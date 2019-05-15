@@ -1,0 +1,25 @@
+@import "partials/variables";
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+a {
+  color: $theme-red;
+  &:hover {
+    color: darken($theme-red, 10%);
+  }
+}
+
+.btn-red {
+  @include button-variant($theme-red, darken($theme-red, 10%))
+}
+
+.sidebar {
+  li {
+    a {
+      &.active {
+        border-radius: 0;
+        background-color: #e9ecef !important;
+      }
+    }
+
+  }
+}
