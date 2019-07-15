@@ -7060,8 +7060,6 @@ a {
     .show > .btn-red.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(192, 55, 76, 0.5); }
 
-.sidebar li {
-  font-weight: 500; }
-  .sidebar li a.active {
-    border-radius: 0;
-    background-color: #e9ecef !important; }
+.sidebar li a.active {
+  border-radius: 0;
+  background-color: #e9ecef !important; }

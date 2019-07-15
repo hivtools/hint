@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${title}"></title>
+    <title>${title}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="css/style.css"/>
 </head>
@@ -9,7 +9,8 @@
 <header>
     <nav class="navbar navbar-dark bg-secondary">
         <div class="container-fluid">
-            <div class="navbar-header text-light" th:text="${title}">
+            <div class="navbar-header text-light">
+                ${title}
             </div>
         </div>
     </nav>
@@ -29,11 +30,10 @@
         <div class="col-10 pt-3">
             <div class="tab-content">
                 <div class="tab-pane active" role="tabpanel" id="inputs">
-                    <div th:replace="fragments/inputs :: div"></div>
+                    <#include "partials/inputs.ftl">
                 </div>
                 <div class="tab-pane" role="tabpanel" id="run">
-                    <div th:replace="fragments/run :: div"></div>
-                </div>
+                    <#include "partials/run.ftl">
             </div>
         </div>
     </div>
