@@ -1,11 +1,11 @@
 package org.imperial.mrc.modelserver
 
+import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class ModelserverApplication
+class ModelServerApplication
 
 fun main(args: Array<String>) {
-    runApplication<ModelserverApplication>(*args)
+    SpringApplication.run(ModelServerApplication::class.java, *args)
 }

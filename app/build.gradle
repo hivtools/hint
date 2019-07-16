@@ -27,7 +27,7 @@ dependencies {
 	implementation 'com.github.kittinunf.fuel:fuel-json:2.1.0'
 	implementation 'com.github.kittinunf.fuel:fuel-coroutines:2.1.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-freemarker'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'

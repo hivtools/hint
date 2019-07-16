@@ -1,9 +1,6 @@
-import {expect} from "chai";
-import {describe} from "mocha";
 import {mockAxios} from "./mocks";
 import {mount} from '@vue/test-utils'
 import status from "../js/components/status.vue";
-import * as polling from "../js/components/polling";
 
 describe("status", () => {
 
@@ -20,8 +17,8 @@ describe("status", () => {
         });
 
         setTimeout(() => {
-            expect(wrapper.find(".status").exists()).to.eq(false);
-            expect(mockAxios.history.get.length).to.eq(0);
+            expect(wrapper.find(".status").exists()).toBe(false);
+            expect(mockAxios.history.get.length).toBe(0);
             done();
         });
     });
@@ -39,8 +36,8 @@ describe("status", () => {
         wrapper.setProps({runId: 1234});
 
         setTimeout(() => {
-            expect(wrapper.find(".status").exists()).to.eq(true);
-            expect(mockAxios.history.get.length).to.eq(1);
+            expect(wrapper.find(".status").exists()).toBe(true);
+            expect(mockAxios.history.get.length).toBe(1);
             done();
         });
     });
@@ -56,9 +53,9 @@ describe("status", () => {
         });
 
         setTimeout(() => {
-            expect(mockAxios.history.get.length).to.eq(1);
-            expect(wrapper.emitted().finished[0][0]).to.eq(true);
-            expect(wrapper.find(".status").exists()).to.eq(false);
+            expect(mockAxios.history.get.length).toBe(1);
+            expect(wrapper.emitted().finished[0][0]).toBe(true);
+            expect(wrapper.find(".status").exists()).toBe(false);
             done();
         });
     });
@@ -74,9 +71,9 @@ describe("status", () => {
         });
 
         setTimeout(() => {
-            expect(mockAxios.history.get.length).to.eq(1);
-            expect(wrapper.emitted().finished[0][0]).to.eq(false);
-            expect(wrapper.find(".status").exists()).to.eq(false);
+            expect(mockAxios.history.get.length).toBe(1);
+            expect(wrapper.emitted().finished[0][0]).toBe(false);
+            expect(wrapper.find(".status").exists()).toBe(false);
             done();
         });
     });

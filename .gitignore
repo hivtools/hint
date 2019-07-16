@@ -1,0 +1,4 @@
+.idea
+src/app/static/coverage
+**/*/coverage
+.gradle
