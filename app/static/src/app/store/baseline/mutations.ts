@@ -7,7 +7,7 @@ export const mutations: MutationTree<BaselineState> = {
         state.hasError = false;
         state.country = action.payload.country
     },
-    PJNZUploadError(state) {
+    PJNZUploadError(state: BaselineState) {
         state.hasError = true;
     }
 };
