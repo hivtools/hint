@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "NODE_ENV=production gulp build",
+    "build": "webpack",
     "test": "jest -c jest.config.js"
   },
   "author": "",
@@ -31,10 +31,13 @@
     "jquery": "^3.4.1",
     "plotly.js": "^1.48.3",
     "through": "^2.3.8",
-    "vue": "^2.6.8",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3",
+    "vue": "^2.6.10",
     "vue-jest": "^3.0.4",
     "vue-loader": "^15.7.0",
     "vue-template-compiler": "^2.6.8",
+    "vuex": "^3.1.1",
     "webpack": "^4.31.0",
     "webpack-cli": "^3.3.2",
     "webpack-node-externals": "^1.7.2",
