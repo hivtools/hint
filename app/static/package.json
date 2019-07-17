@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
-    "sass": "gulp sass",
+    "build": "webpack && gulp sass",
     "test": "jest -c jest.config.js"
   },
   "author": "",

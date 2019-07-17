@@ -13,6 +13,35 @@ a {
   @include button-variant($theme-red, darken($theme-red, 10%))
 }
 
+.step {
+
+  color: $gray-600;
+
+  .btn {
+    color: white;
+    margin: 0 auto;
+    display: block;
+
+    @extend .rounded-circle;
+    @extend .mb-1;
+
+    height: 50px;
+    width: 50px;
+
+    &:not(.btn-red) {
+      background: $gray-500;
+    }
+  }
+
+  &.active {
+    color: inherit;
+  }
+}
+
+.no-padding {
+  padding: 0 !important;
+}
+
 .tick {
   margin-left: 5px;
   margin-bottom: 10px;

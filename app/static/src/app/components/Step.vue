@@ -1,15 +1,18 @@
 <template>
-    <div class="col" :class="[{'active': active}]">
-        <button :class="['btn', {'btn-default': !active}, {'btn-red': active}]"
-                v-on:click="$emit('step', type)">Step</button>
+    <div class="col step no-padding" :class="[{'active': active}]">
+        <button class="btn" :class="[{'btn-red': active}]"
+                v-on:click="$emit('jump', number)">{{number}}
+        </button>
+        <div class="text-center">{{text}}</div>
     </div>
 </template>
 
 <script lang="ts">
 
     import Vue from "vue";
+
     export default Vue.extend({
-        props: ["active", "type"]
+        props: ["active", "number", "text"]
     })
 
 </script>

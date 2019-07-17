@@ -4705,7 +4705,7 @@ button.bg-dark:focus {
 .rounded-lg {
   border-radius: 0.3rem !important; }
 
-.rounded-circle {
+.rounded-circle, .step .btn {
   border-radius: 50% !important; }
 
 .rounded-pill {
@@ -5475,7 +5475,7 @@ button.bg-dark:focus {
 .mx-1 {
   margin-right: 0.25rem !important; }
 
-.mb-1,
+.mb-1, .step .btn,
 .my-1 {
   margin-bottom: 0.25rem !important; }
 
@@ -7059,6 +7059,22 @@ a {
     .btn-red:not(:disabled):not(.disabled):active:focus, .btn-red:not(:disabled):not(.disabled).active:focus,
     .show > .btn-red.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(192, 55, 76, 0.5); }
+
+.step {
+  color: #6c757d; }
+  .step .btn {
+    color: white;
+    margin: 0 auto;
+    display: block;
+    height: 50px;
+    width: 50px; }
+    .step .btn:not(.btn-red) {
+      background: #adb5bd; }
+  .step.active {
+    color: inherit; }
+
+.no-padding {
+  padding: 0 !important; }
 
 .tick {
   margin-left: 5px;

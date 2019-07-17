@@ -1,14 +1,20 @@
 <template>
     <div class="container">
         <div class="row">
-            <step type="baseline" :active="active('baseline')" @step="step"></step>
-            <step type="surveyAndProgram" :active="active('surveyAndProgram')" @step="step"></step>
-            <step type="review" :active="active('review')" @step="step"></step>
-            <step type="run" :active="active('run')" @step="step"></step>
-            <step type="results" :active="active('results')" @step="step"></step>
+            <template v-for="step in steps">
+                <step :key="step.number"
+                      :active="active(step.number)"
+                      :number="step.number"
+                      :text="step.text"
+                      @jump="jump">
+                </step>
+                <div class="col no-padding" v-if="step.number < steps.length">
+                    <hr/>
+                </div>
+            </template>
         </div>
         <div class="pt-5">
-            <baseline v-if="active('baseline')"></baseline>
+            <baseline v-if="active(1)"></baseline>
         </div>
     </div>
 </template>
@@ -31,10 +37,36 @@
         status: Status
     }
 
-    export default Vue.extend<any, any, Dictionary<Computed>, any>({
-        data() {
+    interface Data {
+        activeStep: number
+        steps: { number: number, text: string }[]
+    }
+
+    export default Vue.extend<Data, any, Dictionary<Computed>, any>({
+        data(): Data {
             return {
-                activeRef: ""
+                activeStep: 1,
+                steps: [
+                    {
+                        number: 1,
+                        text: "Upload baseline data"
+                    },
+                    {
+                        number: 2,
+                        text: "Upload survey and program data"
+                    },
+                    {
+                        number: 3,
+                        text: "Review uploads"
+                    },
+                    {
+                        number: 4,
+                        text: "Run model"
+                    },
+                    {
+                        number: 5,
+                        text: "Review output"
+                    }]
             }
         },
         computed: mapState<RootState>({
@@ -49,11 +81,11 @@
             }
         }),
         methods: {
-            step(type: StepType) {
-                this.activeRef = type
+            jump(num: number) {
+                this.activeStep = num
             },
-            active(type: StepType) {
-                return this.activeRef == type
+            active(num: number) {
+                return this.activeStep == num;
             }
         },
         components: {

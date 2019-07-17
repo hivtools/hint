@@ -2,14 +2,14 @@
     <div>
         <div class="row">
             <div class="col">
-                <h1>Upload baseline data</h1>
+                <h1 class="h2 mb-4">Upload baseline data</h1>
             </div>
         </div>
         <div class="row">
             <div class="col">
                 <form>
                     <div class="form-group">
-                        <label>PJNZ</label>
+                        <label class="font-weight-bold">PJNZ</label>
                         <tick color="#e31837" v-if="country" width="20px"></tick>
                         <div class="custom-file">
                             <input type="file"
