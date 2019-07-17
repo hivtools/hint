@@ -1,15 +1,12 @@
 import Vue from "vue";
-import Baseline from "./components/Baseline.vue";
 import {store} from "./main"
+import Stepper from "./components/Stepper.vue";
 
 let v = new Vue({
     el: "#app",
-    template: `
-    <div>
-        <baseline></baseline>
-    </div>`,
+    template: `<stepper></stepper>`,
     store,
     components: {
-        Baseline
+        Stepper
     }
 });

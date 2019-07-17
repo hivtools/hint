@@ -1,5 +1,5 @@
 import { MutationTree } from 'vuex';
-import {BaselineState} from "./baseline";
+import {BaselineState} from "../../types";
 import {PJNZLoaded} from "./actions";
 
 export const mutations: MutationTree<BaselineState> = {

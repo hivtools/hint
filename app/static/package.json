@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack",
+    "sass": "gulp sass",
     "test": "jest -c jest.config.js"
   },
   "author": "",

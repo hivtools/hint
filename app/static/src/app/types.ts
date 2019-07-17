@@ -1,5 +1,12 @@
+export interface BaselineState {
+    hasError: boolean
+    country: string
+    complete: boolean
+}
+
 export interface RootState {
     version: string;
+    baseline: BaselineState
 }
 
 export interface PJNZ {

@@ -2,16 +2,12 @@ import { Module } from 'vuex';
 import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import {RootState} from "../../types";
-
-export interface BaselineState {
-    hasError: boolean
-    country: string
-}
+import {BaselineState, RootState} from "../../types";
 
 export const baselineState: BaselineState = {
     country: "",
-    hasError: false
+    hasError: false,
+    complete: false
 };
 
 const namespaced: boolean = true;
