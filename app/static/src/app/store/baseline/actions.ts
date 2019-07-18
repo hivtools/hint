@@ -12,19 +12,24 @@ export interface PJNZLoaded extends BaselinePayload {
     payload: PJNZ
 }
 
-export const actions: ActionTree<BaselineState, RootState> = {
+export interface BaselineActions {
+    uploadPJNZ: (store: ActionContext<BaselineState, RootState>, file: File) => void
+}
 
-    uploadPJNZ({commit}: ActionContext<BaselineState, RootState>, file: File) {
+export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
+
+    uploadPJNZ({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
         axios.post("/upload", formData)
             .then((response: APIResponse) => {
                 const payload: PJNZ = response && response.data.data;
                 commit<BaselinePayload>({type: "PJNZLoaded", payload});
-            }, (error: APIResponse) => {
-                console.log(error);
-                const payload = error && error.data && error.data.errors;
-                commit<BaselinePayload>({type: 'PJNZUploadError', payload});
+            })
+            .catch((e: {response: APIResponse}) => {
+                const errors = e.response.data.errors;
+                console.log(errors);
+                commit<BaselinePayload>({type: 'PJNZUploadError', payload: errors});
             });
     }
 };

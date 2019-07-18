@@ -3,10 +3,12 @@ module.exports = {
     "moduleFileExtensions": [
         "js",
         "json",
-        "vue"
+        "vue",
+        "ts"
     ],
     "transform": {
         ".*\\.(vue)$": "vue-jest",
+        "^.+\\.tsx?$": "ts-jest",
         "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
     },
     "coverageDirectory": "./coverage/",

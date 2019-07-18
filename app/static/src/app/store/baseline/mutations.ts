@@ -1,13 +1,24 @@
-import { MutationTree } from 'vuex';
+import {Mutation, MutationTree} from 'vuex';
 import {BaselineState} from "../../types";
-import {PJNZLoaded} from "./actions";
+import {BaselinePayload, PJNZLoaded} from "./actions";
 
-export const mutations: MutationTree<BaselineState> = {
+interface BaselineMutation extends Mutation<BaselineState> {
+    payload?: BaselinePayload
+}
+
+export interface BaselineMutations {
+    PJNZLoaded: BaselineMutation
+    PJNZLoadError: BaselineMutation
+}
+
+export const mutations: MutationTree<BaselineState> & BaselineMutations = {
     PJNZLoaded(state: BaselineState, action: PJNZLoaded) {
         state.hasError = false;
         state.country = action.payload.country
     },
-    PJNZUploadError(state: BaselineState) {
+
+    PJNZLoadError(state: BaselineState) {
         state.hasError = true;
     }
 };
+
