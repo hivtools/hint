@@ -21,9 +21,7 @@
                                 {{fileName || "Choose PJNZ file" }}
                             </label>
                         </div>
-                        <div v-if="hasError" class="alert alert-danger">
-                            Something went wrong
-                        </div>
+                        <error-alert v-if="hasError" message="Something went wrong"></error-alert>
                     </div>
                 </form>
             </div>
@@ -46,10 +44,10 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {mapState} from "vuex";
-    import {store} from "../main";
+    import {mapActions, mapState} from "vuex";
     import {BaselineState} from "../types";
     import Tick from "./Tick.vue";
+    import ErrorAlert from "./ErrorAlert.vue";
 
     const namespace: string = 'baseline';
 
@@ -71,15 +69,17 @@
             }
         },
         methods: {
+            ...mapActions({upload: 'baseline/uploadPJNZ'}),
             handleFileSelect() {
                 const fileInput = this.$refs.pjnz as HTMLInputElement;
                 this.file = fileInput && fileInput.files && fileInput.files[0];
                 this.fileName = this.file && this.file.name.split("\\").pop() || "";
-                store.dispatch('baseline/uploadPJNZ', this.file);
+                this.upload(this.file);
             }
         },
         components: {
-            Tick
+            Tick,
+            ErrorAlert
         }
     })
 </script>

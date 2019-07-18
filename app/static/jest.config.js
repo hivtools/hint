@@ -1,4 +1,12 @@
 module.exports = {
+    "globals": {
+        "ts-jest": {
+            "diagnostics": {
+                "warnOnly": true
+            },
+            "esModuleInterop": true
+        }
+    },
     "testResultsProcessor": "jest-teamcity-reporter",
     "moduleFileExtensions": [
         "js",
