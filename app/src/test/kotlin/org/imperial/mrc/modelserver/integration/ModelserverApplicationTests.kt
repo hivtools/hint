@@ -18,9 +18,9 @@ class ModelserverApplicationTests(@Autowired val restTemplate: TestRestTemplate)
 
 	@Test
 	fun `Assert redirects to login page`() {
-		val entity = restTemplate.getForEntity<String>("/")
+        val entity = restTemplate.getForEntity<String>("/")
         assertThat(entity.body!!).contains("Log In")
-		assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
 	}
 
 }
