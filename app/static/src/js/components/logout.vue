@@ -1,12 +1,14 @@
 <template>
-    <span class="logout" v-on:click="logout">Logout</span>
+    <div class="logout">
+        <a v-on:click="logout" href="#">Logout</a>
+    </div>
 </template>
 
 <script>
     import axios from "axios";
 
     export default {
-        name: 'logout-link',
+        name: 'logout',
         methods: {
             logout: function () {
                 //"logout" of basic auth by clearing Authorization header and

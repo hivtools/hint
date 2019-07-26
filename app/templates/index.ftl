@@ -12,8 +12,8 @@
             <div class="container-fluid">
                 <div class="navbar-header text-light">
                     ${title}
-                    <#include "partials/logout_link.ftl">
                 </div>
+                <logout></logout>
             </div>
         </nav>
     </header>

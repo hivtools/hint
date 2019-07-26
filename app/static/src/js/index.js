@@ -6,7 +6,7 @@ import runner from "./components/runner.vue"
 import modelInputs from "./components/inputs.vue"
 import status from "./components/status.vue"
 import results from "./components/results.vue"
-import logout_link from "./components/logout-link.vue"
+import logout from "./components/logout.vue"
 
 const data = {
     runId: null,
@@ -23,7 +23,7 @@ const app = new Vue({
         runner: runner,
         status: status,
         results: results,
-        logout_link: logout_link
+        logout: logout
     },
     methods: {
         handleRun: function (id) {
