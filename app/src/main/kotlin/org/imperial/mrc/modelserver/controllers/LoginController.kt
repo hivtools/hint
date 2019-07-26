@@ -1,4 +1,4 @@
-package org.imperial.mrc.modelserver
+package org.imperial.mrc.modelserver.controllers
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import javax.servlet.http.HttpServletRequest
 
 @Controller
-class LoginController {
-
-    @Autowired
-    private lateinit var request: HttpServletRequest
+class LoginController(@Autowired val request: HttpServletRequest) {
 
     @GetMapping("/login")
     fun login(model: Model): String {

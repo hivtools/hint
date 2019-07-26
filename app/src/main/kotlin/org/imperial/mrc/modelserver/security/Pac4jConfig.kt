@@ -8,9 +8,6 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.pac4j.http.client.indirect.FormClient
 
-
-
-
 @Configuration
 @ComponentScan(basePackages = ["org.pac4j.springframework.web"])
 class Pac4jConfig{
