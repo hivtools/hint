@@ -6,14 +6,25 @@
     <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
-    <div id="app">
-        <h1>Login</h1>
-        <form method="post" action="/callback">
-            <input type="text" size="20" maxlength="256" name="username" id="user-id" value="${username}">
-            <input type="password" size="20" maxlength="256" name="password" id="pw-id">
-           <input type="submit" value="Log In">
-        </form>
-        <div>${error}</div>
+    <div id="app" class="card login-form mx-auto mt-5">
+        <div class="card-body">
+            <form method="post" action="/callback">
+                <div class="form-group">
+                    <label for="user-id">Username</label>
+                    <input type="text" size="20" class="form-control" name="username" id="user-id" value="${username}">
+                </div>
+                <div class="form-group">
+                    <label for="pw-id">Password</label>
+                    <input type="password" size="20" class="form-control" name="password" id="pw-id">
+                </div>
+                <div class="text-center">
+                    <input class="btn btn-red" type="submit" value="Log In">
+                </div>
+            </form>
+            <#if error != "">
+                <div class="alert alert-danger mt-3">${error}</div>
+            </#if>
+        </div>
     </div>
 </body>
 </html>
