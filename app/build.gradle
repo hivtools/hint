@@ -33,6 +33,9 @@ dependencies {
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
+	implementation 'org.pac4j:spring-webmvc-pac4j:3.2.0'
+	implementation 'org.pac4j:pac4j-http:3.3.0'
+	implementation 'org.pac4j:pac4j-sql:3.3.0'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude module: 'junit'
 	}
