@@ -13,10 +13,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 class SecurityConfig: WebMvcConfigurerAdapter() {
 
     @Autowired
-    private lateinit  var config: Config
+    private lateinit var config: Config
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(SecurityInterceptor(config, "IndirectBasicAuthClient"))
+        registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
                 .addPathPatterns("/")
     }
 }

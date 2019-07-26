@@ -13,7 +13,9 @@
                 <div class="navbar-header text-light">
                     ${title}
                 </div>
-                <logout></logout>
+                <div class="logout">
+                    <a href="/logout">Logout</a>
+                </div>
             </div>
         </nav>
     </header>
