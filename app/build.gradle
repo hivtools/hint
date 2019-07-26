@@ -41,6 +41,9 @@ dependencies {
 	}
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'
 	testImplementation "com.nhaarman:mockito-kotlin:1.3.0"
+	testImplementation "org.jsoup:jsoup:1.11.3"
+	testImplementation "org.xmlmatchers:xml-matchers:0.10"
+	testImplementation "net.sourceforge.htmlunit:htmlunit:2.4"
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 

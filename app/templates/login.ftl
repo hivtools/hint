@@ -22,7 +22,7 @@
                 </div>
             </form>
             <#if error != "">
-                <div class="alert alert-danger mt-3">${error}</div>
+                <div id="error" class="alert alert-danger mt-3">${error}</div>
             </#if>
         </div>
     </div>
