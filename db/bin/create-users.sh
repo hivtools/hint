@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 set -ex
 
-dropdb -U naomi --if-exists modelserver-db
-createdb -U naomi modelserver-db
+dropdb -U hint --if-exists modelserver-db
+createdb -U hint modelserver-db

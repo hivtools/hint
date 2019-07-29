@@ -21,7 +21,7 @@ at:
 
 * host: `modelserver-db`
 * port: `5432`
-* user: `naomi`
+* user: `hint`
 * password: `changeme`
 
 You can override these by passing in command line options. Please see the Flyway

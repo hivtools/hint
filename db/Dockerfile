@@ -2,7 +2,7 @@ FROM postgres:10.3
 COPY bin /modelserver-db-bin
 ENV PATH="modelserver-db-bin:$PATH"
 ENV POSTGRES_DB modelserver-db
-ENV POSTGRES_USER naomi
+ENV POSTGRES_USER hint
 ENV POSTGRES_PASSWORD changeme
 # This is needed to override the loss of data that happens if you
 # don't mount a persistent volume at the mount point.

@@ -22,11 +22,10 @@ class UsersTests {
         fun setupDatasource()
         {
             dataSource.url = "jdbc:postgresql://localhost/modelserver-db"
-            dataSource.user = "naomi"
+            dataSource.user = "hint"
             dataSource.password = "changeme"
         }
     }
-
 
     @Test
     fun `can add and remove users`() {
