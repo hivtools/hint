@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+docker run --rm -d --network=model -p 5432:5432 --name modelserver_db mrcide/modelserver_db:mrc-371
+
+# Need to give the database a little time to initialise before we can run the migration
+sleep 10s
+docker run --rm --network=host --name modelserver_db_migrate mrcide/modelserver_db_migrate:mrc-371 -url=jdbc:postgresql://localhost/modelserver-db

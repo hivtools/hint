@@ -16,6 +16,7 @@ RUN cat /etc/modelserver-db/postgresql.conf /etc/modelserver-db/postgresql.produ
 RUN chown -R postgres:postgres /etc/modelserver-db
 RUN ./docker-entrypoint.sh --version
 
+RUN cp /modelserver-db-bin/create-users.sh /docker-entrypoint-initdb.d/
 
 ENTRYPOINT ["/modelserver-db-bin/start-with-config.sh"]
 CMD ["/etc/modelserver-db/postgresql.conf"]
