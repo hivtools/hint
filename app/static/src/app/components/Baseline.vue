@@ -45,9 +45,9 @@
 
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
-    import {BaselineState} from "../types";
     import Tick from "./Tick.vue";
     import ErrorAlert from "./ErrorAlert.vue";
+    import { BaselineState } from "../store/baseline/baseline";
 
     const namespace: string = 'baseline';
 
@@ -57,7 +57,7 @@
     }
 
     export default Vue.extend({
-
+        name: "Baseline",
         computed: mapState<BaselineState>(namespace, {
             country: state => state.country,
             hasError: state => state.hasError
@@ -70,9 +70,12 @@
         },
         methods: {
             ...mapActions({upload: 'baseline/uploadPJNZ'}),
-            handleFileSelect() {
-                const fileInput = this.$refs.pjnz as HTMLInputElement;
-                this.file = fileInput && fileInput.files && fileInput.files[0];
+            handleFileSelect(files: FileList | null) {
+                if (!files) {
+                    const fileInput = this.$refs.pjnz as HTMLInputElement;
+                    files = fileInput.files
+                }
+                this.file = files && files[0];
                 this.fileName = this.file && this.file.name.split("\\").pop() || "";
                 this.upload(this.file);
             }

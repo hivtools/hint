@@ -1,13 +1,13 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import Baseline from "../../app/components/Baseline.vue"
-import Tick from "../../app/components/Tick.vue";
-import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import {BaselineActions} from "../../app/store/baseline/actions";
 import {mutations} from "../../app/store/baseline/mutations";
 import {mockBaselineState, mockFileList} from "../mocks";
-import {BaselineState} from "../../app/types";
+import {BaselineState} from "../../app/store/baseline/baseline";
+import Baseline from "../../app/components/Baseline.vue";
+import ErrorAlert from "../../app/components/ErrorAlert.vue";
+import Tick from "../../app/components/Tick.vue";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -52,7 +52,6 @@ describe("Baseline upload component", () => {
         expect(wrapper.find(ErrorAlert).props().message).toBe("Something went wrong");
     });
 
-
     it("does not render error message if not hasError", () => {
         const store = createSut();
         const wrapper = shallowMount(Baseline, {store, localVue});
@@ -77,4 +76,15 @@ describe("Baseline upload component", () => {
 
     });
 
+    it("dispatches baseline/uploadPJNZ", (done) => {
+        const store = createSut();
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        (wrapper.vm as any).handleFileSelect([{name: "TEST"}] as any);
+
+        setTimeout(() => {
+            expect(actions.uploadPJNZ.mock.calls[0][1]).toStrictEqual({name: "TEST"});
+            done();
+        });
+
+    });
 });

@@ -1,6 +1,8 @@
 import {ActionContext, ActionPayload, ActionTree} from 'vuex';
 import axios from 'axios';
-import {APIResponse, PJNZ, RootState, BaselineState} from "../../types";
+import {APIResponse, PJNZ} from "../../types";
+import {BaselineState} from "./baseline";
+import {RootState} from "../../main";
 
 export type BaselineActionTypes = "PJNZLoaded" | "PJNZUploadError"
 

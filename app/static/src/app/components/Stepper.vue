@@ -6,6 +6,7 @@
                       :active="active(step.number)"
                       :number="step.number"
                       :text="step.text"
+                      :enabled="enabled(step.number)"
                       @jump="jump">
                 </step>
                 <div class="col no-padding" v-if="step.number < steps.length">
@@ -22,19 +23,13 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {Dictionary, mapState} from "vuex";
-    import {RootState} from "../types";
+    import {mapState} from "vuex";
     import Step from "./Step.vue";
     import Baseline from "./Baseline.vue";
+    import {RootState} from "../main";
 
-    type StepType = "baseline" | "surveyAndProgram" | "review" | "run" | "results"
-
-    type Status = {
-        [key in StepType]: boolean
-    }
-
-    interface Computed {
-        status: Status
+    type CompleteStatus = {
+        [key: number]: boolean
     }
 
     interface Data {
@@ -42,7 +37,7 @@
         steps: { number: number, text: string }[]
     }
 
-    export default Vue.extend<Data, any, Dictionary<Computed>, any>({
+    export default Vue.extend({
         data(): Data {
             return {
                 activeStep: 1,
@@ -69,23 +64,28 @@
                     }]
             }
         },
-        computed: mapState<RootState>({
-            status(state): Status {
-                return {
-                    baseline: state.baseline.complete,
-                    surveyAndProgram: false,
-                    review: false,
-                    run: false,
-                    results: false
-                }
-            }
-        }),
+        computed: {
+            ...mapState<RootState>({
+                status: (state: RootState): CompleteStatus => ({
+                    1: state.baseline.complete,
+                    2: false,
+                    3: false,
+                    4: false,
+                    5: false
+                }),
+            })
+        },
         methods: {
             jump(num: number) {
                 this.activeStep = num
             },
             active(num: number) {
                 return this.activeStep == num;
+            },
+            enabled(num: number) {
+                return this.steps.slice(0, num)
+                    .filter((s) => this.status[s.number])
+                    .length >= num - 1
             }
         },
         components: {

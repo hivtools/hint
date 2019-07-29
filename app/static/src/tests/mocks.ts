@@ -1,7 +1,6 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import {initialBaselineState} from "../app/store/baseline/baseline";
-import {BaselineState} from "../app/types";
+import {BaselineState, initialBaselineState} from "../app/store/baseline/baseline";
 
 export const mockAxios = new MockAdapter(axios);
 

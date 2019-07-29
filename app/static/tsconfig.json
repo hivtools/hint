@@ -12,7 +12,8 @@
   },
   "include": [
     "./src/app/**/*.ts",
-    "./src/app/**/*.vue"
+    "./src/app/**/*.vue",
+    "./tests/**/*.test.ts"
   ],
   "files": [
     "./vue-shims.d.ts"

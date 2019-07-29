@@ -1,10 +1,10 @@
 module.exports = {
     "globals": {
         "ts-jest": {
+            tsConfig: 'tsconfig.json',
             "diagnostics": {
                 "warnOnly": true
-            },
-            "esModuleInterop": true
+            }
         }
     },
     "testResultsProcessor": "jest-teamcity-reporter",
@@ -16,9 +16,13 @@ module.exports = {
     ],
     "transform": {
         ".*\\.(vue)$": "vue-jest",
-        "^.+\\.tsx?$": "ts-jest",
+        "^.+\\.ts?$": "ts-jest",
         "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
     },
     "coverageDirectory": "./coverage/",
-    "collectCoverage": true
+    "collectCoverage": true,
+    "coveragePathIgnorePatterns": [
+        "/node_modules/",
+        "./tests/mocks.ts"
+    ]
 };

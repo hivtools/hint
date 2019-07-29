@@ -1,7 +1,11 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
-import {RootState} from "./types";
-import {baseline, initialBaselineState} from "./store/baseline/baseline";
+import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
+
+export interface RootState {
+    version: string;
+    baseline: BaselineState
+}
 
 Vue.use(Vuex);
 
