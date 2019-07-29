@@ -27,7 +27,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     uploadPJNZ({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
-        axios.post("/upload", formData)
+        axios.post("/baseline/pjnz/upload", formData)
             .then((response: AxiosResponse) => {
                 const payload: PJNZ = response && response.data;
                 console.log(payload);
