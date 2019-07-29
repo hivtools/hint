@@ -10,4 +10,4 @@ Requirements:
 1. Run `npm install` from `app/static`
 1. Run `./scripts/run-dependencies.sh` to start a model API
 1. Run `npm run build` from `app/static` to compile front-end dependencies.
-1. Run app from your IDE or by `cd ap && ./gradlew :bootRun` to serve the app on port 8080
+1. Run app from your IDE or by `cd app && ./gradlew :bootRun` to serve the app on port 8080
