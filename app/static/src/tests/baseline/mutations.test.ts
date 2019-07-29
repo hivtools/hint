@@ -8,14 +8,14 @@ describe("Baseline mutations", () => {
         const testState = {...initialBaselineState};
         mutations.PJNZLoaded(testState, {payload: {country: "Malawi"}, type: "PJNZLoaded"});
         expect(testState.country).toBe("Malawi");
-        expect(testState.hasError).toBe(false);
+        expect(testState.pjnzError).toBe("");
     });
 
     it("sets error on PJNZUploadError", () => {
 
         const testState = {...initialBaselineState};
-        mutations.PJNZLoadError(testState);
-        expect(testState.hasError).toBe(true);
+        mutations.PJNZUploadError(testState, {payload: "Some error"});
+        expect(testState.pjnzError).toBe("Some error");
     })
 
 });

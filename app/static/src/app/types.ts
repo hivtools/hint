@@ -2,17 +2,8 @@ export interface PJNZ {
     country: string
 }
 
-export interface ErrorInfo {
+export interface APIError {
+    status: number,
+    error: string,
     message: string
-    code: string
-}
-
-export interface Result {
-    errors: ErrorInfo[]
-    status: "success" | "failure"
-    data: any
-}
-
-export interface APIResponse {
-    data: Result
 }

@@ -47,9 +47,9 @@ describe("Baseline upload component", () => {
     });
 
     it("renders error message if hasError", () => {
-        const store = createSut({hasError: true});
+        const store = createSut({pjnzError: "File upload went wrong"});
         const wrapper = shallowMount(Baseline, {store, localVue});
-        expect(wrapper.find(ErrorAlert).props().message).toBe("Something went wrong");
+        expect(wrapper.find(ErrorAlert).props().message).toBe("File upload went wrong");
     });
 
     it("does not render error message if not hasError", () => {
@@ -79,12 +79,11 @@ describe("Baseline upload component", () => {
     it("dispatches baseline/uploadPJNZ", (done) => {
         const store = createSut();
         const wrapper = shallowMount(Baseline, {store, localVue});
-        (wrapper.vm as any).handleFileSelect([{name: "TEST"}] as any);
+        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
 
         setTimeout(() => {
             expect(actions.uploadPJNZ.mock.calls[0][1]).toStrictEqual({name: "TEST"});
             done();
         });
-
     });
 });

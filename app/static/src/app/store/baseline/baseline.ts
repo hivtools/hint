@@ -4,14 +4,14 @@ import { mutations } from './mutations';
 import {RootState} from "../../main";
 
 export interface BaselineState {
-    hasError: boolean
+    pjnzError: string
     country: string
     complete: boolean
 }
 
 export const initialBaselineState: BaselineState = {
     country: "",
-    hasError: false,
+    pjnzError: "",
     complete: false
 };
 

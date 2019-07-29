@@ -1,6 +1,8 @@
-<div class="alert alert-danger">
-    {{message}}
-</div>
+<template>
+    <div class="pt-1 text-danger">
+        {{message}}
+    </div>
+</template>
 
 <script lang="ts">
     export default {

@@ -5,8 +5,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="css/style.css"/>
 </head>
-<body class="pt-3">
-<header>
+<body>
+<header class="mb-5">
     <nav class="navbar navbar-dark bg-secondary">
         <div class="container-fluid">
             <div class="navbar-header text-light">

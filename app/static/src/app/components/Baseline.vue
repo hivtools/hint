@@ -21,7 +21,7 @@
                                 {{fileName || "Choose PJNZ file" }}
                             </label>
                         </div>
-                        <error-alert v-if="hasError" message="Something went wrong"></error-alert>
+                        <error-alert v-if="hasError" :message="error"></error-alert>
                     </div>
                 </form>
             </div>
@@ -60,7 +60,8 @@
         name: "Baseline",
         computed: mapState<BaselineState>(namespace, {
             country: state => state.country,
-            hasError: state => state.hasError
+            hasError: state => state.pjnzError.length > 0,
+            error: state => state.pjnzError
         }),
         data(): Data {
             return {
@@ -70,7 +71,7 @@
         },
         methods: {
             ...mapActions({upload: 'baseline/uploadPJNZ'}),
-            handleFileSelect(files: FileList | null) {
+            handleFileSelect(_: Event, files: FileList | null) {
                 if (!files) {
                     const fileInput = this.$refs.pjnz as HTMLInputElement;
                     files = fileInput.files

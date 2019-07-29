@@ -21,7 +21,7 @@ class HomeController {
     @PostMapping("/upload")
     @ResponseBody
     fun upload(@RequestParam("file") file: MultipartFile): String {
-        return "{\"data\": {\"country\": \"Malawi\"}}"
+        return "{\"country\": \"Malawi\"}"
     }
 
     @PostMapping("/validate")
