@@ -1,4 +1,5 @@
-package org.imperial.mrc.modelserver
+package org.imperial.mrc.modelserver.controllers
+
 import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost

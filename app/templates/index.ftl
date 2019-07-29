@@ -6,6 +6,18 @@
     <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body class="pt-3">
+<header>
+    <nav class="navbar navbar-dark bg-secondary">
+        <div class="container-fluid">
+            <div class="navbar-header text-light">
+                ${title}
+            </div>
+            <div class="logout">
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+</header>
 <div id="app">
 </div>
 <script src="js/app.js"></script>
