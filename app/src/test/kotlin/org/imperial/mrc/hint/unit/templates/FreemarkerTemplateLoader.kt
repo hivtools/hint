@@ -1,4 +1,4 @@
-package org.imperial.mrc.modelserver.unit.templates
+package org.imperial.mrc.hint.unit.templates
 
 import com.gargoylesoftware.htmlunit.StringWebResponse
 import com.gargoylesoftware.htmlunit.WebClient

@@ -1,4 +1,4 @@
-package org.imperial.mrc.modelserver.security
+package org.imperial.mrc.hint.security
 
 import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config

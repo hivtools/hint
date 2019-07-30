@@ -1,10 +1,10 @@
-package org.imperial.mrc.modelserver.unit.controllers
+package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.doReturn
 import org.junit.jupiter.api.Test
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
-import org.imperial.mrc.modelserver.controllers.LoginController
+import org.imperial.mrc.hint.controllers.LoginController
 import org.springframework.ui.ConcurrentModel
 import javax.servlet.http.HttpServletRequest
 

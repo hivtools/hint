@@ -1,4 +1,4 @@
-package org.imperial.mrc.modelserver.controllers
+package org.imperial.mrc.hint.controllers
 
 import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.httpGet
