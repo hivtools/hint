@@ -1,4 +1,5 @@
 .idea
-src/app/static/coverage
+app/static/coverage/**
 **/*/coverage
 .gradle
+app/static/public/**
