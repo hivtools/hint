@@ -26,7 +26,7 @@ matrix:
       - openjdk8
       install:
       - npm install codecov -g
-      - ./src/gradlew -p src
+      - ./app/gradlew -p app
       before_script:
       - ./scripts/run-dependencies.sh
       script:
