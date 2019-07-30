@@ -1,4 +1,4 @@
-package org.imperial.mrc.modelserver.integration
+package org.imperial.mrc.hint.integration
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -9,7 +9,7 @@ import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.http.HttpStatus
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ModelserverApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
+class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
 
     @Test
     fun contextLoads() {

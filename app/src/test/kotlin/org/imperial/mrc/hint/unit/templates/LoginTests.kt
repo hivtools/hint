@@ -1,4 +1,4 @@
-package org.imperial.mrc.modelserver.unit.templates
+package org.imperial.mrc.hint.unit.templates
 
 import org.junit.jupiter.api.Test
 import org.springframework.ui.ConcurrentModel

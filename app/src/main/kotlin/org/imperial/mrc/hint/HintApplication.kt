@@ -1,11 +1,11 @@
-package org.imperial.mrc.modelserver
+package org.imperial.mrc.hint
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
 @SpringBootApplication
-class ModelServerApplication
+class HintApplication
 
 fun main(args: Array<String>) {
-    SpringApplication.run(ModelServerApplication::class.java, *args)
+    SpringApplication.run(HintApplication::class.java, *args)
 }
