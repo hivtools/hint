@@ -1,0 +1,37 @@
+matrix:
+  include:
+    - language: node_js
+      node_js:
+      - 10
+      cache: npm
+      install:
+      - npm install codecov -g
+      - npm install --prefix=app/static
+      - npm run build --prefix=app/static
+      script: npm test --prefix=app/static
+      after_success:
+      - codecov -f app/static/coverage/*.json
+    - language: java
+      before_cache:
+      - rm -f  $HOME/app/.gradle/caches/modules-2/modules-2.lock
+      - rm -fr $HOME/app/.gradle/caches/*/plugin-resolution/
+      cache:
+          directories:
+          - $HOME/app/.gradle/caches/
+          - $HOME/app/.gradle/wrapper/
+          - $HOME/app/static/node_modules
+      jdk:
+      - openjdk8
+      install:
+      - npm install codecov -g
+      - ./app/gradlew -p app
+      before_script:
+      - sudo /etc/init.d/postgresql stop
+      - ./scripts/run-dependencies.sh
+      script:
+      - ./app/gradlew -p app :test
+      after_success:
+      - ./app/gradlew -p app :jacocoTestReport
+      - codecov -f app/coverage/test/*.xml
+      services:
+      - docker

@@ -1,4 +1,4 @@
-## Model Server
+## HINT - HIV Indicators Tool
 [SpringBoot](https://spring.io/projects/spring-boot) Kotlin web app for interfacing with a model API.
 
 ### Developing
