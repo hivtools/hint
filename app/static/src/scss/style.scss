@@ -3,6 +3,7 @@
 
 a {
   color: $theme-red;
+
   &:hover {
     color: darken($theme-red, 10%);
   }
@@ -12,16 +13,57 @@ a {
   @include button-variant($theme-red, darken($theme-red, 10%))
 }
 
-.sidebar {
-  li {
-    a {
-      &.active {
-        border-radius: 0;
-        background-color: #e9ecef !important;
-      }
-    }
+.step {
 
+  color: $gray-600;
+
+  .btn {
+    color: white;
+    margin: 0 auto;
+    display: block;
+
+    @extend .rounded-circle;
+    @extend .mb-1;
+
+    height: 50px;
+    width: 50px;
+
+    &:not(.btn-red) {
+      background: $gray-500;
+    }
   }
+
+  &.active {
+    color: inherit;
+  }
+}
+
+.no-padding {
+  padding: 0 !important;
+}
+
+.tick {
+  margin-left: 5px;
+  margin-bottom: 10px;
+  height: 20px;
+  width: 20px;
+
+  path {
+    transform: scale(0.2);
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash 2s linear forwards;
+  }
+
+  @keyframes dash {
+    from {
+      stroke-dashoffset: 1000;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
 }
 
 .login-form {

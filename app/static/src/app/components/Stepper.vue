@@ -1,0 +1,97 @@
+<template>
+    <div class="container">
+        <div class="row">
+            <template v-for="step in steps">
+                <step :key="step.number"
+                      :active="active(step.number)"
+                      :number="step.number"
+                      :text="step.text"
+                      :enabled="enabled(step.number)"
+                      @jump="jump">
+                </step>
+                <div class="col no-padding" v-if="step.number < steps.length">
+                    <hr/>
+                </div>
+            </template>
+        </div>
+        <div class="pt-5">
+            <baseline v-if="active(1)"></baseline>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+
+    import Vue from "vue";
+    import {mapState} from "vuex";
+    import Step from "./Step.vue";
+    import Baseline from "./Baseline.vue";
+    import {RootState} from "../main";
+
+    type CompleteStatus = {
+        [key: number]: boolean
+    }
+
+    interface Data {
+        activeStep: number
+        steps: { number: number, text: string }[]
+    }
+
+    export default Vue.extend({
+        data(): Data {
+            return {
+                activeStep: 1,
+                steps: [
+                    {
+                        number: 1,
+                        text: "Upload baseline data"
+                    },
+                    {
+                        number: 2,
+                        text: "Upload survey and program data"
+                    },
+                    {
+                        number: 3,
+                        text: "Review uploads"
+                    },
+                    {
+                        number: 4,
+                        text: "Run model"
+                    },
+                    {
+                        number: 5,
+                        text: "Review output"
+                    }]
+            }
+        },
+        computed: {
+            ...mapState<RootState>({
+                status: (state: RootState): CompleteStatus => ({
+                    1: state.baseline.complete,
+                    2: false,
+                    3: false,
+                    4: false,
+                    5: false
+                }),
+            })
+        },
+        methods: {
+            jump(num: number) {
+                this.activeStep = num
+            },
+            active(num: number) {
+                return this.activeStep == num;
+            },
+            enabled(num: number) {
+                return this.steps.slice(0, num)
+                    .filter((s) => this.status[s.number])
+                    .length >= num - 1
+            }
+        },
+        components: {
+            Step,
+            Baseline
+        }
+    })
+
+</script>

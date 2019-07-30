@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @Controller
 class HomeController {
@@ -15,6 +16,12 @@ class HomeController {
     fun index(model: Model): String {
         model["title"] = "Model Server"
         return "index"
+    }
+
+    @PostMapping("/upload")
+    @ResponseBody
+    fun upload(@RequestParam("file") file: MultipartFile): String {
+        return "{\"country\": \"Malawi\"}"
     }
 
     @PostMapping("/validate")
