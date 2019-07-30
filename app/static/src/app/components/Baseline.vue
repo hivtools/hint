@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col">
+            <div class="col-sm-10 col-md-8">
                 <form>
                     <div class="form-group">
                         <label class="font-weight-bold">PJNZ</label>
@@ -18,25 +18,18 @@
                                    id="pjnz"
                                    accept="PJNZ,pjnz,.pjnz,.PJNZ"
                                    v-on:change="handleFileSelect"/>
-                            <label for="pjnz" :class="['custom-file-label', {'selected': fileName}]">
-                                {{fileName || "Choose PJNZ file" }}
+                            <label for="pjnz" :class="['custom-file-label', {'selected': newFileName || pjnzFileName}]">
+                                {{newFileName || pjnzFileName || "Choose PJNZ file" }}
                             </label>
                         </div>
                         <error-alert v-if="hasError" :message="error"></error-alert>
                     </div>
                 </form>
             </div>
+        </div>
+        <div class="row">
             <div class="col">
-                <form>
-                    <div v-if="country">
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Country:</label>
-                            <div class="col-sm-10 col-form-label">
-                                {{country}}
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                <span v-if="country"><strong>Country</strong>: {{country}}</span>
             </div>
         </div>
     </div>
@@ -48,13 +41,13 @@
     import {mapActions, mapState} from "vuex";
     import Tick from "./Tick.vue";
     import ErrorAlert from "./ErrorAlert.vue";
-    import { BaselineState } from "../store/baseline/baseline";
+    import {BaselineState} from "../store/baseline/baseline";
 
     const namespace: string = 'baseline';
 
     interface Data {
-        file: File | null
-        fileName: string
+        newFile: File | null
+        newFileName: string
     }
 
     export default Vue.extend({
@@ -62,12 +55,13 @@
         computed: mapState<BaselineState>(namespace, {
             country: state => state.country,
             hasError: state => state.pjnzError.length > 0,
-            error: state => state.pjnzError
+            error: state => state.pjnzError,
+            pjnzFileName: state => state.pjnzFileName
         }),
         data(): Data {
             return {
-                file: null,
-                fileName: ""
+                newFile: null,
+                newFileName: ""
             }
         },
         methods: {
@@ -77,11 +71,11 @@
                     const fileInput = this.$refs.pjnz as HTMLInputElement;
                     files = fileInput.files
                 }
-                this.file = files && files[0];
-                this.fileName = this.file && this.file.name.split("\\").pop() || "";
+                this.newFile = files && files[0];
+                this.newFileName = this.newFile && this.newFile.name.split("\\").pop() || "";
 
-                if (this.file) {
-                    this.upload(this.file);
+                if (this.newFile) {
+                    this.upload(this.newFile);
                 }
             }
         },

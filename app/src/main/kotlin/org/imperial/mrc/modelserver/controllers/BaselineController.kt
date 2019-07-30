@@ -1,38 +1,60 @@
 package org.imperial.mrc.modelserver.controllers
 
+import org.apache.tomcat.util.http.fileupload.FileUtils
+import org.imperial.mrc.modelserver.AppProperties
 import org.pac4j.core.config.Config
-import org.pac4j.core.context.J2EContext
-import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.ResponseBody
+import org.pac4j.core.context.WebContext
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.io.File
 
-@Controller
+@RestController
 @RequestMapping("/baseline")
-class BaselineController(val context: J2EContext,
-                         val pac4jConfig: Config) {
-
-    private val UPLOAD_FOLDER = "uploads/"
+class BaselineController(val context: WebContext,
+                         val pac4jConfig: Config,
+                         val appProperties: AppProperties) {
 
     @PostMapping("/pjnz/upload")
     @ResponseBody
     fun upload(@RequestParam("file") file: MultipartFile): String {
 
         val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
-        val pjnzFile = Paths.get(UPLOAD_FOLDER, id, "pjnz", file.originalFilename)
-        try {
-            Files.createDirectories(pjnzFile.parent)
-        }
-        catch(e: FileAlreadyExistsException){
+        val fileName = file.originalFilename!!
+        val pjnzFile = File("${appProperties.uploadDirectory}/$id/pjnz/$fileName")
 
+        if (pjnzFile.parentFile.exists()) {
+            FileUtils.cleanDirectory(pjnzFile.parentFile)
+        } else {
+            FileUtils.forceMkdirParent(pjnzFile)
         }
-        Files.write(pjnzFile, file.bytes)
+
+        pjnzFile.writeBytes(file.bytes)
 
         // TODO request validation from R API and get back JSON
-        return "{\"country\": \"Malawi\"}"
+        // for now just read country name from file
+        val countryName = fileName.split("_").first()
+        return "{\"filename\": \"$fileName\", \"country\": \"$countryName\"}"
     }
+
+    @GetMapping("/")
+    @ResponseBody
+    fun get(): String {
+
+        val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
+
+        // TODO request serialised data for this id from the R API
+        // for now just read basic file info from upload dir
+        val pjnzFiles = File("${appProperties.uploadDirectory}/$id/pjnz")
+                .listFiles()
+
+        return if (pjnzFiles != null && pjnzFiles.any()) {
+            val fileName = pjnzFiles.first().name
+            val countryName = fileName.split("_").first()
+            "{\"pjnz\": { \"filename\": \"$fileName\", \"country\": \"$countryName\"}}"
+        } else {
+            "{\"pjnz\": null}"
+        }
+
+    }
+
 }

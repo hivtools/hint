@@ -1,13 +1,26 @@
 import {ActionContext, ActionPayload, ActionTree} from 'vuex';
 import axios, {AxiosResponse} from 'axios';
-import {APIError, PJNZ} from "../../types";
+import {APIError} from "../../types";
 import {BaselineState} from "./baseline";
 import {RootState} from "../../main";
 
-export type BaselineActionTypes = "PJNZLoaded" | "PJNZUploadError"
+export interface PJNZ {
+    filename: string
+    country: string
+}
+
+export interface BaselineData {
+    pjnz?: PJNZ
+}
+
+export type BaselineActionTypes = "PJNZLoaded" | "PJNZUploadError" | "BaselineDataLoaded"
 
 export interface BaselinePayload extends ActionPayload {
     type: BaselineActionTypes
+}
+
+export interface BaselineDataLoaded extends BaselinePayload {
+    payload: BaselineData
 }
 
 export interface PJNZLoaded extends BaselinePayload {
@@ -20,6 +33,7 @@ export interface PJNZUploadError extends BaselinePayload {
 
 export interface BaselineActions {
     uploadPJNZ: (store: ActionContext<BaselineState, RootState>, file: File) => void
+    getBaselineData: (store: ActionContext<BaselineState, RootState>) => void
 }
 
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
@@ -30,7 +44,6 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         axios.post("/baseline/pjnz/upload", formData)
             .then((response: AxiosResponse) => {
                 const payload: PJNZ = response && response.data;
-                console.log(payload);
                 commit<BaselinePayload>({type: "PJNZLoaded", payload});
             })
             .catch((e: {response: {data: APIError}}) => {
@@ -38,6 +51,17 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
                 console.log(error);
                 commit<BaselinePayload>({type: 'PJNZUploadError', payload: error.message});
             });
+    },
+
+    getBaselineData({commit}) {
+        axios.get("/baseline/")
+            .then((response: AxiosResponse) => {
+            const payload: BaselineData = response && response.data;
+            commit<BaselinePayload>({type: "BaselineDataLoaded", payload});
+        }).catch((e: {response: {data: APIError}}) => {
+            const error = e.response.data;
+            console.log(error);
+        })
     }
 };
 

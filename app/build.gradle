@@ -37,6 +37,7 @@ dependencies {
 	implementation 'org.pac4j:pac4j-http:3.3.0'
 	implementation 'org.pac4j:pac4j-sql:3.3.0'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: "com.vaadin.external.google", module:"android-json"
 		exclude module: 'junit'
 	}
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'

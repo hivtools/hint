@@ -12,13 +12,13 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ComponentScan(basePackages = ["org.pac4j.springframework.web", "org.pac4j.springframework.component"])
 class Pac4jConfig {
+
     @Bean
-    fun config(): Config {
+    fun getConfig(): Config {
         val formClient = FormClient("/login", SimpleTestUsernamePasswordAuthenticator())
 
         val clients = Clients("/callback", formClient)
         return Config(clients).apply {
-            @Bean
             sessionStore = J2ESessionStore()
         }
     }

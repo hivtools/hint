@@ -1,6 +1,7 @@
 import Vue from "vue";
 import {store} from "./main"
 import Stepper from "./components/Stepper.vue";
+import {mapActions} from "vuex";
 
 let v = new Vue({
     el: "#app",
@@ -8,5 +9,11 @@ let v = new Vue({
     store,
     components: {
         Stepper
+    },
+    methods: {
+        ...mapActions({loadBaseline: 'baseline/getBaselineData'})
+    },
+    beforeMount: function() {
+        this.loadBaseline()
     }
 });
