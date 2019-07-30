@@ -3,6 +3,7 @@
 !gradle/wrapper/gradle-wrapper.jar
 static/node_modules
 static/public
+userCLI/build
 
 ### STS ###
 .apt_generated

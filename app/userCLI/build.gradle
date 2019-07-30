@@ -1,0 +1,55 @@
+buildscript {
+    repositories {
+        // This is needed for gradle-docker
+        jcenter()
+    }
+    dependencies {
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+apply plugin: 'application'
+apply plugin: 'docker'
+
+mainClassName = "org.imperial.mrc.hint.userCLI.AppKt"
+
+dependencies {
+    //compile project("modelserver")
+    compile "com.offbytwo:docopt:0.6.0.20150202"
+
+    testCompile "org.assertj:assertj-core:3.6.2"
+    testCompile "org.mockito:mockito-core:2.+"
+    testCompile "com.nhaarman:mockito-kotlin:1.3.0"
+
+    //testCompile project(":databaseInterface")
+    //testCompile project(":testHelpers")
+}
+
+def cli_docker_version = 'UNKNOWN'
+if (hasProperty('docker_version')) {
+    cli_docker_version = docker_version
+}
+def cli_docker_name = 'mrcide/hint-user-cli'
+if (hasProperty('docker_name')) {
+    cli_docker_name = docker_name
+}
+
+distDocker {
+    baseImage = "openjdk:8u121-jre"
+    dependsOn = [build]
+    push = true
+    tag = cli_docker_name
+    tagVersion = cli_docker_version
+}
+
+//task copyDemo(type: Copy) {
+//    from '../app/demo'
+//    include '*'
+//    into 'demo'
+//    outputs.upToDateWhen { false }
+//}
