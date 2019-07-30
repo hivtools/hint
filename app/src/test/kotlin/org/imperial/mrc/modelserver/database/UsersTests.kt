@@ -21,8 +21,8 @@ class UsersTests {
         @JvmStatic
         fun setupDatasource()
         {
-            dataSource.url = "jdbc:postgresql://localhost/modelserver-db"
-            dataSource.user = "hint"
+            dataSource.url = "jdbc:postgresql://localhost/hint"
+            dataSource.user = "hintuser"
             dataSource.password = "changeme"
         }
     }
