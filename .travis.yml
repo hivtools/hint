@@ -12,8 +12,6 @@ matrix:
       after_success:
       - codecov -f app/static/coverage/*.json
     - language: java
-      addons:
-          chrome: stable
       before_cache:
       - rm -f  $HOME/app/.gradle/caches/modules-2/modules-2.lock
       - rm -fr $HOME/app/.gradle/caches/*/plugin-resolution/
@@ -28,6 +26,7 @@ matrix:
       - npm install codecov -g
       - ./app/gradlew -p app
       before_script:
+      - sudo /etc/init.d/postgresql stop
       - ./scripts/run-dependencies.sh
       script:
       - ./app/gradlew -p app :test

@@ -8,6 +8,7 @@ docker network create $NETWORK
 docker run --rm -d \
   --network=$NETWORK \
   --name $CONTAINER \
+  -p 5432:5432 \
   mrcide/hint-db:mrc-371
 
 # From now on, if the user presses Ctrl+C we should teardown gracefully
