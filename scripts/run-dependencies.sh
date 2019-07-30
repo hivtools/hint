@@ -19,4 +19,6 @@ function on_interrupt() {
 
 # Need to give the database a little time to initialise before we can run the migration
 sleep 10s
-docker run --rm --network=$NETWORK mrcide/hint-db-migrate:mrc-371
+docker run --rm --network=$NETWORK \
+  mrcide/hint-db-migrate:mrc-371 \
+  -url=jdbc:postgresql://$CONTAINER/hint
