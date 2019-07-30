@@ -1,4 +1,4 @@
-package org.imperial.mrc.modelserver
+package org.imperial.mrc.hint
 
 import org.springframework.context.annotation.Configuration
 import java.io.File

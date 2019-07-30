@@ -1,7 +1,7 @@
-package org.imperial.mrc.modelserver.controllers
+package org.imperial.mrc.hint.controllers
 
 import org.apache.tomcat.util.http.fileupload.FileUtils
-import org.imperial.mrc.modelserver.AppProperties
+import org.imperial.mrc.hint.AppProperties
 import org.pac4j.core.config.Config
 import org.pac4j.core.context.WebContext
 import org.springframework.web.bind.annotation.*

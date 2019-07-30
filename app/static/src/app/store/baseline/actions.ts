@@ -1,8 +1,7 @@
 import {ActionContext, ActionPayload, ActionTree} from 'vuex';
-import axios, {AxiosResponse} from 'axios';
-import {APIError} from "../../types";
 import {BaselineState} from "./baseline";
 import {RootState} from "../../main";
+import {api} from "../../apiService";
 
 export interface PJNZ {
     filename: string
@@ -41,27 +40,20 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     uploadPJNZ({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
-        axios.post("/baseline/pjnz/upload", formData)
-            .then((response: AxiosResponse) => {
-                const payload: PJNZ = response && response.data;
+        api.post<PJNZ>("/baseline/pjnz/upload", formData)
+            .then((payload) => {
                 commit<BaselinePayload>({type: "PJNZLoaded", payload});
             })
-            .catch((e: {response: {data: APIError}}) => {
-                const error = e.response.data;
-                console.log(error);
-                commit<BaselinePayload>({type: 'PJNZUploadError', payload: error.message});
+            .catch((error: string) => {
+                commit<BaselinePayload>({type: 'PJNZUploadError', payload: error});
             });
     },
 
     getBaselineData({commit}) {
-        axios.get("/baseline/")
-            .then((response: AxiosResponse) => {
-            const payload: BaselineData = response && response.data;
-            commit<BaselinePayload>({type: "BaselineDataLoaded", payload});
-        }).catch((e: {response: {data: APIError}}) => {
-            const error = e.response.data;
-            console.log(error);
-        })
+        api.get<BaselineData>("/baseline/")
+            .then((payload) => {
+                commit<BaselinePayload>({type: "BaselineDataLoaded", payload});
+            });
     }
 };
 

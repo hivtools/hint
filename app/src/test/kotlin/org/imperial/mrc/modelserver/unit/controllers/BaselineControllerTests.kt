@@ -4,8 +4,8 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.modelserver.AppProperties
-import org.imperial.mrc.modelserver.controllers.BaselineController
+import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.controllers.BaselineController
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.pac4j.core.config.Config
