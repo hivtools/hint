@@ -14,7 +14,7 @@ class HomeController {
 
     @GetMapping("/")
     fun index(model: Model): String {
-        model["title"] = "Model Server"
+        model["title"] = "HINT"
         return "index"
     }
 
