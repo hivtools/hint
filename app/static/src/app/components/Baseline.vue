@@ -16,6 +16,7 @@
                                    class="custom-file-input"
                                    ref="pjnz"
                                    id="pjnz"
+                                   accept="PJNZ,pjnz,.pjnz,.PJNZ"
                                    v-on:change="handleFileSelect"/>
                             <label for="pjnz" :class="['custom-file-label', {'selected': fileName}]">
                                 {{fileName || "Choose PJNZ file" }}
@@ -78,7 +79,10 @@
                 }
                 this.file = files && files[0];
                 this.fileName = this.file && this.file.name.split("\\").pop() || "";
-                this.upload(this.file);
+
+                if (this.file) {
+                    this.upload(this.file);
+                }
             }
         },
         components: {
