@@ -1,4 +1,4 @@
-package org.imperial.mrc.modelserver.controllers
+package org.imperial.mrc.hint.controllers
 
 import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.httpGet
@@ -14,7 +14,7 @@ class HomeController {
 
     @GetMapping("/")
     fun index(model: Model): String {
-        model["title"] = "Model Server"
+        model["title"] = "HINT"
         return "index"
     }
 

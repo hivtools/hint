@@ -1,8 +1,8 @@
-package org.imperial.mrc.modelserver.unit.security
+package org.imperial.mrc.hint.unit.security
 
 import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions
-import org.imperial.mrc.modelserver.security.Pac4jConfig
+import org.imperial.mrc.hint.security.Pac4jConfig
 import org.pac4j.http.client.indirect.FormClient
 
 class Pac4jConfigTests
