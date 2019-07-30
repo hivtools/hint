@@ -11,6 +11,19 @@ plugins {
 }
 
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'jacoco'
+
+jacoco {
+	toolVersion = "0.8.3"
+	reportsDir = file("$projectDir/coverage")
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled = true
+		csv.enabled = false
+	}
+}
 
 group = 'org.imperial.mrc'
 version = '0.0.1-SNAPSHOT'
