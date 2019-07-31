@@ -24,6 +24,7 @@ matrix:
       - openjdk8
       install:
       - npm install codecov -g
+      - npm install --prefix=app/static
       - ./app/gradlew -p app
       before_script:
       - sudo /etc/init.d/postgresql stop
