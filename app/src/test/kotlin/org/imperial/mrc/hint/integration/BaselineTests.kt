@@ -1,4 +1,4 @@
-package org.imperial.mrc.modelserver.integration
+package org.imperial.mrc.hint.integration
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach

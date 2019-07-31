@@ -1,4 +1,4 @@
-package org.imperial.mrc.modelserver.unit.controllers
+package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
