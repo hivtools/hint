@@ -1,0 +1,58 @@
+buildscript {
+    ext.kotlin_version = '1.3.30'
+    repositories {
+        // This is needed for gradle-docker
+        jcenter()
+    }
+    dependencies {
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.1.4.RELEASE'
+}
+
+apply plugin: 'application'
+apply plugin: 'docker'
+apply plugin: 'kotlin'
+apply plugin: 'io.spring.dependency-management'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+mainClassName = "org.imperial.mrc.hint.userCLI.AppKt"
+
+dependencies {
+    implementation project(":app")
+    implementation "com.offbytwo:docopt:0.6.0.20150202"
+    implementation 'org.pac4j:pac4j-sql:3.3.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
+    testImplementation "org.assertj:assertj-core:3.6.2"
+    testImplementation"org.mockito:mockito-core:2.+"
+    testImplementation "com.nhaarman:mockito-kotlin:1.3.0"
+}
+
+def cli_docker_version = 'UNKNOWN'
+if (hasProperty('docker_version')) {
+    cli_docker_version = docker_version
+}
+def cli_docker_name = 'mrcide/hint-user-cli'
+if (hasProperty('docker_name')) {
+    cli_docker_name = docker_name
+}
+
+distDocker {
+    baseImage = "openjdk:8u121-jre"
+    dependsOn = [build]
+    push = true
+    tag = cli_docker_name
+    tagVersion = cli_docker_version
+}
+
+jar{
+    enabled = true
+}

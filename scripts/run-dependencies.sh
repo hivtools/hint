@@ -23,3 +23,5 @@ sleep 10s
 docker run --rm --network=$NETWORK \
   mrcide/hint-db-migrate:latest \
   -url=jdbc:postgresql://$CONTAINER/hint
+
+
