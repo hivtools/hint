@@ -1,0 +1,18 @@
+PACKAGE_ROOT=$(realpath $HERE/..)
+PACKAGE_NAME=hint-user-cli
+
+GIT_SHA=$(git -C "$PACKAGE_ROOT" rev-parse --short=7 HEAD)
+
+if [ -z "$TRAVIS_BRANCH" ]; then
+    GIT_BRANCH=$(git -C "$PACKAGE_ROOT" symbolic-ref --short HEAD)
+else
+    GIT_BRANCH=$TRAVIS_BRANCH
+fi
+
+if [ $GIT_BRANCH == "master" ]; then
+   GIT_BRANCH="latest"
+fi
+
+TAG_IMAGE="mrcide/${PACKAGE_NAME}"
+TAG_SHA="${TAG_IMAGE}:${GIT_SHA}"
+TAG_BRANCH="${TAG_IMAGE}:${GIT_BRANCH}"

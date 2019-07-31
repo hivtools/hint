@@ -9,8 +9,13 @@ to the database.
         -v hint_volume:/hint \
         $image <command>
 
-or to test locally:
-`./scripts/test-cli.sh <command>`
+or to test locally, from root of hint repository:
+1. `./scripts/run-development-dependencies.sh`
+1. `./scripts/test-cli.sh <command>`
+
+This will run the pushed container for the current commit. 
+
+To build and push the `hint-user-cli` container, run `./scripts/build` and `./scripts/push` from the userCLI folder. 
 
 ### Commands
 #### Add user
