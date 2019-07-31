@@ -18,8 +18,10 @@ APP_DOCKER_TAG=$REGISTRY/$NAME
 APP_DOCKER_COMMIT_TAG=$REGISTRY/$NAME:$GIT_ID
 APP_DOCKER_BRANCH_TAG=$REGISTRY/$NAME:$GIT_BRANCH
 
-docker build . --tag hint-dist-base \
-    && ./app/gradlew -p app :distDocker -i -Pdocker_version=$GIT_ID -Pdocker_name=$APP_DOCKER_TAG \
+./app/gradlew -p app :bootDistTar
+
+docker build . --tag $APP_DOCKER_COMMIT_TAG \
+    && docker push $APP_DOCKER_COMMIT_TAG \
     && docker tag $APP_DOCKER_COMMIT_TAG $APP_DOCKER_BRANCH_TAG \
     && docker push $APP_DOCKER_BRANCH_TAG
 
