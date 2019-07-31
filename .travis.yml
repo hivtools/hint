@@ -29,9 +29,10 @@ matrix:
       - sudo /etc/init.d/postgresql stop
       - ./scripts/run-dependencies.sh
       script:
-      - ./app/gradlew -p app :test
+      - ./src/app/gradlew -p app :test
       after_success:
-      - ./app/gradlew -p app :jacocoTestReport
-      - codecov -f app/coverage/test/*.xml
+      - ./src/app/gradlew -p app :jacocoTestReport
+      - (cd src/app/userCLI; ./scripts/build; ./scripts/push)
+      - codecov -f src/app/coverage/test/*.xml
       services:
       - docker
