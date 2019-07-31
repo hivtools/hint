@@ -2,6 +2,16 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
 	ext.kotlin_version = '1.3.30'
+
+	repositories {
+		mavenCentral()
+		// This is needed for gradle-docker
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'se.transmode.gradle:gradle-docker:1.2'
+	}
 }
 
 plugins {
@@ -11,7 +21,31 @@ plugins {
 }
 
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'application'
 apply plugin: 'jacoco'
+apply plugin: 'docker'
+
+mainClassName = "org.imperial.mrc.hint.HintApplicationKt"
+
+def api_docker_version = 'UNKNOWN'
+if (hasProperty('docker_version')) {
+	api_docker_version = docker_version
+}
+def api_docker_name = 'hint'
+if (hasProperty('docker_name')) {
+	api_docker_name = docker_name
+}
+
+docker {
+	baseImage = "hint-dist-base"
+}
+
+distDocker {
+	dependsOn = [build]
+	push = true
+	tag = api_docker_name
+	tagVersion = api_docker_version
+}
 
 jacoco {
 	toolVersion = "0.8.3"
@@ -72,3 +106,13 @@ tasks.withType(KotlinCompile) {
 test {
 	useJUnitPlatform()
 }
+
+task compileFrontEnd() {
+	doLast {
+		exec {
+			commandLine "npm", "run", "build", "--prefix=$projectDir/static/"
+		}
+	}
+}
+
+processResources.dependsOn 'compileFrontEnd'

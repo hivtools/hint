@@ -33,5 +33,6 @@ matrix:
       after_success:
       - ./app/gradlew -p app :jacocoTestReport
       - codecov -f app/coverage/test/*.xml
+      - ./scripts/travis.sh
       services:
       - docker
