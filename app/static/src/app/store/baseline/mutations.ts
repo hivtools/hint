@@ -24,10 +24,9 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
 
     BaselineDataLoaded(state: BaselineState, action: BaselineDataLoaded) {
         const data = action.payload;
-        console.log(data);
         if (data.pjnz){
             state.country = data.pjnz.country;
-            state.pjnzFileName = data.pjnz.filename;
+            state.pjnzFilename = data.pjnz.filename;
          }
     }
 };

@@ -10,7 +10,7 @@ export class APIService {
                 return payload
             })
             .catch((e: { response: { data: APIError } }) => {
-                APIService.handleError(e)
+                this.handleError(e)
             })
     }
 
@@ -21,15 +21,17 @@ export class APIService {
                 return payload
             })
             .catch((e: { response: { data: APIError } }) => {
-                APIService.handleError(e)
+               this.handleError(e)
             });
     }
 
-    private static handleError(e: { response: { data: APIError } }) {
+    handleError = (e: { response: { data: APIError } }) => {
         const error = e.response.data;
         console.log(error);
         throw new Error(error.message)
-    }
+    };
+
+    doNothing = () => {}
 }
 
 export const api = new APIService();

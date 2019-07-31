@@ -44,8 +44,8 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .then((payload) => {
                 commit<BaselinePayload>({type: "PJNZLoaded", payload});
             })
-            .catch((error: string) => {
-                commit<BaselinePayload>({type: 'PJNZUploadError', payload: error});
+            .catch((error: Error) => {
+                commit<BaselinePayload>({type: 'PJNZUploadError', payload: error.message});
             });
     },
 
@@ -53,7 +53,8 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         api.get<BaselineData>("/baseline/")
             .then((payload) => {
                 commit<BaselinePayload>({type: "BaselineDataLoaded", payload});
-            });
+            })
+            .catch(api.doNothing);
     }
 };
 

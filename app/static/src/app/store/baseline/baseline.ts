@@ -7,13 +7,13 @@ export interface BaselineState {
     pjnzError: string
     country: string
     complete: boolean,
-    pjnzFileName: string
+    pjnzFilename: string
 }
 
 export const initialBaselineState: BaselineState = {
     country: "",
     pjnzError: "",
-    pjnzFileName: "",
+    pjnzFilename: "",
     complete: false
 };
 

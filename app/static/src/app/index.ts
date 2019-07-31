@@ -3,13 +3,13 @@ import {store} from "./main"
 import Stepper from "./components/Stepper.vue";
 import {mapActions} from "vuex";
 
-let v = new Vue({
+export const app = new Vue({
     el: "#app",
-    template: `<stepper></stepper>`,
     store,
     components: {
         Stepper
     },
+    render: h => h(Stepper),
     methods: {
         ...mapActions({loadBaseline: 'baseline/getBaselineData'})
     },

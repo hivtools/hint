@@ -56,7 +56,7 @@
             country: state => state.country,
             hasError: state => state.pjnzError.length > 0,
             error: state => state.pjnzError,
-            pjnzFileName: state => state.pjnzFileName
+            pjnzFileName: state => state.pjnzFilename
         }),
         data(): Data {
             return {
