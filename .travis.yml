@@ -10,7 +10,7 @@ matrix:
       - npm run build --prefix=src/app/static
       script: npm test --prefix=src/app/static
       after_success:
-      - codecov -f app/static/coverage/*.json
+      - codecov -f src/app/static/coverage/*.json
     - language: java
       before_cache:
       - rm -f  $HOME/src/app/.gradle/caches/modules-2/modules-2.lock
