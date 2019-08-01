@@ -13,6 +13,7 @@ buildscript {
 
 plugins {
     id 'org.springframework.boot' version '2.1.6.RELEASE' apply false
+    id 'org.jetbrains.kotlin.plugin.spring' version "1.3.30"
 }
 
 subprojects {
@@ -22,10 +23,10 @@ subprojects {
         jcenter()
     }
 
-    apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'jacoco'
     apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'org.springframework.boot'
 
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
