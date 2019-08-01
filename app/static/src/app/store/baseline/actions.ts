@@ -40,7 +40,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     uploadPJNZ({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
-        api.post<PJNZ>("/baseline/pjnz/upload", formData)
+        api.post<PJNZ>("/baseline/pjnz/", formData)
             .then((payload) => {
                 commit<BaselinePayload>({type: "PJNZLoaded", payload});
             })

@@ -15,7 +15,7 @@ describe("Baseline actions", () => {
 
     it("sets country after PJNZ file upload", (done) => {
 
-        mockAxios.onPost(`/baseline/pjnz/upload`)
+        mockAxios.onPost(`/baseline/pjnz/`)
             .reply(200, {country: "Malawi"});
 
         const commit = jest.fn();
@@ -29,7 +29,7 @@ describe("Baseline actions", () => {
 
     it("sets error message after failed PJNZ file upload", (done) => {
 
-        mockAxios.onPost(`/baseline/pjnz/upload`)
+        mockAxios.onPost(`/baseline/pjnz/`)
             .reply(500, {error: "Something went wrong", status: 500, message: "error message"});
 
         const commit = jest.fn();
