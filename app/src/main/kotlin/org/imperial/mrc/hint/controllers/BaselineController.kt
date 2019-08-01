@@ -14,7 +14,7 @@ class BaselineController(val context: WebContext,
                          val pac4jConfig: Config,
                          val appProperties: AppProperties) {
 
-    @PostMapping("/pjnz/upload")
+    @PostMapping("/pjnz/")
     @ResponseBody
     fun upload(@RequestParam("file") file: MultipartFile): String {
 

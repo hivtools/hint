@@ -17,14 +17,19 @@ class ConfiguredAppProperties: AppProperties {
 
     companion object
     {
-        val properties = Properties().apply {
-            load(getResource("config.properties").openStream())
-            val global = File("/etc/orderly/web/config.properties")
-            if (global.exists())
-            {
-                global.inputStream().use { load(it) }
+
+        fun readProperties(configPath: String): Properties {
+            return Properties().apply {
+                load(getResource("config.properties").openStream())
+                val global = File(configPath)
+                if (global.exists())
+                {
+                    global.inputStream().use { load(it) }
+                }
             }
         }
+        val configPath = "/etc/hint/config.properties"
+        val properties = readProperties(configPath)
     }
 }
 

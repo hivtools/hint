@@ -16,7 +16,6 @@ class Pac4jConfig {
     @Bean
     fun getConfig(): Config {
         val formClient = FormClient("/login", SimpleTestUsernamePasswordAuthenticator())
-
         val clients = Clients("/callback", formClient)
         return Config(clients).apply {
             sessionStore = J2ESessionStore()
