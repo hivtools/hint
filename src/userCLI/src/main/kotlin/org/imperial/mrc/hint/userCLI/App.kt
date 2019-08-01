@@ -4,6 +4,7 @@ import org.docopt.Docopt
 import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
 import kotlin.system.exitProcess
 import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.security.Pac4jProfileService
 
 const val doc = """
 Hint User CLI
@@ -38,29 +39,29 @@ fun main(args: Array<String>)
     }
 }
 
-fun addUser(options: Map<String, Any>): String
+fun addUser(options: Map<String, Any>, userRepository: UserRepository=userRepository()): String
 {
     val email = options["<email>"].getStringValue()
     val password = options["<password>"].getStringValue()
     println("Adding user $email")
 
-    userRepository().addUser(email, password)
+    userRepository.addUser(email, password)
 
     return "OK"
 }
 
-fun removeUser(options: Map<String, Any>): String
+fun removeUser(options: Map<String, Any>, userRepository: UserRepository=userRepository()): String
 {
     val email = options["<email>"].getStringValue()
     println("Removing user $email")
 
-    userRepository().removeUser(email)
+    userRepository.removeUser(email)
     return "OK"
 }
 
 private fun userRepository(): UserRepository
 {
-    return DbProfileServiceUserRepository()
+    return DbProfileServiceUserRepository(Pac4jProfileService().profileService())
 }
 
 private fun Any?.getStringValue(): String

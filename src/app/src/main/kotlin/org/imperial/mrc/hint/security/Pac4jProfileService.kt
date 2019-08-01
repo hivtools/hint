@@ -21,7 +21,7 @@ open class Pac4jProfileService
                 {
                     initializedDataSource = Jdbc3PoolingDataSource()
 
-                    //TODO: put these in AppSettings
+                    //TODO: put these in AppProperties
                     initializedDataSource?.url = "jdbc:postgresql://hint_db/hint"
                     initializedDataSource?.user = "hintuser"
                     initializedDataSource?.password = "changeme"
@@ -33,7 +33,12 @@ open class Pac4jProfileService
     @Bean
     open fun profileService(): DbProfileService
     {
+        return profileService(dataSource)
+    }
+
+    fun profileService(source: Jdbc3PoolingDataSource): DbProfileService
+    {
         //TODO: Use Libsodium
-        return DbProfileService(dataSource, JBCryptPasswordEncoder(salt))
+        return DbProfileService(source, JBCryptPasswordEncoder(salt))
     }
 }

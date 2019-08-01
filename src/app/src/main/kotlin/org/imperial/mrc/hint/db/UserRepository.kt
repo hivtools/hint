@@ -1,16 +1,18 @@
 package org.imperial.mrc.hint.db
 
-import org.imperial.mrc.hint.security.Pac4jProfileService
+import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
+import org.springframework.beans.factory.annotation.Autowired
 
 interface UserRepository
 {
     fun addUser(email: String, password: String)
     fun removeUser(email: String)
+    fun getUser(email: String): CommonProfile
 }
 
-class DbProfileServiceUserRepository(val profileService: DbProfileService=Pac4jProfileService().profileService()): UserRepository
+class DbProfileServiceUserRepository(@Autowired val profileService: DbProfileService): UserRepository
 {
     override fun addUser(email: String, password: String)
     {
@@ -23,5 +25,10 @@ class DbProfileServiceUserRepository(val profileService: DbProfileService=Pac4jP
     override fun removeUser(email: String)
     {
         profileService.removeById(email)
+    }
+
+    override fun getUser(email: String): CommonProfile
+    {
+        return profileService.findById(email)
     }
 }
