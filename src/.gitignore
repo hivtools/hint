@@ -1,5 +1,4 @@
 .gradle
-app/build/
 !gradle/wrapper/gradle-wrapper.jar
 app/static/node_modules
 app/static/public

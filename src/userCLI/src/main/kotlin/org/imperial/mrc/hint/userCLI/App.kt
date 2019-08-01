@@ -1,9 +1,8 @@
 package org.imperial.mrc.hint.userCLI
 
 import org.docopt.Docopt
-import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
 import kotlin.system.exitProcess
-import org.imperial.mrc.hint.db.UserRepository
+
 
 const val doc = """
 Hint User CLI
@@ -44,7 +43,7 @@ fun addUser(options: Map<String, Any>): String
     val password = options["<password>"].getStringValue()
     println("Adding user $email")
 
-    userRepository().addUser(email, password)
+    //TODO: call user repository to add user
 
     return "OK"
 }
@@ -54,14 +53,11 @@ fun removeUser(options: Map<String, Any>): String
     val email = options["<email>"].getStringValue()
     println("Removing user $email")
 
-    userRepository().removeUser(email)
+    //TODO: call user repository to remove user
+
     return "OK"
 }
 
-private fun userRepository(): UserRepository
-{
-    return DbProfileServiceUserRepository()
-}
 
 private fun Any?.getStringValue(): String
 {

@@ -49,3 +49,6 @@ subprojects {
     }
 
 }
+
+group = 'org.imperial.mrc'
+sourceCompatibility = '1.8'
