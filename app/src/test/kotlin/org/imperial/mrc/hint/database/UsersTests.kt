@@ -1,4 +1,4 @@
-package org.imperial.mrc.modelserver.database
+package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeAll
