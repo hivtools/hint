@@ -45,7 +45,7 @@ class BaselineTests(@Autowired val testRestTemplate: TestRestTemplate) {
         val headers = HttpHeaders()
         headers.contentType = MediaType.MULTIPART_FORM_DATA
 
-        val entity = testRestTemplate.postForEntity<String>("/baseline/pjnz/upload/", HttpEntity(body, headers))
+        val entity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", HttpEntity(body, headers))
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(entity.body!!).isEqualTo("{\"filename\": \"Malawi_2018.pjnz\", \"country\": \"Malawi\"}")
     }

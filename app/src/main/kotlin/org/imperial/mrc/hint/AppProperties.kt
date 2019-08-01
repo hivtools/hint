@@ -19,7 +19,7 @@ class ConfiguredAppProperties: AppProperties {
     {
         val properties = Properties().apply {
             load(getResource("config.properties").openStream())
-            val global = File("/etc/orderly/web/config.properties")
+            val global = File("/etc/hint/config.properties")
             if (global.exists())
             {
                 global.inputStream().use { load(it) }
