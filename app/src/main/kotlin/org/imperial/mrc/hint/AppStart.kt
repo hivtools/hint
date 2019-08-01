@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
 @SpringBootApplication
-class Hint
+class HintApplication
 
 fun main(args: Array<String>) {
-    SpringApplication.run(Hint::class.java, *args)
+    SpringApplication.run(HintApplication::class.java, *args)
 }
