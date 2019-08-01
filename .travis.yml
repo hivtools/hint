@@ -13,8 +13,8 @@ matrix:
       - codecov -f src/app/static/coverage/*.json
     - language: java
       before_cache:
-      - rm -f  $HOME/src/app/.gradle/caches/modules-2/modules-2.lock
-      - rm -fr $HOME/src/app/.gradle/caches/*/plugin-resolution/
+      - rm -f  $HOME/src/.gradle/caches/modules-2/modules-2.lock
+      - rm -fr $HOME/src/.gradle/caches/*/plugin-resolution/
       cache:
           directories:
           - $HOME/src/app/.gradle/caches/
@@ -24,14 +24,14 @@ matrix:
       - openjdk8
       install:
       - npm install codecov -g
-      - ./src/gradlew -p app
+      - ./src/gradlew -p src
       before_script:
       - sudo /etc/init.d/postgresql stop
       - ./scripts/run-dependencies.sh
       script:
-      - ./src/gradlew -p app :test
+      - ./src/gradlew -p src app::test
       after_success:
-      - ./src/gradlew -p app :jacocoTestReport
+      - ./src/gradlew -p src app::jacocoTestReport
       - (cd src/app/userCLI; ./scripts/build; ./scripts/push)
       - codecov -f src/app/coverage/test/*.xml
       services:
