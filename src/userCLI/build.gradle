@@ -9,20 +9,8 @@ buildscript {
     }
 }
 
-plugins {
-    id 'org.springframework.boot' version '2.1.4.RELEASE'
-}
-
 apply plugin: 'application'
 apply plugin: 'docker'
-apply plugin: 'kotlin'
-apply plugin: 'io.spring.dependency-management'
-
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
 mainClassName = "org.imperial.mrc.hint.userCLI.AppKt"
 
 dependencies {
@@ -48,11 +36,6 @@ if (hasProperty('docker_name')) {
 distDocker {
     baseImage = "openjdk:8u121-jre"
     dependsOn = [build]
-    push = true
     tag = cli_docker_name
     tagVersion = cli_docker_version
-}
-
-jar{
-    enabled = true
 }

@@ -1,20 +1,5 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 buildscript {
 	ext.kotlin_version = '1.3.30'
-}
-
-plugins {
-	id 'org.springframework.boot' version '2.1.4.RELEASE'
-}
-
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'jacoco'
-apply plugin: 'kotlin'
-
-repositories {
-	mavenCentral()
-	jcenter()
 }
 
 dependencies {
@@ -49,15 +34,9 @@ test {
 	useJUnitPlatform()
 }
 
-jar{
-	enabled = true
-}
-
-tasks.withType(KotlinCompile) {
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
 	kotlinOptions {
 		freeCompilerArgs = ['-Xjsr305=strict']
 		jvmTarget = '1.8'
 	}
 }
-
-
