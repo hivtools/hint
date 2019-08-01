@@ -2,7 +2,7 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {BaselineActions} from "../../app/store/baseline/actions";
-import {mutations} from "../../app/store/baseline/mutations";
+import {BaselineMutations} from "../../app/store/baseline/mutations";
 import {mockBaselineState, mockFileList} from "../mocks";
 import {BaselineState} from "../../app/store/baseline/baseline";
 import Baseline from "../../app/components/baseline/Baseline.vue";
@@ -15,11 +15,13 @@ Vue.use(Vuex);
 describe("Baseline upload component", () => {
 
     let actions: jest.Mocked<BaselineActions>;
+    let mutations: jest.Mocked<BaselineMutations>;
 
     const createSut = (baselineState?: Partial<BaselineState>) => {
 
         actions = {
-            uploadPJNZ: jest.fn()
+            uploadPJNZ: jest.fn(),
+            getBaselineData: jest.fn()
         };
 
         return new Vuex.Store({

@@ -18,12 +18,6 @@ class HomeController {
         return "index"
     }
 
-    @PostMapping("/upload")
-    @ResponseBody
-    fun upload(@RequestParam("file") file: MultipartFile): String {
-        return "{\"country\": \"Malawi\"}"
-    }
-
     @PostMapping("/validate")
     @ResponseBody
     fun validate(@ModelAttribute("modelJson")modelJson: String): String {

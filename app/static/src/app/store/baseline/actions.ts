@@ -1,13 +1,25 @@
 import {ActionContext, ActionPayload, ActionTree} from 'vuex';
-import axios, {AxiosResponse} from 'axios';
-import {APIError, PJNZ} from "../../types";
 import {BaselineState} from "./baseline";
 import {RootState} from "../../main";
+import {api} from "../../apiService";
 
-export type BaselineActionTypes = "PJNZLoaded" | "PJNZUploadError"
+export interface PJNZ {
+    filename: string
+    country: string
+}
+
+export interface BaselineData {
+    pjnz?: PJNZ
+}
+
+export type BaselineActionTypes = "PJNZLoaded" | "PJNZUploadError" | "BaselineDataLoaded"
 
 export interface BaselinePayload extends ActionPayload {
     type: BaselineActionTypes
+}
+
+export interface BaselineDataLoaded extends BaselinePayload {
+    payload: BaselineData
 }
 
 export interface PJNZLoaded extends BaselinePayload {
@@ -20,6 +32,7 @@ export interface PJNZUploadError extends BaselinePayload {
 
 export interface BaselineActions {
     uploadPJNZ: (store: ActionContext<BaselineState, RootState>, file: File) => void
+    getBaselineData: (store: ActionContext<BaselineState, RootState>) => void
 }
 
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
@@ -27,17 +40,21 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     uploadPJNZ({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
-        axios.post("/upload", formData)
-            .then((response: AxiosResponse) => {
-                const payload: PJNZ = response && response.data;
-                console.log(payload);
+        api.post<PJNZ>("/baseline/pjnz/", formData)
+            .then((payload) => {
                 commit<BaselinePayload>({type: "PJNZLoaded", payload});
             })
-            .catch((e: {response: {data: APIError}}) => {
-                const error = e.response.data;
-                console.log(error);
+            .catch((error: Error) => {
                 commit<BaselinePayload>({type: 'PJNZUploadError', payload: error.message});
             });
+    },
+
+    getBaselineData({commit}) {
+        api.get<BaselineData>("/baseline/")
+            .then((payload) => {
+                commit<BaselinePayload>({type: "BaselineDataLoaded", payload});
+            })
+            .catch(api.doNothing);
     }
 };
 

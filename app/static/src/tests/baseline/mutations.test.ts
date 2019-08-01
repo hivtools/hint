@@ -23,6 +23,22 @@ describe("Baseline mutations", () => {
         const testState = {...initialBaselineState};
         mutations.PJNZUploadError(testState, {payload: "Some error"});
         expect(testState.pjnzError).toBe("Some error");
-    })
+    });
+
+    it("sets country and filename if present on BaselineDataLoaded", () => {
+
+        const testState = {...initialBaselineState};
+        mutations.BaselineDataLoaded(testState, {payload: {pjnz: {filename: "file.pjnz", country: "Malawi"}}});
+        expect(testState.pjnzFilename).toBe("file.pjnz");
+        expect(testState.country).toBe("Malawi");
+    });
+
+    it("does nothing on BaselineDataLoaded if no data present", () => {
+
+        const testState = {...initialBaselineState};
+        mutations.BaselineDataLoaded(testState, {payload: {pjnz: null}});
+        expect(testState.pjnzFilename).toBe("");
+        expect(testState.country).toBe("");
+    });
 
 });
