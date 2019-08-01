@@ -8,21 +8,14 @@
         <div class="row">
             <div class="col-sm-10 col-md-8">
                 <form>
-                    <div class="form-group">
-                        <label class="font-weight-bold">Survey</label>
-                        <tick color="#e31837" v-if="hasSurvey" width="20px"></tick>
-                        <div class="custom-file">
-                            <input type="file"
-                                   class="custom-file-input"
-                                   ref="pjnz"
-                                   id="pjnz"
-                                   v-on:change="handleSurveyFileSelect"/>
-                            <label for="pjnz" :class="['custom-file-label', {'selected': fileName}]">
-                                {{fileName || "Choose CSV file" }}
-                            </label>
-                        </div>
-                        <error-alert v-if="hasError" :message="error"></error-alert>
-                    </div>
+                    <file-upload label="Survey"
+                                 :valid="hasSurvey"
+                                 :error="surveyError"
+                                 :upload="uploadSurvey"
+                                 :existingFileName="surveyFileName"
+                                 accept="csv,.csv"
+                                 name="survey">
+                    </file-upload>
                 </form>
             </div>
         </div>
@@ -33,11 +26,10 @@
 
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
-    import Tick from "../Tick.vue";
-    import ErrorAlert from "../ErrorAlert.vue";
     import {SurveyAndProgramDataState} from "../../store/surveyAndProgram/surveyAndProgram";
+    import FileUpload from "../FileUpload.vue";
 
-    const namespace: string = 'baseline';
+    const namespace: string = 'surveyAndProgram';
 
     interface Data {
         surveyFile: File | null
@@ -48,36 +40,14 @@
         name: "SurveyAndProgram",
         computed: mapState<SurveyAndProgramDataState>(namespace, {
             hasSurvey: state => state.surveyGeoJson != null,
-            hasSurveyError: state => state.surveyError.length > 0,
-            surveyError: state => state.surveyError
+            surveyError: state => state.surveyError,
+            surveyFileName: state => state.surveyFileName
         }),
-        data(): Data {
-            return {
-                surveyFile: null,
-                surveyFileName: ""
-            }
-        },
         methods: {
-            ...mapActions({uploadSurvey: 'surveyAndProgram/uploadSurvey'}),
-            handleSurveyFileSelect(_: Event, files: FileList | null) {
-                if (!files) {
-                    files = this.getFilesFromInput("survey")
-                }
-                this.surveyFile = files && files[0];
-                this.surveyFileName = this.getFileName(this.surveyFile);
-                this.uploadSurvey(this.surveyFile);
-            },
-            getFilesFromInput(inputRef: string) {
-                const fileInput = this.$refs[inputRef] as HTMLInputElement;
-                return fileInput.files
-            },
-            getFileName(file: File | null) {
-                return file && file.name.split("\\").pop() || "";
-            }
+            ...mapActions({uploadSurvey: 'surveyAndProgram/uploadSurvey'})
         },
         components: {
-            Tick,
-            ErrorAlert
+            FileUpload
         }
     })
 </script>

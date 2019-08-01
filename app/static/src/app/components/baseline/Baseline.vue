@@ -8,22 +8,14 @@
         <div class="row">
             <div class="col-sm-10 col-md-8">
                 <form>
-                    <div class="form-group">
-                        <label class="font-weight-bold">PJNZ</label>
-                        <tick color="#e31837" v-if="country" width="20px"></tick>
-                        <div class="custom-file">
-                            <input type="file"
-                                   class="custom-file-input"
-                                   ref="pjnz"
-                                   id="pjnz"
-                                   accept="PJNZ,pjnz,.pjnz,.PJNZ"
-                                   v-on:change="handleFileSelect"/>
-                            <label for="pjnz" :class="['custom-file-label', {'selected': newFileName || pjnzFileName}]">
-                                {{newFileName || pjnzFileName || "Choose PJNZ file" }}
-                            </label>
-                        </div>
-                        <error-alert v-if="hasError" :message="error"></error-alert>
-                    </div>
+                    <file-upload label="PJNZ"
+                                 :valid="!!country"
+                                 :error="error"
+                                 :upload="upload"
+                                 :existingFileName="pjnzFileName"
+                                 accept="PJNZ,pjnz,.pjnz,.PJNZ"
+                                 name="pjnz">
+                    </file-upload>
                 </form>
             </div>
         </div>
@@ -40,49 +32,23 @@
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
 
-    import Tick from "../Tick.vue";
-    import ErrorAlert from "../ErrorAlert.vue";
-    import { BaselineState } from "../../store/baseline/baseline";
+    import {BaselineState} from "../../store/baseline/baseline";
+    import FileUpload from "../FileUpload.vue";
 
     const namespace: string = 'baseline';
-
-    interface Data {
-        newFile: File | null
-        newFileName: string
-    }
 
     export default Vue.extend({
         name: "Baseline",
         computed: mapState<BaselineState>(namespace, {
             country: state => state.country,
-            hasError: state => state.pjnzError.length > 0,
             error: state => state.pjnzError,
             pjnzFileName: state => state.pjnzFilename
         }),
-        data(): Data {
-            return {
-                newFile: null,
-                newFileName: ""
-            }
-        },
         methods: {
-            ...mapActions({upload: 'baseline/uploadPJNZ'}),
-            handleFileSelect(_: Event, files: FileList | null) {
-                if (!files) {
-                    const fileInput = this.$refs.pjnz as HTMLInputElement;
-                    files = fileInput.files
-                }
-                this.newFile = files && files[0];
-                this.newFileName = this.newFile && this.newFile.name.split("\\").pop() || "";
-
-                if (this.newFile) {
-                    this.upload(this.newFile);
-                }
-            }
+            ...mapActions({upload: 'baseline/uploadPJNZ'})
         },
         components: {
-            Tick,
-            ErrorAlert
+            FileUpload
         }
     })
 </script>

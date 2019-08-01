@@ -7,6 +7,7 @@
                       :number="step.number"
                       :text="step.text"
                       :enabled="enabled(step.number)"
+                      :complete="status[step.number]"
                       @jump="jump">
                 </step>
                 <div class="col no-padding" v-if="step.number < steps.length">
@@ -17,6 +18,14 @@
         <div class="pt-5">
             <baseline v-if="active(1)"></baseline>
             <survey-and-program v-if="active(2)"></survey-and-program>
+        </div>
+        <div class="row">
+            <div class="col">
+                <a href="#" id="continue"
+                   v-on:click="next"
+                   class="text-uppercase font-weight-bold float-right"
+                   :class="{'disabled': !status[activeStep]}">continue</a>
+            </div>
         </div>
     </div>
 </template>
@@ -88,6 +97,11 @@
                 return this.steps.slice(0, num)
                     .filter((s) => this.status[s.number])
                     .length >= num - 1
+            },
+            next() {
+                if (this.status[this.activeStep]) {
+                    this.activeStep = this.activeStep + 1;
+                }
             }
         },
         components: {

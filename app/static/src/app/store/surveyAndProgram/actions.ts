@@ -1,8 +1,8 @@
 import {ActionContext, ActionPayload, ActionTree} from 'vuex';
-import axios, {AxiosResponse} from 'axios';
-import {APIError, PJNZ} from "../../types";
 import {RootState} from "../../main";
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
+import {GeoJSON} from "geojson";
+import {api} from "../../apiService";
 
 export type SurveyAndProgramActionTypes = "SurveyLoaded" | "SurveyError"
 
@@ -27,17 +27,12 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     uploadSurvey({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
-        axios.post("/survey/upload", formData)
-            .then((response: AxiosResponse) => {
-                const payload: PJNZ = response && response.data;
-                console.log(payload);
+        api.post<GeoJSON>("/survey/", formData)
+            .then((payload) => {
                 commit<SurveyAndProgramPayload>({type: "SurveyLoaded", payload});
             })
-            .catch((e: {response: {data: APIError}}) => {
-                const error = e.response.data;
-                console.log(error);
+            .catch((error: Error) => {
                 commit<SurveyAndProgramPayload>({type: 'SurveyError', payload: error.message});
             });
     }
 };
-

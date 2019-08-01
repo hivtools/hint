@@ -1,5 +1,5 @@
 import { Module } from 'vuex';
-import {actions, PJNZ} from './actions';
+import {actions} from './actions';
 import { mutations } from './mutations';
 import {StepState, RootState} from "../../main";
 

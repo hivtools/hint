@@ -9,7 +9,7 @@ describe("Survey and program actions", () => {
 
     it("sets data after survey file upload", (done) => {
 
-        mockAxios.onPost(`/survey/upload`)
+        mockAxios.onPost(`/survey/`)
             .reply(200, "SOME GEOJSON");
 
         const commit = jest.fn();
@@ -23,7 +23,7 @@ describe("Survey and program actions", () => {
 
     it("sets error message after failed survey upload", (done) => {
 
-        mockAxios.onPost(`/survey/upload`)
+        mockAxios.onPost(`/survey/`)
             .reply(500, {error: "Something went wrong", status: 500, message: "error message"});
 
         const commit = jest.fn();

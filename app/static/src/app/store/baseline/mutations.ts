@@ -30,6 +30,9 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
         if (data.pjnz){
             state.country = data.pjnz.country;
             state.pjnzFilename = data.pjnz.filename;
+            // TODO this step isn't really complete until all files are uploaded
+            // but for now lets say it is
+            state.complete = true;
          }
     }
 };

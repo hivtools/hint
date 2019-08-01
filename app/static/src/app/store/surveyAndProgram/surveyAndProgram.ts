@@ -7,6 +7,7 @@ import {GeoJSON} from "geojson";
 export interface SurveyAndProgramDataState extends StepState {
     surveyGeoJson: GeoJSON | null
     surveyError: string,
+    surveyFileName: string,
     programGeoJson: GeoJSON | null,
     programError: string
 
@@ -15,6 +16,7 @@ export interface SurveyAndProgramDataState extends StepState {
 export const initialSurveyAndProgramDataState: SurveyAndProgramDataState = {
     surveyGeoJson: null,
     surveyError: "",
+    surveyFileName: "",
     programGeoJson: null,
     programError: "",
     complete: false

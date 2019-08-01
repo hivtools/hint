@@ -1,6 +1,6 @@
 <template>
     <div class="col step no-padding" :class="[{'active': active}]">
-        <button class="btn" :class="[{'btn-red': active}]"
+        <button class="btn" :class="[{'btn-red': active || complete}]"
                 :disabled="!enabled"
                 v-on:click="$emit('jump', number)">{{number}}
         </button>
@@ -13,7 +13,7 @@
     import Vue from "vue";
 
     export default Vue.extend({
-        props: ["active", "number", "text", "enabled"]
+        props: ["active", "number", "text", "enabled", "complete"]
     })
 
 </script>
