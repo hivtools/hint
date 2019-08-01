@@ -20,6 +20,7 @@ dependencies {
 	implementation 'org.postgresql:postgresql:9.3-1100-jdbc3'
 	implementation 'org.mindrot:jbcrypt:0.4'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: "com.vaadin.external.google", module:"android-json"
 		exclude module: 'junit'
 	}
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'

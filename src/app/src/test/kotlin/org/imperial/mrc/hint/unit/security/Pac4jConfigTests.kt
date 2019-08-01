@@ -11,7 +11,7 @@ class Pac4jConfigTests
     fun `can get config`()
     {
         val sut = Pac4jConfig()
-        val config = sut.config()
+        val config = sut.getConfig()
 
         Assertions.assertThat(config.clients.callbackUrl).isEqualTo("/callback")
         Assertions.assertThat(config.clients.clients.count()).isEqualTo(1)
