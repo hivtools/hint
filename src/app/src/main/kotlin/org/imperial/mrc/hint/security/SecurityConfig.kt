@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 @Configuration
 @ComponentScan(basePackages = ["org.pac4j.springframework.web"])
-class SecurityConfig(@Autowired val config: Config): WebMvcConfigurerAdapter() {
+open class SecurityConfig(@Autowired val config: Config): WebMvcConfigurerAdapter() {
 
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(SecurityInterceptor(config, "FormClient"))

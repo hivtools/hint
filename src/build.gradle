@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 buildscript {
     ext.kotlin_version = '1.3.30'
 
@@ -44,10 +42,3 @@ sourceCompatibility = '1.8'
 //        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 //    }
 //}
-
-tasks.withType(KotlinCompile) {
-    kotlinOptions {
-        freeCompilerArgs = ['-Xjsr305=strict']
-        jvmTarget = '1.8'
-    }
-}

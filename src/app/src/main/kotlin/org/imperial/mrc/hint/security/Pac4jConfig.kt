@@ -10,9 +10,9 @@ import org.pac4j.http.client.indirect.FormClient
 
 @Configuration
 @ComponentScan(basePackages = ["org.pac4j.springframework.web"])
-class Pac4jConfig{
+open class Pac4jConfig{
    @Bean
-   fun config(): Config
+   open fun config(): Config
    {
        val formClient = FormClient("/login", SimpleTestUsernamePasswordAuthenticator())
 

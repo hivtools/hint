@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class Pac4jProfileService
+open class Pac4jProfileService
 {
     companion object {
         private var initializedDataSource: Jdbc3PoolingDataSource? = null
@@ -31,7 +31,7 @@ class Pac4jProfileService
     }
 
     @Bean
-    fun profileService(): DbProfileService
+    open fun profileService(): DbProfileService
     {
         //TODO: Use Libsodium
         return DbProfileService(dataSource, JBCryptPasswordEncoder(salt))

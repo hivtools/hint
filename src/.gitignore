@@ -4,6 +4,7 @@ app/build/
 app/static/node_modules
 app/static/public
 userCLI/build
+src/build
 
 ### STS ###
 .apt_generated
