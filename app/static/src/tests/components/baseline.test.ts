@@ -5,7 +5,7 @@ import {BaselineActions} from "../../app/store/baseline/actions";
 import {mutations} from "../../app/store/baseline/mutations";
 import {mockBaselineState, mockFileList} from "../mocks";
 import {BaselineState} from "../../app/store/baseline/baseline";
-import Baseline from "../../app/components/Baseline.vue";
+import Baseline from "../../app/components/baseline/Baseline.vue";
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import Tick from "../../app/components/Tick.vue";
 

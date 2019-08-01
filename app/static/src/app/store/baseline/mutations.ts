@@ -14,7 +14,10 @@ export interface BaselineMutations {
 export const mutations: MutationTree<BaselineState> & BaselineMutations = {
     PJNZLoaded(state: BaselineState, action: PJNZLoaded) {
         state.pjnzError = "";
-        state.country = action.payload.country
+        state.country = action.payload.country;
+        // TODO this step isn't really complete until all files are uploaded
+        // but for now lets say it is
+        state.complete = true;
     },
 
     PJNZUploadError(state: BaselineState, action: PJNZUploadError) {

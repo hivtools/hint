@@ -16,6 +16,7 @@
         </div>
         <div class="pt-5">
             <baseline v-if="active(1)"></baseline>
+            <survey-and-program v-if="active(2)"></survey-and-program>
         </div>
     </div>
 </template>
@@ -25,7 +26,8 @@
     import Vue from "vue";
     import {mapState} from "vuex";
     import Step from "./Step.vue";
-    import Baseline from "./Baseline.vue";
+    import Baseline from "./baseline/Baseline.vue";
+    import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
     import {RootState} from "../main";
 
     type CompleteStatus = {
@@ -68,7 +70,7 @@
             ...mapState<RootState>({
                 status: (state: RootState): CompleteStatus => ({
                     1: state.baseline.complete,
-                    2: false,
+                    2: state.surveyAndProgram.complete,
                     3: false,
                     4: false,
                     5: false
@@ -90,7 +92,8 @@
         },
         components: {
             Step,
-            Baseline
+            Baseline,
+            SurveyAndProgram
         }
     })
 

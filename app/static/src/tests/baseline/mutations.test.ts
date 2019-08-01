@@ -11,6 +11,13 @@ describe("Baseline mutations", () => {
         expect(testState.pjnzError).toBe("");
     });
 
+    it("sets state complete once pjnz is uploaded", () => {
+
+        const testState = {...initialBaselineState};
+        mutations.PJNZLoaded(testState, {payload: {country: "Malawi"}, type: "PJNZLoaded"});
+        expect(testState.complete).toBe(true);
+    });
+
     it("sets error on PJNZUploadError", () => {
 
         const testState = {...initialBaselineState};

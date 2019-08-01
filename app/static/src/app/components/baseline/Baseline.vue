@@ -45,9 +45,9 @@
 
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
-    import Tick from "./Tick.vue";
-    import ErrorAlert from "./ErrorAlert.vue";
-    import { BaselineState } from "../store/baseline/baseline";
+    import Tick from "../Tick.vue";
+    import ErrorAlert from "../ErrorAlert.vue";
+    import { BaselineState } from "../../store/baseline/baseline";
 
     const namespace: string = 'baseline';
 
