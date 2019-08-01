@@ -24,14 +24,14 @@ matrix:
       - openjdk8
       install:
       - npm install codecov -g
-      - ./app/gradlew -p app
+      - ./src/gradlew -p app
       before_script:
       - sudo /etc/init.d/postgresql stop
       - ./scripts/run-dependencies.sh
       script:
-      - ./src/app/gradlew -p app :test
+      - ./src/gradlew -p app :test
       after_success:
-      - ./src/app/gradlew -p app :jacocoTestReport
+      - ./src/gradlew -p app :jacocoTestReport
       - (cd src/app/userCLI; ./scripts/build; ./scripts/push)
       - codecov -f src/app/coverage/test/*.xml
       services:
