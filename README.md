@@ -11,3 +11,9 @@ Requirements:
 1. Run `./scripts/run-dependencies.sh` to start a model API
 1. Run `npm run build` from `app/static` to compile front-end dependencies.
 1. Run app from your IDE or by `cd app && ./gradlew :bootRun` to serve the app on port 8080
+
+### Distribution
+A docker image containing the app is created by running `./scripts/build-app.sh`. This is run as part of 
+the Travis build. 
+Run `docker run -p 8080:8080 mrcide/hint:branch_name` to run a built image.
+

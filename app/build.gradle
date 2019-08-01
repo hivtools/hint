@@ -11,7 +11,10 @@ plugins {
 }
 
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'application'
 apply plugin: 'jacoco'
+
+mainClassName = "org.imperial.mrc.hint.AppStartKt"
 
 jacoco {
 	toolVersion = "0.8.3"
@@ -26,7 +29,6 @@ jacocoTestReport {
 }
 
 group = 'org.imperial.mrc'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
@@ -73,3 +75,13 @@ tasks.withType(KotlinCompile) {
 test {
 	useJUnitPlatform()
 }
+
+task compileFrontEnd() {
+	doLast {
+		exec {
+			commandLine "npm", "run", "build", "--prefix=$projectDir/static/"
+		}
+	}
+}
+
+processResources.dependsOn 'compileFrontEnd'

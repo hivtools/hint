@@ -24,6 +24,7 @@ matrix:
       - openjdk8
       install:
       - npm install codecov -g
+      - npm install --prefix=app/static
       - ./app/gradlew -p app
       before_script:
       - sudo /etc/init.d/postgresql stop
@@ -33,5 +34,6 @@ matrix:
       after_success:
       - ./app/gradlew -p app :jacocoTestReport
       - codecov -f app/coverage/test/*.xml
+      - ./scripts/travis.sh
       services:
       - docker
