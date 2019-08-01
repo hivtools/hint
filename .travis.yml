@@ -32,7 +32,7 @@ matrix:
       - ./src/gradlew -p src app::test
       after_success:
       - ./src/gradlew -p src app::jacocoTestReport
-      - (cd src/app/userCLI; ./scripts/build; ./scripts/push)
+      - (cd src/userCLI; ./scripts/build; ./scripts/push)
       - codecov -f src/app/coverage/test/*.xml
       services:
       - docker

@@ -3,8 +3,9 @@ app/build/
 !gradle/wrapper/gradle-wrapper.jar
 app/static/node_modules
 app/static/public
+build
 userCLI/build
-src/build
+app/build
 
 ### STS ###
 .apt_generated
