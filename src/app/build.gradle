@@ -25,6 +25,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-freemarker'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
@@ -32,7 +33,7 @@ dependencies {
 	implementation 'org.pac4j:spring-webmvc-pac4j:3.2.0'
 	implementation 'org.pac4j:pac4j-http:3.3.0'
 	implementation 'org.pac4j:pac4j-sql:3.3.0'
-	implementation 'org.postgresql:postgresql:9.3-1100-jdbc3'
+	implementation 'org.postgresql:postgresql:9.4-1200-jdbc41'
 	implementation 'org.mindrot:jbcrypt:0.4'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude module: 'junit'

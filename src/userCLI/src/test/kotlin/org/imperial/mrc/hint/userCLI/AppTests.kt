@@ -1,41 +1,59 @@
 package org.imperial.mrc.hint.userCLI
 
-import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions
-import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
 import org.imperial.mrc.hint.db.UserRepository
-import org.imperial.mrc.hint.security.Pac4jProfileService
-import org.imperial.mrc.hint.userCLI.addUser
-import org.imperial.mrc.hint.userCLI.removeUser
-import org.junit.jupiter.api.BeforeAll
-import org.pac4j.sql.profile.service.DbProfileService
-import org.postgresql.jdbc3.Jdbc3PoolingDataSource
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContext
+import org.springframework.transaction.annotation.Isolation
 
 
-//TODO: inherit from CleanDatabaseTests. The hint db container must be running to run these tests
-class AppTests
+//The hint db container must be running to run these tests
+@ActiveProfiles(profiles=["test"])
+@SpringBootTest
+@ExtendWith(SpringExtension::class)
+@Transactional(isolation= Isolation.READ_UNCOMMITTED)
+open class AppTests
 {
     companion object {
-        lateinit var userRepository: UserRepository
+        const val TEST_EMAIL = "test@test.com"
+    }
 
-        @BeforeAll
-        @JvmStatic
-        fun setUpUserRepo() {
-            val dataSource = Jdbc3PoolingDataSource()
-            dataSource.setUrl("jdbc:postgresql://localhost/hint")
-            dataSource.setUser("hintuser")
-            dataSource.setPassword("changeme")
+    @Autowired
+    private lateinit var context: ApplicationContext
 
-            val profileService = Pac4jProfileService().profileService(dataSource)
+    @Test
+    //@Transactional
+    open fun `can add user`()
+    {
+        val sut = UserCLI(context)
+        sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
-            userRepository = DbProfileServiceUserRepository(profileService)
-        }
+        sut.removeUser(mapOf("<email>" to TEST_EMAIL))
     }
 
     @Test
-    fun `addUser and removeUser have expected effect`()
+    //@Transactional(isolation= Isolation.READ_UNCOMMITTED)
+    open fun `can remove user`()
     {
-        addUser(mapOf("<email>" to "test@test.com", "<password>" to "testpassword"), userRepository)
-        removeUser(mapOf("<email>" to "test@test.com"), userRepository)
+        val sut = UserCLI(context)
+        sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
+
+        sut.removeUser(mapOf("<email>" to TEST_EMAIL))
+
+    }
+
+    @Test
+    open fun `cannot add same user twice`()
+    {
+        val sut = UserCLI(context)
+        sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
+
+        sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
     }
 }
