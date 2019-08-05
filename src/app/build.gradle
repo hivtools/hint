@@ -1,21 +1,25 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 buildscript {
 	ext.kotlin_version = '1.3.30'
 }
 
-plugins {
-	id 'org.springframework.boot' version '2.1.4.RELEASE'
+apply plugin: 'application'
+
+mainClassName = "org.imperial.mrc.hint.AppStartKt"
+
+jacoco {
+	toolVersion = "0.8.3"
+	reportsDir = file("$projectDir/coverage")
 }
 
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'jacoco'
-apply plugin: 'kotlin'
-
-repositories {
-	mavenCentral()
-	jcenter()
+jacocoTestReport {
+	reports {
+		xml.enabled = true
+		csv.enabled = false
+	}
 }
+
+group = 'org.imperial.mrc'
+sourceCompatibility = '1.8'
 
 dependencies {
 
@@ -36,6 +40,7 @@ dependencies {
 	implementation 'org.postgresql:postgresql:9.4-1200-jdbc41'
 	implementation 'org.mindrot:jbcrypt:0.4'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: "com.vaadin.external.google", module:"android-json"
 		exclude module: 'junit'
 	}
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'
@@ -50,15 +55,21 @@ test {
 	useJUnitPlatform()
 }
 
-jar{
-	enabled = true
-}
-
-tasks.withType(KotlinCompile) {
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
 	kotlinOptions {
 		freeCompilerArgs = ['-Xjsr305=strict']
 		jvmTarget = '1.8'
 	}
 }
 
+
+task compileFrontEnd() {
+	doLast {
+		exec {
+			commandLine "npm", "run", "build", "--prefix=$projectDir/static/"
+		}
+	}
+}
+
+processResources.dependsOn 'compileFrontEnd'
 

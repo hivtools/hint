@@ -9,20 +9,8 @@ buildscript {
     }
 }
 
-plugins {
-    id 'org.springframework.boot' version '2.1.4.RELEASE'
-}
-
 apply plugin: 'application'
 apply plugin: 'docker'
-apply plugin: 'kotlin'
-apply plugin: 'io.spring.dependency-management'
-
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
 mainClassName = "org.imperial.mrc.hint.userCLI.AppKt"
 
 dependencies {
@@ -72,3 +60,4 @@ test {
 jar{
     enabled = true
 }
+

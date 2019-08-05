@@ -1,7 +1,6 @@
 package org.imperial.mrc.hint.userCLI
 
 import org.docopt.Docopt
-
 import kotlin.system.exitProcess
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.HintApplication
@@ -66,6 +65,7 @@ class UserCLI(private val appContext: ApplicationContext)
     {
         val email = options["<email>"].getStringValue()
         println("Removing user $email")
+
 
         userRepository.removeUser(email)
         return "OK"

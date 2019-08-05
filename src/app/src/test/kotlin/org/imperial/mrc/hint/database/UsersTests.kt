@@ -11,7 +11,6 @@ import org.mindrot.jbcrypt.BCrypt
 
 //Tests that pac4j can access the database
 //Database should be running (via ./scripts/run-dependencies.sh)
-
 class UsersTests {
 
     companion object {
