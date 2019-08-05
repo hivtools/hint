@@ -21,6 +21,7 @@ fun main(args: Array<String>)
     val options = Docopt(doc).parse(args.toList())
     val addUser = options["add-user"] as Boolean
     val removeUser = options["remove-user"] as Boolean
+    val userExists = options["user-exists"] as Boolean
 
     //Start a background HintApplication so we can get an ApplicationContext in order to get Autowired user repo
     val applicationContext = SpringApplication.run(HintApplication::class.java)
@@ -32,6 +33,7 @@ fun main(args: Array<String>)
         {
             addUser -> userCLI.addUser(options)
             removeUser -> userCLI.removeUser(options)
+            userExists -> userCLI.userExists(options)
             else -> ""
         }
 

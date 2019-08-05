@@ -7,7 +7,7 @@ Requirements:
 * npm
 
 1. Clone this repo
-1. Run `npm install` from `app/static`
+1. Run `npm install` from `src/app/static`
 1. Run `./scripts/run-dependencies.sh` to start a model API
-1. Run `npm run build` from `app/static` to compile front-end dependencies.
-1. Run app from your IDE or by `cd app && ./gradlew :app:bootRun` to serve the app on port 8080
+1. Run `npm run build` from `src/app/static` to compile front-end dependencies.
+1. Run app from your IDE or by `cd src && ./gradlew :app:bootRun` to serve the app on port 8080
