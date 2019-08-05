@@ -1,17 +1,19 @@
 import { Module } from 'vuex';
-import { actions } from './actions';
+import {actions, PJNZ} from './actions';
 import { mutations } from './mutations';
 import {RootState} from "../../main";
 
 export interface BaselineState {
     pjnzError: string
     country: string
-    complete: boolean
+    complete: boolean,
+    pjnzFilename: string
 }
 
 export const initialBaselineState: BaselineState = {
     country: "",
     pjnzError: "",
+    pjnzFilename: "",
     complete: false
 };
 

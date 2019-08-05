@@ -49,4 +49,5 @@ class BaselineTests(@Autowired val testRestTemplate: TestRestTemplate) {
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(entity.body!!).isEqualTo("{\"filename\": \"Malawi_2018.pjnz\", \"country\": \"Malawi\"}")
     }
+
 }

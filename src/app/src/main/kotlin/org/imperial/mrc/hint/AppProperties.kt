@@ -17,6 +17,7 @@ open class ConfiguredAppProperties: AppProperties {
 
     companion object
     {
+
         fun readProperties(configPath: String): Properties {
             return Properties().apply {
                 load(getResource("config.properties").openStream())

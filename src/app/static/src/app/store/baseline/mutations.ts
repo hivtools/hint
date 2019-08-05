@@ -1,5 +1,5 @@
 import {Mutation, MutationTree} from 'vuex';
-import {BaselinePayload, PJNZLoaded, PJNZUploadError} from "./actions";
+import {BaselineDataLoaded, BaselinePayload, PJNZLoaded, PJNZUploadError} from "./actions";
 import {BaselineState} from "./baseline";
 
 interface BaselineMutation extends Mutation<BaselineState> {
@@ -9,6 +9,7 @@ interface BaselineMutation extends Mutation<BaselineState> {
 export interface BaselineMutations {
     PJNZLoaded: BaselineMutation
     PJNZUploadError: BaselineMutation
+    BaselineDataLoaded: BaselineMutation
 }
 
 export const mutations: MutationTree<BaselineState> & BaselineMutations = {
@@ -19,6 +20,14 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
 
     PJNZUploadError(state: BaselineState, action: PJNZUploadError) {
         state.pjnzError = action.payload;
+    },
+
+    BaselineDataLoaded(state: BaselineState, action: BaselineDataLoaded) {
+        const data = action.payload;
+        if (data.pjnz){
+            state.country = data.pjnz.country;
+            state.pjnzFilename = data.pjnz.filename;
+         }
     }
 };
 
