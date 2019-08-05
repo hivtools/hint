@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.userCLI
 
+import org.imperial.mrc.hint.exceptions.UserException
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -49,9 +50,9 @@ open class AppTests
         val sut = UserCLI(context)
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
-        //TODO: Make exception class and use this for all exceptions from UserRepository.
         Assertions.assertThatThrownBy { sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword")) }
-                .hasMessageContaining("duplicate key value")
+                .isInstanceOf(UserException::class.java)
+                .hasMessageContaining("User already exists")
 
     }
 
@@ -60,6 +61,7 @@ open class AppTests
     {
         val sut = UserCLI(context)
         Assertions.assertThatThrownBy{ sut.removeUser(mapOf("<email>" to "notaperson.@email.com")) }
+                .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("User does not exist")
 
     }
