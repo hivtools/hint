@@ -49,7 +49,7 @@ open class AppTests
         val sut = UserCLI(context)
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
-        //TODO: Make exception class and use this for all exceptions from UserRepository
+        //TODO: Make exception class and use this for all exceptions from UserRepository.
         Assertions.assertThatThrownBy { sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword")) }
                 .hasMessageContaining("duplicate key value")
 
