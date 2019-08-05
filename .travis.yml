@@ -35,7 +35,7 @@ matrix:
       - ./src/gradlew -p src app::jacocoTestReport
       - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
       - ./src/userCLI/scripts/build
-      - ./src/userCLI/scripts/push)
+      - ./src/userCLI/scripts/push
       - codecov -f src/app/coverage/test/*.xml
       - ./scripts/travis.sh
       services:
