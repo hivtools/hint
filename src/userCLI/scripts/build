@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -ex
+
+HERE=$(dirname $0)
+. $HERE/common
+
+$HERE/../../gradlew :userCLI:distDocker -i -Pdocker_version=$GIT_SHA -Pdocker_name=$TAG_IMAGE;
