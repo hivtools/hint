@@ -6,6 +6,8 @@ import javax.sql.DataSource
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
+
 
 @Configuration
 open class Pac4jProfileService(@Autowired val dataSource: DataSource)
@@ -18,7 +20,7 @@ open class Pac4jProfileService(@Autowired val dataSource: DataSource)
     open fun profileService(): DbProfileService
     {
         //TODO: Use Libsodium
-        return DbProfileService(dataSource, JBCryptPasswordEncoder(salt))
+        return DbProfileService(TransactionAwareDataSourceProxy(dataSource), JBCryptPasswordEncoder(salt))
     }
 
 }

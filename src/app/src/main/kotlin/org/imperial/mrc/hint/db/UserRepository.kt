@@ -5,12 +5,13 @@ import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
+import org.springframework.transaction.annotation.Transactional
 
 interface UserRepository
 {
     fun addUser(email: String, password: String)
     fun removeUser(email: String)
-    fun getUser(email: String): CommonProfile
+    fun getUser(email: String): CommonProfile?
 }
 
 @Configuration
@@ -26,10 +27,15 @@ open class DbProfileServiceUserRepository(@Autowired val profileService: DbProfi
 
     override fun removeUser(email: String)
     {
+        val user = getUser(email)
+        if (user == null)
+        {
+            throw Exception("User does not exist")
+        }
         profileService.removeById(email)
     }
 
-    override fun getUser(email: String): CommonProfile
+    override fun getUser(email: String): CommonProfile?
     {
         return profileService.findById(email)
     }

@@ -13,6 +13,7 @@ Hint User CLI
 Usage:
     app add-user <email> <password>
     app remove-user <email>
+    app user-exists <email>
 """
 
 fun main(args: Array<String>)
@@ -66,6 +67,15 @@ class UserCLI(private val appContext: ApplicationContext)
 
         userRepository.removeUser(email)
         return "OK"
+    }
+
+    fun userExists(options: Map<String, Any>, userRepository: UserRepository=userRepository()): String
+    {
+        val email = options["<email>"].getStringValue()
+        println("Checking if user exists: $email")
+
+        val exists = userRepository.getUser(email) != null
+        return exists.toString()
     }
 
     private fun userRepository(): UserRepository
