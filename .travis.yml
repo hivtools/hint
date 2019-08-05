@@ -31,6 +31,7 @@ matrix:
       - ./scripts/run-dependencies.sh
       script:
       - ./src/gradlew -p src app::test
+      - ./src/gradlew -p src userCLI::test
       after_success:
       - ./src/gradlew -p src app::jacocoTestReport
       - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
