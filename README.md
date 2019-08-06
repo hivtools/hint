@@ -1,5 +1,8 @@
 ## HINT - HIV Indicators Tool
-[SpringBoot](https://spring.io/projects/spring-boot) Kotlin web app for interfacing with a model API.
+[![Build Status](https://travis-ci.com/mrc-ide/hint.svg?branch=master)](https://travis-ci.com/mrc-ide/hint)
+[![codecov](https://codecov.io/gh/mrc-ide/hint/branch/master/graph/badge.svg)](https://codecov.io/gh/mrc-ide/hint)
+
+[SpringBoot](https://spring.io/projects/spring-boot) Kotlin web app for interfacing with the [Naomi model](https://github.com/mrc-ide/naomi-dev) for joint small-area estimation of HIV prevalence, ART coverage, and HIV incidence via the [hintr package](https://github.com/mrc-ide/hintr)
 
 ### Developing
 Requirements:
@@ -16,4 +19,3 @@ Requirements:
 A docker image containing the app is created by running `./scripts/build-app.sh`. This is run as part of 
 the Travis build. 
 Run `docker run -p 8080:8080 mrcide/hint:branch_name` to run a built image.
-
