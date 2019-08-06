@@ -1,6 +1,6 @@
 import {createLocalVue, mount} from '@vue/test-utils';
 import Vuex from 'vuex';
-import {mockAxios} from "../mocks";
+import {mockAxios, mockSurveyAndProgramState} from "../mocks";
 import {mockBaselineState} from "../mocks";
 import {mutations} from "../../app/store/baseline/mutations";
 
@@ -27,6 +27,10 @@ describe("App", () => {
                 state: mockBaselineState(),
                 actions: {...actions},
                 mutations: {...mutations}
+            },
+            surveyAndProgram: {
+                namespaced: true,
+                state: mockSurveyAndProgramState()
             }
         }
     });

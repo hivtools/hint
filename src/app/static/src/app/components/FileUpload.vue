@@ -1,0 +1,93 @@
+<template>
+    <div class="form-group">
+        <label class="font-weight-bold">{{label}}</label>
+        <tick color="#e31837" v-if="valid" width="20px"></tick>
+        <div class="custom-file">
+            <input type="file"
+                   class="custom-file-input"
+                   :ref="name"
+                   :id="name"
+                   :accept="accept"
+                   v-on:change="handleFileSelect"/>
+            <label :for="name" :class="['custom-file-label', {'selected': selectedFileName || existingFileName}]">
+                {{selectedFileName || existingFileName || "Choose a file" }}
+            </label>
+        </div>
+        <error-alert v-if="hasError" :message="error"></error-alert>
+    </div>
+</template>
+
+<script lang="ts">
+    import Vue from "vue";
+
+    import Tick from "./Tick.vue";
+    import ErrorAlert from "./ErrorAlert.vue";
+
+    interface Data {
+        selectedFile: File | null
+        selectedFileName: string
+    }
+
+    interface Computed {
+        hasError: boolean
+    }
+
+    interface Methods {
+        handleFileSelect: (_: Event, files: FileList | null) => void
+    }
+
+    interface Props {
+        upload: (file: File) => void,
+        accept: string,
+        label: string,
+        valid: Boolean,
+        error: string,
+        existingFileName: string,
+        name: string
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
+        name: "FileUpload",
+        data(): Data {
+            return {
+                selectedFile: null,
+                selectedFileName: ""
+            }
+        },
+        props: {
+            "upload": Function,
+            "accept": String,
+            "label": String,
+            "valid": Boolean,
+            "error": String,
+            "existingFileName": String,
+            "name": String
+        },
+        computed: {
+            hasError: function () {
+                return this.error.length > 0
+            }
+        },
+        methods: {
+            handleFileSelect(_: Event, files: FileList | null) {
+                if (!files) {
+                    const fileInput = this.$refs[this.name] as HTMLInputElement;
+                    files = fileInput.files
+                }
+
+                this.selectedFile = files && files[0];
+                this.selectedFileName = this.selectedFile && this.selectedFile.name.split("\\").pop() || "";
+
+                if (this.selectedFile) {
+                    this.upload(this.selectedFile);
+                }
+            }
+        },
+        components: {
+            Tick,
+            ErrorAlert
+        }
+    });
+
+
+</script>

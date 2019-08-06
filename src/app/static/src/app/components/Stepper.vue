@@ -7,6 +7,7 @@
                       :number="step.number"
                       :text="step.text"
                       :enabled="enabled(step.number)"
+                      :complete="complete[step.number]"
                       @jump="jump">
                 </step>
                 <div class="col no-padding" v-if="step.number < steps.length">
@@ -16,6 +17,15 @@
         </div>
         <div class="pt-5">
             <baseline v-if="active(1)"></baseline>
+            <survey-and-program v-if="active(2)"></survey-and-program>
+        </div>
+        <div class="row">
+            <div class="col">
+                <a href="#" id="continue"
+                   v-on:click="next"
+                   class="text-uppercase font-weight-bold float-right"
+                   :class="{'disabled': !complete[activeStep]}">continue</a>
+            </div>
         </div>
     </div>
 </template>
@@ -25,7 +35,8 @@
     import Vue from "vue";
     import {mapState} from "vuex";
     import Step from "./Step.vue";
-    import Baseline from "./Baseline.vue";
+    import Baseline from "./baseline/Baseline.vue";
+    import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
     import {RootState} from "../main";
 
     type CompleteStatus = {
@@ -66,9 +77,9 @@
         },
         computed: {
             ...mapState<RootState>({
-                status: (state: RootState): CompleteStatus => ({
+                complete: (state: RootState): CompleteStatus => ({
                     1: state.baseline.complete,
-                    2: false,
+                    2: state.surveyAndProgram.complete,
                     3: false,
                     4: false,
                     5: false
@@ -84,13 +95,19 @@
             },
             enabled(num: number) {
                 return this.steps.slice(0, num)
-                    .filter((s) => this.status[s.number])
+                    .filter((s) => this.complete[s.number])
                     .length >= num - 1
+            },
+            next() {
+                if (this.complete[this.activeStep]) {
+                    this.activeStep = this.activeStep + 1;
+                }
             }
         },
         components: {
             Step,
-            Baseline
+            Baseline,
+            SurveyAndProgram
         }
     })
 

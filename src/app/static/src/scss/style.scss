@@ -7,6 +7,14 @@ a {
   &:hover {
     color: darken($theme-red, 10%);
   }
+
+  &.disabled {
+    color: $gray-500;
+    cursor: default;
+    &:hover {
+      text-decoration: none;
+    }
+  }
 }
 
 .btn-red {
@@ -73,6 +81,7 @@ a {
 .logout {
   float: right;
   margin-right: 1em;
+
   a {
     color: #f8f9fa;
   }

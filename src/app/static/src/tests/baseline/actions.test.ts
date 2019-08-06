@@ -22,7 +22,7 @@ describe("Baseline actions", () => {
         actions.uploadPJNZ({commit} as any, {} as File);
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZLoaded", payload: {country: "Malawi"}});
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUploaded", payload: {country: "Malawi"}});
             done();
         })
     });
