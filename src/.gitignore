@@ -7,7 +7,6 @@ userCLI/build
 app/build
 app/uploads
 
-
 ### STS ###
 .apt_generated
 .classpath

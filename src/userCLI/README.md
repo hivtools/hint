@@ -28,4 +28,8 @@ password `password`
 #### Remove user
 
     remove-user test.user@example.com
+    
+#### Check if user exists
+ 
+    user-exists test.user@example.com   
 
