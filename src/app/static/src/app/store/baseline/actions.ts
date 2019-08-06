@@ -12,7 +12,7 @@ export interface BaselineData {
     pjnz?: PJNZ
 }
 
-export type BaselineActionTypes = "PJNZLoaded" | "PJNZUploadError" | "BaselineDataLoaded"
+export type BaselineActionTypes = "PJNZUploaded" | "PJNZUploadError" | "BaselineDataLoaded"
 
 export interface BaselinePayload extends ActionPayload {
     type: BaselineActionTypes
@@ -22,7 +22,7 @@ export interface BaselineDataLoaded extends BaselinePayload {
     payload: BaselineData
 }
 
-export interface PJNZLoaded extends BaselinePayload {
+export interface PJNZUploaded extends BaselinePayload {
     payload: PJNZ
 }
 
@@ -40,9 +40,9 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     uploadPJNZ({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
-        api.post<PJNZ>("/baseline/pjnz/", formData)
+        api.postAndReturn<PJNZ>("/baseline/pjnz/", formData)
             .then((payload) => {
-                commit<BaselinePayload>({type: "PJNZLoaded", payload});
+                commit<BaselinePayload>({type: "PJNZUploaded", payload});
             })
             .catch((error: Error) => {
                 commit<BaselinePayload>({type: 'PJNZUploadError', payload: error.message});

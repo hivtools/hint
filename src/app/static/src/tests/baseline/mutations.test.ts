@@ -3,18 +3,19 @@ import {initialBaselineState} from "../../app/store/baseline/baseline";
 
 describe("Baseline mutations", () => {
 
-    it("sets country and error on PJNZLoaded", () => {
+    it("sets country, filename and error on PJNZLoaded", () => {
 
         const testState = {...initialBaselineState};
-        mutations.PJNZLoaded(testState, {payload: {country: "Malawi"}, type: "PJNZLoaded"});
+        mutations.PJNZUploaded(testState, {payload: {country: "Malawi", filename: "file.pjnz"}, type: "PJNZLoaded"});
         expect(testState.country).toBe("Malawi");
+        expect(testState.pjnzFilename).toBe("file.pjnz");
         expect(testState.pjnzError).toBe("");
     });
 
     it("sets state complete once pjnz is uploaded", () => {
 
         const testState = {...initialBaselineState};
-        mutations.PJNZLoaded(testState, {payload: {country: "Malawi"}, type: "PJNZLoaded"});
+        mutations.PJNZUploaded(testState, {payload: {country: "Malawi"}, type: "PJNZLoaded"});
         expect(testState.complete).toBe(true);
     });
 

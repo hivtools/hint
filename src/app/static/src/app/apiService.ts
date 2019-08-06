@@ -14,7 +14,7 @@ export class APIService {
             })
     }
 
-    post<T>(url: string, data: any) {
+    postAndReturn<T>(url: string, data: any) {
         return axios.post(url, data)
             .then((response: AxiosResponse) => {
                 const payload: T = response && response.data;

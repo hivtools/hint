@@ -11,7 +11,8 @@ export interface SurveyAndProgramPayload extends ActionPayload {
 }
 
 export interface SurveyLoaded extends SurveyAndProgramPayload {
-    geoJson: string
+    filename: string
+    geoJson: GeoJSON
 }
 
 export interface SurveyError extends SurveyAndProgramPayload {
@@ -27,7 +28,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     uploadSurvey({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
-        api.post<GeoJSON>("/survey/", formData)
+        api.postAndReturn<SurveyLoaded>("/survey/", formData)
             .then((payload) => {
                 commit<SurveyAndProgramPayload>({type: "SurveyLoaded", payload});
             })

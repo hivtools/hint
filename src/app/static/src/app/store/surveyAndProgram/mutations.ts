@@ -13,7 +13,8 @@ export interface SurveyAndProgramMutations {
 
 export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgramMutations = {
     SurveyLoaded(state: SurveyAndProgramDataState, action: SurveyLoaded) {
-        state.surveyGeoJson = action.payload
+        state.surveyFileName = action.payload.filename;
+        state.surveyGeoJson = action.payload.geoJson;
     },
 
     SurveyError(state: SurveyAndProgramDataState, action: SurveyError) {

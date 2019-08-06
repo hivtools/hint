@@ -31,11 +31,6 @@
 
     const namespace: string = 'surveyAndProgram';
 
-    interface Data {
-        surveyFile: File | null
-        surveyFileName: string
-    }
-
     export default Vue.extend({
         name: "SurveyAndProgram",
         computed: mapState<SurveyAndProgramDataState>(namespace, {

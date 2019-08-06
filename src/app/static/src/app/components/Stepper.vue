@@ -7,7 +7,7 @@
                       :number="step.number"
                       :text="step.text"
                       :enabled="enabled(step.number)"
-                      :complete="status[step.number]"
+                      :complete="complete[step.number]"
                       @jump="jump">
                 </step>
                 <div class="col no-padding" v-if="step.number < steps.length">
@@ -24,7 +24,7 @@
                 <a href="#" id="continue"
                    v-on:click="next"
                    class="text-uppercase font-weight-bold float-right"
-                   :class="{'disabled': !status[activeStep]}">continue</a>
+                   :class="{'disabled': !complete[activeStep]}">continue</a>
             </div>
         </div>
     </div>
@@ -77,7 +77,7 @@
         },
         computed: {
             ...mapState<RootState>({
-                status: (state: RootState): CompleteStatus => ({
+                complete: (state: RootState): CompleteStatus => ({
                     1: state.baseline.complete,
                     2: state.surveyAndProgram.complete,
                     3: false,
@@ -95,11 +95,11 @@
             },
             enabled(num: number) {
                 return this.steps.slice(0, num)
-                    .filter((s) => this.status[s.number])
+                    .filter((s) => this.complete[s.number])
                     .length >= num - 1
             },
             next() {
-                if (this.status[this.activeStep]) {
+                if (this.complete[this.activeStep]) {
                     this.activeStep = this.activeStep + 1;
                 }
             }

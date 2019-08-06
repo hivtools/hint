@@ -9,8 +9,8 @@
                    :id="name"
                    :accept="accept"
                    v-on:change="handleFileSelect"/>
-            <label :for="name" :class="['custom-file-label', {'selected': newFileName || existingFileName}]">
-                {{newFileName || existingFileName || "Choose a file" }}
+            <label :for="name" :class="['custom-file-label', {'selected': selectedFileName || existingFileName}]">
+                {{selectedFileName || existingFileName || "Choose a file" }}
             </label>
         </div>
         <error-alert v-if="hasError" :message="error"></error-alert>
@@ -24,8 +24,8 @@
     import ErrorAlert from "./ErrorAlert.vue";
 
     interface Data {
-        newFile: File | null
-        newFileName: string
+        selectedFile: File | null
+        selectedFileName: string
     }
 
     interface Computed {
@@ -36,17 +36,33 @@
         handleFileSelect: (_: Event, files: FileList | null) => void
     }
 
-    type PropNames = "upload" | "accept" | "label" | "valid" | "error" | "existingFileName" | "name"
+    interface Props {
+        upload: (file: File) => void,
+        accept: string,
+        label: string,
+        valid: Boolean,
+        error: string,
+        existingFileName: string,
+        name: string
+    }
 
-    export default Vue.extend<Data, Methods, Computed, PropNames>({
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "FileUpload",
         data(): Data {
             return {
-                newFile: null,
-                newFileName: ""
+                selectedFile: null,
+                selectedFileName: ""
             }
         },
-        props: ["upload", "accept", "label", "valid", "error", "existingFileName", "name"],
+        props: {
+            "upload": Function,
+            "accept": String,
+            "label": String,
+            "valid": Boolean,
+            "error": String,
+            "existingFileName": String,
+            "name": String
+        },
         computed: {
             hasError: function () {
                 return this.error.length > 0
@@ -59,11 +75,11 @@
                     files = fileInput.files
                 }
 
-                this.newFile = files && files[0];
-                this.newFileName = this.newFile && this.newFile.name.split("\\").pop() || "";
+                this.selectedFile = files && files[0];
+                this.selectedFileName = this.selectedFile && this.selectedFile.name.split("\\").pop() || "";
 
-                if (this.newFile) {
-                    this.upload(this.newFile);
+                if (this.selectedFile) {
+                    this.upload(this.selectedFile);
                 }
             }
         },
