@@ -32,10 +32,6 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
-configurations {
-    all*.exclude module : 'spring-boot-starter-logging'
-}
-
 def cli_docker_version = 'UNKNOWN'
 if (hasProperty('docker_version')) {
     cli_docker_version = docker_version
@@ -53,11 +49,4 @@ distDocker {
     tagVersion = cli_docker_version
 }
 
-test {
-    useJUnitPlatform()
-}
-
-jar{
-    enabled = true
-}
 

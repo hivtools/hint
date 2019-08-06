@@ -51,14 +51,6 @@ dependencies {
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
-configurations {
-	all*.exclude module : 'spring-boot-starter-logging'
-}
-
-test {
-	useJUnitPlatform()
-}
-
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
 	kotlinOptions {
 		freeCompilerArgs = ['-Xjsr305=strict']

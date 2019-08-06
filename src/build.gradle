@@ -48,6 +48,14 @@ subprojects {
         enabled true
     }
 
+    test {
+        useJUnitPlatform()
+    }
+
+    configurations {
+        all*.exclude module : 'spring-boot-starter-logging'
+    }
+
     group = 'org.imperial.mrc'
     sourceCompatibility = '1.8'
 
