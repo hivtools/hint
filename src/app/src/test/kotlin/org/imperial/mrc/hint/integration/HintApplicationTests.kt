@@ -5,13 +5,11 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.*
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.LinkedMultiValueMap
-
 
 @ActiveProfiles(profiles=["test"])
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -46,7 +44,7 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
         val cookies = entity.headers["Set-Cookie"]!!.first().split(";")
         val sessionCookie = cookies.first{it.startsWith("JSESSIONID")}.split("=")[1]
 
-        //Assert can access '/' using the cookie
+        //Assert can access '/' using the returned cookie
         val rootHeaders = HttpHeaders()
         rootHeaders.put("Cookie", listOf("JSESSIONID=" + sessionCookie))
         val getRootEntity = HttpEntity(null, rootHeaders)
