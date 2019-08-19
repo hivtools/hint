@@ -2,8 +2,8 @@ FROM openjdk:8u121
 
 RUN mkdir /static/public -p
 
-COPY ./app/static/public /static/public
-COPY ./app/templates /templates
+COPY ./src/app/static/public /static/public
+COPY ./src/app/templates /templates
 
-ADD ./app/build/distributions/hint-boot.tar /
+ADD ./src/app/build/distributions/hint-boot.tar /
 ENTRYPOINT ["/hint-boot/bin/hint"]
