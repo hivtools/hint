@@ -67,5 +67,11 @@ task compileFrontEnd() {
 	}
 }
 
+//Run bootRun with eg -PspringProfile=prod to run with a different active profile from default 'dev' 
+//defined in gradle.properties
+bootRun {
+	bootRun.systemProperty 'spring.profiles.active', springProfile
+}
+
 processResources.dependsOn 'compileFrontEnd'
 
