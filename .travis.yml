@@ -35,7 +35,6 @@ matrix:
       after_script:
       - ./src/gradlew -p src app::jacocoTestReport
       - codecov -f src/app/coverage/test/*.xml
-      deploy:
       - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
       - ./src/userCLI/scripts/build
       - ./src/userCLI/scripts/push
