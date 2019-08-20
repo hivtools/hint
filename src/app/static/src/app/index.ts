@@ -1,7 +1,8 @@
 import Vue from "vue";
 import {store} from "./main"
 import Stepper from "./components/Stepper.vue";
-import {mapActions} from "vuex";
+import ForgotPassword from "./components/password/ForgotPassword.vue";
+import {mapActions, mapState} from "vuex";
 
 export const app = new Vue({
     el: "#app",
@@ -17,3 +18,17 @@ export const app = new Vue({
         this.loadBaseline()
     }
 });
+
+
+export const forgotPassword = new Vue({
+    el: "#forgot-password",
+    store,
+    components: {
+        ForgotPassword
+    },
+    render: h => h(ForgotPassword),
+    methods: {
+        ...mapActions({requestResetLink: 'password/requestResetLink'})
+    }
+});
+

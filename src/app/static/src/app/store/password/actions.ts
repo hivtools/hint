@@ -1,24 +1,37 @@
-import {ActionContext, ActionTree} from "vuex";
-import {PasswordState} from "password";
+import {ActionContext, ActionPayload, ActionTree} from "vuex";
+import {PasswordState} from "./password";
 import {RootState} from "../../main";
 import {api} from "../../apiService";
-import {BaselineData, BaselinePayload, PJNZ} from "../baseline/actions";
 
-export interface PasswordActions {
-    requestResetLink (store: ActionContext<PasswordState>, email: string) => void
+export type PasswordActionTypes = "ResetLinkRequested" | "RequestResetLinkError"
+
+export interface PasswordPayload extends ActionPayload {
+    type: PasswordActionTypes
 }
 
-export const actions: ActionTree<PasswordState> & PasswordActions = {
+export interface ResetLinkRequested extends PasswordPayload {
+    payload: null
+}
 
-    reqiestResetLink({commit}, string) {
+export interface RequestResetLinkError extends PasswordPayload {
+    payload: string
+}
+
+export interface PasswordActions {
+    requestResetLink: (store: ActionContext<PasswordState, RootState>, email: string) => void
+}
+
+export const actions: ActionTree<PasswordState, RootState> & PasswordActions = {
+
+    requestResetLink({commit}, email) {
         let formData = new FormData();
-        formData.append('file', file);
-        api.postAndReturn<PJNZ>("/baseline/pjnz/", formData)
+        formData.append('email', email);
+        api.postAndReturn<string>("/password/request-reset-link/", formData)
             .then((payload) => {
-                commit<BaselinePayload>({type: "PJNZUploaded", payload});
+                commit<PasswordPayload>({type: "ResetLinkRequested", payload: null});
             })
             .catch((error: Error) => {
-                commit<BaselinePayload>({type: 'PJNZUploadError', payload: error.message});
+                commit<PasswordPayload>({type: "RequestResetLinkError", payload: error.message});
             });
     }
 };

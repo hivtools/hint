@@ -11,9 +11,11 @@ Requirements:
 
 1. Clone this repo
 1. Run `npm install` from `src/app/static`
-1. Run `./scripts/run-dependencies.sh` to start a model API
+1. Run `./scripts/run-development-dependencies.sh` to start a model API and other dependencies.
 1. Run `npm run build` from `src/app/static` to compile front-end dependencies.
 1. Run app from your IDE or by `cd src && ./gradlew :app:bootRun` to serve the app on port 8080
+
+The run-development-dependencies script adds a test user, so you can log in locally with user = test.user@example.com, password = password
 
 ### Distribution
 A docker image containing the app is created by running `./scripts/build-app.sh`. This is run as part of 
