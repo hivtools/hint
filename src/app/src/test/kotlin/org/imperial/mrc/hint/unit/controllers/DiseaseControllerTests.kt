@@ -18,27 +18,35 @@ class DiseaseControllerTests {
 
     private val tmpUploadDirectory = "tmp"
 
-
     @AfterEach
     fun tearDown() {
         File(tmpUploadDirectory).deleteRecursively()
     }
 
-    @Test
-    fun `validates survey file`() {
+    private val mockFile = MockMultipartFile("data", "some-file-name.csv",
+            "application/zip", "csv content".toByteArray())
 
-        val mockFile = MockMultipartFile("data", "some-file-name.csv",
-                "application/zip", "csv content".toByteArray())
-        val mockFileManager = mock<FileManager> {
+    private fun getMockFileManager(type: FileType): FileManager {
+        return mock {
             on {
                 saveFile(argWhere {
                     it.originalFilename == "some-file-name.csv"
-                }, eq(FileType.Survey))
+                }, eq(type))
             } doReturn "test-path"
         }
-        val mockApiClient = mock<APIClient>() {
-            on { validate("test-path", FileType.Survey) } doReturn Response(URL("http://whatever"), 200)
+    }
+
+    private fun getMockAPIClient(type: FileType): APIClient {
+        return mock {
+            on { validate("test-path", type) } doReturn Response(URL("http://whatever"), 200)
         }
+    }
+
+    @Test
+    fun `validates survey file`() {
+
+        val mockFileManager = getMockFileManager(FileType.Survey)
+        val mockApiClient = getMockAPIClient(FileType.Survey)
         val sut = DiseaseController(mockFileManager, mockApiClient)
 
         val result = sut.uploadSurvey(mockFile)
@@ -50,18 +58,8 @@ class DiseaseControllerTests {
     @Test
     fun `validates program file`() {
 
-        val mockFile = MockMultipartFile("data", "some-file-name.csv",
-                "application/zip", "csv content".toByteArray())
-        val mockFileManager = mock<FileManager> {
-            on {
-                saveFile(argWhere {
-                    it.originalFilename == "some-file-name.csv"
-                }, eq(FileType.Program))
-            } doReturn "test-path"
-        }
-        val mockApiClient = mock<APIClient>() {
-            on { validate("test-path", FileType.Program) } doReturn Response(URL("http://whatever"), 200)
-        }
+        val mockFileManager = getMockFileManager(FileType.Program)
+        val mockApiClient = getMockAPIClient(FileType.Program)
         val sut = DiseaseController(mockFileManager, mockApiClient)
 
         val result = sut.uploadProgram(mockFile)

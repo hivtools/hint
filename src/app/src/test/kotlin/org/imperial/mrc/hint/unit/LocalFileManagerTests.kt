@@ -23,6 +23,14 @@ class LocalFileManagerTests {
         on { uploadDirectory } doReturn tmpUploadDirectory
     }
 
+    private val mockSessionStore = mock<SessionStore<WebContext>> {
+        on { getOrCreateSessionId(any()) } doReturn "fake-id"
+    }
+
+    private val mockConfig = mock<Config> {
+        on { sessionStore } doReturn mockSessionStore
+    }
+
     @AfterEach
     fun tearDown() {
         File(tmpUploadDirectory).deleteRecursively()
@@ -31,12 +39,6 @@ class LocalFileManagerTests {
     @Test
     fun `can save file and return path`() {
 
-        val mockSessionStore = mock<SessionStore<WebContext>>() {
-            on { getOrCreateSessionId(any()) } doReturn "fake-id"
-        }
-        val mockConfig = mock<Config> {
-            on { sessionStore } doReturn mockSessionStore
-        }
         val sut = LocalFileManager(mock(), mockConfig, mockProperties)
 
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
@@ -56,12 +58,6 @@ class LocalFileManagerTests {
         file.mkdirs()
         file.createNewFile()
 
-        val mockSessionStore = mock<SessionStore<WebContext>>() {
-            on { getOrCreateSessionId(any()) } doReturn "fake-id"
-        }
-        val mockConfig = mock<Config> {
-            on { sessionStore } doReturn mockSessionStore
-        }
         val sut = LocalFileManager(mock(), mockConfig, mockProperties)
         Assertions.assertThat(sut.getFile(FileType.Survey)).isNotNull()
     }
@@ -69,12 +65,6 @@ class LocalFileManagerTests {
     @Test
     fun `returns null if no file exists`() {
 
-        val mockSessionStore = mock<SessionStore<WebContext>>() {
-            on { getOrCreateSessionId(any()) } doReturn "fake-id"
-        }
-        val mockConfig = mock<Config> {
-            on { sessionStore } doReturn mockSessionStore
-        }
         val sut = LocalFileManager(mock(), mockConfig, mockProperties)
         Assertions.assertThat(sut.getFile(FileType.Survey))
                 .isNull()
