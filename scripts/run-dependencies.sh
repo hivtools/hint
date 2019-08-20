@@ -24,4 +24,7 @@ docker run --rm --network=$NETWORK \
   mrcide/hint-db-migrate:latest \
   -url=jdbc:postgresql://$CONTAINER/hint
 
+HERE=$(dirname "$0")
+"$HERE"/add-test-user.sh
+
 

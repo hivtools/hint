@@ -32,12 +32,11 @@ matrix:
       script:
       - ./src/gradlew -p src app::test
       - ./src/gradlew -p src userCLI::test
-      after_success:
       - ./src/gradlew -p src app::jacocoTestReport
+      - codecov -f src/app/coverage/test/*.xml
       - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
       - ./src/userCLI/scripts/build
       - ./src/userCLI/scripts/push
-      - codecov -f src/app/coverage/test/*.xml
       - ./scripts/travis.sh
       services:
       - docker
