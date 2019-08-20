@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
-<div id="forgot-password"></div>
+<div id="app-forgot-password"></div>
 <script src="/js/app.js"></script>
 </body>
 </html>
