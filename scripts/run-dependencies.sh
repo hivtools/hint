@@ -11,10 +11,18 @@ docker run --rm -d \
   -p 5432:5432 \
   mrcide/hint-db:latest
 
+docker run --rm -d \
+  --network=$NETWORK \
+  --name=hintr \
+  -p 8888:8888 \
+  mrcide/hintr:latest
+
 # From now on, if the user presses Ctrl+C we should teardown gracefully
-trap on_interrupt INT
+trap cleanup INT
+trap cleanup ERR
 function on_interrupt() {
   docker stop $CONTAINER
+  docker stop hintr
   docker network rm $NETWORK
 }
 
