@@ -1,8 +1,8 @@
 package org.imperial.mrc.hint.integration
 
-import jdk.nashorn.internal.ir.annotations.Ignore
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,7 +27,7 @@ class DiseaseTests(@Autowired val testRestTemplate: TestRestTemplate) {
         File(tmpUploadDirectory).deleteRecursively()
     }
 
-    @Ignore
+    @Disabled
     @Test
     fun `can upload survey file`() {
 
@@ -45,7 +45,7 @@ class DiseaseTests(@Autowired val testRestTemplate: TestRestTemplate) {
         assertThat(entity.body!!).isEqualTo("{\"status\": \"failure\", \"errors\": [], \"data\": {}}")
     }
 
-    @Ignore
+    @Disabled
     @Test
     fun `can upload program file`() {
 

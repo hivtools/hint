@@ -7,9 +7,15 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
 
+enum class FileType {
+    Survey,
+    Program,
+    PJNZ
+}
+
 interface FileManager {
-    fun saveFile(file: MultipartFile, type: String): String
-    fun getFile(type: String): File?
+    fun saveFile(file: MultipartFile, type: FileType): String
+    fun getFile(type: FileType): File?
 }
 
 @Configuration
@@ -18,7 +24,7 @@ open class LocalFileManager(
         private val pac4jConfig: Config,
         private val appProperties: AppProperties) : FileManager {
 
-    override fun saveFile(file: MultipartFile, type: String): String {
+    override fun saveFile(file: MultipartFile, type: FileType): String {
         val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
         val fileName = file.originalFilename!!
         val path = "$id/$type/$fileName"
@@ -35,7 +41,7 @@ open class LocalFileManager(
         return path
     }
 
-    override fun getFile(type: String): File? {
+    override fun getFile(type: FileType): File? {
 
         val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
 

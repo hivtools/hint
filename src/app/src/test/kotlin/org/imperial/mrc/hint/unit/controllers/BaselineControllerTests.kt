@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.FileManager
+import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.BaselineController
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -31,7 +32,7 @@ class BaselineControllerTests {
                 "application/zip", "pjnz content".toByteArray())
 
         sut.upload(mockFile)
-        verify(mockFileManager).saveFile(mockFile, "pjnz")
+        verify(mockFileManager).saveFile(mockFile, FileType.PJNZ)
     }
 
     @Test
@@ -43,7 +44,7 @@ class BaselineControllerTests {
         file.createNewFile()
 
         val mockFileManager = mock<FileManager> {
-            on { getFile("pjnz") } doReturn file
+            on { getFile(FileType.PJNZ) } doReturn file
         }
 
         val sut = BaselineController(mockFileManager)
@@ -55,7 +56,7 @@ class BaselineControllerTests {
     fun `returns null pjnz if no file exists`() {
 
         val mockFileManager = mock<FileManager> {
-            on { getFile("pjnz") } doReturn null as File?
+            on { getFile(FileType.PJNZ) } doReturn null as File?
         }
         val sut = BaselineController(mockFileManager)
         assertThat(sut.get())

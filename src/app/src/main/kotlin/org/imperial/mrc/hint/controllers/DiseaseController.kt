@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.controllers
 
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
+import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.asResponseEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -16,8 +17,8 @@ class DiseaseController(private val fileManager: FileManager,
     @ResponseBody
     fun uploadSurvey(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
 
-        val path = fileManager.saveFile(file, "survey")
-        val res = apiClient.validate(path, "survey")
+        val path = fileManager.saveFile(file, FileType.Survey)
+        val res = apiClient.validate(path, FileType.Survey)
         return res.asResponseEntity()
     }
 
@@ -25,8 +26,8 @@ class DiseaseController(private val fileManager: FileManager,
     @ResponseBody
     fun uploadProgram(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
 
-        val path = fileManager.saveFile(file, "program")
-        val res = apiClient.validate(path, "program")
+        val path = fileManager.saveFile(file, FileType.Program)
+        val res = apiClient.validate(path, FileType.Program)
         return res.asResponseEntity()
     }
 }

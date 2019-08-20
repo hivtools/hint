@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.LocalFileManager
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -41,16 +42,16 @@ class LocalFileManagerTests {
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
-        val path = sut.saveFile(mockFile, "fake-type")
-        val savedFile = File("$tmpUploadDirectory/fake-id/fake-type/some-file-name.pjnz")
+        val path = sut.saveFile(mockFile, FileType.Survey)
+        val savedFile = File("$tmpUploadDirectory/fake-id/Survey/some-file-name.pjnz")
         Assertions.assertThat(savedFile.readLines().first()).isEqualTo("pjnz content")
-        Assertions.assertThat(path).isEqualTo("fake-id/fake-type/some-file-name.pjnz")
+        Assertions.assertThat(path).isEqualTo("fake-id/Survey/some-file-name.pjnz")
     }
 
     @Test
     fun `gets file if it exists`() {
 
-        val file = File("$tmpUploadDirectory/fake-id/pjnz/Malawi_file_name.pjnz")
+        val file = File("$tmpUploadDirectory/fake-id/Survey/Malawi_file_name.pjnz")
 
         file.mkdirs()
         file.createNewFile()
@@ -62,7 +63,7 @@ class LocalFileManagerTests {
             on { sessionStore } doReturn mockSessionStore
         }
         val sut = LocalFileManager(mock(), mockConfig, mockProperties)
-        Assertions.assertThat(sut.getFile("pjnz")).isNotNull()
+        Assertions.assertThat(sut.getFile(FileType.Survey)).isNotNull()
     }
 
     @Test
@@ -75,7 +76,7 @@ class LocalFileManagerTests {
             on { sessionStore } doReturn mockSessionStore
         }
         val sut = LocalFileManager(mock(), mockConfig, mockProperties)
-        Assertions.assertThat(sut.getFile("pjnz"))
+        Assertions.assertThat(sut.getFile(FileType.Survey))
                 .isNull()
     }
 

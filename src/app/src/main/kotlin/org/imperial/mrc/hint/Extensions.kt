@@ -10,6 +10,8 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
         200 -> HttpStatus.OK
         201 -> HttpStatus.CREATED
         400 -> HttpStatus.BAD_REQUEST
+        401 -> HttpStatus.UNAUTHORIZED
+        403 -> HttpStatus.FORBIDDEN
         404 -> HttpStatus.NOT_FOUND
         else -> HttpStatus.INTERNAL_SERVER_ERROR
     }
