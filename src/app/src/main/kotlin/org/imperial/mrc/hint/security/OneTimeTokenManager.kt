@@ -5,13 +5,6 @@ import org.pac4j.core.profile.CommonProfile
 import org.springframework.context.annotation.Configuration
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import org.pac4j.jwt.profile.JwtGenerator
-//import org.vaccineimpact.api.app.repositories.TokenRepository
-//import org.vaccineimpact.api.models.permissions.ReifiedPermission
-//import org.vaccineimpact.api.models.permissions.ReifiedRole
-//import org.vaccineimpact.api.security.InternalUser
-//import org.vaccineimpact.api.security.KeyHelper
-//import org.vaccineimpact.api.security.WebTokenHelper
-//import org.vaccineimpact.api.security.deflated
 import java.time.Duration
 import java.security.KeyPair
 import java.security.SecureRandom
@@ -24,10 +17,9 @@ enum class TokenType
 }
 
 @Configuration
-open class OneTimeTokenGenerator(
+open class OneTimeTokenManager(
         appProperties: AppProperties
-        //private val tokenRepository: TokenRepository,
-       // private val tokenHelper: WebTokenHelper = WebTokenHelper(KeyHelper.keyPair)
+        //private val tokenRepository: TokenRepository
 )
 {
     private val keyPair: KeyPair = KeyHelper.keyPair
@@ -36,7 +28,8 @@ open class OneTimeTokenGenerator(
     private val issuer = appProperties.tokenIssuer
     private val random = SecureRandom()
 
-    open fun getSetPasswordToken(user: CommonProfile): String
+
+    open fun generateOnetimeSetPasswordToken(user: CommonProfile): String
     {
         val token= generator.generate(mapOf(
                 "iss" to issuer,
@@ -44,6 +37,8 @@ open class OneTimeTokenGenerator(
                 "sub" to user.username,
                 "exp" to Date.from(Instant.now().plus(Duration.ofDays(1))),
                 "url" to "/password/set/",
+                "permissions" to "",
+                "roles" to "",
                 "nonce" to getNonce()
         ))
 
@@ -51,6 +46,12 @@ open class OneTimeTokenGenerator(
         //tokenRepository.storeToken(token)
 
         return token.deflated()
+    }
+
+    fun verifyOneTimeToken(compressedToken: String, oneTimeTokenChecker: OneTimeTokenChecker): Map<String, Any>
+    {
+        val authenticator = OneTimeTokenAuthenticator(signatureConfiguration, oneTimeTokenChecker, issuer)
+        return authenticator.validateTokenAndGetClaims(compressedToken.inflated())
     }
 
     private fun getNonce(): String
