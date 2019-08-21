@@ -6,7 +6,7 @@
                 If you've forgotten your password, enter your email address to request a link which you can use
                 to create a new password.
             </p>
-            <form id="forgot-password-form">
+            <form ref="forgotPasswordForm">
                 <div class="form-group">
                     <label for="email">Email address</label>
                     <input type="email" class="form-control" name="email" id="email" v-model="email" required>
@@ -51,7 +51,7 @@
         methods: {
             ...mapActions({requestResetLink: 'password/requestResetLink'}),
             handleRequestResetLink: function(event: Event){
-                const form = document.getElementById("forgot-password-form") as HTMLFieldSetElement;
+                const form = this.$refs.forgotPasswordForm as HTMLFieldSetElement;
                 if (form.checkValidity()) {
                     event.preventDefault();
                     this.requestResetLink(this.email);

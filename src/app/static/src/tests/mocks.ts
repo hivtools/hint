@@ -1,6 +1,7 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {BaselineState, initialBaselineState} from "../app/store/baseline/baseline";
+import {PasswordState, initialPasswordState} from "../app/store/password/password";
 import {APIService} from "../app/apiService";
 import {
     initialSurveyAndProgramDataState,
@@ -8,6 +9,13 @@ import {
 } from "../app/store/surveyAndProgram/surveyAndProgram";
 
 export const mockAxios = new MockAdapter(axios);
+
+export const mockPasswordState = (props?: Partial<PasswordState>) => {
+    return {
+        ...initialPasswordState,
+        ...props
+    }
+};
 
 export const mockBaselineState = (props?: Partial<BaselineState>) => {
     return {
