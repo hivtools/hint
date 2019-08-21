@@ -26,7 +26,7 @@ const storeOptions: StoreOptions<RootState> = {
         version: '0.0.0',
         password: initialPasswordState,
         baseline: initialBaselineState,
-        surveyAndProgram: initialSurveyAndProgramDataState,
+        surveyAndProgram: initialSurveyAndProgramDataState
     },
     modules: {
         password,
