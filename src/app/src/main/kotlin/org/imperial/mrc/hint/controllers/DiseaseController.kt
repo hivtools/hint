@@ -15,17 +15,17 @@ class DiseaseController(private val fileManager: FileManager,
     @PostMapping("/survey/")
     @ResponseBody
     fun uploadSurvey(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
-        return saveAndValidate(file)
+        return saveAndValidate(file, FileType.Survey)
     }
 
     @PostMapping("/program/")
     @ResponseBody
     fun uploadProgram(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
-        return saveAndValidate(file)
+        return saveAndValidate(file, FileType.Program)
     }
 
-    private fun saveAndValidate(file: MultipartFile): ResponseEntity<String> {
-        val path = fileManager.saveFile(file, FileType.Program)
-        return apiClient.validate(path, FileType.Program)
+    private fun saveAndValidate(file: MultipartFile, type: FileType): ResponseEntity<String> {
+        val path = fileManager.saveFile(file, type)
+        return apiClient.validate(path, type)
     }
 }
