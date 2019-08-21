@@ -3,7 +3,8 @@ set -ex
 
 HERE=$(dirname "$0")
 NETWORK=hint_nw
-CONTAINER=hint_db
+DB=hint_db
+API=hintr
 
 "$HERE"/run-dependencies.sh
 
@@ -11,7 +12,8 @@ CONTAINER=hint_db
 trap cleanup INT
 trap cleanup EXIT
 function cleanup() {
-  docker stop $CONTAINER
+  docker stop $DB
+  docker stop $API
   docker network rm $NETWORK
 }
 
