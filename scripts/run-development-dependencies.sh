@@ -10,7 +10,7 @@ API=hintr
 
 # From now on, if the user presses Ctrl+C we should teardown gracefully
 trap cleanup INT
-trap cleanup EXIT
+trap cleanup ERR
 function cleanup() {
   docker stop $DB
   docker stop $API
