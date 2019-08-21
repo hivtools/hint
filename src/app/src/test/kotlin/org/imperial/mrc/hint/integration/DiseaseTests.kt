@@ -1,8 +1,9 @@
 package org.imperial.mrc.hint.integration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.helpers.JSONValidator
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -19,17 +20,15 @@ class DiseaseTests(@Autowired val testRestTemplate: TestRestTemplate) {
         File(tmpUploadDirectory).deleteRecursively()
     }
 
-    @Disabled
     @Test
     fun `can upload survey file`() {
 
         val postEntity = createTestHttpEntity()
         val entity = testRestTemplate.postForEntity<String>("/disease/survey/", postEntity)
         assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(entity.body!!).isEqualTo("{\"status\": \"failure\", \"errors\": [], \"data\": {}}")
+        JSONValidator().validate(entity.body!!, "ValidateInputResponse.schema")
     }
 
-    @Disabled
     @Test
     fun `can upload program file`() {
 

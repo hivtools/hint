@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.httpPost
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.ResponseEntity
 
 interface APIClient {
-    fun validate(path: String, type: FileType): Response
+    fun validate(path: String, type: FileType): ResponseEntity<String>
 }
 
 @Configuration
@@ -16,11 +17,11 @@ open class HintAPIClient(
 
     private val baseUrl = appProperties.apiUrl
 
-    override fun validate(path: String, type: FileType): Response {
+    override fun validate(path: String, type: FileType): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().toLowerCase(),
-                        "path" to path))
+                        "path" to "/uploads/$path"))
 
         return "$baseUrl/validate"
                 .httpPost()
@@ -28,6 +29,7 @@ open class HintAPIClient(
                 .body(json)
                 .response()
                 .second
+                .asResponseEntity()
     }
 
 }

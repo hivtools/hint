@@ -49,6 +49,8 @@ dependencies {
 		exclude group: "com.vaadin.external.google", module:"android-json"
 		exclude module: 'junit'
 	}
+	testImplementation "org.leadpony.justify:justify:1.1.0"
+	testImplementation "org.leadpony.joy:joy:1.1.0"
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'
 	testImplementation "com.nhaarman:mockito-kotlin:1.3.0"
 	testImplementation "org.jsoup:jsoup:1.11.3"
