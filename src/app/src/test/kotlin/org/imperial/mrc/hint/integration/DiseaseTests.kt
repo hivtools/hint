@@ -1,8 +1,9 @@
 package org.imperial.mrc.hint.integration
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.helpers.JSONValidator
+import org.imperial.mrc.hint.helpers.createTestHttpEntity
+import org.imperial.mrc.hint.helpers.tmpUploadDirectory
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,20 +23,18 @@ class DiseaseTests(@Autowired val testRestTemplate: TestRestTemplate) {
 
     @Test
     fun `can upload survey file`() {
-
         val postEntity = createTestHttpEntity()
         val entity = testRestTemplate.postForEntity<String>("/disease/survey/", postEntity)
         assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        JSONValidator().validate(entity.body!!, "ValidateInputResponse.schema")
+        JSONValidator().validateSuccess(entity.body!!, "ValidateInputResponse")
     }
 
     @Test
     fun `can upload program file`() {
-
         val postEntity = createTestHttpEntity()
         val entity = testRestTemplate.postForEntity<String>("/disease/program/", postEntity)
         assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(entity.body!!).isEqualTo("{\"status\": \"failure\", \"errors\": [], \"data\": {}}")
+        JSONValidator().validateError(entity.body!!, "INVALID_FILE", "")
     }
 
 }
