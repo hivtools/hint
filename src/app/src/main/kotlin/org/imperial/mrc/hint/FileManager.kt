@@ -8,9 +8,14 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.File
 
 enum class FileType {
+
     Survey,
     Program,
-    PJNZ
+    PJNZ;
+
+    override fun toString(): String {
+        return this.name.toLowerCase()
+    }
 }
 
 interface FileManager {
