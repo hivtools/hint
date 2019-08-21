@@ -36,6 +36,7 @@ dependencies {
 	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
 	implementation 'org.pac4j:spring-webmvc-pac4j:3.2.0'
 	implementation 'org.pac4j:pac4j-http:3.3.0'
+	implementation 'org.pac4j:pac4j-jwt:2.2.1'
 	implementation 'org.pac4j:pac4j-sql:3.3.0'
 	implementation 'org.postgresql:postgresql:9.4-1200-jdbc41'
 	implementation 'org.mindrot:jbcrypt:0.4'
