@@ -19,8 +19,6 @@ import java.io.File
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BaselineTests(@Autowired val testRestTemplate: TestRestTemplate) {
 
-    private val tmpUploadDirectory = "tmp"
-
     @AfterEach
     fun tearDown() {
         File(tmpUploadDirectory).deleteRecursively()
@@ -36,16 +34,9 @@ class BaselineTests(@Autowired val testRestTemplate: TestRestTemplate) {
     @Test
     fun `can upload pjnz file`() {
 
-        val testFile = File("$tmpUploadDirectory/Malawi_2018.pjnz")
-        testFile.parentFile.mkdirs()
-        testFile.createNewFile()
+        val postEntity = createTestHttpEntity("Malawi_2018.pjnz")
 
-        val body = LinkedMultiValueMap<String, Any>()
-        body.add("file", FileSystemResource(testFile))
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.MULTIPART_FORM_DATA
-
-        val entity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", HttpEntity(body, headers))
+        val entity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(entity.body!!).isEqualTo("{\"filename\": \"Malawi_2018.pjnz\", \"country\": \"Malawi\"}")
     }

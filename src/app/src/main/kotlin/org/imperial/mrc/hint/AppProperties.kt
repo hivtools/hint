@@ -9,6 +9,7 @@ import java.util.*
 interface AppProperties {
     val uploadDirectory: String
     val tokenIssuer: String
+    val apiUrl: String
 }
 
 @Configuration
@@ -16,6 +17,7 @@ open class ConfiguredAppProperties(props: Properties = properties): AppPropertie
 
     override val uploadDirectory = props["upload_dir"].toString()
     override val tokenIssuer = props["token_issuer"].toString()
+    override val apiUrl = props["hintr_url"].toString()
 
     companion object
     {
