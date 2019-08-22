@@ -38,8 +38,6 @@ open class OneTimeTokenManager(
                 "sub" to user.username,
                 "exp" to Date.from(Instant.now().plus(Duration.ofDays(1))),
                 "url" to "/password/set/",
-                "permissions" to "",
-                "roles" to "",
                 "nonce" to getNonce()
         ))
 
