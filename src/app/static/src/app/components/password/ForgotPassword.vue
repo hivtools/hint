@@ -31,8 +31,6 @@
     import {mapActions, mapState} from "vuex";
     import {PasswordState} from "../../store/password/password";
 
-    const namespace: string = 'password';
-
     export default Vue.extend({
         name: "ForgotPassword",
         data: () => {
@@ -40,7 +38,7 @@
                 email: ""
             };
         },
-        computed: mapState<PasswordState>(namespace, {
+        computed: mapState<PasswordState>( {
             error: state => state.requestResetLinkError,
             hasError:  state => state.requestResetLinkError && state.requestResetLinkError.length > 0,
             resetLinkRequested: state => state.resetLinkRequested
@@ -49,7 +47,7 @@
             ErrorAlert
         },
         methods: {
-            ...mapActions({requestResetLink: 'password/requestResetLink'}),
+            ...mapActions({requestResetLink: 'requestResetLink'}),
             handleRequestResetLink: function(event: Event){
                 const form = this.$refs.forgotPasswordForm as HTMLFieldSetElement;
                 if (form.checkValidity()) {

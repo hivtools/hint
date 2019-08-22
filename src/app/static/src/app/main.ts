@@ -6,11 +6,9 @@ import {
     surveyAndProgram,
     SurveyAndProgramDataState
 } from "./store/surveyAndProgram/surveyAndProgram";
-import {password, initialPasswordState, PasswordState} from "./store/password/password";
 
 export interface RootState {
     version: string;
-    password: PasswordState,
     baseline: BaselineState,
     surveyAndProgram: SurveyAndProgramDataState
 }
@@ -24,12 +22,10 @@ Vue.use(Vuex);
 const storeOptions: StoreOptions<RootState> = {
     state: {
         version: '0.0.0',
-        password: initialPasswordState,
         baseline: initialBaselineState,
         surveyAndProgram: initialSurveyAndProgramDataState
     },
     modules: {
-        password,
         baseline,
         surveyAndProgram
     }

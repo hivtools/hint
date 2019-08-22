@@ -1,6 +1,5 @@
 import {ActionContext, ActionPayload, ActionTree} from "vuex";
 import {PasswordState} from "./password";
-import {RootState} from "../../main";
 import {api} from "../../apiService";
 
 export type PasswordActionTypes = "ResetLinkRequested" | "RequestResetLinkError"
@@ -18,10 +17,10 @@ export interface RequestResetLinkError extends PasswordPayload {
 }
 
 export interface PasswordActions {
-    requestResetLink: (store: ActionContext<PasswordState, RootState>, email: string) => void
+    requestResetLink: (store: ActionContext<PasswordState, PasswordState>, email: string) => void
 }
 
-export const actions: ActionTree<PasswordState, RootState> & PasswordActions = {
+export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions = {
 
     requestResetLink({commit}, email) {
         let formData = new FormData();
