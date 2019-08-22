@@ -1,14 +1,11 @@
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import ForgotPassword from "../../../app/components/password/ForgotPassword";
 import {PasswordState} from "../../../app/store/password/password";
-import {PasswordMutations} from "../../../app/store/password/mutations";
 import {PasswordActions} from "../../../app/store/password/actions";
 import Vuex, {Store} from "vuex";
 import {mockPasswordState} from "../../mocks";
 import Vue from "vue";
 import {RootState} from "../../../app/main";
-import {BaselineActions} from "../../../app/store/baseline/actions";
-
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -23,20 +20,15 @@ describe("Forgot password component", () => {
         };
 
         return new Vuex.Store({
-            modules: {
-                password: {
-                    namespaced: true,
-                    state: mockPasswordState(passwordState),
-                    actions: {...actions},
-                    mutations: {}
-                }
-            }
-        })
+            state: mockPasswordState(passwordState),
+            actions: {...actions},
+            mutations: {}
+        });
     };
 
     const createSut = (store: Store<RootState>) => {
         return shallowMount(ForgotPassword, {store, localVue});
-    }
+    };
 
 
     it("renders form with no error", () => {
