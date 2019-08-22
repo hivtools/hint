@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.security.tokens
 
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.db.TokenRepository
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.context.annotation.Configuration
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
@@ -18,8 +19,8 @@ enum class TokenType
 
 @Configuration
 open class OneTimeTokenManager(
-        appProperties: AppProperties
-        //private val tokenRepository: TokenRepository
+        appProperties: AppProperties,
+        private val tokenRepository: TokenRepository
 )
 {
     private val keyPair: KeyPair = KeyHelper.keyPair
@@ -42,8 +43,7 @@ open class OneTimeTokenManager(
                 "nonce" to getNonce()
         ))
 
-        //TODO!!
-        //tokenRepository.storeToken(token)
+        tokenRepository.storeToken(token)
 
         return token.deflated()
     }
