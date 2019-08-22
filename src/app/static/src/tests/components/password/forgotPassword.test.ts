@@ -1,14 +1,10 @@
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import ForgotPassword from "../../../app/components/password/ForgotPassword";
 import {PasswordState} from "../../../app/store/password/password";
-import {PasswordMutations} from "../../../app/store/password/mutations";
 import {PasswordActions} from "../../../app/store/password/actions";
 import Vuex, {Store} from "vuex";
 import {mockPasswordState} from "../../mocks";
 import Vue from "vue";
-import {RootState} from "../../../app/main";
-import {BaselineActions} from "../../../app/store/baseline/actions";
-
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -23,20 +19,15 @@ describe("Forgot password component", () => {
         };
 
         return new Vuex.Store({
-            modules: {
-                password: {
-                    namespaced: true,
-                    state: mockPasswordState(passwordState),
-                    actions: {...actions},
-                    mutations: {}
-                }
-            }
-        })
+            state: mockPasswordState(passwordState),
+            actions: {...actions},
+            mutations: {}
+        });
     };
 
-    const createSut = (store: Store<RootState>) => {
+    const createSut = (store: Store<PasswordState>) => {
         return shallowMount(ForgotPassword, {store, localVue});
-    }
+    };
 
 
     it("renders form with no error", () => {
@@ -94,6 +85,7 @@ describe("Forgot password component", () => {
         setTimeout(() => {
             expect(actions.requestResetLink.mock.calls.length).toEqual(1);
             expect(actions.requestResetLink.mock.calls[0][1]).toEqual("test@email.com");
+            expect(wrapper.find("form").classes()).toContain("was-validated");
             done();
         });
 
@@ -108,6 +100,7 @@ describe("Forgot password component", () => {
 
         setTimeout(() => {
             expect(actions.requestResetLink.mock.calls.length).toEqual(0);
+            expect(wrapper.find("form").classes()).toContain("was-validated");
             done();
         });
 
@@ -123,6 +116,7 @@ describe("Forgot password component", () => {
 
         setTimeout(() => {
             expect(actions.requestResetLink.mock.calls.length).toEqual(0);
+            expect(wrapper.find("form").classes()).toContain("was-validated");
             done();
         });
 

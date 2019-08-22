@@ -2,13 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
-module.exports = {
-    entry: './src/app/index.ts',
-    output: {
-        path: path.resolve(__dirname, './public/js'),
-        publicPath: '/public/js/',
-        filename: 'app.js'
-    },
+const commonConfig = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     module: {
         rules: [
@@ -69,6 +63,26 @@ module.exports = {
         new VueLoaderPlugin()
     ]
 };
+
+const appConfig = {...commonConfig,
+    entry: './src/app/index.ts',
+    output: {
+        path: path.resolve(__dirname, './public/js'),
+        publicPath: '/public/js/',
+        filename: 'app.js'
+    }
+};
+
+const forgotPasswordAppConfig = {...commonConfig,
+    entry: './src/app/forgotPassword.ts',
+    output: {
+        path: path.resolve(__dirname, './public/js'),
+        publicPath: '/public/js/',
+        filename: 'forgotPassword.js'
+    }
+};
+
+module.exports = [appConfig, forgotPasswordAppConfig];
 
 if (process.env.NODE_ENV === 'production') {
     module.exports.devtool = '#source-map';

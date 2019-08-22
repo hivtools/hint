@@ -6,10 +6,11 @@
                 If you've forgotten your password, enter your email address to request a link which you can use
                 to create a new password.
             </p>
-            <form ref="forgotPasswordForm">
+            <form ref="forgotPasswordForm" class="needs-validation" novalidate>
                 <div class="form-group">
-                    <label for="email">Email address</label>
-                    <input type="email" class="form-control" name="email" id="email" v-model="email" required>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Email address"
+                           v-model="email" required>
+                    <div class="invalid-feedback">Please enter a valid email address.</div>
                 </div>
 
                 <div class="text-center">
@@ -31,8 +32,6 @@
     import {mapActions, mapState} from "vuex";
     import {PasswordState} from "../../store/password/password";
 
-    const namespace: string = 'password';
-
     export default Vue.extend({
         name: "ForgotPassword",
         data: () => {
@@ -40,7 +39,7 @@
                 email: ""
             };
         },
-        computed: mapState<PasswordState>(namespace, {
+        computed: mapState<PasswordState>( {
             error: state => state.requestResetLinkError,
             hasError:  state => state.requestResetLinkError && state.requestResetLinkError.length > 0,
             resetLinkRequested: state => state.resetLinkRequested
@@ -49,13 +48,14 @@
             ErrorAlert
         },
         methods: {
-            ...mapActions({requestResetLink: 'password/requestResetLink'}),
+            ...mapActions({requestResetLink: 'requestResetLink'}),
             handleRequestResetLink: function(event: Event){
+                event.preventDefault();
                 const form = this.$refs.forgotPasswordForm as HTMLFieldSetElement;
                 if (form.checkValidity()) {
-                    event.preventDefault();
                     this.requestResetLink(this.email);
                 }
+                form.classList.add('was-validated');
             }
         }
     });

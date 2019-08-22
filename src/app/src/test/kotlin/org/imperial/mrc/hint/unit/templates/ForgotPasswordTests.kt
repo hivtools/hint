@@ -15,6 +15,6 @@ class ForgotPasswordTests {
         val doc = ForgotPasswordTests.template.jsoupDocFor(ConcurrentModel())
 
         Assertions.assertThat(doc.select("title").text()).isEqualTo("Forgot password")
-        Assertions.assertThat(doc.select("#app-forgot-password").count()).isEqualTo(1)
+        Assertions.assertThat(doc.select("#app").count()).isEqualTo(1)
     }
 }
