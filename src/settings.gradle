@@ -5,4 +5,4 @@ pluginManagement {
 }
 
 rootProject.name = 'hint'
-include 'app', 'userCLI'
+include 'app', 'userCLI', 'generateDatabaseInterface'
