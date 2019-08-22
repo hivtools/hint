@@ -17,7 +17,7 @@ docker run --rm -d \
   --network=$NETWORK \
   --name=$API \
   -p 8888:8888 \
-  mrcide/hintr:mrc-418
+  mrcide/hintr:mrc-418-rgf
 
 # Need to give the database a little time to initialise before we can run the migration
 sleep 10s

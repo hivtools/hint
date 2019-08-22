@@ -26,7 +26,7 @@ class DiseaseTests(@Autowired val testRestTemplate: TestRestTemplate) {
         val postEntity = createTestHttpEntity()
         val entity = testRestTemplate.postForEntity<String>("/disease/survey/", postEntity)
         assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        JSONValidator().validateSuccess(entity.body!!, "ValidateInputResponse")
+        JSONValidator().validateError(entity.body!!, "INVALID_FILE")
     }
 
     @Test
@@ -34,7 +34,7 @@ class DiseaseTests(@Autowired val testRestTemplate: TestRestTemplate) {
         val postEntity = createTestHttpEntity()
         val entity = testRestTemplate.postForEntity<String>("/disease/program/", postEntity)
         assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        JSONValidator().validateError(entity.body!!, "INVALID_FILE", "")
+        JSONValidator().validateError(entity.body!!, "INVALID_FILE")
     }
 
 }

@@ -25,14 +25,17 @@ class JSONValidator {
 
     private val responseSchema = getSchema("Response")
 
-    fun validateError(response: String, expectedErrorCode: String, expectedErrorMessage: String) {
+    fun validateError(response: String, expectedErrorCode: String, expectedErrorMessage: String? = null) {
         assertValidates(response, responseSchema, "Response")
         val error = objectMapper.readValue<JsonNode>(response)["errors"].first()
         val status = objectMapper.readValue<JsonNode>(response)["status"].textValue()
 
         assertThat(status).isEqualTo("failure")
-        assertThat(error["code"].asText()).isEqualTo(expectedErrorCode)
-        assertThat(error["message"].asText()).isEqualTo(expectedErrorMessage)
+        assertThat(error["error"].asText()).isEqualTo(expectedErrorCode)
+        if (expectedErrorMessage != null) {
+            assertThat(error["detail"].asText()).isEqualTo(expectedErrorMessage)
+
+        }
     }
 
     fun validateSuccess(response: String, schemaName: String) {
@@ -65,13 +68,12 @@ class JSONValidator {
         } else {
             "$name.schema.json"
         }
-        val url = URL("https://raw.githubusercontent.com/mrc-ide/hintr/master/inst/schema/$path")
+        val url = URL("https://raw.githubusercontent.com/mrc-ide/hintr/mrc-418-rgf/inst/schema/$path")
         return url.openStream().use {
             val reader = readerFactory.createSchemaReader(it)
             try {
                 reader.read()
-            }
-            catch(e: JsonParsingException){
+            } catch (e: JsonParsingException) {
                 Assertions.fail<JsonSchema>("Could not parse schema $name")
             }
         }
