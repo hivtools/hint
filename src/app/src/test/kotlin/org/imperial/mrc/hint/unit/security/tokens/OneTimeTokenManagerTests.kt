@@ -1,4 +1,4 @@
-package org.imperial.mrc.hint.unit.security
+package org.imperial.mrc.hint.unit.security.tokens
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn

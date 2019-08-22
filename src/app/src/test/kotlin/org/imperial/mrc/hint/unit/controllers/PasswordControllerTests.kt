@@ -17,6 +17,14 @@ class PasswordControllerTests {
     }
 
     @Test
+    fun `forgotPassword returns expected template name`()
+    {
+        val sut = PasswordController(mockUserRepo,  mock())
+        val result = sut.forgotPassword()
+        assertThat(result).isEqualTo("forgot-password")
+    }
+
+    @Test
     fun `requestResetLink gets user and generates Token`()
     {
         val mockTokenGen = mock<OneTimeTokenManager> {

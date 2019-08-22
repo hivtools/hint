@@ -1,4 +1,4 @@
-package org.imperial.mrc.hint.unit.security
+package org.imperial.mrc.hint.unit.security.tokens
 
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.security.tokens.deflated
