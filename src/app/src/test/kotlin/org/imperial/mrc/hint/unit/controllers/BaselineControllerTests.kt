@@ -1,16 +1,14 @@
 package org.imperial.mrc.hint.unit.controllers
 
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.FileManager
+import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.BaselineController
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import org.pac4j.core.config.Config
-import org.pac4j.core.context.WebContext
-import org.pac4j.core.context.session.SessionStore
 import org.springframework.mock.web.MockMultipartFile
 import java.io.File
 
@@ -18,9 +16,6 @@ class BaselineControllerTests {
 
     private val tmpUploadDirectory = "tmp"
 
-    private val mockProperties = mock<AppProperties> {
-        on { uploadDirectory } doReturn tmpUploadDirectory
-    }
 
     @AfterEach
     fun tearDown() {
@@ -30,20 +25,14 @@ class BaselineControllerTests {
     @Test
     fun `can save pjnz file`() {
 
-        val mockSessionStore = mock<SessionStore<WebContext>>() {
-            on { getOrCreateSessionId(any()) } doReturn "fake-id"
-        }
-        val mockConfig = mock<Config> {
-            on { sessionStore } doReturn mockSessionStore
-        }
-        val sut = BaselineController(mock(), mockConfig, mockProperties)
+        val mockFileManager = mock<FileManager>()
+        val sut = BaselineController(mockFileManager)
 
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
         sut.upload(mockFile)
-        val savedFile = File("$tmpUploadDirectory/fake-id/pjnz/some-file-name.pjnz")
-        assertThat(savedFile.readLines().first()).isEqualTo("pjnz content")
+        verify(mockFileManager).saveFile(mockFile, FileType.PJNZ)
     }
 
     @Test
@@ -54,13 +43,11 @@ class BaselineControllerTests {
         file.mkdirs()
         file.createNewFile()
 
-        val mockSessionStore = mock<SessionStore<WebContext>>() {
-            on { getOrCreateSessionId(any()) } doReturn "fake-id"
+        val mockFileManager = mock<FileManager> {
+            on { getFile(FileType.PJNZ) } doReturn file
         }
-        val mockConfig = mock<Config> {
-            on { sessionStore } doReturn mockSessionStore
-        }
-        val sut = BaselineController(mock(), mockConfig, mockProperties)
+
+        val sut = BaselineController(mockFileManager)
         assertThat(sut.get())
                 .isEqualTo("{\"pjnz\": { \"filename\": \"Malawi_file_name.pjnz\", \"country\": \"Malawi\"}}")
     }
@@ -68,13 +55,10 @@ class BaselineControllerTests {
     @Test
     fun `returns null pjnz if no file exists`() {
 
-        val mockSessionStore = mock<SessionStore<WebContext>>() {
-            on { getOrCreateSessionId(any()) } doReturn "fake-id"
+        val mockFileManager = mock<FileManager> {
+            on { getFile(FileType.PJNZ) } doReturn null as File?
         }
-        val mockConfig = mock<Config> {
-            on { sessionStore } doReturn mockSessionStore
-        }
-        val sut = BaselineController(mock(), mockConfig, mockProperties)
+        val sut = BaselineController(mockFileManager)
         assertThat(sut.get())
                 .isEqualTo("{\"pjnz\": null}")
     }

@@ -2,27 +2,28 @@
 set -ex
 
 NETWORK=hint_nw
-CONTAINER=hint_db
+DB=hint_db
+API=hintr
+
 docker network create $NETWORK
 
 docker run --rm -d \
   --network=$NETWORK \
-  --name $CONTAINER \
+  --name $DB \
   -p 5432:5432 \
   mrcide/hint-db:latest
 
-# From now on, if the user presses Ctrl+C we should teardown gracefully
-trap on_interrupt INT
-function on_interrupt() {
-  docker stop $CONTAINER
-  docker network rm $NETWORK
-}
+docker run --rm -d \
+  --network=$NETWORK \
+  --name=$API \
+  -p 8888:8888 \
+  mrcide/hintr:mrc-418
 
 # Need to give the database a little time to initialise before we can run the migration
 sleep 10s
 docker run --rm --network=$NETWORK \
   mrcide/hint-db-migrate:latest \
-  -url=jdbc:postgresql://$CONTAINER/hint
+  -url=jdbc:postgresql://$DB/hint
 
 HERE=$(dirname "$0")
 "$HERE"/add-test-user.sh

@@ -8,12 +8,14 @@ import java.util.*
 
 interface AppProperties {
     val uploadDirectory: String
+    val apiUrl: String
 }
 
 @Configuration
 open class ConfiguredAppProperties: AppProperties {
 
     override val uploadDirectory = properties["upload_dir"].toString()
+    override val apiUrl = properties["hintr_url"].toString()
 
     companion object
     {
