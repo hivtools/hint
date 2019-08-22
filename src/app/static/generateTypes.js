@@ -1,9 +1,12 @@
 'use strict';
+// This file is executed by ./generate-types.sh
 
 const schemaToTs = require('json-schema-to-typescript');
 const fs = require('fs');
 const path = require('path');
-const dir = `hintr-${process.argv[2]}/inst/schema`;
+
+const branchName = process.argv[2];
+const dir = `hintr-${branchName}/inst/schema`;
 
 fs.readdir(dir, function (err, files) {
     if (err) {
@@ -14,10 +17,10 @@ fs.readdir(dir, function (err, files) {
     files.forEach(function (file) {
         if (file.endsWith(".schema.json")) {
             const filePath = path.join(dir, file);
-
+            const typeName = file.split(".")[0];
             try {
                 schemaToTs.compileFromFile(filePath, {cwd: dir, bannerComment: ""})
-                    .then(ts => fs.writeFileSync(`types/${file.split(".")[0]}.d.ts`, ts))
+                    .then(ts => fs.writeFileSync(`types/${typeName}.d.ts`, ts))
             } catch (e) {
                 console.log(e);
             }

@@ -15,6 +15,7 @@ Requirements:
 1. Run `npm run build` from `src/app/static` to compile front-end dependencies.
 1. Run app from your IDE or by `cd src && ./gradlew :app:bootRun` to serve the app on port 8080
 
+For more information about developing the front-end see [src/app/static/README](src/app/static/README)
 ### Distribution
 A docker image containing the app is created by running `./scripts/build-app.sh`. This is run as part of 
 the Travis build. 

@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "sass": "gulp sass",
+    "js": "webpack",
     "build": "webpack && gulp sass",
     "test": "jest -c jest.config.js"
   },
