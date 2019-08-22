@@ -5,7 +5,6 @@ import {PasswordActions} from "../../../app/store/password/actions";
 import Vuex, {Store} from "vuex";
 import {mockPasswordState} from "../../mocks";
 import Vue from "vue";
-import {RootState} from "../../../app/main";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -26,7 +25,7 @@ describe("Forgot password component", () => {
         });
     };
 
-    const createSut = (store: Store<RootState>) => {
+    const createSut = (store: Store<PasswordState>) => {
         return shallowMount(ForgotPassword, {store, localVue});
     };
 
@@ -86,6 +85,7 @@ describe("Forgot password component", () => {
         setTimeout(() => {
             expect(actions.requestResetLink.mock.calls.length).toEqual(1);
             expect(actions.requestResetLink.mock.calls[0][1]).toEqual("test@email.com");
+            expect(wrapper.find("form").classes()).toContain("was-validated");
             done();
         });
 
@@ -100,6 +100,7 @@ describe("Forgot password component", () => {
 
         setTimeout(() => {
             expect(actions.requestResetLink.mock.calls.length).toEqual(0);
+            expect(wrapper.find("form").classes()).toContain("was-validated");
             done();
         });
 
@@ -115,6 +116,7 @@ describe("Forgot password component", () => {
 
         setTimeout(() => {
             expect(actions.requestResetLink.mock.calls.length).toEqual(0);
+            expect(wrapper.find("form").classes()).toContain("was-validated");
             done();
         });
 
