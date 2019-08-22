@@ -1,4 +1,4 @@
-package org.imperial.mrc.hint.security
+package org.imperial.mrc.hint.security.tokens
 
 import com.nimbusds.jwt.JWT
 import org.pac4j.core.credentials.TokenCredentials

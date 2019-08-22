@@ -1,4 +1,4 @@
-package org.imperial.mrc.hint.security
+package org.imperial.mrc.hint.security.tokens
 
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream

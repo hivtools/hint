@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.controllers.PasswordController
 import org.imperial.mrc.hint.db.UserRepository
-import org.imperial.mrc.hint.security.OneTimeTokenManager
+import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 

@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.security.OneTimeTokenManager
+import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import org.imperial.mrc.hint.db.UserRepository

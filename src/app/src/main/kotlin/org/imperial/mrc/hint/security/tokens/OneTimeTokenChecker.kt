@@ -1,4 +1,4 @@
-package org.imperial.mrc.hint.security
+package org.imperial.mrc.hint.security.tokens
 
 interface OneTimeTokenChecker
 {

@@ -5,7 +5,8 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
-import org.imperial.mrc.hint.security.*
+import org.imperial.mrc.hint.security.tokens.OneTimeTokenChecker
+import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import java.time.Instant

@@ -1,7 +1,9 @@
 package org.imperial.mrc.hint.unit.security
 
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.security.*
+import org.imperial.mrc.hint.security.tokens.deflated
+import org.imperial.mrc.hint.security.tokens.inflate
+import org.imperial.mrc.hint.security.tokens.inflated
 import org.junit.jupiter.api.Test
 
 class GZipHelpersTests

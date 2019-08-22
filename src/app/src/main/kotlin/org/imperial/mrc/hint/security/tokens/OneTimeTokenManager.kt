@@ -1,4 +1,4 @@
-package org.imperial.mrc.hint.security
+package org.imperial.mrc.hint.security.tokens
 
 import org.imperial.mrc.hint.AppProperties
 import org.pac4j.core.profile.CommonProfile
