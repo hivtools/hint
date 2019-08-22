@@ -11,7 +11,7 @@ docker run --rm -d \
   --network=$NETWORK \
   --name $DB \
   -p 5432:5432 \
-  mrcide/hint-db:latest
+  mrcide/hint-db:mrc-402
 
 docker run --rm -d \
   --network=$NETWORK \
@@ -22,7 +22,7 @@ docker run --rm -d \
 # Need to give the database a little time to initialise before we can run the migration
 sleep 10s
 docker run --rm --network=$NETWORK \
-  mrcide/hint-db-migrate:latest \
+  mrcide/hint-db-migrate:mrc-402 \
   -url=jdbc:postgresql://$DB/hint
 
 HERE=$(dirname "$0")

@@ -17,6 +17,11 @@ Requirements:
 
 The run-development-dependencies script adds a test user, so you can log in locally with user = test.user@example.com, password = password
 
+### Database Interface
+
+If the database schema has changed, you can regenerate the database interface code (in /src/databaseInterface)
+by running `./gradlew :generateDatabaseInterface:run` from the `src` folder.
+
 ### Distribution
 A docker image containing the app is created by running `./scripts/build-app.sh`. This is run as part of 
 the Travis build. 
