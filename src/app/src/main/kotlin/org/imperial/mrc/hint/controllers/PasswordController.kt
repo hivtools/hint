@@ -14,6 +14,7 @@ class PasswordController(private val userRepository: UserRepository,
                          private val onetimeTokenGenerator: OneTimeTokenManager,
                          private val appProperties: AppProperties,
                          private val emailManager: EmailManager) {
+
     @GetMapping("/forgot-password")
     fun forgotPassword(): String {
         return "forgot-password"
@@ -40,5 +41,10 @@ class PasswordController(private val userRepository: UserRepository,
         }
 
         return ""
+    }
+
+    @GetMapping("/reset-password")
+    fun resetPassword(): String {
+        return "reset-password"
     }
 }
