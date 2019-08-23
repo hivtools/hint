@@ -16,7 +16,7 @@ open class EmailManagerConfig {
     open fun getEmailManager(@Autowired appProperties: AppProperties): EmailManager {
         val mode = appProperties.emailMode
         return when (mode) {
-            //"real" -> RealEmailManager()
+            "real" -> RealEmailManager(appProperties)
             "disk" -> WriteToDiskEmailManager()
             else -> throw Exception("Unknown email mode '$mode'")
         }

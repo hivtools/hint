@@ -11,6 +11,11 @@ interface AppProperties {
     val applicationTitle: String
     val applicationUrl: String
     val emailMode: String
+    val emailServer: String
+    val emailPort: Int?
+    val emailSender: String
+    val emailUsername: String
+    val emailPassword: String
     val tokenIssuer: String
     val uploadDirectory: String
 
@@ -23,6 +28,11 @@ open class ConfiguredAppProperties(private val props: Properties = properties): 
     override val applicationTitle = propString("application_title")
     override val applicationUrl = propString("application_url")
     override val emailMode = propString("email_mode")
+    override val emailServer = propString("email_server")
+    override val emailPort = propString("email_port").toIntOrNull()
+    override val emailSender = propString("email_sender")
+    override val emailUsername= propString("email_username")
+    override val emailPassword= propString("email_password")
     override val tokenIssuer = propString("token_issuer")
     override val uploadDirectory = propString("upload_dir")
 

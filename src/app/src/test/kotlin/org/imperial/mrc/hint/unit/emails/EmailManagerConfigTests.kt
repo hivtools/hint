@@ -1,4 +1,4 @@
-package org.imperial.mrc.hint.unit.controllers
+package org.imperial.mrc.hint.unit.emails
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.emails.EmailManagerConfig
+import org.imperial.mrc.hint.emails.RealEmailManager
 import org.imperial.mrc.hint.emails.WriteToDiskEmailManager
 import org.junit.jupiter.api.Test
 
@@ -22,6 +23,17 @@ class EmailManagerConfigTests
 
         val result = sut.getEmailManager(mockAppProperties)
         assertThat(result).isInstanceOf(WriteToDiskEmailManager::class.java)
+    }
+
+    @Test
+    fun `returns RealEmailManager when email mode is real`()
+    {
+        val mockAppProperties = mock<AppProperties>{
+            on { emailMode } doReturn "real"
+        }
+
+        val result = sut.getEmailManager(mockAppProperties)
+        assertThat(result).isInstanceOf(RealEmailManager::class.java)
     }
 
     @Test
