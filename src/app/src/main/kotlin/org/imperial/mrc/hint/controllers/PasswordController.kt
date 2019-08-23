@@ -29,14 +29,12 @@ class PasswordController(private val userRepository: UserRepository,
         {
             val token = onetimeTokenGenerator.generateOnetimeSetPasswordToken(user)
 
-            val emailAddress = user.id
-
             val emailMessage = PasswordResetEmail(appProperties.applicationTitle,
                     appProperties.applicationUrl,
                     token,
-                    emailAddress)
+                    email)
 
-            emailManager.sendEmail(emailMessage, emailAddress)
+            emailManager.sendEmail(emailMessage, email)
 
             return token
         }

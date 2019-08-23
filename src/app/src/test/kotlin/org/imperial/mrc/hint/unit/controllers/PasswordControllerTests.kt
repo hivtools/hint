@@ -5,6 +5,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.controllers.PasswordController
 import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.emails.EmailData
+import org.imperial.mrc.hint.emails.EmailManager
+import org.imperial.mrc.hint.emails.PasswordResetEmail
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
@@ -12,7 +15,6 @@ import org.pac4j.core.profile.CommonProfile
 class PasswordControllerTests {
 
     val mockUser = mock<CommonProfile> {
-        on { id } doReturn "testUserId"
     }
 
     val mockUserRepo = mock<UserRepository> {
@@ -24,10 +26,12 @@ class PasswordControllerTests {
         on { applicationUrl } doReturn "https://test/"
     }
 
+    val mockEmailManager = mock<EmailManager>()
+
     @Test
     fun `forgotPassword returns expected template name`()
     {
-        val sut = PasswordController(mockUserRepo,  mock(), mockAppProperties)
+        val sut = PasswordController(mockUserRepo,  mock(), mockAppProperties, mockEmailManager)
         val result = sut.forgotPassword()
         assertThat(result).isEqualTo("forgot-password")
     }
@@ -36,17 +40,27 @@ class PasswordControllerTests {
     fun `requestResetLink gets user and generates Token`()
     {
         val mockTokenGen = mock<OneTimeTokenManager> {
-            on { generateOnetimeSetPasswordToken( mockUser ) } doReturn "token"
+            on { generateOnetimeSetPasswordToken( mockUser ) } doReturn "testToken"
         }
 
-        val sut = PasswordController(mockUserRepo, mockTokenGen, mockAppProperties)
+        val sut = PasswordController(mockUserRepo, mockTokenGen, mockAppProperties, mockEmailManager)
 
         val result = sut.requestResetLink("test.user@test.com")
 
         verify(mockTokenGen).generateOnetimeSetPasswordToken(mockUser)
 
+        argumentCaptor<PasswordResetEmail>().apply{
+            verify(mockEmailManager).sendEmail(capture(), eq("test.user@test.com"))
+            val emailObj = firstValue
+            assertThat(emailObj).isInstanceOf(PasswordResetEmail::class.java)
+            assertThat((emailObj as PasswordResetEmail).values["appTitle"]).isEqualTo("testAppTitle")
+            assertThat(emailObj.values["appUrl"]).isEqualTo("https://test/")
+            assertThat(emailObj.values["token"]).isEqualTo("testToken")
+            assertThat(emailObj.values["email"]).isEqualTo("test.user@test.com")
+        }
+
         //TODO: we won't always return the token, but test it's got it ok for now, change once we can save it
-        assertThat(result).isEqualTo("token")
+        assertThat(result).isEqualTo("testToken")
     }
 
     @Test
@@ -56,7 +70,7 @@ class PasswordControllerTests {
             on { generateOnetimeSetPasswordToken( mockUser ) } doReturn "token"
         }
 
-        val sut = PasswordController(mockUserRepo, mockTokenGen, mockAppProperties)
+        val sut = PasswordController(mockUserRepo, mockTokenGen, mockAppProperties, mockEmailManager)
 
         val result = sut.requestResetLink("nonexistent@test.com")
 
