@@ -32,7 +32,7 @@ class RealEmailManager(appProperties: AppProperties): EmailManager
             textHTML = data.html()
         }
         mailer.sendMail(email)
-        logger.info("mail sent to: ${email}")
+        logger.info("mail sent to: ${emailAddress}")
 
     }
 }
