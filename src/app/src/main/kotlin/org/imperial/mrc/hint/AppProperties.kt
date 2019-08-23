@@ -7,21 +7,24 @@ import java.net.URL
 import java.util.*
 
 interface AppProperties {
+    val apiUrl: String
     val applicationTitle: String
     val applicationUrl: String
-    val uploadDirectory: String
+    val emailMode: String
     val tokenIssuer: String
-    val apiUrl: String
+    val uploadDirectory: String
+
 }
 
 @Configuration
 open class ConfiguredAppProperties(private val props: Properties = properties): AppProperties {
 
+    override val apiUrl = propString("hintr_url")
     override val applicationTitle = propString("application_title")
     override val applicationUrl = propString("application_url")
-    override val uploadDirectory = propString("upload_dir")
+    override val emailMode = propString("email_mode")
     override val tokenIssuer = propString("token_issuer")
-    override val apiUrl = propString("hintr_url")
+    override val uploadDirectory = propString("upload_dir")
 
     companion object
     {

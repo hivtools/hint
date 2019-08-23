@@ -61,4 +61,11 @@ class AppPropertiesTests {
         val sut = ConfiguredAppProperties(props)
         assertThat(sut.applicationUrl).isEqualTo("https://test")
     }
+
+    @Test
+    fun `can read email mode`(){
+        val props = readPropsFromTempFile("email_mode=test_mode")
+        val sut = ConfiguredAppProperties(props)
+        assertThat(sut.emailMode).isEqualTo("test_mode")
+    }
 }
