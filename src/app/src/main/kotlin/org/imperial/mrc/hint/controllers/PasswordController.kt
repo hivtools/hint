@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordResetEmail
+import org.springframework.ui.Model
+import org.springframework.ui.set
 
 @Controller
 @RequestMapping("/password")
@@ -44,7 +46,8 @@ class PasswordController(private val userRepository: UserRepository,
     }
 
     @GetMapping("/reset-password")
-    fun resetPassword(): String {
+    fun resetPassword(@RequestParam("token") token: String, model: Model): String {
+        model["token"] = token
         return "reset-password"
     }
 }
