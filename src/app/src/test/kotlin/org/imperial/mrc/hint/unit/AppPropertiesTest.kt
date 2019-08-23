@@ -47,4 +47,18 @@ class AppPropertiesTests {
         val sut = ConfiguredAppProperties(props)
         assertThat(sut.tokenIssuer).isEqualTo("fakeIssuer")
     }
+
+    @Test
+    fun `can read applicationTitle`(){
+        val props = readPropsFromTempFile("application_title=TestTitle")
+        val sut = ConfiguredAppProperties(props)
+        assertThat(sut.applicationTitle).isEqualTo("TestTitle")
+    }
+
+    @Test
+    fun `can read applicationUrl`(){
+        val props = readPropsFromTempFile("application_url=https://test")
+        val sut = ConfiguredAppProperties(props)
+        assertThat(sut.applicationUrl).isEqualTo("https://test")
+    }
 }

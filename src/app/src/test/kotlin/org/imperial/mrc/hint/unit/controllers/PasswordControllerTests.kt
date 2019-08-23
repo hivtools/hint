@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.controllers.PasswordController
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
@@ -10,16 +11,23 @@ import org.pac4j.core.profile.CommonProfile
 
 class PasswordControllerTests {
 
-    val mockUser = mock<CommonProfile>()
+    val mockUser = mock<CommonProfile> {
+        on { id } doReturn "testUserId"
+    }
 
     val mockUserRepo = mock<UserRepository> {
         on { getUser("test.user@test.com") } doReturn mockUser
     }
 
+    val mockAppProperties = mock<AppProperties> {
+        on { applicationTitle } doReturn "testAppTitle"
+        on { applicationUrl } doReturn "https://test/"
+    }
+
     @Test
     fun `forgotPassword returns expected template name`()
     {
-        val sut = PasswordController(mockUserRepo,  mock())
+        val sut = PasswordController(mockUserRepo,  mock(), mockAppProperties)
         val result = sut.forgotPassword()
         assertThat(result).isEqualTo("forgot-password")
     }
@@ -31,7 +39,7 @@ class PasswordControllerTests {
             on { generateOnetimeSetPasswordToken( mockUser ) } doReturn "token"
         }
 
-        val sut = PasswordController(mockUserRepo, mockTokenGen)
+        val sut = PasswordController(mockUserRepo, mockTokenGen, mockAppProperties)
 
         val result = sut.requestResetLink("test.user@test.com")
 
@@ -48,7 +56,7 @@ class PasswordControllerTests {
             on { generateOnetimeSetPasswordToken( mockUser ) } doReturn "token"
         }
 
-        val sut = PasswordController(mockUserRepo, mockTokenGen)
+        val sut = PasswordController(mockUserRepo, mockTokenGen, mockAppProperties)
 
         val result = sut.requestResetLink("nonexistent@test.com")
 

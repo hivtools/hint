@@ -7,17 +7,21 @@ import java.net.URL
 import java.util.*
 
 interface AppProperties {
+    val applicationTitle: String
+    val applicationUrl: String
     val uploadDirectory: String
     val tokenIssuer: String
     val apiUrl: String
 }
 
 @Configuration
-open class ConfiguredAppProperties(props: Properties = properties): AppProperties {
+open class ConfiguredAppProperties(private val props: Properties = properties): AppProperties {
 
-    override val uploadDirectory = props["upload_dir"].toString()
-    override val tokenIssuer = props["token_issuer"].toString()
-    override val apiUrl = props["hintr_url"].toString()
+    override val applicationTitle = propString("application_title")
+    override val applicationUrl = propString("application_url")
+    override val uploadDirectory = propString("upload_dir")
+    override val tokenIssuer = propString("token_issuer")
+    override val apiUrl = propString("hintr_url")
 
     companion object
     {
@@ -35,6 +39,11 @@ open class ConfiguredAppProperties(props: Properties = properties): AppPropertie
 
         var configPath = "/etc/hint/config.properties"
         val properties = readProperties(configPath)
+    }
+
+    private fun propString(propName: String): String
+    {
+        return props[propName].toString()
     }
 }
 
