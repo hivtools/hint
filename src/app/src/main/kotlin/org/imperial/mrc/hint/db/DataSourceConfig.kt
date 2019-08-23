@@ -13,6 +13,6 @@ open class DataSourceConfig
     @ConfigurationProperties(prefix="spring.datasource")
     open fun dataSource(): DataSource
     {
-       return DataSourceBuilder.create().build()
+        return DataSourceBuilder.create().build()
     }
 }
