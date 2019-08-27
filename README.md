@@ -11,11 +11,13 @@ Requirements:
 
 1. Clone this repo
 1. Run `npm install` from `src/app/static`
-1. Run `./scripts/run-development-dependencies.sh` to start a model API and other dependencies.
+1. Run `./scripts/run-development-dependencies.sh` to start docker instances of [hint-db](https://github.com/mrc-ide/hint-db/) 
+and [hintr](https://github.com/mrc-ide/hintr) and add a test user with username `test.user@example.com`
+ and password `password`.
 1. Run `npm run build` from `src/app/static` to compile front-end dependencies.
 1. Run app from your IDE or by `cd src && ./gradlew :app:bootRun` to serve the app on port 8080
 
-The run-development-dependencies script adds a test user, so you can log in locally with user = test.user@example.com, password = password
+For more information about developing the front-end see [src/app/static/README](src/app/static/README)
 
 ### Database Interface
 
