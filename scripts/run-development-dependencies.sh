@@ -20,3 +20,4 @@ function cleanup() {
 # Wait for Ctrl+C
 echo "Ready to use. Press Ctrl+C to teardown."
 sleep infinity
+

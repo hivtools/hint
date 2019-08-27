@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "sass": "gulp sass",
+    "js": "webpack",
     "build": "webpack && gulp sass",
     "test": "jest -c jest.config.js"
   },
@@ -30,6 +32,7 @@
     "jest": "^24.8.0",
     "jest-teamcity-reporter": "^0.9.0",
     "jquery": "^3.4.1",
+    "json-schema-to-typescript": "^7.0.0",
     "ts-jest": "^24.0.2",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3",

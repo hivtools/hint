@@ -21,7 +21,7 @@ open class HintAPIClient(
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().toLowerCase(),
-                        "path" to path))
+                        "path" to "/uploads/$path"))
 
         return "$baseUrl/validate"
                 .httpPost()
