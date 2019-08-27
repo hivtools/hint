@@ -13,7 +13,9 @@ export const app = new Vue({
     methods: {
         ...mapActions({loadBaseline: 'baseline/getBaselineData'})
     },
-    beforeMount: function() {
+    beforeMount: function () {
         this.loadBaseline()
     }
 });
+
+

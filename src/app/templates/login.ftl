@@ -24,6 +24,9 @@
             <#if error != "">
                 <div id="error" class="alert alert-danger mt-3">${error}</div>
             </#if>
+            <div id="forgot-password" class="mt-3">
+                Forgotten your password? <a href="/password/forgot-password/">Click here</a>
+            </div>
         </div>
     </div>
 </body>

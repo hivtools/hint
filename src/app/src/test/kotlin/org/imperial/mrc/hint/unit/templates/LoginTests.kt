@@ -30,6 +30,9 @@ class LoginTests
 
         assertThat(doc.select("form input[type='submit']").attr("value")).isEqualTo("Log In")
         assertThat(doc.select("#error").text()).isEqualTo("test error")
+
+        assertThat(doc.select("#forgot-password").text()).isEqualTo("Forgotten your password? Click here")
+        assertThat(doc.select("#forgot-password a").attr("href")).isEqualTo("/password/forgot-password/")
     }
 
     @Test
