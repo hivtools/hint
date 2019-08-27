@@ -38,8 +38,6 @@ class PasswordController(private val userRepository: UserRepository,
                     email)
 
             emailManager.sendEmail(emailMessage, email)
-
-            return token
         }
 
         return ""
@@ -50,4 +48,15 @@ class PasswordController(private val userRepository: UserRepository,
         model["token"] = token
         return "reset-password"
     }
+
+    @PostMapping("/reset-password")
+    @ResponseBody
+    fun resetPassword(@RequestParam("token") token: String,
+            @RequestParam("password") password: String): String
+    {
+        //TODO!
+        return ""
+    }
 }
+
+

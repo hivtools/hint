@@ -25,14 +25,19 @@ export interface ResetPasswordError extends PasswordPayload {
     payload: string
 }
 
+export interface ResetPasswordActionParams {
+    token: string
+    password: string
+}
+
 export interface PasswordActions {
     requestResetLink: (store: ActionContext<PasswordState, PasswordState>, email: string) => void
-    resetPassword: (store: ActionContext<PasswordState, PasswordState>, password: string) => void
+    resetPassword: (store: ActionContext<PasswordState, PasswordState>, payload: ResetPasswordActionParams) => void
 }
 
 export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions = {
 
-    requestResetLink({commit}, email) {
+    requestResetLink({commit}: ActionContext<PasswordState, PasswordState>, email: string) {
         let formData = new FormData();
         formData.append('email', email);
         api.postAndReturn<string>("/password/request-reset-link/", formData)
@@ -44,9 +49,10 @@ export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions
             });
     },
 
-    resetPassword({commit}, email) {
+    resetPassword({commit}: ActionContext<PasswordState, PasswordState>, payload: ResetPasswordActionParams) {
         let formData = new FormData();
-        formData.append('email', email);
+        formData.append('token', payload.token);
+        formData.append('password', payload.password);
         api.postAndReturn<string>("/password/reset-password/", formData)
             .then((payload) => {
                 commit<PasswordPayload>({type: "ResetPassword", payload: null});

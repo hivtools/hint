@@ -1,13 +1,12 @@
 <template>
     <div class="card reset-password-form mx-auto mt-5">
         <div class="card-body">
-            <div>{{token}}</div>
             <h3 class="card-title">Enter a new password</h3>
             <div v-if="!passwordWasReset" >
                 <form ref="resetPasswordForm" class="needs-validation" novalidate>
                     <div class="form-group">
                         <input type="password" class="form-control" name="password" id="email" placeholder="New password"
-                               v-model="passworf" required>
+                               v-model="password" required>
                         <div class="invalid-feedback">Please enter a new password.</div>
                     </div>
 
@@ -18,7 +17,7 @@
                 </form>
             <error-alert v-if="hasError" :message="error"></error-alert>
             </div>
-            < v-if="passwordWasReset" class="alert alert-success mt-4" role="alert">
+            <div v-if="passwordWasReset">
                 Thank you, your password has been updated. Click <a href="/">here</a> to login.
             </div>
         </div>
@@ -53,7 +52,7 @@
                 event.preventDefault();
                 const form = this.$refs.resetPasswordForm as HTMLFieldSetElement;
                 if (form.checkValidity()) {
-                    this.resetPassword(this.token, this.password);
+                    this.resetPassword({token: this.token, password: this.password});
                 }
                 form.classList.add('was-validated');
             }
