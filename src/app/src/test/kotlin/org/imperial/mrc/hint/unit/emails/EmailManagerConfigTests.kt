@@ -30,6 +30,11 @@ class EmailManagerConfigTests
     {
         val mockAppProperties = mock<AppProperties>{
             on { emailMode } doReturn "real"
+            on { emailUsername } doReturn "testUsername"
+            on { emailServer } doReturn "testServer"
+            on { emailSender } doReturn "testSender"
+            on { emailPort } doReturn 100
+            on { emailPassword } doReturn "testpassword"
         }
 
         val result = sut.getEmailManager(mockAppProperties)

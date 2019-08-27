@@ -8,25 +8,23 @@ import org.simplejavamail.mailer.config.TransportStrategy
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class RealEmailManager(appProperties: AppProperties): EmailManager
+class RealEmailManager(appProperties: AppProperties,
+                       val logger: Logger = LoggerFactory.getLogger(RealEmailManager::class.java),
+                       val mailer: Mailer = Mailer(
+                               ServerConfig(appProperties.emailServer,
+                                       appProperties.emailPort,
+                                       appProperties.emailUsername,
+                                       appProperties.emailPassword),
+                               TransportStrategy.SMTP_TLS)): EmailManager
 {
-    private val logger: Logger = LoggerFactory.getLogger(RealEmailManager::class.java)
-
-    val server = appProperties.emailServer
-    val port = appProperties.emailPort
     val sender = appProperties.emailSender
-    val username = appProperties.emailUsername
-    val password = appProperties.emailPassword
+    val appTitle = appProperties.applicationTitle
 
     override fun sendEmail(data: EmailData, emailAddress: String)
     {
-        val mailer = Mailer(
-                ServerConfig(server, port, username, password),
-                TransportStrategy.SMTP_TLS
-        )
         val email = Email().apply {
             addToRecipients(emailAddress)
-            setFromAddress("Montagu notifications", sender)
+            setFromAddress("${appTitle} notifications", sender)
             subject = data.subject
             text = data.text()
             textHTML = data.html()
