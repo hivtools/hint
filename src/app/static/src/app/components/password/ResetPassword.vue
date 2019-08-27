@@ -1,6 +1,7 @@
 <template>
     <div class="card reset-password-form mx-auto mt-5">
         <div class="card-body">
+            <div>{{token}}</div>
             <h3 class="card-title">Enter a new password</h3>
             <div v-if="!passwordWasReset" >
                 <form ref="resetPasswordForm" class="needs-validation" novalidate>

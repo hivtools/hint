@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
-<div>${token}</div>
 <div id="app" token="${token}"></div>
 <script src="/js/resetPassword.js"></script>
 </body>
