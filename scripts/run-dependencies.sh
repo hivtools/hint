@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -ex
 
-REGISTRY=mrcide
 NETWORK=hint_nw
 DB=hint_db
 API=hintr
 
+REGISTRY=mrcide
 DB_IMAGE=$REGISTRY/hint-db:latest
 DB_MIGRATE_IMAGE=$REGISTRY/hint-db-migrate:latest
 HINTR_IMAGE=$REGISTRY/$API:mrc-418
