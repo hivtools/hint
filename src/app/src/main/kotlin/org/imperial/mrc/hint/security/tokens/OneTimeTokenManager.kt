@@ -43,13 +43,13 @@ open class OneTimeTokenManager(
         //TODO!!
         //tokenRepository.storeToken(token)
 
-        return token.deflated()
+        return token
     }
 
     fun verifyOneTimeToken(compressedToken: String, oneTimeTokenChecker: OneTimeTokenChecker): Map<String, Any>
     {
         val authenticator = OneTimeTokenAuthenticator(signatureConfiguration, oneTimeTokenChecker, issuer)
-        return authenticator.validateTokenAndGetClaims(compressedToken.inflated())
+        return authenticator.validateTokenAndGetClaims(compressedToken)
     }
 
     private fun getNonce(): String
