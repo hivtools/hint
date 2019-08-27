@@ -9,7 +9,6 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.TokenRepository
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenChecker
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
-import org.imperial.mrc.hint.security.tokens.inflated
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import java.time.Instant
@@ -40,12 +39,10 @@ class OneTimeTokenManagerTests {
 
         val claims = sut.verifyOneTimeToken(token, mockTokenChecker)
         assertThat(claims["iss"]).isEqualTo("test issuer")
-        assertThat(claims["token_type"]).isEqualTo("ONETIME")
         assertThat(claims["sub"]).isEqualTo("test user")
         assertThat(claims["exp"] as Date).isAfter(Date.from(Instant.now()))
-        assertThat(claims["url"]).isEqualTo("/password/set/")
         assertThat(claims["nonce"]).isNotNull()
 
-        verify(mockTokenRepository).storeToken(token.inflated())
+        verify(mockTokenRepository).storeToken(token)
     }
 }

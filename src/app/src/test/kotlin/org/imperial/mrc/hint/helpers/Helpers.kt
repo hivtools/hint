@@ -1,4 +1,4 @@
-package org.imperial.mrc.hint.integration
+package org.imperial.mrc.hint.helpers
 
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpEntity
