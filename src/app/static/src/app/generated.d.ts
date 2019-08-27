@@ -13,6 +13,26 @@ export interface Error {
 }
 export type ErrorTypes = "INVALID_FILE" | "FAILED_TO_QUEUE" | "INVALID_PJNZ" | "OTHER_ERROR" | "FAILED_TO_CHECK_STATUS";
 export type FilePath = string | null;
+export interface InitialiseModelRunRequest {
+  pjnz: string | null;
+  shape: string | null;
+  population: string | null;
+  survey: string | null;
+  programme: string | null;
+  anc: string | null;
+  options: {
+    max_iterations: number;
+    no_of_simulations: number;
+    input_data: {
+      programme: {
+        [k: string]: any;
+      };
+      anc: {
+        [k: string]: any;
+      };
+    };
+  };
+}
 export interface InitialiseModelRunResponse {
   processId: string;
 }

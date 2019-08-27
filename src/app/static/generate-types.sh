@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
+here=$(dirname $0)
+
 echo "Usage: ./generate-types.sh HINTR_BRANCH"
 target="src/app/generated.d.ts"
+hintr_version=$(<$here/../../config/hintr_version)
 if [[ $# -ne 1 ]] ; then
-    echo "No branch provided. Defaulting to master"
-    branch="master"
+    echo "No branch provided. Defaulting to $hintr_version"
+    branch=$hintr_version
 else
     branch=$1
 fi

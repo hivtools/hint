@@ -9,6 +9,7 @@ import org.leadpony.justify.api.JsonSchema
 import org.leadpony.justify.api.JsonValidationService
 import org.leadpony.justify.api.Problem
 import org.leadpony.justify.api.ProblemHandler
+import java.io.File
 import java.net.URI
 import java.net.URL
 import javax.json.stream.JsonParsingException
@@ -18,6 +19,7 @@ class JSONValidator {
 
     private val service = JsonValidationService.newInstance()
     private val objectMapper = ObjectMapper()
+    private val hintrVersion = File("../config/hintr_version").readLines().first()
 
     private val readerFactory = service.createSchemaReaderFactoryBuilder()
             .withSchemaResolver(this::resolveSchema)
@@ -68,7 +70,7 @@ class JSONValidator {
         } else {
             "$name.schema.json"
         }
-        val url = URL("https://raw.githubusercontent.com/mrc-ide/hintr/mrc-418-rgf/inst/schema/$path")
+        val url = URL("https://raw.githubusercontent.com/mrc-ide/hintr/$hintrVersion/inst/schema/$path")
         return url.openStream().use {
             val reader = readerFactory.createSchemaReader(it)
             try {
