@@ -48,6 +48,12 @@ class GZipHelpersTests
     }
 
     @Test
+    fun `can inflate non-null nullable string`()
+    {
+        assertThat(inflate(testString as String?)).isEqualTo(testString)
+    }
+
+    @Test
     fun `can inflate empty string`()
     {
         assertThat(inflate("")).isEqualTo("")
