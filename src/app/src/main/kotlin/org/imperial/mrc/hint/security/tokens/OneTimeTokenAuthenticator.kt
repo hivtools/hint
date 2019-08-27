@@ -22,32 +22,17 @@ class OneTimeTokenAuthenticator(
         {
             throw CredentialsException("Token was issued by '$issuer'. Must be issued by '${tokenIssuer}'")
         }
-        val tokenType = claims.getClaim("token_type").toString()
-        if (tokenType != TokenType.ONETIME.toString())
-        {
-            throw CredentialsException("Wrong type of token was provided. " +
-                    "Expected '${TokenType.ONETIME}', was actually '$tokenType'")
-        }
-        handleUrlAttribute(credentials, jwt)
+
         checkTokenAgainstRepository(credentials)
     }
 
     private fun checkTokenAgainstRepository(credentials: TokenCredentials)
     {
         val compressedToken = credentials.token
-        if (!oneTimeTokenChecker.checkToken(compressedToken.inflated()))
+        if (!oneTimeTokenChecker.checkToken(compressedToken))
         {
             throw CredentialsException("Token has already been used (or never existed)")
         }
     }
 
-    private fun handleUrlAttribute(credentials: TokenCredentials, jwt: JWT)
-    {
-        val claims = jwt.jwtClaimsSet
-        val url = claims.getClaim("url")
-        if (url !is String || url.isEmpty())
-        {
-            throw CredentialsException("No 'url' claim provided. Token is invalid")
-        }
-    }
 }
