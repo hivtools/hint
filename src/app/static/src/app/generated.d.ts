@@ -124,13 +124,10 @@ export interface Success {
             };
           } & {
             filename?: any;
-            type?: {
-              [k: string]: any;
-            };
+            type?: "pjnz";
             data?: {
               country: string;
             };
-            [k: string]: any;
           })
         | ({
             filename: string;
@@ -139,11 +136,9 @@ export interface Success {
               [k: string]: any;
             };
           } & {
-            type?: {
-              [k: string]: any;
-            };
+            filename?: any;
+            type?: "shape";
             data?: string;
-            [k: string]: any;
           }))
     | {
         processId: string;
@@ -208,19 +203,15 @@ export interface ValidateInputRequest {
 export type ValidateInputResponse = PjnzResponse | ShapeResponse;
 export type PjnzResponse = InputResponse & {
   filename?: any;
-  type?: {
-    [k: string]: any;
-  };
+  type?: "pjnz";
   data?: {
     country: string;
   };
 };
 export type ShapeResponse = InputResponse & {
-  type?: {
-    [k: string]: any;
-  };
+  filename?: any;
+  type?: "shape";
   data?: string;
-  [k: string]: any;
 };
 
 export interface InputResponse {

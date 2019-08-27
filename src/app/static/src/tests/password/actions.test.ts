@@ -1,5 +1,6 @@
 import {mockAxios} from "../mocks";
 import {actions} from "../../app/store/password/actions";
+import {Failure} from "../../app/generated";
 
 describe("Password actions", () => {
 
@@ -25,7 +26,7 @@ describe("Password actions", () => {
         setTimeout(() => {
             expect(commit.mock.calls[0][0]).toStrictEqual({
                 type: "ResetLinkRequested",
-                payload: null
+                payload: undefined
             });
             done();
         })
@@ -34,7 +35,7 @@ describe("Password actions", () => {
     it("requests reset link and commits error", (done) => {
 
         mockAxios.onPost(`/password/request-reset-link/`)
-            .reply(500, { message: "test error"});
+            .reply(500, {errors: [{error: "OTHER_ERROR", detail: "test error"}]} as Partial<Failure>);
 
         const commit = jest.fn();
         actions.requestResetLink({commit} as any, "test@email.com");

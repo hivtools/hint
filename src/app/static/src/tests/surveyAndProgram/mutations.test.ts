@@ -6,7 +6,7 @@ describe("Survey and program mutations", () => {
     it("sets survey geoson and filename on SurveyLoaded", () => {
 
         const testState = {...initialSurveyAndProgramDataState};
-        mutations.SurveyLoaded(testState, {payload: {geoJson: "somegeojson", filename: "somefile.csv"}});
+        mutations.SurveyLoaded(testState, {payload: {data: {geoJson: "somegeojson"}, filename: "somefile.csv"}});
         expect(testState.surveyGeoJson).toBe("somegeojson");
         expect(testState.surveyFileName).toBe("somefile.csv");
         expect(testState.surveyError).toBe("");

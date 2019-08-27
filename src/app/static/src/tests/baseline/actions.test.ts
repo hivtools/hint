@@ -1,5 +1,7 @@
 import {mockAxios} from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
+import {Failure, Success} from "../../app/generated";
+import {InternalResponse} from "../../app/types";
 
 describe("Baseline actions", () => {
 
@@ -16,13 +18,13 @@ describe("Baseline actions", () => {
     it("sets country after PJNZ file upload", (done) => {
 
         mockAxios.onPost(`/baseline/pjnz/`)
-            .reply(200, {country: "Malawi"});
+            .reply(200, {data: {data: {country: "Malawi"}}} as Partial<Success>);
 
         const commit = jest.fn();
         actions.uploadPJNZ({commit} as any, {} as File);
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUploaded", payload: {country: "Malawi"}});
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUploaded", payload: {data: {country: "Malawi"}}});
             done();
         })
     });
@@ -30,7 +32,7 @@ describe("Baseline actions", () => {
     it("sets error message after failed PJNZ file upload", (done) => {
 
         mockAxios.onPost(`/baseline/pjnz/`)
-            .reply(500, {error: "Something went wrong", status: 500, message: "error message"});
+            .reply(500, {errors: [{error: "OTHER_ERROR", detail: "Something went wrong"}]} as Partial<Failure>);
 
         const commit = jest.fn();
         actions.uploadPJNZ({commit} as any, {} as File);
@@ -38,7 +40,7 @@ describe("Baseline actions", () => {
         setTimeout(() => {
             expect(commit.mock.calls[0][0]).toStrictEqual({
                 type: "PJNZUploadError",
-                payload: "error message"
+                payload: "Something went wrong"
             });
             done();
         })
@@ -47,7 +49,7 @@ describe("Baseline actions", () => {
     it("gets baseline data and commits it", (done) => {
 
         mockAxios.onGet(`/baseline/`)
-            .reply(200, {pjnz: {country: "Malawi", fileName: "test.pjnz"}});
+            .reply(200, {data: {pjnz: {data: {country: "Malawi"}, filename: "test.pjnz"}}});
 
         const commit = jest.fn();
         actions.getBaselineData({commit} as any);
@@ -55,7 +57,7 @@ describe("Baseline actions", () => {
         setTimeout(() => {
             expect(commit.mock.calls[0][0]).toStrictEqual({
                 type: "BaselineDataLoaded",
-                payload: {pjnz: {country: "Malawi", fileName: "test.pjnz"}}
+                payload: {pjnz: {data: {country: "Malawi"}, filename: "test.pjnz"}}
             });
             done();
         })
