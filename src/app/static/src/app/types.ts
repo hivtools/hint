@@ -1,5 +1,7 @@
-export interface APIError {
-    status: number,
-    error: string,
-    message: string
+import {PjnzResponse} from "./generated";
+
+export type InternalResponse = BaselineData
+
+export interface BaselineData {
+    pjnz?: PjnzResponse
 }

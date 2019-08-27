@@ -1,5 +1,5 @@
 import {PasswordState} from "./password";
-import {PasswordPayload, ResetLinkRequested, RequestResetLinkError} from "./actions";
+import {PasswordPayload, RequestResetLinkError} from "./actions";
 import {Mutation, MutationTree} from "vuex";
 
 interface PasswordMutation extends Mutation<PasswordState> {
@@ -12,7 +12,7 @@ export interface PasswordMutations {
 }
 
 export const mutations: MutationTree<PasswordState> & PasswordMutations = {
-    ResetLinkRequested(state: PasswordState, action: ResetLinkRequested) {
+    ResetLinkRequested(state: PasswordState) {
         state.resetLinkRequested = true;
         state.requestResetLinkError = "";
     },
@@ -21,4 +21,4 @@ export const mutations: MutationTree<PasswordState> & PasswordMutations = {
         state.resetLinkRequested = false;
         state.requestResetLinkError = action.payload;
     }
-}
+};

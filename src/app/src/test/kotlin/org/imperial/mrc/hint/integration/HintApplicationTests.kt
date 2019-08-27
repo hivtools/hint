@@ -13,7 +13,7 @@ import org.springframework.util.LinkedMultiValueMap
 
 @ActiveProfiles(profiles=["test"])
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
+class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate): IntegrationTests()  {
 
     @Test
     fun contextLoads() {
@@ -68,6 +68,12 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
         assertThat(entity.statusCode).isEqualTo(HttpStatus.FOUND)
         assertThat(entity.headers["Location"]!!.first())
                 .isEqualTo("/login?username=test.user%40example.com&error=BadCredentialsException")
+    }
+
+    @Test
+    fun `can get static resources`() {
+        val entity = restTemplate.getForEntity<String>("/public/css/style.css")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
     }
 
 }
