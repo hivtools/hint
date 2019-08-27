@@ -9,7 +9,6 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.TokenRepository
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenChecker
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
-import org.imperial.mrc.hint.security.tokens.inflated
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import java.time.Instant
@@ -44,6 +43,6 @@ class OneTimeTokenManagerTests {
         assertThat(claims["exp"] as Date).isAfter(Date.from(Instant.now()))
         assertThat(claims["nonce"]).isNotNull()
 
-        verify(mockTokenRepository).storeToken(token.inflated())
+        verify(mockTokenRepository).storeToken(token)
     }
 }
