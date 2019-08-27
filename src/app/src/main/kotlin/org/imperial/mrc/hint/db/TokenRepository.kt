@@ -13,12 +13,11 @@ interface TokenRepository
 @Configuration
 open class JooqTokenRepository(@Autowired private val dataSource: DataSource): TokenRepository
 {
-    override fun storeToken(uncompressedToken: String)
-    {
-        JooqContext(dataSource).use{
+    override fun storeToken(uncompressedToken: String) {
+        JooqContext(dataSource).use {
             val r = it.dsl.newRecord(ONETIME_TOKEN)
             r.token = uncompressedToken
-           r.store()
+            r.store()
         }
     }
 }
