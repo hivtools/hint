@@ -1,6 +1,5 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
-import {mockAxios} from "../mocks";
-import {Failure, Success} from "../../app/generated";
+import {mockAxios, mockFailure, mockSuccess} from "../mocks";
 
 describe("Survey and program actions", () => {
 
@@ -11,7 +10,7 @@ describe("Survey and program actions", () => {
     it("sets data after survey file upload", (done) => {
 
         mockAxios.onPost(`/survey/`)
-            .reply(200, {data: {data: {geoJson: "SOME GEOJSON"}}});
+            .reply(200, mockSuccess({data: {geoJson: "SOME GEOJSON"}}));
 
         const commit = jest.fn();
         actions.uploadSurvey({commit} as any, {} as File);
@@ -28,7 +27,7 @@ describe("Survey and program actions", () => {
     it("sets error message after failed survey upload", (done) => {
 
         mockAxios.onPost(`/survey/`)
-            .reply(500, {errors: [{error: "OTHER_ERROR", detail: "error message"}]} as Partial<Failure>);
+            .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
         actions.uploadSurvey({commit} as any, {} as File);

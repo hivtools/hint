@@ -111,9 +111,7 @@ export interface PjnzResponseData {
 export type Response = Success | Failure;
 
 export interface Success {
-  status: {
-    [k: string]: any;
-  };
+  status: "success"
   data:
     | (
         | ({
@@ -177,9 +175,7 @@ export interface Success {
   };
 }
 export interface Failure {
-  status: {
-    [k: string]: any;
-  };
+  status: "failure"
   data: {
     [k: string]: any;
   };

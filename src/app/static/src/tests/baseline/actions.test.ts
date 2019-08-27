@@ -1,7 +1,5 @@
-import {mockAxios} from "../mocks";
+import {mockAxios, mockFailure, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
-import {Failure, Success} from "../../app/generated";
-import {InternalResponse} from "../../app/types";
 
 describe("Baseline actions", () => {
 
@@ -18,7 +16,7 @@ describe("Baseline actions", () => {
     it("sets country after PJNZ file upload", (done) => {
 
         mockAxios.onPost(`/baseline/pjnz/`)
-            .reply(200, {data: {data: {country: "Malawi"}}} as Partial<Success>);
+            .reply(200, mockSuccess({data: {country: "Malawi"}}));
 
         const commit = jest.fn();
         actions.uploadPJNZ({commit} as any, {} as File);
@@ -32,7 +30,7 @@ describe("Baseline actions", () => {
     it("sets error message after failed PJNZ file upload", (done) => {
 
         mockAxios.onPost(`/baseline/pjnz/`)
-            .reply(500, {errors: [{error: "OTHER_ERROR", detail: "Something went wrong"}]} as Partial<Failure>);
+            .reply(500, mockFailure("Something went wrong"));
 
         const commit = jest.fn();
         actions.uploadPJNZ({commit} as any, {} as File);
@@ -49,7 +47,7 @@ describe("Baseline actions", () => {
     it("gets baseline data and commits it", (done) => {
 
         mockAxios.onGet(`/baseline/`)
-            .reply(200, {data: {pjnz: {data: {country: "Malawi"}, filename: "test.pjnz"}}});
+            .reply(200, mockSuccess({pjnz: {data: {country: "Malawi"}, filename: "test.pjnz"}}));
 
         const commit = jest.fn();
         actions.getBaselineData({commit} as any);
