@@ -1,0 +1,64 @@
+<template>
+    <div class="card reset-password-form mx-auto mt-5">
+        <div class="card-body">
+            <h3 class="card-title">Forgotten your password?</h3>
+            <p>
+                If you've forgotten your password, enter your email address to request a link which you can use
+                to create a new password.
+            </p>
+            <form ref="forgotPasswordForm" class="needs-validation" novalidate>
+                <div class="form-group">
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Email address"
+                           v-model="email" required>
+                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                </div>
+
+                <div class="text-center">
+                    <input class="btn btn-red" type="submit" value="Request password reset email"
+                           v-on:click="handleRequestResetLink">
+                </div>
+            </form>
+            <error-alert v-if="hasError" :message="error"></error-alert>
+            <div v-if="resetLinkRequested" class="alert alert-success mt-4" role="alert">
+                Thank you. If we have an account registered for this email address, you wil receive a password reset link.
+            </div>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+    import Vue from "vue";
+    import ErrorAlert from "../ErrorAlert.vue";
+    import {mapActions, mapState} from "vuex";
+    import {PasswordState} from "../../store/password/password";
+
+    export default Vue.extend({
+        name: "ForgotPassword",
+        data: () => {
+            return {
+                email: ""
+            };
+        },
+        computed: mapState<PasswordState>( {
+            error: state => state.requestResetLinkError,
+            hasError:  state => state.requestResetLinkError && state.requestResetLinkError.length > 0,
+            resetLinkRequested: state => state.resetLinkRequested
+        }),
+       components: {
+            ErrorAlert
+        },
+        methods: {
+            ...mapActions({requestResetLink: 'requestResetLink'}),
+            handleRequestResetLink: function(event: Event){
+                event.preventDefault();
+                const form = this.$refs.forgotPasswordForm as HTMLFieldSetElement;
+                if (form.checkValidity()) {
+                    this.requestResetLink(this.email);
+                }
+                form.classList.add('was-validated');
+            }
+        }
+    });
+
+
+</script>
