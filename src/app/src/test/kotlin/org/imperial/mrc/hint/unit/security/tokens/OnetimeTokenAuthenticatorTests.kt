@@ -57,4 +57,22 @@ class OnetimeTokenAuthenticatorTests{
         assertThat(profile).isNull()
     }
 
+    @Test
+    fun `validateToken returns null when token check fails`() {
+        val token= tokenGenerator.generate(mapOf(
+                "iss" to "right issuer",
+                "sub" to "test user",
+                "exp" to Date.from(Instant.now().plus(Duration.ofDays(1)))
+        ))
+
+        val mockTokenChecker =  mock<OneTimeTokenChecker> {
+            on { checkToken(any()) } doReturn false
+        }
+
+        val sut = OneTimeTokenAuthenticator(signatureConfiguration, mockTokenChecker, "right issuer")
+
+        val profile = sut.validateToken(token)
+        assertThat(profile).isNull()
+    }
+
 }
