@@ -3,8 +3,10 @@ package org.imperial.mrc.hint.unit.security.tokens
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.db.TokenRepository
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenChecker
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
@@ -29,7 +31,9 @@ class OneTimeTokenManagerTests {
             on { checkToken(any()) } doReturn true
         }
 
-        val sut = OneTimeTokenManager(mockAppProperties)
+        val mockTokenRepository = mock<TokenRepository>()
+
+        val sut = OneTimeTokenManager(mockAppProperties, mockTokenRepository)
 
         val token = sut.generateOnetimeSetPasswordToken(mockUser)
 
@@ -38,5 +42,7 @@ class OneTimeTokenManagerTests {
         assertThat(claims["sub"]).isEqualTo("test user")
         assertThat(claims["exp"] as Date).isAfter(Date.from(Instant.now()))
         assertThat(claims["nonce"]).isNotNull()
+
+        verify(mockTokenRepository).storeToken(token)
     }
 }

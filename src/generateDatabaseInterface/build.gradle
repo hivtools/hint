@@ -1,0 +1,18 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'application'
+
+mainClassName = "org.imperial.mrc.hint.generateDatabaseInterface.AppKt"
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    implementation "org.postgresql:postgresql:42.2.1"
+    implementation "org.jooq:jooq:3.10.5"
+    implementation "org.jooq:jooq-meta:3.10.5"
+    implementation "org.jooq:jooq-codegen:3.10.5"
+}
