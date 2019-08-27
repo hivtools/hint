@@ -22,13 +22,7 @@ class OneTimeTokenAuthenticator(
         {
             throw CredentialsException("Token was issued by '$issuer'. Must be issued by '${tokenIssuer}'")
         }
-        val tokenType = claims.getClaim("token_type").toString()
-        if (tokenType != TokenType.ONETIME.toString())
-        {
-            throw CredentialsException("Wrong type of token was provided. " +
-                    "Expected '${TokenType.ONETIME}', was actually '$tokenType'")
-        }
-        handleUrlAttribute(credentials, jwt)
+
         checkTokenAgainstRepository(credentials)
     }
 
@@ -41,13 +35,4 @@ class OneTimeTokenAuthenticator(
         }
     }
 
-    private fun handleUrlAttribute(credentials: TokenCredentials, jwt: JWT)
-    {
-        val claims = jwt.jwtClaimsSet
-        val url = claims.getClaim("url")
-        if (url !is String || url.isEmpty())
-        {
-            throw CredentialsException("No 'url' claim provided. Token is invalid")
-        }
-    }
 }

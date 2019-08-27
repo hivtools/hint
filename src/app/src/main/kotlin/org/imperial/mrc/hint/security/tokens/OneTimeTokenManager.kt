@@ -11,11 +11,6 @@ import java.security.SecureRandom
 import java.time.Instant
 import java.util.*
 
-enum class TokenType
-{
-    ONETIME
-}
-
 @Configuration
 open class OneTimeTokenManager(
         appProperties: AppProperties
@@ -33,10 +28,8 @@ open class OneTimeTokenManager(
     {
         val token= generator.generate(mapOf(
                 "iss" to issuer,
-                "token_type" to TokenType.ONETIME,
                 "sub" to user.username,
                 "exp" to Date.from(Instant.now().plus(Duration.ofDays(1))),
-                "url" to "/password/set/",
                 "nonce" to getNonce()
         ))
 

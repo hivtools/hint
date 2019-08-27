@@ -35,10 +35,8 @@ class OneTimeTokenManagerTests {
 
         val claims = sut.verifyOneTimeToken(token, mockTokenChecker)
         assertThat(claims["iss"]).isEqualTo("test issuer")
-        assertThat(claims["token_type"]).isEqualTo("ONETIME")
         assertThat(claims["sub"]).isEqualTo("test user")
         assertThat(claims["exp"] as Date).isAfter(Date.from(Instant.now()))
-        assertThat(claims["url"]).isEqualTo("/password/set/")
         assertThat(claims["nonce"]).isNotNull()
     }
 }
