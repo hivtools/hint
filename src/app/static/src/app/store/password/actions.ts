@@ -1,28 +1,11 @@
-import {ActionContext, ActionPayload, ActionTree} from "vuex";
+import {ActionContext, ActionTree, Payload} from "vuex";
 import {PasswordState} from "./password";
 import {api} from "../../apiService";
 
-export type PasswordActionTypes = "ResetLinkRequested" | "RequestResetLinkError" |
-    "ResetPassword" | "ResetPasswordError"
-
-export interface PasswordPayload extends ActionPayload {
+export type PasswordActionTypes = "ResetLinkRequested" | "RequestResetLinkError" | "ResetPassword" | "ResetPasswordError"
+export interface PasswordActionPayload<T> extends Payload {
     type: PasswordActionTypes
-}
-
-export interface ResetLinkRequested extends PasswordPayload {
-    payload: null
-}
-
-export interface RequestResetLinkError extends PasswordPayload {
-    payload: string
-}
-
-export interface ResetPassword extends PasswordPayload {
-    payload: null
-}
-
-export interface ResetPasswordError extends PasswordPayload {
-    payload: string
+    payload: T
 }
 
 export interface ResetPasswordActionParams {
@@ -40,12 +23,12 @@ export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions
     requestResetLink({commit}: ActionContext<PasswordState, PasswordState>, email: string) {
         let formData = new FormData();
         formData.append('email', email);
-        api.postAndReturn<string>("/password/request-reset-link/", formData)
+        api.postAndReturn<null>("/password/request-reset-link/", formData)
             .then((payload) => {
-                commit<PasswordPayload>({type: "ResetLinkRequested", payload: null});
+                commit<PasswordActionPayload<null>>({type: "ResetLinkRequested", payload: null});
             })
             .catch((error: Error) => {
-                commit<PasswordPayload>({type: "RequestResetLinkError", payload: error.message});
+                commit<PasswordActionPayload<string>>({type: "RequestResetLinkError", payload: error.message});
             });
     },
 
@@ -53,12 +36,12 @@ export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions
         let formData = new FormData();
         formData.append('token', payload.token);
         formData.append('password', payload.password);
-        api.postAndReturn<string>("/password/reset-password/", formData)
+        api.postAndReturn<null>("/password/reset-password/", formData)
             .then((payload) => {
-                commit<PasswordPayload>({type: "ResetPassword", payload: null});
+                commit<PasswordActionPayload<null>>({type: "ResetPassword", payload: null});
             })
             .catch((error: Error) => {
-                commit<PasswordPayload>({type: "ResetPasswordError", payload: error.message});
+                commit<PasswordActionPayload<string>>({type: "ResetPasswordError", payload: error.message});
             });
     }
 };

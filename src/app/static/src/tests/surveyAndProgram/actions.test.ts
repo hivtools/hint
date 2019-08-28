@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
-import {mockAxios} from "../mocks";
+import {mockAxios, mockFailure, mockSuccess} from "../mocks";
 
 describe("Survey and program actions", () => {
 
@@ -9,22 +9,25 @@ describe("Survey and program actions", () => {
 
     it("sets data after survey file upload", (done) => {
 
-        mockAxios.onPost(`/survey/`)
-            .reply(200, "SOME GEOJSON");
+        mockAxios.onPost(`/disease/survey/`)
+            .reply(200, mockSuccess({data: {geoJson: "SOME GEOJSON"}}));
 
         const commit = jest.fn();
         actions.uploadSurvey({commit} as any, {} as File);
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: "SurveyLoaded", payload: "SOME GEOJSON"});
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: "SurveyLoaded",
+                payload: {data: {geoJson: "SOME GEOJSON"}}
+            });
             done();
         })
     });
 
     it("sets error message after failed survey upload", (done) => {
 
-        mockAxios.onPost(`/survey/`)
-            .reply(500, {error: "Something went wrong", status: 500, message: "error message"});
+        mockAxios.onPost(`/disease/survey/`)
+            .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
         actions.uploadSurvey({commit} as any, {} as File);

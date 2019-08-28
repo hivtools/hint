@@ -7,6 +7,10 @@ import {
     initialSurveyAndProgramDataState,
     SurveyAndProgramDataState
 } from "../app/store/surveyAndProgram/surveyAndProgram";
+import {Failure, PjnzResponse, Success} from "../app/generated";
+import {BaselineData} from "../app/types";
+import {SurveyResponse} from "../app/store/surveyAndProgram/actions";
+import {Point} from "geojson";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -43,4 +47,44 @@ export const mockFileList = (filename: string, type: string = "text/csv"): FileL
     const fileList = new FileList();
     fileList[0] = file;
     return fileList;
+};
+
+export const mockSuccess = (data: any): Success => {
+    return {
+        data,
+        status: "success",
+        errors: []
+    }
+};
+
+export const mockFailure = (errorMessage: string): Failure => {
+    return {
+        data: {},
+        status: "failure",
+        errors: [{error: "OTHER_ERROR", detail: errorMessage}]
+    }
+};
+
+export const mockPJNZResponse = (props: Partial<PjnzResponse> = {}): PjnzResponse => {
+    return {
+        data: {country: "Malawi"},
+        filename: "test.pjnz",
+        type: "pjnz",
+        ...props
+    }
+};
+
+export const mockBaselineResponse = (props: Partial<BaselineData> = {}): BaselineData => {
+    return {
+        pjnz: mockPJNZResponse(),
+        ...props
+    }
+};
+
+export const mockSurveyResponse = (props: Partial<SurveyResponse> = {}): SurveyResponse => {
+    return {
+        data: {geoJson: {type: "Point", coordinates: [1, 2]}},
+        filename: "test.csv",
+        ...props
+    }
 };
