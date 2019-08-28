@@ -11,13 +11,13 @@
                     </div>
 
                     <div class="text-center">
-                        <input class="btn btn-red" type="submit" value="Update"
+                        <input class="btn btn-red" type="submit" value="Update password"
                                v-on:click="handleResetPassword">
                     </div>
                 </form>
             <error-alert v-if="hasError" :message="error"></error-alert>
             </div>
-            <div v-if="passwordWasReset">
+            <div v-if="passwordWasReset" id="password-was-reset">
                 Thank you, your password has been updated. Click <a href="/">here</a> to login.
             </div>
         </div>
