@@ -7,17 +7,27 @@ import javax.sql.DataSource
 
 interface TokenRepository
 {
-    fun storeToken(uncompressedToken: String)
+    fun storeOneTimeToken(token: String)
+    fun validateOneTimeToken(token: String): Boolean
 }
 
 @Configuration
 open class JooqTokenRepository(@Autowired private val dataSource: DataSource): TokenRepository
 {
-    override fun storeToken(uncompressedToken: String) {
+    override fun storeOneTimeToken(token: String) {
         JooqContext(dataSource).use {
             val r = it.dsl.newRecord(ONETIME_TOKEN)
-            r.token = uncompressedToken
+            r.token = token
             r.store()
+        }
+    }
+
+    override fun validateOneTimeToken(token: String): Boolean {
+        JooqContext(dataSource).use {
+            val deletedCount = it.dsl.deleteFrom(ONETIME_TOKEN)
+                    .where(ONETIME_TOKEN.TOKEN.eq(token))
+                    .execute()
+            return deletedCount > 0
         }
     }
 }

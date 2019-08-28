@@ -27,7 +27,7 @@ open class TokenRepositoryTests {
     @Test
     fun `can store token`()
     {
-        sut.storeToken("testToken")
+        sut.storeOneTimeToken("testToken")
 
         JooqContext(dataSource).use{
             var result = it.dsl.select()

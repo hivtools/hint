@@ -15,7 +15,8 @@ import java.util.*
 @Configuration
 open class OneTimeTokenManager(
         appProperties: AppProperties,
-        private val tokenRepository: TokenRepository
+        private val tokenRepository: TokenRepository,
+        tokenChecker: OneTimeTokenChecker
 )
 {
     private val keyPair: KeyPair = KeyHelper.keyPair
@@ -23,6 +24,8 @@ open class OneTimeTokenManager(
     private val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
     private val issuer = appProperties.tokenIssuer
     private val random = SecureRandom()
+
+    private val authenticator = OneTimeTokenAuthenticator(signatureConfiguration, tokenChecker, issuer)
 
 
     open fun generateOnetimeSetPasswordToken(user: CommonProfile): String
@@ -34,15 +37,20 @@ open class OneTimeTokenManager(
                 "nonce" to getNonce()
         ))
 
-        tokenRepository.storeToken(token)
+        tokenRepository.storeOneTimeToken(token)
 
         return token
     }
 
-    fun verifyOneTimeToken(compressedToken: String, oneTimeTokenChecker: OneTimeTokenChecker): Map<String, Any>
+    fun validateToken(token: String): CommonProfile
     {
-        val authenticator = OneTimeTokenAuthenticator(signatureConfiguration, oneTimeTokenChecker, issuer)
-        return authenticator.validateTokenAndGetClaims(compressedToken)
+        return authenticator.validateToken(token);
+    }
+
+    fun validateTokenAndGetClaims(token: String): Map<String, Any>
+    {
+
+        return authenticator.validateTokenAndGetClaims(token)
     }
 
     private fun getNonce(): String

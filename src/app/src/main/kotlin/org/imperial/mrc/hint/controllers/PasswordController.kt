@@ -13,7 +13,7 @@ import org.springframework.ui.set
 @Controller
 @RequestMapping("/password")
 class PasswordController(private val userRepository: UserRepository,
-                         private val onetimeTokenGenerator: OneTimeTokenManager,
+                         private val oneTimeTokenManager: OneTimeTokenManager,
                          private val appProperties: AppProperties,
                          private val emailManager: EmailManager) {
 
@@ -30,7 +30,7 @@ class PasswordController(private val userRepository: UserRepository,
 
         if (user != null)
         {
-            val token = onetimeTokenGenerator.generateOnetimeSetPasswordToken(user)
+            val token = oneTimeTokenManager.generateOnetimeSetPasswordToken(user)
 
             val emailMessage = PasswordResetEmail(appProperties.applicationTitle,
                     appProperties.applicationUrl,
@@ -54,7 +54,11 @@ class PasswordController(private val userRepository: UserRepository,
     fun resetPassword(@RequestParam("token") token: String,
             @RequestParam("password") password: String): String
     {
-        //TODO!
+        //verify that token is valid, get user profile
+        val user = oneTimeTokenManager.validateToken(token)
+
+        //update password
+
         return ""
     }
 }

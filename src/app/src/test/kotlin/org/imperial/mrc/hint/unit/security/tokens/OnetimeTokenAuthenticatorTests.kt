@@ -75,4 +75,19 @@ class OnetimeTokenAuthenticatorTests{
         assertThat(profile).isNull()
     }
 
+    @Test
+    fun `validateToken fails when token has expired`()
+    {
+        val token= tokenGenerator.generate(mapOf(
+                "iss" to "right issuer",
+                "sub" to "test user",
+                "exp" to Date.from(Instant.now().minus(Duration.ofDays(1)))
+        ))
+
+        val sut = OneTimeTokenAuthenticator(signatureConfiguration, okTokenChecker, "right issuer")
+
+        val profile = sut.validateToken(token)
+        assertThat(profile).isNull()
+    }
+
 }

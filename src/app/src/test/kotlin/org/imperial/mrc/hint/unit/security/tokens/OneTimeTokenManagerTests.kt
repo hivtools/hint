@@ -33,16 +33,16 @@ class OneTimeTokenManagerTests {
 
         val mockTokenRepository = mock<TokenRepository>()
 
-        val sut = OneTimeTokenManager(mockAppProperties, mockTokenRepository)
+        val sut = OneTimeTokenManager(mockAppProperties, mockTokenRepository, mockTokenChecker)
 
         val token = sut.generateOnetimeSetPasswordToken(mockUser)
 
-        val claims = sut.verifyOneTimeToken(token, mockTokenChecker)
+        val claims = sut.validateTokenAndGetClaims(token)
         assertThat(claims["iss"]).isEqualTo("test issuer")
         assertThat(claims["sub"]).isEqualTo("test user")
         assertThat(claims["exp"] as Date).isAfter(Date.from(Instant.now()))
         assertThat(claims["nonce"]).isNotNull()
 
-        verify(mockTokenRepository).storeToken(token)
+        verify(mockTokenRepository).storeOneTimeToken(token)
     }
 }
