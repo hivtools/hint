@@ -8,14 +8,16 @@ import java.util.*
 
 interface AppProperties {
     val uploadDirectory: String
+    val tokenIssuer: String
     val apiUrl: String
 }
 
 @Configuration
-open class ConfiguredAppProperties: AppProperties {
+open class ConfiguredAppProperties(props: Properties = properties): AppProperties {
 
-    override val uploadDirectory = properties["upload_dir"].toString()
-    override val apiUrl = properties["hintr_url"].toString()
+    override val uploadDirectory = props["upload_dir"].toString()
+    override val tokenIssuer = props["token_issuer"].toString()
+    override val apiUrl = props["hintr_url"].toString()
 
     companion object
     {
@@ -30,7 +32,8 @@ open class ConfiguredAppProperties: AppProperties {
                 }
             }
         }
-        val configPath = "/etc/hint/config.properties"
+
+        var configPath = "/etc/hint/config.properties"
         val properties = readProperties(configPath)
     }
 }

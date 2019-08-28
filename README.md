@@ -19,6 +19,11 @@ and [hintr](https://github.com/mrc-ide/hintr) and add a test user with username 
 
 For more information about developing the front-end see [src/app/static/README](src/app/static/README)
 
+### Database Interface
+
+If the database schema has changed, you can regenerate the database interface code (in /src/databaseInterface)
+by running `./gradlew :generateDatabaseInterface:run` from the `src` folder while the database container is running.
+
 ### Distribution
 A docker image containing the app is created by running `./scripts/build-app.sh`. This is run as part of 
 the Travis build. 

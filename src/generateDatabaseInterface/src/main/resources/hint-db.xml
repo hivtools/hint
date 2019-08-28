@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration xmlns="http://www.jooq.org/xsd/jooq-codegen-3.6.0.xsd">
+    <jdbc>
+        <driver>org.postgresql.Driver</driver>
+        <url>jdbc:postgresql://localhost:5432/hint</url>
+        <user>hintuser</user>
+        <password>changeme</password>
+    </jdbc>
+
+    <generator>
+        <name>org.jooq.util.JavaGenerator</name>
+
+        <database>
+            <name>org.jooq.util.postgres.PostgresDatabase</name>
+            <inputSchema>public</inputSchema>
+            <includes>.*</includes>
+            <excludes>flyway_schema_history</excludes>
+        </database>
+
+        <target>
+            <packageName>org.imperial.mrc.hint.db</packageName>
+            <directory>../databaseInterface/src/main/java</directory>
+        </target>
+    </generator>
+</configuration>
