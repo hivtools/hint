@@ -82,6 +82,7 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) : Inte
     fun `can get static resources`() {
         val entity = restTemplate.getForEntity<String>("/public/css/style.css")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.headers.contentType!!.toString()).isEqualTo("text/css")
     }
 
 }

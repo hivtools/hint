@@ -12,6 +12,6 @@ class SecurityConfig(val config: Config): WebMvcConfigurer {
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login", "/login/", "/password/**", "/callback", "/callback/")
+                .excludePathPatterns("/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
     }
 }
