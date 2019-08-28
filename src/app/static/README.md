@@ -6,7 +6,7 @@ Type definitions are auto-generated based on the
 [hintr API schema](https://github.com/mrc-ide/hintr/tree/master/inst/schema). To 
 re-generate types run 
 
-    ./generate-types.sh <BRANCH_NAME>
+    ./scripts/generate-types.sh <BRANCH_NAME>
 
 From this directory
 
