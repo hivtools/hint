@@ -10,10 +10,21 @@ import {
 
 type ResponseData = ValidateInputResponse | ModelRunResultResponse | InitialiseModelRunResponse | InternalResponse | null
 
+declare var appUrl: string;
+
 export class APIService {
 
+    // appUrl var should be set externally in the browser
+    baseUrl = typeof appUrl !== "undefined" ? appUrl: "";
+
+    buildFullUrl = (url: string) => {
+        return this.baseUrl + url
+    };
+
     get<T extends ResponseData>(url: string) {
-        return axios.get(url)
+        const fullUrl = this.buildFullUrl(url);
+        console.log(`GET ${fullUrl}`);
+        return axios.get(fullUrl)
             .then((response: AxiosResponse<Success>) => {
                 const payload = response && response.data;
                 return payload.data as T
@@ -24,12 +35,15 @@ export class APIService {
     }
 
     postAndReturn<T extends ResponseData>(url: string, data: any) {
-        return axios.post(url, data)
+        const fullUrl = this.buildFullUrl(url);
+        console.log(`POST ${fullUrl}`);
+        return axios.post(fullUrl, data)
             .then((response: AxiosResponse<Success>) => {
                 const payload = response && response.data;
                 return payload.data as T
             })
             .catch((e: AxiosError<Failure>) => {
+                console.log(e)
                return this.handleError(e)
             });
     }

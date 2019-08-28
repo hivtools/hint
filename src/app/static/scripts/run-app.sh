@@ -2,12 +2,12 @@
 
 set -ex
 
-HERE=$(dirname $0)
+HERE=$(readlink -f "$(dirname $0)")
 NETWORK=hint_nw
 DB=hint_db
 API=hintr
 HINT=hint
-HINTR_VERSION=$(<$HERE/../../config/hintr_version)
+HINTR_VERSION=$(<$HERE/../../../config/hintr_version)
 HINT_VERSION=master
 
 REGISTRY=mrcide

@@ -7,7 +7,8 @@
     "sass": "gulp sass",
     "js": "webpack",
     "build": "webpack && gulp sass",
-    "test": "jest -c jest.config.js"
+    "test": "jest -c jest.config.js",
+    "integration-test": "jest -c jest.integration.config.js"
   },
   "author": "",
   "license": "MIT",
