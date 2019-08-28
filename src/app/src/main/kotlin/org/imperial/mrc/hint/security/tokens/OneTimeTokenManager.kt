@@ -37,7 +37,7 @@ open class OneTimeTokenManager(
         return token
     }
 
-    open fun validateToken(token: String): CommonProfile
+    open fun validateToken(token: String): CommonProfile?
     {
         return authenticator.validateToken(token)
     }

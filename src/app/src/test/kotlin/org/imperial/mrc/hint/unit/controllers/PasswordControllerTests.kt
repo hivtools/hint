@@ -90,7 +90,7 @@ class PasswordControllerTests {
 
 
     @Test
-    fun `resetPassword validates password and updates password`()
+    fun `postResetPassword validates password and updates password`()
     {
         val mockProfile = mock<CommonProfile>()
 
@@ -103,6 +103,24 @@ class PasswordControllerTests {
         val result = sut.postResetPassword("testToken", "testPassword")
 
         verify(mockTokenMan).validateToken("testToken")
+        verify(mockUserRepo).updateUserPassword(mockProfile, "testPassword")
         assertThat(result).isEqualTo("")
+    }
+
+    @Test
+    fun `postResetPassword does not update password if token is not valid`()
+    {
+        val mockTokenMan = mock<OneTimeTokenManager>{
+            on { validateToken("testToken") } doReturn (null as CommonProfile?)
+        }
+
+        val sut = PasswordController(mockUserRepo, mockTokenMan, mockAppProperties, mockEmailManager)
+
+        val result = sut.postResetPassword("testToken", "testPassword")
+
+        verify(mockTokenMan).validateToken("testToken")
+        verify(mockUserRepo, never()).updateUserPassword(any(), any())
+
+        assertThat(result).isEqualTo("bad token")
     }
 }

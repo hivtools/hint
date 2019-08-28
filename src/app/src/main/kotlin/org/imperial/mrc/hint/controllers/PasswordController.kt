@@ -54,10 +54,16 @@ class PasswordController(private val userRepository: UserRepository,
     fun postResetPassword(@RequestParam("token") token: String,
                          @RequestParam("password") password: String): String
     {
-        //verify that token is valid, get user profile
         val user = oneTimeTokenManager.validateToken(token)
-
-        //update password
+        if (user != null)
+        {
+            userRepository.updateUserPassword(user, password)
+        }
+        else
+        {
+            //TODO: return an error response
+            return "bad token"
+        }
 
         return ""
     }
