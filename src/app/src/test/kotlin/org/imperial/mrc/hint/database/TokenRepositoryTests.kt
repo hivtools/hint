@@ -24,18 +24,43 @@ open class TokenRepositoryTests {
     @Autowired
     private lateinit var dataSource: DataSource
 
+    private val TOKEN = "testToken"
+
     @Test
     fun `can store token`()
     {
-        sut.storeOneTimeToken("testToken")
+        sut.storeOneTimeToken(TOKEN)
+        assertThat(checkIfTokenExists()).isTrue()
+    }
 
+    @Test
+    fun `validateOneTimeToken returns true and deletes if token exists`()
+    {
+        sut.storeOneTimeToken(TOKEN)
+
+        val result = sut.validateOneTimeToken(TOKEN)
+
+        assertThat(result).isTrue()
+        assertThat(checkIfTokenExists()).isFalse()
+    }
+
+    @Test
+    fun `validateOneTimeToken returns false if token does not exist`()
+    {
+        val result = sut.validateOneTimeToken(TOKEN)
+
+        assertThat(result).isFalse()
+    }
+
+    private fun checkIfTokenExists(): Boolean
+    {
         JooqContext(dataSource).use{
-            var result = it.dsl.select()
-            .from(ONETIME_TOKEN)
-            .where(ONETIME_TOKEN.TOKEN.eq("testToken"))
-            .fetch()
+            val result = it.dsl.select()
+                    .from(ONETIME_TOKEN)
+                    .where(ONETIME_TOKEN.TOKEN.eq(TOKEN))
+                    .fetch()
 
-            assertThat(result.count()).isEqualTo(1)
+            return result.count() == 1
         }
     }
 }
