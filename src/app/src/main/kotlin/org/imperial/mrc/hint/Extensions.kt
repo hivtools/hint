@@ -1,9 +1,6 @@
 package org.imperial.mrc.hint
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.core.Response
-import org.imperial.mrc.hint.models.ErrorResponse
-import org.imperial.mrc.hint.models.SuccessResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
