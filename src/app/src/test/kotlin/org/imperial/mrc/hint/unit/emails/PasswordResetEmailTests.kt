@@ -38,6 +38,8 @@ To change your password on testApp please browse to:
 
 http://testAppUrl/password/reset-password/?token=testToken
 
+This link will expire in 24 hours. If you don't get a chance to use it within that time, you can request a new one.
+
 If you did not request a password change, or you no longer want to change your password, please ignore this email.
 
 Have a great day!""")
@@ -62,6 +64,9 @@ Have a great day!""")
 <p>
     To change your password on testApp please click:
     <a href="http://testAppUrl/password/reset-password/?token=testToken">here</a>.
+</p>
+<p>
+    This link will expire in 24 hours. If you don't get a chance to use it within that time, you can request a new one.
 </p>
 <p>
     If you did not request a password change, or you no longer want to change your password, please ignore this email.
