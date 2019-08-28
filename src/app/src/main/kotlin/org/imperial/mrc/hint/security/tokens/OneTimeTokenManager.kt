@@ -37,9 +37,9 @@ open class OneTimeTokenManager(
         return token
     }
 
-    fun validateToken(token: String): CommonProfile
+    open fun validateToken(token: String): CommonProfile
     {
-        return authenticator.validateToken(token);
+        return authenticator.validateToken(token)
     }
 
     fun validateTokenAndGetClaims(token: String): Map<String, Any>

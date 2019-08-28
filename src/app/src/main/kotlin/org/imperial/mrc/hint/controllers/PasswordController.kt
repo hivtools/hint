@@ -44,15 +44,15 @@ class PasswordController(private val userRepository: UserRepository,
     }
 
     @GetMapping("/reset-password")
-    fun resetPassword(@RequestParam("token") token: String, model: Model): String {
+    fun getResetPassword(@RequestParam("token") token: String, model: Model): String {
         model["token"] = token
         return "reset-password"
     }
 
     @PostMapping("/reset-password")
     @ResponseBody
-    fun resetPassword(@RequestParam("token") token: String,
-            @RequestParam("password") password: String): String
+    fun postResetPassword(@RequestParam("token") token: String,
+                         @RequestParam("password") password: String): String
     {
         //verify that token is valid, get user profile
         val user = oneTimeTokenManager.validateToken(token)

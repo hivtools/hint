@@ -5,7 +5,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.controllers.PasswordController
 import org.imperial.mrc.hint.db.UserRepository
-import org.imperial.mrc.hint.emails.EmailData
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordResetEmail
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
@@ -39,17 +38,17 @@ class PasswordControllerTests {
     @Test
     fun `requestResetLink gets user and generates Token`()
     {
-        val mockTokenGen = mock<OneTimeTokenManager> {
+        val mockTokenMan = mock<OneTimeTokenManager> {
             on { generateOnetimeSetPasswordToken( mockUser ) } doReturn "testToken"
         }
 
-        val sut = PasswordController(mockUserRepo, mockTokenGen, mockAppProperties, mockEmailManager)
+        val sut = PasswordController(mockUserRepo, mockTokenMan, mockAppProperties, mockEmailManager)
 
         val result = sut.requestResetLink("test.user@test.com")
 
         assertThat(result).isEqualTo("")
 
-        verify(mockTokenGen).generateOnetimeSetPasswordToken(mockUser)
+        verify(mockTokenMan).generateOnetimeSetPasswordToken(mockUser)
 
         argumentCaptor<PasswordResetEmail>().apply{
             verify(mockEmailManager).sendEmail(capture(), eq("test.user@test.com"))
@@ -66,15 +65,32 @@ class PasswordControllerTests {
     @Test
     fun `requestResetLink does not generate token if user does not exist`()
     {
-        val mockTokenGen = mock<OneTimeTokenManager> {
+        val mockTokenMan = mock<OneTimeTokenManager> {
             on { generateOnetimeSetPasswordToken( mockUser ) } doReturn "token"
         }
 
-        val sut = PasswordController(mockUserRepo, mockTokenGen, mockAppProperties, mockEmailManager)
+        val sut = PasswordController(mockUserRepo, mockTokenMan, mockAppProperties, mockEmailManager)
 
         val result = sut.requestResetLink("nonexistent@test.com")
 
-        verify(mockTokenGen, never()).generateOnetimeSetPasswordToken(any())
+        verify(mockTokenMan, never()).generateOnetimeSetPasswordToken(any())
+        assertThat(result).isEqualTo("")
+    }
+
+    @Test
+    fun `resetPassword validates password and updates password`()
+    {
+        val mockProfile = mock<CommonProfile>()
+
+        val mockTokenMan = mock<OneTimeTokenManager>{
+            on { validateToken("testToken") } doReturn mockProfile
+        }
+
+        val sut = PasswordController(mockUserRepo, mockTokenMan, mockAppProperties, mockEmailManager)
+
+        val result = sut.postResetPassword("testToken", "testPassword")
+
+        verify(mockTokenMan).validateToken("testToken")
         assertThat(result).isEqualTo("")
     }
 }
