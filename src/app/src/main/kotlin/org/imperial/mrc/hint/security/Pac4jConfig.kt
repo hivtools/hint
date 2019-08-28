@@ -12,12 +12,12 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @ComponentScan(basePackages = ["org.pac4j.springframework.web", "org.pac4j.springframework.component"])
-open class Pac4jConfig {
+class Pac4jConfig {
 
    @Autowired lateinit var profileService: DbProfileService
 
    @Bean
-    open fun getConfig(): Config {
+    fun getConfig(): Config {
         val formClient = FormClient("/login", profileService)
         val clients = Clients("/callback", formClient)
         return Config(clients).apply {

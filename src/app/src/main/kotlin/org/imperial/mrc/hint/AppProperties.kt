@@ -13,7 +13,7 @@ interface AppProperties {
 }
 
 @Configuration
-open class ConfiguredAppProperties(props: Properties = properties): AppProperties {
+class ConfiguredAppProperties(props: Properties = properties): AppProperties {
 
     override val uploadDirectory = props["upload_dir"].toString()
     override val tokenIssuer = props["token_issuer"].toString()

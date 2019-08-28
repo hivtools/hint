@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
-open class SecurityConfig(val config: Config): WebMvcConfigurer {
+class SecurityConfig(val config: Config): WebMvcConfigurer {
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
                 .addPathPatterns("/")

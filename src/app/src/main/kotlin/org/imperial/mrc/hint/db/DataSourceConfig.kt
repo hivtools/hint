@@ -7,11 +7,11 @@ import org.springframework.context.annotation.Configuration
 import javax.sql.DataSource
 
 @Configuration
-open class DataSourceConfig
+class DataSourceConfig
 {
     @Bean
     @ConfigurationProperties(prefix="spring.datasource")
-    open fun dataSource(): DataSource
+    fun dataSource(): DataSource
     {
         return DataSourceBuilder.create().build()
     }

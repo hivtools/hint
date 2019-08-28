@@ -1,7 +1,6 @@
 package org.imperial.mrc.hint
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.httpPost
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.ResponseEntity
@@ -11,7 +10,7 @@ interface APIClient {
 }
 
 @Configuration
-open class HintAPIClient(
+class HintAPIClient(
         appProperties: AppProperties,
         private val objectMapper: ObjectMapper) : APIClient {
 

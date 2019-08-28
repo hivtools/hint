@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @Transactional
-open class UserRepositoryTests {
+class UserRepositoryTests {
     @Autowired
     private lateinit var sut: UserRepository
 
@@ -26,7 +26,7 @@ open class UserRepositoryTests {
     }
 
     @Test
-    open fun `can add user`()
+    fun `can add user`()
     {
         sut.addUser(TEST_EMAIL, "testpassword")
 
@@ -34,7 +34,7 @@ open class UserRepositoryTests {
     }
 
     @Test
-    open fun `can remove user`()
+    fun `can remove user`()
     {
         sut.addUser(TEST_EMAIL, "testpassword")
 
@@ -43,7 +43,7 @@ open class UserRepositoryTests {
     }
 
     @Test
-    open fun `cannot add same user twice`()
+    fun `cannot add same user twice`()
     {
         sut.addUser(TEST_EMAIL, "testpassword")
 
@@ -54,7 +54,7 @@ open class UserRepositoryTests {
     }
 
     @Test
-    open fun `cannot remove nonexistent user`()
+    fun `cannot remove nonexistent user`()
     {
         Assertions.assertThatThrownBy{ sut.removeUser("notaperson.@email.com") }
                 .isInstanceOf(UserException::class.java)

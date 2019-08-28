@@ -15,7 +15,7 @@ interface UserRepository
 }
 
 @Configuration
-open class DbProfileServiceUserRepository(@Autowired val profileService: DbProfileService): UserRepository
+class DbProfileServiceUserRepository(@Autowired val profileService: DbProfileService): UserRepository
 {
     override fun addUser(email: String, password: String)
     {
