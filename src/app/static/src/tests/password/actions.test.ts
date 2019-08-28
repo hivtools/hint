@@ -48,4 +48,38 @@ describe("Password actions", () => {
         })
     });
 
+    it("calls reset password endpoint and commits success", (done) => {
+
+        mockAxios.onPost(`/password/reset-password/`)
+            .reply(200, "");
+
+        const commit = jest.fn();
+        actions.resetPassword({commit} as any, {"token": "testToken", "password": "new_password"});
+
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: "ResetPassword",
+                payload: null
+            });
+            done();
+        })
+    });
+
+    it("calls reset password endpoint and commits error", (done) => {
+
+        mockAxios.onPost(`/password/reset-password/`)
+            .reply(500, { message: "test error"});
+
+        const commit = jest.fn();
+        actions.resetPassword({commit} as any, {"token": "testToken", "password": "new_password"});
+
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: "ResetPasswordError",
+                payload: "test error"
+            });
+            done();
+        })
+    });
+
 });
