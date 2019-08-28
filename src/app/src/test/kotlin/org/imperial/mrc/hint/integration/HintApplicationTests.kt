@@ -1,6 +1,8 @@
 package org.imperial.mrc.hint.integration
 
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.helpers.AuthInterceptor
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -11,16 +13,21 @@ import org.springframework.http.*
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.LinkedMultiValueMap
 
-@ActiveProfiles(profiles=["test"])
+@ActiveProfiles(profiles = ["test"])
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
 
-    @Test
-    fun contextLoads() {
+    private fun authorize() {
+        restTemplate.restTemplate.interceptors.add(AuthInterceptor(restTemplate))
+    }
+
+    @BeforeEach
+    private fun clearAuth(){
+        restTemplate.restTemplate.interceptors.clear()
     }
 
     @Test
-    fun `Assert redirects to login page`() {
+    fun `unauthorized users are redirected to login page`() {
         val entity = restTemplate.getForEntity<String>("/")
         assertThat(entity.body!!).contains("Log In")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
@@ -28,29 +35,10 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
 
     @Test
     fun `can login with correct credentials`() {
-        val map = LinkedMultiValueMap<String, String>()
-        map.add("username", "test.user@example.com")
-        map.add("password", "password")
-
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-
-        val entity = restTemplate.postForEntity<String>("/callback/", HttpEntity(map, headers))
-
-        //test get redirected to '/'
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.FOUND)
-        assertThat(entity.headers["Location"]!!.first()).isEqualTo("/")
-
-        val cookies = entity.headers["Set-Cookie"]!!.first().split(";")
-        val sessionCookie = cookies.first{it.startsWith("JSESSIONID")}.split("=")[1]
-
-        //Assert can access '/' using the returned cookie
-        val rootHeaders = HttpHeaders()
-        rootHeaders.put("Cookie", listOf("JSESSIONID=" + sessionCookie))
-        val getRootEntity = HttpEntity(null, rootHeaders)
-        val rootEntity = restTemplate.exchange("/", HttpMethod.GET, getRootEntity, String::class.java)
-
+        authorize()
+        val rootEntity = restTemplate.getForEntity<String>("/")
         assertThat(rootEntity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(rootEntity.body!!).contains("<a href=\"/logout\">Logout</a>")
     }
 
     @Test
@@ -68,6 +56,23 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
         assertThat(entity.statusCode).isEqualTo(HttpStatus.FOUND)
         assertThat(entity.headers["Location"]!!.first())
                 .isEqualTo("/login?username=test.user%40example.com&error=BadCredentialsException")
+    }
+
+    @Test
+    fun `unauthorized users cannot access REST endpoints`() {
+        val entity = restTemplate.getForEntity<String>("/baseline/")
+
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body!!).contains("Log In")
+    }
+
+    @Test
+    fun `authorized users can access REST endpoints`() {
+        authorize()
+        val entity = restTemplate.getForEntity<String>("/baseline/")
+
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body!!).isEqualTo("{\"pjnz\": null}")
     }
 
 }
