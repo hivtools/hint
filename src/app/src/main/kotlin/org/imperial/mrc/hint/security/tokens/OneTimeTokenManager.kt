@@ -3,11 +3,10 @@ package org.imperial.mrc.hint.security.tokens
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.TokenRepository
 import org.pac4j.core.profile.CommonProfile
-import org.springframework.context.annotation.Configuration
-import org.pac4j.jwt.config.signature.RSASignatureConfiguration
+import org.pac4j.jwt.config.signature.SignatureConfiguration
 import org.pac4j.jwt.profile.JwtGenerator
+import org.springframework.context.annotation.Configuration
 import java.time.Duration
-import java.security.KeyPair
 import java.security.SecureRandom
 import java.time.Instant
 import java.util.*
@@ -16,17 +15,13 @@ import java.util.*
 open class OneTimeTokenManager(
         appProperties: AppProperties,
         private val tokenRepository: TokenRepository,
-        tokenChecker: OneTimeTokenChecker
+        signatureConfiguration: SignatureConfiguration,
+        private val authenticator: OneTimeTokenAuthenticator
 )
 {
-    private val keyPair: KeyPair = KeyHelper.keyPair
-    private val signatureConfiguration = RSASignatureConfiguration(keyPair)
     private val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
     private val issuer = appProperties.tokenIssuer
     private val random = SecureRandom()
-
-    private val authenticator = OneTimeTokenAuthenticator(signatureConfiguration, tokenChecker, issuer)
-
 
     open fun generateOnetimeSetPasswordToken(user: CommonProfile): String
     {

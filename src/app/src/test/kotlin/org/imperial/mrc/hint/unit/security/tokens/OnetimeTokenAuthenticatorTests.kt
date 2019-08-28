@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.security.tokens.KeyHelper
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenAuthenticator
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenChecker
@@ -26,6 +27,10 @@ class OnetimeTokenAuthenticatorTests{
         on { checkToken(any()) } doReturn true
     }
 
+    private val mockAppProperties = mock<AppProperties>{
+        on { tokenIssuer } doReturn "right issuer"
+    }
+
     @Test
     fun `can get claims when token is valid`() {
         val token= tokenGenerator.generate(mapOf(
@@ -34,7 +39,7 @@ class OnetimeTokenAuthenticatorTests{
                 "exp" to Date.from(Instant.now().plus(Duration.ofDays(1)))
         ))
 
-        val sut = OneTimeTokenAuthenticator(signatureConfiguration, okTokenChecker, "right issuer")
+        val sut = OneTimeTokenAuthenticator(signatureConfiguration, okTokenChecker, mockAppProperties)
 
         val profile = sut.validateToken(token)
         assertThat(profile).isNotNull()
@@ -51,7 +56,7 @@ class OnetimeTokenAuthenticatorTests{
                 "exp" to Date.from(Instant.now().plus(Duration.ofDays(1)))
         ))
 
-        val sut = OneTimeTokenAuthenticator(signatureConfiguration, okTokenChecker, "right issuer")
+        val sut = OneTimeTokenAuthenticator(signatureConfiguration, okTokenChecker, mockAppProperties)
 
         val profile = sut.validateToken(token)
         assertThat(profile).isNull()
@@ -69,7 +74,7 @@ class OnetimeTokenAuthenticatorTests{
             on { checkToken(any()) } doReturn false
         }
 
-        val sut = OneTimeTokenAuthenticator(signatureConfiguration, mockTokenChecker, "right issuer")
+        val sut = OneTimeTokenAuthenticator(signatureConfiguration, mockTokenChecker, mockAppProperties)
 
         val profile = sut.validateToken(token)
         assertThat(profile).isNull()
@@ -84,7 +89,7 @@ class OnetimeTokenAuthenticatorTests{
                 "exp" to Date.from(Instant.now().minus(Duration.ofDays(1)))
         ))
 
-        val sut = OneTimeTokenAuthenticator(signatureConfiguration, okTokenChecker, "right issuer")
+        val sut = OneTimeTokenAuthenticator(signatureConfiguration, okTokenChecker, mockAppProperties)
 
         val profile = sut.validateToken(token)
         assertThat(profile).isNull()
