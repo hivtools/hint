@@ -21,7 +21,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         let formData = new FormData();
         formData.append('file', file);
         // TODO change from any type once survey response added to spec
-        api.postAndReturn<any>("/survey/", formData)
+        api.postAndReturn<any>("/disease/survey/", formData)
             .then((payload) => {
                 commit<SurveyAndProgramPayload<SurveyResponse>>({type: "SurveyLoaded", payload});
             })
