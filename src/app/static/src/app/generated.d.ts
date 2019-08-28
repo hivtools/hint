@@ -111,33 +111,23 @@ export interface PjnzResponseData {
 export type Response = Success | Failure;
 
 export interface Success {
-  status: "success"
+  status: {
+    [k: string]: any;
+  };
   data:
     | (
-        | ({
+        | {
             filename: string;
-            type: string;
+            type: "pjnz";
             data: {
-              [k: string]: any;
-            };
-          } & {
-            filename?: any;
-            type?: "pjnz";
-            data?: {
               country: string;
             };
-          })
-        | ({
+          }
+        | {
             filename: string;
-            type: string;
-            data: {
-              [k: string]: any;
-            };
-          } & {
-            filename?: any;
-            type?: "shape";
-            data?: string;
-          }))
+            type: "shape";
+            data: string;
+          })
     | {
         processId: string;
       }
@@ -175,7 +165,9 @@ export interface Success {
   };
 }
 export interface Failure {
-  status: "failure"
+  status: {
+    [k: string]: any;
+  };
   data: {
     [k: string]: any;
   };
@@ -197,23 +189,16 @@ export interface ValidateInputRequest {
   path: string | null;
 }
 export type ValidateInputResponse = PjnzResponse | ShapeResponse;
-export type PjnzResponse = InputResponse & {
-  filename?: any;
-  type?: "pjnz";
-  data?: {
+
+export interface PjnzResponse {
+  filename: string;
+  type: "pjnz";
+  data: {
     country: string;
   };
-};
-export type ShapeResponse = InputResponse & {
-  filename?: any;
-  type?: "shape";
-  data?: string;
-};
-
-export interface InputResponse {
+}
+export interface ShapeResponse {
   filename: string;
-  type: string;
-  data: {
-    [k: string]: any;
-  };
+  type: "shape";
+  data: string;
 }

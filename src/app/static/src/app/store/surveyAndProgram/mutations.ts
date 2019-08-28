@@ -1,6 +1,7 @@
 import {Mutation, MutationTree} from 'vuex';
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
-import {SurveyAndProgramPayload, SurveyResponse} from "./actions";
+import {SurveyAndProgramPayload} from "./actions";
+import {SurveyResponse} from "../../types";
 
 interface SurveyAndProgramMutation extends Mutation<SurveyAndProgramDataState> {
     payload?: SurveyAndProgramPayload<any>
