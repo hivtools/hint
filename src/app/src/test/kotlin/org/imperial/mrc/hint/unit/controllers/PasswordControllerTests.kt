@@ -10,6 +10,7 @@ import org.imperial.mrc.hint.emails.PasswordResetEmail
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
+import org.springframework.ui.ConcurrentModel
 
 class PasswordControllerTests {
 
@@ -76,6 +77,17 @@ class PasswordControllerTests {
         verify(mockTokenMan, never()).generateOnetimeSetPasswordToken(any())
         assertThat(result).isEqualTo("")
     }
+
+    @Test
+    fun `getResetPassword returns expected template and model`()
+    {
+        val sut = PasswordController(mockUserRepo,  mock(), mockAppProperties, mockEmailManager)
+        val model = ConcurrentModel()
+        val result = sut.getResetPassword("testToken", model)
+        assertThat(result).isEqualTo("reset-password")
+        assertThat(model["token"]).isEqualTo("testToken")
+    }
+
 
     @Test
     fun `resetPassword validates password and updates password`()
