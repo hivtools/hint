@@ -9,20 +9,23 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
-import org.springframework.http.*
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.LinkedMultiValueMap
 
 @ActiveProfiles(profiles = ["test"])
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
+class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) : IntegrationTests() {
 
     private fun authorize() {
         restTemplate.restTemplate.interceptors.add(AuthInterceptor(restTemplate))
     }
 
     @BeforeEach
-    private fun clearAuth(){
+    private fun clearAuth() {
         restTemplate.restTemplate.interceptors.clear()
     }
 
@@ -73,6 +76,12 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
 
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(entity.body!!).isEqualTo("{\"pjnz\": null}")
+    }
+
+    @Test
+    fun `can get static resources`() {
+        val entity = restTemplate.getForEntity<String>("/public/css/style.css")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
     }
 
 }

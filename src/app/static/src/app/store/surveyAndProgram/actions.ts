@@ -1,22 +1,14 @@
-import {ActionContext, ActionPayload, ActionTree} from 'vuex';
+import {ActionContext, ActionTree, Payload} from 'vuex';
 import {RootState} from "../../main";
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
-import {GeoJSON} from "geojson";
 import {api} from "../../apiService";
+import {SurveyResponse} from "../../types";
 
 export type SurveyAndProgramActionTypes = "SurveyLoaded" | "SurveyError"
 
-export interface SurveyAndProgramPayload extends ActionPayload {
+export interface SurveyAndProgramPayload<T> extends Payload {
     type: SurveyAndProgramActionTypes
-}
-
-export interface SurveyLoaded extends SurveyAndProgramPayload {
-    filename: string
-    geoJson: GeoJSON
-}
-
-export interface SurveyError extends SurveyAndProgramPayload {
-    error: string
+    payload: T
 }
 
 export interface SurveyAndProgramActions {
@@ -28,12 +20,12 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     uploadSurvey({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
-        api.postAndReturn<SurveyLoaded>("/survey/", formData)
+        api.postAndReturn<SurveyResponse>("/disease/survey/", formData)
             .then((payload) => {
-                commit<SurveyAndProgramPayload>({type: "SurveyLoaded", payload});
+                commit<SurveyAndProgramPayload<SurveyResponse>>({type: "SurveyLoaded", payload});
             })
             .catch((error: Error) => {
-                commit<SurveyAndProgramPayload>({type: 'SurveyError', payload: error.message});
+                commit<SurveyAndProgramPayload<string>>({type: 'SurveyError', payload: error.message});
             });
     }
 };

@@ -1,4 +1,5 @@
 import {api} from "../app/apiService";
+import {Failure} from "../app/generated";
 
 describe("ApiService", () => {
 
@@ -11,21 +12,21 @@ describe("ApiService", () => {
     });
 
     it("console logs error", () => {
-        const e = {status: 400, message: "missing parameter", error: "bad request"};
-
+        const error = {detail: "missing parameter", error: "OTHER_ERROR"};
+        const e = {errors: [error]} as Partial<Failure>;
         try {
-            api.handleError({response: {data: e}});
+            api.handleError({response: {data: e}} as any);
         } catch (e) {
 
         }
-        expect((console.log as jest.Mock).mock.calls[0][0]).toStrictEqual(e);
+        expect((console.log as jest.Mock).mock.calls[0][0][0]).toStrictEqual(error);
     });
 
     it("rethrows simple error", () => {
-        const e = {status: 400, message: "missing parameter", error: "bad request"};
-
+        const error = {detail: "missing parameter", error: "OTHER_ERROR"};
+        const e = {errors: [error]} as Partial<Failure>;
         try {
-            api.handleError({response: {data: e}});
+            api.handleError({response: {data: e}} as any);
         } catch (e) {
             expect(e.message).toBe("missing parameter");
         }

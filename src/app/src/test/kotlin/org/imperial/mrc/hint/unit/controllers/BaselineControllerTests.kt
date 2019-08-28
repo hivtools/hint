@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.unit.controllers
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -48,8 +49,10 @@ class BaselineControllerTests {
         }
 
         val sut = BaselineController(mockFileManager)
-        assertThat(sut.get())
-                .isEqualTo("{\"pjnz\": { \"filename\": \"Malawi_file_name.pjnz\", \"country\": \"Malawi\"}}")
+        val result = sut.get()
+        val data = ObjectMapper().readTree(result)["data"]["pjnz"].toString()
+        assertThat(data)
+                .isEqualTo("{\"filename\":\"Malawi_file_name.pjnz\",\"data\":{\"country\":\"Malawi\"},\"type\":\"pjnz\"}")
     }
 
     @Test
@@ -59,7 +62,9 @@ class BaselineControllerTests {
             on { getFile(FileType.PJNZ) } doReturn null as File?
         }
         val sut = BaselineController(mockFileManager)
-        assertThat(sut.get())
-                .isEqualTo("{\"pjnz\": null}")
+        val result = sut.get()
+        val data = ObjectMapper().readTree(result)["data"].toString()
+        assertThat(data)
+                .isEqualTo("{\"pjnz\":null}")
     }
 }
