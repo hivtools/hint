@@ -59,7 +59,8 @@ class JSONValidator {
         }
         if (problems.any()) {
             Assertions.fail<Any>(
-                    "JSON failed schema validation. Attempted to validate: $jsonString against $schemaName."
+                    "JSON failed schema validation. Attempted to validate: $jsonString against $schemaName. " +
+                            "Problems were ${problems.joinToString(",")}"
             )
         }
     }

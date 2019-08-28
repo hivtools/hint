@@ -12,6 +12,7 @@ export interface Error {
   detail?: string | null;
 }
 export type ErrorTypes = "INVALID_FILE" | "FAILED_TO_QUEUE" | "INVALID_PJNZ" | "OTHER_ERROR" | "FAILED_TO_CHECK_STATUS";
+export type FileName = string;
 export type FilePath = string | null;
 export interface InitialiseModelRunRequest {
   pjnz: string | null;
@@ -104,6 +105,9 @@ export interface Complete {
     };
   };
 }
+export interface PjnzResponseData {
+  country: string;
+}
 export type Response = Success | Failure;
 
 export interface Success {
@@ -111,7 +115,19 @@ export interface Success {
     [k: string]: any;
   };
   data:
-    | string
+    | (
+        | {
+            filename: string;
+            type: "pjnz";
+            data: {
+              country: string;
+            };
+          }
+        | {
+            filename: string;
+            type: "shape";
+            data: string;
+          })
     | {
         processId: string;
       }
@@ -166,9 +182,23 @@ export interface Failure {
     })[]
   ];
 }
+export type ShapefileResponseData = string;
 export type URI = string;
 export interface ValidateInputRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
   path: string | null;
 }
-export type ValidateInputResponse = string;
+export type ValidateInputResponse = PjnzResponse | ShapeResponse;
+
+export interface PjnzResponse {
+  filename: string;
+  type: "pjnz";
+  data: {
+    country: string;
+  };
+}
+export interface ShapeResponse {
+  filename: string;
+  type: "shape";
+  data: string;
+}
