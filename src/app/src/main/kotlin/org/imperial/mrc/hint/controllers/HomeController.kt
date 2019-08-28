@@ -15,7 +15,7 @@ class HomeController(private val appProperties: AppProperties) {
 
     @GetMapping("/")
     fun index(model: Model): String {
-        model["title"] = "HINT"
+        model["title"] = appProperties.applicationTitle
         return "index"
     }
 
