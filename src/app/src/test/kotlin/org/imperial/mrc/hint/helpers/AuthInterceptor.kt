@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.helpers
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.*
@@ -23,9 +23,8 @@ class AuthInterceptor(restTemplate: TestRestTemplate) : ClientHttpRequestInterce
 
         val entity = restTemplate.postForEntity<String>("/callback/", HttpEntity(map, headers))
 
-        //test get redirected to '/'
-        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.FOUND)
-        Assertions.assertThat(entity.headers["Location"]!!.first()).isEqualTo("/")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.FOUND)
+        assertThat(entity.headers.location).isEqualTo("/")
 
         val cookies = entity.headers["Set-Cookie"]!!.first().split(";")
         this.sessionCookie = cookies.first { it.startsWith("JSESSIONID") }.split("=")[1]
@@ -35,5 +34,4 @@ class AuthInterceptor(restTemplate: TestRestTemplate) : ClientHttpRequestInterce
         request.headers.add("Cookie", "JSESSIONID=$sessionCookie")
         return execution.execute(request, body)
     }
-
 }
