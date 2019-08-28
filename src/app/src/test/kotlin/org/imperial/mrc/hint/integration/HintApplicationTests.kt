@@ -32,7 +32,7 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) : Inte
     @Test
     fun `unauthorized users are redirected to login page`() {
         val entity = restTemplate.getForEntity<String>("/")
-        assertThat(entity.body!!).contains("Log In")
+        assertThat(entity.body!!).contains("<title>Login</title>")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -66,7 +66,7 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) : Inte
         val entity = restTemplate.getForEntity<String>("/baseline/")
 
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(entity.body!!).contains("Log In")
+        assertThat(entity.body!!).contains("<title>Login</title>")
     }
 
     @Test
@@ -75,7 +75,7 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) : Inte
         val entity = restTemplate.getForEntity<String>("/baseline/")
 
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(entity.body!!).isEqualTo("{\"pjnz\": null}")
+        assertThat(entity.body!!).isEqualTo("{\"errors\":{},\"status\":\"success\",\"data\":{\"pjnz\":null}}")
     }
 
     @Test

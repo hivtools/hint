@@ -1,32 +1,26 @@
 package org.imperial.mrc.hint.integration
 
-import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.helpers.createTestHttpEntity
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
-import org.springframework.http.HttpStatus
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class BaselineTests(@Autowired val testRestTemplate: TestRestTemplate): IntegrationTests() {
+class BaselineTests : SecureIntegrationTests() {
 
-    @Test
-    fun `can get baseline data`() {
-        val entity = testRestTemplate.getForEntity<String>("/baseline/")
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can get baseline data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.getForEntity<String>("/baseline/")
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
     }
 
-    @Test
-    fun `can upload pjnz file`() {
-
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can upload pjnz file`(isAuthorized: IsAuthorized) {
         val postEntity = createTestHttpEntity("Malawi_2018.pjnz")
-        val entity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-        JSONValidator().validateSuccess(entity.body!!, "ValidateInputResponse")
+        val responseEntity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
     }
 
 }

@@ -21,11 +21,9 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
 import java.nio.file.Files
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(profiles=["test"])
 @ExtendWith(SpringExtension::class)
 @Transactional
-open class PasswordTests(@Autowired val restTemplate: TestRestTemplate) {
+class PasswordTests(@Autowired val restTemplate: TestRestTemplate): IntegrationTests() {
 
     companion object {
         @BeforeAll
@@ -36,7 +34,8 @@ open class PasswordTests(@Autowired val restTemplate: TestRestTemplate) {
     }
 
     @AfterEach
-    fun tearDown() {
+    override fun tearDown() {
+        super.tearDown()
         WriteToDiskEmailManager.cleanOutputDirectory()
     }
 
