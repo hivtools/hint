@@ -14,30 +14,30 @@ import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
-import org.pac4j.jwt.config.signature.SignatureConfiguration
 import java.time.Instant
 import java.util.*
 
 class OneTimeTokenManagerTests {
 
+    private val mockAppProperties = mock<AppProperties>(){
+        on { tokenIssuer } doReturn "test issuer"
+    }
+
+    private val mockUser = mock<CommonProfile> {
+        on { username } doReturn "test user"
+    }
+
+    private val mockTokenRepository = mock<TokenRepository>()
+
+    private val mockTokenChecker =  mock<OneTimeTokenChecker> {
+        on { checkToken(any()) } doReturn true
+    }
+
+    private val signatureConfig = RSASignatureConfiguration(KeyHelper.keyPair)
+
     @Test
     fun `can generate onetime set password token`()
     {
-        val mockAppProperties = mock<AppProperties>(){
-            on { tokenIssuer } doReturn "test issuer"
-        }
-
-        val mockUser = mock<CommonProfile> {
-            on { username } doReturn "test user"
-        }
-
-        val mockTokenRepository = mock<TokenRepository>()
-
-        val mockTokenChecker =  mock<OneTimeTokenChecker> {
-            on { checkToken(any()) } doReturn true
-        }
-
-        val signatureConfig = RSASignatureConfiguration(KeyHelper.keyPair)
         val authenticator = OneTimeTokenAuthenticator(signatureConfig, mockTokenChecker, mockAppProperties)
 
         val sut = OneTimeTokenManager(mockAppProperties, mockTokenRepository, signatureConfig, authenticator)
@@ -51,5 +51,18 @@ class OneTimeTokenManagerTests {
         assertThat(claims["nonce"]).isNotNull()
 
         verify(mockTokenRepository).storeOneTimeToken(token)
+    }
+
+    @Test
+    fun `validateToken calls authenticator`()
+    {
+        val mockProfile = mock<CommonProfile>()
+        val authenticator = mock<OneTimeTokenAuthenticator>{
+            on { validateToken("testToken") } doReturn (mockProfile)
+        }
+
+        val sut = OneTimeTokenManager(mockAppProperties, mockTokenRepository, signatureConfig, authenticator)
+        val result = sut.validateToken("testToken")
+        assertThat(result).isSameAs(mockProfile)
     }
 }
