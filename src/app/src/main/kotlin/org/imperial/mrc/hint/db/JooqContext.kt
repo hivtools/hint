@@ -7,7 +7,7 @@ import org.jooq.impl.DSL
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import javax.sql.DataSource
 
-open class JooqContext(private val dataSource: DataSource) : AutoCloseable
+class JooqContext(private val dataSource: DataSource) : AutoCloseable
 {
     private val conn = getConnection()
     val dsl = createDSL(conn)

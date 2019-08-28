@@ -7,7 +7,7 @@ API=hintr
 
 REGISTRY=mrcide
 DB_IMAGE=$REGISTRY/hint-db:master
-DB_MIGRATE_IMAGE=$REGISTRY/hint-db-migrate:latest
+DB_MIGRATE_IMAGE=$REGISTRY/hint-db-migrate:master
 HINTR_IMAGE=$REGISTRY/$API:mrc-418
 
 docker network create $NETWORK
