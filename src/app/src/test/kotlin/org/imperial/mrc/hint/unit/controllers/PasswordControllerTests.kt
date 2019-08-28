@@ -47,6 +47,8 @@ class PasswordControllerTests {
 
         val result = sut.requestResetLink("test.user@test.com")
 
+        assertThat(result).isEqualTo("")
+
         verify(mockTokenGen).generateOnetimeSetPasswordToken(mockUser)
 
         argumentCaptor<PasswordResetEmail>().apply{
@@ -59,8 +61,6 @@ class PasswordControllerTests {
             assertThat(emailObj.values["email"]).isEqualTo("test.user@test.com")
         }
 
-        //TODO: we won't always return the token, but test it's got it ok for now, change once we can save it
-        assertThat(result).isEqualTo("testToken")
     }
 
     @Test
