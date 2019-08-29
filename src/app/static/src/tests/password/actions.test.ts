@@ -14,38 +14,32 @@ describe("Password actions", () => {
     });
 
 
-    it("requests reset link and commits success", (done) => {
+    it("requests reset link and commits success", async () => {
 
         mockAxios.onPost(`/password/request-reset-link/`)
-            .reply(200, mockSuccess(null));
+            .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        actions.requestResetLink({commit} as any, "test@email.com");
+        await actions.requestResetLink({commit} as any, "test@email.com");
 
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: "ResetLinkRequested",
-                payload: null
-            });
-            done();
-        })
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "ResetLinkRequested",
+            payload: null
+        });
     });
 
-    it("requests reset link and commits error", (done) => {
+    it("requests reset link and commits error", async () => {
 
         mockAxios.onPost(`/password/request-reset-link/`)
             .reply(500, mockFailure("test error"));
 
         const commit = jest.fn();
-        actions.requestResetLink({commit} as any, "test@email.com");
+        await actions.requestResetLink({commit} as any, "test@email.com");
 
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: "RequestResetLinkError",
-                payload: "test error"
-            });
-            done();
-        })
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "RequestResetLinkError",
+            payload: "test error"
+        });
     });
 
 });

@@ -17,15 +17,14 @@ export interface SurveyAndProgramActions {
 
 export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
 
-    uploadSurvey({commit}, file) {
+    async uploadSurvey({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
-        api.postAndReturn<SurveyResponse>("/disease/survey/", formData)
-            .then((payload) => {
-                commit<SurveyAndProgramPayload<SurveyResponse>>({type: "SurveyLoaded", payload});
-            })
-            .catch((error: Error) => {
-                commit<SurveyAndProgramPayload<string>>({type: 'SurveyError', payload: error.message});
-            });
+        const payload = await api()
+            .commitFirstErrorAsType(commit, "SurveyError")
+            .postAndReturn<SurveyResponse>("/disease/survey/", formData);
+
+        payload && commit<SurveyAndProgramPayload<SurveyResponse>>({type: "SurveyLoaded", payload});
+
     }
 };
