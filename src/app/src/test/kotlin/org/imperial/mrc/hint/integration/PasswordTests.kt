@@ -3,11 +3,13 @@ package org.imperial.mrc.hint.integration
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.emails.WriteToDiskEmailManager
+import org.imperial.mrc.hint.helpers.AuthInterceptor
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -56,8 +58,12 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate): CleanDatabas
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
 
-        val entity = restTemplate.postForEntity<String>("/password/reset-password/",
+        var entity = restTemplate.postForEntity<String>("/password/reset-password/",
                 HttpEntity(map, headers))
+        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+
+        restTemplate.restTemplate.interceptors.add(AuthInterceptor(restTemplate, "newpassword"))
+        entity = restTemplate.getForEntity<String>("/")
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
     }
 

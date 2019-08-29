@@ -19,7 +19,7 @@ fun main(args: Array<String>) {
 
 @Configuration
 @EnableWebMvc
-open class MvcConfig : WebMvcConfigurer {
+class MvcConfig : WebMvcConfigurer {
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/public/**")
                 .addResourceLocations("file:/static/public/", "file:static/public/")
