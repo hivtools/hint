@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.exceptions
 
+import org.imperial.mrc.hint.controllers.TokenException
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -24,4 +25,11 @@ class HintExceptionHandler : ResponseEntityExceptionHandler() {
                                          request: WebRequest): ResponseEntity<Any> {
         return ErrorDetail(status, e.message ?: "Something went wrong").toResponseEntity()
     }
+
+    @ExceptionHandler(HintException::class)
+    fun handleHintException(e: HintException): ResponseEntity<Any>
+    {
+        return ErrorDetail(e.httpStatus, e.message!!).toResponseEntity()
+    }
+
 }

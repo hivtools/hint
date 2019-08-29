@@ -35,7 +35,7 @@
         props: ["token"],
         data: () => {
             return {
-                email: ""
+                password: ""
             };
         },
         computed: mapState<PasswordState>( {

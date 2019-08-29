@@ -28,6 +28,8 @@ class PasswordControllerTests {
 
     val mockEmailManager = mock<EmailManager>()
 
+    val expectedSuccessResponse = "{\"errors\":{},\"status\":\"success\",\"data\":null}"
+
     @Test
     fun `forgotPassword returns expected template name`()
     {
@@ -47,7 +49,7 @@ class PasswordControllerTests {
 
         val result = sut.requestResetLink("test.user@test.com")
 
-        assertThat(result).isEqualTo("")
+        assertThat(result).isEqualTo(expectedSuccessResponse)
 
         verify(mockTokenMan).generateOnetimeSetPasswordToken(mockUser)
 
@@ -75,7 +77,8 @@ class PasswordControllerTests {
         val result = sut.requestResetLink("nonexistent@test.com")
 
         verify(mockTokenMan, never()).generateOnetimeSetPasswordToken(any())
-        assertThat(result).isEqualTo("")
+
+        assertThat(result).isEqualTo(expectedSuccessResponse)
     }
 
     @Test
@@ -104,7 +107,8 @@ class PasswordControllerTests {
 
         verify(mockTokenMan).validateToken("testToken")
         verify(mockUserRepo).updateUserPassword(mockProfile, "testPassword")
-        assertThat(result).isEqualTo("")
+
+        assertThat(result).isEqualTo(expectedSuccessResponse)
     }
 
     @Test

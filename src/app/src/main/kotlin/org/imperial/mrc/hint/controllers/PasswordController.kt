@@ -7,8 +7,14 @@ import org.springframework.web.bind.annotation.*
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordResetEmail
+import org.imperial.mrc.hint.exceptions.HintException
 import org.springframework.ui.Model
 import org.springframework.ui.set
+import org.imperial.mrc.hint.models.EmptySuccessResponse
+import org.imperial.mrc.hint.models.toJsonString
+import org.springframework.http.HttpStatus
+
+class TokenException(message: String): HintException(message, HttpStatus.BAD_REQUEST)
 
 @Controller
 @RequestMapping("/password")
@@ -40,7 +46,7 @@ class PasswordController(private val userRepository: UserRepository,
             emailManager.sendEmail(emailMessage, email)
         }
 
-        return ""
+        return EmptySuccessResponse.toJsonString()
     }
 
     @GetMapping("/reset-password")
@@ -54,18 +60,10 @@ class PasswordController(private val userRepository: UserRepository,
     fun postResetPassword(@RequestParam("token") token: String,
                          @RequestParam("password") password: String): String
     {
-        val user = oneTimeTokenManager.validateToken(token)
-        if (user != null)
-        {
-            userRepository.updateUserPassword(user, password)
-        }
-        else
-        {
-            //TODO: return an error response
-            return "bad token"
-        }
+        val user = oneTimeTokenManager.validateToken(token) ?: throw TokenException("Token is not valid")
 
-        return ""
+        userRepository.updateUserPassword(user, password)
+        return EmptySuccessResponse.toJsonString()
     }
 }
 
