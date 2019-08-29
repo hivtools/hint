@@ -7,7 +7,7 @@ DB=hint_db
 API=hintr
 HINT=hint
 HINTR_VERSION=$(<$HERE/../../../config/hintr_version)
-HINT_VERSION=$(git symbolic-ref --short HEAD)
+HINT_VERSION=mrc-433_integrationtests
 TEST_CONFIG=$HERE/test.properties
 
 REGISTRY=mrcide
