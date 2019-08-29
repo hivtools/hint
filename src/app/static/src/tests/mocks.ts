@@ -2,7 +2,6 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {BaselineState, initialBaselineState} from "../app/store/baseline/baseline";
 import {PasswordState, initialPasswordState} from "../app/store/password/password";
-import {APIService} from "../app/apiService";
 import {
     initialSurveyAndProgramDataState,
     SurveyAndProgramDataState

@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordResetEmail
+import org.imperial.mrc.hint.models.SuccessResponse
+import org.imperial.mrc.hint.models.toJsonString
 
 @Controller
 @RequestMapping("/password")
@@ -39,6 +41,6 @@ class PasswordController(private val userRepository: UserRepository,
             return token
         }
 
-        return ""
+        return SuccessResponse(true).toJsonString()
     }
 }

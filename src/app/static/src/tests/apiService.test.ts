@@ -30,7 +30,7 @@ describe("ApiService", () => {
         mockAxios.onGet(`/unusual/`)
             .reply(500, mockFailure("some error message"));
 
-        let error: Error = null;
+        let error: Error;
         try {
             await api()
                 .get("/unusual/");
@@ -65,7 +65,7 @@ describe("ApiService", () => {
         mockAxios.onGet(`/baseline/`)
             .reply(500);
 
-        let error: Error = null;
+        let error: Error;
         try {
             await api()
                 .get("/baseline/");

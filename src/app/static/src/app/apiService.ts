@@ -29,7 +29,7 @@ export interface API {
 
 export class APIService implements API {
 
-    // appUrl var should be set externally in the browser
+    // appUrl will be set as a jest global during testing
     private readonly _baseUrl = typeof appUrl !== "undefined" ? appUrl : "";
 
     private _buildFullUrl = (url: string) => {
