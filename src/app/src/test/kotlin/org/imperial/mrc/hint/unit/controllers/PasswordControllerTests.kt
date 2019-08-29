@@ -2,8 +2,10 @@ package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.controllers.PasswordController
+import org.imperial.mrc.hint.controllers.TokenException
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordResetEmail
@@ -112,7 +114,7 @@ class PasswordControllerTests {
     }
 
     @Test
-    fun `postResetPassword does not update password if token is not valid`()
+    fun `postResetPassword throws error and does not update password if token is not valid`()
     {
         val mockTokenMan = mock<OneTimeTokenManager>{
             on { validateToken("testToken") } doReturn (null as CommonProfile?)
@@ -120,11 +122,12 @@ class PasswordControllerTests {
 
         val sut = PasswordController(mockUserRepo, mockTokenMan, mockAppProperties, mockEmailManager)
 
-        val result = sut.postResetPassword("testToken", "testPassword")
+        assertThatThrownBy{ sut.postResetPassword("testToken", "testPassword") }
+                .isInstanceOf(TokenException::class.java)
+                .hasMessage("Token is not valid")
 
         verify(mockTokenMan).validateToken("testToken")
         verify(mockUserRepo, never()).updateUserPassword(any(), any())
 
-        assertThat(result).isEqualTo("bad token")
     }
 }

@@ -9,7 +9,7 @@ import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-open class OneTimeTokenAuthenticator(
+class OneTimeTokenAuthenticator(
         signatureConfiguration: SignatureConfiguration,
         private val oneTimeTokenChecker: OneTimeTokenChecker,
         appProperties: AppProperties

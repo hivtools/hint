@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Configuration
 import java.security.KeyPair
 
 @Configuration
-open class SignatureConfig
+class SignatureConfig
 {
     @Bean
-    open fun getSignatureConfiguration(): SignatureConfiguration
+    fun getSignatureConfiguration(): SignatureConfiguration
     {
         val keyPair: KeyPair = KeyHelper.keyPair
         return RSASignatureConfiguration(keyPair)

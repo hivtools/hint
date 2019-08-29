@@ -12,7 +12,7 @@ interface OneTimeTokenChecker
 }
 
 @Configuration
-open class JooqOneTimeTokenChecker(private val tokenRepository: TokenRepository) : OneTimeTokenChecker
+class JooqOneTimeTokenChecker(private val tokenRepository: TokenRepository) : OneTimeTokenChecker
 {
     override fun checkToken(token: String): Boolean
     {

@@ -23,7 +23,7 @@ class OneTimeTokenManager(
     private val issuer = appProperties.tokenIssuer
     private val random = SecureRandom()
 
-    open fun generateOnetimeSetPasswordToken(user: CommonProfile): String
+    fun generateOnetimeSetPasswordToken(user: CommonProfile): String
     {
         val token= generator.generate(mapOf(
                 "iss" to issuer,
@@ -37,7 +37,7 @@ class OneTimeTokenManager(
         return token
     }
 
-    open fun validateToken(token: String): CommonProfile?
+    fun validateToken(token: String): CommonProfile?
     {
         return authenticator.validateToken(token)
     }
