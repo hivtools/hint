@@ -20,6 +20,7 @@ describe("Baseline upload component", () => {
 
         actions = {
             uploadPJNZ: jest.fn(),
+            _uploadPJNZ: jest.fn(),
             getBaselineData: jest.fn()
         };
 

@@ -1,6 +1,6 @@
 import {api} from "../app/apiService";
 import {mockAxios, mockFailure} from "./mocks";
-import {Commit} from "vuex";
+import {ActionPayload, Commit, CommitOptions, Payload} from "vuex";
 
 describe("ApiService", () => {
 
@@ -48,7 +48,7 @@ describe("ApiService", () => {
 
         let committedType: any = false;
         let committedPayload: any = false;
-        const commit: Commit = ({type, payload}) => {
+        const commit: any = ({type, payload}: ActionPayload) => {
             committedType = type;
             committedPayload = payload;
         };

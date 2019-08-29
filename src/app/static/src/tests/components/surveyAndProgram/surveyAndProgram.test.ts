@@ -19,7 +19,8 @@ describe("Survey and program component", () => {
     const createSut = (state?: Partial<SurveyAndProgramDataState>) => {
 
         actions = {
-            uploadSurvey: jest.fn()
+            uploadSurvey: jest.fn(),
+            _uploadSurvey: jest.fn()
         };
 
         return new Vuex.Store({

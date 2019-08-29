@@ -1,5 +1,5 @@
 import {createLocalVue, shallowMount} from "@vue/test-utils";
-import ForgotPassword from "../../../app/components/password/ForgotPassword";
+import ForgotPassword from "../../../app/components/password/ForgotPassword.vue";
 import {PasswordState} from "../../../app/store/password/password";
 import {PasswordActions} from "../../../app/store/password/actions";
 import Vuex, {Store} from "vuex";
