@@ -1,6 +1,7 @@
 import {ActionContext, ActionTree, Payload} from "vuex";
 import {PasswordState} from "./password";
 import {api} from "../../apiService";
+import qs from "qs";
 
 export type PasswordActionTypes = "ResetLinkRequested" | "RequestResetLinkError"
 
@@ -16,11 +17,9 @@ export interface PasswordActions {
 export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions = {
 
     async requestResetLink({commit}, email) {
-        let formData = new FormData();
-        formData.append('email', email);
         const success = await api()
             .commitFirstErrorAsType(commit, "RequestResetLinkError")
-            .postAndReturn<Boolean>("/password/request-reset-link/", formData);
+            .postAndReturn<Boolean>("/password/request-reset-link/", qs.stringify({email: email}));
 
         success && commit<PasswordActionPayload<null>>({type: "ResetLinkRequested", payload: null});
     }

@@ -6,30 +6,10 @@ NETWORK=hint_nw
 DB=hint_db
 API=hintr
 HINT=hint
-HINTR_VERSION=$(<$HERE/../../../config/hintr_version)
+$HERE/../../../../scripts/run-dependencies.sh
 HINT_VERSION=mrc-433_integrationtests
 TEST_CONFIG=$HERE/test.properties
-
-REGISTRY=mrcide
-DB_IMAGE=$REGISTRY/hint-db:master
-DB_MIGRATE_IMAGE=$REGISTRY/hint-db-migrate:master
-HINTR_IMAGE=$REGISTRY/$API:$HINTR_VERSION
-HINT_IMAGE=$REGISTRY/$HINT:$HINT_VERSION
-
-docker network create $NETWORK
-docker pull $DB_IMAGE
-docker pull $HINTR_IMAGE
-docker pull $DB_MIGRATE_IMAGE
-
-docker run --rm -d \
-  --network=$NETWORK \
-  --name $DB \
-  $DB_IMAGE
-
-docker run --rm -d \
-  --network=$NETWORK \
-  --name=$API \
-  $HINTR_IMAGE
+HINT_IMAGE=mrcide/$HINT:$HINT_VERSION
 
 docker run --rm -d \
   --network=$NETWORK \

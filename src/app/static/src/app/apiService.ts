@@ -72,6 +72,7 @@ export class APIService implements API {
     }
 
     private _handleError = (e: AxiosError) => {
+        console.log(e);
         if (this._ignoreErrors) {
             return
         }
