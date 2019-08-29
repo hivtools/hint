@@ -1,34 +1,27 @@
 package org.imperial.mrc.hint.integration
 
-import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.helpers.createTestHttpEntity
-import org.imperial.mrc.hint.helpers.tmpUploadDirectory
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpStatus
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class DiseaseTests(@Autowired val testRestTemplate: TestRestTemplate): IntegrationTests()  {
+class DiseaseTests: SecureIntegrationTests() {
 
-    @Test
-    fun `can upload survey file`() {
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can upload survey file`(isAuthorized: IsAuthorized) {
         val postEntity = createTestHttpEntity()
         val entity = testRestTemplate.postForEntity<String>("/disease/survey/", postEntity)
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        JSONValidator().validateError(entity.body!!, "INVALID_FILE")
+        assertSecureWithError(isAuthorized, entity, HttpStatus.BAD_REQUEST, "INVALID_FILE")
     }
 
-    @Test
-    fun `can upload program file`() {
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can upload program file`(isAuthorized: IsAuthorized) {
         val postEntity = createTestHttpEntity()
         val entity = testRestTemplate.postForEntity<String>("/disease/program/", postEntity)
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        JSONValidator().validateError(entity.body!!, "INVALID_FILE")
+        assertSecureWithError(isAuthorized, entity, HttpStatus.BAD_REQUEST, "INVALID_FILE")
     }
 
 }

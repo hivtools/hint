@@ -11,7 +11,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver
 
 
 @SpringBootApplication
-open class HintApplication
+class HintApplication
 
 fun main(args: Array<String>) {
     SpringApplication.run(HintApplication::class.java, *args)

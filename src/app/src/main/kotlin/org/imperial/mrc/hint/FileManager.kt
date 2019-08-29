@@ -24,7 +24,7 @@ interface FileManager {
 }
 
 @Configuration
-open class LocalFileManager(
+class LocalFileManager(
         private val context: WebContext,
         private val pac4jConfig: Config,
         private val appProperties: AppProperties) : FileManager {

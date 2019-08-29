@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationContext
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @Transactional
-open class AppTests
+class AppTests
 {
     companion object {
         const val TEST_EMAIL = "test@test.com"
@@ -26,7 +26,7 @@ open class AppTests
     private lateinit var context: ApplicationContext
 
     @Test
-    open fun `can add user`()
+    fun `can add user`()
     {
         val sut = UserCLI(context)
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
@@ -35,7 +35,7 @@ open class AppTests
     }
 
     @Test
-    open fun `can remove user`()
+    fun `can remove user`()
     {
         val sut = UserCLI(context)
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
@@ -45,7 +45,7 @@ open class AppTests
     }
 
     @Test
-    open fun `cannot add same user twice`()
+    fun `cannot add same user twice`()
     {
         val sut = UserCLI(context)
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
@@ -57,7 +57,7 @@ open class AppTests
     }
 
     @Test
-    open fun `cannot remove nonexistent user`()
+    fun `cannot remove nonexistent user`()
     {
         val sut = UserCLI(context)
         Assertions.assertThatThrownBy{ sut.removeUser(mapOf("<email>" to "notaperson.@email.com")) }

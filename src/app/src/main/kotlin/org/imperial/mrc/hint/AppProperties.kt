@@ -22,8 +22,7 @@ interface AppProperties {
 }
 
 @Configuration
-open class ConfiguredAppProperties(private val props: Properties = properties): AppProperties {
-
+class ConfiguredAppProperties(private val props: Properties = properties): AppProperties {
     override val apiUrl = propString("hintr_url")
     override val applicationTitle = propString("application_title")
     override val applicationUrl = propString("application_url")

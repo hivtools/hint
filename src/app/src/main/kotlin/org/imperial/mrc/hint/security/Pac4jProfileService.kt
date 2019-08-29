@@ -8,10 +8,10 @@ import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import javax.sql.DataSource
 
 @Configuration
-open class Pac4jProfileService(@Autowired val dataSource: DataSource)
+class Pac4jProfileService(@Autowired val dataSource: DataSource)
 {
     @Bean
-    open fun profileService(): DbProfileService
+    fun profileService(): DbProfileService
     {
         return DbProfileService(TransactionAwareDataSourceProxy(dataSource), SecurePasswordEncoder())
     }
