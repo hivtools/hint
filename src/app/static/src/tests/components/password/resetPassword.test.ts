@@ -110,4 +110,21 @@ describe("Reset password component", () => {
         });
 
     });
+
+    it("does not invoke resetPassword action if input value is too short", (done) => {
+
+        const store = createStore();
+        const wrapper = createSut(store);
+
+        wrapper.find("input[type='password']").setValue("12345");
+        wrapper.find("input[type='submit']").trigger("click");
+
+        setTimeout(() => {
+
+            expect(actions.resetPassword.mock.calls.length).toEqual(0);
+            expect(wrapper.find("form").classes()).toContain("was-validated");
+            done();
+        });
+
+    });
 });
