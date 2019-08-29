@@ -53,14 +53,14 @@ class PasswordControllerTests {
             verify(mockEmailManager).sendEmail(capture(), eq("test.user@test.com"))
             val emailObj = firstValue
             assertThat(emailObj).isInstanceOf(PasswordResetEmail::class.java)
-            assertThat((emailObj as PasswordResetEmail).values["appTitle"]).isEqualTo("testAppTitle")
+            assertThat((emailObj).values["appTitle"]).isEqualTo("testAppTitle")
             assertThat(emailObj.values["appUrl"]).isEqualTo("https://test/")
             assertThat(emailObj.values["token"]).isEqualTo("testToken")
             assertThat(emailObj.values["email"]).isEqualTo("test.user@test.com")
         }
 
         //TODO: we won't always return the token, but test it's got it ok for now, change once we can save it
-        assertThat(result).isEqualTo("testToken")
+        assertThat(result).isEqualTo("{\"errors\":{},\"status\":\"success\",\"data\":\"testToken\"}")
     }
 
     @Test
@@ -75,6 +75,6 @@ class PasswordControllerTests {
         val result = sut.requestResetLink("nonexistent@test.com")
 
         verify(mockTokenGen, never()).generateOnetimeSetPasswordToken(any())
-        assertThat(result).isEqualTo("")
+        assertThat(result).isEqualTo("{\"errors\":{},\"status\":\"success\",\"data\":true}")
     }
 }
