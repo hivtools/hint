@@ -15,7 +15,13 @@
                                v-on:click="handleResetPassword">
                     </div>
                 </form>
-            <error-alert v-if="hasError" :message="error"></error-alert>
+                <div v-if="hasError">
+                    <error-alert :message="error"></error-alert>
+                    <div id="request-new-link">
+                        This password reset link is not valid. It may have expired or already been used.
+                        Please request another link <a href="/password/forgot-password">here</a>.
+                    </div>
+                </div>
             </div>
             <div v-if="passwordWasReset" id="password-was-reset">
                 Thank you, your password has been updated. Click <a href="/">here</a> to login.

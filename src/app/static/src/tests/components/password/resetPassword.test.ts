@@ -59,6 +59,8 @@ describe("Reset password component", () => {
         expect((wrapper.find("input[type='submit']").element as HTMLInputElement).value).toEqual("Update password");
         expect(wrapper.findAll("error-alert-stub").length).toEqual(1);
         expect(wrapper.find("error-alert-stub").props("message")).toEqual("test error");
+        expect((wrapper.find("#request-new-link a").element as HTMLLinkElement).href)
+            .toEqual("http://localhost/password/forgot-password");
         expect(wrapper.findAll("#password-was-reset").length).toEqual(0);
     });
 
