@@ -47,9 +47,7 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate): CleanDatabas
     @Test
     fun `can reset password with valid token`() {
         val lines = requestPasswordResetLinkAndReadEmail()
-        val regex = Regex("token=(.*)\\n")
-        val match =regex.find(lines)
-        val token = match!!.groups[1]!!.value
+        val token = getTokenFromEmailText(lines)
 
         val map = LinkedMultiValueMap<String, String>()
         map.add("token", token)
@@ -79,6 +77,31 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate): CleanDatabas
         val entity = restTemplate.postForEntity<String>("/password/reset-password/",
                 HttpEntity(map, headers))
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    fun `cannot reset password which is too short`()
+    {
+        val lines = requestPasswordResetLinkAndReadEmail()
+        val token = getTokenFromEmailText(lines)
+
+        val map = LinkedMultiValueMap<String, String>()
+        map.add("token", token)
+        map.add("password", "new")
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+
+        val entity = restTemplate.postForEntity<String>("/password/reset-password/",
+                HttpEntity(map, headers))
+        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    private fun getTokenFromEmailText(emailText: String): String
+    {
+        val regex = Regex("token=(.*)\\n")
+        val match =regex.find(emailText)
+        return match!!.groups[1]!!.value
     }
 
     private fun requestPasswordResetLinkAndReadEmail(): String

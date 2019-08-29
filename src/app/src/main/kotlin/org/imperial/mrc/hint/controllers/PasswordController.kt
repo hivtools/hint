@@ -13,10 +13,13 @@ import org.springframework.ui.set
 import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.toJsonString
 import org.springframework.http.HttpStatus
+import org.springframework.validation.annotation.Validated
+import javax.validation.constraints.Size
 
 class TokenException(message: String): HintException(message, HttpStatus.BAD_REQUEST)
 
 @Controller
+@Validated
 @RequestMapping("/password")
 class PasswordController(private val userRepository: UserRepository,
                          private val oneTimeTokenManager: OneTimeTokenManager,
@@ -57,8 +60,9 @@ class PasswordController(private val userRepository: UserRepository,
 
     @PostMapping("/reset-password")
     @ResponseBody
+    @Throws(TokenException::class)
     fun postResetPassword(@RequestParam("token") token: String,
-                         @RequestParam("password") password: String): String
+                         @RequestParam("password") @Size(min = 6) password: String): String
     {
         val user = oneTimeTokenManager.validateToken(token) ?: throw TokenException("Token is not valid")
 
