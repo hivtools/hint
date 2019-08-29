@@ -63,7 +63,8 @@ dependencies {
 	testImplementation "org.jsoup:jsoup:1.11.3"
 	testImplementation "org.xmlmatchers:xml-matchers:0.10"
 	testImplementation "net.sourceforge.htmlunit:htmlunit:2.4"
-	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+	testImplementation "org.junit.jupiter:junit-jupiter-params:5.4.2"
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {

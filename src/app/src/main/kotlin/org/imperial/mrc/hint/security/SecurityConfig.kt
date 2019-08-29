@@ -8,8 +8,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 class SecurityConfig(val config: Config): WebMvcConfigurer {
+
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
-                .addPathPatterns("/")
+                .addPathPatterns("/**")
+                .excludePathPatterns("/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
     }
 }
