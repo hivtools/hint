@@ -38,10 +38,13 @@ export class APIService implements API {
 
     private _ignoreErrors: Boolean = false;
 
-    private _notifyOnError: ((failure: Failure) => void) = (failure: Failure) => {
+    static getFirstErrorFromFailure = () => {
         const firstError = failure.errors[0];
-        const firstErrorMessage = firstError.detail ? firstError.detail : firstError.error;
-        throw new Error(firstErrorMessage);
+        return firstError.detail ? firstError.detail : firstError.error;
+    };
+
+    private _notifyOnError: ((failure: Failure) => void) = (failure: Failure) => {
+        throw new Error(APIService.getFirstErrorFromFailure(failure));
     };
 
     commitFirstErrorAsType = (commit: Commit, type: string) => {
@@ -49,9 +52,7 @@ export class APIService implements API {
         // an action with the error as a payload rather than
         // throwing the error
         this._notifyOnError = (failure: Failure) => {
-            const firstError = failure.errors[0];
-            const firstErrorMessage = firstError.detail ? firstError.detail : firstError.error;
-            commit({type: type, payload: firstErrorMessage});
+            commit({type: type, payload: APIService.getFirstErrorFromFailure(failure)});
         };
         return this
     };
