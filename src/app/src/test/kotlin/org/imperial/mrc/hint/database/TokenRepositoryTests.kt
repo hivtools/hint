@@ -24,7 +24,7 @@ class TokenRepositoryTests {
     @Autowired
     private lateinit var dataSource: DataSource
 
-    private val TOKEN = "testToken"
+    private val TOKEN = "testRepoToken"
 
     @Test
     fun `can store token`()

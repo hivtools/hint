@@ -6,22 +6,17 @@ import org.imperial.mrc.hint.emails.WriteToDiskEmailManager
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
 import java.nio.file.Files
 
-class PasswordTests(@Autowired val restTemplate: TestRestTemplate): IntegrationTests() {
+class PasswordTests(@Autowired val restTemplate: TestRestTemplate): CleanDatabaseTests() {
 
     companion object {
         @BeforeAll
