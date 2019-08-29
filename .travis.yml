@@ -15,6 +15,7 @@ matrix:
       - npm run integration-test --prefix=src/app/static
       after_success:
       - codecov -f src/app/static/coverage/*.json
+      - codecov -f src/app/static/coverage/integration/*.json
     - language: java
       before_cache:
       - rm -f  $HOME/src/.gradle/caches/modules-2/modules-2.lock
