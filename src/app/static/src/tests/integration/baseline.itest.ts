@@ -5,13 +5,16 @@ const FormData = require("form-data");
 
 describe("Baseline actions", () => {
 
+    beforeEach(() => {
+        fs.writeFile("Malawi_1.pjnz");
+    });
+
     afterEach(() => {
         fs.unlinkSync("Malawi_1.pjnz")
     });
 
     it("can upload PJNZ file", async () => {
         const commit = jest.fn();
-        fs.writeFile("Malawi_1.pjnz");
         const file = fs.createReadStream("Malawi_1.pjnz");
         const formData = new FormData();
         formData.append('file', file);

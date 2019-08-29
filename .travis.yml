@@ -8,7 +8,11 @@ matrix:
       - npm install codecov -g
       - npm install --prefix=src/app/static
       - npm run build --prefix=src/app/static
-      script: npm test --prefix=src/app/static
+      before_script:
+      - ./src/app/static/scripts/run-app.sh
+      script: 
+      - npm test --prefix=src/app/static
+      - npm run integration-test --prefix=src/app/static
       after_success:
       - codecov -f src/app/static/coverage/*.json
     - language: java
