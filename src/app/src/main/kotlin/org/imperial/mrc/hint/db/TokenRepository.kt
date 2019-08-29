@@ -11,7 +11,7 @@ interface TokenRepository
 }
 
 @Configuration
-open class JooqTokenRepository(@Autowired private val dataSource: DataSource): TokenRepository
+class JooqTokenRepository(@Autowired private val dataSource: DataSource): TokenRepository
 {
     override fun storeToken(uncompressedToken: String) {
         JooqContext(dataSource).use {

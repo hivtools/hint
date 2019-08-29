@@ -13,7 +13,7 @@ import java.time.Instant
 import java.util.*
 
 @Configuration
-open class OneTimeTokenManager(
+class OneTimeTokenManager(
         appProperties: AppProperties,
         private val tokenRepository: TokenRepository
 )
