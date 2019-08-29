@@ -38,7 +38,7 @@ class PasswordController(private val userRepository: UserRepository,
 
             emailManager.sendEmail(emailMessage, email)
 
-            return token
+            return SuccessResponse(token).toJsonString()
         }
 
         return SuccessResponse(true).toJsonString()
