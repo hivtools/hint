@@ -1,55 +1,37 @@
 import {actions} from "../../app/store/baseline/actions";
 
+const fs = require("fs");
+import FormData from "form-data"
+
 describe("Baseline actions", () => {
 
-    it("sets country after PJNZ file upload", (done) => {
-
-        const commit = jest.fn();
-        actions.uploadPJNZ({commit} as any, {} as File);
-
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUploaded", payload: {data: {country: "Malawi"}}});
-            done();
-        })
+    afterEach(() => {
+        fs.unlinkSync("Malawi_1.pjnz")
     });
 
-    it("sets error message after failed PJNZ file upload", (done) => {
-
+    it("can upload PJNZ file upload", async () => {
         const commit = jest.fn();
-        actions.uploadPJNZ({commit} as any, {} as File);
-
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: "PJNZUploadError",
-                payload: "Something went wrong"
-            });
-            done();
-        })
+        fs.writeFile("Malawi_1.pjnz");
+        const file = fs.createReadStream("Malawi_1.pjnz");
+        const formData = new FormData();
+        formData.append('file', file);
+        await actions._uploadPJNZ(commit, formData);
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "PJNZUploaded",
+            payload: {data: {country: "Malawi"}, filename: "Malawi_1.pjnz", type: "pjnz"}
+        });
     });
 
-    it("gets baseline data and commits it", (done) => {
+    it("can get baseline data", async () => {
 
         const commit = jest.fn();
-        actions.getBaselineData({commit} as any);
+        await actions.getBaselineData({commit} as any);
 
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: "BaselineDataLoaded",
-                payload: {pjnz: {data: {country: "Malawi"}, filename: "test.pjnz"}}
-            });
-            done();
-        })
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "BaselineDataLoaded",
+            payload: {pjnz: null}
+        });
     });
 
-    it("fails silently if get baseline data fails", (done) => {
-
-        const commit = jest.fn();
-        actions.getBaselineData({commit} as any);
-
-        setTimeout(() => {
-            expect(commit).toBeCalledTimes(0);
-            done();
-        })
-    });
 
 });

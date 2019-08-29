@@ -13,66 +13,52 @@ describe("Baseline actions", () => {
         (console.log as jest.Mock).mockClear();
     });
 
-    it("sets country after PJNZ file upload", (done) => {
+    it("sets country after PJNZ file upload", async () => {
 
         mockAxios.onPost(`/baseline/pjnz/`)
             .reply(200, mockSuccess({data: {country: "Malawi"}}));
 
         const commit = jest.fn();
-        actions.uploadPJNZ({commit} as any, {} as File);
+        await actions.uploadPJNZ({commit} as any, {} as File);
 
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUploaded", payload: {data: {country: "Malawi"}}});
-            done();
-        })
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUploaded", payload: {data: {country: "Malawi"}}});
     });
 
-    it("sets error message after failed PJNZ file upload", (done) => {
+    it("sets error message after failed PJNZ file upload", async () => {
 
         mockAxios.onPost(`/baseline/pjnz/`)
             .reply(500, mockFailure("Something went wrong"));
 
         const commit = jest.fn();
-        actions.uploadPJNZ({commit} as any, {} as File);
+        await actions.uploadPJNZ({commit} as any, {} as File);
 
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: "PJNZUploadError",
-                payload: "Something went wrong"
-            });
-            done();
-        })
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "PJNZUploadError",
+            payload: "Something went wrong"
+        });
     });
 
-    it("gets baseline data and commits it", (done) => {
+    it("gets baseline data and commits it", async () => {
 
         mockAxios.onGet(`/baseline/`)
             .reply(200, mockSuccess({pjnz: {data: {country: "Malawi"}, filename: "test.pjnz"}}));
 
         const commit = jest.fn();
-        actions.getBaselineData({commit} as any);
+        await actions.getBaselineData({commit} as any);
 
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: "BaselineDataLoaded",
-                payload: {pjnz: {data: {country: "Malawi"}, filename: "test.pjnz"}}
-            });
-            done();
-        })
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "BaselineDataLoaded",
+            payload: {pjnz: {data: {country: "Malawi"}, filename: "test.pjnz"}}
+        });
     });
 
-    it("fails silently if get baseline data fails", (done) => {
+    it("fails silently if get baseline data fails", async () => {
 
         mockAxios.onGet(`/baseline/`)
             .reply(500);
 
         const commit = jest.fn();
-        actions.getBaselineData({commit} as any);
-
-        setTimeout(() => {
-            expect(commit).toBeCalledTimes(0);
-            done();
-        })
+        await actions.getBaselineData({commit} as any);
+        expect(commit).toBeCalledTimes(0);
     });
-
 });
