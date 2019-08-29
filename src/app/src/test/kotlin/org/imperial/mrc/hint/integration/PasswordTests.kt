@@ -21,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
 import java.nio.file.Files
 
-@ExtendWith(SpringExtension::class)
-@Transactional
 class PasswordTests(@Autowired val restTemplate: TestRestTemplate): IntegrationTests() {
 
     companion object {
@@ -41,6 +39,49 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate): IntegrationT
 
     @Test
     fun `request reset password link generates email to disk`() {
+        val lines = requestPasswordResetLinkAndReadEmail()
+
+        assertThat(lines.contains("This is an automated email from HINT. We have received a request to reset the" +
+                " password for the account with\n" +
+                "this email address (test.user@example.com)."))
+
+    }
+
+    @Test
+    fun `can reset password with valid token`() {
+        val lines = requestPasswordResetLinkAndReadEmail()
+        val regex = Regex("token=(.*)\\n")
+        val match =regex.find(lines)
+        val token = match!!.groups[1]!!.value
+
+        val map = LinkedMultiValueMap<String, String>()
+        map.add("token", token)
+        map.add("password", "newpassword")
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+
+        val entity = restTemplate.postForEntity<String>("/password/reset-password/",
+                HttpEntity(map, headers))
+        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `cannot reset password with invalid token`() {
+        val map = LinkedMultiValueMap<String, String>()
+        map.add("token", "blah")
+        map.add("password", "newpassword")
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+
+        val entity = restTemplate.postForEntity<String>("/password/reset-password/",
+                HttpEntity(map, headers))
+        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    private fun requestPasswordResetLinkAndReadEmail(): String
+    {
         val map = LinkedMultiValueMap<String, String>()
         map.add("email", "test.user@example.com")
 
@@ -56,11 +97,7 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate): IntegrationT
         val files = dir.listFiles()
         assertThat(files.count()).isEqualTo(1)
 
-        val lines = Files.readAllLines(files[0].toPath()).joinToString(separator ="\n")
-        assertThat(lines.contains("This is an automated email from HINT. We have received a request to reset the" +
-                " password for the account with\n" +
-                "this email address (test.user@example.com)."))
-
+        return Files.readAllLines(files[0].toPath()).joinToString(separator ="\n")
     }
 
 }
