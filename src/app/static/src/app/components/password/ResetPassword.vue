@@ -6,7 +6,7 @@
                 <form ref="resetPasswordForm" class="needs-validation" novalidate>
                     <div class="form-group">
                         <input type="password" class="form-control" name="password" id="email" placeholder="New password"
-                               v-model="password" pattern=".{2,}" required>
+                               v-model="password" pattern=".{6,}" required>
                         <div class="invalid-feedback">Please enter a new password with at least 6 characters.</div>
                     </div>
 
