@@ -6,7 +6,7 @@ const FormData = require("form-data");
 describe("Baseline actions", () => {
 
     beforeEach(() => {
-        fs.writeFile("Malawi_1.pjnz");
+        fs.writeFileSync("Malawi_1.pjnz");
     });
 
     afterEach(() => {
@@ -15,10 +15,13 @@ describe("Baseline actions", () => {
 
     it("can upload PJNZ file", async () => {
         const commit = jest.fn();
+
         const file = fs.createReadStream("Malawi_1.pjnz");
         const formData = new FormData();
         formData.append('file', file);
+
         await actions._uploadPJNZ({commit} as any, formData);
+
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "PJNZUploaded",
             payload: {data: {country: "Malawi"}, filename: "Malawi_1.pjnz", type: "pjnz"}

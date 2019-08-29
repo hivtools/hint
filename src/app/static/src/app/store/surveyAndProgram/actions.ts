@@ -12,19 +12,23 @@ export interface SurveyAndProgramPayload<T> extends Payload {
 }
 
 export interface SurveyAndProgramActions {
-    uploadSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>, file: File) => void
+    uploadSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>, file: File) => void,
+    _uploadSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void
 }
 
 export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
 
-    async uploadSurvey({commit}, file) {
+    async uploadSurvey(store, file) {
         let formData = new FormData();
         formData.append('file', file);
+        await this._uploadSurvey(store, formData)
+    },
+
+    async _uploadSurvey({commit}, formData) {
         const payload = await api()
             .commitFirstErrorAsType(commit, "SurveyError")
             .postAndReturn<SurveyResponse>("/disease/survey/", formData);
 
         payload && commit<SurveyAndProgramPayload<SurveyResponse>>({type: "SurveyLoaded", payload});
-
-    }
+    },
 };

@@ -72,12 +72,11 @@ export class APIService implements API {
     }
 
     private _handleError = (e: AxiosError) => {
-        console.log(e);
         if (this._ignoreErrors) {
             return
         }
         const failure = e.response && e.response.data as Failure;
-        if (!failure) {
+        if (!failure || !failure.status) {
             throw new Error("Could not parse API response");
         }
         this._notifyOnError(failure);
