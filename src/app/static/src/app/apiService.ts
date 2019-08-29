@@ -38,7 +38,7 @@ export class APIService implements API {
 
     private _ignoreErrors: Boolean = false;
 
-    static getFirstErrorFromFailure = () => {
+    static getFirstErrorFromFailure = (failure: Failure) => {
         const firstError = failure.errors[0];
         return firstError.detail ? firstError.detail : firstError.error;
     };
