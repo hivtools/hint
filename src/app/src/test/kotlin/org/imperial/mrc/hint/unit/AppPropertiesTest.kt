@@ -103,4 +103,18 @@ class AppPropertiesTests {
         val sut = ConfiguredAppProperties(props)
         assertThat(sut.emailPassword).isEqualTo("test_password")
     }
+
+    @Test
+    fun `can read db user`(){
+        val props = readPropsFromTempFile("db_user=test")
+        val sut = ConfiguredAppProperties(props)
+        assertThat(sut.dbUser).isEqualTo("test")
+    }
+
+    @Test
+    fun `can read db pw`(){
+        val props = readPropsFromTempFile("db_password=test")
+        val sut = ConfiguredAppProperties(props)
+        assertThat(sut.dbPassword).isEqualTo("test")
+    }
 }

@@ -8,12 +8,11 @@ import org.springframework.context.annotation.Configuration
 import javax.sql.DataSource
 
 @Configuration
-class DbConfig
-{
+class DbConfig {
+
     @Bean
     @ConfigurationProperties("spring.datasource")
-    fun dataSource(appProperties: AppProperties): DataSource
-    {
+    fun dataSource(appProperties: AppProperties): DataSource {
         val dataSourceBuilder = DataSourceBuilder.create()
         dataSourceBuilder.username(appProperties.dbUser)
         dataSourceBuilder.password(appProperties.dbPassword)
