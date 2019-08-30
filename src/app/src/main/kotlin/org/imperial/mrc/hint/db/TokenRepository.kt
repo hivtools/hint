@@ -1,23 +1,31 @@
 package org.imperial.mrc.hint.db
 
 import org.imperial.mrc.hint.db.Tables.ONETIME_TOKEN
-import org.springframework.beans.factory.annotation.Autowired
+
 import org.springframework.stereotype.Component
-import javax.sql.DataSource
+import org.jooq.DSLContext
 
 interface TokenRepository
 {
-    fun storeToken(uncompressedToken: String)
+    fun storeOneTimeToken(token: String)
+    fun validateOneTimeToken(token: String): Boolean
 }
 
 @Component
-class JooqTokenRepository(private val dataSource: DataSource): TokenRepository
+class JooqTokenRepository(private val dsl: DSLContext): TokenRepository
 {
-    override fun storeToken(uncompressedToken: String) {
-        JooqContext(dataSource).use {
-            val r = it.dsl.newRecord(ONETIME_TOKEN)
-            r.token = uncompressedToken
-            r.store()
-        }
+    override fun storeOneTimeToken(token: String) {
+        val r = dsl.newRecord(ONETIME_TOKEN)
+        r.token = token
+        r.store()
+    }
+
+    override fun validateOneTimeToken(token: String): Boolean {
+
+        val deletedCount = dsl.deleteFrom(ONETIME_TOKEN)
+                .where(ONETIME_TOKEN.TOKEN.eq(token))
+                .execute()
+        return deletedCount > 0
+
     }
 }

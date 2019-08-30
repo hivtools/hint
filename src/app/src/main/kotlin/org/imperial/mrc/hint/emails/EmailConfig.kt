@@ -13,7 +13,7 @@ interface EmailManager
 @Configuration
 class EmailConfig {
     @Bean
-    fun getEmailManager(@Autowired appProperties: AppProperties): EmailManager {
+    fun getEmailManager(appProperties: AppProperties): EmailManager {
         val mode = appProperties.emailMode
         return when (mode) {
             "real" -> RealEmailManager(appProperties)

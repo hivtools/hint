@@ -12,10 +12,11 @@ interface UserRepository
     fun addUser(email: String, password: String)
     fun removeUser(email: String)
     fun getUser(email: String): CommonProfile?
+    fun updateUserPassword(user: CommonProfile, password: String)
 }
 
 @Component
-class DbProfileServiceUserRepository(@Autowired val profileService: DbProfileService): UserRepository
+class DbProfileServiceUserRepository(private val profileService: DbProfileService): UserRepository
 {
     override fun addUser(email: String, password: String)
     {
@@ -39,6 +40,12 @@ class DbProfileServiceUserRepository(@Autowired val profileService: DbProfileSer
     override fun getUser(email: String): CommonProfile?
     {
         return profileService.findById(email)
+    }
+
+    override fun updateUserPassword(user: CommonProfile, password: String)
+    {
+        val dbUser: DbProfile = getUser(user.id) as DbProfile
+        profileService.update(dbUser, password)
     }
 }
 

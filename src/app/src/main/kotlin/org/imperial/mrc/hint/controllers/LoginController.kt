@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import javax.servlet.http.HttpServletRequest
 
 @Controller
-class LoginController(@Autowired val request: HttpServletRequest) {
+class LoginController(private val request: HttpServletRequest) {
 
     @GetMapping("/login")
     fun login(model: Model): String {
