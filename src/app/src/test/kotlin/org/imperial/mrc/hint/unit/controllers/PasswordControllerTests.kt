@@ -30,7 +30,7 @@ class PasswordControllerTests {
 
     val mockEmailManager = mock<EmailManager>()
 
-    val expectedSuccessResponse = "{\"errors\":{},\"status\":\"success\",\"data\":null}"
+    val expectedSuccessResponse = "{\"errors\":{},\"status\":\"success\",\"data\":true}"
 
     @Test
     fun `forgotPassword returns expected template name`()
