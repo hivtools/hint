@@ -63,10 +63,7 @@ class PasswordController(private val userRepository: UserRepository,
                           @RequestParam("password") @Size(min = 6, message = "Password must be at least 6 characters long")
                           password: String): String {
         val user = oneTimeTokenManager.validateToken(token) ?: throw TokenException("Token is not valid")
-
         userRepository.updateUserPassword(user, password)
         return EmptySuccessResponse.toJsonString()
     }
 }
-
-
