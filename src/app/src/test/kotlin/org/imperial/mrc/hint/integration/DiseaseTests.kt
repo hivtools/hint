@@ -24,4 +24,11 @@ class DiseaseTests: SecureIntegrationTests() {
         assertSecureWithError(isAuthorized, entity, HttpStatus.BAD_REQUEST, "INVALID_FILE")
     }
 
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can upload ANC file`(isAuthorized: IsAuthorized) {
+        val postEntity = createTestHttpEntity()
+        val entity = testRestTemplate.postForEntity<String>("/disease/anc/", postEntity)
+        assertSecureWithError(isAuthorized, entity, HttpStatus.BAD_REQUEST, "INVALID_FILE")
+    }
 }

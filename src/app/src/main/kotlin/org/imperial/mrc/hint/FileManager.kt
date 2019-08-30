@@ -11,7 +11,8 @@ enum class FileType {
 
     Survey,
     Program,
-    PJNZ;
+    PJNZ,
+    ANC;
 
     override fun toString(): String {
         return this.name.toLowerCase()
