@@ -5,7 +5,6 @@ import org.pac4j.core.config.Config
 import org.pac4j.core.context.session.J2ESessionStore
 import org.pac4j.http.client.indirect.FormClient
 import org.pac4j.sql.profile.service.DbProfileService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -17,12 +16,12 @@ import javax.sql.DataSource
 class Pac4jConfig {
 
     @Bean
-    fun getProfileService(@Autowired dataSource: DataSource): DbProfileService {
+    fun getProfileService(dataSource: DataSource): DbProfileService {
         return DbProfileService(TransactionAwareDataSourceProxy(dataSource), SecurePasswordEncoder())
     }
 
-   @Bean
-    fun getPac4jConfig(@Autowired profileService: DbProfileService): Config {
+    @Bean
+    fun getPac4jConfig(profileService: DbProfileService): Config {
         val formClient = FormClient("/login", profileService)
         val clients = Clients("/callback", formClient)
         return Config(clients).apply {

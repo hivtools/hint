@@ -5,14 +5,14 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.AppProperties
-import org.imperial.mrc.hint.emails.EmailManagerConfig
+import org.imperial.mrc.hint.emails.EmailConfig
 import org.imperial.mrc.hint.emails.RealEmailManager
 import org.imperial.mrc.hint.emails.WriteToDiskEmailManager
 import org.junit.jupiter.api.Test
 
 class EmailManagerConfigTests
 {
-    val sut = EmailManagerConfig()
+    val sut = EmailConfig()
 
     @Test
     fun `returns WriteToDisk manager when email mode is disk`()
