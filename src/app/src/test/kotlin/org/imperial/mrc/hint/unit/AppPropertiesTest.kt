@@ -2,10 +2,10 @@ package org.imperial.mrc.hint.unit
 
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.HintProperties
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.io.File
-import java.util.*
 
 class AppPropertiesTests {
 
@@ -14,7 +14,7 @@ class AppPropertiesTests {
         File("tmp").deleteRecursively()
     }
 
-    private fun readPropsFromTempFile(contents: String): Properties {
+    private fun readPropsFromTempFile(contents: String): HintProperties {
         File("tmp").mkdir()
         val config = File("tmp/fake.properties")
         config.createNewFile()

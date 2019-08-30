@@ -3,16 +3,16 @@ package org.imperial.mrc.hint.security.tokens
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.TokenRepository
 import org.pac4j.core.profile.CommonProfile
-import org.springframework.context.annotation.Configuration
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import org.pac4j.jwt.profile.JwtGenerator
+import org.springframework.stereotype.Component
 import java.time.Duration
 import java.security.KeyPair
 import java.security.SecureRandom
 import java.time.Instant
 import java.util.*
 
-@Configuration
+@Component
 class OneTimeTokenManager(
         appProperties: AppProperties,
         private val tokenRepository: TokenRepository
@@ -25,7 +25,7 @@ class OneTimeTokenManager(
     private val random = SecureRandom()
 
 
-    open fun generateOnetimeSetPasswordToken(user: CommonProfile): String
+    fun generateOnetimeSetPasswordToken(user: CommonProfile): String
     {
         val token= generator.generate(mapOf(
                 "iss" to issuer,
