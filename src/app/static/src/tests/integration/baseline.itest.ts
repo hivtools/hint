@@ -20,7 +20,7 @@ describe("Baseline actions", () => {
         const formData = new FormData();
         formData.append('file', file);
 
-        await actions._uploadPJNZ({commit} as any, formData);
+        await actions.uploadPJNZ({commit} as any, formData);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "PJNZUploaded",

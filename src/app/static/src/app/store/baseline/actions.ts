@@ -2,45 +2,32 @@ import {ActionContext, ActionTree, Commit, Payload} from 'vuex';
 import {BaselineState} from "./baseline";
 import {RootState} from "../../main";
 import {api} from "../../apiService";
-import {PjnzResponse} from "../../generated";
 import {BaselineData} from "../../types";
+import {PjnzResponse} from "../../generated";
 
-export type BaselineActionTypes = "PJNZUploaded" | "PJNZUploadError" | "BaselineDataLoaded"
-
-export interface BaselinePayload<T> extends Payload {
-    type: BaselineActionTypes
-    payload: T
-}
+export type BaselineActionTypes = "PJNZUploaded" | "BaselineDataLoaded"
+export type BaselineErrorActionTypes = "PJNZUploadError"
 
 export interface BaselineActions {
-    uploadPJNZ: (store: ActionContext<BaselineState, RootState>, file: File) => void
-    _uploadPJNZ: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void
+    uploadPJNZ: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void
     getBaselineData: (store: ActionContext<BaselineState, RootState>) => void
 }
 
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
-    async uploadPJNZ(store, file) {
-        let formData = new FormData();
-        formData.append('file', file);
-
-        await this._uploadPJNZ(store, formData)
-    },
-
-    async _uploadPJNZ({commit}, formData) {
-        const payload = await api()
-            .commitFirstErrorAsType(commit, "PJNZUploadError")
+    async uploadPJNZ({commit}, formData) {
+        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+            .withSuccess("PJNZUploaded")
+            .withError("PJNZUploadError")
             .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData);
-
-        payload && commit<BaselinePayload<PjnzResponse>>({type: "PJNZUploaded", payload});
     },
 
     async getBaselineData({commit}) {
-        const payload = await api()
+        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .ignoreErrors()
+            .withSuccess("BaselineDataLoaded")
             .get<BaselineData>("/baseline/");
-
-        payload && commit<BaselinePayload<BaselineData>>({type: "BaselineDataLoaded", payload});
     }
+
 };
 

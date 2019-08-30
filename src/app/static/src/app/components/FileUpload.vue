@@ -37,7 +37,7 @@
     }
 
     interface Props {
-        upload: (file: File) => void,
+        upload: (formData: FormData) => void,
         accept: string,
         label: string,
         valid: Boolean,
@@ -79,7 +79,9 @@
                 this.selectedFileName = this.selectedFile && this.selectedFile.name.split("\\").pop() || "";
 
                 if (this.selectedFile) {
-                    this.upload(this.selectedFile);
+                    const formData = new FormData();
+                    formData.append('file', this.selectedFile);
+                    this.upload(formData);
                 }
             }
         },

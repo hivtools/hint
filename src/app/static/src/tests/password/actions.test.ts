@@ -13,7 +13,6 @@ describe("Password actions", () => {
         (console.log as jest.Mock).mockClear();
     });
 
-
     it("requests reset link and commits success", async () => {
 
         mockAxios.onPost(`/password/request-reset-link/`)
@@ -24,7 +23,7 @@ describe("Password actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ResetLinkRequested",
-            payload: null
+            payload: true
         });
     });
 
