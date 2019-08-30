@@ -4,7 +4,6 @@ import org.imperial.mrc.hint.exceptions.UserException
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 interface UserRepository

@@ -5,7 +5,6 @@ import org.pac4j.core.config.Config
 import org.pac4j.core.context.session.J2ESessionStore
 import org.pac4j.http.client.indirect.FormClient
 import org.pac4j.sql.profile.service.DbProfileService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
