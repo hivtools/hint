@@ -18,6 +18,8 @@ APP_DOCKER_TAG=$REGISTRY/$NAME
 APP_DOCKER_COMMIT_TAG=$REGISTRY/$NAME:$GIT_ID
 APP_DOCKER_BRANCH_TAG=$REGISTRY/$NAME:$GIT_BRANCH
 
+export NODE_ENV=production
+
 ./src/gradlew -p src :app:bootDistTar
 
 docker build . --tag $APP_DOCKER_COMMIT_TAG \
