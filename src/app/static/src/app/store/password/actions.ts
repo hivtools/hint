@@ -1,6 +1,7 @@
 import {ActionContext, ActionTree, Payload} from "vuex";
 import {PasswordState} from "./password";
 import {api} from "../../apiService";
+import qs from "qs";
 
 export type PasswordActionTypes = "ResetLinkRequested" | "RequestResetLinkError" | "ResetPassword" | "ResetPasswordError"
 export interface PasswordActionPayload<T> extends Payload {
@@ -33,10 +34,8 @@ export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions
     },
 
     resetPassword({commit}: ActionContext<PasswordState, PasswordState>, payload: ResetPasswordActionParams) {
-        let formData = new FormData();
-        formData.append('token', payload.token);
-        formData.append('password', payload.password);
-        api.postAndReturn<null>("/password/reset-password/", formData)
+        api.postAndReturn<null>("/password/reset-password/",
+                    qs.stringify({token: payload.token, password: payload.password}))
             .then((payload) => {
                 commit<PasswordActionPayload<null>>({type: "ResetPassword", payload: null});
             })
