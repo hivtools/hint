@@ -21,7 +21,7 @@ describe("Survey and program actions", () => {
         const formData = new FormData();
         formData.append('file', file);
 
-        await actions._uploadSurvey({commit} as any, formData);
+        await actions.uploadSurvey({commit} as any, formData);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "SurveyError",
