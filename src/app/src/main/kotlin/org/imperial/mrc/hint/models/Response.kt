@@ -10,7 +10,7 @@ data class SuccessResponse(val data: Any?){
 
 fun SuccessResponse.toJsonString() = ObjectMapper().writeValueAsString(this)
 
-val EmptySuccessResponse = SuccessResponse(null)
+val EmptySuccessResponse = SuccessResponse(true)
 
 data class ErrorResponse(val errors: List<ErrorDetail>) {
     val data = mapOf<Any, Any>()
