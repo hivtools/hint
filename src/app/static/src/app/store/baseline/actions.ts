@@ -2,15 +2,11 @@ import {ActionContext, ActionTree, Payload} from 'vuex';
 import {BaselineState} from "./baseline";
 import {RootState} from "../../main";
 import {api} from "../../apiService";
-import {PjnzResponse} from "../../generated";
 import {BaselineData} from "../../types";
+import {PjnzResponse} from "../../generated";
 
-export type BaselineActionTypes = "PJNZUploaded" | "PJNZUploadError" | "BaselineDataLoaded"
-
-export interface BaselinePayload<T> extends Payload {
-    type: BaselineActionTypes
-    payload: T
-}
+export type BaselineActionTypes = "PJNZUploaded" | "BaselineDataLoaded"
+export type BaselineErrorActionTypes = "PJNZUploadError"
 
 export interface BaselineActions {
     uploadPJNZ: (store: ActionContext<BaselineState, RootState>, file: File) => void
@@ -19,24 +15,22 @@ export interface BaselineActions {
 
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
-    uploadPJNZ({commit}, file) {
+    async uploadPJNZ({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
-        api.postAndReturn<PjnzResponse>("/baseline/pjnz/", formData)
-            .then((payload) => {
-                commit<BaselinePayload<PjnzResponse>>({type: "PJNZUploaded", payload});
-            })
-            .catch((error: Error) => {
-                commit<BaselinePayload<String>>({type: 'PJNZUploadError', payload: error.message});
-            });
+
+        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+            .withSuccess("PJNZUploaded")
+            .withError("PJNZUploadError")
+            .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData);
     },
 
-    getBaselineData({commit}) {
-        api.get<BaselineData>("/baseline/")
-            .then((payload) => {
-                commit<BaselinePayload<BaselineData>>({type: "BaselineDataLoaded", payload});
-            })
-            .catch(api.doNothing);
+    async getBaselineData({commit}) {
+        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+            .ignoreErrors()
+            .withSuccess("BaselineDataLoaded")
+            .get<BaselineData>("/baseline/");
     }
+
 };
 

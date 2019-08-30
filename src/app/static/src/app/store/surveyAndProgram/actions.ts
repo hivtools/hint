@@ -1,15 +1,11 @@
-import {ActionContext, ActionTree, Payload} from 'vuex';
+import {ActionContext, ActionTree} from 'vuex';
 import {RootState} from "../../main";
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {SurveyResponse} from "../../types";
 
-export type SurveyAndProgramActionTypes = "SurveyLoaded" | "SurveyError"
-
-export interface SurveyAndProgramPayload<T> extends Payload {
-    type: SurveyAndProgramActionTypes
-    payload: T
-}
+export type SurveyAndProgramActionTypes = "SurveyLoaded"
+export type SurveyAndProgramActionErrorTypes = "SurveyError"
 
 export interface SurveyAndProgramActions {
     uploadSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>, file: File) => void
@@ -17,15 +13,12 @@ export interface SurveyAndProgramActions {
 
 export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
 
-    uploadSurvey({commit}, file) {
+    async uploadSurvey({commit}, file) {
         let formData = new FormData();
         formData.append('file', file);
-        api.postAndReturn<SurveyResponse>("/disease/survey/", formData)
-            .then((payload) => {
-                commit<SurveyAndProgramPayload<SurveyResponse>>({type: "SurveyLoaded", payload});
-            })
-            .catch((error: Error) => {
-                commit<SurveyAndProgramPayload<string>>({type: 'SurveyError', payload: error.message});
-            });
+        await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
+            .withError("SurveyError")
+            .withSuccess("SurveyLoaded")
+            .postAndReturn<SurveyResponse>("/disease/survey/", formData);
     }
 };

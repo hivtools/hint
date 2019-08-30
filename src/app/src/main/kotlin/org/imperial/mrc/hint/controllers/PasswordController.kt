@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.*
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordResetEmail
+import org.imperial.mrc.hint.models.toJsonString
 import org.imperial.mrc.hint.exceptions.HintException
 import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.imperial.mrc.hint.models.EmptySuccessResponse
-import org.imperial.mrc.hint.models.toJsonString
 import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import javax.validation.constraints.Size
@@ -37,8 +37,7 @@ class PasswordController(private val userRepository: UserRepository,
     {
         val user = userRepository.getUser(email)
 
-        if (user != null)
-        {
+        if (user != null) {
             val token = oneTimeTokenManager.generateOnetimeSetPasswordToken(user)
 
             val emailMessage = PasswordResetEmail(appProperties.applicationTitle,
@@ -66,10 +65,7 @@ class PasswordController(private val userRepository: UserRepository,
                                         password: String): String
     {
         val user = oneTimeTokenManager.validateToken(token) ?: throw TokenException("Token is not valid")
-
         userRepository.updateUserPassword(user, password)
         return EmptySuccessResponse.toJsonString()
     }
 }
-
-

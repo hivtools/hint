@@ -1,13 +1,10 @@
-import {ActionContext, ActionTree, Payload} from "vuex";
+import {ActionContext, ActionTree} from "vuex";
 import {PasswordState} from "./password";
 import {api} from "../../apiService";
 import qs from "qs";
 
-export type PasswordActionTypes = "ResetLinkRequested" | "RequestResetLinkError" | "ResetPassword" | "ResetPasswordError"
-export interface PasswordActionPayload<T> extends Payload {
-    type: PasswordActionTypes
-    payload: T
-}
+export type PasswordActionTypes = "ResetLinkRequested" | "ResetPassword"
+export type PasswordActionErrorTypes = "RequestResetLinkError" | "ResetPasswordError"
 
 export interface ResetPasswordActionParams {
     token: string
@@ -21,26 +18,22 @@ export interface PasswordActions {
 
 export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions = {
 
-    requestResetLink({commit}: ActionContext<PasswordState, PasswordState>, email: string) {
+    async requestResetLink({commit}, email) {
         let formData = new FormData();
         formData.append('email', email);
-        api.postAndReturn<null>("/password/request-reset-link/", formData)
-            .then((payload) => {
-                commit<PasswordActionPayload<null>>({type: "ResetLinkRequested", payload: null});
-            })
-            .catch((error: Error) => {
-                commit<PasswordActionPayload<string>>({type: "RequestResetLinkError", payload: error.message});
-            });
+        await api<PasswordActionTypes, PasswordActionErrorTypes>(commit)
+            .withError("RequestResetLinkError")
+            .withSuccess("ResetLinkRequested")
+            .postAndReturn<Boolean>("/password/request-reset-link/", formData);
     },
 
-    resetPassword({commit}: ActionContext<PasswordState, PasswordState>, payload: ResetPasswordActionParams) {
-        api.postAndReturn<null>("/password/reset-password/",
-                    qs.stringify({token: payload.token, password: payload.password}))
-            .then((payload) => {
-                commit<PasswordActionPayload<null>>({type: "ResetPassword", payload: null});
-            })
-            .catch((error: Error) => {
-                commit<PasswordActionPayload<string>>({type: "ResetPasswordError", payload: error.message});
-            });
+    async resetPassword({commit}, payload) {
+        await api<PasswordActionTypes, PasswordActionErrorTypes>(commit)
+            .withError("ResetPasswordError")
+            .withSuccess("ResetPassword")
+            .postAndReturn<Boolean>("/password/reset-password/", qs.stringify({
+                token: payload.token,
+                password: payload.password
+            }));
     }
 };

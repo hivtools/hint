@@ -7,38 +7,32 @@ describe("Survey and program actions", () => {
         mockAxios.reset();
     });
 
-    it("sets data after survey file upload", (done) => {
+    it("sets data after survey file upload", async () => {
 
         mockAxios.onPost(`/disease/survey/`)
             .reply(200, mockSuccess({data: {geoJson: "SOME GEOJSON"}}));
 
         const commit = jest.fn();
-        actions.uploadSurvey({commit} as any, {} as File);
+        await actions.uploadSurvey({commit} as any, {} as File);
 
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: "SurveyLoaded",
-                payload: {data: {geoJson: "SOME GEOJSON"}}
-            });
-            done();
-        })
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "SurveyLoaded",
+            payload: {data: {geoJson: "SOME GEOJSON"}}
+        });
     });
 
-    it("sets error message after failed survey upload", (done) => {
+    it("sets error message after failed survey upload", async () => {
 
         mockAxios.onPost(`/disease/survey/`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
-        actions.uploadSurvey({commit} as any, {} as File);
+        await actions.uploadSurvey({commit} as any, {} as File);
 
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: "SurveyError",
-                payload: "error message"
-            });
-            done();
-        })
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "SurveyError",
+            payload: "error message"
+        });
     });
 
 });

@@ -64,7 +64,6 @@ class PasswordControllerTests {
             assertThat(emailObj.values["token"]).isEqualTo("testToken")
             assertThat(emailObj.values["email"]).isEqualTo("test.user@test.com")
         }
-
     }
 
     @Test
@@ -79,7 +78,6 @@ class PasswordControllerTests {
         val result = sut.requestResetLink("nonexistent@test.com")
 
         verify(mockTokenMan, never()).generateOnetimeSetPasswordToken(any())
-
         assertThat(result).isEqualTo(expectedSuccessResponse)
     }
 
@@ -128,6 +126,5 @@ class PasswordControllerTests {
 
         verify(mockTokenMan).validateToken("testToken")
         verify(mockUserRepo, never()).updateUserPassword(any(), any())
-
     }
 }

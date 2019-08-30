@@ -25,12 +25,8 @@ export interface InitialiseModelRunRequest {
     max_iterations: number;
     no_of_simulations: number;
     input_data: {
-      programme: {
-        [k: string]: any;
-      };
-      anc: {
-        [k: string]: any;
-      };
+      programme: boolean;
+      anc: boolean;
     };
   };
 }
@@ -39,23 +35,15 @@ export interface InitialiseModelRunResponse {
 }
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface ModelRunInputData {
-  programme: {
-    [k: string]: any;
-  };
-  anc: {
-    [k: string]: any;
-  };
+  programme: boolean;
+  anc: boolean;
 }
 export interface ModelRunOptions {
   max_iterations: number;
   no_of_simulations: number;
   input_data: {
-    programme: {
-      [k: string]: any;
-    };
-    anc: {
-      [k: string]: any;
-    };
+    programme: boolean;
+    anc: boolean;
   };
 }
 export interface ModelRunResult {
@@ -79,17 +67,13 @@ export type ModelRunResultResponse = Incomplete | Complete;
 
 export interface Incomplete {
   processId: string;
-  complete: {
-    [k: string]: any;
-  };
+  complete: false;
   progress: number;
   timeRemaining: number;
 }
 export interface Complete {
   processId: string;
-  complete: {
-    [k: string]: any;
-  };
+  complete: true;
   result: {
     plhiv: {
       placeholder?: boolean;
@@ -111,9 +95,7 @@ export interface PjnzResponseData {
 export type Response = Success | Failure;
 
 export interface Success {
-  status: {
-    [k: string]: any;
-  };
+  status: "success";
   data:
     | (
         | {
@@ -126,7 +108,7 @@ export interface Success {
         | {
             filename: string;
             type: "shape";
-            data: string;
+            data: GeoJSONObject;
           })
     | {
         processId: string;
@@ -134,17 +116,13 @@ export interface Success {
     | (
         | {
             processId: string;
-            complete: {
-              [k: string]: any;
-            };
+            complete: false;
             progress: number;
             timeRemaining: number;
           }
         | {
             processId: string;
-            complete: {
-              [k: string]: any;
-            };
+            complete: true;
             result: {
               plhiv: {
                 placeholder?: boolean;
@@ -164,10 +142,24 @@ export interface Success {
     [k: string]: any;
   };
 }
-export interface Failure {
-  status: {
+/**
+ * TODO: Validate against a URL e.g. https://geojson.org/schema/FeatureCollection.json
+ */
+export interface GeoJSONObject {
+  type: "FeatureCollection";
+  crs?: {
     [k: string]: any;
   };
+  name?: {
+    [k: string]: any;
+  };
+  features: {
+    [k: string]: any;
+  }[];
+  [k: string]: any;
+}
+export interface Failure {
+  status: "failure";
   data: {
     [k: string]: any;
   };
@@ -182,7 +174,22 @@ export interface Failure {
     })[]
   ];
 }
-export type ShapefileResponseData = string;
+/**
+ * TODO: Validate against a URL e.g. https://geojson.org/schema/FeatureCollection.json
+ */
+export interface GeoJSONObject {
+  type: "FeatureCollection";
+  crs?: {
+    [k: string]: any;
+  };
+  name?: {
+    [k: string]: any;
+  };
+  features: {
+    [k: string]: any;
+  }[];
+  [k: string]: any;
+}
 export type URI = string;
 export interface ValidateInputRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
@@ -200,5 +207,21 @@ export interface PjnzResponse {
 export interface ShapeResponse {
   filename: string;
   type: "shape";
-  data: string;
+  data: GeoJSONObject;
+}
+/**
+ * TODO: Validate against a URL e.g. https://geojson.org/schema/FeatureCollection.json
+ */
+export interface GeoJSONObject {
+  type: "FeatureCollection";
+  crs?: {
+    [k: string]: any;
+  };
+  name?: {
+    [k: string]: any;
+  };
+  features: {
+    [k: string]: any;
+  }[];
+  [k: string]: any;
 }
