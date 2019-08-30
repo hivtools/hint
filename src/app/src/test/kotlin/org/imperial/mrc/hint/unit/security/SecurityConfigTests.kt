@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.imperial.mrc.hint.AppProperties
-import org.imperial.mrc.hint.security.SecurityConfig
+import org.imperial.mrc.hint.MvcConfig
 import org.junit.jupiter.api.Test
 import org.mockito.internal.verification.Times
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration
@@ -18,7 +18,7 @@ class SecurityConfigTests {
         val mockProps = mock<AppProperties> {
             on { useAuth } doReturn true
         }
-        val sut = SecurityConfig(mock(), mockProps)
+        val sut = MvcConfig(mock(), mockProps)
 
         val mockNestedInterceptor = mock<InterceptorRegistration>()
         val mockInterceptor = mock<InterceptorRegistration>() {
@@ -37,7 +37,7 @@ class SecurityConfigTests {
         val mockProps = mock<AppProperties> {
             on { useAuth } doReturn false
         }
-        val sut = SecurityConfig(mock(), mockProps)
+        val sut = MvcConfig(mock(), mockProps)
 
         val interceptors = mock<InterceptorRegistry>()
         sut.addInterceptors(interceptors)

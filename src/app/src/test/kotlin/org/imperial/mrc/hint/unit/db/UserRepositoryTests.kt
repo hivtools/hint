@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.mockito.ArgumentCaptor
+import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
 
@@ -85,6 +86,25 @@ class UserRepositoryTests
         val sut = DbProfileServiceUserRepository(mockProfileService)
         val result = sut.getUser(TEST_EMAIL)
         assertThat(result).isSameAs(mockProfile)
+    }
+
+    @Test
+    fun `updateUserPassword updates profile`()
+    {
+        val mockCommonProfile = mock<CommonProfile>{
+            on { id } doReturn TEST_EMAIL
+        }
+
+        val mockDbProfile = mock<DbProfile>()
+
+        val mockProfileService = mock<DbProfileService> {
+            on { findById(TEST_EMAIL) } doReturn mockDbProfile
+        }
+
+        val sut = DbProfileServiceUserRepository(mockProfileService)
+        sut.updateUserPassword(mockCommonProfile, "testPassword")
+
+        verify(mockProfileService).update(mockDbProfile, "testPassword")
     }
 
 }
