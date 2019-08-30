@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.db
 
+import org.imperial.mrc.hint.AppProperties
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
@@ -10,9 +11,12 @@ import javax.sql.DataSource
 class DbConfig
 {
     @Bean
-    @ConfigurationProperties(prefix="spring.datasource")
-    fun dataSource(): DataSource
+    @ConfigurationProperties("spring.datasource")
+    fun dataSource(appProperties: AppProperties): DataSource
     {
-        return DataSourceBuilder.create().build()
+        val dataSourceBuilder = DataSourceBuilder.create()
+        dataSourceBuilder.username(appProperties.dbUser)
+        dataSourceBuilder.password(appProperties.dbPassword)
+        return dataSourceBuilder.build()
     }
 }
