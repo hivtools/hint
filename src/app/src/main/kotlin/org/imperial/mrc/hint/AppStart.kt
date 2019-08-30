@@ -5,7 +5,10 @@ import org.pac4j.springframework.web.SecurityInterceptor
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.servlet.config.annotation.*
+import org.springframework.web.servlet.config.annotation.EnableWebMvc
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.EncodedResourceResolver
 import org.springframework.web.servlet.resource.PathResourceResolver
 
@@ -17,7 +20,8 @@ fun main(args: Array<String>) {
 }
 
 @Configuration
-class MvcConfig(val config: Config) : WebMvcConfigurationSupport() {
+@EnableWebMvc
+class MvcConfig(val config: Config) : WebMvcConfigurer {
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/public/**")
@@ -25,6 +29,7 @@ class MvcConfig(val config: Config) : WebMvcConfigurationSupport() {
                 .resourceChain(true)
                 .addResolver(EncodedResourceResolver())
                 .addResolver(PathResourceResolver())
+
     }
 
     override fun addInterceptors(registry: InterceptorRegistry) {
