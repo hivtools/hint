@@ -73,8 +73,9 @@ export class APIService<S extends string, E extends string> implements API<S, E>
             if (this._onSuccess) {
                 this._onSuccess(success);
             }
+            return success;
         }).catch((e: AxiosError) => {
-            this._handleError(e)
+            return this._handleError(e)
         });
     }
 
