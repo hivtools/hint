@@ -9,15 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
+import javax.sql.DataSource
 
 @Configuration
 @ComponentScan(basePackages = ["org.pac4j.springframework.web", "org.pac4j.springframework.component"])
 class Pac4jConfig {
 
-   @Autowired lateinit var profileService: DbProfileService
+    @Bean
+    fun getProfileService(@Autowired dataSource: DataSource): DbProfileService {
+        return DbProfileService(TransactionAwareDataSourceProxy(dataSource), SecurePasswordEncoder())
+    }
 
    @Bean
-    fun getConfig(): Config {
+    fun getPac4jConfig(@Autowired profileService: DbProfileService): Config {
         val formClient = FormClient("/login", profileService)
         val clients = Clients("/callback", formClient)
         return Config(clients).apply {

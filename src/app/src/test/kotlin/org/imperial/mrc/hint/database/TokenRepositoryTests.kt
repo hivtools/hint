@@ -1,9 +1,9 @@
 package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.db.JooqContext
 import org.imperial.mrc.hint.db.Tables.ONETIME_TOKEN
 import org.imperial.mrc.hint.db.TokenRepository
+import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,20 +22,44 @@ class TokenRepositoryTests {
     private lateinit var sut: TokenRepository
 
     @Autowired
-    private lateinit var dataSource: DataSource
+    private lateinit var dsl: DSLContext
+
+    private val TOKEN = "testRepoToken"
 
     @Test
     fun `can store token`()
     {
-        sut.storeToken("testToken")
+        sut.storeOneTimeToken(TOKEN)
+        assertThat(checkIfTokenExists()).isTrue()
+    }
 
-        JooqContext(dataSource).use{
-            var result = it.dsl.select()
-            .from(ONETIME_TOKEN)
-            .where(ONETIME_TOKEN.TOKEN.eq("testToken"))
-            .fetch()
+    @Test
+    fun `validateOneTimeToken returns true and deletes if token exists`()
+    {
+        sut.storeOneTimeToken(TOKEN)
 
-            assertThat(result.count()).isEqualTo(1)
-        }
+        val result = sut.validateOneTimeToken(TOKEN)
+
+        assertThat(result).isTrue()
+        assertThat(checkIfTokenExists()).isFalse()
+    }
+
+    @Test
+    fun `validateOneTimeToken returns false if token does not exist`()
+    {
+        val result = sut.validateOneTimeToken(TOKEN)
+
+        assertThat(result).isFalse()
+    }
+
+    private fun checkIfTokenExists(): Boolean
+    {
+        val result = dsl.select()
+                    .from(ONETIME_TOKEN)
+                    .where(ONETIME_TOKEN.TOKEN.eq(TOKEN))
+                    .fetch()
+
+        return result.count() == 1
+
     }
 }

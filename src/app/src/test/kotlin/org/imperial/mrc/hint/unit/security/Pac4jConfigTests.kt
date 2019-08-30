@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.unit.security
 import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.security.Pac4jConfig
+import org.imperial.mrc.hint.security.SecurePasswordEncoder
 import org.junit.jupiter.api.extension.ExtendWith
 import org.pac4j.core.client.BaseClient
 import org.pac4j.core.context.session.J2ESessionStore
@@ -10,25 +11,27 @@ import org.pac4j.http.client.indirect.FormClient
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import javax.sql.DataSource
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 class Pac4jConfigTests
 {
     @Autowired
+    private lateinit var wiredDataSource: DataSource
+
+    @Autowired
+    private lateinit var wiredDbProfileService: DbProfileService
+
+    @Autowired
     private lateinit var sut: Pac4jConfig
 
     @Test
-    fun `config properties are initialized`()
+    fun `can get Pac4j Config`()
     {
-        assertThat(sut.profileService).isInstanceOf(DbProfileService::class.java)
-    }
-
-    @Test
-    fun `can get config`()
-    {
-        val config = sut.getConfig()
+        val config = sut.getPac4jConfig(wiredDbProfileService)
 
         assertThat(config.clients.callbackUrl).isEqualTo("/callback")
         assertThat(config.clients.clients.count()).isEqualTo(1)
@@ -42,5 +45,14 @@ class Pac4jConfigTests
         assertThat(field.get(client)).isInstanceOf(DbProfileService::class.java)
 
         assertThat(config.sessionStore).isInstanceOf(J2ESessionStore::class.java)
+    }
+
+    @Test
+    fun `can get dbProfileService`()
+    {
+        val result = sut.getProfileService(wiredDataSource)
+        assertThat(result.dataSource).isInstanceOf(TransactionAwareDataSourceProxy::class.java)
+        assertThat((result.dataSource as TransactionAwareDataSourceProxy).targetDataSource).isSameAs(wiredDataSource)
+        assertThat(result.passwordEncoder).isInstanceOf(SecurePasswordEncoder::class.java)
     }
 }
