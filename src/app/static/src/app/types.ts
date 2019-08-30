@@ -1,5 +1,10 @@
 import {PjnzResponse} from "./generated";
 import {GeoJSON} from "geojson";
+import {Payload} from "vuex";
+
+export interface PayloadWithType<T> extends Payload {
+    payload: T
+}
 
 export type InternalResponse = BaselineData |  SurveyResponse
 

@@ -2,15 +2,11 @@ import {ActionContext, ActionTree, Payload} from 'vuex';
 import {BaselineState} from "./baseline";
 import {RootState} from "../../main";
 import {api} from "../../apiService";
-import {PjnzResponse} from "../../generated";
 import {BaselineData} from "../../types";
+import {PjnzResponse} from "../../generated";
 
-export type BaselineActionTypes = "PJNZUploaded" | "PJNZUploadError" | "BaselineDataLoaded"
-
-export interface BaselinePayload<T> extends Payload {
-    type: BaselineActionTypes
-    payload: T
-}
+export type BaselineActionTypes = "PJNZUploaded" | "BaselineDataLoaded"
+export type BaselineErrorActionTypes = "PJNZUploadError"
 
 export interface BaselineActions {
     uploadPJNZ: (store: ActionContext<BaselineState, RootState>, file: File) => void
@@ -23,19 +19,18 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         let formData = new FormData();
         formData.append('file', file);
 
-        const payload = await api()
-            .commitFirstErrorAsType(commit, "PJNZUploadError")
+        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+            .withSuccess("PJNZUploaded")
+            .withError("PJNZUploadError")
             .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData);
-
-        payload && commit<BaselinePayload<PjnzResponse>>({type: "PJNZUploaded", payload});
     },
 
     async getBaselineData({commit}) {
-        const payload = await api()
+        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .ignoreErrors()
+            .withSuccess("BaselineDataLoaded")
             .get<BaselineData>("/baseline/");
-
-        payload && commit<BaselinePayload<BaselineData>>({type: "BaselineDataLoaded", payload});
     }
+
 };
 
