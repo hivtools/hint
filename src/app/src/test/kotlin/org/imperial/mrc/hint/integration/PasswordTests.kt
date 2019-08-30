@@ -18,7 +18,7 @@ import org.springframework.http.MediaType
 import org.springframework.util.LinkedMultiValueMap
 import java.nio.file.Files
 
-class PasswordTests(@Autowired val restTemplate: TestRestTemplate): CleanDatabaseTests() {
+class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDatabaseTests() {
 
     companion object {
         @BeforeAll
@@ -26,6 +26,12 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate): CleanDatabas
         fun setUp() {
             WriteToDiskEmailManager.cleanOutputDirectory()
         }
+    }
+
+    private val expectedSuccessResponse = "{\"errors\":{},\"status\":\"success\",\"data\":true}"
+
+    private fun expectedErrorResponse(errorMessage: String): String {
+        return "{\"data\":{},\"status\":\"failure\",\"errors\":[{\"error\":\"OTHER_ERROR\",\"detail\":\"$errorMessage\"}]}"
     }
 
     @AfterEach
@@ -59,6 +65,7 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate): CleanDatabas
         var entity = restTemplate.postForEntity<String>("/password/reset-password/",
                 HttpEntity(map, headers))
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(entity.body).isEqualTo(expectedSuccessResponse)
 
         restTemplate.restTemplate.interceptors.add(AuthInterceptor(restTemplate, "newpassword"))
         entity = restTemplate.getForEntity<String>("/")
@@ -77,11 +84,11 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate): CleanDatabas
         val entity = restTemplate.postForEntity<String>("/password/reset-password/",
                 HttpEntity(map, headers))
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        Assertions.assertThat(entity.body).isEqualTo(expectedErrorResponse("Token is not valid"))
     }
 
     @Test
-    fun `cannot reset password which is too short`()
-    {
+    fun `cannot reset password which is too short`() {
         val lines = requestPasswordResetLinkAndReadEmail()
         val token = getTokenFromEmailText(lines)
 
@@ -95,17 +102,16 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate): CleanDatabas
         val entity = restTemplate.postForEntity<String>("/password/reset-password/",
                 HttpEntity(map, headers))
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        Assertions.assertThat(entity.body).isEqualTo(expectedErrorResponse("postResetPassword.password: Password must be at least 6 characters long"))
     }
 
-    private fun getTokenFromEmailText(emailText: String): String
-    {
+    private fun getTokenFromEmailText(emailText: String): String {
         val regex = Regex("token=(.*)\\n")
-        val match =regex.find(emailText)
+        val match = regex.find(emailText)
         return match!!.groups[1]!!.value
     }
 
-    private fun requestPasswordResetLinkAndReadEmail(): String
-    {
+    private fun requestPasswordResetLinkAndReadEmail(): String {
         val map = LinkedMultiValueMap<String, String>()
         map.add("email", "test.user@example.com")
 
@@ -121,7 +127,7 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate): CleanDatabas
         val files = dir.listFiles()
         assertThat(files.count()).isEqualTo(1)
 
-        return Files.readAllLines(files[0].toPath()).joinToString(separator ="\n")
+        return Files.readAllLines(files[0].toPath()).joinToString(separator = "\n")
     }
 
 }

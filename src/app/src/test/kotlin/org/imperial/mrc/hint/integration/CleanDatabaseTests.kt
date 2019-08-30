@@ -18,7 +18,6 @@ import javax.sql.DataSource
 
 @ActiveProfiles(profiles = ["dev"])
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ExtendWith(SpringExtension::class)
 abstract class CleanDatabaseTests
 {
     @Autowired
