@@ -59,7 +59,6 @@ class PasswordControllerTests {
             verify(mockEmailManager).sendEmail(capture(), eq("test.user@test.com"))
             val emailObj = firstValue
             assertThat(emailObj).isInstanceOf(PasswordResetEmail::class.java)
-            assertThat((emailObj).values["appTitle"]).isEqualTo("testAppTitle")
             assertThat(emailObj.values["appTitle"]).isEqualTo("testAppTitle")
             assertThat(emailObj.values["appUrl"]).isEqualTo("https://test/")
             assertThat(emailObj.values["token"]).isEqualTo("testToken")
