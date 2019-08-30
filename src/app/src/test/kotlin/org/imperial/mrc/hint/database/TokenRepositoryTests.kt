@@ -1,9 +1,9 @@
 package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.db.JooqContext
 import org.imperial.mrc.hint.db.Tables.ONETIME_TOKEN
 import org.imperial.mrc.hint.db.TokenRepository
+import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +22,7 @@ class TokenRepositoryTests {
     private lateinit var sut: TokenRepository
 
     @Autowired
-    private lateinit var dataSource: DataSource
+    private lateinit var dsl: DSLContext
 
     private val TOKEN = "testRepoToken"
 
@@ -54,13 +54,12 @@ class TokenRepositoryTests {
 
     private fun checkIfTokenExists(): Boolean
     {
-        JooqContext(dataSource).use{
-            val result = it.dsl.select()
+        val result = dsl.select()
                     .from(ONETIME_TOKEN)
                     .where(ONETIME_TOKEN.TOKEN.eq(TOKEN))
                     .fetch()
 
-            return result.count() == 1
-        }
+        return result.count() == 1
+
     }
 }
