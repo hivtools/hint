@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import javax.servlet.http.HttpServletRequest
+import javax.validation.ConstraintViolationException
+
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -24,4 +27,16 @@ class HintExceptionHandler : ResponseEntityExceptionHandler() {
                                          request: WebRequest): ResponseEntity<Any> {
         return ErrorDetail(status, e.message ?: "Something went wrong").toResponseEntity()
     }
+
+    @ExceptionHandler(HintException::class)
+    protected fun handleHintException(e: HintException): ResponseEntity<Any>
+    {
+        return ErrorDetail(e.httpStatus, e.message!!).toResponseEntity()
+    }
+
+    @ExceptionHandler(ConstraintViolationException::class)
+    protected fun handleConstraintViolationException(e: ConstraintViolationException, request: HttpServletRequest): ResponseEntity<*> {
+        return ErrorDetail(HttpStatus.BAD_REQUEST, e.message!!).toResponseEntity()
+    }
+
 }

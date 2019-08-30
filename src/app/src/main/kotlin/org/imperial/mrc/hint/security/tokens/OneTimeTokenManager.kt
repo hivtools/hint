@@ -3,11 +3,10 @@ package org.imperial.mrc.hint.security.tokens
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.TokenRepository
 import org.pac4j.core.profile.CommonProfile
-import org.springframework.context.annotation.Configuration
-import org.pac4j.jwt.config.signature.RSASignatureConfiguration
+import org.pac4j.jwt.config.signature.SignatureConfiguration
 import org.pac4j.jwt.profile.JwtGenerator
+import org.springframework.context.annotation.Configuration
 import java.time.Duration
-import java.security.KeyPair
 import java.security.SecureRandom
 import java.time.Instant
 import java.util.*
@@ -15,17 +14,16 @@ import java.util.*
 @Configuration
 class OneTimeTokenManager(
         appProperties: AppProperties,
-        private val tokenRepository: TokenRepository
+        private val tokenRepository: TokenRepository,
+        signatureConfiguration: SignatureConfiguration,
+        private val authenticator: OneTimeTokenAuthenticator
 )
 {
-    private val keyPair: KeyPair = KeyHelper.keyPair
-    private val signatureConfiguration = RSASignatureConfiguration(keyPair)
     private val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
     private val issuer = appProperties.tokenIssuer
     private val random = SecureRandom()
 
-
-    open fun generateOnetimeSetPasswordToken(user: CommonProfile): String
+    fun generateOnetimeSetPasswordToken(user: CommonProfile): String
     {
         val token= generator.generate(mapOf(
                 "iss" to issuer,
@@ -34,15 +32,20 @@ class OneTimeTokenManager(
                 "nonce" to getNonce()
         ))
 
-        tokenRepository.storeToken(token)
+        tokenRepository.storeOneTimeToken(token)
 
         return token
     }
 
-    fun verifyOneTimeToken(compressedToken: String, oneTimeTokenChecker: OneTimeTokenChecker): Map<String, Any>
+    fun validateToken(token: String): CommonProfile?
     {
-        val authenticator = OneTimeTokenAuthenticator(signatureConfiguration, oneTimeTokenChecker, issuer)
-        return authenticator.validateTokenAndGetClaims(compressedToken)
+        return authenticator.validateToken(token)
+    }
+
+    fun validateTokenAndGetClaims(token: String): Map<String, Any>
+    {
+
+        return authenticator.validateTokenAndGetClaims(token)
     }
 
     private fun getNonce(): String

@@ -7,6 +7,8 @@ type PasswordMutation = Mutation<PasswordState>
 export interface PasswordMutations {
     ResetLinkRequested:PasswordMutation
     RequestResetLinkError: PasswordMutation
+    ResetPassword: PasswordMutation
+    ResetPasswordError: PasswordMutation
 }
 
 export const mutations: MutationTree<PasswordState> & PasswordMutations = {
@@ -18,5 +20,15 @@ export const mutations: MutationTree<PasswordState> & PasswordMutations = {
     RequestResetLinkError(state: PasswordState, action: PayloadWithType<string>) {
         state.resetLinkRequested = false;
         state.requestResetLinkError = action.payload;
+    },
+
+    ResetPassword(state: PasswordState) {
+        state.passwordWasReset = true;
+        state.resetPasswordError = "";
+    },
+
+    ResetPasswordError(state: PasswordState, action: PayloadWithType<string>) {
+        state.passwordWasReset= false;
+        state.resetPasswordError = action.payload;
     }
 };

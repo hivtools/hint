@@ -82,7 +82,16 @@ const forgotPasswordAppConfig = {...commonConfig,
     }
 };
 
-module.exports = [appConfig, forgotPasswordAppConfig];
+const resetPasswordAppConfig =  {...commonConfig,
+    entry: './src/app/resetPassword.ts',
+    output: {
+        path: path.resolve(__dirname, './public/js'),
+        publicPath: '/public/js/',
+        filename: 'resetPassword.js'
+    }
+};
+
+module.exports = [appConfig, forgotPasswordAppConfig, resetPasswordAppConfig];
 
 if (process.env.NODE_ENV === 'production') {
     module.exports.forEach((moduleExport) =>
