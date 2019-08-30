@@ -36,4 +36,3 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
          }
     }
 };
-

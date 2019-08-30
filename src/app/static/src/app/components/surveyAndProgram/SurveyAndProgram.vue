@@ -16,6 +16,14 @@
                                  accept="csv,.csv"
                                  name="survey">
                     </file-upload>
+                    <file-upload label="Program"
+                                 :valid="hasProgram"
+                                 :error="programError"
+                                 :upload="uploadProgram"
+                                 :existingFileName="programFileName"
+                                 accept="csv,.csv"
+                                 name="program">
+                    </file-upload>
                 </form>
             </div>
         </div>
@@ -34,12 +42,18 @@
     export default Vue.extend({
         name: "SurveyAndProgram",
         computed: mapState<SurveyAndProgramDataState>(namespace, {
-            hasSurvey: state => state.surveyGeoJson != null,
+            hasSurvey: state => state.survey != null,
             surveyError: state => state.surveyError,
-            surveyFileName: state => state.surveyFileName
+            surveyFileName: state => state.survey && state.survey.filename,
+            hasProgram: state => state.program != null,
+            programError: state => state.programError,
+            programFileName: state => state.program && state.program.filename
         }),
         methods: {
-            ...mapActions({uploadSurvey: 'surveyAndProgram/uploadSurvey'})
+            ...mapActions({
+                uploadSurvey: 'surveyAndProgram/uploadSurvey',
+                uploadProgram: 'surveyAndProgram/uploadProgram'
+            })
         },
         components: {
             FileUpload

@@ -92,6 +92,7 @@ export interface Complete {
 export interface PjnzResponseData {
   country: string;
 }
+export type PopulationResponseData = null;
 export type Response = Success | Failure;
 
 export interface Success {
@@ -109,6 +110,11 @@ export interface Success {
             filename: string;
             type: "shape";
             data: GeoJSONObject;
+          }
+        | {
+            filename: string;
+            type: "population";
+            data: null;
           })
     | {
         processId: string;
@@ -195,7 +201,7 @@ export interface ValidateInputRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
   path: string | null;
 }
-export type ValidateInputResponse = PjnzResponse | ShapeResponse;
+export type ValidateInputResponse = PjnzResponse | ShapeResponse | PopulationResponse;
 
 export interface PjnzResponse {
   filename: string;
@@ -224,4 +230,9 @@ export interface GeoJSONObject {
     [k: string]: any;
   }[];
   [k: string]: any;
+}
+export interface PopulationResponse {
+  filename: string;
+  type: "population";
+  data: null;
 }
