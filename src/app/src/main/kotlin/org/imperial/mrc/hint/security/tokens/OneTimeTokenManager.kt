@@ -3,15 +3,15 @@ package org.imperial.mrc.hint.security.tokens
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.TokenRepository
 import org.pac4j.core.profile.CommonProfile
-import org.pac4j.jwt.config.signature.SignatureConfiguration
 import org.pac4j.jwt.profile.JwtGenerator
-import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Component
+import org.pac4j.jwt.config.signature.SignatureConfiguration
 import java.time.Duration
 import java.security.SecureRandom
 import java.time.Instant
 import java.util.*
 
-@Configuration
+@Component
 class OneTimeTokenManager(
         appProperties: AppProperties,
         private val tokenRepository: TokenRepository,

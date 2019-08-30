@@ -3,7 +3,7 @@ package org.imperial.mrc.hint
 import org.apache.tomcat.util.http.fileupload.FileUtils
 import org.pac4j.core.config.Config
 import org.pac4j.core.context.WebContext
-import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
 
@@ -11,7 +11,8 @@ enum class FileType {
 
     Survey,
     Program,
-    PJNZ;
+    PJNZ,
+    ANC;
 
     override fun toString(): String {
         return this.name.toLowerCase()
@@ -23,7 +24,7 @@ interface FileManager {
     fun getFile(type: FileType): File?
 }
 
-@Configuration
+@Component
 class LocalFileManager(
         private val context: WebContext,
         private val pac4jConfig: Config,

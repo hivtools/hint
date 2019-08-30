@@ -1,9 +1,9 @@
 package org.imperial.mrc.hint.db
 
 import org.imperial.mrc.hint.db.Tables.ONETIME_TOKEN
+
+import org.springframework.stereotype.Component
 import org.jooq.DSLContext
-import org.springframework.context.annotation.Configuration
-import org.springframework.beans.factory.annotation.Autowired
 
 interface TokenRepository
 {
@@ -11,8 +11,8 @@ interface TokenRepository
     fun validateOneTimeToken(token: String): Boolean
 }
 
-@Configuration
-class JooqTokenRepository(@Autowired private val dsl: DSLContext): TokenRepository
+@Component
+class JooqTokenRepository(private val dsl: DSLContext): TokenRepository
 {
     override fun storeOneTimeToken(token: String) {
         val r = dsl.newRecord(ONETIME_TOKEN)

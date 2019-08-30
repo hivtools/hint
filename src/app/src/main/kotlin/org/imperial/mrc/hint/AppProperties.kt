@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint
 
-import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Component
 import java.io.File
 import java.io.FileNotFoundException
 import java.net.URL
@@ -21,8 +21,11 @@ interface AppProperties {
     val useAuth: Boolean
 }
 
-@Configuration
-class ConfiguredAppProperties(private val props: Properties = properties) : AppProperties {
+//prevent auto-wiring of default Properties
+class HintProperties: Properties()
+
+@Component
+class ConfiguredAppProperties(private val props: HintProperties = properties): AppProperties {
     override val apiUrl = propString("hintr_url")
     override val applicationTitle = propString("application_title")
     override val applicationUrl = propString("application_url")
@@ -38,8 +41,8 @@ class ConfiguredAppProperties(private val props: Properties = properties) : AppP
 
     companion object {
 
-        fun readProperties(configPath: String): Properties {
-            return Properties().apply {
+        fun readProperties(configPath: String): HintProperties {
+            return HintProperties().apply {
                 load(getResource("config.properties").openStream())
                 val global = File(configPath)
                 if (global.exists()) {

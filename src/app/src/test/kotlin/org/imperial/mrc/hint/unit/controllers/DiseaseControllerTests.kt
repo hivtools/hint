@@ -67,4 +67,16 @@ class DiseaseControllerTests {
         verify(mockApiClient).validate("test-path", FileType.Program)
     }
 
+    @Test
+    fun `validates anc file`() {
+
+        val mockFileManager = getMockFileManager(FileType.ANC)
+        val mockApiClient = getMockAPIClient(FileType.ANC)
+        val sut = DiseaseController(mockFileManager, mockApiClient)
+
+        val result = sut.uploadANC(mockFile)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        verify(mockFileManager).saveFile(mockFile, FileType.ANC)
+        verify(mockApiClient).validate("test-path", FileType.ANC)
+    }
 }
