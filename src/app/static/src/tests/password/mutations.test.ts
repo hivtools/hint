@@ -19,4 +19,20 @@ describe("Password mutations", () => {
         expect(testState.requestResetLinkError).toBe("test error");
     });
 
+    it("sets passwordWasReset on success", () => {
+
+        const testState = {...initialPasswordState};
+        mutations.ResetPassword(testState, {payload: null});
+        expect(testState.passwordWasReset).toBe(true);
+        expect(testState.resetPasswordError).toBe("");
+    });
+
+    it("sets error on ResetPasswordError", () => {
+
+        const testState = {...initialPasswordState};
+        mutations.ResetPasswordError(testState, {payload: "test error"});
+        expect(testState.passwordWasReset).toBe(false);
+        expect(testState.resetPasswordError).toBe("test error");
+    });
+
 });

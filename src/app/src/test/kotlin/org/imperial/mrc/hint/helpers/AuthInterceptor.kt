@@ -9,14 +9,14 @@ import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.util.LinkedMultiValueMap
 
-class AuthInterceptor(restTemplate: TestRestTemplate) : ClientHttpRequestInterceptor {
+class AuthInterceptor(restTemplate: TestRestTemplate, password: String = "password") : ClientHttpRequestInterceptor {
 
     private val sessionCookie: String
 
     init {
         val map = LinkedMultiValueMap<String, String>()
         map.add("username", "test.user@example.com")
-        map.add("password", "password")
+        map.add("password", password)
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
