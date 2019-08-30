@@ -24,6 +24,12 @@ class DiseaseController(private val fileManager: FileManager,
         return saveAndValidate(file, FileType.Program)
     }
 
+    @PostMapping("/anc/")
+    @ResponseBody
+    fun uploadANC(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
+        return saveAndValidate(file, FileType.ANC)
+    }
+
     private fun saveAndValidate(file: MultipartFile, type: FileType): ResponseEntity<String> {
         val path = fileManager.saveFile(file, type)
         return apiClient.validate(path, type)
