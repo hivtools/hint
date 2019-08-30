@@ -19,12 +19,10 @@ export interface PasswordActions {
 export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions = {
 
     async requestResetLink({commit}, email) {
-        let formData = new FormData();
-        formData.append('email', email);
         await api<PasswordActionTypes, PasswordActionErrorTypes>(commit)
             .withError("RequestResetLinkError")
             .withSuccess("ResetLinkRequested")
-            .postAndReturn<Boolean>("/password/request-reset-link/", formData);
+            .postAndReturn<Boolean>("/password/request-reset-link/", qs.stringify({email: email}));
     },
 
     async resetPassword({commit}, payload) {

@@ -2,14 +2,14 @@ package org.imperial.mrc.hint
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.httpPost
-import org.springframework.context.annotation.Configuration
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Component
 
 interface APIClient {
     fun validate(path: String, type: FileType): ResponseEntity<String>
 }
 
-@Configuration
+@Component
 class HintAPIClient(
         appProperties: AppProperties,
         private val objectMapper: ObjectMapper) : APIClient {

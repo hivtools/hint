@@ -9,7 +9,7 @@ describe("Password actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ResetLinkRequested",
-            payload: null
+            payload: true
         });
     });
 
