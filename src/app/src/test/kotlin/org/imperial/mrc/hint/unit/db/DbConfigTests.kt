@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.DbConfig
 import org.junit.jupiter.api.Test
+
 class DbConfigTests {
 
     @Test
