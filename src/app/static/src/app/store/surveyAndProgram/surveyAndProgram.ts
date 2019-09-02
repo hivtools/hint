@@ -2,12 +2,12 @@ import { Module } from 'vuex';
 import { actions } from './actions';
 import { mutations } from './mutations';
 import {RootState, StepState} from "../../main";
-import {ShapeResponse} from "../../generated";
+import {ProgramResponse, SurveyResponse} from "../../types";
 
 export interface SurveyAndProgramDataState extends StepState {
-    survey: ShapeResponse | null
+    survey: SurveyResponse | null
     surveyError: string,
-    program: ShapeResponse | null
+    program: ProgramResponse | null
     programError: string
 }
 

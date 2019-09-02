@@ -8,14 +8,14 @@ describe("Survey and program actions", () => {
     it("sets data after survey file upload", async () => {
 
         mockAxios.onPost(`/disease/survey/`)
-            .reply(200, mockSuccess({data: {geoJson: "SOME GEOJSON"}}));
+            .reply(200, mockSuccess({data: "SOME DATA"}));
 
         const commit = jest.fn();
         await actions.uploadSurvey({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "SurveyLoaded",
-            payload: {data: {geoJson: "SOME GEOJSON"}}
+            payload: {data: "SOME DATA"}
         });
     });
 

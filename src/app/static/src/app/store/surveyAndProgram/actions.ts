@@ -2,7 +2,7 @@ import {ActionContext, ActionTree} from 'vuex';
 import {RootState} from "../../main";
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {api} from "../../apiService";
-import {ShapeResponse} from "../../generated";
+import {ProgramResponse, SurveyResponse} from "../../types";
 
 export type SurveyAndProgramActionTypes = "SurveyLoaded" | "ProgramLoaded"
 export type SurveyAndProgramActionErrorTypes = "SurveyError" | "ProgramError"
@@ -18,14 +18,14 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("SurveyError")
             .withSuccess("SurveyLoaded")
-            .postAndReturn<ShapeResponse>("/disease/survey/", formData);
+            .postAndReturn<SurveyResponse>("/disease/survey/", formData);
     },
 
     async uploadProgram({commit}, formData) {
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("ProgramError")
             .withSuccess("ProgramLoaded")
-            .postAndReturn<ShapeResponse>("/disease/program/", formData);
+            .postAndReturn<ProgramResponse>("/disease/program/", formData);
     }
 
 };

@@ -7,7 +7,6 @@ import {SurveyAndProgramDataState} from "../../../app/store/surveyAndProgram/sur
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {SurveyAndProgramMutations} from "../../../app/store/surveyAndProgram/mutations";
 import {mockSurveyAndProgramState} from "../../mocks";
-import {ShapeResponse} from "../../../app/generated";
 
 export function testUploadComponent(name: string, position: number) {
 
@@ -42,40 +41,37 @@ export function testUploadComponent(name: string, position: number) {
         const errorState = name == "survey" ? {surveyError: "File upload went wrong"}
             : {programError: "File upload went wrong"};
 
-        const shapeResponse: ShapeResponse = {
-            filename: "survey.csv",
-            type: "shape",
-            data: {
-                "type": "FeatureCollection",
-                "features": []
-            }
+        const response = {
+            filename: "filename.csv",
+            type: name as any,
+            data: "SOME DATA"
         };
 
         const successState = name == "survey" ? {
-            survey: shapeResponse
+            survey: response
         } : {
-            program: shapeResponse
+            program: response
         };
 
-        it("survey upload is valid if surveyGeoJson is present", () => {
+        it(`${name} upload is valid if data is present`, () => {
             const store = createSut(successState);
             const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
             expect(wrapper.findAll(FileUpload).at(position).props().valid).toBe(true);
         });
 
-        it("survey upload is invalid if surveyGeoJson is null", () => {
+        it(`${name} upload is invalid if data is null`, () => {
             const store = createSut();
             const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
             expect(wrapper.findAll(FileUpload).at(position).props().valid).toBe(false);
         });
 
-        it("passes survey upload error to file upload", () => {
+        it(`passes ${name} upload error to file upload`, () => {
             const store = createSut(errorState);
             const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
             expect(wrapper.findAll(FileUpload).at(position).props().error).toBe("File upload went wrong");
         });
 
-        it("upload survey dispatches surveyAndProgram/uploadSurvey", (done) => {
+        it(`upload ${name} dispatches surveyAndProgram/upload${name}`, (done) => {
             const store = createSut();
             const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
