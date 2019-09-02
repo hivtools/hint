@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-10 col-md-8">
+            <div class="col-sm-3">
                 <form>
                     <file-upload label="Survey"
                                  :valid="hasSurvey"
@@ -18,6 +18,9 @@
                     </file-upload>
                 </form>
             </div>
+            <div class="col">
+                <choropleth></choropleth>
+            </div>
         </div>
     </div>
 </template>
@@ -28,6 +31,7 @@
     import {mapActions, mapState} from "vuex";
     import {SurveyAndProgramDataState} from "../../store/surveyAndProgram/surveyAndProgram";
     import FileUpload from "../FileUpload.vue";
+    import Choropleth from "../maps/Choropleth.vue";
 
     const namespace: string = 'surveyAndProgram';
 
@@ -42,7 +46,8 @@
             ...mapActions({uploadSurvey: 'surveyAndProgram/uploadSurvey'})
         },
         components: {
-            FileUpload
+            FileUpload,
+            Choropleth
         }
     })
 </script>
