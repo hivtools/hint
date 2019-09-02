@@ -18,6 +18,8 @@ interface AppProperties {
     val emailPassword: String
     val tokenIssuer: String
     val uploadDirectory: String
+    val dbUser: String
+    val dbPassword: String
     val useAuth: Boolean
 }
 
@@ -37,6 +39,8 @@ class ConfiguredAppProperties(private val props: HintProperties = properties): A
     override val emailPassword = propString("email_password")
     override val tokenIssuer = propString("token_issuer")
     override val uploadDirectory = propString("upload_dir")
+    override val dbUser: String = propString("db_user")
+    override val dbPassword: String = propString("db_password")
     override val useAuth = propString("use_auth").toBoolean()
 
     companion object {
