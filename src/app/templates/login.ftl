@@ -21,12 +21,12 @@
                 <div class="form-group">
                     <label for="user-id">Username</label>
                     <input type="text" size="20" class="form-control" name="username" id="user-id" value="${username}" required>
-                    <div class="invalid-feedback">Please enter your username.</div>
+                    <div id="userid-feedback" class="invalid-feedback">Please enter your username.</div>
                 </div>
                 <div class="form-group">
                     <label for="pw-id">Password</label>
                     <input type="password" size="20" class="form-control" name="password" id="pw-id" required>
-                    <div class="invalid-feedback">Please enter your password.</div>
+                    <div id="pw-feedback" class="invalid-feedback">Please enter your password.</div>
                 </div>
                 <div class="text-center">
                     <input class="btn btn-red" type="submit" value="Log In">
