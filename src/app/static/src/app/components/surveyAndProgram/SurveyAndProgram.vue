@@ -16,6 +16,22 @@
                                  accept="csv,.csv"
                                  name="survey">
                     </file-upload>
+                    <file-upload label="Program"
+                                 :valid="true"
+                                 error=""
+                                 :upload="uploadSurvey"
+                                 existingFileName="myprogramdata.csv"
+                                 accept="csv,.csv"
+                                 name="program">
+                    </file-upload>
+                    <file-upload label="ANC"
+                                 :valid="true"
+                                 error=""
+                                 :upload="uploadSurvey"
+                                 existingFileName="somefile.csv"
+                                 accept="csv,.csv"
+                                 name="anc">
+                    </file-upload>
                 </form>
             </div>
             <div class="col">

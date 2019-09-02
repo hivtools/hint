@@ -18,6 +18,15 @@
                     </div>
                     <div class="row form-group">
                         <label class="col-3 col-form-label">
+                            Data source:
+                        </label>
+                        <div class="col">
+                            <tree-select v-model="source" :multiple="false" :options="sourceOptions">
+                            </tree-select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="col-3 col-form-label">
                             Detail:
                         </label>
                         <div class="col">
@@ -62,6 +71,8 @@
         indicatorData: { [k: string]: any },
         max: number;
         min: number;
+        source: string;
+        sourceOptions: any[];
     }
 
     export default Vue.extend<Data, any, any, any>({
@@ -117,7 +128,13 @@
                 ],
                 indicatorData: {},
                 max: 0.25,
-                min: 0.003
+                min: 0.003,
+                source: "survey",
+                sourceOptions: [
+                    {id: "survey", label: "survey"},
+                    {id: "program", label: "program"},
+                    {id: "anc", label: "ANC"}
+                ]
             }
         },
         computed: {
