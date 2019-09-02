@@ -5,7 +5,7 @@ import {BaselineData, PayloadWithType} from "../../types";
 
 type BaselineMutation = Mutation<BaselineState>
 
-interface BaselineMutations {
+export interface BaselineMutations {
     PJNZUploaded: BaselineMutation
     PJNZUploadError: BaselineMutation
     BaselineDataLoaded: BaselineMutation

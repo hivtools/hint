@@ -1,11 +1,9 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
 import {mockAxios, mockFailure, mockSuccess} from "../mocks";
 
-describe("Survey and program actions", () => {
+const FormData = require("form-data");
 
-    beforeEach(() => {
-        mockAxios.reset();
-    });
+describe("Survey and program actions", () => {
 
     it("sets data after survey file upload", async () => {
 
@@ -13,7 +11,7 @@ describe("Survey and program actions", () => {
             .reply(200, mockSuccess({data: {geoJson: "SOME GEOJSON"}}));
 
         const commit = jest.fn();
-        await actions.uploadSurvey({commit} as any, {} as File);
+        await actions.uploadSurvey({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "SurveyLoaded",
@@ -27,7 +25,7 @@ describe("Survey and program actions", () => {
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
-        await actions.uploadSurvey({commit} as any, {} as File);
+        await actions.uploadSurvey({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "SurveyError",

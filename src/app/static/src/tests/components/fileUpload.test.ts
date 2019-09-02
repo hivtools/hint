@@ -101,7 +101,7 @@ describe("File upload component", () => {
 
     });
 
-    it("calls upload function", (done) => {
+    it("calls upload function with formData", (done) => {
         const uploader = jest.fn();
         const wrapper = createSut({
             upload: uploader
@@ -110,7 +110,7 @@ describe("File upload component", () => {
         (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
 
         setTimeout(() => {
-            expect(uploader.mock.calls[0][0]).toStrictEqual({name: "TEST"});
+            expect(uploader.mock.calls[0][0] instanceof FormData).toBe(true);
             done();
         });
     });

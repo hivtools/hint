@@ -4,7 +4,7 @@ module.exports = {
         "ts-jest": {
             tsConfig: 'tsconfig.json',
             "diagnostics": {
-                "warnOnly": true
+                "warnOnly": false
             }
         }
     },

@@ -18,7 +18,7 @@ interface AppProperties {
     val emailPassword: String
     val tokenIssuer: String
     val uploadDirectory: String
-
+    val useAuth: Boolean
 }
 
 //prevent auto-wiring of default Properties
@@ -33,20 +33,19 @@ class ConfiguredAppProperties(private val props: HintProperties = properties): A
     override val emailServer = propString("email_server")
     override val emailPort = propString("email_port").toIntOrNull()
     override val emailSender = propString("email_sender")
-    override val emailUsername= propString("email_username")
-    override val emailPassword= propString("email_password")
+    override val emailUsername = propString("email_username")
+    override val emailPassword = propString("email_password")
     override val tokenIssuer = propString("token_issuer")
     override val uploadDirectory = propString("upload_dir")
+    override val useAuth = propString("use_auth").toBoolean()
 
-    companion object
-    {
+    companion object {
 
         fun readProperties(configPath: String): HintProperties {
             return HintProperties().apply {
                 load(getResource("config.properties").openStream())
                 val global = File(configPath)
-                if (global.exists())
-                {
+                if (global.exists()) {
                     global.inputStream().use { load(it) }
                 }
             }
@@ -56,21 +55,16 @@ class ConfiguredAppProperties(private val props: HintProperties = properties): A
         val properties = readProperties(configPath)
     }
 
-    private fun propString(propName: String): String
-    {
+    private fun propString(propName: String): String {
         return props[propName].toString()
     }
 }
 
-fun getResource(path: String): URL
-{
+fun getResource(path: String): URL {
     val url: URL? = AppProperties::class.java.classLoader.getResource(path)
-    if (url != null)
-    {
+    if (url != null) {
         return url
-    }
-    else
-    {
+    } else {
         throw FileNotFoundException("Unable to load '$path' as a resource steam")
     }
 }

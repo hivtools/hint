@@ -1,4 +1,4 @@
-import {ActionContext, ActionTree, Payload} from 'vuex';
+import {ActionContext, ActionTree, Commit, Payload} from 'vuex';
 import {BaselineState} from "./baseline";
 import {RootState} from "../../main";
 import {api} from "../../apiService";
@@ -9,16 +9,13 @@ export type BaselineActionTypes = "PJNZUploaded" | "BaselineDataLoaded"
 export type BaselineErrorActionTypes = "PJNZUploadError"
 
 export interface BaselineActions {
-    uploadPJNZ: (store: ActionContext<BaselineState, RootState>, file: File) => void
+    uploadPJNZ: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void
     getBaselineData: (store: ActionContext<BaselineState, RootState>) => void
 }
 
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
-    async uploadPJNZ({commit}, file) {
-        let formData = new FormData();
-        formData.append('file', file);
-
+    async uploadPJNZ({commit}, formData) {
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("PJNZUploaded")
             .withError("PJNZUploadError")

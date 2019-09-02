@@ -6,12 +6,18 @@ Type definitions are auto-generated based on the
 [hintr API schema](https://github.com/mrc-ide/hintr/tree/master/inst/schema). To 
 re-generate types run 
 
-    ./generate-types.sh <BRANCH_NAME>
+    ./scripts/generate-types.sh <BRANCH_NAME>
 
-From this directory
+from this directory
 
-### Test
-Run `npm test` to run tests locally using jest
+### Testing
+Tests are run with jest. Files with the suffix `.test.ts` are treated as unit tests, files 
+with the suffix `.itest.ts` treated as integration tests. Config for each can be found in 
+`jest.config.js` and `jest.integration.config.js`, respectively.
+- run unit tests with `npm test` 
+- run integration tests with `npm run integration-test` having first started the app and 
+all dependencies by running `./scripts/run-dev-dependencies-for-integration-tests.sh` from this
+directory
 
 ### Compiling
 - sass is compiled using gulp - this task can be triggered by running `npm run sass` 

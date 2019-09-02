@@ -1,6 +1,5 @@
 import {api} from "../app/apiService";
 import {mockAxios, mockFailure, mockSuccess} from "./mocks";
-import {Commit} from "vuex";
 
 describe("ApiService", () => {
 
@@ -56,6 +55,7 @@ describe("ApiService", () => {
 
         let committedType: any = false;
         let committedPayload: any = false;
+
         const commit = ({type, payload}: any) => {
             committedType = type;
             committedPayload = payload;

@@ -1,6 +1,8 @@
 import {mockAxios, mockFailure, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
 
+const FormData = require("form-data");
+
 describe("Baseline actions", () => {
 
     beforeEach(() => {
@@ -19,7 +21,7 @@ describe("Baseline actions", () => {
             .reply(200, mockSuccess({data: {country: "Malawi"}}));
 
         const commit = jest.fn();
-        await actions.uploadPJNZ({commit} as any, {} as File);
+        await actions.uploadPJNZ({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUploaded", payload: {data: {country: "Malawi"}}});
     });
@@ -30,7 +32,7 @@ describe("Baseline actions", () => {
             .reply(500, mockFailure("Something went wrong"));
 
         const commit = jest.fn();
-        await actions.uploadPJNZ({commit} as any, {} as File);
+        await actions.uploadPJNZ({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "PJNZUploadError",
