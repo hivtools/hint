@@ -4,18 +4,29 @@
     <title>${title}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="/public/css/style.css"/>
+    <script>
+        function validate(event) {
+            const form = document.getElementById("login-form");
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                form.classList.add('was-validated');
+            }
+        }
+    </script>
 </head>
 <body>
     <div id="app" class="card login-form mx-auto mt-5">
         <div class="card-body">
-            <form method="post" action="/callback">
+            <form id="login-form" method="post" action="/callback" class="needs-validation" novalidate onsubmit="validate(event);">
                 <div class="form-group">
                     <label for="user-id">Username</label>
-                    <input type="text" size="20" class="form-control" name="username" id="user-id" value="${username}">
+                    <input type="text" size="20" class="form-control" name="username" id="user-id" value="${username}" required>
+                    <div id="userid-feedback" class="invalid-feedback">Please enter your username.</div>
                 </div>
                 <div class="form-group">
                     <label for="pw-id">Password</label>
-                    <input type="password" size="20" class="form-control" name="password" id="pw-id">
+                    <input type="password" size="20" class="form-control" name="password" id="pw-id" required>
+                    <div id="pw-feedback" class="invalid-feedback">Please enter your password.</div>
                 </div>
                 <div class="text-center">
                     <input class="btn btn-red" type="submit" value="Log In">

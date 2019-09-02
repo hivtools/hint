@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.unit.security
 
 import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.security.HintDbProfileService
 import org.imperial.mrc.hint.security.Pac4jConfig
 import org.imperial.mrc.hint.security.SecurePasswordEncoder
 import org.junit.jupiter.api.extension.ExtendWith
@@ -51,6 +52,7 @@ class Pac4jConfigTests
     fun `can get dbProfileService`()
     {
         val result = sut.getProfileService(wiredDataSource)
+        assertThat(result).isInstanceOf(HintDbProfileService::class.java)
         assertThat(result.dataSource).isInstanceOf(TransactionAwareDataSourceProxy::class.java)
         assertThat((result.dataSource as TransactionAwareDataSourceProxy).targetDataSource).isSameAs(wiredDataSource)
         assertThat(result.passwordEncoder).isInstanceOf(SecurePasswordEncoder::class.java)

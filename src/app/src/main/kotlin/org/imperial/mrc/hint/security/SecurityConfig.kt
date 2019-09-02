@@ -16,8 +16,8 @@ import javax.sql.DataSource
 class Pac4jConfig {
 
     @Bean
-    fun getProfileService(dataSource: DataSource): DbProfileService {
-        return DbProfileService(TransactionAwareDataSourceProxy(dataSource), SecurePasswordEncoder())
+    fun getProfileService(dataSource: DataSource): HintDbProfileService {
+        return HintDbProfileService(TransactionAwareDataSourceProxy(dataSource), SecurePasswordEncoder())
     }
 
     @Bean
