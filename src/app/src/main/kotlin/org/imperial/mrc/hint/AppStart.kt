@@ -21,19 +21,20 @@ fun main(args: Array<String>) {
 
 @Configuration
 @EnableWebMvc
-class MvcConfig(val config: Config) : WebMvcConfigurer {
+class MvcConfig(val config: Config, val appProperties: AppProperties) : WebMvcConfigurer {
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/public/**")
                 .addResourceLocations("file:/static/public/", "file:static/public/")
                 .resourceChain(true)
                 .addResolver(EncodedResourceResolver())
                 .addResolver(PathResourceResolver())
-
     }
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
-                .addPathPatterns("/**")
-                .excludePathPatterns("/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
+        if (appProperties.useAuth) {
+            registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
+                    .addPathPatterns("/**")
+                    .excludePathPatterns("/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
+        }
     }
 }

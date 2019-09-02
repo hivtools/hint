@@ -8,9 +8,14 @@ matrix:
       - npm install codecov -g
       - npm install --prefix=src/app/static
       - npm run build --prefix=src/app/static
-      script: npm test --prefix=src/app/static
+      before_script:
+      - ./src/app/static/scripts/run-dependencies-for-integration-tests.sh
+      script: 
+      - npm test --prefix=src/app/static
+      - npm run integration-test --prefix=src/app/static
       after_success:
       - codecov -f src/app/static/coverage/*.json
+      - codecov -f src/app/static/coverage/integration/*.json
     - language: java
       before_cache:
       - rm -f  $HOME/src/.gradle/caches/modules-2/modules-2.lock

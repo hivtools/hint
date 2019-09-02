@@ -7,8 +7,7 @@ import {
     SurveyAndProgramDataState
 } from "../app/store/surveyAndProgram/surveyAndProgram";
 import {Failure, PjnzResponse, Success} from "../app/generated";
-import {BaselineData} from "../app/types";
-import {SurveyResponse} from "../app/store/surveyAndProgram/actions";
+import {BaselineData, SurveyResponse} from "../app/types";
 import {Point} from "geojson";
 
 export const mockAxios = new MockAdapter(axios);

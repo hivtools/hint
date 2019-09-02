@@ -2,11 +2,11 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
-import {BaselineMutations} from "../../../app/store/baseline/mutations";
 import {mockBaselineState} from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import Baseline from "../../../app/components/baseline/Baseline.vue";
 import FileUpload from "../../../app/components/FileUpload.vue";
+import {BaselineMutations} from "../../../app/store/baseline/mutations";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);

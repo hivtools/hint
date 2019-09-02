@@ -85,7 +85,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
             return
         }
         const failure = e.response && e.response.data as Failure;
-        if (!failure) {
+        if (!failure || !failure.status) {
             throw new Error("Could not parse API response");
         }
         if (this._onError) {
@@ -114,7 +114,14 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     async postAndReturn<T extends ResponseData>(url: string, data: any): Promise<void | T> {
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
-        return this._handleAxiosResponse(axios.post(fullUrl, data));
+
+        // this allows us to pass data of type FormData in both the browser and
+        // in node for testing, using the "form-data" package in the latter case
+        const config = typeof data.getHeaders == "function" ? {
+            headers: data.getHeaders()
+        } : {};
+
+        return this._handleAxiosResponse(axios.post(fullUrl, data, config));
     }
 
 }

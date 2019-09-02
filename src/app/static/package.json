@@ -7,7 +7,8 @@
     "sass": "gulp sass",
     "js": "webpack",
     "build": "webpack && gulp sass",
-    "test": "jest -c jest.config.js"
+    "test": "jest -c jest.config.js",
+    "integration-test": "jest -c jest.integration.config.js"
   },
   "author": "",
   "license": "MIT",
@@ -25,6 +26,7 @@
     "babel-jest": "^24.8.0",
     "babel-loader": "^8.0.5",
     "bootstrap": "^4.3.1",
+    "form-data": "^2.5.1",
     "gulp": "^4.0.0",
     "gulp-clean-css": "^4.0.0",
     "gulp-rename": "^1.4.0",

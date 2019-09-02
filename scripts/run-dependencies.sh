@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -ex
 
+HERE=$(dirname "$0")
 NETWORK=hint_nw
 DB=hint_db
 API=hintr
-HINTR_VERSION=$(<src/config/hintr_version)
+HINTR_VERSION=$(<$HERE/../src/config/hintr_version)
 
 REGISTRY=mrcide
 DB_IMAGE=$REGISTRY/hint-db:master
