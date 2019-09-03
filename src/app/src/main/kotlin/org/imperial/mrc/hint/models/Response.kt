@@ -15,6 +15,6 @@ fun SuccessResponse.asResponseEntity() = ResponseEntity(this.toJsonString(), Htt
 val EmptySuccessResponse = SuccessResponse(true)
 
 data class ErrorResponse(val errors: List<ErrorDetail>) {
-    val data = null
+    val data = mapOf<Any, Any>()
     val status = "failure"
 }
