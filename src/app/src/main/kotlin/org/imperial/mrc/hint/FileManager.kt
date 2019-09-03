@@ -9,10 +9,11 @@ import java.io.File
 
 enum class FileType {
 
-    Survey,
+    ANC,
     Program,
     PJNZ,
-    ANC;
+    Shape,
+    Survey;
 
     override fun toString(): String {
         return this.name.toLowerCase()

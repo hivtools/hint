@@ -5,34 +5,26 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Java6Assertions
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.BaselineController
+import org.imperial.mrc.hint.controllers.DiseaseController
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockMultipartFile
 import java.io.File
 
-class BaselineControllerTests {
-
-    private val tmpUploadDirectory = "tmp"
-
-
-    @AfterEach
-    fun tearDown() {
-        File(tmpUploadDirectory).deleteRecursively()
-    }
+class BaselineControllerTests : HintrControllerTests() {
 
     @Test
     fun `can save pjnz file`() {
 
-        val mockFileManager = mock<FileManager>()
-        val sut = BaselineController(mockFileManager)
+        val mockFileManager = getMockFileManager(FileType.PJNZ)
+        val sut = BaselineController(mockFileManager, getMockAPIClient(FileType.PJNZ))
 
-        val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
-                "application/zip", "pjnz content".toByteArray())
-
-        sut.upload(mockFile)
+        sut.uploadPJNZ(mockFile)
         verify(mockFileManager).saveFile(mockFile, FileType.PJNZ)
     }
 
@@ -48,7 +40,7 @@ class BaselineControllerTests {
             on { getFile(FileType.PJNZ) } doReturn file
         }
 
-        val sut = BaselineController(mockFileManager)
+        val sut = BaselineController(mockFileManager, getMockAPIClient(FileType.PJNZ))
         val result = sut.get()
         val data = ObjectMapper().readTree(result)["data"]["pjnz"].toString()
         assertThat(data)
@@ -61,10 +53,23 @@ class BaselineControllerTests {
         val mockFileManager = mock<FileManager> {
             on { getFile(FileType.PJNZ) } doReturn null as File?
         }
-        val sut = BaselineController(mockFileManager)
+        val sut = BaselineController(mockFileManager, getMockAPIClient(FileType.PJNZ))
         val result = sut.get()
         val data = ObjectMapper().readTree(result)["data"].toString()
         assertThat(data)
                 .isEqualTo("{\"pjnz\":null}")
+    }
+
+    @Test
+    fun `validates shape file`() {
+
+        val mockFileManager = getMockFileManager(FileType.Shape)
+        val mockApiClient = getMockAPIClient(FileType.Shape)
+        val sut = BaselineController(mockFileManager, mockApiClient)
+
+        val result = sut.uploadShape(mockFile)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        verify(mockFileManager).saveFile(mockFile, FileType.Shape)
+        verify(mockApiClient).validate("test-path", FileType.Shape)
     }
 }

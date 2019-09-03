@@ -1,19 +1,22 @@
 package org.imperial.mrc.hint.controllers
 
+import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.toJsonString
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/baseline")
-class BaselineController(private val fileManager: FileManager) {
+class BaselineController(private val fileManager: FileManager,
+                         apiClient: APIClient) : HintrController(fileManager, apiClient) {
 
     @PostMapping("/pjnz/")
     @ResponseBody
-    fun upload(@RequestParam("file") file: MultipartFile): String {
+    fun uploadPJNZ(@RequestParam("file") file: MultipartFile): String {
 
         val fileName = file.originalFilename!!
         fileManager.saveFile(file, FileType.PJNZ)
@@ -22,6 +25,12 @@ class BaselineController(private val fileManager: FileManager) {
         // for now just read country name from file
         val countryName = fileName.split("_").first()
         return SuccessResponse(buildPjnzResponse(fileName, countryName)).toJsonString()
+    }
+
+    @PostMapping("/shape/")
+    @ResponseBody
+    fun uploadShape(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
+        return saveAndValidate(file, FileType.Shape)
     }
 
     @GetMapping("/")

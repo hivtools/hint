@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.http.HttpStatus
 
 class BaselineTests : SecureIntegrationTests() {
 
@@ -27,6 +28,14 @@ class BaselineTests : SecureIntegrationTests() {
         val postEntity = createTestHttpEntity("Malawi_2018.pjnz")
         val responseEntity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
         assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can upload shape file`(isAuthorized: IsAuthorized) {
+        val postEntity = createTestHttpEntity()
+        val entity = testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
+        assertSecureWithError(isAuthorized, entity, HttpStatus.BAD_REQUEST, "INVALID_FILE")
     }
 
 }
