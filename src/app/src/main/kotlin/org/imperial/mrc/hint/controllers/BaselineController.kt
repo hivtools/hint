@@ -55,7 +55,7 @@ class BaselineController(private val fileManager: FileManager,
     @GetMapping("/shape/")
     @ResponseBody
     fun getShape(): ResponseEntity<String> {
-       return getIfExists(FileType.Shape)
+       return getAndValidate(FileType.Shape)
     }
 
     private fun buildPjnzResponse(fileName: String, countryName: String): Map<String, Any> {

@@ -18,7 +18,7 @@ abstract class HintrController(private val fileManager: FileManager,
         return apiClient.validate(path, type)
     }
 
-    protected fun getIfExists(type: FileType): ResponseEntity<String> {
+    protected fun getAndValidate(type: FileType): ResponseEntity<String> {
         val file = fileManager.getFile(FileType.Shape)
         return if (file != null) {
             apiClient.validate(file.path, FileType.Shape)
