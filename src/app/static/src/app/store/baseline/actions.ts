@@ -27,6 +27,4 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .withSuccess("PJNZLoaded")
             .get<PjnzResponse>("/baseline/pjnz/");
     }
-
 };
-

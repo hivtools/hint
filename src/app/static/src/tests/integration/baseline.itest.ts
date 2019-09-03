@@ -34,14 +34,10 @@ describe("Baseline actions", () => {
         await actions.getBaselineData({commit} as any);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "BaselineDataLoaded",
-            payload: {pjnz: null}
+            type: "PJNZLoaded",
+            payload: null
         });
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "BaselineDataLoaded",
-            payload: {pjnz: null}
-        });
     });
 
 });

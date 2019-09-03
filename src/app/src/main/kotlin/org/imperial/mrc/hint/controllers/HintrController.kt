@@ -4,6 +4,7 @@ import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.models.SuccessResponse
+import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.models.toJsonString
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,16 +20,10 @@ abstract class HintrController(private val fileManager: FileManager,
 
     protected fun getIfExists(type: FileType): ResponseEntity<String> {
         val file = fileManager.getFile(FileType.Shape)
-        val response = if (file != null) {
+        return if (file != null) {
             apiClient.validate(file.path, FileType.Shape)
         } else {
-            null
-        }
-
-        return if (response?.statusCode == HttpStatus.OK) {
-            response
-        } else {
-            ResponseEntity(SuccessResponse(null).toJsonString(), HttpStatus.OK)
+            SuccessResponse(null).asResponseEntity()
         }
     }
 }
