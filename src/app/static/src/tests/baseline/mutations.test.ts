@@ -1,6 +1,6 @@
 import {mutations} from "../../app/store/baseline/mutations";
 import {initialBaselineState} from "../../app/store/baseline/baseline";
-import {mockPJNZResponse} from "../mocks";
+import {mockPJNZResponse, mockShapeResponse} from "../mocks";
 
 describe("Baseline mutations", () => {
 
@@ -39,12 +39,29 @@ describe("Baseline mutations", () => {
         expect(testState.country).toBe("Malawi");
     });
 
-    it("does nothing on BaselineDataLoaded if no data present", () => {
+    it("does nothing on PJNZLoaded if no data present", () => {
 
         const testState = {...initialBaselineState};
         mutations.PJNZLoaded(testState, {payload: null});
         expect(testState.pjnzFilename).toBe("");
         expect(testState.country).toBe("");
+    });
+
+    it("sets shape on ShapeLoaded", () => {
+
+        const mockShape = mockShapeResponse();
+        const testState = {...initialBaselineState};
+        mutations.ShapeUploaded(testState, {
+            payload: mockShape
+        });
+        expect(testState.shape).toBe(mockShape);
+    });
+
+    it("sets error on ShapeUploadError", () => {
+
+        const testState = {...initialBaselineState};
+        mutations.ShapeUploadError(testState, {payload: "Some error"});
+        expect(testState.shapeError).toBe("Some error");
     });
 
 });

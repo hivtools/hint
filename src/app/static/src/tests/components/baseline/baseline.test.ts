@@ -20,7 +20,8 @@ describe("Baseline upload component", () => {
 
         actions = {
             uploadPJNZ: jest.fn(),
-            getBaselineData: jest.fn()
+            getBaselineData: jest.fn(),
+            uploadShape: jest.fn()
         };
 
         return new Vuex.Store({

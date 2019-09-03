@@ -47,11 +47,11 @@ describe("Baseline actions", () => {
         const formData = new FormData();
         formData.append('file', file);
 
-        await actions.uploadPJNZ({commit} as any, formData);
+        await actions.uploadShape({commit} as any, formData);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "PJNZUploaded",
-            payload: {data: {country: "Malawi"}, filename: "Malawi_1.pjnz", type: "pjnz"}
+            type: "ShapeUploadError",
+            payload: "File does not exist. Create it, or fix the path."
         });
     });
 

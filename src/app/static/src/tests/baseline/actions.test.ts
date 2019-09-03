@@ -1,5 +1,7 @@
-import {mockAxios, mockFailure, mockSuccess} from "../mocks";
+import {mockAxios, mockFailure, mockShapeResponse, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
+import {testUploadComponent} from "../components/surveyAndProgram/fileUploads";
+import {testUploadErrorCommitted} from "../actionTestHelpers";
 
 const FormData = require("form-data");
 
@@ -26,24 +28,33 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUploaded", payload: {data: {country: "Malawi"}}});
     });
 
-    it("sets error message after failed PJNZ file upload", async () => {
+    testUploadErrorCommitted("/baseline/pjnz/", "PJNZUploadError", actions.uploadPJNZ);
 
-        mockAxios.onPost(`/baseline/pjnz/`)
-            .reply(500, mockFailure("Something went wrong"));
+    it("commits response after shape file upload", async () => {
+
+        const mockShape = mockShapeResponse();
+        mockAxios.onPost(`/baseline/shape/`)
+            .reply(200, mockSuccess(mockShape));
 
         const commit = jest.fn();
-        await actions.uploadPJNZ({commit} as any, new FormData());
+        await actions.uploadShape({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "PJNZUploadError",
-            payload: "Something went wrong"
+            type: "ShapeUploaded",
+            payload: mockShape
         });
     });
 
-    it("gets pjnz data and commits it", async () => {
+    testUploadErrorCommitted("/baseline/shape/", "ShapeUploadError", actions.uploadShape);
 
+    it("gets baseline data and commits it", async () => {
+
+        const mockShape = mockShapeResponse();
         mockAxios.onGet(`/baseline/pjnz/`)
             .reply(200, mockSuccess({data: {country: "Malawi"}, filename: "test.pjnz"}));
+
+        mockAxios.onGet(`/baseline/shape/`)
+            .reply(200, mockSuccess(mockShape));
 
         const commit = jest.fn();
         await actions.getBaselineData({commit} as any);
@@ -52,11 +63,19 @@ describe("Baseline actions", () => {
             type: "PJNZLoaded",
             payload: {data: {country: "Malawi"}, filename: "test.pjnz"}
         });
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "ShapeUploaded",
+            payload: mockShape
+        });
     });
 
-    it("fails silently if get pjnz data fails", async () => {
+    it("fails silently if getting baseline data fails", async () => {
 
         mockAxios.onGet(`/baseline/pjnz/`)
+            .reply(500);
+
+        mockAxios.onGet(`/baseline/shape/`)
             .reply(500);
 
         const commit = jest.fn();

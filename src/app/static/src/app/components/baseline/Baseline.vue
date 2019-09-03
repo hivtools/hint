@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-8 col-md-10">
                 <form>
                     <file-upload label="PJNZ"
                                  :valid="!!country"
@@ -15,19 +15,17 @@
                                  :existingFileName="pjnzFileName"
                                  accept="PJNZ,pjnz,.pjnz,.PJNZ"
                                  name="pjnz">
+                        <label v-if="country"><strong>Country</strong>: {{country}}</label>
                     </file-upload>
                     <file-upload label="Shape file"
                                  :valid="validShape"
                                  :error="shapeError"
                                  :upload="uploadShape"
                                  :existingFileName="shapeFileName"
-                                 accept="zip, .zip"
+                                 accept="geojson,.geojson,GEOJSON,.GEOJSON"
                                  name="shape">
                     </file-upload>
                 </form>
-            </div>
-            <div class="col">
-                <span v-if="country"><strong>Country</strong>: {{country}}</span>
             </div>
         </div>
     </div>
@@ -56,7 +54,7 @@
         methods: {
             ...mapActions({
                 uploadPJNZ: 'baseline/uploadPJNZ',
-                uploadShape: 'baseline/uploadPJNZ'
+                uploadShape: 'baseline/uploadShape'
             })
         },
         components: {
