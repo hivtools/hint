@@ -6,9 +6,8 @@ import {
     initialSurveyAndProgramDataState,
     SurveyAndProgramDataState
 } from "../app/store/surveyAndProgram/surveyAndProgram";
-import {Failure, PjnzResponse, ShapeResponse, Success} from "../app/generated";
-import {BaselineData, ProgramResponse, SurveyResponse} from "../app/types";
-import {Point} from "geojson";
+import {PjnzResponse, ShapeResponse, Response} from "../app/generated";
+import { ProgramResponse, SurveyResponse} from "../app/types";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -47,7 +46,7 @@ export const mockFileList = (filename: string, type: string = "text/csv"): FileL
     return fileList;
 };
 
-export const mockSuccess = (data: any): Success => {
+export const mockSuccess = (data: any): Response => {
     return {
         data,
         status: "success",
@@ -55,7 +54,7 @@ export const mockSuccess = (data: any): Success => {
     }
 };
 
-export const mockFailure = (errorMessage: string): Failure => {
+export const mockFailure = (errorMessage: string): Response => {
     return {
         data: {},
         status: "failure",
@@ -68,13 +67,6 @@ export const mockPJNZResponse = (props: Partial<PjnzResponse> = {}): PjnzRespons
         data: {country: "Malawi"},
         filename: "test.pjnz",
         type: "pjnz",
-        ...props
-    }
-};
-
-export const mockBaselineResponse = (props: Partial<BaselineData> = {}): BaselineData => {
-    return {
-        pjnz: mockPJNZResponse(),
         ...props
     }
 };

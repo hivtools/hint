@@ -32,6 +32,10 @@ abstract class HintrControllerTests {
                     it.originalFilename == "some-file-name.csv"
                 }, eq(type))
             } doReturn "test-path"
+
+            on {
+                getFile(type)
+            } doReturn File("test-path")
         }
     }
 

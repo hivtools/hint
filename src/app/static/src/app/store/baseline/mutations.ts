@@ -1,14 +1,14 @@
 import {Mutation, MutationTree} from 'vuex';
 import {BaselineState} from "./baseline";
 import {PjnzResponse} from "../../generated";
-import {BaselineData, PayloadWithType} from "../../types";
+import {PayloadWithType} from "../../types";
 
 type BaselineMutation = Mutation<BaselineState>
 
 export interface BaselineMutations {
     PJNZUploaded: BaselineMutation
     PJNZUploadError: BaselineMutation
-    BaselineDataLoaded: BaselineMutation
+    PJNZLoaded: BaselineMutation
 }
 
 export const mutations: MutationTree<BaselineState> & BaselineMutations = {
@@ -25,11 +25,11 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
         state.pjnzError = action.payload;
     },
 
-    BaselineDataLoaded(state: BaselineState, action: PayloadWithType<BaselineData>) {
+    PJNZLoaded(state: BaselineState, action: PayloadWithType<PjnzResponse | null>) {
         const data = action.payload;
-        if (data.pjnz){
-            state.country = data.pjnz.data.country;
-            state.pjnzFilename = data.pjnz.filename;
+        if (data){
+            state.country = data.data.country;
+            state.pjnzFilename = data.filename;
             // TODO this step isn't really complete until all files are uploaded
             // but for now lets say it is
             state.complete = true;

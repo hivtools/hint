@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.integration
 
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.helpers.createTestHttpEntity
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
@@ -12,14 +12,16 @@ class BaselineTests : SecureIntegrationTests() {
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `can get baseline data`(isAuthorized: IsAuthorized) {
-        val responseEntity = testRestTemplate.getForEntity<String>("/baseline/")
+    fun `can get pjnz data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.getForEntity<String>("/baseline/pjnz/")
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
-        if (isAuthorized == IsAuthorized.TRUE){
-            // we can't use the JSONValidator here because this response schema isn't in the spec yet
-            assertThat(responseEntity.body!!)
-                    .isEqualTo("{\"errors\":{},\"status\":\"success\",\"data\":{\"pjnz\":null}}")
-        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can get shape data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.getForEntity<String>("/baseline/shape/")
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
     }
 
     @ParameterizedTest

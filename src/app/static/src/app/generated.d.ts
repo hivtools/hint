@@ -7,11 +7,11 @@
 export interface Data {
   placeholder?: boolean;
 }
+export type ErrorCode = string;
 export interface Error {
-  error?: "INVALID_FILE" | "FAILED_TO_QUEUE" | "INVALID_PJNZ" | "OTHER_ERROR" | "FAILED_TO_CHECK_STATUS";
+  error?: string;
   detail?: string | null;
 }
-export type ErrorTypes = "INVALID_FILE" | "FAILED_TO_QUEUE" | "INVALID_PJNZ" | "OTHER_ERROR" | "FAILED_TO_CHECK_STATUS";
 export type FileName = string;
 export type FilePath = string | null;
 export interface InitialiseModelRunRequest {
@@ -93,92 +93,18 @@ export interface PjnzResponseData {
   country: string;
 }
 export type PopulationResponseData = null;
-export type Response = Success | Failure;
-
-export interface Success {
-  status: "success";
-  data:
-    | (
-        | {
-            filename: string;
-            type: "pjnz";
-            data: {
-              country: string;
-            };
-          }
-        | {
-            filename: string;
-            type: "shape";
-            data: GeoJSONObject;
-          }
-        | {
-            filename: string;
-            type: "population";
-            data: null;
-          })
-    | {
-        processId: string;
-      }
-    | (
-        | {
-            processId: string;
-            complete: false;
-            progress: number;
-            timeRemaining: number;
-          }
-        | {
-            processId: string;
-            complete: true;
-            result: {
-              plhiv: {
-                placeholder?: boolean;
-              };
-              prevalence: {
-                placeholder?: boolean;
-              };
-              art: {
-                placeholder?: boolean;
-              };
-              incidence: {
-                placeholder?: boolean;
-              };
-            };
-          });
-  errors: {
-    [k: string]: any;
-  };
-}
-/**
- * TODO: Validate against a URL e.g. https://geojson.org/schema/FeatureCollection.json
- */
-export interface GeoJSONObject {
-  type: "FeatureCollection";
-  crs?: {
-    [k: string]: any;
-  };
-  name?: {
-    [k: string]: any;
-  };
-  features: {
-    [k: string]: any;
-  }[];
+export type ProgrammeResponseData = {
+  iso3: string;
+  area_id: string;
   [k: string]: any;
-}
-export interface Failure {
-  status: "failure";
-  data: {
-    [k: string]: any;
-  };
-  errors: [
-    {
-      error?: "INVALID_FILE" | "FAILED_TO_QUEUE" | "INVALID_PJNZ" | "OTHER_ERROR" | "FAILED_TO_CHECK_STATUS";
-      detail?: string | null;
-    },
-    ...({
-      error?: "INVALID_FILE" | "FAILED_TO_QUEUE" | "INVALID_PJNZ" | "OTHER_ERROR" | "FAILED_TO_CHECK_STATUS";
-      detail?: string | null;
-    })[]
-  ];
+}[];
+export interface Response {
+  status: "success" | "failure";
+  data: any;
+  errors: {
+    error?: string;
+    detail?: string | null;
+  }[];
 }
 /**
  * TODO: Validate against a URL e.g. https://geojson.org/schema/FeatureCollection.json
@@ -201,7 +127,7 @@ export interface ValidateInputRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
   path: string | null;
 }
-export type ValidateInputResponse = PjnzResponse | ShapeResponse | PopulationResponse;
+export type ValidateInputResponse = PjnzResponse | ShapeResponse | PopulationResponse | ProgrammeResponse;
 
 export interface PjnzResponse {
   filename: string;
@@ -235,4 +161,13 @@ export interface PopulationResponse {
   filename: string;
   type: "population";
   data: null;
+}
+export interface ProgrammeResponse {
+  filename: string;
+  type: "programme";
+  data: {
+    iso3: string;
+    area_id: string;
+    [k: string]: any;
+  }[];
 }

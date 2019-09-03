@@ -37,6 +37,11 @@ describe("Baseline actions", () => {
             type: "BaselineDataLoaded",
             payload: {pjnz: null}
         });
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "BaselineDataLoaded",
+            payload: {pjnz: null}
+        });
     });
 
 });

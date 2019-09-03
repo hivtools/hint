@@ -33,22 +33,29 @@ class BaselineController(private val fileManager: FileManager,
         return saveAndValidate(file, FileType.Shape)
     }
 
-    @GetMapping("/")
+    @GetMapping("/pjnz/")
     @ResponseBody
-    fun get(): String {
+    fun getPJNZ(): String {
 
         // TODO request serialised data for this id from the R API
         // for now just read basic file info from upload dir
         val file = fileManager.getFile(FileType.PJNZ)
 
-        val data = if (file != null) {
+        val pjnzResponse = if (file != null) {
             val fileName = file.name
             val countryName = fileName.split("_").first()
-            mapOf("pjnz" to buildPjnzResponse(fileName, countryName))
+            buildPjnzResponse(fileName, countryName)
         } else {
-            mapOf("pjnz" to null)
+            null
         }
-        return SuccessResponse(data).toJsonString()
+
+        return SuccessResponse(pjnzResponse).toJsonString()
+    }
+
+    @GetMapping("/shape/")
+    @ResponseBody
+    fun getShape(): ResponseEntity<String> {
+       return getIfExists(FileType.Shape)
     }
 
     private fun buildPjnzResponse(fileName: String, countryName: String): Map<String, Any> {

@@ -1,6 +1,6 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {InternalResponse} from "./types";
-import {Failure, InitialiseModelRunResponse, ModelRunResultResponse, Success, ValidateInputResponse} from "./generated";
+import {Response, InitialiseModelRunResponse, ModelRunResultResponse, ValidateInputResponse} from "./generated";
 import {Commit} from "vuex";
 
 type ResponseData =
@@ -39,17 +39,17 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     private _ignoreErrors: Boolean = false;
 
-    static getFirstErrorFromFailure = (failure: Failure) => {
+    static getFirstErrorFromFailure = (failure: Response) => {
         const firstError = failure.errors[0];
         return firstError.detail ? firstError.detail : firstError.error;
     };
 
-    private _onError: ((failure: Failure) => void) | null = null;
+    private _onError: ((failure: Response) => void) | null = null;
 
-    private _onSuccess: ((success: Success) => void) | null = null;
+    private _onSuccess: ((success: Response) => void) | null = null;
 
     withError = (type: E) => {
-        this._onError = (failure: Failure) => {
+        this._onError = (failure: Response) => {
             this._commit({type: type, payload: APIService.getFirstErrorFromFailure(failure)});
         };
         return this
@@ -61,7 +61,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     };
 
     withSuccess = (type: S) => {
-        this._onSuccess = (success: Success) => {
+        this._onSuccess = (success: Response) => {
             this._commit({type: type, payload: success.data});
         };
         return this;
@@ -84,7 +84,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         if (this._ignoreErrors) {
             return
         }
-        const failure = e.response && e.response.data as Failure;
+        const failure = e.response && e.response.data as Response;
         if (!failure || !failure.status) {
             throw new Error("Could not parse API response");
         }
