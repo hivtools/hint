@@ -2,19 +2,24 @@ import { Module } from 'vuex';
 import {actions} from './actions';
 import { mutations } from './mutations';
 import {StepState, RootState} from "../../main";
+import {ShapeResponse} from "../../generated";
 
 export interface BaselineState extends StepState {
     pjnzError: string
     country: string
-    complete: boolean,
+    complete: boolean
     pjnzFilename: string
+    shape: ShapeResponse | null
+    shapeError: string
 }
 
 export const initialBaselineState: BaselineState = {
     country: "",
     pjnzError: "",
     pjnzFilename: "",
-    complete: false
+    complete: false,
+    shape: null,
+    shapeError: ""
 };
 
 const namespaced: boolean = true;

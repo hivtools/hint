@@ -1,6 +1,6 @@
 import {Mutation, MutationTree} from 'vuex';
 import {BaselineState} from "./baseline";
-import {PjnzResponse} from "../../generated";
+import {PjnzResponse, ShapeResponse} from "../../generated";
 import {PayloadWithType} from "../../types";
 
 type BaselineMutation = Mutation<BaselineState>
@@ -8,7 +8,9 @@ type BaselineMutation = Mutation<BaselineState>
 export interface BaselineMutations {
     PJNZUploaded: BaselineMutation
     PJNZUploadError: BaselineMutation
-    PJNZLoaded: BaselineMutation
+    PJNZLoaded: BaselineMutation,
+    ShapeUploaded: BaselineMutation
+    ShapeUploadError: BaselineMutation
 }
 
 export const mutations: MutationTree<BaselineState> & BaselineMutations = {
@@ -34,5 +36,13 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
             // but for now lets say it is
             state.complete = true;
          }
+    },
+
+    ShapeUploaded(state: BaselineState, action: PayloadWithType<ShapeResponse>) {
+        state.shape = action.payload
+    },
+
+    ShapeUploadError(state: BaselineState, action: PayloadWithType<string>) {
+        state.shapeError = action.payload;
     }
 };
