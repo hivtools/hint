@@ -4,7 +4,7 @@ here=$(dirname $0)
 
 echo "Usage: ./generate-types.sh HINTR_BRANCH"
 target="src/app/generated.d.ts"
-hintr_version=$(<$here/../../config/hintr_version)
+hintr_version=$(<$here/../../../config/hintr_version)
 if [[ $# -ne 1 ]] ; then
     echo "No branch provided. Defaulting to $hintr_version"
     branch=$hintr_version

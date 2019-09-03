@@ -1,6 +1,6 @@
 import {createLocalVue, mount} from '@vue/test-utils';
 import Vuex from 'vuex';
-import {mockAxios, mockSurveyAndProgramState} from "../mocks";
+import {mockAxios, mockSuccess, mockSurveyAndProgramState} from "../mocks";
 import {mockBaselineState} from "../mocks";
 import {mutations} from "../../app/store/baseline/mutations";
 
@@ -9,7 +9,7 @@ localVue.use(Vuex);
 
 // mock requests made by the root vue instance before it is imported
 mockAxios.onGet(`/baseline/`)
-    .reply(200, {pjnz: null});
+    .reply(200, mockSuccess({pjnz: null}));
 
 import {app} from "../../app"
 

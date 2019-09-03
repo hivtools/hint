@@ -2,22 +2,19 @@ import { Module } from 'vuex';
 import { actions } from './actions';
 import { mutations } from './mutations';
 import {RootState, StepState} from "../../main";
-import {GeoJSON} from "geojson";
+import {ProgramResponse, SurveyResponse} from "../../types";
 
 export interface SurveyAndProgramDataState extends StepState {
-    surveyGeoJson: GeoJSON | null
+    survey: SurveyResponse | null
     surveyError: string,
-    surveyFileName: string,
-    programGeoJson: GeoJSON | null,
+    program: ProgramResponse | null
     programError: string
-
 }
 
 export const initialSurveyAndProgramDataState: SurveyAndProgramDataState = {
-    surveyGeoJson: null,
+    survey: null,
     surveyError: "",
-    surveyFileName: "",
-    programGeoJson: null,
+    program: null,
     programError: "",
     complete: false
 };

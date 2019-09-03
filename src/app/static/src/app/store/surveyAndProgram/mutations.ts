@@ -1,21 +1,30 @@
 import {Mutation, MutationTree} from 'vuex';
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
-import {PayloadWithType, SurveyResponse} from "../../types";
+import {PayloadWithType, ProgramResponse, SurveyResponse} from "../../types";
 
 type SurveyAndProgramMutation = Mutation<SurveyAndProgramDataState>
 
 export interface SurveyAndProgramMutations {
     SurveyLoaded: SurveyAndProgramMutation
-    SurveyError: SurveyAndProgramMutation
+    SurveyError: SurveyAndProgramMutation,
+    ProgramLoaded: SurveyAndProgramMutation
+    ProgramError: SurveyAndProgramMutation
 }
 
 export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgramMutations = {
     SurveyLoaded(state: SurveyAndProgramDataState, action: PayloadWithType<SurveyResponse>) {
-        state.surveyFileName = action.payload.filename;
-        state.surveyGeoJson = action.payload.data.geoJson;
+        state.survey = action.payload;
     },
 
     SurveyError(state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
         state.surveyError = action.payload;
+    },
+
+    ProgramLoaded(state: SurveyAndProgramDataState, action: PayloadWithType<ProgramResponse>) {
+        state.program = action.payload;
+    },
+
+    ProgramError(state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
+        state.programError = action.payload;
     }
 };
