@@ -70,7 +70,7 @@ describe("Stepper component", () => {
     });
 
     it("upload survey step is enabled when baseline step is complete", () => {
-        const store = createSut({complete: true});
+        const store = createSut({complete: () => {return true} });
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
@@ -80,7 +80,7 @@ describe("Stepper component", () => {
     });
 
     it("updates active step when jump event is emitted", () => {
-        const store = createSut({complete: true});
+        const store = createSut({complete: () => {return true} });
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         steps.at(1).vm.$emit("jump", 2);
@@ -89,7 +89,7 @@ describe("Stepper component", () => {
     });
 
     it("cannot continue when the active step is not complete", () => {
-        const store = createSut({complete: false});
+        const store = createSut({complete: () => {return false}});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).toContain("disabled");
@@ -101,7 +101,7 @@ describe("Stepper component", () => {
 
 
     it("can continue when the active step is complete", () => {
-        const store = createSut({complete: true});
+        const store = createSut({complete: () => {return true}});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).not.toContain("disabled");

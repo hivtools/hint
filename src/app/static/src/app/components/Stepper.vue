@@ -78,8 +78,8 @@
         computed: {
             ...mapState<RootState>({
                 complete: (state: RootState): CompleteStatus => ({
-                    1: state.baseline.complete,
-                    2: state.surveyAndProgram.complete,
+                    1: state.baseline.complete(),
+                    2: state.surveyAndProgram.complete(),
                     3: false,
                     4: false,
                     5: false

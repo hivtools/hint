@@ -22,3 +22,9 @@ export interface ProgramResponse {
     type: "program";
     data: string;
 }
+
+export interface ANCResponse {
+    filename: string;
+    type: "anc";
+    data: string;
+}

@@ -14,7 +14,7 @@ export interface RootState {
 }
 
 export interface StepState {
-    complete: boolean
+    complete: () => boolean
 }
 
 Vue.use(Vuex);

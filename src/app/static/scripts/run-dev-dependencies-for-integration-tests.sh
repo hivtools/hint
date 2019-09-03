@@ -7,7 +7,7 @@ HINT=hint
 DB=hint_db
 API=hintr
 $HERE/../../../../scripts/run-dependencies.sh
-HINT_VERSION=mrc-433_integrationtests
+HINT_VERSION=master
 TEST_CONFIG=$HERE/test.properties
 HINT_IMAGE=mrcide/$HINT:$HINT_VERSION
 

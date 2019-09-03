@@ -21,10 +21,13 @@ export function testUploadComponent(name: string, position: number) {
 
             actions = {
                 uploadSurvey: jest.fn(),
-                uploadProgram: jest.fn()
+                uploadProgram: jest.fn(),
+                uploadANC: jest.fn()
             };
 
-            expectedAction = name == "survey" ? actions.uploadSurvey : actions.uploadProgram;
+            expectedAction = name == "survey" ? actions.uploadSurvey :
+                name == "program" ? actions.uploadProgram :
+                    actions.uploadANC;
 
             return new Vuex.Store({
                 modules: {
@@ -39,7 +42,8 @@ export function testUploadComponent(name: string, position: number) {
         };
 
         const errorState = name == "survey" ? {surveyError: "File upload went wrong"}
-            : {programError: "File upload went wrong"};
+            : name =="program" ? {programError: "File upload went wrong"}
+            : {ancError: "File upload went wrong"};
 
         const response = {
             filename: "filename.csv",
@@ -49,8 +53,10 @@ export function testUploadComponent(name: string, position: number) {
 
         const successState = name == "survey" ? {
             survey: response
-        } : {
+        } : name =="program" ? {
             program: response
+        } : {
+            anc: response
         };
 
         it(`${name} upload is valid if data is present`, () => {

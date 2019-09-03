@@ -6,7 +6,6 @@ import {StepState, RootState} from "../../main";
 export interface BaselineState extends StepState {
     pjnzError: string
     country: string
-    complete: boolean,
     pjnzFilename: string
 }
 
@@ -14,7 +13,9 @@ export const initialBaselineState: BaselineState = {
     country: "",
     pjnzError: "",
     pjnzFilename: "",
-    complete: false
+    complete: function() {
+        return !!this.country
+    }
 };
 
 const namespaced: boolean = true;

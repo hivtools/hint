@@ -45,4 +45,20 @@ describe("Survey and program actions", () => {
         });
     });
 
+    it("can upload anc", async () => {
+
+        const commit = jest.fn();
+
+        const file = fs.createReadStream("fakefile");
+        const formData = new FormData();
+        formData.append('file', file);
+
+        await actions.uploadANC({commit} as any, formData);
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "ANCError",
+            payload: "could not find function \"validate_func\""
+        });
+    });
+
 });

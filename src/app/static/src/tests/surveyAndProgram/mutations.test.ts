@@ -11,7 +11,7 @@ describe("Survey and program mutations", () => {
         })
     };
 
-    it("sets survey geoson and filename on SurveyLoaded", () => {
+    it("sets survey data and filename on SurveyLoaded", () => {
         const testState = {...initialSurveyAndProgramDataState};
         mutations.SurveyLoaded(testState, testPayload);
         expect(testState.survey!!.data).toBe("SOME DATA");
@@ -25,7 +25,7 @@ describe("Survey and program mutations", () => {
         expect(testState.surveyError).toBe("Some error");
     });
 
-    it("sets program geoson and filename on ProgramLoaded", () => {
+    it("sets program data and filename on ProgramLoaded", () => {
         const testState = {...initialSurveyAndProgramDataState};
         mutations.ProgramLoaded(testState, testPayload);
         expect(testState.program!!.data).toBe("SOME DATA");
@@ -37,6 +37,35 @@ describe("Survey and program mutations", () => {
         const testState = {...initialSurveyAndProgramDataState};
         mutations.ProgramError(testState, {payload: "Some error"});
         expect(testState.programError).toBe("Some error");
+    });
+
+    it("sets anc data and filename on ANCLoaded", () => {
+        const testState = {...initialSurveyAndProgramDataState};
+        mutations.ANCLoaded(testState, testPayload);
+        expect(testState.anc!!.data).toBe("SOME DATA");
+        expect(testState.anc!!.filename).toBe("somefile.csv");
+        expect(testState.ancError).toBe("");
+    });
+
+    it("sets error on ANCError", () => {
+        const testState = {...initialSurveyAndProgramDataState};
+        mutations.ANCError(testState, {payload: "Some error"});
+        expect(testState.ancError).toBe("Some error");
+    });
+
+    it("finds complete is true after all files are uploaded", () => {
+        const testState = {...initialSurveyAndProgramDataState};
+        expect(testState.complete()).toBe(false);
+
+        mutations.SurveyLoaded(testState, testPayload);
+        expect(testState.complete()).toBe(false);
+
+        mutations.ProgramLoaded(testState, testPayload);
+        expect(testState.complete()).toBe(false);
+
+        mutations.ANCLoaded(testState, testPayload);
+        expect(testState.complete()).toBe(true);
+
     });
 
 });
