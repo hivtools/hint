@@ -13,8 +13,8 @@ export interface RootState {
     surveyAndProgram: SurveyAndProgramDataState
 }
 
-export interface StepState {
-    complete: () => boolean
+export interface StepGetters {
+   complete: boolean
 }
 
 Vue.use(Vuex);

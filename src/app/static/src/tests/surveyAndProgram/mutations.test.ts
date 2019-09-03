@@ -1,6 +1,13 @@
-import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {
+    initialSurveyAndProgramDataState,
+    surveyAndProgram,
+    SurveyAndProgramDataState, surveyAndProgramGetters
+} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations} from "../../app/store/surveyAndProgram/mutations";
 import { mockSurveyResponse} from "../mocks";
+import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
+import {Module} from "vuex";
+import {RootState} from "../../app/main";
 
 describe("Survey and program mutations", () => {
 
@@ -54,17 +61,28 @@ describe("Survey and program mutations", () => {
     });
 
     it("finds complete is true after all files are uploaded", () => {
-        const testState = {...initialSurveyAndProgramDataState};
-        expect(testState.complete()).toBe(false);
+        const testStore:  Module<SurveyAndProgramDataState, RootState> = {
+            state: {...initialSurveyAndProgramDataState},
+            getters: surveyAndProgramGetters
+        };
+        const testState = testStore.state as SurveyAndProgramDataState;
+        const testRootState = {
+            version: "",
+            baseline: {...initialBaselineState},
+            surveyAndProgram: testState
+        };
+        const complete = testStore.getters!!.complete;
+
+        expect(complete(testState, null, testRootState, null)).toBe(false);
 
         mutations.SurveyLoaded(testState, testPayload);
-        expect(testState.complete()).toBe(false);
+        expect(complete(testState, null, testRootState, null)).toBe(false);
 
         mutations.ProgramLoaded(testState, testPayload);
-        expect(testState.complete()).toBe(false);
+        expect(complete(testState, null, testRootState, null)).toBe(false);
 
         mutations.ANCLoaded(testState, testPayload);
-        expect(testState.complete()).toBe(true);
+        expect(complete(testState, null, testRootState, null)).toBe(true);
 
     });
 

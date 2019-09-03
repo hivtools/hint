@@ -33,7 +33,7 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {mapState} from "vuex";
+    import {mapGetters, mapState} from "vuex";
     import Step from "./Step.vue";
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
@@ -76,15 +76,21 @@
             }
         },
         computed: {
-            ...mapState<RootState>({
-                complete: (state: RootState): CompleteStatus => ({
-                    1: state.baseline.complete(),
-                    2: state.surveyAndProgram.complete(),
+            baselineComplete: function() {
+              return this.$store.getters['baseline/complete']
+            },
+            surveyAndProgramComplete: function() {
+                return this.$store.getters['surveyAndProgram/complete']
+            },
+            complete: function(): CompleteStatus {
+                return {
+                    1: this.baselineComplete,
+                    2: this.surveyAndProgramComplete,
                     3: false,
                     4: false,
                     5: false
-                }),
-            })
+                }
+            }
         },
         methods: {
             jump(num: number) {
@@ -99,7 +105,7 @@
                     .length >= num - 1
             },
             next() {
-                if (this.complete[this.activeStep]) {
+               if (this.complete[this.activeStep]) {
                     this.activeStep = this.activeStep + 1;
                 }
             }

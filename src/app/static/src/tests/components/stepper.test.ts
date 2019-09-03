@@ -1,17 +1,17 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {BaselineState} from "../../app/store/baseline/baseline";
+import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
 import {mockBaselineState, mockSurveyAndProgramState} from "../mocks";
-import {SurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import { mutations } from '../../app/store/baseline/mutations';
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
 
 describe("Stepper component", () => {
-
     const createSut = (baselineState?: Partial<BaselineState>,
                        surveyAndProgramState?: Partial<SurveyAndProgramDataState>) => {
 
@@ -19,11 +19,14 @@ describe("Stepper component", () => {
             modules: {
                 baseline: {
                     namespaced: true,
-                    state: mockBaselineState(baselineState)
+                    state: mockBaselineState(baselineState),
+                    getters: baselineGetters,
+                    mutations
                 },
                 surveyAndProgram: {
                     namespaced: true,
-                    state: mockSurveyAndProgramState(surveyAndProgramState)
+                    state: mockSurveyAndProgramState(surveyAndProgramState),
+                    getters: surveyAndProgramGetters
                 }
             }
         })
@@ -70,7 +73,7 @@ describe("Stepper component", () => {
     });
 
     it("upload survey step is enabled when baseline step is complete", () => {
-        const store = createSut({complete: () => {return true} });
+        const store = createSut({ country: "testCountry" } );
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
@@ -80,7 +83,7 @@ describe("Stepper component", () => {
     });
 
     it("updates active step when jump event is emitted", () => {
-        const store = createSut({complete: () => {return true} });
+        const store = createSut({ country: "testCountry" });
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         steps.at(1).vm.$emit("jump", 2);
@@ -89,7 +92,7 @@ describe("Stepper component", () => {
     });
 
     it("cannot continue when the active step is not complete", () => {
-        const store = createSut({complete: () => {return false}});
+        const store = createSut({ country: ""});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).toContain("disabled");
@@ -101,7 +104,7 @@ describe("Stepper component", () => {
 
 
     it("can continue when the active step is complete", () => {
-        const store = createSut({complete: () => {return true}});
+        const store = createSut({ country: "testCountry" });
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).not.toContain("disabled");
@@ -109,6 +112,25 @@ describe("Stepper component", () => {
         continueLink.trigger("click");
         const steps = wrapper.findAll(Step);
         expect(steps.at(1).props().active).toBe(true);
+    });
+
+    it("updates from completed state when active step data is populated", (done) => {
+        const baselineState = { country: ""};
+        const store = createSut(baselineState);
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const continueLink = wrapper.find("#continue");
+        expect(continueLink.classes()).toContain("disabled");
+
+        //invoke the mutation
+        store.commit("baseline/PJNZUploaded", {
+            "type": "PJNZUploaded",
+            "payload": {"filename": "fn", "data": {"country": "testCountry", }}
+        });
+
+        Vue.nextTick().then( () => {
+            expect(wrapper.find("#continue").classes()).not.toContain("disabled");
+            done();
+        });
     });
 
 });

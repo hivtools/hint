@@ -1,10 +1,10 @@
 import { Module } from 'vuex';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import {RootState, StepState} from "../../main";
+import {RootState} from "../../main";
 import {ProgramResponse, SurveyResponse, ANCResponse} from "../../types";
 
-export interface SurveyAndProgramDataState extends StepState {
+export interface SurveyAndProgramDataState {
     survey: SurveyResponse | null
     surveyError: string,
     program: ProgramResponse | null
@@ -19,9 +19,12 @@ export const initialSurveyAndProgramDataState: SurveyAndProgramDataState = {
     program: null,
     programError: "",
     anc: null,
-    ancError: "",
-    complete: function() {
-        return !!this.survey && !!this.program && !!this.anc
+    ancError: ""
+};
+
+export const surveyAndProgramGetters = {
+    complete: (state: SurveyAndProgramDataState) => {
+        return !!state.survey && !!state.program && !!state.anc
     }
 };
 
@@ -30,7 +33,7 @@ const namespaced: boolean = true;
 export const surveyAndProgram: Module<SurveyAndProgramDataState, RootState> = {
     namespaced,
     state: initialSurveyAndProgramDataState,
-    getters: {},
+    getters: surveyAndProgramGetters,
     actions,
     mutations
 };
