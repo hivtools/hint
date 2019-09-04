@@ -40,23 +40,23 @@ describe("Baseline actions", () => {
         });
     });
 
-    it("gets baseline data and commits it", async () => {
+    it("gets pjnz data and commits it", async () => {
 
-        mockAxios.onGet(`/baseline/`)
-            .reply(200, mockSuccess({pjnz: {data: {country: "Malawi"}, filename: "test.pjnz"}}));
+        mockAxios.onGet(`/baseline/pjnz/`)
+            .reply(200, mockSuccess({data: {country: "Malawi"}, filename: "test.pjnz"}));
 
         const commit = jest.fn();
         await actions.getBaselineData({commit} as any);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "BaselineDataLoaded",
-            payload: {pjnz: {data: {country: "Malawi"}, filename: "test.pjnz"}}
+            type: "PJNZLoaded",
+            payload: {data: {country: "Malawi"}, filename: "test.pjnz"}
         });
     });
 
-    it("fails silently if get baseline data fails", async () => {
+    it("fails silently if get pjnz data fails", async () => {
 
-        mockAxios.onGet(`/baseline/`)
+        mockAxios.onGet(`/baseline/pjnz/`)
             .reply(500);
 
         const commit = jest.fn();

@@ -1,19 +1,17 @@
 import {mutations} from "../../app/store/baseline/mutations";
-import {baseline, baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
-import {mockBaselineResponse, mockPJNZResponse} from "../mocks";
+import {mockPJNZResponse} from "../mocks";
+import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
 import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {Module} from "vuex";
 import {RootState} from "../../app/main";
-import {actions} from "../../app/store/baseline/actions";
 
 describe("Baseline mutations", () => {
 
-    it("sets country, filename and error on PJNZLoaded", () => {
+    it("sets country, filename and error on PJNZUploaded", () => {
 
         const testState = {...initialBaselineState};
         mutations.PJNZUploaded(testState, {
-            payload: mockPJNZResponse({data: {country: "Malawi"}, filename: "file.pjnz"}),
-            type: "PJNZLoaded"
+            payload: mockPJNZResponse({data: {country: "Malawi"}, filename: "file.pjnz"})
         });
         expect(testState.country).toBe("Malawi");
         expect(testState.pjnzFilename).toBe("file.pjnz");
@@ -45,13 +43,11 @@ describe("Baseline mutations", () => {
         expect(testState.pjnzError).toBe("Some error");
     });
 
-    it("sets country and filename if present on BaselineDataLoaded", () => {
+    it("sets country and filename if present on PJNZLoaded", () => {
 
         const testState = {...initialBaselineState};
-        mutations.BaselineDataLoaded(testState, {
-            payload: mockBaselineResponse({
-                pjnz: mockPJNZResponse({filename: "file.pjnz", data: {country: "Malawi"}})
-            })
+        mutations.PJNZLoaded(testState, {
+            payload: mockPJNZResponse({filename: "file.pjnz", data: {country: "Malawi"}})
         });
         expect(testState.pjnzFilename).toBe("file.pjnz");
         expect(testState.country).toBe("Malawi");
@@ -60,7 +56,7 @@ describe("Baseline mutations", () => {
     it("does nothing on BaselineDataLoaded if no data present", () => {
 
         const testState = {...initialBaselineState};
-        mutations.BaselineDataLoaded(testState, {payload: mockBaselineResponse({pjnz: null})});
+        mutations.PJNZLoaded(testState, {payload: null});
         expect(testState.pjnzFilename).toBe("");
         expect(testState.country).toBe("");
     });

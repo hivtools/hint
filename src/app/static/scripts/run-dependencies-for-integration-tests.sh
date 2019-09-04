@@ -5,9 +5,12 @@ HERE=$(readlink -f "$(dirname $0)")
 NETWORK=hint_nw
 HINT=hint
 $HERE/../../../../scripts/run-dependencies.sh
-HINT_VERSION=master
+
+. $HERE/../../../../scripts/common # sets GIT_BRANCH
+$HERE/../../../../scripts/build-app.sh
+
 TEST_CONFIG=$HERE/test.properties
-HINT_IMAGE=mrcide/$HINT:$HINT_VERSION
+HINT_IMAGE=mrcide/$HINT:$GIT_BRANCH
 
 docker run --rm -d \
   --network=$NETWORK \

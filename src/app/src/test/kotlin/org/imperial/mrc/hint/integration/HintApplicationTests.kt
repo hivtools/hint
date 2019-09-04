@@ -63,7 +63,7 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) : Inte
 
     @Test
     fun `unauthorized users cannot access REST endpoints`() {
-        val entity = restTemplate.getForEntity<String>("/baseline/")
+        val entity = restTemplate.getForEntity<String>("/baseline/pjnz/")
 
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(entity.body!!).contains("<title>Login</title>")
@@ -72,10 +72,10 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) : Inte
     @Test
     fun `authorized users can access REST endpoints`() {
         authorize()
-        val entity = restTemplate.getForEntity<String>("/baseline/")
+        val entity = restTemplate.getForEntity<String>("/baseline/pjnz/")
 
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":{\"pjnz\":null}}")
+        assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
     }
 
     @Test

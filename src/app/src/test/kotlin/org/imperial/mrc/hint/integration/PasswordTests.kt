@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.emails.WriteToDiskEmailManager
 import org.imperial.mrc.hint.helpers.AuthInterceptor
+import org.imperial.mrc.hint.helpers.JSONValidator
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -83,6 +84,7 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
 
         val entity = restTemplate.postForEntity<String>("/password/reset-password/",
                 HttpEntity(map, headers))
+
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         Assertions.assertThat(entity.body).isEqualTo(expectedErrorResponse("Token is not valid"))
     }

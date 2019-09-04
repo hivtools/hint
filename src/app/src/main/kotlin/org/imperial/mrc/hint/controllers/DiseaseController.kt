@@ -9,8 +9,8 @@ import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/disease")
-class DiseaseController(private val fileManager: FileManager,
-                        private val apiClient: APIClient) {
+class DiseaseController(fileManager: FileManager,
+                        apiClient: APIClient): HintrController(fileManager, apiClient) {
 
     @PostMapping("/survey/")
     @ResponseBody
@@ -28,10 +28,5 @@ class DiseaseController(private val fileManager: FileManager,
     @ResponseBody
     fun uploadANC(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
         return saveAndValidate(file, FileType.ANC)
-    }
-
-    private fun saveAndValidate(file: MultipartFile, type: FileType): ResponseEntity<String> {
-        val path = fileManager.saveFile(file, type)
-        return apiClient.validate(path, type)
     }
 }

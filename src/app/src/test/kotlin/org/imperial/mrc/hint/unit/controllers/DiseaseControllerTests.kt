@@ -13,33 +13,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.mock.web.MockMultipartFile
 import java.io.File
 
-class DiseaseControllerTests {
-
-    private val tmpUploadDirectory = "tmp"
-
-    @AfterEach
-    fun tearDown() {
-        File(tmpUploadDirectory).deleteRecursively()
-    }
-
-    private val mockFile = MockMultipartFile("data", "some-file-name.csv",
-            "application/zip", "csv content".toByteArray())
-
-    private fun getMockFileManager(type: FileType): FileManager {
-        return mock {
-            on {
-                saveFile(argWhere {
-                    it.originalFilename == "some-file-name.csv"
-                }, eq(type))
-            } doReturn "test-path"
-        }
-    }
-
-    private fun getMockAPIClient(type: FileType): APIClient {
-        return mock {
-            on { validate("test-path", type) } doReturn ResponseEntity("whatever", HttpStatus.OK)
-        }
-    }
+class DiseaseControllerTests: HintrControllerTests() {
 
     @Test
     fun `validates survey file`() {

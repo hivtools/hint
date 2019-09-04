@@ -1,19 +1,22 @@
 package org.imperial.mrc.hint.controllers
 
+import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.toJsonString
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/baseline")
-class BaselineController(private val fileManager: FileManager) {
+class BaselineController(private val fileManager: FileManager,
+                         apiClient: APIClient) : HintrController(fileManager, apiClient) {
 
     @PostMapping("/pjnz/")
     @ResponseBody
-    fun upload(@RequestParam("file") file: MultipartFile): String {
+    fun uploadPJNZ(@RequestParam("file") file: MultipartFile): String {
 
         val fileName = file.originalFilename!!
         fileManager.saveFile(file, FileType.PJNZ)
@@ -24,22 +27,35 @@ class BaselineController(private val fileManager: FileManager) {
         return SuccessResponse(buildPjnzResponse(fileName, countryName)).toJsonString()
     }
 
-    @GetMapping("/")
+    @PostMapping("/shape/")
     @ResponseBody
-    fun get(): String {
+    fun uploadShape(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
+        return saveAndValidate(file, FileType.Shape)
+    }
+
+    @GetMapping("/pjnz/")
+    @ResponseBody
+    fun getPJNZ(): String {
 
         // TODO request serialised data for this id from the R API
         // for now just read basic file info from upload dir
         val file = fileManager.getFile(FileType.PJNZ)
 
-        val data = if (file != null) {
+        val pjnzResponse = if (file != null) {
             val fileName = file.name
             val countryName = fileName.split("_").first()
-            mapOf("pjnz" to buildPjnzResponse(fileName, countryName))
+            buildPjnzResponse(fileName, countryName)
         } else {
-            mapOf("pjnz" to null)
+            null
         }
-        return SuccessResponse(data).toJsonString()
+
+        return SuccessResponse(pjnzResponse).toJsonString()
+    }
+
+    @GetMapping("/shape/")
+    @ResponseBody
+    fun getShape(): ResponseEntity<String> {
+       return getAndValidate(FileType.Shape)
     }
 
     private fun buildPjnzResponse(fileName: String, countryName: String): Map<String, Any> {
