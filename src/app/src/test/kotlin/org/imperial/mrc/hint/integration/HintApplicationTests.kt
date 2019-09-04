@@ -75,7 +75,7 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) : Inte
         val entity = restTemplate.getForEntity<String>("/baseline/")
 
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(entity.body!!).isEqualTo("{\"errors\":{},\"status\":\"success\",\"data\":{\"pjnz\":null}}")
+        assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":{\"pjnz\":null}}")
     }
 
     @Test

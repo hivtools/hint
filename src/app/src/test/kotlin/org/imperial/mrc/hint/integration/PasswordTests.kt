@@ -28,7 +28,7 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
         }
     }
 
-    private val expectedSuccessResponse = "{\"errors\":{},\"status\":\"success\",\"data\":true}"
+    private val expectedSuccessResponse = "{\"errors\":[],\"status\":\"success\",\"data\":true}"
 
     private fun expectedErrorResponse(errorMessage: String): String {
         return "{\"data\":{},\"status\":\"failure\",\"errors\":[{\"error\":\"OTHER_ERROR\",\"detail\":\"$errorMessage\"}]}"

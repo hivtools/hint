@@ -17,7 +17,7 @@ class BaselineTests : SecureIntegrationTests() {
         if (isAuthorized == IsAuthorized.TRUE){
             // we can't use the JSONValidator here because this response schema isn't in the spec yet
             assertThat(responseEntity.body!!)
-                    .isEqualTo("{\"errors\":{},\"status\":\"success\",\"data\":{\"pjnz\":null}}")
+                    .isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":{\"pjnz\":null}}")
         }
     }
 
