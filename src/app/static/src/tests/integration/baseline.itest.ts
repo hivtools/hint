@@ -40,4 +40,19 @@ describe("Baseline actions", () => {
 
     });
 
+    it("can upload shape file", async () => {
+        const commit = jest.fn();
+
+        const file = fs.createReadStream("Malawi_1.pjnz");
+        const formData = new FormData();
+        formData.append('file', file);
+
+        await actions.uploadShape({commit} as any, formData);
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "ShapeUploadError",
+            payload: "File does not exist. Create it, or fix the path."
+        });
+    });
+
 });

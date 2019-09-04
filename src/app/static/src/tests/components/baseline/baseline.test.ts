@@ -2,7 +2,7 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
-import {mockBaselineState} from "../../mocks";
+import {mockBaselineState, mockPopulationResponse, mockShapeResponse} from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import Baseline from "../../../app/components/baseline/Baseline.vue";
 import FileUpload from "../../../app/components/FileUpload.vue";
@@ -20,7 +20,9 @@ describe("Baseline upload component", () => {
 
         actions = {
             uploadPJNZ: jest.fn(),
-            getBaselineData: jest.fn()
+            getBaselineData: jest.fn(),
+            uploadShape: jest.fn(),
+            uploadPopulation: jest.fn()
         };
 
         return new Vuex.Store({
@@ -39,6 +41,7 @@ describe("Baseline upload component", () => {
         const store = createSut();
         const wrapper = shallowMount(Baseline, {store, localVue});
         expect(wrapper.findAll(FileUpload).at(0).props().valid).toBe(false);
+        expect(wrapper.findAll(FileUpload).at(0).findAll("label").length).toBe(0);
     });
 
     it("pjnz is valid if country is present", () => {
@@ -47,20 +50,76 @@ describe("Baseline upload component", () => {
         expect(wrapper.findAll(FileUpload).at(0).props().valid).toBe(true);
     });
 
+    it("country name is passed to file upload component if country is present", () => {
+        const store = createSut({country: "Malawi"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(0).find("label").text()).toBe("Country: Malawi");
+    });
+
     it("passes pjnz error to file upload", () => {
         const store = createSut({pjnzError: "File upload went wrong"});
         const wrapper = shallowMount(Baseline, {store, localVue});
         expect(wrapper.findAll(FileUpload).at(0).props().error).toBe("File upload went wrong");
     });
 
+    it("shape is not valid if shape is not present", () => {
+        const store = createSut();
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(1).props().valid).toBe(false);
+    });
+
+    it("shape is valid if shape is present", () => {
+        const store = createSut({shape: mockShapeResponse()});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(1).props().valid).toBe(true);
+    });
+
+    it("passes shape error to file upload", () => {
+        const store = createSut({shapeError: "File upload went wrong"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(1).props().error).toBe("File upload went wrong");
+    });
+
+    it("population is not valid if population is not present", () => {
+        const store = createSut();
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(2).props().valid).toBe(false);
+    });
+
+    it("population is valid if population is present", () => {
+        const store = createSut({population: mockPopulationResponse()});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(2).props().valid).toBe(true);
+    });
+
+    it("passes population error to file upload", () => {
+        const store = createSut({populationError: "File upload went wrong"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(2).props().error).toBe("File upload went wrong");
+    });
+
     it("upload pjnz dispatches baseline/uploadPJNZ", (done) => {
+        expectUploadToDispatchAction(0, () => actions.uploadPJNZ, done);
+    });
+
+    it("upload shape dispatches baseline/uploadShape", (done) => {
+        expectUploadToDispatchAction(1, () => actions.uploadShape, done);
+    });
+
+    it("upload population dispatches baseline/uploadPopulation", (done) => {
+        expectUploadToDispatchAction(2, () => actions.uploadPopulation, done);
+    });
+
+    const expectUploadToDispatchAction = (index: number,
+                                          action: () => jest.MockInstance<any, any>,
+                                          done: jest.DoneCallback) => {
         const store = createSut();
         const wrapper = shallowMount(Baseline, {store, localVue});
 
-        wrapper.findAll(FileUpload).at(0).props().upload({name: "TEST"});
+        wrapper.findAll(FileUpload).at(index).props().upload({name: "TEST"});
         setTimeout(() => {
-            expect(actions.uploadPJNZ.mock.calls[0][1]).toStrictEqual({name: "TEST"});
+            expect(action().mock.calls[0][1]).toStrictEqual({name: "TEST"});
             done();
         });
-    });
+    }
 });

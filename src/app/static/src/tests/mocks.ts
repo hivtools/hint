@@ -7,7 +7,7 @@ import {
     SurveyAndProgramDataState
 } from "../app/store/surveyAndProgram/surveyAndProgram";
 
-import {PjnzResponse, ShapeResponse, Response} from "../app/generated";
+import {PjnzResponse, ShapeResponse, Response, PopulationResponse} from "../app/generated";
 import { ProgramResponse, SurveyResponse} from "../app/types";
 
 export const mockAxios = new MockAdapter(axios);
@@ -97,6 +97,15 @@ export const mockProgramResponse = (props: Partial<ProgramResponse> = {}): Progr
     return {
         data: "SOME DATA",
         type: "program",
+        filename: "test.csv",
+        ...props
+    }
+};
+
+export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}): PopulationResponse => {
+    return {
+        data: null,
+        type: "population",
         filename: "test.csv",
         ...props
     }

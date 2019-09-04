@@ -6,22 +6,34 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-10 col-md-8">
+            <div class="col-sm-8 col-md-10">
                 <form>
                     <file-upload label="PJNZ"
-                                 :valid="!!country"
-                                 :error="error"
-                                 :upload="upload"
-                                 :existingFileName="pjnzFileName"
+                                 :valid="pjnz.valid"
+                                 :error="pjnz.error"
+                                 :upload="uploadPJNZ"
+                                 :existingFileName="pjnz.existingFileName"
                                  accept="PJNZ,pjnz,.pjnz,.PJNZ"
                                  name="pjnz">
+                        <label v-if="country"><strong>Country</strong>: {{country}}</label>
+                    </file-upload>
+                    <file-upload label="Shape file"
+                                 :valid="shape.valid"
+                                 :error="shape.error"
+                                 :upload="uploadShape"
+                                 :existingFileName="shape.existingFileName"
+                                 accept="geojson,.geojson,GEOJSON,.GEOJSON"
+                                 name="shape">
+                    </file-upload>
+                    <file-upload label="Population"
+                                 :valid="population.valid"
+                                 :error="population.error"
+                                 :upload="uploadPopulation"
+                                 :existingFileName="population.existingFileName"
+                                 accept="csv,.csv"
+                                 name="population">
                     </file-upload>
                 </form>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <span v-if="country"><strong>Country</strong>: {{country}}</span>
             </div>
         </div>
     </div>
@@ -35,17 +47,40 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import FileUpload from "../FileUpload.vue";
 
+    interface PartialFileUploadProps {
+        valid: Boolean,
+        error: string,
+        existingFileName: string,
+    }
+
     const namespace: string = 'baseline';
 
     export default Vue.extend({
         name: "Baseline",
         computed: mapState<BaselineState>(namespace, {
             country: state => state.country,
-            error: state => state.pjnzError,
-            pjnzFileName: state => state.pjnzFilename
+            pjnz: state => ({
+                valid: !!state.country,
+                error: state.pjnzError,
+                existingFileName: state.pjnzFilename
+            } as PartialFileUploadProps),
+            shape: state => ({
+                valid: state.shape != null,
+                error: state.shapeError,
+                existingFileName: state.shape && state.shape.filename
+            } as PartialFileUploadProps),
+            population: state => ({
+                valid: state.population != null,
+                error: state.populationError,
+                existingFileName: state.population && state.population.filename
+            } as PartialFileUploadProps),
         }),
         methods: {
-            ...mapActions({upload: 'baseline/uploadPJNZ'})
+            ...mapActions({
+                uploadPJNZ: 'baseline/uploadPJNZ',
+                uploadShape: 'baseline/uploadShape',
+                uploadPopulation: 'baseline/uploadPopulation'
+            })
         },
         components: {
             FileUpload

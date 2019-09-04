@@ -1,24 +1,33 @@
-import { Module } from 'vuex';
+import {Module} from 'vuex';
 import {actions} from './actions';
-import { mutations } from './mutations';
+import {mutations} from './mutations';
 import {RootState} from "../../main";
+import {PopulationResponse, ShapeResponse} from "../../generated";
 
 export interface BaselineState {
     pjnzError: string
     country: string
     pjnzFilename: string
+    shape: ShapeResponse | null
+    shapeError: string
+    population: PopulationResponse | null,
+    populationError: string
 }
 
 export const initialBaselineState: BaselineState = {
     country: "",
     pjnzError: "",
-    pjnzFilename: ""
+    pjnzFilename: "",
+    shape: null,
+    shapeError: "",
+    population: null,
+    populationError: ""
 };
 
 export const baselineGetters = {
-  complete: (state: BaselineState) => {
-      return !!state.country
-  }
+    complete: (state: BaselineState) => {
+        return !!state.country
+    }
 };
 
 const namespaced: boolean = true;
