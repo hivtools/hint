@@ -23,7 +23,7 @@ export const initialBaselineState: BaselineState = {
 
 export const baselineGetters = {
   complete: (state: BaselineState) => {
-      return !!state.country
+      return !!state.country && !!state.shape
   }
 };
 
