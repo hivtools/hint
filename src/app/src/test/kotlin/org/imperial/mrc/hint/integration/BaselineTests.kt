@@ -1,12 +1,10 @@
 package org.imperial.mrc.hint.integration
 
-import org.assertj.core.api.AssertionsForClassTypes.assertThat
-import org.imperial.mrc.hint.helpers.createTestHttpEntity
+import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
-import org.springframework.http.HttpStatus
 
 class BaselineTests : SecureIntegrationTests() {
 
@@ -27,7 +25,7 @@ class BaselineTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can upload pjnz file`(isAuthorized: IsAuthorized) {
-        val postEntity = createTestHttpEntity("Malawi_2018.pjnz")
+        val postEntity = getTestEntity("Botswana2018.pjnz")
         val responseEntity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
         assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
     }
@@ -35,9 +33,9 @@ class BaselineTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can upload shape file`(isAuthorized: IsAuthorized) {
-        val postEntity = createTestHttpEntity()
+        val postEntity = getTestEntity("malawi.geojson")
         val entity = testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
-        assertSecureWithError(isAuthorized, entity, HttpStatus.BAD_REQUEST, "INVALID_FILE")
+        assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
     }
 
 }
