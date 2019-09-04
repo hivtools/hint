@@ -4,6 +4,11 @@
   * Instead, modify the hintr JSON schema files
   * and run ./generate-types.sh to regenerate this file.
 */
+export type AncResponseData = {
+  iso3: string;
+  area_id: string;
+  [k: string]: any;
+}[];
 export interface Data {
   placeholder?: boolean;
 }
@@ -127,7 +132,7 @@ export interface ValidateInputRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
   path: string | null;
 }
-export type ValidateInputResponse = PjnzResponse | ShapeResponse | PopulationResponse | ProgrammeResponse;
+export type ValidateInputResponse = PjnzResponse | ShapeResponse | PopulationResponse | ProgrammeResponse | AncResponse;
 
 export interface PjnzResponse {
   filename: string;
@@ -165,6 +170,15 @@ export interface PopulationResponse {
 export interface ProgrammeResponse {
   filename: string;
   type: "programme";
+  data: {
+    iso3: string;
+    area_id: string;
+    [k: string]: any;
+  }[];
+}
+export interface AncResponse {
+  filename: string;
+  type: "anc";
   data: {
     iso3: string;
     area_id: string;

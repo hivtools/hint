@@ -1,20 +1,24 @@
 import { Module } from 'vuex';
 import {actions} from './actions';
 import { mutations } from './mutations';
-import {StepState, RootState} from "../../main";
+import {RootState} from "../../main";
 
-export interface BaselineState extends StepState {
+export interface BaselineState {
     pjnzError: string
     country: string
-    complete: boolean,
     pjnzFilename: string
 }
 
 export const initialBaselineState: BaselineState = {
     country: "",
     pjnzError: "",
-    pjnzFilename: "",
-    complete: false
+    pjnzFilename: ""
+};
+
+export const baselineGetters = {
+  complete: (state: BaselineState) => {
+      return !!state.country
+  }
 };
 
 const namespaced: boolean = true;
@@ -22,7 +26,7 @@ const namespaced: boolean = true;
 export const baseline: Module<BaselineState, RootState> = {
     namespaced,
     state: initialBaselineState,
-    getters: {},
+    getters: baselineGetters,
     actions,
     mutations
 };

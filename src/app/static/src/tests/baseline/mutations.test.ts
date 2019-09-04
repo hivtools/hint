@@ -1,6 +1,9 @@
 import {mutations} from "../../app/store/baseline/mutations";
-import {initialBaselineState} from "../../app/store/baseline/baseline";
 import {mockPJNZResponse} from "../mocks";
+import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
+import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {Module} from "vuex";
+import {RootState} from "../../app/main";
 
 describe("Baseline mutations", () => {
 
@@ -15,11 +18,22 @@ describe("Baseline mutations", () => {
         expect(testState.pjnzError).toBe("");
     });
 
-    it("sets state complete once pjnz is uploaded", () => {
+    it("state becomes complete once pjnz is uploaded", () => {
+        const testStore: Module<BaselineState, RootState> = {
+            state: {...initialBaselineState},
+            getters: baselineGetters
+        };
+        const testState = testStore.state as BaselineState;
+        const testRootState = {
+            version: "",
+            baseline: testState,
+            surveyAndProgram: {...initialSurveyAndProgramDataState}
+        };
+        const complete = testStore.getters!!.complete;
 
-        const testState = {...initialBaselineState};
         mutations.PJNZUploaded(testState, {payload: mockPJNZResponse({data: {country: "Malawi"}}), type: "PJNZLoaded"});
-        expect(testState.complete).toBe(true);
+
+        expect(complete(testState, null, testRootState, null)).toBe(true);
     });
 
     it("sets error on PJNZUploadError", () => {

@@ -24,6 +24,14 @@
                                  accept="csv,.csv"
                                  name="program">
                     </file-upload>
+                    <file-upload label="ANC"
+                                 :valid="hasANC"
+                                 :error="ancError"
+                                 :upload="uploadANC"
+                                 :existingFileName="ancFileName"
+                                 accept="csv,.csv"
+                                 name="anc">
+                    </file-upload>
                 </form>
             </div>
         </div>
@@ -45,14 +53,20 @@
             hasSurvey: state => state.survey != null,
             surveyError: state => state.surveyError,
             surveyFileName: state => state.survey && state.survey.filename,
+
             hasProgram: state => state.program != null,
             programError: state => state.programError,
-            programFileName: state => state.program && state.program.filename
+            programFileName: state => state.program && state.program.filename,
+
+            hasANC: state => state.anc != null,
+            ancError: state => state.ancError,
+            ancFileName: state => state.anc && state.anc.filename
         }),
         methods: {
             ...mapActions({
                 uploadSurvey: 'surveyAndProgram/uploadSurvey',
-                uploadProgram: 'surveyAndProgram/uploadProgram'
+                uploadProgram: 'surveyAndProgram/uploadProgram',
+                uploadANC: 'surveyAndProgram/uploadANC'
             })
         },
         components: {
