@@ -38,21 +38,40 @@ describe("Baseline actions", () => {
             payload: null
         });
 
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "ShapeUploaded",
+            payload: null
+        });
+
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: "PopulationUploaded",
+            payload: null
+        });
     });
 
     it("can upload shape file", async () => {
+        await expectUpload(actions.uploadShape, "ShapeUploadError", "File does not exist. Create it, or fix the path.");
+    });
+
+    it("can upload population file", async () => {
+        await expectUpload(actions.uploadPopulation, "PopulationUploadError", "cannot open the connection");
+    });
+
+    const expectUpload = async (action: (commit: any, formData: any) => void,
+                                expectedErrorType: string,
+                                expectedErrorMessage: string) => {
         const commit = jest.fn();
 
         const file = fs.createReadStream("Malawi_1.pjnz");
         const formData = new FormData();
         formData.append('file', file);
 
-        await actions.uploadShape({commit} as any, formData);
+        await action({commit}, formData);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ShapeUploadError",
-            payload: "File does not exist. Create it, or fix the path."
+            type: expectedErrorType,
+            payload: expectedErrorMessage
         });
-    });
+    }
 
 });
