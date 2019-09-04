@@ -26,6 +26,13 @@ class BaselineTests : SecureIntegrationTests() {
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can get population data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.getForEntity<String>("/baseline/population/")
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can upload pjnz file`(isAuthorized: IsAuthorized) {
         val postEntity = createTestHttpEntity("Malawi_2018.pjnz")
         val responseEntity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
@@ -37,6 +44,14 @@ class BaselineTests : SecureIntegrationTests() {
     fun `can upload shape file`(isAuthorized: IsAuthorized) {
         val postEntity = createTestHttpEntity()
         val entity = testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
+        assertSecureWithError(isAuthorized, entity, HttpStatus.BAD_REQUEST, "INVALID_FILE")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can upload population file`(isAuthorized: IsAuthorized) {
+        val postEntity = createTestHttpEntity()
+        val entity = testRestTemplate.postForEntity<String>("/baseline/population/", postEntity)
         assertSecureWithError(isAuthorized, entity, HttpStatus.BAD_REQUEST, "INVALID_FILE")
     }
 
