@@ -6,6 +6,7 @@ NETWORK=hint_nw
 HINT=hint
 DB=hint_db
 API=hintr
+
 $HERE/run-dependencies-for-integration-tests.sh
 
 # From now on, if the user presses Ctrl+C we should teardown gracefully

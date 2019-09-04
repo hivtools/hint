@@ -61,4 +61,32 @@ describe("Survey and program actions", () => {
         });
     });
 
+    it("sets data after anc file upload", async () => {
+
+        mockAxios.onPost(`/disease/anc/`)
+            .reply(200, mockSuccess("TEST"));
+
+        const commit = jest.fn();
+        await actions.uploadANC({commit} as any, new FormData());
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "ANCLoaded",
+            payload: "TEST"
+        });
+    });
+
+    it("sets error message after failed anc upload", async () => {
+
+        mockAxios.onPost(`/disease/anc/`)
+            .reply(500, mockFailure("error message"));
+
+        const commit = jest.fn();
+        await actions.uploadANC({commit} as any, new FormData());
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "ANCError",
+            payload: "error message"
+        });
+    });
+
 });
