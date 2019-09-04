@@ -29,13 +29,13 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .postAndReturn<PjnzResponse>("/baseline/shape/", formData);
     },
 
-    async getBaselineData({commit}) {
-        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+    getBaselineData({commit}) {
+        api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .ignoreErrors()
             .withSuccess("PJNZLoaded")
             .get<PjnzResponse>("/baseline/pjnz/");
 
-        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+        api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .ignoreErrors()
             .withSuccess("ShapeUploaded")
             .get<PjnzResponse>("/baseline/shape/");
