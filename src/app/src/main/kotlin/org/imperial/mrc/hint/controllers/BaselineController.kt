@@ -27,12 +27,6 @@ class BaselineController(private val fileManager: FileManager,
         return SuccessResponse(buildPjnzResponse(fileName, countryName)).toJsonString()
     }
 
-    @PostMapping("/shape/")
-    @ResponseBody
-    fun uploadShape(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
-        return saveAndValidate(file, FileType.Shape)
-    }
-
     @GetMapping("/pjnz/")
     @ResponseBody
     fun getPJNZ(): String {
@@ -52,10 +46,28 @@ class BaselineController(private val fileManager: FileManager,
         return SuccessResponse(pjnzResponse).toJsonString()
     }
 
+    @PostMapping("/shape/")
+    @ResponseBody
+    fun uploadShape(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
+        return saveAndValidate(file, FileType.Shape)
+    }
+
     @GetMapping("/shape/")
     @ResponseBody
     fun getShape(): ResponseEntity<String> {
        return getAndValidate(FileType.Shape)
+    }
+
+    @PostMapping("/population/")
+    @ResponseBody
+    fun uploadPopulation(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
+        return saveAndValidate(file, FileType.Population)
+    }
+
+    @GetMapping("/population/")
+    @ResponseBody
+    fun getPopulation(): ResponseEntity<String> {
+        return getAndValidate(FileType.Population)
     }
 
     private fun buildPjnzResponse(fileName: String, countryName: String): Map<String, Any> {
