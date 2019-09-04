@@ -29,7 +29,6 @@ describe("Baseline actions", () => {
     });
 
     it("can get baseline data", async () => {
-
         const commit = jest.fn();
         await actions.getBaselineData({commit} as any);
 
@@ -38,6 +37,10 @@ describe("Baseline actions", () => {
             payload: null
         });
 
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "ShapeUploaded",
+            payload: null
+        });
     });
 
     it("can upload shape file", async () => {
