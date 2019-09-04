@@ -12,7 +12,6 @@ import org.leadpony.justify.api.ProblemHandler
 import java.io.File
 import java.net.URI
 import java.net.URL
-import java.net.URLConnection
 import javax.json.stream.JsonParsingException
 import java.io.InputStreamReader
 import java.io.BufferedReader
@@ -76,7 +75,6 @@ class JSONValidator {
             "$name.schema.json"
         }
         val url = URL("https://raw.githubusercontent.com/mrc-ide/hintr/$hintrVersion/inst/schema/$path")
-
 
         val conn = url.openConnection() as HttpURLConnection
         return BufferedReader(InputStreamReader(conn.getInputStream())).use {
