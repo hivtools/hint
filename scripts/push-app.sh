@@ -4,5 +4,5 @@ set -ex
 HERE=$(dirname $0)
 . $HERE/common
 
-docker docker push $APP_DOCKER_COMMIT_TAG \
+docker push $APP_DOCKER_COMMIT_TAG \
     && docker push $APP_DOCKER_BRANCH_TAG

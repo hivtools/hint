@@ -12,8 +12,8 @@ API=hintr
 trap cleanup INT
 trap cleanup ERR
 function cleanup() {
-  docker stop $DB
-  docker stop $API
+  docker kill $DB
+  docker kill $API
   docker network rm $NETWORK
 }
 

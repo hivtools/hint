@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 
-HERE=$(dirname "$0")
+HERE=$(readlink -f "$(dirname $0)")
 NETWORK=hint_nw
 DB=hint_db
 API=hintr
@@ -27,6 +27,7 @@ docker run --rm -d \
   --network=$NETWORK \
   --name=$API \
   -p 8888:8888 \
+  -v $HERE/../src/app/uploads:/uploads \
   $HINTR_IMAGE
 
 # Need to give the database a little time to initialise before we can run the migration
