@@ -25,7 +25,7 @@ class BaselineTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can upload pjnz file`(isAuthorized: IsAuthorized) {
-        val postEntity = getTestEntity("Botswana2018.pjnz")
+        val postEntity = getTestEntity("Botswana2018.PJNZ")
         val responseEntity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
         assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
     }

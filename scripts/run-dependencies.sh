@@ -23,6 +23,8 @@ docker run --rm -d \
   -p 5432:5432 \
   $DB_IMAGE
 
+mkdir -p $HERE/../src/app/uploads
+
 docker run --rm -d \
   --network=$NETWORK \
   --name=$API \
