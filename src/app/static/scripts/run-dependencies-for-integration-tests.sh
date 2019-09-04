@@ -5,7 +5,7 @@ HERE=$(readlink -f "$(dirname $0)")
 NETWORK=hint_nw
 HINT=hint
 $HERE/../../../../scripts/run-dependencies.sh
-HINT_VERSION=mrc-433_integrationtests
+HINT_VERSION=master
 TEST_CONFIG=$HERE/test.properties
 HINT_IMAGE=mrcide/$HINT:$HINT_VERSION
 

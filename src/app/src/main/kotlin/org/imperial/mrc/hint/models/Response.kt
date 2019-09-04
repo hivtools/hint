@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.models
 import com.fasterxml.jackson.databind.ObjectMapper
 
 data class SuccessResponse(val data: Any?){
-    val errors = mapOf<Any, Any>()
+    val errors = arrayOf<Any>()
     val status = "success"
 }
 

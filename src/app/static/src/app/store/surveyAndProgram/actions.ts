@@ -4,12 +4,13 @@ import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {ProgramResponse, SurveyResponse} from "../../types";
 
-export type SurveyAndProgramActionTypes = "SurveyLoaded" | "ProgramLoaded"
-export type SurveyAndProgramActionErrorTypes = "SurveyError" | "ProgramError"
+export type SurveyAndProgramActionTypes = "SurveyLoaded" | "ProgramLoaded" | "ANCLoaded"
+export type SurveyAndProgramActionErrorTypes = "SurveyError" | "ProgramError" | "ANCError"
 
 export interface SurveyAndProgramActions {
     uploadSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
-    uploadProgram: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void
+    uploadProgram: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
+    uploadANC: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void
 }
 
 export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
@@ -26,6 +27,12 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             .withError("ProgramError")
             .withSuccess("ProgramLoaded")
             .postAndReturn<ProgramResponse>("/disease/program/", formData);
-    }
+    },
 
+    async uploadANC({commit}, formData) {
+        await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
+            .withError("ANCError")
+            .withSuccess("ANCLoaded")
+            .postAndReturn<ProgramResponse>("/disease/anc/", formData);
+    }
 };

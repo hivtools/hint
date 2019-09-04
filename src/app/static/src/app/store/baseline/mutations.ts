@@ -16,9 +16,6 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
         state.pjnzError = "";
         state.pjnzFilename = action.payload.filename;
         state.country = action.payload.data.country;
-        // TODO this step isn't really complete until all files are uploaded
-        // but for now lets say it is
-        state.complete = true;
     },
 
     PJNZUploadError(state: BaselineState, action: PayloadWithType<string>) {
@@ -30,9 +27,6 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
         if (data.pjnz){
             state.country = data.pjnz.data.country;
             state.pjnzFilename = data.pjnz.filename;
-            // TODO this step isn't really complete until all files are uploaded
-            // but for now lets say it is
-            state.complete = true;
          }
     }
 };
