@@ -38,7 +38,7 @@ class BaselineTests : SecureIntegrationTests() {
         val entity = testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
         assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
 
-        if (isAuthorized == IsAuthorized.TRUE){
+        if (isAuthorized == IsAuthorized.TRUE) {
             val data = getResponseData(entity)
             assertThat(data["type"].asText()).isEqualTo("shape")
         }

@@ -6,7 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.postForEntity
 
-class DiseaseTests: SecureIntegrationTests() {
+class DiseaseTests : SecureIntegrationTests() {
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
@@ -14,7 +14,7 @@ class DiseaseTests: SecureIntegrationTests() {
         val postEntity = getTestEntity("survey.csv")
         val entity = testRestTemplate.postForEntity<String>("/disease/survey/", postEntity)
         assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
-        if (isAuthorized == IsAuthorized.TRUE){
+        if (isAuthorized == IsAuthorized.TRUE) {
             val data = getResponseData(entity)
             assertThat(data["type"].asText()).isEqualTo("survey")
         }
@@ -27,7 +27,7 @@ class DiseaseTests: SecureIntegrationTests() {
         val entity = testRestTemplate.postForEntity<String>("/disease/program/", postEntity)
         assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
 
-        if (isAuthorized == IsAuthorized.TRUE){
+        if (isAuthorized == IsAuthorized.TRUE) {
             val data = getResponseData(entity)
             assertThat(data["type"].asText()).isEqualTo("programme")
         }
@@ -40,7 +40,7 @@ class DiseaseTests: SecureIntegrationTests() {
         val entity = testRestTemplate.postForEntity<String>("/disease/anc/", postEntity)
         assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
 
-        if (isAuthorized == IsAuthorized.TRUE){
+        if (isAuthorized == IsAuthorized.TRUE) {
             val data = getResponseData(entity)
             assertThat(data["type"].asText()).isEqualTo("anc")
         }
