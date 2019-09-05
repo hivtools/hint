@@ -13,7 +13,10 @@ import org.pac4j.core.config.Config
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.SessionStore
 import org.springframework.mock.web.MockMultipartFile
+import org.springframework.util.StreamUtils
 import java.io.File
+import java.security.DigestInputStream
+import java.security.MessageDigest
 
 class LocalFileManagerTests {
 
@@ -45,9 +48,8 @@ class LocalFileManagerTests {
                 "application/zip", "pjnz content".toByteArray())
 
         val path = sut.saveFile(mockFile, FileType.Survey)
-        val savedFile = File("$tmpUploadDirectory/fake-id/survey/some-file-name.pjnz")
+        val savedFile = File("$tmpUploadDirectory/$path")
         assertThat(savedFile.readLines().first()).isEqualTo("pjnz content")
-        assertThat(path).isEqualTo("fake-id/survey/some-file-name.pjnz")
     }
 
     @Test
@@ -61,7 +63,7 @@ class LocalFileManagerTests {
         sut.saveFile(mockFile, FileType.PJNZ)
         var savedFiles = File("$tmpUploadDirectory/fake-id/pjnz").listFiles()
         assertThat(savedFiles?.count()).isEqualTo(1)
-        assertThat(savedFiles?.first()?.name).isEqualTo("some-file-name.pjnz")
+        assertThat(savedFiles?.first()?.readText()).isEqualTo("pjnz content")
 
         val newMockFile = MockMultipartFile("data", "new-file-name.pjnz",
                 "application/zip", "new content".toByteArray())
@@ -69,7 +71,7 @@ class LocalFileManagerTests {
         sut.saveFile(newMockFile, FileType.PJNZ)
         savedFiles = File("$tmpUploadDirectory/fake-id/pjnz").listFiles()
         assertThat(savedFiles?.count()).isEqualTo(1)
-        assertThat(savedFiles?.first()?.name).isEqualTo("new-file-name.pjnz")
+        assertThat(savedFiles?.first()?.readText()).isEqualTo("new content")
     }
 
     @Test

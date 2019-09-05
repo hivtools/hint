@@ -2,7 +2,11 @@ package org.imperial.mrc.hint.security
 
 import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
+import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.J2ESessionStore
+import org.pac4j.core.context.session.SessionStore
+import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.profile.ProfileManager
 import org.pac4j.http.client.indirect.FormClient
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.context.annotation.Bean
@@ -28,4 +32,17 @@ class Pac4jConfig {
             sessionStore = J2ESessionStore()
         }
     }
+
+    @Bean
+    fun getSessionId(pac4jConfig: Config, webContext: WebContext): SessionId {
+        return pac4jConfig.sessionStore.getOrCreateSessionId(webContext)
+    }
+
+    @Bean
+    fun getCurrentUser(webContext: WebContext): CommonProfile {
+        val manager = ProfileManager<CommonProfile>(webContext)
+        return manager.getAll(true).single()
+    }
 }
+
+typealias SessionId = String

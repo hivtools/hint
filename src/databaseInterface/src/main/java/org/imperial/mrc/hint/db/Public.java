@@ -11,6 +11,8 @@ import java.util.List;
 import javax.annotation.Generated;
 
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
+import org.imperial.mrc.hint.db.tables.SessionFiles;
+import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
 import org.jooq.Catalog;
 import org.jooq.Table;
@@ -30,7 +32,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -2022829577;
+    private static final long serialVersionUID = 5948063;
 
     /**
      * The reference instance of <code>public</code>
@@ -41,6 +43,16 @@ public class Public extends SchemaImpl {
      * The table <code>public.onetime_token</code>.
      */
     public final OnetimeToken ONETIME_TOKEN = org.imperial.mrc.hint.db.tables.OnetimeToken.ONETIME_TOKEN;
+
+    /**
+     * The table <code>public.session_files</code>.
+     */
+    public final SessionFiles SESSION_FILES = org.imperial.mrc.hint.db.tables.SessionFiles.SESSION_FILES;
+
+    /**
+     * The table <code>public.user_session</code>.
+     */
+    public final UserSession USER_SESSION = org.imperial.mrc.hint.db.tables.UserSession.USER_SESSION;
 
     /**
      * The table <code>public.users</code>.
@@ -73,6 +85,8 @@ public class Public extends SchemaImpl {
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
             OnetimeToken.ONETIME_TOKEN,
+            SessionFiles.SESSION_FILES,
+            UserSession.USER_SESSION,
             Users.USERS);
     }
 }

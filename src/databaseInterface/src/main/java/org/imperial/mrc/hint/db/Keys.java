@@ -7,9 +7,14 @@ package org.imperial.mrc.hint.db;
 import javax.annotation.Generated;
 
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
+import org.imperial.mrc.hint.db.tables.SessionFiles;
+import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
 import org.imperial.mrc.hint.db.tables.records.OnetimeTokenRecord;
+import org.imperial.mrc.hint.db.tables.records.SessionFilesRecord;
+import org.imperial.mrc.hint.db.tables.records.UserSessionRecord;
 import org.imperial.mrc.hint.db.tables.records.UsersRecord;
+import org.jooq.ForeignKey;
 import org.jooq.UniqueKey;
 import org.jooq.impl.Internal;
 
@@ -38,12 +43,15 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<OnetimeTokenRecord> ONETIME_TOKEN_PKEY = UniqueKeys0.ONETIME_TOKEN_PKEY;
+    public static final UniqueKey<UserSessionRecord> USER_SESSION_PKEY = UniqueKeys0.USER_SESSION_PKEY;
     public static final UniqueKey<UsersRecord> USERS_PKEY = UniqueKeys0.USERS_PKEY;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final ForeignKey<SessionFilesRecord, UserSessionRecord> SESSION_FILES__SESSION_FILES_SESSION_FKEY = ForeignKeys0.SESSION_FILES__SESSION_FILES_SESSION_FKEY;
+    public static final ForeignKey<UserSessionRecord, UsersRecord> USER_SESSION__USER_SESSION_USER_ID_FKEY = ForeignKeys0.USER_SESSION__USER_SESSION_USER_ID_FKEY;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -51,6 +59,12 @@ public class Keys {
 
     private static class UniqueKeys0 {
         public static final UniqueKey<OnetimeTokenRecord> ONETIME_TOKEN_PKEY = Internal.createUniqueKey(OnetimeToken.ONETIME_TOKEN, "onetime_token_pkey", OnetimeToken.ONETIME_TOKEN.TOKEN);
+        public static final UniqueKey<UserSessionRecord> USER_SESSION_PKEY = Internal.createUniqueKey(UserSession.USER_SESSION, "user_session_pkey", UserSession.USER_SESSION.SESSION);
         public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, "users_pkey", Users.USERS.ID);
+    }
+
+    private static class ForeignKeys0 {
+        public static final ForeignKey<SessionFilesRecord, UserSessionRecord> SESSION_FILES__SESSION_FILES_SESSION_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.USER_SESSION_PKEY, SessionFiles.SESSION_FILES, "session_files__session_files_session_fkey", SessionFiles.SESSION_FILES.SESSION);
+        public static final ForeignKey<UserSessionRecord, UsersRecord> USER_SESSION__USER_SESSION_USER_ID_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.USERS_PKEY, UserSession.USER_SESSION, "user_session__user_session_user_id_fkey", UserSession.USER_SESSION.USER_ID);
     }
 }
