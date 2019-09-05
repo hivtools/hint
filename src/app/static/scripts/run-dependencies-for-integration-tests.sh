@@ -16,5 +16,6 @@ docker run --rm -d \
   --network=$NETWORK \
   --name $HINT \
   -p 8080:8080 \
+  -v $HERE/../../../../src/app/uploads:/uploads \
   -v $TEST_CONFIG:/etc/hint/config.properties \
   $HINT_IMAGE
