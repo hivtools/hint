@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.integration
 
+import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
@@ -36,6 +37,11 @@ class BaselineTests : SecureIntegrationTests() {
         val postEntity = getTestEntity("malawi.geojson")
         val entity = testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
         assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
+
+        if (isAuthorized == IsAuthorized.TRUE) {
+            val data = getResponseData(entity)
+            assertThat(data["type"].asText()).isEqualTo("shape")
+        }
     }
 
 }

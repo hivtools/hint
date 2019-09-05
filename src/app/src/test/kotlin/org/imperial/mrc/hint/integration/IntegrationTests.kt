@@ -1,5 +1,7 @@
 package org.imperial.mrc.hint.integration
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.helpers.AuthInterceptor
 import org.imperial.mrc.hint.helpers.JSONValidator
@@ -93,5 +95,9 @@ abstract class SecureIntegrationTests : IntegrationTests() {
 
     private fun authorize() {
         testRestTemplate.restTemplate.interceptors.add(AuthInterceptor(testRestTemplate))
+    }
+
+    protected fun getResponseData(entity: ResponseEntity<String>): JsonNode {
+        return ObjectMapper().readTree(entity.body)["data"]
     }
 }
