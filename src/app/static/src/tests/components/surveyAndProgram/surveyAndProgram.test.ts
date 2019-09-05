@@ -1,4 +1,5 @@
 import {testUploadComponent} from "./fileUploads";
+import {mockBaselineState, mockSurveyAndProgramState} from "../../mocks";
 
 describe("Survey and program component", () => {
 

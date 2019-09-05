@@ -6,7 +6,6 @@ import {
     surveyAndProgram,
     SurveyAndProgramDataState
 } from "./store/surveyAndProgram/surveyAndProgram";
-import {PayloadWithType} from "./types";
 
 export interface RootState {
     version: string;

@@ -7,7 +7,15 @@ import {
     SurveyAndProgramDataState
 } from "../app/store/surveyAndProgram/surveyAndProgram";
 
-import {PjnzResponse, ShapeResponse, Response,ProgrammeResponse, SurveyResponse} from "../app/generated";
+import {
+    PjnzResponse,
+    ShapeResponse,
+    Response,
+    ProgrammeResponse,
+    SurveyResponse,
+    AgeFilters,
+    SurveyFilters, AncResponse
+} from "../app/generated";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -103,6 +111,31 @@ export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): Pro
         filename: "test.csv",
         data: [],
         filters: {"age": []},
+        ...props
+    }
+};
+
+export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse => {
+    return {
+        type: "anc",
+        filename: "test.csv",
+        data: [],
+        filters: {"age": []},
+        ...props
+    }
+};
+
+export const mockAgeFilters = (props: Partial<AgeFilters> = {}): AgeFilters => {
+    return {
+       age: [],
+        ...props
+    }
+};
+
+export const mockSurveyFilters = (props: Partial<SurveyFilters> = {}): SurveyFilters => {
+    return {
+        age: [],
+        survey: [],
         ...props
     }
 };

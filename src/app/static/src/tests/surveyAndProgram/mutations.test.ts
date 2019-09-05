@@ -8,6 +8,7 @@ import { mockSurveyResponse} from "../mocks";
 import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
+import {initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 
 describe("Survey and program mutations", () => {
 
@@ -68,10 +69,9 @@ describe("Survey and program mutations", () => {
         const testState = testStore.state as SurveyAndProgramDataState;
         const testRootState = {
             version: "",
-            selectedDataType: null,
+            filteredData: {...initialFilteredDataState},
             baseline: {...initialBaselineState},
             surveyAndProgram: testState,
-            getters: {}
         };
         const complete = testStore.getters!!.complete;
 
