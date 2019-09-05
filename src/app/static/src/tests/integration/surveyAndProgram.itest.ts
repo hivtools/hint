@@ -6,67 +6,47 @@ const FormData = require("form-data");
 
 describe("Survey and program actions", () => {
 
-    beforeEach(() => {
-        fs.writeFileSync("fakefile");
-    });
-
-    afterEach(() => {
-        fs.unlinkSync("fakefile")
-    });
-
     it("can upload survey", async () => {
 
         const commit = jest.fn();
 
-        const file = fs.createReadStream("fakefile");
+        const file = fs.createReadStream("../testdata/survey.csv");
         const formData = new FormData();
         formData.append('file', file);
 
         await actions.uploadSurvey({commit} as any, formData);
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "SurveyError",
-            payload: "File does not exist. Create it, or fix the path."
-        });
 
-        //expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.Survey);
-
+        expect(commit.mock.calls[0][0]["type"]).toBe("SurveyLoaded");
+        expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.Survey);
     });
 
     it("can upload program", async () => {
 
         const commit = jest.fn();
 
-        const file = fs.createReadStream("fakefile");
+        const file = fs.createReadStream("../testdata/programme.csv");
         const formData = new FormData();
         formData.append('file', file);
 
         await actions.uploadProgram({commit} as any, formData);
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ProgramError",
-            payload: "File does not exist. Create it, or fix the path."
-        });
-
-        //expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.Program);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ProgramLoaded");
+        expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.Program);
     });
 
     it("can upload anc", async () => {
 
         const commit = jest.fn();
 
-        const file = fs.createReadStream("fakefile");
+        const file = fs.createReadStream("../testdata/anc.csv");
         const formData = new FormData();
         formData.append('file', file);
 
         await actions.uploadANC({commit} as any, formData);
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ANCError",
-            payload: "File does not exist. Create it, or fix the path."
-        });
-
-        //expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.ANC);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ANCLoaded");
+        expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.ANC);
     });
 
     function expectSelectedDataTypeUpdate(params: any[], dataType: DataType){
