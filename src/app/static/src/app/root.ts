@@ -19,22 +19,6 @@ export interface StepGetters {
     complete: boolean
 }
 
-/*export const rootGetters = {
-    selectedDataFilterOptions: (state: RootState) => {
-        const sapState = state.surveyAndProgram;
-        switch(state.selectedDataType){
-            case (DataType.ANC):
-                return sapState.anc ? sapState.anc.filters : null;
-            case (DataType.Program):
-                return sapState.program ? sapState.program.filters : null;
-            case (DataType.Survey):
-                return sapState.survey ? sapState.survey.filters : null;
-            default:
-                return null;
-        }
-    }
-};*/
-
 export const storeOptions: StoreOptions<RootState> = {
     state: {
         version: '0.0.0',
