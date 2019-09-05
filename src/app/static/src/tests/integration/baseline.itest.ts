@@ -38,6 +38,6 @@ describe("Baseline actions", () => {
 
         await actions.uploadShape({commit} as any, formData);
         expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUploaded");
-    });
+    }, 10000);
 
 });
