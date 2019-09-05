@@ -3,7 +3,8 @@ import {mockPJNZResponse} from "../mocks";
 import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
 import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {Module} from "vuex";
-import {RootState} from "../../app/main";
+import {RootState} from "../../app/root";
+import {initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 
 describe("Baseline mutations", () => {
 
@@ -26,7 +27,7 @@ describe("Baseline mutations", () => {
         const testState = testStore.state as BaselineState;
         const testRootState = {
             version: "",
-            selectedDataType: null,
+            filteredData: {...initialFilteredDataState},
             baseline: testState,
             surveyAndProgram: {...initialSurveyAndProgramDataState}
         };

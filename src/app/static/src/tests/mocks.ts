@@ -99,7 +99,7 @@ export const mockSurveyResponse = (props: Partial<SurveyResponse> = {}): SurveyR
         data: [],
         filters: {
             "age": [],
-            "survey": []
+            "surveys": []
         },
         ...props
     }
@@ -135,7 +135,7 @@ export const mockAgeFilters = (props: Partial<AgeFilters> = {}): AgeFilters => {
 export const mockSurveyFilters = (props: Partial<SurveyFilters> = {}): SurveyFilters => {
     return {
         age: [],
-        survey: [],
+        surveys: [],
         ...props
     }
 };

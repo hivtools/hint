@@ -46,7 +46,7 @@ describe("FilteredData mutations", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = mockSurveyFilters({age: ["age1", "age2"], survey: ["s1", "s2"]});
+        const testFilters = mockSurveyFilters({age: ["age1", "age2"], surveys: ["s1", "s2"]});
         const testRootState = {
             version: "",
             selectedDataType: null,
@@ -60,7 +60,7 @@ describe("FilteredData mutations", () => {
 
         const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null) as SurveyFilters;
         expect(filters.age).toStrictEqual(["age1", "age2"]);
-        expect(filters.survey).toStrictEqual(["s1", "s2"]);
+        expect(filters.surveys).toStrictEqual(["s1", "s2"]);
 
     });
 
