@@ -9,11 +9,8 @@ import java.io.File
 
 const val tmpUploadDirectory = "tmp"
 
-fun createTestHttpEntity(fileName: String = "testfile.csv"): HttpEntity<LinkedMultiValueMap<String, Any>> {
-    val testFile = File("$tmpUploadDirectory/$fileName")
-    testFile.parentFile.mkdirs()
-    testFile.createNewFile()
-
+fun getTestEntity(fileName: String): HttpEntity<LinkedMultiValueMap<String, Any>> {
+    val testFile = File("testdata/$fileName")
     val body = LinkedMultiValueMap<String, Any>()
     body.add("file", FileSystemResource(testFile))
     val headers = HttpHeaders()

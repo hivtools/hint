@@ -5,37 +5,26 @@ const FormData = require("form-data");
 
 describe("Baseline actions", () => {
 
-    beforeEach(() => {
-        fs.writeFileSync("Malawi_1.pjnz");
-    });
-
-    afterEach(() => {
-        fs.unlinkSync("Malawi_1.pjnz")
-    });
-
     it("can upload PJNZ file", async () => {
         const commit = jest.fn();
 
-        const file = fs.createReadStream("Malawi_1.pjnz");
+        const file = fs.createReadStream("../testdata/Botswana2018.PJNZ");
         const formData = new FormData();
         formData.append('file', file);
 
         await actions.uploadPJNZ({commit} as any, formData);
-
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "PJNZUploaded",
-            payload: {data: {country: "Malawi"}, filename: "Malawi_1.pjnz", type: "pjnz"}
-        });
+        expect(commit.mock.calls[0][0]["type"]).toBe("PJNZUploaded");
     });
 
-    it("can get baseline data", async () => {
-
+    it("can get baseline data", async (done) => {
         const commit = jest.fn();
         await actions.getBaselineData({commit} as any);
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "PJNZLoaded",
-            payload: null
+        setTimeout(() => {
+            const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+            expect(calls).toContain("PJNZLoaded");
+            expect(calls).toContain("ShapeUploaded");
+            done();
         });
 
     });
@@ -43,16 +32,12 @@ describe("Baseline actions", () => {
     it("can upload shape file", async () => {
         const commit = jest.fn();
 
-        const file = fs.createReadStream("Malawi_1.pjnz");
+        const file = fs.createReadStream("../testdata/malawi.geojson");
         const formData = new FormData();
         formData.append('file', file);
 
         await actions.uploadShape({commit} as any, formData);
-
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ShapeUploadError",
-            payload: "File does not exist. Create it, or fix the path."
-        });
-    });
+        expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUploaded");
+    }, 10000);
 
 });

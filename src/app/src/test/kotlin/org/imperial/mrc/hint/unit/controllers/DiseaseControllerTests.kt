@@ -22,8 +22,8 @@ class DiseaseControllerTests: HintrControllerTests() {
 
     @Test
     fun `validates program file`() {
-        assertValidates(FileType.Program) {
-            sut ->  (sut as DiseaseController).uploadProgram(mockFile)
+        assertValidates(FileType.Programme) {
+            sut ->  (sut as DiseaseController).uploadProgramme(mockFile)
         }
     }
 
