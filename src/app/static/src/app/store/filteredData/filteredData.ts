@@ -1,22 +1,21 @@
 import { Module } from 'vuex';
 import { mutations } from './mutations';
 import { RootState} from "../../root";
-import {SurveyAndProgramDataState} from "../surveyAndProgram/surveyAndProgram";
 
 export enum DataType { ANC, Survey, Program }
 
-export interface SelectedDataState {
+export interface FilteredDataState {
     selectedDataType: DataType | null
 }
 
-export const initialSelectedDataState: SelectedDataState = {
+export const initialFilteredDataState: FilteredDataState = {
    selectedDataType: null
 };
 
 const namespaced: boolean = true;
 
-export const selectedData: Module<SelectedDataState, RootState> = {
+export const filteredData: Module<FilteredDataState, RootState> = {
     namespaced,
-    state: initialSelectedDataState,
+    state: initialFilteredDataState,
     mutations
 };

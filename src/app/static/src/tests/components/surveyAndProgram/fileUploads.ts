@@ -1,7 +1,7 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import SurveyAndProgram from "../../../app/components/surveyAndProgram/SurveyAndProgram.vue";
+import SurveyAndProgram from "../../../app/components/surveAndProgram/SurveyAndProgram.vue";
 import FileUpload from "../../../app/components/FileUpload.vue";
 import {SurveyAndProgramDataState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";

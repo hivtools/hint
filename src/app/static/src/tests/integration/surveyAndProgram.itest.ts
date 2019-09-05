@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
-import {DataType} from "../../app/main";
+import {DataType} from "../../app/store/filteredData/filteredData";
 
 const fs = require("fs");
 const FormData = require("form-data");
@@ -26,13 +26,11 @@ describe("Survey and program actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "SurveyError",
-            payload: "could not find function \"validate_func\""
+            payload: "cannot open the connection"
         });
 
-        expect(commit.mock.calls[0][1]).toStrictEqual({
-            type: "SelectedDataTypeUpated",
-            payload: DataType.Survey
-        });
+        expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.Survey);
+
     });
 
     it("can upload program", async () => {
@@ -50,10 +48,7 @@ describe("Survey and program actions", () => {
             payload: "could not find function \"validate_func\""
         });
 
-        expect(commit.mock.calls[0][1]).toStrictEqual({
-            type: "SelectedDataTypeUpated",
-            payload: DataType.Survey
-        });
+        expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.Program);
     });
 
     it("can upload anc", async () => {
@@ -71,10 +66,16 @@ describe("Survey and program actions", () => {
             payload: "cannot open the connection"
         });
 
-        expect(commit.mock.calls[0][1]).toStrictEqual({
-            type: "SelectedDataTypeUpated",
-            payload: DataType.Survey
-        });
+        expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.ANC);
     });
+
+    function expectSelectedDataTypeUpdate(params: any[], dataType: DataType){
+        expect(params[0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
+        expect(params[1]).toStrictEqual({
+            type: "SelectedDataTypeUpdated",
+            payload: dataType
+        });
+        expect(params[2]).toStrictEqual({root: true});
+    }
 
 });

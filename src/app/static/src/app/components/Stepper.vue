@@ -36,7 +36,7 @@
     import {mapGetters, mapState} from "vuex";
     import Step from "./Step.vue";
     import Baseline from "./baseline/Baseline.vue";
-    import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
+    import SurveyAndProgram from "./surveAndProgram/SurveyAndProgram.vue";
     import {RootState} from "../root";
 
     type CompleteStatus = {

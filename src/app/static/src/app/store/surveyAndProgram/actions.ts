@@ -1,6 +1,6 @@
-import {ActionContext, ActionTree} from 'vuex';
+import {ActionContext, ActionTree, Commit} from 'vuex';
 import {RootState} from "../../root";
-import {DataType} from "../selectedData/selectedData";
+import {DataType} from "../filteredData/filteredData";
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {ProgrammeResponse, SurveyResponse} from "../../generated";
@@ -14,6 +14,11 @@ export interface SurveyAndProgramActions {
     uploadANC: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void
 }
 
+function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
+    commit("filteredData/SelectedDataTypeUpdated",
+        {type: "SelectedDataTypeUpdated", payload: dataType}, {root: true})
+}
+
 export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
 
     async uploadSurvey({commit}, formData) {
@@ -22,7 +27,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             .withSuccess("SurveyLoaded")
             .postAndReturn<SurveyResponse>("/disease/survey/", formData)
             .then(() => {
-                commit("selectedData/SelectedDataUpdated", {type: "SelectedDataUpdated", payload: DataType.Survey}, {root: true})
+                commitSelectedDataTypeUpdated(commit, DataType.Survey);
             });
     },
 
@@ -32,7 +37,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             .withSuccess("ProgramLoaded")
             .postAndReturn<ProgrammeResponse>("/disease/program/", formData)
             .then(() => {
-                commit("selectedData/SelectedDataUpdated", {type: "SelectedDataUpdated", payload: DataType.Program}, {root: true})
+                commitSelectedDataTypeUpdated(commit, DataType.Program);
             });
     },
 
@@ -42,7 +47,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             .withSuccess("ANCLoaded")
             .postAndReturn<ProgrammeResponse>("/disease/anc/", formData)
             .then(() => {
-                commit("selectedData/SelectedDataUpdated", {type: "SelectedDataUpdated", payload: DataType.ANC}, {root: true})
+                commitSelectedDataTypeUpdated(commit, DataType.ANC);
             });
     }
 };

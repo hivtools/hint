@@ -1,6 +1,6 @@
 import {StoreOptions} from "vuex";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
-import {selectedData, initialSelectedDataState, SelectedDataState} from "./store/selectedData/selectedData";
+import {filteredData, initialFilteredDataState, FilteredDataState} from "./store/filteredData/filteredData";
 import {
     initialSurveyAndProgramDataState,
     surveyAndProgram,
@@ -12,7 +12,7 @@ export interface RootState {
     version: string;
     baseline: BaselineState,
     surveyAndProgram: SurveyAndProgramDataState,
-    selectedData: SelectedDataState
+    filteredData: FilteredDataState
 }
 
 export interface StepGetters {
@@ -35,21 +35,16 @@ export interface StepGetters {
     }
 };*/
 
-
-
-//const getters = rootGetters;
-//const mutations = rootMutations;
-
 export const storeOptions: StoreOptions<RootState> = {
     state: {
         version: '0.0.0',
         baseline: initialBaselineState,
         surveyAndProgram: initialSurveyAndProgramDataState,
-        selectedData: initialSelectedDataState
+        filteredData: initialFilteredDataState
     },
     modules: {
         baseline,
         surveyAndProgram,
-        selectedData
+        selectedData: filteredData
     }
 };
