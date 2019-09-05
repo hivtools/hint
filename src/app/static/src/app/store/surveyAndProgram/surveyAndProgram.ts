@@ -1,7 +1,7 @@
 import { Module } from 'vuex';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import {RootState} from "../../main";
+import {RootState} from "../../root";
 import {ProgrammeResponse, SurveyResponse, AncResponse} from "../../generated";
 
 export interface SurveyAndProgramDataState {
@@ -30,10 +30,12 @@ export const surveyAndProgramGetters = {
 
 const namespaced: boolean = true;
 
+const getters = surveyAndProgramGetters
+
 export const surveyAndProgram: Module<SurveyAndProgramDataState, RootState> = {
     namespaced,
     state: initialSurveyAndProgramDataState,
-    getters: surveyAndProgramGetters,
+    getters,
     actions,
     mutations
 };

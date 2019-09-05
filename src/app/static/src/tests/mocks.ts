@@ -88,6 +88,7 @@ export const mockSurveyResponse = (props: Partial<SurveyResponse> = {}): SurveyR
     return {
         type: "survey",
         filename: "test.csv",
+        data: [],
         filters: {
             "age": [],
             "survey": []

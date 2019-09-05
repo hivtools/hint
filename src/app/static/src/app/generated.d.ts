@@ -140,6 +140,12 @@ export interface SurveyFilters {
   age: string[];
   survey: string[];
 }
+export type SurveyResponseData = {
+  iso3: string;
+  area_id: string;
+  survey_id: string;
+  [k: string]: any;
+}[];
 export type URI = string;
 export interface ValidateInputRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
@@ -195,7 +201,13 @@ export interface PopulationResponse {
 export interface SurveyResponse {
   filename: string;
   type: "survey";
-  filters: {
+  data: {
+    iso3: string;
+    area_id: string;
+    survey_id: string;
+    [k: string]: any;
+  }[];
+  filters?: {
     age: string[];
     survey: string[];
   };

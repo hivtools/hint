@@ -1,4 +1,5 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
+import {DataType} from "../../app/main";
 
 const fs = require("fs");
 const FormData = require("form-data");
@@ -27,6 +28,11 @@ describe("Survey and program actions", () => {
             type: "SurveyError",
             payload: "could not find function \"validate_func\""
         });
+
+        expect(commit.mock.calls[0][1]).toStrictEqual({
+            type: "SelectedDataTypeUpated",
+            payload: DataType.Survey
+        });
     });
 
     it("can upload program", async () => {
@@ -43,6 +49,11 @@ describe("Survey and program actions", () => {
             type: "ProgramError",
             payload: "could not find function \"validate_func\""
         });
+
+        expect(commit.mock.calls[0][1]).toStrictEqual({
+            type: "SelectedDataTypeUpated",
+            payload: DataType.Survey
+        });
     });
 
     it("can upload anc", async () => {
@@ -58,6 +69,11 @@ describe("Survey and program actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ANCError",
             payload: "cannot open the connection"
+        });
+
+        expect(commit.mock.calls[0][1]).toStrictEqual({
+            type: "SelectedDataTypeUpated",
+            payload: DataType.Survey
         });
     });
 

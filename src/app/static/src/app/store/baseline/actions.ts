@@ -1,6 +1,6 @@
 import {ActionContext, ActionTree} from 'vuex';
 import {BaselineState} from "./baseline";
-import {RootState} from "../../main";
+import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {PjnzResponse} from "../../generated";
 
