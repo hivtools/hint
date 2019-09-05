@@ -1,4 +1,4 @@
-import {shallowMount} from '@vue/test-utils';
+import {shallowMount, Slots} from '@vue/test-utils';
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import Tick from "../../app/components/Tick.vue";
 import FileUpload from "../../app/components/FileUpload.vue";
@@ -6,7 +6,7 @@ import {mockFileList} from "../mocks";
 
 describe("File upload component", () => {
 
-    const createSut = (props?: any) => {
+    const createSut = (props?: any, slots?: Slots) => {
         return shallowMount(FileUpload, {
             propsData: {
                 error: "",
@@ -17,7 +17,8 @@ describe("File upload component", () => {
                 name: "pjnz",
                 accept: "csv",
                 ...props
-            }
+            },
+            slots: slots
         });
     };
 
@@ -78,6 +79,15 @@ describe("File upload component", () => {
     it("does not render error message if no error is present", () => {
         const wrapper = createSut();
         expect(wrapper.findAll(ErrorAlert).length).toBe(0);
+    });
+
+    it("renders slot before custom-file", () => {
+
+        const wrapper = createSut({}, {
+            default: '<div class="fake-slot"></div>'
+        });
+        const slot = wrapper.find(".fake-slot");
+        expect(slot.element!!.nextElementSibling!!.classList[0]).toBe("custom-file");
     });
 
     // TODO this is a massive pain - you can't programatically create a FileList

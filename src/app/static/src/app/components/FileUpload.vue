@@ -2,6 +2,7 @@
     <div class="form-group">
         <label class="font-weight-bold">{{label}}</label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
+        <slot></slot>
         <div class="custom-file">
             <input type="file"
                    class="custom-file-input"

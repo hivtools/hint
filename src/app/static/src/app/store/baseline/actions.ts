@@ -4,12 +4,13 @@ import {RootState} from "../../main";
 import {api} from "../../apiService";
 import {PjnzResponse} from "../../generated";
 
-export type BaselineActionTypes = "PJNZUploaded" | "PJNZLoaded"
-export type BaselineErrorActionTypes = "PJNZUploadError"
+export type BaselineActionTypes = "PJNZUploaded" | "PJNZLoaded" | "ShapeUploaded"
+export type BaselineErrorActionTypes = "PJNZUploadError" | "ShapeUploadError"
 
 export interface BaselineActions {
     uploadPJNZ: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void
     getBaselineData: (store: ActionContext<BaselineState, RootState>) => void
+    uploadShape: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void
 }
 
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
@@ -21,10 +22,22 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData);
     },
 
-    async getBaselineData({commit}) {
+    async uploadShape({commit}, formData) {
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+            .withSuccess("ShapeUploaded")
+            .withError("ShapeUploadError")
+            .postAndReturn<PjnzResponse>("/baseline/shape/", formData);
+    },
+
+    async getBaselineData({commit}) {
+        api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .ignoreErrors()
             .withSuccess("PJNZLoaded")
             .get<PjnzResponse>("/baseline/pjnz/");
+
+        return api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+            .ignoreErrors()
+            .withSuccess("ShapeUploaded")
+            .get<PjnzResponse>("/baseline/shape/");
     }
 };

@@ -6,22 +6,26 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-10 col-md-8">
+            <div class="col-sm-8 col-md-10">
                 <form>
                     <file-upload label="PJNZ"
                                  :valid="!!country"
-                                 :error="error"
-                                 :upload="upload"
+                                 :error="pjnzError"
+                                 :upload="uploadPJNZ"
                                  :existingFileName="pjnzFileName"
                                  accept="PJNZ,pjnz,.pjnz,.PJNZ"
                                  name="pjnz">
+                        <label v-if="country"><strong>Country</strong>: {{country}}</label>
+                    </file-upload>
+                    <file-upload label="Shape file"
+                                 :valid="validShape"
+                                 :error="shapeError"
+                                 :upload="uploadShape"
+                                 :existingFileName="shapeFileName"
+                                 accept="geojson,.geojson,GEOJSON,.GEOJSON"
+                                 name="shape">
                     </file-upload>
                 </form>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <span v-if="country"><strong>Country</strong>: {{country}}</span>
             </div>
         </div>
     </div>
@@ -41,11 +45,17 @@
         name: "Baseline",
         computed: mapState<BaselineState>(namespace, {
             country: state => state.country,
-            error: state => state.pjnzError,
-            pjnzFileName: state => state.pjnzFilename
+            pjnzError: state => state.pjnzError,
+            pjnzFileName: state => state.pjnzFilename,
+            validShape: state => state.shape != null,
+            shapeFileName: state => state.shape && state.shape.filename,
+            shapeError: state => state.shapeError
         }),
         methods: {
-            ...mapActions({upload: 'baseline/uploadPJNZ'})
+            ...mapActions({
+                uploadPJNZ: 'baseline/uploadPJNZ',
+                uploadShape: 'baseline/uploadShape'
+            })
         },
         components: {
             FileUpload
