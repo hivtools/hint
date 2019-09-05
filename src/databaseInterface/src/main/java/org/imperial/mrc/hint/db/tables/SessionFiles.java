@@ -9,15 +9,18 @@ import java.util.List;
 
 import javax.annotation.Generated;
 
+import org.imperial.mrc.hint.db.Indexes;
 import org.imperial.mrc.hint.db.Keys;
 import org.imperial.mrc.hint.db.Public;
 import org.imperial.mrc.hint.db.tables.records.SessionFilesRecord;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 
@@ -35,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SessionFiles extends TableImpl<SessionFilesRecord> {
 
-    private static final long serialVersionUID = 265532037;
+    private static final long serialVersionUID = -1040305653;
 
     /**
      * The reference instance of <code>public.session_files</code>
@@ -53,7 +56,7 @@ public class SessionFiles extends TableImpl<SessionFilesRecord> {
     /**
      * The column <code>public.session_files.session</code>.
      */
-    public final TableField<SessionFilesRecord, String> SESSION = createField("session", org.jooq.impl.SQLDataType.CLOB, this, "");
+    public final TableField<SessionFilesRecord, String> SESSION = createField("session", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>public.session_files.pjnz</code>.
@@ -115,6 +118,30 @@ public class SessionFiles extends TableImpl<SessionFilesRecord> {
     @Override
     public Schema getSchema() {
         return Public.PUBLIC;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.SESSION_FILES_PKEY);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UniqueKey<SessionFilesRecord> getPrimaryKey() {
+        return Keys.SESSION_FILES_PKEY;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UniqueKey<SessionFilesRecord>> getKeys() {
+        return Arrays.<UniqueKey<SessionFilesRecord>>asList(Keys.SESSION_FILES_PKEY);
     }
 
     /**
