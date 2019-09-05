@@ -20,8 +20,8 @@ class DiseaseController(fileManager: FileManager,
 
     @PostMapping("/program/")
     @ResponseBody
-    fun uploadProgram(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
-        return saveAndValidate(file, FileType.Program)
+    fun uploadProgramme(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
+        return saveAndValidate(file, FileType.Programme)
     }
 
     @PostMapping("/anc/")

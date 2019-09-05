@@ -12,7 +12,7 @@ enum class FileType {
     ANC,
     PJNZ,
     Population,
-    Program,
+    Programme,
     Shape,
     Survey;
 

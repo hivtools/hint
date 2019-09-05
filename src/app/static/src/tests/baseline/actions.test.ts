@@ -1,6 +1,5 @@
-import {mockAxios, mockFailure, mockShapeResponse, mockSuccess} from "../mocks";
+import {mockAxios, mockShapeResponse, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
-import {testUploadComponent} from "../components/surveyAndProgram/fileUploads";
 import {testUploadErrorCommitted} from "../actionTestHelpers";
 
 const FormData = require("form-data");
@@ -47,7 +46,7 @@ describe("Baseline actions", () => {
 
     testUploadErrorCommitted("/baseline/shape/", "ShapeUploadError", actions.uploadShape);
 
-    it("gets baseline data and commits it", async () => {
+    it("gets baseline data and commits it", (done) => {
 
         const mockShape = mockShapeResponse();
         mockAxios.onGet(`/baseline/pjnz/`)
@@ -57,20 +56,24 @@ describe("Baseline actions", () => {
             .reply(200, mockSuccess(mockShape));
 
         const commit = jest.fn();
-        await actions.getBaselineData({commit} as any);
+        actions.getBaselineData({commit} as any);
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "PJNZLoaded",
-            payload: {data: {country: "Malawi"}, filename: "test.pjnz"}
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: "PJNZLoaded",
+                payload: {data: {country: "Malawi"}, filename: "test.pjnz"}
+            });
+
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: "ShapeUploaded",
+                payload: mockShape
+            });
+            done();
         });
 
-        expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ShapeUploaded",
-            payload: mockShape
-        });
     });
 
-    it("fails silently if getting baseline data fails", async () => {
+    it("fails silently if getting baseline data fails", (done) => {
 
         mockAxios.onGet(`/baseline/pjnz/`)
             .reply(500);
@@ -79,9 +82,12 @@ describe("Baseline actions", () => {
             .reply(500);
 
         const commit = jest.fn();
-        await actions.getBaselineData({commit} as any);
+        actions.getBaselineData({commit} as any);
 
-        expect(commit).toBeCalledTimes(0);
+        setTimeout(() => {
+            expect(commit).toBeCalledTimes(0);
+            done();
+        });
     });
 
 });

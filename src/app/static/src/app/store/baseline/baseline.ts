@@ -25,9 +25,9 @@ export const initialBaselineState: BaselineState = {
 };
 
 export const baselineGetters = {
-    complete: (state: BaselineState) => {
-        return !!state.country
-    }
+  complete: (state: BaselineState) => {
+      return !!state.country && !!state.shape
+  }
 };
 
 const namespaced: boolean = true;

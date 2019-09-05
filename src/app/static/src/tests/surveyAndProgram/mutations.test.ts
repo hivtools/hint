@@ -1,11 +1,10 @@
 import {
     initialSurveyAndProgramDataState,
-    surveyAndProgram,
     SurveyAndProgramDataState, surveyAndProgramGetters
 } from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations} from "../../app/store/surveyAndProgram/mutations";
 import { mockSurveyResponse} from "../mocks";
-import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
+import {initialBaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
 import {RootState} from "../../app/main";
 
@@ -83,7 +82,6 @@ describe("Survey and program mutations", () => {
 
         mutations.ANCLoaded(testState, testPayload);
         expect(complete(testState, null, testRootState, null)).toBe(true);
-
     });
 
 });
