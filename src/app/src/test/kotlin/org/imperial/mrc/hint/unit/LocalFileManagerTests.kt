@@ -1,22 +1,16 @@
 package org.imperial.mrc.hint.unit
 
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.LocalFileManager
+import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import org.pac4j.core.config.Config
-import org.pac4j.core.context.WebContext
-import org.pac4j.core.context.session.SessionStore
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.util.StreamUtils
 import java.io.File
-import java.security.DigestInputStream
-import java.security.MessageDigest
 
 class LocalFileManagerTests {
 
@@ -26,12 +20,8 @@ class LocalFileManagerTests {
         on { uploadDirectory } doReturn tmpUploadDirectory
     }
 
-    private val mockSessionStore = mock<SessionStore<WebContext>> {
-        on { getOrCreateSessionId(any()) } doReturn "fake-id"
-    }
-
-    private val mockConfig = mock<Config> {
-        on { sessionStore } doReturn mockSessionStore
+    private val mockSessionId = mock<Session> {
+        on { getId() } doReturn "fake-id"
     }
 
     @AfterEach
@@ -42,7 +32,7 @@ class LocalFileManagerTests {
     @Test
     fun `can save file and return path`() {
 
-        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val sut = LocalFileManager(mockSessionId, mockProperties, mock())
 
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
@@ -55,7 +45,7 @@ class LocalFileManagerTests {
     @Test
     fun `empties directory if it already exists`() {
 
-        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val sut = LocalFileManager(mockSessionId, mockProperties, mock())
 
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
@@ -82,14 +72,14 @@ class LocalFileManagerTests {
         file.mkdirs()
         file.createNewFile()
 
-        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val sut = LocalFileManager(mockSessionId, mockProperties, mock())
         assertThat(sut.getFile(FileType.Survey)).isNotNull()
     }
 
     @Test
     fun `returns null if no file exists`() {
 
-        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val sut = LocalFileManager(mockSessionId, mockProperties, mock())
         assertThat(sut.getFile(FileType.Survey))
                 .isNull()
     }

@@ -43,6 +43,7 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<OnetimeTokenRecord> ONETIME_TOKEN_PKEY = UniqueKeys0.ONETIME_TOKEN_PKEY;
+    public static final UniqueKey<SessionFilesRecord> SESSION_FILES_PKEY = UniqueKeys0.SESSION_FILES_PKEY;
     public static final UniqueKey<UserSessionRecord> USER_SESSION_PKEY = UniqueKeys0.USER_SESSION_PKEY;
     public static final UniqueKey<UsersRecord> USERS_PKEY = UniqueKeys0.USERS_PKEY;
 
@@ -59,6 +60,7 @@ public class Keys {
 
     private static class UniqueKeys0 {
         public static final UniqueKey<OnetimeTokenRecord> ONETIME_TOKEN_PKEY = Internal.createUniqueKey(OnetimeToken.ONETIME_TOKEN, "onetime_token_pkey", OnetimeToken.ONETIME_TOKEN.TOKEN);
+        public static final UniqueKey<SessionFilesRecord> SESSION_FILES_PKEY = Internal.createUniqueKey(SessionFiles.SESSION_FILES, "session_files_pkey", SessionFiles.SESSION_FILES.SESSION);
         public static final UniqueKey<UserSessionRecord> USER_SESSION_PKEY = Internal.createUniqueKey(UserSession.USER_SESSION, "user_session_pkey", UserSession.USER_SESSION.SESSION);
         public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, "users_pkey", Users.USERS.ID);
     }

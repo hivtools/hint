@@ -1,8 +1,7 @@
 package org.imperial.mrc.hint
 
-import org.apache.tomcat.util.http.fileupload.FileUtils
-import org.pac4j.core.config.Config
-import org.pac4j.core.context.WebContext
+import org.imperial.mrc.hint.db.StateRepository
+import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Component
 import org.springframework.util.StreamUtils
 import org.springframework.web.multipart.MultipartFile
@@ -11,6 +10,7 @@ import java.io.IOException
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import javax.xml.bind.DatatypeConverter
+import java.util.UUID
 
 enum class FileType {
 
@@ -32,22 +32,13 @@ interface FileManager {
 
 @Component
 class LocalFileManager(
-        private val context: WebContext,
-        private val pac4jConfig: Config,
-        private val appProperties: AppProperties) : FileManager {
+        private val session: Session,
+        private val appProperties: AppProperties,
+        private val stateRepository: StateRepository) : FileManager {
 
     override fun saveFile(file: MultipartFile, type: FileType): String {
-        val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
-        val fileName = file.originalFilename!!
-        val path = "$id/$type/$fileName"
-        val localFile = File("${appProperties.uploadDirectory}/$path")
-
-        if (localFile.parentFile.exists()) {
-            FileUtils.cleanDirectory(localFile.parentFile)
-        } else {
-            FileUtils.forceMkdirParent(localFile)
-        }
-
+        val temp = UUID.randomUUID()
+        val localFile = File("${appProperties.uploadDirectory}/$temp")
         val md = MessageDigest.getInstance("MD5")
         localFile.outputStream().use { out ->
             file.inputStream.use {
@@ -57,22 +48,22 @@ class LocalFileManager(
             }
         }
 
-        val name = "$id/$type/${DatatypeConverter.printHexBinary(md.digest())}"
-        if (!localFile.renameTo(File("${appProperties.uploadDirectory}/$name"))) {
+        val hash = DatatypeConverter.printHexBinary(md.digest())
+        if (!localFile.renameTo(File("${appProperties.uploadDirectory}/$hash"))) {
             throw IOException("Failed to rename file")
         }
 
-        return name
+        stateRepository.saveHash(type, hash)
+        return hash
     }
 
     override fun getFile(type: FileType): File? {
-
-        val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
-
-        val files = File("${appProperties.uploadDirectory}/$id/$type")
-                .listFiles()
-
-        return files?.first()
+        val hash = stateRepository.getHash(type)
+        return if (hash != null) {
+            File("${appProperties.uploadDirectory}/$hash")
+        } else {
+            null
+        }
     }
 }
 

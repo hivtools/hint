@@ -13,6 +13,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
+import org.springframework.stereotype.Component
+import org.springframework.web.context.annotation.RequestScope
+import org.springframework.web.context.annotation.SessionScope
 import javax.sql.DataSource
 
 @Configuration
@@ -32,17 +35,15 @@ class Pac4jConfig {
             sessionStore = J2ESessionStore()
         }
     }
+}
 
-    @Bean
-    fun getSessionId(pac4jConfig: Config, webContext: WebContext): SessionId {
-        return pac4jConfig.sessionStore.getOrCreateSessionId(webContext)
-    }
+@Component
+class Session(private val webContext: WebContext, private val pac4jConfig: Config) {
 
-    @Bean
-    fun getCurrentUser(webContext: WebContext): CommonProfile {
+    fun getId() = pac4jConfig.sessionStore.getOrCreateSessionId(webContext)
+
+    fun getUserProfile(): CommonProfile {
         val manager = ProfileManager<CommonProfile>(webContext)
         return manager.getAll(true).single()
     }
 }
-
-typealias SessionId = String
