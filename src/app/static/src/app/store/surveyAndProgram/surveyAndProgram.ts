@@ -2,14 +2,14 @@ import { Module } from 'vuex';
 import { actions } from './actions';
 import { mutations } from './mutations';
 import {RootState} from "../../main";
-import {ProgramResponse, SurveyResponse, ANCResponse} from "../../types";
+import {ProgrammeResponse, SurveyResponse, AncResponse} from "../../generated";
 
 export interface SurveyAndProgramDataState {
     survey: SurveyResponse | null
     surveyError: string,
-    program: ProgramResponse | null
+    program: ProgrammeResponse | null
     programError: string
-    anc: ANCResponse | null
+    anc: AncResponse | null
     ancError: string
 }
 

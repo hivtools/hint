@@ -1,25 +1,9 @@
 import {Payload} from "vuex";
+import {ProgrammeResponse, SurveyResponse} from "./generated";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
 }
 
-export type InternalResponse = SurveyResponse | ProgramResponse
+export type InternalResponse = SurveyResponse | ProgrammeResponse
 
-export interface SurveyResponse {
-    filename: string;
-    type: "survey";
-    data: string;
-}
-
-export interface ProgramResponse {
-    filename: string;
-    type: "program";
-    data: string;
-}
-
-export interface ANCResponse {
-    filename: string;
-    type: "anc";
-    data: string;
-}

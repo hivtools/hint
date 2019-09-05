@@ -26,6 +26,7 @@ describe("Baseline mutations", () => {
         const testState = testStore.state as BaselineState;
         const testRootState = {
             version: "",
+            selectedDataType: null,
             baseline: testState,
             surveyAndProgram: {...initialSurveyAndProgramDataState}
         };

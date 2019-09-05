@@ -7,8 +7,7 @@ import {
     SurveyAndProgramDataState
 } from "../app/store/surveyAndProgram/surveyAndProgram";
 
-import {PjnzResponse, ShapeResponse, Response} from "../app/generated";
-import { ProgramResponse, SurveyResponse} from "../app/types";
+import {PjnzResponse, ShapeResponse, Response,ProgrammeResponse, SurveyResponse} from "../app/generated";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -80,24 +79,29 @@ export const mockShapeResponse = (props: Partial<ShapeResponse> = {}): ShapeResp
         },
         type: "shape",
         filename: "test.csv",
+        filters: [],
         ...props
     }
 };
 
 export const mockSurveyResponse = (props: Partial<SurveyResponse> = {}): SurveyResponse => {
     return {
-        data: "SOME DATA",
         type: "survey",
         filename: "test.csv",
+        filters: {
+            "age": [],
+            "survey": []
+        },
         ...props
     }
 };
 
-export const mockProgramResponse = (props: Partial<ProgramResponse> = {}): ProgramResponse => {
+export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): ProgrammeResponse => {
     return {
-        data: "SOME DATA",
-        type: "program",
+        type: "programme",
         filename: "test.csv",
+        data: [],
+        filters: {"age": []},
         ...props
     }
 };
