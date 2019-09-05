@@ -10,6 +10,6 @@ export interface SelectedDataMutations {
 
 export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations  = {
     SelectedDataTypeUpdated(state: FilteredDataState, action: PayloadWithType<DataType>) {
-        state.selectedDataType = action.payload
+        state.selectedDataType = action.payload;
     }
 };

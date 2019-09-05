@@ -26,8 +26,10 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             .withError("SurveyError")
             .withSuccess("SurveyLoaded")
             .postAndReturn<SurveyResponse>("/disease/survey/", formData)
-            .then(() => {
-                commitSelectedDataTypeUpdated(commit, DataType.Survey);
+            .then((response) => {
+                if (response) {
+                    commitSelectedDataTypeUpdated(commit, DataType.Survey);
+                }
             });
     },
 
@@ -36,8 +38,10 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             .withError("ProgramError")
             .withSuccess("ProgramLoaded")
             .postAndReturn<ProgrammeResponse>("/disease/program/", formData)
-            .then(() => {
-                commitSelectedDataTypeUpdated(commit, DataType.Program);
+            .then((response) => {
+                if (response) {
+                    commitSelectedDataTypeUpdated(commit, DataType.Program);
+                }
             });
     },
 
@@ -46,8 +50,10 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             .withError("ANCError")
             .withSuccess("ANCLoaded")
             .postAndReturn<ProgrammeResponse>("/disease/anc/", formData)
-            .then(() => {
-                commitSelectedDataTypeUpdated(commit, DataType.ANC);
+            .then((response) => {
+                if (response) {
+                    commitSelectedDataTypeUpdated(commit, DataType.ANC);
+                }
             });
     }
 };

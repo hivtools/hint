@@ -138,7 +138,7 @@ export interface GeoJSONObject {
 }
 export interface SurveyFilters {
   age: string[];
-  survey: string[];
+  surveys: string[];
 }
 export type SurveyResponseData = {
   iso3: string;
@@ -155,9 +155,9 @@ export type ValidateInputResponse =
   | PjnzResponse
   | ShapeResponse
   | PopulationResponse
-  | SurveyResponse
   | ProgrammeResponse
-  | AncResponse;
+  | AncResponse
+  | SurveyResponse;
 
 export interface PjnzResponse {
   filename: string;
@@ -198,20 +198,6 @@ export interface PopulationResponse {
   type: "population";
   data: null;
 }
-export interface SurveyResponse {
-  filename: string;
-  type: "survey";
-  data: {
-    iso3: string;
-    area_id: string;
-    survey_id: string;
-    [k: string]: any;
-  }[];
-  filters?: {
-    age: string[];
-    survey: string[];
-  };
-}
 export interface ProgrammeResponse {
   filename: string;
   type: "programme";
@@ -234,5 +220,19 @@ export interface AncResponse {
   }[];
   filters: {
     age: string[];
+  };
+}
+export interface SurveyResponse {
+  filename: string;
+  type: "survey";
+  data: {
+    iso3: string;
+    area_id: string;
+    survey_id: string;
+    [k: string]: any;
+  }[];
+  filters: {
+    age: string[];
+    surveys: string[];
   };
 }

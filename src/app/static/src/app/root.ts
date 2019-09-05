@@ -28,6 +28,6 @@ export const storeOptions: StoreOptions<RootState> = {
     modules: {
         baseline,
         surveyAndProgram,
-        selectedData: filteredData
+        filteredData
     }
 };
