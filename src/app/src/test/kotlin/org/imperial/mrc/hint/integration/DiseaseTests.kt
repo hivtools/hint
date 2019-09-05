@@ -13,7 +13,7 @@ class DiseaseTests: SecureIntegrationTests() {
     fun `can upload survey file`(isAuthorized: IsAuthorized) {
         val postEntity = getTestEntity("survey.csv")
         val entity = testRestTemplate.postForEntity<String>("/disease/survey/", postEntity)
-        assertSecureWithError(isAuthorized, entity, HttpStatus.BAD_REQUEST, "INVALID_FILE")
+        assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
     }
 
     @ParameterizedTest
@@ -21,7 +21,7 @@ class DiseaseTests: SecureIntegrationTests() {
     fun `can upload program file`(isAuthorized: IsAuthorized) {
         val postEntity = getTestEntity("programme.csv")
         val entity = testRestTemplate.postForEntity<String>("/disease/program/", postEntity)
-        assertSecureWithError(isAuthorized, entity, HttpStatus.BAD_REQUEST, "INVALID_FILE")
+        assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
     }
 
     @ParameterizedTest

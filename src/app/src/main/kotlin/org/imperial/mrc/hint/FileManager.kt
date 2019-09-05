@@ -10,7 +10,7 @@ import java.io.File
 enum class FileType {
 
     ANC,
-    Program,
+    Programme,
     PJNZ,
     Shape,
     Survey;
