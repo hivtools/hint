@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.http.ResponseEntity
 
 class BaselineTests : SecureIntegrationTests() {
 
@@ -20,6 +21,13 @@ class BaselineTests : SecureIntegrationTests() {
     @EnumSource(IsAuthorized::class)
     fun `can get shape data`(isAuthorized: IsAuthorized) {
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/shape/")
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can get population data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.getForEntity<String>("/baseline/population/")
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
     }
 
@@ -44,4 +52,16 @@ class BaselineTests : SecureIntegrationTests() {
         }
     }
 
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can upload population file`(isAuthorized: IsAuthorized) {
+        val postEntity = getTestEntity("population.csv")
+        val entity = testRestTemplate.postForEntity<String>("/baseline/population/", postEntity)
+        assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
+
+        if (isAuthorized == IsAuthorized.TRUE) {
+            val data = getResponseData(entity)
+            assertThat(data["type"].asText()).isEqualTo("population")
+        }
+    }
 }
