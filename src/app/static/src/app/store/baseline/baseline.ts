@@ -1,9 +1,8 @@
 import { Module } from 'vuex';
 import {actions} from './actions';
 import { mutations } from './mutations';
-import {RootState} from "../../main";
+import {RootState} from "../../root";
 import {ShapeResponse} from "../../generated";
-
 
 export interface BaselineState {
     pjnzError: string
@@ -27,12 +26,14 @@ export const baselineGetters = {
   }
 };
 
+const getters = baselineGetters
+
 const namespaced: boolean = true;
 
 export const baseline: Module<BaselineState, RootState> = {
     namespaced,
     state: initialBaselineState,
-    getters: baselineGetters,
+    getters,
     actions,
     mutations
 };

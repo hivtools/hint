@@ -1,6 +1,7 @@
 import {Mutation, MutationTree} from 'vuex';
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
-import {PayloadWithType, ProgramResponse, SurveyResponse, ANCResponse} from "../../types";
+import {PayloadWithType} from "../../types";
+import {ProgrammeResponse, SurveyResponse, AncResponse} from "../../generated";
 
 type SurveyAndProgramMutation = Mutation<SurveyAndProgramDataState>
 
@@ -22,7 +23,7 @@ export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgr
         state.surveyError = action.payload;
     },
 
-    ProgramLoaded(state: SurveyAndProgramDataState, action: PayloadWithType<ProgramResponse>) {
+    ProgramLoaded(state: SurveyAndProgramDataState, action: PayloadWithType<ProgrammeResponse>) {
         state.program = action.payload;
     },
 
@@ -30,7 +31,7 @@ export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgr
         state.programError = action.payload;
     },
 
-    ANCLoaded(state: SurveyAndProgramDataState, action: PayloadWithType<ANCResponse>) {
+    ANCLoaded(state: SurveyAndProgramDataState, action: PayloadWithType<AncResponse>) {
         state.anc = action.payload;
     },
 

@@ -22,7 +22,8 @@ describe("Reset password component", () => {
         return new Vuex.Store({
             state: mockPasswordState(passwordState),
             actions: {...actions},
-            mutations: {}
+            mutations: {},
+            getters: {}
         });
     };
 

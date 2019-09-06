@@ -6,13 +6,20 @@ import {mutations} from "../../app/store/surveyAndProgram/mutations";
 import { mockSurveyResponse} from "../mocks";
 import {initialBaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
-import {RootState} from "../../app/main";
+import {RootState} from "../../app/root";
+import {initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 
 describe("Survey and program mutations", () => {
 
+    const testData = [{
+        iso3: "MWI",
+        area_id: "MWI.1",
+        survey_id: "MWI1"
+    }];
+
     const testPayload = {
         payload: mockSurveyResponse({
-            data: "SOME DATA",
+            data: testData,
             filename: "somefile.csv"
         })
     };
@@ -20,7 +27,7 @@ describe("Survey and program mutations", () => {
     it("sets survey data and filename on SurveyLoaded", () => {
         const testState = {...initialSurveyAndProgramDataState};
         mutations.SurveyLoaded(testState, testPayload);
-        expect(testState.survey!!.data).toBe("SOME DATA");
+        expect(testState.survey!!.data).toStrictEqual(testData);
         expect(testState.survey!!.filename).toBe("somefile.csv");
         expect(testState.surveyError).toBe("");
     });
@@ -34,7 +41,7 @@ describe("Survey and program mutations", () => {
     it("sets program data and filename on ProgramLoaded", () => {
         const testState = {...initialSurveyAndProgramDataState};
         mutations.ProgramLoaded(testState, testPayload);
-        expect(testState.program!!.data).toBe("SOME DATA");
+        expect(testState.program!!.data).toStrictEqual(testData);
         expect(testState.program!!.filename).toBe("somefile.csv");
         expect(testState.programError).toBe("");
     });
@@ -48,7 +55,7 @@ describe("Survey and program mutations", () => {
     it("sets anc data and filename on ANCLoaded", () => {
         const testState = {...initialSurveyAndProgramDataState};
         mutations.ANCLoaded(testState, testPayload);
-        expect(testState.anc!!.data).toBe("SOME DATA");
+        expect(testState.anc!!.data).toStrictEqual(testData);
         expect(testState.anc!!.filename).toBe("somefile.csv");
         expect(testState.ancError).toBe("");
     });
@@ -67,8 +74,9 @@ describe("Survey and program mutations", () => {
         const testState = testStore.state as SurveyAndProgramDataState;
         const testRootState = {
             version: "",
+            filteredData: {...initialFilteredDataState},
             baseline: {...initialBaselineState},
-            surveyAndProgram: testState
+            surveyAndProgram: testState,
         };
         const complete = testStore.getters!!.complete;
 
