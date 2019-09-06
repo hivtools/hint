@@ -1,4 +1,5 @@
 import { Module } from 'vuex';
+import { actions } from './actions';
 import { mutations } from './mutations';
 import { getters } from './getters';
 import { RootState} from "../../root";
@@ -46,6 +47,7 @@ const namespaced: boolean = true;
 export const filteredData: Module<FilteredDataState, RootState> = {
     namespaced,
     state: initialFilteredDataState,
+    actions,
     mutations,
     getters
 };

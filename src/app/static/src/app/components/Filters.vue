@@ -4,20 +4,29 @@
             <treeselect id="sex-filters" v-if="hasSelectedDataType" :multiple="true" :options="sexFilterOptions"
                         v-on:select="sexFilterSelected" v-on:deselect="sexFilterDeselected"></treeselect>
         </div>
+        <div>
+            <div>Testing...</div>
+            <div v-for="filter in sexFilterData">{{filter}}</div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
-    import {DataType, FilteredDataState} from "../store/filteredData/filteredData";
+    import {DataType, FilterType, FilteredDataState} from "../store/filteredData/filteredData";
     import Treeselect from '@riophae/vue-treeselect';
 
     const namespace: string = 'filteredData';
 
-    const treeselectOptions = (stringOptions: string[]) => {
+    const treeselectOptions = (stringOptions: string[]) : treeselectOption[] => {
         return stringOptions.map(x => { return {"id": x, "label": x}  });
     };
+
+    interface treeselectOption {
+        id: string,
+        label: string
+    }
 
     export default Vue.extend ({
         name: "Filters",
@@ -30,16 +39,21 @@
                                             state.selectedDataType == DataType.ANC ?
                                             ["female"] :
                                             ["female", "male", "both"]
-            )
+            ),
+            sexFilterData: state => state.selectedFilters.sex
         }),
         methods: {
-            sexFilterSelected(value: object){
-                //TODO: raise filterAdded action
+            ...mapActions({
+                filterAdded: 'filteredData/filterAdded',
+                filterRemoved: 'filteredData/filterRemoved'
+            }),
+            sexFilterSelected(value: treeselectOption){
                 const option: string  = value.id;
+                this.filterAdded([FilterType.Sex, option]);
             },
-            sexFilterDeselected(value: object){
-                //TODO: raise filterRemoved action
+            sexFilterDeselected(value: treeselectOption){
                 const option: string  = value.id;
+                this.filterRemoved([FilterType.Sex, option]);
             }
         },
         components: { Treeselect }

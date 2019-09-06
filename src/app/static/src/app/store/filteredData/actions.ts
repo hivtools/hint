@@ -2,21 +2,18 @@ import {ActionContext, ActionTree} from 'vuex';
 import {FilteredDataState} from "./filteredData";
 import {RootState} from "../../root";
 import {FilterType} from "./filteredData";
-import {}
-
-export type FilteredDataActionTypes = "FilterAdded" | "FilterRemoved";
 
 export interface FilteredDataActions {
-    filterAdded: (store: ActionContext<FilteredDataState, RootState>, filterType: FilterType, filter: String) => void
-    filterRemoved: (store: ActionContext<FilteredDataState, RootState>, filterType: FilterType, filter: String) => void
+    filterAdded: (store: ActionContext<FilteredDataState, RootState>, payload: [FilterType, String]) => void
+    filterRemoved: (store: ActionContext<FilteredDataState, RootState>, payload: [FilterType, String]) => void
 }
 
 export const actions: ActionTree<FilteredDataState, RootState> & FilteredDataActions = {
 
-    filterAdded({commit}, filterType, filter) {
-        commit({type: "FilterAdded", payload: [filterType, filter]});
+    filterAdded(store: ActionContext<FilteredDataState, RootState>, payload: [FilterType, String]) {
+        store.commit({type: "FilterAdded", payload: payload});
     },
-    filterRemoved({commit}, filterType, filter) {
-        commit({type: "FilterAdded", payload: [filterType, filter]});
+    filterRemoved(store: ActionContext<FilteredDataState, RootState>, payload: [FilterType, String]) {
+        store.commit({type: "FilterRemoved", payload: payload});
     }
 };
