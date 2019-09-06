@@ -24,17 +24,8 @@ describe("Baseline actions", () => {
             const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
             expect(calls).toContain("PJNZLoaded");
             expect(calls).toContain("ShapeUploaded");
+            expect(calls).toContain("PopulationUploaded");
             done();
-        });
-
-        expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ShapeUploaded",
-            payload: null
-        });
-
-        expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "PopulationUploaded",
-            payload: null
         });
     });
 

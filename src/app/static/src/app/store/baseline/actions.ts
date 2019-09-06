@@ -43,14 +43,14 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .withSuccess("PJNZLoaded")
             .get<PjnzResponse>("/baseline/pjnz/");
 
+        api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+            .ignoreErrors()
+            .withSuccess("PopulationUploaded")
+            .get<PjnzResponse>("/baseline/population/");
+
         return api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .ignoreErrors()
             .withSuccess("ShapeUploaded")
             .get<PjnzResponse>("/baseline/shape/");
-
-        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .ignoreErrors()
-            .withSuccess("PopulationUploaded")
-            .get<PjnzResponse>("/baseline/population/");
     }
 };
