@@ -1,5 +1,5 @@
 import {mutations} from "../../app/store/baseline/mutations";
-import {mockPJNZResponse, mockShapeResponse} from "../mocks";
+import {mockPJNZResponse, mockPopulationResponse, mockShapeResponse} from "../mocks";
 import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
 import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {Module} from "vuex";
@@ -86,6 +86,23 @@ describe("Baseline mutations", () => {
         const testState = {...initialBaselineState};
         mutations.ShapeUploadError(testState, {payload: "Some error"});
         expect(testState.shapeError).toBe("Some error");
+    });
+
+    it("sets response on PopulationLoaded", () => {
+
+        const mockPop = mockPopulationResponse();
+        const testState = {...initialBaselineState};
+        mutations.PopulationUploaded(testState, {
+            payload: mockPop
+        });
+        expect(testState.population).toBe(mockPop);
+    });
+
+    it("sets error on PopulationUploadError", () => {
+
+        const testState = {...initialBaselineState};
+        mutations.PopulationUploadError(testState, {payload: "Some error"});
+        expect(testState.populationError).toBe("Some error");
     });
 
 });
