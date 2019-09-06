@@ -7,7 +7,7 @@ describe("Map legend component", () => {
         propsData: {
             max: 2,
             min: 1,
-            getColor: (i: number) => "fake-color-" + i
+            getColor: (i: number) => `rgb(0,0,${i})`
         }
     });
 
@@ -27,12 +27,12 @@ describe("Map legend component", () => {
     });
 
     it("renders icons with colors", () => {
-        const icons = wrapper.findAll(".hidden");
-        // theres a bug with vue-test-utils that means
-        // we can't access the v-bind:style property
-        // to check this properly
-        expect(icons.at(0).text()).toContain("fake-color-1");
-        expect(icons.at(5).text()).toContain("fake-color-2");
+        const icons = wrapper.findAll("i");
+        expect(icons.at(0).element.style
+            .getPropertyValue("background")).toBe("rgb(0, 0, 1)");
+        expect(icons.at(5).element.style
+            .getPropertyValue("background")).toBe("rgb(0, 0, 2)");
+
     });
 
 });

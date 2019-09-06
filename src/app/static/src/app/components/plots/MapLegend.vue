@@ -16,7 +16,11 @@
 
     export default Vue.extend({
         name: "MapLegend",
-        props: ["getColor", "max", "min"],
+        props: {
+            "getColor": Function,
+            "max": Number,
+            "min": Number
+        },
         components: {
             LControl
         },
