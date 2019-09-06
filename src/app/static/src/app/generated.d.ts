@@ -4,6 +4,9 @@
   * Instead, modify the hintr JSON schema files
   * and run ./generate-types.sh to regenerate this file.
 */
+export interface AgeFilters {
+  age: string[];
+}
 export type AncResponseData = {
   iso3: string;
   area_id: string;
@@ -94,6 +97,12 @@ export interface Complete {
     };
   };
 }
+export interface NestedFilterOption {
+  name: string;
+  options?: {
+    [k: string]: any;
+  }[];
+}
 export interface PjnzResponseData {
   country: string;
 }
@@ -127,12 +136,28 @@ export interface GeoJSONObject {
   }[];
   [k: string]: any;
 }
+export interface SurveyFilters {
+  age: string[];
+  surveys: string[];
+}
+export type SurveyResponseData = {
+  iso3: string;
+  area_id: string;
+  survey_id: string;
+  [k: string]: any;
+}[];
 export type URI = string;
 export interface ValidateInputRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
   path: string | null;
 }
-export type ValidateInputResponse = PjnzResponse | ShapeResponse | PopulationResponse | ProgrammeResponse | AncResponse;
+export type ValidateInputResponse =
+  | PjnzResponse
+  | ShapeResponse
+  | PopulationResponse
+  | ProgrammeResponse
+  | AncResponse
+  | SurveyResponse;
 
 export interface PjnzResponse {
   filename: string;
@@ -145,6 +170,12 @@ export interface ShapeResponse {
   filename: string;
   type: "shape";
   data: GeoJSONObject;
+  filters: {
+    name: string;
+    options?: {
+      [k: string]: any;
+    }[];
+  }[];
 }
 /**
  * TODO: Validate against a URL e.g. https://geojson.org/schema/FeatureCollection.json
@@ -175,6 +206,9 @@ export interface ProgrammeResponse {
     area_id: string;
     [k: string]: any;
   }[];
+  filters: {
+    age: string[];
+  };
 }
 export interface AncResponse {
   filename: string;
@@ -184,4 +218,21 @@ export interface AncResponse {
     area_id: string;
     [k: string]: any;
   }[];
+  filters: {
+    age: string[];
+  };
+}
+export interface SurveyResponse {
+  filename: string;
+  type: "survey";
+  data: {
+    iso3: string;
+    area_id: string;
+    survey_id: string;
+    [k: string]: any;
+  }[];
+  filters: {
+    age: string[];
+    surveys: string[];
+  };
 }

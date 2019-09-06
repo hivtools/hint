@@ -7,8 +7,16 @@ import {
     SurveyAndProgramDataState
 } from "../app/store/surveyAndProgram/surveyAndProgram";
 
-import {PjnzResponse, ShapeResponse, Response, PopulationResponse} from "../app/generated";
-import { ProgramResponse, SurveyResponse} from "../app/types";
+import {
+    PjnzResponse,
+    ShapeResponse,
+    Response,
+    ProgrammeResponse,
+    SurveyResponse,
+    AgeFilters,
+    SurveyFilters, AncResponse, PopulationResponse
+} from "../app/generated";
+
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -80,24 +88,55 @@ export const mockShapeResponse = (props: Partial<ShapeResponse> = {}): ShapeResp
         },
         type: "shape",
         filename: "test.csv",
+        filters: [],
         ...props
     }
 };
 
 export const mockSurveyResponse = (props: Partial<SurveyResponse> = {}): SurveyResponse => {
     return {
-        data: "SOME DATA",
         type: "survey",
         filename: "test.csv",
+        data: [],
+        filters: {
+            "age": [],
+            "surveys": []
+        },
         ...props
     }
 };
 
-export const mockProgramResponse = (props: Partial<ProgramResponse> = {}): ProgramResponse => {
+export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): ProgrammeResponse => {
     return {
-        data: "SOME DATA",
-        type: "program",
+        type: "programme",
         filename: "test.csv",
+        data: [],
+        filters: {"age": []},
+        ...props
+    }
+};
+
+export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse => {
+    return {
+        type: "anc",
+        filename: "test.csv",
+        data: [],
+        filters: {"age": []},
+        ...props
+    }
+};
+
+export const mockAgeFilters = (props: Partial<AgeFilters> = {}): AgeFilters => {
+    return {
+       age: [],
+        ...props
+    }
+};
+
+export const mockSurveyFilters = (props: Partial<SurveyFilters> = {}): SurveyFilters => {
+    return {
+        age: [],
+        surveys: [],
         ...props
     }
 };

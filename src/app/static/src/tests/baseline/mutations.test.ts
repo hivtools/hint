@@ -3,7 +3,8 @@ import {mockPJNZResponse, mockPopulationResponse, mockShapeResponse} from "../mo
 import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
 import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {Module} from "vuex";
-import {RootState} from "../../app/main";
+import {RootState} from "../../app/root";
+import {initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 
 describe("Baseline mutations", () => {
 
@@ -18,7 +19,7 @@ describe("Baseline mutations", () => {
         expect(testState.pjnzError).toBe("");
     });
 
-    it("state becomes complete once pjnz and shape files are uploaded", () => {
+    it("state becomes complete once all files are uploaded", () => {
         const testStore: Module<BaselineState, RootState> = {
             state: {...initialBaselineState},
             getters: baselineGetters
@@ -26,6 +27,7 @@ describe("Baseline mutations", () => {
         const testState = testStore.state as BaselineState;
         const testRootState = {
             version: "",
+            filteredData: {...initialFilteredDataState},
             baseline: testState,
             surveyAndProgram: {...initialSurveyAndProgramDataState}
         };
@@ -43,7 +45,15 @@ describe("Baseline mutations", () => {
                 mockShapeResponse(), type: "ShapeUploaded"
         });
 
+        expect(complete(testState, null, testRootState, null)).toBe(false);
+
+        mutations.PopulationUploaded(testState, {
+            payload:
+                mockPopulationResponse(), type: "PopulationUploaded"
+        });
+
         expect(complete(testState, null, testRootState, null)).toBe(true);
+
     });
 
     it("sets error on PJNZUploadError", () => {

@@ -1,7 +1,7 @@
 import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
-import {RootState} from "../../main";
+import {RootState} from "../../root";
 import {PopulationResponse, ShapeResponse} from "../../generated";
 
 export interface BaselineState {
@@ -26,16 +26,18 @@ export const initialBaselineState: BaselineState = {
 
 export const baselineGetters = {
   complete: (state: BaselineState) => {
-      return !!state.country && !!state.shape
+      return !!state.country && !!state.shape && !!state.population
   }
 };
+
+const getters = baselineGetters;
 
 const namespaced: boolean = true;
 
 export const baseline: Module<BaselineState, RootState> = {
     namespaced,
     state: initialBaselineState,
-    getters: baselineGetters,
+    getters,
     actions,
     mutations
 };

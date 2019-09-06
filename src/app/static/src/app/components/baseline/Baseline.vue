@@ -46,12 +46,7 @@
 
     import {BaselineState} from "../../store/baseline/baseline";
     import FileUpload from "../FileUpload.vue";
-
-    interface PartialFileUploadProps {
-        valid: Boolean,
-        error: string,
-        existingFileName: string,
-    }
+    import {PartialFileUploadProps} from "../../types";
 
     const namespace: string = 'baseline';
 

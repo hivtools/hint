@@ -12,6 +12,8 @@ mockAxios.onGet(`/baseline/`)
     .reply(200, mockSuccess({pjnz: null}));
 
 import {app} from "../../app"
+import {baselineGetters} from "../../app/store/baseline/baseline";
+import {surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
 
 describe("App", () => {
 
@@ -26,11 +28,17 @@ describe("App", () => {
                 namespaced: true,
                 state: mockBaselineState(),
                 actions: {...actions},
-                mutations: {...mutations}
+                mutations: {...mutations},
+                getters: {...baselineGetters}
             },
             surveyAndProgram: {
                 namespaced: true,
-                state: mockSurveyAndProgramState()
+                state: mockSurveyAndProgramState(),
+                getters: {...surveyAndProgramGetters}
+            },
+            selectedData: {
+                namespaced: true,
+                state: {state: null},
             }
         }
     });
