@@ -1,12 +1,11 @@
 <template>
     <div>
-        <div>
-            <treeselect id="sex-filters" v-if="hasSelectedDataType" :multiple="true" :options="sexFilterOptions"
-                        v-on:select="sexFilterSelected" v-on:deselect="sexFilterDeselected"></treeselect>
-        </div>
-        <div>
-            <div>Testing...</div>
-            <div v-for="filter in sexFilterData">{{filter}}</div>
+        <div v-if="hasSelectedDataType" >
+            <treeselect id="sex-filters" :multiple="true"
+                        :options="sexFilters.available"
+                        :value="sexFilters.selected"
+                        v-on:select="sexFilterSelected"
+                        v-on:deselect="sexFilterDeselected"></treeselect>
         </div>
     </div>
 </template>
@@ -28,6 +27,11 @@
         label: string
     }
 
+    interface filterOptions {
+        available: treeselectOption[],
+        selected: string[]
+    }
+
     export default Vue.extend ({
         name: "Filters",
         computed: mapState<FilteredDataState>(namespace, {
@@ -35,12 +39,12 @@
             selectedDataType: state => state.selectedDataType,
             hasSelectedDataType: state => state.selectedDataType != null,
 
-            sexFilterOptions: state => treeselectOptions(
-                                            state.selectedDataType == DataType.ANC ?
-                                            ["female"] :
-                                            ["female", "male", "both"]
-            ),
-            sexFilterData: state => state.selectedFilters.sex
+            sexFilters: (state) => ({
+                available: treeselectOptions(state.selectedDataType == DataType.ANC ?
+                    ["female"] :
+                    ["female", "male", "both"]),
+                 selected: state.selectedFilters.sex
+            } as filterOptions)
         }),
         methods: {
             ...mapActions({
@@ -48,12 +52,10 @@
                 filterRemoved: 'filteredData/filterRemoved'
             }),
             sexFilterSelected(value: treeselectOption){
-                const option: string  = value.id;
-                this.filterAdded([FilterType.Sex, option]);
+                this.filterAdded([FilterType.Sex, value.id]);
             },
             sexFilterDeselected(value: treeselectOption){
-                const option: string  = value.id;
-                this.filterRemoved([FilterType.Sex, option]);
+                this.filterRemoved([FilterType.Sex, value.id]);
             }
         },
         components: { Treeselect }
