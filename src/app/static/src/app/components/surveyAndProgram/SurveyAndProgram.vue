@@ -32,6 +32,7 @@
                                  accept="csv,.csv"
                                  name="anc">
                     </file-upload>
+                    <filters></filters>
                 </form>
             </div>
         </div>
@@ -44,6 +45,7 @@
     import {mapActions, mapState} from "vuex";
     import {SurveyAndProgramDataState} from "../../store/surveyAndProgram/surveyAndProgram";
     import FileUpload from "../FileUpload.vue";
+    import Filters from "../Filters.vue";
 
     const namespace: string = 'surveyAndProgram';
 
@@ -70,7 +72,8 @@
             })
         },
         components: {
-            FileUpload
+            FileUpload,
+            Filters
         }
     })
 </script>
