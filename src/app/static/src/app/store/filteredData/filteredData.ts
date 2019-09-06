@@ -20,26 +20,28 @@ export interface FilteredDataState {
     selectedFilters: SelectedFilters
 }
 
+export const initialSelectedFilters: SelectedFilters = {
+    sex: [],
+    age: [],
+    region: [],
+    survey: [],
+    byType: function(type: FilterType): string[] {
+        switch (type) {
+            case (FilterType.Age):
+                return this.age;
+            case (FilterType.Region):
+                return this.region;
+            case (FilterType.Sex):
+                return this.sex;
+            case (FilterType.Survey):
+                return this.survey;
+        }
+    }
+};
+
 export const initialFilteredDataState: FilteredDataState = {
    selectedDataType: null,
-   selectedFilters: {
-       sex: [],
-       age: [],
-       region: [],
-       survey: [],
-       byType: function(type: FilterType): string[] {
-           switch (type) {
-               case (FilterType.Age):
-                   return this.age;
-               case (FilterType.Region):
-                   return this.region;
-               case (FilterType.Sex):
-                   return this.sex;
-               case (FilterType.Survey):
-                   return this.survey;
-           }
-       }
-   }
+   selectedFilters: initialSelectedFilters
 };
 
 const namespaced: boolean = true;
