@@ -2,22 +2,27 @@ import { Module } from 'vuex';
 import {actions} from './actions';
 import { mutations } from './mutations';
 import {RootState} from "../../root";
+import {ShapeResponse} from "../../generated";
 
 export interface BaselineState {
     pjnzError: string
     country: string
     pjnzFilename: string
+    shape: ShapeResponse | null
+    shapeError: string
 }
 
 export const initialBaselineState: BaselineState = {
     country: "",
     pjnzError: "",
-    pjnzFilename: ""
+    pjnzFilename: "",
+    shape: null,
+    shapeError: ""
 };
 
 export const baselineGetters = {
   complete: (state: BaselineState) => {
-      return !!state.country
+      return !!state.country && !!state.shape
   }
 };
 
