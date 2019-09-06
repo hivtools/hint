@@ -14,7 +14,7 @@
     import Vue from "vue";
     import {mapState} from "vuex";
     import {interpolateCool, interpolateWarm} from "d3-scale-chromatic"
-    import {LControl, LGeoJson, LMap} from 'vue2-leaflet';
+    import {LGeoJson, LMap} from 'vue2-leaflet';
     import axios from "axios"
     import {Feature} from "geojson";
     import MapControl from "./MapControl.vue";
@@ -39,7 +39,6 @@
         components: {
             LMap,
             LGeoJson,
-            LControl,
             MapLegend,
             MapControl
         },
@@ -72,7 +71,7 @@
                 indicator: "prev",
                 detail: 4,
                 max: 0.25,
-                min: 0.003
+                min: 0.03
             }
         },
         created() {
@@ -81,21 +80,20 @@
             // required indicators, already filtered/aggregated
             axios.get('public/testdata/indicators.json')
                 .then(response => {
-                    this.indicatorData = response.data
+                    this.indicatorData = response.data;
+                    this.features.forEach((feature: Feature) => {
+                        const areas = feature.properties!!["area_id"].split(".");
+                        const adminLevel = areas.length;
+                        this.featuresByLevel[adminLevel].push(feature);
+                    });
                 });
-
-            this.features.forEach((feature: Feature) => {
-                const areas = feature.properties!!["area_id"].split(".");
-                const adminLevel = areas.length;
-                this.featuresByLevel[adminLevel].push(feature);
-            });
         },
         methods: {
             onIndicatorChange: function (newVal: string) {
                 if (newVal) {
                     if (newVal == "prev") {
-                        this.min = 0.03;
-                        this.max = 0.25;
+                        this.min = 0.03; // TODO just hard-coding these because I know the min/max of the data!
+                        this.max = 0.25; // should do something cleverer/get this back from the API
                     }
                     if (newVal == "art") {
                         this.min = 0.13;
