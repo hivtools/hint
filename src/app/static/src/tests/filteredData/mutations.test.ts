@@ -1,34 +1,34 @@
 import {mutations} from "../../app/store/filteredData/mutations";
 import {DataType, FilterType, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 
-
-function testFilterAddedAndRemoved(filterType: FilterType) {
-    const testState = {...initialFilteredDataState};
-    mutations.FilterAdded(testState, {
-        payload: [filterType, "value" ]
-    });
-    expect(testState.selectedFilters.byType(filterType)).toStrictEqual(["value"]);
-
-    //Adding again should have no effect
-    mutations.FilterAdded(testState, {
-        payload: [filterType, "value" ]
-    });
-    expect(testState.selectedFilters.byType(filterType)).toStrictEqual(["value"]);
-
-    //Removing non existing filter should have no effect
-    mutations.FilterRemoved(testState, {
-        payload: [filterType, "nonexistent" ]
-    });
-    expect(testState.selectedFilters.byType(filterType)).toStrictEqual(["value"]);
-
-    //Can remove
-    mutations.FilterRemoved(testState, {
-        payload: [filterType, "value" ]
-    });
-    expect(testState.selectedFilters.byType(filterType)).toStrictEqual([]);
-}
-
 describe("FilteredData mutations", () => {
+
+
+    const testFilterAddedAndRemoved = (filterType: FilterType) => {
+        const testState = {...initialFilteredDataState};
+        mutations.FilterAdded(testState, {
+            payload: [filterType, "value" ]
+        });
+        expect(testState.selectedFilters.byType(filterType)).toStrictEqual(["value"]);
+
+        //Adding again should have no effect
+        mutations.FilterAdded(testState, {
+            payload: [filterType, "value" ]
+        });
+        expect(testState.selectedFilters.byType(filterType)).toStrictEqual(["value"]);
+
+        //Removing non existing filter should have no effect
+        mutations.FilterRemoved(testState, {
+            payload: [filterType, "nonexistent" ]
+        });
+        expect(testState.selectedFilters.byType(filterType)).toStrictEqual(["value"]);
+
+        //Can remove
+        mutations.FilterRemoved(testState, {
+            payload: [filterType, "value" ]
+        });
+        expect(testState.selectedFilters.byType(filterType)).toStrictEqual([]);
+    };
 
     it("sets selectedDataType on SelectedDataTypeUpdated", () => {
 

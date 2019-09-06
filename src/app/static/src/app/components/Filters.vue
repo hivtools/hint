@@ -1,12 +1,10 @@
 <template>
-    <div>
-        <div v-if="hasSelectedDataType" >
-            <treeselect id="sex-filters" :multiple="true"
-                        :options="sexFilters.available"
-                        :value="sexFilters.selected"
-                        v-on:select="sexFilterSelected"
-                        v-on:deselect="sexFilterDeselected"></treeselect>
-        </div>
+    <div v-if="hasSelectedDataType" >
+        <treeselect id="sex-filters" :multiple="true"
+                    :options="sexFilters.available"
+                    :value="sexFilters.selected"
+                    v-on:select="sexFilterSelected"
+                    v-on:deselect="sexFilterDeselected"></treeselect>
     </div>
 </template>
 
@@ -18,17 +16,17 @@
 
     const namespace: string = 'filteredData';
 
-    const treeselectOptions = (stringOptions: string[]) : treeselectOption[] => {
+    const treeselectOptions = (stringOptions: string[]) : TreeselectOption[] => {
         return stringOptions.map(x => { return {"id": x, "label": x}  });
     };
 
-    interface treeselectOption {
+    interface TreeselectOption {
         id: string,
         label: string
     }
 
-    interface filterOptions {
-        available: treeselectOption[],
+    export interface FilterOptions {
+        available: TreeselectOption[],
         selected: string[]
     }
 
@@ -36,7 +34,6 @@
         name: "Filters",
         computed: mapState<FilteredDataState>(namespace, {
 
-            selectedDataType: state => state.selectedDataType,
             hasSelectedDataType: state => state.selectedDataType != null,
 
             sexFilters: (state) => ({
@@ -44,17 +41,17 @@
                     ["female"] :
                     ["female", "male", "both"]),
                  selected: state.selectedFilters.sex
-            } as filterOptions)
+            } as FilterOptions)
         }),
         methods: {
             ...mapActions({
                 filterAdded: 'filteredData/filterAdded',
                 filterRemoved: 'filteredData/filterRemoved'
             }),
-            sexFilterSelected(value: treeselectOption){
+            sexFilterSelected(value: TreeselectOption){
                 this.filterAdded([FilterType.Sex, value.id]);
             },
-            sexFilterDeselected(value: treeselectOption){
+            sexFilterDeselected(value: TreeselectOption){
                 this.filterRemoved([FilterType.Sex, value.id]);
             }
         },
