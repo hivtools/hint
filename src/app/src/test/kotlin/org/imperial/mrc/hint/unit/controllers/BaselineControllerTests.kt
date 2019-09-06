@@ -1,20 +1,23 @@
 package org.imperial.mrc.hint.unit.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.BaselineController
+import org.imperial.mrc.hint.controllers.HintrController
 import org.junit.jupiter.api.Test
-import org.mockito.internal.verification.Times
-import org.springframework.http.HttpStatus
 import java.io.File
 
 class BaselineControllerTests : HintrControllerTests() {
+
+    override fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient): HintrController {
+        return BaselineController(mockFileManager, mockAPIClient)
+    }
 
     @Test
     fun `can save pjnz file`() {
@@ -60,42 +63,29 @@ class BaselineControllerTests : HintrControllerTests() {
 
     @Test
     fun `validates shape file`() {
-
-        val mockFileManager = getMockFileManager(FileType.Shape)
-        val mockApiClient = getMockAPIClient(FileType.Shape)
-        val sut = BaselineController(mockFileManager, mockApiClient)
-
-        val result = sut.uploadShape(mockFile)
-        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-        verify(mockFileManager).saveFile(mockFile, FileType.Shape)
-        verify(mockApiClient).validate("test-path", FileType.Shape)
+        assertValidates(FileType.Shape) {
+            sut ->  (sut as BaselineController).uploadShape(mockFile)
+        }
     }
 
     @Test
-    fun `getShape returns validation result for shape file if exists`() {
-
-        val mockFileManager = getMockFileManager(FileType.Shape)
-        val mockApiClient = getMockAPIClient(FileType.Shape)
-        val sut = BaselineController(mockFileManager, mockApiClient)
-
-        val result = sut.getShape()
-        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-
-        assertThat(result.body).isEqualTo("whatever")
-        verify(mockApiClient).validate("test-path", FileType.Shape)
+    fun `validates population file`() {
+        assertValidates(FileType.Population) {
+            sut ->  (sut as BaselineController).uploadPopulation(mockFile)
+        }
     }
 
     @Test
-    fun `getShape returns null for shape file if it doesn't exist`() {
+    fun `getShape gets the validation result if the file exists`() {
+        assertGetsIfExists(FileType.Shape) {
+            sut ->  (sut as BaselineController).getShape()
+        }
+    }
 
-        val mockApiClient = getMockAPIClient(FileType.Shape)
-        val sut = BaselineController(mock(), mockApiClient)
-
-        val result = sut.getShape()
-        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-
-        val data = ObjectMapper().readTree(result.body)["data"].toString()
-        assertThat(data).isEqualTo("null")
-        verify(mockApiClient, Times(0)).validate(any(), any())
+    @Test
+    fun `getPopulation gets the validation result if the file exists`() {
+        assertGetsIfExists(FileType.Population) {
+            sut ->  (sut as BaselineController).getPopulation()
+        }
     }
 }

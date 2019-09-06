@@ -1,13 +1,23 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
-import {InternalResponse} from "./types";
-import {Response, InitialiseModelRunResponse, ModelRunResultResponse, ValidateInputResponse} from "./generated";
+import {
+    Response,
+    InitialiseModelRunResponse,
+    ModelRunResultResponse,
+    ValidateInputResponse,
+    SurveyResponse, AncResponse, ProgrammeResponse, PopulationResponse, ShapeResponse, PjnzResponse
+} from "./generated";
 import {Commit} from "vuex";
 
 type ResponseData =
     ValidateInputResponse
     | ModelRunResultResponse
     | InitialiseModelRunResponse
-    | InternalResponse
+    | AncResponse
+    | PjnzResponse
+    | PopulationResponse
+    | ProgrammeResponse
+    | ShapeResponse
+    | SurveyResponse
     | Boolean
 
 declare var appUrl: string;
