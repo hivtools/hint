@@ -4,6 +4,8 @@ export interface PayloadWithType<T> extends Payload {
     payload: T
 }
 
+export type Indicator = "prev" | "art"
+
 export type InternalResponse = SurveyResponse | ProgramResponse
 
 export interface SurveyResponse {

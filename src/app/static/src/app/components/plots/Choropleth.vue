@@ -5,18 +5,22 @@
                         :optionsStyle="{...style, fillColor: getColorForRegion(feature.properties['area_id'])}">
             </l-geo-json>
         </template>
-        <map-control></map-control>
+        <map-control @indicator-changed="onIndicatorChange"
+                     @detail-changed="onDetailChange"></map-control>
         <map-legend :getColor="getColor" :max="max" :min="min"></map-legend>
     </l-map>
 </template>
 <script lang="ts">
     import Vue from "vue";
+    import {mapState} from "vuex";
     import {interpolateCool, interpolateWarm} from "d3-scale-chromatic"
     import {LControl, LGeoJson, LMap} from 'vue2-leaflet';
     import axios from "axios"
     import {Feature} from "geojson";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
+    import {Indicator} from "../../types";
+    import {BaselineState} from "../../store/baseline/baseline";
 
     interface Data {
         zoom: number,
@@ -24,6 +28,8 @@
         featuresByLevel: { [k: number]: any },
         style: any,
         indicatorData: { [k: string]: any },
+        indicator: Indicator;
+        detail: number;
         max: number;
         min: number;
     }
@@ -37,22 +43,10 @@
             MapLegend,
             MapControl
         },
-        data(): Data {
-            return {
-                zoom: 7,
-                center: [-13.2543, 34.3015],
-                featuresByLevel: {1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
-                style: {
-                    weight: 1,
-                    fillOpacity: 1.0,
-                    color: 'grey'
-                },
-                indicatorData: {},
-                max: 0.25,
-                min: 0.003
-            }
-        },
         computed: {
+            ...mapState<BaselineState>("baseline", {
+                features: state => state.shape && state.shape.data.features
+            }),
             currentFeatures: function () {
                 return this.featuresByLevel[this.detail || 1]
             },
@@ -64,44 +58,59 @@
                 }
             }
         },
-        created() {
-            axios.get('https://raw.githubusercontent.com/mrc-ide/hintr/master/tests/testthat/testdata/malawi.geojson')
-                .then((response) => {
-                    response.data.features.forEach((feature: Feature) => {
-                        const areas = feature.properties!!["area_id"].split(".");
-                        const adminLevel = areas.length;
-                        if (!this.featuresByLevel[adminLevel]) {
-                            this.featuresByLevel[adminLevel] = [feature];
-                        } else this.featuresByLevel[adminLevel].push(feature);
-                    });
-                });
-
-            axios.get('public/testdata/prev.json')
-                .then(response => {
-                    this.indicatorData = response.data
-                })
-        },
-        watch: {
-            indicator: function (val) {
-                if (val) {
-                    axios.get(`public/testdata/${val}.json`)
-                        .then(response => {
-                            this.indicatorData = response.data;
-                            if (val == "prev") {
-                                this.min = 0.03;
-                                this.max = 0.25;
-                            }
-                            if (val == "art") {
-                                this.min = 2000;
-                                this.max = 70000;
-                            }
-                        });
-                }
+        data(): Data {
+            return {
+                zoom: 7, // TODO: will this always be appropriate?
+                center: [-13.2543, 34.3015], // TODO: this is hardcoded to Malawi! where will this come from?
+                featuresByLevel: {1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
+                style: {
+                    weight: 1,
+                    fillOpacity: 1.0,
+                    color: 'grey'
+                },
+                indicatorData: {},
+                indicator: "prev",
+                detail: 4,
+                max: 0.25,
+                min: 0.003
             }
         },
+        created() {
+            // TODO this data should come from the store
+            // and be a dictionary of all region ids to
+            // required indicators, already filtered/aggregated
+            axios.get('public/testdata/indicators.json')
+                .then(response => {
+                    this.indicatorData = response.data
+                });
+
+            this.features.forEach((feature: Feature) => {
+                const areas = feature.properties!!["area_id"].split(".");
+                const adminLevel = areas.length;
+                this.featuresByLevel[adminLevel].push(feature);
+            });
+        },
         methods: {
+            onIndicatorChange: function (newVal: string) {
+                if (newVal) {
+                    if (newVal == "prev") {
+                        this.min = 0.03;
+                        this.max = 0.25;
+                    }
+                    if (newVal == "art") {
+                        this.min = 0.13;
+                        this.max = 0.35;
+                    }
+                }
+                this.indicator = newVal
+            },
+            onDetailChange: function (newVal: number) {
+                this.detail = newVal
+            },
             getColorForRegion: function (region: string) {
-                const data = parseFloat(this.indicatorData[region]) / (this.max - this.min);
+                let data = this.indicatorData[region];
+                data = data && data[this.indicator];
+                data = data && parseFloat(data) / (this.max - this.min);
                 return this.getColor(data);
             }
         }

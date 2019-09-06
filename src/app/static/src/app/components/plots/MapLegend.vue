@@ -23,9 +23,9 @@
             levels: function () {
                 const step = (this.max - this.min) / 5;
                 return [0, 1, 2, 3, 4, 5].map((i) => {
-                    const val = this.min + (i * step);
+                    const val = Math.round(this.min + (i * step) * 100)/100;
                     return {
-                        val, style: {background: this.getColor(val / (this.max - this.min))}
+                        val, style: {background: this.getColor(val/(this.max - this.min))}
                     }
                 });
             }
