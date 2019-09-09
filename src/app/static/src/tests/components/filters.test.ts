@@ -77,26 +77,16 @@ describe("Step component", () => {
         ]);
     });
 
-    it ("invokes store action when sex filter is selected", () => {
+    it ("invokes store action when sex filter is edited", () => {
+        testInvokesStoreActionsWhenEditFilterValues(FilterType.Sex);
+    });
+
+    it ("invokes store actions when age filter is edited", () => {
+        testInvokesStoreActionsWhenEditFilterValues(FilterType.Age);
+    });
+
+    const testInvokesStoreActionsWhenEditFilterValues = (filterType: FilterType) => {
         const mockFilterAdded = jest.fn();
-        const store = new Vuex.Store({
-            modules: {
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState(),
-                    actions: {
-                        filterAdded: mockFilterAdded
-                    }
-                }
-            }
-        });
-        const wrapper = shallowMount(Filters, {localVue, store});
-        (wrapper as any).vm.sexFilterSelected({id: "both", label: "both"});
-
-        expect(mockFilterAdded.mock.calls[0][1]).toStrictEqual([FilterType.Sex, "both"]);
-    });
-
-    it ("invokes store action when sex filter is deselected", () => {
         const mockFilterRemoved = jest.fn();
         const store = new Vuex.Store({
             modules: {
@@ -104,72 +94,42 @@ describe("Step component", () => {
                     namespaced: true,
                     state: mockFilteredDataState(),
                     actions: {
+                        filterAdded: mockFilterAdded,
                         filterRemoved: mockFilterRemoved
                     }
                 }
             }
         });
         const wrapper = shallowMount(Filters, {localVue, store});
-        (wrapper as any).vm.sexFilterDeselected({id: "both", label: "both"});
 
-        expect(mockFilterRemoved.mock.calls[0][1]).toStrictEqual([FilterType.Sex, "both"]);
-    });
+        const treeselectOption = {id: "value", label: "value"};
 
-    it ("invokes store action when age filter is selected", () => {
-        const mockFilterAdded = jest.fn();
-        const store = new Vuex.Store({
-            modules: {
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState(),
-                    actions: {
-                        filterAdded: mockFilterAdded
-                    }
-                }
-            }
-        });
-        const wrapper = shallowMount(Filters, {localVue, store});
-        (wrapper as any).vm.ageFilterSelected({id: "0-5", label: "0-5"});
+        //Test select
+        const vm = (wrapper as any).vm;
+        switch(filterType) {
+            case(FilterType.Sex):
+                vm.sexFilterSelected(treeselectOption);
+                break;
+            case(FilterType.Age):
+                vm.ageFilterSelected(treeselectOption);
+                break;
+            default:
+                throw "Filter type not supported in test"
+        }
 
-        expect(mockFilterAdded.mock.calls[0][1]).toStrictEqual([FilterType.Age, "0-5"]);
-    });
+        expect(mockFilterAdded.mock.calls[0][1]).toStrictEqual([filterType, "value"]);
 
-    it ("invokes store action when sex filter is deselected", () => {
-        const mockFilterRemoved = jest.fn();
-        const store = new Vuex.Store({
-            modules: {
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState(),
-                    actions: {
-                        filterRemoved: mockFilterRemoved
-                    }
-                }
-            }
-        });
-        const wrapper = shallowMount(Filters, {localVue, store});
-        (wrapper as any).vm.sexFilterDeselected({id: "both", label: "both"});
+        //Test deselect
+        switch(filterType) {
+            case(FilterType.Sex):
+                vm.sexFilterDeselected(treeselectOption);
+                break;
+            case(FilterType.Age):
+                vm.ageFilterDeselected(treeselectOption);
+                break;
+        }
 
-        expect(mockFilterRemoved.mock.calls[0][1]).toStrictEqual([FilterType.Sex, "both"]);
-    });
-
-    it ("invokes store action when age filter is deselected", () => {
-        const mockFilterRemoved = jest.fn();
-        const store = new Vuex.Store({
-            modules: {
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState(),
-                    actions: {
-                        filterRemoved: mockFilterRemoved
-                    }
-                }
-            }
-        });
-        const wrapper = shallowMount(Filters, {localVue, store});
-        (wrapper as any).vm.ageFilterDeselected({id: "0-5", label: "0-5"});
-
-        expect(mockFilterRemoved.mock.calls[0][1]).toStrictEqual([FilterType.Age, "0-5"]);
-    });
+        expect(mockFilterRemoved.mock.calls[0][1]).toStrictEqual([filterType, "value"]);
+    }
 
 });
