@@ -9,26 +9,26 @@
             <div class="col-sm-6 col-md-4">
                 <form>
                     <file-upload label="Survey"
-                                 :valid="hasSurvey"
-                                 :error="surveyError"
+                                 :valid="survey.valid"
+                                 :error="survey.error"
                                  :upload="uploadSurvey"
-                                 :existingFileName="surveyFileName"
+                                 :existingFileName="survey.existingFileName"
                                  accept="csv,.csv"
                                  name="survey">
                     </file-upload>
                     <file-upload label="Program"
-                                 :valid="hasProgram"
-                                 :error="programError"
+                                 :valid="programme.valid"
+                                 :error="programme.error"
                                  :upload="uploadProgram"
-                                 :existingFileName="programFileName"
+                                 :existingFileName="programme.existingFileName"
                                  accept="csv,.csv"
                                  name="program">
                     </file-upload>
                     <file-upload label="ANC"
-                                 :valid="hasANC"
-                                 :error="ancError"
+                                 :valid="anc.valid"
+                                 :error="anc.error"
                                  :upload="uploadANC"
-                                 :existingFileName="ancFileName"
+                                 :existingFileName="anc.existingFileName"
                                  accept="csv,.csv"
                                  name="anc">
                     </file-upload>
@@ -48,23 +48,28 @@
     import {SurveyAndProgramDataState} from "../../store/surveyAndProgram/surveyAndProgram";
     import FileUpload from "../FileUpload.vue";
     import Filters from "../Filters.vue";
+    import {PartialFileUploadProps} from "../../types";
 
     const namespace: string = 'surveyAndProgram';
 
     export default Vue.extend({
         name: "SurveyAndProgram",
         computed: mapState<SurveyAndProgramDataState>(namespace, {
-            hasSurvey: state => state.survey != null,
-            surveyError: state => state.surveyError,
-            surveyFileName: state => state.survey && state.survey.filename,
-
-            hasProgram: state => state.program != null,
-            programError: state => state.programError,
-            programFileName: state => state.program && state.program.filename,
-
-            hasANC: state => state.anc != null,
-            ancError: state => state.ancError,
-            ancFileName: state => state.anc && state.anc.filename
+            anc: state => ({
+                valid: !!state.anc,
+                error: state.ancError,
+                existingFileName: state.anc && state.anc.filename
+            } as PartialFileUploadProps),
+            programme: state => ({
+                valid: state.program != null,
+                error: state.programError,
+                existingFileName: state.program && state.program.filename
+            } as PartialFileUploadProps),
+            survey: state => ({
+                valid: state.survey != null,
+                error: state.surveyError,
+                existingFileName: state.survey && state.survey.filename
+            } as PartialFileUploadProps),
         }),
         methods: {
             ...mapActions({
