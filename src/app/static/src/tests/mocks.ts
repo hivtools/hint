@@ -14,8 +14,9 @@ import {
     ProgrammeResponse,
     SurveyResponse,
     AgeFilters,
-    SurveyFilters, AncResponse
+    SurveyFilters, AncResponse, PopulationResponse
 } from "../app/generated";
+
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -136,6 +137,15 @@ export const mockSurveyFilters = (props: Partial<SurveyFilters> = {}): SurveyFil
     return {
         age: [],
         surveys: [],
+        ...props
+    }
+};
+
+export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}): PopulationResponse => {
+    return {
+        data: null,
+        type: "population",
+        filename: "test.csv",
         ...props
     }
 };
