@@ -1,11 +1,25 @@
 <template>
-    <div v-if="hasSelectedDataType" >
-        <label :for="sex-filters">Sex</label>
-        <treeselect id="sex-filters" :multiple="true"
-                    :options="sexFilters.available"
-                    :value="sexFilters.selected"
-                    v-on:select="sexFilterSelected"
-                    v-on:deselect="sexFilterDeselected"></treeselect>
+    <div v-if="hasSelectedDataType">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                    <label>Sex</label>
+                    <treeselect id="sex-filters" :multiple="true"
+                                :options="sexFilters.available"
+                                :value="sexFilters.selected"
+                                v-on:select="sexFilterSelected"
+                                v-on:deselect="sexFilterDeselected"></treeselect>
+                </div>
+                <div class="col">
+                    <label>Age</label>
+                    <treeselect id="age-filters" :multiple="true"
+                                :options="ageFilters.available"
+                                :value="ageFilters.selected"
+                                v-on:select="ageFilterSelected"
+                                v-on:deselect="ageFilterDeselected"></treeselect>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -18,7 +32,7 @@
     const namespace: string = 'filteredData';
 
     const treeselectOptions = (stringOptions: string[]) : TreeselectOption[] => {
-        return stringOptions.map(x => { return {"id": x, "label": x}  });
+        return (stringOptions ? stringOptions : []).map(x => { return {"id": x, "label": x}  });
     };
 
     interface TreeselectOption {
@@ -36,13 +50,23 @@
         computed: mapState<FilteredDataState>(namespace, {
 
             hasSelectedDataType: state => state.selectedDataType != null,
+            selectedDataFilterOptions: function() {
+                return this.$store.getters['filteredData/selectedDataFilterOptions']
+            },
 
             sexFilters: (state) => ({
                 available: treeselectOptions(state.selectedDataType == DataType.ANC ?
                     ["female"] :
                     ["female", "male", "both"]),
                 selected: state.selectedFilters.sex
-            } as FilterOptions)
+            } as FilterOptions),
+
+            ageFilters: function(state) {
+                return {
+                    available: treeselectOptions(this.selectedDataFilterOptions.age as string[]),
+                    selected: state.selectedFilters.age
+                } as FilterOptions;
+            }
         }),
         methods: {
             ...mapActions({
@@ -54,6 +78,12 @@
             },
             sexFilterDeselected(value: TreeselectOption){
                 this.filterRemoved([FilterType.Sex, value.id]);
+            },
+            ageFilterSelected(value: TreeselectOption){
+                this.filterAdded([FilterType.Age, value.id]);
+            },
+            ageFilterDeselected(value: TreeselectOption){
+                this.filterRemoved([FilterType.Age, value.id]);
             }
         },
         components: { Treeselect }
