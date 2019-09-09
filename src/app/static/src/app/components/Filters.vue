@@ -1,5 +1,6 @@
 <template>
     <div v-if="hasSelectedDataType" >
+        <label :for="sex-filters">Sex</label>
         <treeselect id="sex-filters" :multiple="true"
                     :options="sexFilters.available"
                     :value="sexFilters.selected"
@@ -40,7 +41,7 @@
                 available: treeselectOptions(state.selectedDataType == DataType.ANC ?
                     ["female"] :
                     ["female", "male", "both"]),
-                 selected: state.selectedFilters.sex
+                selected: state.selectedFilters.sex
             } as FilterOptions)
         }),
         methods: {

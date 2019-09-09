@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-10 col-md-8">
+            <div class="col-sm-6 col-md-4">
                 <form>
                     <file-upload label="Survey"
                                  :valid="hasSurvey"
@@ -32,8 +32,10 @@
                                  accept="csv,.csv"
                                  name="anc">
                     </file-upload>
-                    <filters></filters>
                 </form>
+            </div>
+            <div class="col-sm-6 col-md-8">
+                <filters></filters>
             </div>
         </div>
     </div>
