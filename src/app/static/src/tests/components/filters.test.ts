@@ -9,7 +9,7 @@ import {FilteredDataActions} from "../../app/store/filteredData/actions";
 const localVue = createLocalVue();
 Vue.use(Vuex);
 
-describe("Step component", () => {
+describe("Filters component", () => {
 
     const getWrapper = (state?: Partial<FilteredDataState>) => {
 
@@ -62,41 +62,23 @@ describe("Step component", () => {
             ]);
     });
 
-    it ("invokes store action when sex filter is selected", () => {
-        const mockFilterAdded = jest.fn();
+    it ("invokes store action when sex filter is updated", () => {
+        const mockFilterUpdated = jest.fn();
         const store = new Vuex.Store({
             modules: {
                 filteredData: {
                     namespaced: true,
                     state: mockFilteredDataState(),
                     actions: {
-                        filterAdded: mockFilterAdded
+                        filterUpdated: mockFilterUpdated
                     }
                 }
             }
         });
         const wrapper = shallowMount(Filters, {localVue, store});
-        (wrapper as any).vm.sexFilterSelected({id: "both", label: "both"});
+        (wrapper as any).vm.updateSexFilter(["female", "male"]);
 
-        expect(mockFilterAdded.mock.calls[0][1]).toStrictEqual([FilterType.Sex, "both"]);
+        expect(mockFilterUpdated.mock.calls[0][1]).toStrictEqual([FilterType.Sex, ["female", "male"]]);
     });
 
-    it ("invokes store action when sex filter is deselected", () => {
-        const mockFilterRemoved = jest.fn();
-        const store = new Vuex.Store({
-            modules: {
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState(),
-                    actions: {
-                        filterRemoved: mockFilterRemoved
-                    }
-                }
-            }
-        });
-        const wrapper = shallowMount(Filters, {localVue, store});
-        (wrapper as any).vm.sexFilterDeselected({id: "both", label: "both"});
-
-        expect(mockFilterRemoved.mock.calls[0][1]).toStrictEqual([FilterType.Sex, "both"]);
-    });
 });

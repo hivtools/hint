@@ -4,30 +4,16 @@ import {DataType, FilterType, initialFilteredDataState} from "../../app/store/fi
 describe("FilteredData mutations", () => {
 
 
-    const testFilterAddedAndRemoved = (filterType: FilterType) => {
+    const testFilterUpdated = (filterType: FilterType) => {
         const testState = {...initialFilteredDataState};
-        mutations.FilterAdded(testState, {
-            payload: [filterType, "value" ]
-        });
-        expect(testState.selectedFilters.byType(filterType)).toStrictEqual(["value"]);
 
-        //Adding again should have no effect
-        mutations.FilterAdded(testState, {
-            payload: [filterType, "value" ]
-        });
-        expect(testState.selectedFilters.byType(filterType)).toStrictEqual(["value"]);
+        //initial sate
+        expect(testState.selectedFilters.getByType(filterType)).toStrictEqual([]);
 
-        //Removing non existing filter should have no effect
-        mutations.FilterRemoved(testState, {
-            payload: [filterType, "nonexistent" ]
+        mutations.FilterUpdated(testState, {
+            payload: [filterType, ["value1", "value2"]]
         });
-        expect(testState.selectedFilters.byType(filterType)).toStrictEqual(["value"]);
-
-        //Can remove
-        mutations.FilterRemoved(testState, {
-            payload: [filterType, "value" ]
-        });
-        expect(testState.selectedFilters.byType(filterType)).toStrictEqual([]);
+        expect(testState.selectedFilters.getByType(filterType)).toStrictEqual(["value1", "value2"]);
     };
 
     it("sets selectedDataType on SelectedDataTypeUpdated", () => {
@@ -40,19 +26,19 @@ describe("FilteredData mutations", () => {
     });
 
     it("adds and removes age filters", () => {
-        testFilterAddedAndRemoved(FilterType.Age);
+        testFilterUpdated(FilterType.Age);
     });
 
     it("adds and removes region filters", () => {
-        testFilterAddedAndRemoved(FilterType.Region);
+        testFilterUpdated(FilterType.Region);
     });
 
     it("adds and removes sex filters", () => {
-        testFilterAddedAndRemoved(FilterType.Sex);
+        testFilterUpdated(FilterType.Sex);
     });
 
     it("adds and removes survey filters", () => {
-        testFilterAddedAndRemoved(FilterType.Survey);
+        testFilterUpdated(FilterType.Survey);
     });
 
 });

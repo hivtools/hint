@@ -12,7 +12,8 @@ export interface SelectedFilters {
     age: string[],
     region: string[],
     survey: string[],
-    byType: (type: FilterType) => string[]
+    getByType: (type: FilterType) => string[],
+    updateByType: (type: FilterType, value: string[]) => void
 }
 
 export interface FilteredDataState {
@@ -25,7 +26,7 @@ export const initialSelectedFilters: SelectedFilters = {
     age: [],
     region: [],
     survey: [],
-    byType: function(type: FilterType): string[] {
+    getByType: function(type: FilterType): string[] {
         switch (type) {
             case (FilterType.Age):
                 return this.age;
@@ -35,6 +36,22 @@ export const initialSelectedFilters: SelectedFilters = {
                 return this.sex;
             case (FilterType.Survey):
                 return this.survey;
+        }
+    },
+    updateByType: function(type: FilterType, value: string[]) {
+        switch (type) {
+            case (FilterType.Age):
+                this.age = value;
+                break;
+            case (FilterType.Region):
+                this.region = value;
+                break;
+            case (FilterType.Sex):
+                this.sex = value;
+                break;
+            case (FilterType.Survey):
+                this.survey = value;
+                break;
         }
     }
 };

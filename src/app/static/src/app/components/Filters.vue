@@ -4,8 +4,7 @@
         <treeselect id="sex-filters" :multiple="true"
                     :options="sexFilters.available"
                     :value="sexFilters.selected"
-                    v-on:select="sexFilterSelected"
-                    v-on:deselect="sexFilterDeselected"></treeselect>
+                    @input="updateSexFilter"></treeselect>
     </div>
 </template>
 
@@ -46,15 +45,11 @@
         }),
         methods: {
             ...mapActions({
-                filterAdded: 'filteredData/filterAdded',
-                filterRemoved: 'filteredData/filterRemoved'
+                filterUpdated: 'filteredData/filterUpdated',
             }),
-            sexFilterSelected(value: TreeselectOption){
-                this.filterAdded([FilterType.Sex, value.id]);
+            updateSexFilter(value: string[]){
+                this.filterUpdated([FilterType.Sex, value]);
             },
-            sexFilterDeselected(value: TreeselectOption){
-                this.filterRemoved([FilterType.Sex, value.id]);
-            }
         },
         components: { Treeselect }
     });
