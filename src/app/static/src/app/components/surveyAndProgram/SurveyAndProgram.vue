@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-10 col-md-8">
+            <div class="col-sm-6 col-md-4">
                 <form>
                     <file-upload label="Survey"
                                  :valid="survey.valid"
@@ -34,6 +34,9 @@
                     </file-upload>
                 </form>
             </div>
+            <div class="col-sm-6 col-md-8">
+                <filters></filters>
+            </div>
         </div>
     </div>
 </template>
@@ -44,6 +47,7 @@
     import {mapActions, mapState} from "vuex";
     import {SurveyAndProgramDataState} from "../../store/surveyAndProgram/surveyAndProgram";
     import FileUpload from "../FileUpload.vue";
+    import Filters from "../Filters.vue";
     import {PartialFileUploadProps} from "../../types";
 
     const namespace: string = 'surveyAndProgram';
@@ -75,7 +79,8 @@
             })
         },
         components: {
-            FileUpload
+            FileUpload,
+            Filters
         }
     })
 </script>
