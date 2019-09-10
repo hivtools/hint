@@ -18,7 +18,7 @@
                 </div>
                 <div class="col">
                     <label>Survey</label>
-                    <treeselect id="age-filters" :multiple="true"
+                    <treeselect id="survey-filters" :multiple="true"
                                 :options="surveyFilters.available"
                                 :value="surveyFilters.selected"
                                 @input="updateSurveyFilter"></treeselect>
@@ -33,17 +33,40 @@
     import {mapActions, mapState} from "vuex";
     import {DataType, FilterType, FilteredDataState} from "../store/filteredData/filteredData";
     import Treeselect from '@riophae/vue-treeselect';
+    import {NestedFilterOption} from "../generated";
 
     const namespace: string = 'filteredData';
-
-    const treeselectOptions = (stringOptions: string[]) : TreeselectOption[] => {
-        return (stringOptions ? stringOptions : []).map(x => { return {"id": x, "label": x}  });
-    };
 
     interface TreeselectOption {
         id: string,
         label: string
     }
+
+    interface NestedTreeselectoption extends TreeselectOption {
+        children: TreeselectOption[]
+    }
+
+    const treeselectOptions = (stringOptions: string[]) : TreeselectOption[] => {
+        return (stringOptions ? stringOptions : []).map(x => { return {id: x, label: x}  });
+    };
+
+    const nestedTreeSelectOptions = (nestedOptions: NestedFilterOption[]): TreeselectOption[] => {
+        return (nestedOptions ? nestedOptions : [])
+            .map(x => {
+                if (x.options && x.options.length) {
+                    return {
+                        id: x.name,
+                        label: x.name,
+                        children: nestedTreeSelectOptions(x.options as NestedFilterOption[])
+                    }
+                } else {
+                    return {
+                        id: x.name,
+                        label: x.name
+                    }
+                }
+            });
+    };
 
     export interface FilterOptions {
         available: TreeselectOption[],
