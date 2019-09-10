@@ -4,6 +4,7 @@ import Vuex from 'vuex';
 import Filters from "../../app/components/Filters.vue";
 import {DataType, FilteredDataState, FilterType} from "../../app/store/filteredData/filteredData";
 import {mockFilteredDataState} from "../mocks";
+import {RootState} from "../../app/root";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -32,8 +33,8 @@ describe("Filters component", () => {
 
     it ("computes available sexFilters for non-ANC", () => {
         const wrapper = getWrapper({selectedDataType: DataType.Survey});
-        const sexFilters = (wrapper as any).vm.sexFilters.available;
-        expect(sexFilters).toStrictEqual([
+        const sexFilters = (wrapper as any).vm.sexFilters;
+        expect(sexFilters.viewOptions).toStrictEqual([
             {"id": "female", "label": "female"},
             {"id": "male", "label": "male"},
             {"id": "both", "label": "both"}
@@ -42,22 +43,140 @@ describe("Filters component", () => {
 
     it ("computes available sexFilters for ANC", () => {
         const wrapper = getWrapper({selectedDataType: DataType.ANC});
-        const sexFilters = (wrapper as any).vm.sexFilters.available;
-        expect(sexFilters).toStrictEqual([
+        const sexFilters = (wrapper as any).vm.sexFilters;
+        expect(sexFilters.viewOptions).toStrictEqual([
             {"id": "female", "label": "female"}
             ]);
     });
 
     it ("computes available ageFilters", () => {
-        testInvokesStoreActionWhenFilterIsEdited(FilterType.Age);
+        const mockFilterUpdated = jest.fn();
+        const stateAgeFilterOptions = [
+            {id: "a1", name: "0-4"},
+            {id: "a2", name: "5-9"}
+        ];
+        const store = new Vuex.Store({
+            modules: {
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState(),
+                    actions: {
+                        filterUpdated: mockFilterUpdated
+                    },
+                    getters: {
+                        selectedDataFilterOptions: () => {
+                            return {
+                                age: stateAgeFilterOptions
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        const wrapper = shallowMount(Filters, {localVue, store});
+        const vm = (wrapper as any).vm;
+        const ageFilters = vm.ageFilters;
+        expect(ageFilters.available).toStrictEqual(stateAgeFilterOptions);
+        expect(ageFilters.viewOptions).toStrictEqual(
+            [
+                {id: "a1", label: "0-4"},
+                {id: "a2", label: "5-9"}
+            ]
+        );
+    });
+
+    it ("computes available surveyFilters", () => {
+        //TODO: check computers selected too
+        const mockFilterUpdated = jest.fn();
+        const stateSurveyFilterOptions = [
+            {id: "s1", name: "survey 1"},
+            {id: "s2", name: "survey 2"}
+        ];
+        const store = new Vuex.Store({
+            modules: {
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState(),
+                    actions: {
+                        filterUpdated: mockFilterUpdated
+                    },
+                    getters: {
+                        selectedDataFilterOptions: () => {
+                            return {
+                                surveys: stateSurveyFilterOptions
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        const wrapper = shallowMount(Filters, {localVue, store});
+        const vm = (wrapper as any).vm;
+        const surveyFilters = vm.surveyFilters;
+        expect(surveyFilters.available).toStrictEqual(stateSurveyFilterOptions);
+        expect(surveyFilters.viewOptions).toStrictEqual(
+            [
+                {id: "s1", label: "survey 1"},
+                {id: "s2", label: "survey 2"}
+            ]
+        );
     });
 
     it ("invokes store action when sex filter is edited", () => {
-        testInvokesStoreActionWhenFilterIsEdited(FilterType.Sex);
+        const mockFilterUpdated = jest.fn();
+        const store = new Vuex.Store({
+            modules: {
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState(),
+                    actions: {
+                        filterUpdated: mockFilterUpdated
+                    }
+                }
+            }
+        });
+        const wrapper = shallowMount(Filters, {localVue, store});
+        const vm = (wrapper as any).vm;
+        const newFilter = ["female", "both"];
+        vm.updateSexFilter(newFilter);
+
+        expect(mockFilterUpdated.mock.calls[0][1]).toStrictEqual([FilterType.Sex, [
+            {id: "female", name: "female"},
+            {id: "both", name: "both"}
+        ]]);
     });
 
-    it ("invokes store actions when survey filter is edited", () => {
-        testInvokesStoreActionWhenFilterIsEdited(FilterType.Survey);
+    it ("invokes store actions when surveys filter is edited", () => {
+        const mockFilterUpdated = jest.fn();
+        const store = new Vuex.Store({
+            modules: {
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState(),
+                    actions: {
+                        filterUpdated: mockFilterUpdated
+                    },
+                    getters: {
+                        selectedDataFilterOptions: () => {
+                            return {
+                                surveys: [
+                                    {id: "s1", name: "survey 1"},
+                                    {id: "s2", name: "survey 2"}
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        const wrapper = shallowMount(Filters, {localVue, store});
+        const vm = (wrapper as any).vm;
+        const newFilter = ["s1"];
+        vm.updateSurveyFilter(newFilter);
+
+        expect(mockFilterUpdated.mock.calls[0][1]).toStrictEqual([FilterType.Survey, [
+            {id: "s1", name: "survey 1"}
+        ]]);
     });
 
     const getWrapper = (state?: Partial<FilteredDataState>, selectedDataFilterOptions: object = {}) => {
@@ -75,38 +194,5 @@ describe("Filters component", () => {
         });
         return shallowMount(Filters, {localVue, store});
     };
-
-    const testInvokesStoreActionWhenFilterIsEdited = function(filterType: FilterType){
-        const mockFilterUpdated = jest.fn();
-        const store = new Vuex.Store({
-            modules: {
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState(),
-                    actions: {
-                        filterUpdated: mockFilterUpdated
-                    }
-                }
-            }
-        });
-        const wrapper = shallowMount(Filters, {localVue, store});
-        const vm = (wrapper as any).vm;
-        const newFilter = ["v1", "v2"];
-        switch(filterType) {
-            case (FilterType.Sex):
-                vm.updateSexFilter(newFilter);
-                break;
-            case (FilterType.Age):
-                vm.updateAgeFilter(newFilter);
-                break;
-            case (FilterType.Survey):
-                vm.updateSurveyFilter(newFilter);
-                break;
-            default:
-                throw "FilterType not supported by test"
-        }
-
-        expect(mockFilterUpdated.mock.calls[0][1]).toStrictEqual([filterType, newFilter]);
-    }
 
 });

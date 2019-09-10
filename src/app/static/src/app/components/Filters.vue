@@ -5,22 +5,22 @@
                 <div class="col">
                     <label>Sex</label>
                     <treeselect id="sex-filters" :multiple="true"
-                                :options="sexFilters.available"
-                                :value="sexFilters.selected"
+                                :options="sexFilters.viewOptions"
+                                :value="sexFilters.viewSelected"
                                 @input="updateSexFilter"></treeselect>
                 </div>
                 <div class="col">
                     <label>Age</label>
                     <treeselect id="age-filters" :multiple="true"
-                                :options="ageFilters.available"
-                                :value="ageFilters.selected"
+                                :options="ageFilters.viewOptions"
+                                :value="ageFilters.viewSelected"
                                 @input="updateAgeFilter"></treeselect>
                 </div>
                 <div class="col">
                     <label>Survey</label>
                     <treeselect id="survey-filters" :multiple="true"
-                                :options="surveyFilters.available"
-                                :value="surveyFilters.selected"
+                                :options="surveyFilters.viewOptions"
+                                :value="surveyFilters.viewSelected"
                                 @input="updateSurveyFilter"></treeselect>
                 </div>
             </div>
@@ -33,7 +33,7 @@
     import {mapActions, mapState} from "vuex";
     import {DataType, FilterType, FilteredDataState} from "../store/filteredData/filteredData";
     import Treeselect from '@riophae/vue-treeselect';
-    import {NestedFilterOption} from "../generated";
+    import {FilterOption, NestedFilterOption} from "../generated";
 
     const namespace: string = 'filteredData';
 
@@ -46,8 +46,24 @@
         children: TreeselectOption[]
     }
 
-    const treeselectOptions = (stringOptions: string[]) : TreeselectOption[] => {
-        return (stringOptions ? stringOptions : []).map(x => { return {id: x, label: x}  });
+    export interface ViewFiltersForType {
+        available: FilterOption[],
+        viewSelected: string[],
+        viewOptions: TreeselectOption[]
+    }
+
+    const buildViewFiltersForType = (availableFilterOptions: FilterOption[],
+                                     selectedFilterOptions: FilterOption[]) : ViewFiltersForType => {
+        return {
+            available: availableFilterOptions,
+            viewSelected: (selectedFilterOptions || []).map(f => f.id),
+            viewOptions: treeselectOptions(availableFilterOptions)
+        }
+    };
+
+    //TODO: combine these?? if filterOption.children then do nesting
+    const treeselectOptions = (filterOptions: FilterOption[]) : TreeselectOption[] => {
+        return (filterOptions || []).map(x => { return {id: x.id, label: x.name}  });
     };
 
     const nestedTreeSelectOptions = (nestedOptions: NestedFilterOption[]): TreeselectOption[] => {
@@ -55,23 +71,19 @@
             .map(x => {
                 if (x.options && x.options.length) {
                     return {
-                        id: x.name,
+                        id: x.id,
                         label: x.name,
                         children: nestedTreeSelectOptions(x.options as NestedFilterOption[])
                     }
                 } else {
                     return {
-                        id: x.name,
+                        id: x.id,
                         label: x.name
                     }
                 }
             });
     };
 
-    export interface FilterOptions {
-        available: TreeselectOption[],
-        selected: string[]
-    }
 
     export default Vue.extend ({
         name: "Filters",
@@ -82,40 +94,44 @@
                 return this.$store.getters['filteredData/selectedDataFilterOptions']
             },
 
-            sexFilters: (state) => ({
-                available: treeselectOptions(state.selectedDataType == DataType.ANC ?
-                    ["female"] :
-                    ["female", "male", "both"]),
-                selected: state.selectedFilters.sex
-            } as FilterOptions),
+            sexFilters: (state) => {
+                const available = (state.selectedDataType == DataType.ANC ?
+                    [{id: "female", name: "female"}] :
+                    [
+                        {id: "female", name: "female"},
+                        {id: "male", name: "male"},
+                        {id: "both", name: "both"}
+                    ]) as FilterOption[];
+               return buildViewFiltersForType(available, state.selectedFilters.sex)
+            },
 
             ageFilters: function(state) {
-                return {
-                    available: treeselectOptions(this.selectedDataFilterOptions.age as string[]),
-                    selected: state.selectedFilters.age
-                } as FilterOptions;
+                return buildViewFiltersForType(this.selectedDataFilterOptions.age,
+                    state.selectedFilters.age);
             },
 
             surveyFilters: function(state) {
-                const available = this.selectedDataFilterOptions.surveys || [];
-                return {
-                    available: treeselectOptions(available),
-                    selected: state.selectedFilters.survey
-                } as FilterOptions;
+                return buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
+                    state.selectedFilters.surveys);
             }
         }),
         methods: {
             ...mapActions({
                 filterUpdated: 'filteredData/filterUpdated',
             }),
-            updateSexFilter(value: string[]){
-                this.filterUpdated([FilterType.Sex, value]);
+            updateFilter(filterType: FilterType, ids: string[], available: FilterOption[]) {
+                const updatedSelected = available.filter(a => ids.indexOf(a.id) > -1);
+                this.filterUpdated([filterType, updatedSelected]);
+
             },
-            updateAgeFilter(value: string[]){
-                this.filterUpdated([FilterType.Age, value]);
+            updateSexFilter(ids: string[]){
+                this.updateFilter(FilterType.Sex, ids, this.sexFilters.available);
             },
-            updateSurveyFilter(value: string[]){
-                this.filterUpdated([FilterType.Survey, value]);
+            updateAgeFilter(ids: string[]){
+                this.updateFilter(FilterType.Age, ids, this.ageFilters.available);
+            },
+            updateSurveyFilter(ids: string[]){
+                this.updateFilter(FilterType.Survey, ids, this.surveyFilters.available);
             }
         },
         components: { Treeselect }

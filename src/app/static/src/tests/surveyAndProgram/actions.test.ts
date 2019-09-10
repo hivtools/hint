@@ -6,7 +6,7 @@ const FormData = require("form-data");
 
 describe("Survey and program actions", () => {
 
-    it("sets data after survey file upload", async () => {
+    it("sets data after surveys file upload", async () => {
 
         mockAxios.onPost(`/disease/survey/`)
             .reply(200, mockSuccess({data: "SOME DATA"}));
@@ -24,7 +24,7 @@ describe("Survey and program actions", () => {
         expect(commit.mock.calls[1][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
     });
 
-    it("sets error message after failed survey upload", async () => {
+    it("sets error message after failed surveys upload", async () => {
 
         mockAxios.onPost(`/disease/survey/`)
             .reply(500, mockFailure("error message"));

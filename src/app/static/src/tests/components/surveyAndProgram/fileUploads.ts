@@ -26,7 +26,7 @@ export function testUploadComponent(name: string, position: number) {
         };
 
         switch (name) {
-            case "survey":
+            case "surveys":
                 expectedAction = actions.uploadSurvey;
                 break;
             case "program":
@@ -51,7 +51,7 @@ export function testUploadComponent(name: string, position: number) {
 
     let errorState: object;
     switch (name) {
-        case "survey":
+        case "surveys":
             errorState = {surveyError: "File upload went wrong"};
             break;
         case "program":
@@ -71,7 +71,7 @@ export function testUploadComponent(name: string, position: number) {
 
     let successState: object;
     switch (name) {
-        case "survey":
+        case "surveys":
             successState = {
                 survey: response
             };

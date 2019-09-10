@@ -43,7 +43,7 @@ describe("Stepper component", () => {
         expect(steps.at(0).props().number).toBe(1);
         expect(steps.at(0).props().complete).toBe(false);
 
-        expect(steps.at(1).props().text).toBe("Upload survey and program data");
+        expect(steps.at(1).props().text).toBe("Upload surveys and program data");
         expect(steps.at(1).props().active).toBe(false);
         expect(steps.at(1).props().number).toBe(2);
         expect(steps.at(1).props().complete).toBe(false);
@@ -72,7 +72,7 @@ describe("Stepper component", () => {
         expect([1, 2, 3, 4].filter(i => steps.at(i).props().enabled).length).toBe(0);
     });
 
-    it("upload survey step is enabled when baseline step is complete", () => {
+    it("upload surveys step is enabled when baseline step is complete", () => {
         const store = createSut({
             country: "testCountry",
             shape: mockShapeResponse(),

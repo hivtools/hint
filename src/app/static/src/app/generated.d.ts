@@ -5,7 +5,10 @@
   * and run ./generate-types.sh to regenerate this file.
 */
 export interface AgeFilters {
-  age: string[];
+  age: {
+    name: string;
+    id: string;
+  }[];
 }
 export type AncResponseData = {
   iso3: string;
@@ -22,6 +25,10 @@ export interface Error {
 }
 export type FileName = string;
 export type FilePath = string | null;
+export interface FilterOption {
+  name: string;
+  id: string;
+}
 export interface InitialiseModelRunRequest {
   pjnz: string | null;
   shape: string | null;
@@ -99,6 +106,7 @@ export interface Complete {
 }
 export interface NestedFilterOption {
   name: string;
+  id: string;
   options?: {
     [k: string]: any;
   }[];
@@ -137,8 +145,14 @@ export interface GeoJSONObject {
   [k: string]: any;
 }
 export interface SurveyFilters {
-  age: string[];
-  surveys: string[];
+  age: {
+    name: string;
+    id: string;
+  }[];
+  surveys: {
+    name: string;
+    id: string;
+  }[];
 }
 export type SurveyResponseData = {
   iso3: string;
@@ -148,7 +162,7 @@ export type SurveyResponseData = {
 }[];
 export type URI = string;
 export interface ValidateInputRequest {
-  type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
+  type: "pjnz" | "shape" | "population" | "surveys" | "programme" | "anc";
   path: string | null;
 }
 export type ValidateInputResponse =
@@ -172,6 +186,7 @@ export interface ShapeResponse {
   data: GeoJSONObject;
   filters: {
     name: string;
+    id: string;
     options?: {
       [k: string]: any;
     }[];
@@ -207,7 +222,10 @@ export interface ProgrammeResponse {
     [k: string]: any;
   }[];
   filters: {
-    age: string[];
+    age: {
+      name: string;
+      id: string;
+    }[];
   };
 }
 export interface AncResponse {
@@ -219,12 +237,15 @@ export interface AncResponse {
     [k: string]: any;
   }[];
   filters: {
-    age: string[];
+    age: {
+      name: string;
+      id: string;
+    }[];
   };
 }
 export interface SurveyResponse {
   filename: string;
-  type: "survey";
+  type: "surveys";
   data: {
     iso3: string;
     area_id: string;
@@ -232,7 +253,13 @@ export interface SurveyResponse {
     [k: string]: any;
   }[];
   filters: {
-    age: string[];
-    surveys: string[];
+    age: {
+      name: string;
+      id: string;
+    }[];
+    surveys: {
+      name: string;
+      id: string;
+    }[];
   };
 }

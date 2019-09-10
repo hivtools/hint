@@ -6,11 +6,11 @@ const FormData = require("form-data");
 
 describe("Survey and program actions", () => {
 
-    it("can upload survey", async () => {
+    it("can upload surveys", async () => {
 
         const commit = jest.fn();
 
-        const file = fs.createReadStream("../testdata/survey.csv");
+        const file = fs.createReadStream("../testdata/surveys.csv");
         const formData = new FormData();
         formData.append('file', file);
 
