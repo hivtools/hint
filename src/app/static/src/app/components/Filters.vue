@@ -7,16 +7,21 @@
                     <treeselect id="sex-filters" :multiple="true"
                                 :options="sexFilters.available"
                                 :value="sexFilters.selected"
-                                v-on:select="sexFilterSelected"
-                                v-on:deselect="sexFilterDeselected"></treeselect>
+                                @input="updateSexFilter"></treeselect>
                 </div>
                 <div class="col">
                     <label>Age</label>
                     <treeselect id="age-filters" :multiple="true"
                                 :options="ageFilters.available"
                                 :value="ageFilters.selected"
-                                v-on:select="ageFilterSelected"
-                                v-on:deselect="ageFilterDeselected"></treeselect>
+                                @input="updateAgeFilter"></treeselect>
+                </div>
+                <div class="col">
+                    <label>Survey</label>
+                    <treeselect id="age-filters" :multiple="true"
+                                :options="surveyFilters.available"
+                                :value="surveyFilters.selected"
+                                @input="updateSurveyFilter"></treeselect>
                 </div>
             </div>
         </div>
@@ -66,30 +71,30 @@
                     available: treeselectOptions(this.selectedDataFilterOptions.age as string[]),
                     selected: state.selectedFilters.age
                 } as FilterOptions;
+            },
+
+            surveyFilters: function(state) {
+                const available = this.selectedDataFilterOptions.surveys || [];
+                return {
+                    available: treeselectOptions(available),
+                    selected: state.selectedFilters.survey
+                } as FilterOptions;
             }
         }),
         methods: {
             ...mapActions({
-                filterAdded: 'filteredData/filterAdded',
-                filterRemoved: 'filteredData/filterRemoved'
+                filterUpdated: 'filteredData/filterUpdated',
             }),
-            sexFilterSelected(value: TreeselectOption){
-                this.filterAdded([FilterType.Sex, value.id]);
+            updateSexFilter(value: string[]){
+                this.filterUpdated([FilterType.Sex, value]);
             },
-            sexFilterDeselected(value: TreeselectOption){
-                this.filterRemoved([FilterType.Sex, value.id]);
+            updateAgeFilter(value: string[]){
+                this.filterUpdated([FilterType.Age, value]);
             },
-            ageFilterSelected(value: TreeselectOption){
-                this.filterAdded([FilterType.Age, value.id]);
-            },
-            ageFilterDeselected(value: TreeselectOption){
-                this.filterRemoved([FilterType.Age, value.id]);
+            updateSurveyFilter(value: string[]){
+                this.filterUpdated([FilterType.Survey, value]);
             }
         },
         components: { Treeselect }
     });
 </script>
-
-<style scoped>
-
-</style>

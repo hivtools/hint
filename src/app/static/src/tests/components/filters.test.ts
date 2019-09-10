@@ -1,36 +1,18 @@
-import {createLocalVue, mount, shallowMount} from '@vue/test-utils';
+import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import Filters from "../../app/components/Filters.vue";
 import {DataType, FilteredDataState, FilterType} from "../../app/store/filteredData/filteredData";
-import { getters } from '../../app/store/filteredData/getters';
 import {mockFilteredDataState} from "../mocks";
-import {FilteredDataActions} from "../../app/store/filteredData/actions";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
 
-describe("Step component", () => {
-
-    const getWrapper = (state?: Partial<FilteredDataState>, selectedDataFilterOptions: object = {}) => {
-
-        const store = new Vuex.Store({
-            modules: {
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState(state),
-                    getters: {
-                        selectedDataFilterOptions: () => selectedDataFilterOptions
-                    }
-                }
-            }
-        });
-        return shallowMount(Filters, {localVue, store});
-    };
+describe("Filters component", () => {
 
     it("renders filter controls if selected data type", () => {
         const wrapper = getWrapper({selectedDataType: DataType.Survey});
-        expect(wrapper.findAll("treeselect-stub").length).toBe(2);
+        expect(wrapper.findAll("treeselect-stub").length).toBe(3);
     });
 
     it("does not render filter controls if no selected data type", () => {
@@ -67,69 +49,64 @@ describe("Step component", () => {
     });
 
     it ("computes available ageFilters", () => {
-        const wrapper = getWrapper({selectedDataType: DataType.Survey},
-            {age: ["0-4", "5-9", "10-15"]});
-        const ageFilters = (wrapper as any).vm.ageFilters.available;
-        expect(ageFilters).toStrictEqual([
-            {"id": "0-4", "label": "0-4"},
-            {"id": "5-9", "label": "5-9"},
-            {"id": "10-15", "label": "10-15"}
-        ]);
+        testInvokesStoreActionWhenFilterIsEdited(FilterType.Age);
     });
 
     it ("invokes store action when sex filter is edited", () => {
-        testInvokesStoreActionsWhenEditFilterValues(FilterType.Sex);
+        testInvokesStoreActionWhenFilterIsEdited(FilterType.Sex);
     });
 
-    it ("invokes store actions when age filter is edited", () => {
-        testInvokesStoreActionsWhenEditFilterValues(FilterType.Age);
+    it ("invokes store actions when survey filter is edited", () => {
+        testInvokesStoreActionWhenFilterIsEdited(FilterType.Survey);
     });
 
-    const testInvokesStoreActionsWhenEditFilterValues = (filterType: FilterType) => {
-        const mockFilterAdded = jest.fn();
-        const mockFilterRemoved = jest.fn();
+    const getWrapper = (state?: Partial<FilteredDataState>, selectedDataFilterOptions: object = {}) => {
+
+        const store = new Vuex.Store({
+            modules: {
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState(state),
+                    getters: {
+                        selectedDataFilterOptions: () => selectedDataFilterOptions
+                    }
+                }
+            }
+        });
+        return shallowMount(Filters, {localVue, store});
+    };
+
+    const testInvokesStoreActionWhenFilterIsEdited = function(filterType: FilterType){
+        const mockFilterUpdated = jest.fn();
         const store = new Vuex.Store({
             modules: {
                 filteredData: {
                     namespaced: true,
                     state: mockFilteredDataState(),
                     actions: {
-                        filterAdded: mockFilterAdded,
-                        filterRemoved: mockFilterRemoved
+                        filterUpdated: mockFilterUpdated
                     }
                 }
             }
         });
         const wrapper = shallowMount(Filters, {localVue, store});
-
-        const treeselectOption = {id: "value", label: "value"};
-
-        //Test select
         const vm = (wrapper as any).vm;
+        const newFilter = ["v1", "v2"];
         switch(filterType) {
-            case(FilterType.Sex):
-                vm.sexFilterSelected(treeselectOption);
+            case (FilterType.Sex):
+                vm.updateSexFilter(newFilter);
                 break;
-            case(FilterType.Age):
-                vm.ageFilterSelected(treeselectOption);
+            case (FilterType.Age):
+                vm.updateAgeFilter(newFilter);
+                break;
+            case (FilterType.Survey):
+                vm.updateSurveyFilter(newFilter);
                 break;
             default:
-                throw "Filter type not supported in test"
+                throw "FilterType not supported by test"
         }
 
-        expect(mockFilterAdded.mock.calls[0][1]).toStrictEqual([filterType, "value"]);
-
-        //Test deselect
-        switch(filterType) {
-            case(FilterType.Sex):
-                vm.sexFilterDeselected(treeselectOption);
-                break;
-            case(FilterType.Age):
-                vm.ageFilterDeselected(treeselectOption);
-                break;
-        }
-
-        expect(mockFilterRemoved.mock.calls[0][1]).toStrictEqual([filterType, "value"]);
+        expect(mockFilterUpdated.mock.calls[0][1]).toStrictEqual([filterType, newFilter]);
     }
 
 });

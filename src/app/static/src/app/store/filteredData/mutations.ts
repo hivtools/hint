@@ -6,27 +6,14 @@ type FilteredDataMutation = Mutation<FilteredDataState>
 
 export interface SelectedDataMutations {
     SelectedDataTypeUpdated: FilteredDataMutation
-    FilterAdded: FilteredDataMutation,
-    FilterRemoved: FilteredDataMutation
+    FilterUpdated: FilteredDataMutation
 }
 
 export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations  = {
     SelectedDataTypeUpdated(state: FilteredDataState, action: PayloadWithType<DataType>) {
         state.selectedDataType = action.payload;
     },
-    FilterAdded(state: FilteredDataState, action: PayloadWithType<[FilterType, string]>) {
-        const filterOptions = state.selectedFilters.byType(action.payload[0]);
-        const filter = action.payload[1];
-        if (filterOptions.indexOf(filter) < 0) {
-            filterOptions.push(filter);
-        }
-    },
-    FilterRemoved(state: FilteredDataState, action: PayloadWithType<[FilterType, string]>) {
-        const filterOptions = state.selectedFilters.byType(action.payload[0]);
-        const filter = action.payload[1];
-        const index = filterOptions.indexOf(filter);
-        if (index > -1) {
-            filterOptions.splice(index, 1);
-        }
+    FilterUpdated(state: FilteredDataState, action: PayloadWithType<[FilterType, string[]]>) {
+        state.selectedFilters.updateByType(action.payload[0], action.payload[1]);
     }
 };
