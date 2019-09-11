@@ -5,22 +5,25 @@
                 <div class="col">
                     <label>Sex</label>
                     <treeselect id="sex-filters" :multiple="true"
-                                :options="sexFilters.viewOptions"
-                                :value="sexFilters.viewSelected"
+                                :options="sexFilters.available"
+                                :value="sexFilters.selected"
+                                :normalizer = "treeselectNormalizer"
                                 @input="updateSexFilter"></treeselect>
                 </div>
                 <div class="col">
                     <label>Age</label>
                     <treeselect id="age-filters" :multiple="true"
-                                :options="ageFilters.viewOptions"
-                                :value="ageFilters.viewSelected"
+                                :options="ageFilters.available"
+                                :value="ageFilters.selected"
+                                :normalizer = "treeselectNormalizer"
                                 @input="updateAgeFilter"></treeselect>
                 </div>
                 <div class="col">
                     <label>Survey</label>
                     <treeselect id="survey-filters" :multiple="true"
-                                :options="surveyFilters.viewOptions"
-                                :value="surveyFilters.viewSelected"
+                                :options="surveyFilters.available"
+                                :value="surveyFilters.selected"
+                                :normalizer = "treeselectNormalizer"
                                 @input="updateSurveyFilter"></treeselect>
                 </div>
             </div>
@@ -37,32 +40,19 @@
 
     const namespace: string = 'filteredData';
 
-    interface TreeselectOption {
+    /*interface TreeselectOption {
         id: string,
         label: string
     }
 
     interface NestedTreeselectoption extends TreeselectOption {
         children: TreeselectOption[]
-    }
+    }*/
 
-    export interface ViewFiltersForType {
-        available: FilterOption[],
-        viewSelected: string[],
-        viewOptions: TreeselectOption[]
-    }
-
-    const buildViewFiltersForType = (availableFilterOptions: FilterOption[],
-                                     selectedFilterOptions: FilterOption[]) : ViewFiltersForType => {
-        return {
-            available: availableFilterOptions,
-            viewSelected: (selectedFilterOptions || []).map(f => f.id),
-            viewOptions: treeselectOptions(availableFilterOptions)
-        }
-    };
+   /* */
 
     //TODO: combine these?? if filterOption.children then do nesting
-    const treeselectOptions = (filterOptions: FilterOption[]) : TreeselectOption[] => {
+    /*const treeselectOptions = (filterOptions: FilterOption[]) : TreeselectOption[] => {
         return (filterOptions || []).map(x => { return {id: x.id, label: x.name}  });
     };
 
@@ -82,8 +72,13 @@
                     }
                 }
             });
-    };
+    };*/
 
+
+    export interface FiltersForType {
+        available: FilterOption[],
+        selected: string[]
+    }
 
     export default Vue.extend ({
         name: "Filters",
@@ -94,7 +89,7 @@
                 return this.$store.getters['filteredData/selectedDataFilterOptions']
             },
 
-            sexFilters: (state) => {
+            sexFilters: function(state): FiltersForType{
                 const available = (state.selectedDataType == DataType.ANC ?
                     [{id: "female", name: "female"}] :
                     [
@@ -102,16 +97,16 @@
                         {id: "male", name: "male"},
                         {id: "both", name: "both"}
                     ]) as FilterOption[];
-               return buildViewFiltersForType(available, state.selectedFilters.sex)
+               return this.buildViewFiltersForType(available, state.selectedFilters.sex)
             },
 
-            ageFilters: function(state) {
-                return buildViewFiltersForType(this.selectedDataFilterOptions.age,
+            ageFilters: function(state): FiltersForType {
+                return this.buildViewFiltersForType(this.selectedDataFilterOptions.age,
                     state.selectedFilters.age);
             },
 
-            surveyFilters: function(state) {
-                return buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
+            surveyFilters: function(state): FiltersForType {
+                return this.buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
                     state.selectedFilters.surveys);
             }
         }),
@@ -119,6 +114,16 @@
             ...mapActions({
                 filterUpdated: 'filteredData/filterUpdated',
             }),
+            treeselectNormalizer(node: FilterOption) {
+                return {id: node.id, label: node.name}
+            },
+            buildViewFiltersForType(availableFilterOptions: FilterOption[],
+                                       selectedFilterOptions: FilterOption[]) {
+                return {
+                    available: availableFilterOptions,
+                    selected: (selectedFilterOptions || []).map(f => f.id),
+                }
+            },
             updateFilter(filterType: FilterType, ids: string[], available: FilterOption[]) {
                 const updatedSelected = available.filter(a => ids.indexOf(a.id) > -1);
                 this.filterUpdated([filterType, updatedSelected]);
