@@ -6,11 +6,8 @@
             </div>
         </div>
         <div class="row">
-<<<<<<< HEAD
             <div class="col-sm-3">
-=======
-            <div class="col-sm-6 col-md-4">
->>>>>>> master
+
                 <form>
                     <file-upload label="Survey"
                                  :valid="survey.valid"
@@ -40,10 +37,8 @@
             </div>
 
             <div class="col">
-
-            <div class="col-sm-6 col-md-8">
                 <div>
-                    <filters></filters>
+                    <filters class="mb-2"></filters>
                 </div>
                 <div>
                     <choropleth></choropleth>
@@ -59,12 +54,9 @@
     import {mapActions, mapState} from "vuex";
     import {SurveyAndProgramDataState} from "../../store/surveyAndProgram/surveyAndProgram";
     import FileUpload from "../FileUpload.vue";
-<<<<<<< HEAD
     import Choropleth from "../plots/Choropleth.vue";
-=======
     import Filters from "../Filters.vue";
     import {PartialFileUploadProps} from "../../types";
->>>>>>> master
 
     const namespace: string = 'surveyAndProgram';
 
@@ -96,11 +88,8 @@
         },
         components: {
             FileUpload,
-<<<<<<< HEAD
-            Choropleth
-=======
+            Choropleth,
             Filters
->>>>>>> master
         }
     })
 </script>
