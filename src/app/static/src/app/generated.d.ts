@@ -29,80 +29,59 @@ export interface FilterOption {
   name: string;
   id: string;
 }
-export interface InitialiseModelRunRequest {
+export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
+export type ModelResultResponse = number;
+export interface ModelStatusResponse {
+  id: string;
+  done: boolean | null;
+  status: string;
+  success: boolean | null;
+  queue: number;
+  progress: string;
+  timeRemaining: string;
+}
+export interface ModelSubmitData {
   pjnz: string | null;
   shape: string | null;
   population: string | null;
   survey: string | null;
   programme: string | null;
   anc: string | null;
-  options: {
-    max_iterations: number;
-    no_of_simulations: number;
-    input_data: {
-      programme: boolean;
-      anc: boolean;
-    };
-  };
 }
-export interface InitialiseModelRunResponse {
-  processId: string;
-}
-export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
-export interface ModelRunInputData {
+export interface ModelSubmitInputOptions {
   programme: boolean;
   anc: boolean;
 }
-export interface ModelRunOptions {
+export interface ModelSubmitParameters {
   max_iterations: number;
   no_of_simulations: number;
-  input_data: {
+  options: {
     programme: boolean;
     anc: boolean;
   };
+  [k: string]: any;
 }
-export interface ModelRunResult {
-  plhiv: {
-    placeholder?: boolean;
+export interface ModelSubmitRequest {
+  data: {
+    pjnz: string | null;
+    shape: string | null;
+    population: string | null;
+    survey: string | null;
+    programme: string | null;
+    anc: string | null;
   };
-  prevalence: {
-    placeholder?: boolean;
-  };
-  art: {
-    placeholder?: boolean;
-  };
-  incidence: {
-    placeholder?: boolean;
+  parameters: {
+    max_iterations: number;
+    no_of_simulations: number;
+    options: {
+      programme: boolean;
+      anc: boolean;
+    };
+    [k: string]: any;
   };
 }
-export interface ModelRunResultRequest {
-  processId: string;
-}
-export type ModelRunResultResponse = Incomplete | Complete;
-
-export interface Incomplete {
-  processId: string;
-  complete: false;
-  progress: number;
-  timeRemaining: number;
-}
-export interface Complete {
-  processId: string;
-  complete: true;
-  result: {
-    plhiv: {
-      placeholder?: boolean;
-    };
-    prevalence: {
-      placeholder?: boolean;
-    };
-    art: {
-      placeholder?: boolean;
-    };
-    incidence: {
-      placeholder?: boolean;
-    };
-  };
+export interface ModelSubmitResponse {
+  id: string;
 }
 export interface NestedFilterOption {
   name: string;
@@ -162,7 +141,7 @@ export type SurveyResponseData = {
 }[];
 export type URI = string;
 export interface ValidateInputRequest {
-  type: "pjnz" | "shape" | "population" | "surveys" | "programme" | "anc";
+  type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
   path: string | null;
 }
 export type ValidateInputResponse =
@@ -245,7 +224,7 @@ export interface AncResponse {
 }
 export interface SurveyResponse {
   filename: string;
-  type: "surveys";
+  type: "survey";
   data: {
     iso3: string;
     area_id: string;
