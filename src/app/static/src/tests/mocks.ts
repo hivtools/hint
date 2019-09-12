@@ -103,7 +103,7 @@ export const mockShapeResponse = (props: Partial<ShapeResponse> = {}): ShapeResp
 
 export const mockSurveyResponse = (props: Partial<SurveyResponse> = {}): SurveyResponse => {
     return {
-        type: "surveys",
+        type: "survey",
         filename: "test.csv",
         data: [],
         filters: {
