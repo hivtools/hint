@@ -2,7 +2,7 @@
     <div v-if="hasSelectedDataType">
         <div class="container-fluid">
             <div class="row">
-                <div class="col">
+                <div class="col-sm-3">
                     <label>Sex</label>
                     <treeselect id="sex-filters" :multiple="true"
                                 :options="sexFilters.available"
@@ -10,7 +10,7 @@
                                 :normalizer = "treeselectNormalizer"
                                 @input="updateSexFilter"></treeselect>
                 </div>
-                <div class="col">
+                <div class="col-sm-3">
                     <label>Age</label>
                     <treeselect id="age-filters" :multiple="true"
                                 :options="ageFilters.available"
@@ -18,7 +18,7 @@
                                 :normalizer = "treeselectNormalizer"
                                 @input="updateAgeFilter"></treeselect>
                 </div>
-                <div class="col">
+                <div class="col-sm-3">
                     <label>Survey</label>
                     <treeselect id="survey-filters" :multiple="true"
                                 :options="surveyFilters.available"
@@ -26,7 +26,7 @@
                                 :normalizer = "treeselectNormalizer"
                                 @input="updateSurveyFilter"></treeselect>
                 </div>
-                <div class="col">
+                <div class="col-sm-3">
                     <label>Region</label>
                     <treeselect id="survey-filters" :multiple="true"
                                 :options="regionFilters.available"
