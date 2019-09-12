@@ -14,8 +14,10 @@ import {
     ProgrammeResponse,
     SurveyResponse,
     AgeFilters,
-    SurveyFilters, AncResponse
+    SurveyFilters, AncResponse, PopulationResponse
 } from "../app/generated";
+import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
+
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -39,6 +41,13 @@ export const mockSurveyAndProgramState = (props?: Partial<SurveyAndProgramDataSt
         ...props
     }
 };
+
+export const mockFilteredDataState = (props?: Partial<FilteredDataState>) => {
+    return {
+        ...initialFilteredDataState,
+        ...props
+    }
+}
 
 export const mockFile = (filename: string, type: string = "text/csv"): File => {
     return new File([new ArrayBuffer(10)], filename, {
@@ -136,6 +145,15 @@ export const mockSurveyFilters = (props: Partial<SurveyFilters> = {}): SurveyFil
     return {
         age: [],
         surveys: [],
+        ...props
+    }
+};
+
+export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}): PopulationResponse => {
+    return {
+        data: null,
+        type: "population",
+        filename: "test.csv",
         ...props
     }
 };

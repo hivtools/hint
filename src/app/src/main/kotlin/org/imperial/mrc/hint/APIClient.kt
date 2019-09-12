@@ -22,7 +22,7 @@ class HintAPIClient(
                 mapOf("type" to type.toString().toLowerCase(),
                         "path" to "/uploads/$path"))
 
-        return "$baseUrl/validate"
+        return "$baseUrl/validate/input"
                 .httpPost()
                 .header("Content-Type" to "application/json")
                 .body(json)

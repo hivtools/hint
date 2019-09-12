@@ -8,8 +8,12 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 // mock requests made by the root vue instance before it is imported
-mockAxios.onGet(`/baseline/`)
-    .reply(200, mockSuccess({pjnz: null}));
+mockAxios.onGet(`/baseline/pjnz/`)
+    .reply(200, mockSuccess(null));
+mockAxios.onGet(`/baseline/shape/`)
+    .reply(200, mockSuccess(null));
+mockAxios.onGet(`/baseline/population/`)
+    .reply(200, mockSuccess(null));
 
 import {app} from "../../app"
 import {baselineGetters} from "../../app/store/baseline/baseline";

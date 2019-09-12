@@ -1,5 +1,5 @@
 import {mutations} from "../../app/store/baseline/mutations";
-import {mockPJNZResponse, mockShapeResponse} from "../mocks";
+import {mockPJNZResponse, mockPopulationResponse, mockShapeResponse} from "../mocks";
 import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
 import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {Module} from "vuex";
@@ -19,7 +19,7 @@ describe("Baseline mutations", () => {
         expect(testState.pjnzError).toBe("");
     });
 
-    it("state becomes complete once pjnz and shape files are uploaded", () => {
+    it("state becomes complete once all files are uploaded", () => {
         const testStore: Module<BaselineState, RootState> = {
             state: {...initialBaselineState},
             getters: baselineGetters
@@ -45,7 +45,15 @@ describe("Baseline mutations", () => {
                 mockShapeResponse(), type: "ShapeUploaded"
         });
 
+        expect(complete(testState, null, testRootState, null)).toBe(false);
+
+        mutations.PopulationUploaded(testState, {
+            payload:
+                mockPopulationResponse(), type: "PopulationUploaded"
+        });
+
         expect(complete(testState, null, testRootState, null)).toBe(true);
+
     });
 
     it("sets error on PJNZUploadError", () => {
@@ -88,6 +96,23 @@ describe("Baseline mutations", () => {
         const testState = {...initialBaselineState};
         mutations.ShapeUploadError(testState, {payload: "Some error"});
         expect(testState.shapeError).toBe("Some error");
+    });
+
+    it("sets response on PopulationLoaded", () => {
+
+        const mockPop = mockPopulationResponse();
+        const testState = {...initialBaselineState};
+        mutations.PopulationUploaded(testState, {
+            payload: mockPop
+        });
+        expect(testState.population).toBe(mockPop);
+    });
+
+    it("sets error on PopulationUploadError", () => {
+
+        const testState = {...initialBaselineState};
+        mutations.PopulationUploadError(testState, {payload: "Some error"});
+        expect(testState.populationError).toBe("Some error");
     });
 
 });

@@ -1,4 +1,4 @@
-import {mockAxios, mockShapeResponse, mockSuccess} from "../mocks";
+import {mockAxios, mockPopulationResponse, mockShapeResponse, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
 import {testUploadErrorCommitted} from "../actionTestHelpers";
 
@@ -44,30 +44,45 @@ describe("Baseline actions", () => {
         });
     });
 
+    it("commits response after population file upload", async () => {
+
+        const mockPop = mockPopulationResponse();
+        mockAxios.onPost(`/baseline/population/`)
+            .reply(200, mockSuccess(mockPop));
+
+        const commit = jest.fn();
+        await actions.uploadPopulation({commit} as any, new FormData());
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "PopulationUploaded",
+            payload: mockPop
+        });
+    });
+
     testUploadErrorCommitted("/baseline/shape/", "ShapeUploadError", actions.uploadShape);
 
     it("gets baseline data and commits it", (done) => {
 
         const mockShape = mockShapeResponse();
+        const mockPopulation = mockPopulationResponse();
         mockAxios.onGet(`/baseline/pjnz/`)
             .reply(200, mockSuccess({data: {country: "Malawi"}, filename: "test.pjnz"}));
 
         mockAxios.onGet(`/baseline/shape/`)
             .reply(200, mockSuccess(mockShape));
 
+        mockAxios.onGet(`/baseline/population/`)
+            .reply(200, mockSuccess(mockPopulation));
+
         const commit = jest.fn();
         actions.getBaselineData({commit} as any);
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: "PJNZLoaded",
-                payload: {data: {country: "Malawi"}, filename: "test.pjnz"}
-            });
+            const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+            expect(calls).toContain("PJNZLoaded");
+            expect(calls).toContain("ShapeUploaded");
+            expect(calls).toContain("PopulationUploaded");
 
-            expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: "ShapeUploaded",
-                payload: mockShape
-            });
             done();
         });
 

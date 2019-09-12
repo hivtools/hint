@@ -4,9 +4,9 @@ import Vuex from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
-import {mockBaselineState, mockShapeResponse, mockSurveyAndProgramState} from "../mocks";
+import {mockBaselineState, mockPopulationResponse, mockShapeResponse, mockSurveyAndProgramState} from "../mocks";
 import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
-import { mutations } from '../../app/store/baseline/mutations';
+import {mutations} from '../../app/store/baseline/mutations';
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -73,7 +73,11 @@ describe("Stepper component", () => {
     });
 
     it("upload survey step is enabled when baseline step is complete", () => {
-        const store = createSut({ country: "testCountry", shape: mockShapeResponse() } );
+        const store = createSut({
+            country: "testCountry",
+            shape: mockShapeResponse(),
+            population: mockPopulationResponse()
+        });
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
@@ -83,7 +87,11 @@ describe("Stepper component", () => {
     });
 
     it("updates active step when jump event is emitted", () => {
-        const store = createSut({ country: "testCountry", shape: mockShapeResponse() });
+        const store = createSut({
+            country: "testCountry",
+            shape: mockShapeResponse(),
+            population: mockPopulationResponse()
+        });
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         steps.at(1).vm.$emit("jump", 2);
@@ -92,7 +100,7 @@ describe("Stepper component", () => {
     });
 
     it("cannot continue when the active step is not complete", () => {
-        const store = createSut({ country: ""});
+        const store = createSut({country: ""});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).toContain("disabled");
@@ -104,7 +112,11 @@ describe("Stepper component", () => {
 
 
     it("can continue when the active step is complete", () => {
-        const store = createSut({ country: "testCountry", shape: mockShapeResponse() });
+        const store = createSut({
+            country: "testCountry",
+            shape: mockShapeResponse(),
+            population: mockPopulationResponse()
+        });
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).not.toContain("disabled");
@@ -115,7 +127,7 @@ describe("Stepper component", () => {
     });
 
     it("updates from completed state when active step data is populated", (done) => {
-        const baselineState = { country: "Malawi"};
+        const baselineState = {country: "Malawi", population: mockPopulationResponse()};
         const store = createSut(baselineState);
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
@@ -127,7 +139,7 @@ describe("Stepper component", () => {
             "payload": mockShapeResponse()
         });
 
-        Vue.nextTick().then( () => {
+        Vue.nextTick().then(() => {
             expect(wrapper.find("#continue").classes()).not.toContain("disabled");
             done();
         });

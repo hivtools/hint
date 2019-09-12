@@ -6,3 +6,9 @@ export interface PayloadWithType<T> extends Payload {
 
 export type Indicator = "prev" | "art"
 
+export interface PartialFileUploadProps {
+    valid: Boolean,
+    error: string,
+    existingFileName: string,
+}
+
