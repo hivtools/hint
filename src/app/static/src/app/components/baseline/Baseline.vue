@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-8 col-md-10">
+            <div class="col-sm-6 col-md-8">
                 <form>
                     <file-upload label="PJNZ"
                                  :valid="pjnz.valid"

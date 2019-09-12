@@ -25,6 +25,7 @@ a {
 .step {
 
   color: $gray-600;
+  max-width: 200px;
 
   .btn {
     color: white;
@@ -45,6 +46,10 @@ a {
   &.active {
     color: inherit;
   }
+}
+
+.step-connector {
+  max-width: 100px;
 }
 
 .no-padding {
@@ -112,4 +117,12 @@ a {
     border-color: $theme-red;
     background: $theme-red;
   }
+}
+
+.vue-treeselect__label-container {
+  width: auto;
+}
+
+.vue-treeselect__menu {
+  overflow-x: auto;
 }

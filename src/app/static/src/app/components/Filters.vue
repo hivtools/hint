@@ -26,6 +26,15 @@
                                 :normalizer = "treeselectNormalizer"
                                 @input="updateSurveyFilter"></treeselect>
                 </div>
+                <div class="col">
+                    <label>Region</label>
+                    <treeselect id="survey-filters" :multiple="true"
+                                :options="regionFilters.available"
+                                :value="regionFilters.selected"
+                                :normalizer = "treeselectNormalizer"
+                                :flat="true"
+                                @input="updateRegionFilter"></treeselect>
+                </div>
             </div>
         </div>
     </div>
@@ -40,41 +49,6 @@
 
     const namespace: string = 'filteredData';
 
-    /*interface TreeselectOption {
-        id: string,
-        label: string
-    }
-
-    interface NestedTreeselectoption extends TreeselectOption {
-        children: TreeselectOption[]
-    }*/
-
-   /* */
-
-    //TODO: combine these?? if filterOption.children then do nesting
-    /*const treeselectOptions = (filterOptions: FilterOption[]) : TreeselectOption[] => {
-        return (filterOptions || []).map(x => { return {id: x.id, label: x.name}  });
-    };
-
-    const nestedTreeSelectOptions = (nestedOptions: NestedFilterOption[]): TreeselectOption[] => {
-        return (nestedOptions ? nestedOptions : [])
-            .map(x => {
-                if (x.options && x.options.length) {
-                    return {
-                        id: x.id,
-                        label: x.name,
-                        children: nestedTreeSelectOptions(x.options as NestedFilterOption[])
-                    }
-                } else {
-                    return {
-                        id: x.id,
-                        label: x.name
-                    }
-                }
-            });
-    };*/
-
-
     export interface FiltersForType {
         available: FilterOption[],
         selected: string[]
@@ -87,6 +61,9 @@
             hasSelectedDataType: state => state.selectedDataType != null,
             selectedDataFilterOptions: function() {
                 return this.$store.getters['filteredData/selectedDataFilterOptions']
+            },
+            regionOptions: function() {
+                return this.$store.getters['filteredData/regionOptions']
             },
 
             sexFilters: function(state): FiltersForType{
@@ -108,14 +85,31 @@
             surveyFilters: function(state): FiltersForType {
                 return this.buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
                     state.selectedFilters.surveys);
+            },
+
+            regionFilters: function(state): FiltersForType {
+                return this.buildViewFiltersForType(this.regionOptions,
+                    state.selectedFilters.region);
             }
         }),
         methods: {
             ...mapActions({
                 filterUpdated: 'filteredData/filterUpdated',
             }),
-            treeselectNormalizer(node: FilterOption) {
-                return {id: node.id, label: node.name}
+            treeselectNormalizer(anyNode: any) {
+                //In the nested case, this gets called for the child nodes we add in below - just return these unchanged
+                if (anyNode.label){
+                    return anyNode;
+                }
+
+                const node = anyNode as NestedFilterOption;
+                const result =  {id: node.id, label: node.name};
+                if (node.options) {
+                    if (node.options && node.options.length > 0) {
+                        (result as any).children = node.options.map(o => this.treeselectNormalizer(o));
+                    }
+                }
+                return result;
             },
             buildViewFiltersForType(availableFilterOptions: FilterOption[],
                                        selectedFilterOptions: FilterOption[]) {
@@ -127,7 +121,32 @@
             updateFilter(filterType: FilterType, ids: string[], available: FilterOption[]) {
                 const updatedSelected = available.filter(a => ids.indexOf(a.id) > -1);
                 this.filterUpdated([filterType, updatedSelected]);
+            },
+            updateFilterNested(filterType: FilterType, ids: string[], available: NestedFilterOption[]) {
 
+                //recursively find multiple ids in the available FilterOptions tree in a single pass.
+                //Mutates ids and found arrays.
+                const findIds = (ids: string[], options: NestedFilterOption[], found: NestedFilterOption[]) => {
+                    for (const option of options) {
+                        if (ids.length == 0) {
+                            break;
+                        }
+
+                        const index = ids.indexOf(option.id);
+                        if (index > -1) {
+                            ids.splice(index, 1); //remove index from array
+                            found.push(option);
+                        }
+                        if (ids.length > 0 && option.options) {
+                            findIds(ids, option.options as NestedFilterOption[], found)
+                        }
+                    }
+                };
+
+                const idsToFind = [...ids];
+                const found: NestedFilterOption[] = [];
+                findIds(idsToFind, available, found);
+                this.filterUpdated([filterType, found]);
             },
             updateSexFilter(ids: string[]){
                 this.updateFilter(FilterType.Sex, ids, this.sexFilters.available);
@@ -137,6 +156,9 @@
             },
             updateSurveyFilter(ids: string[]){
                 this.updateFilter(FilterType.Survey, ids, this.surveyFilters.available);
+            },
+            updateRegionFilter(ids: string[]){
+                this.updateFilterNested(FilterType.Region, ids, this.regionFilters.available);
             }
         },
         components: { Treeselect }
