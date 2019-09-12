@@ -18,7 +18,7 @@ describe("Filters component", () => {
 
     it("renders filter controls if selected data type", () => {
         const wrapper = getWrapper({selectedDataType: DataType.Survey});
-        expect(wrapper.findAll("treeselect-stub").length).toBe(3);
+        expect(wrapper.findAll("treeselect-stub").length).toBe(4);
     });
 
     it("does not render filter controls if no selected data type", () => {
@@ -135,6 +135,45 @@ describe("Filters component", () => {
         expect(surveyFilters.selected).toStrictEqual([ "s1" ]);
     });
 
+    it ("computes regionFilters", () => {
+        const stateRegionFilterOptions =  [
+            {name: "Northern Region", id: "MWI.1", options: [
+                    {name: "Chitipa", id: "MWI.1.1"},
+                    {name: "Karonga", id: "MWI.1.2"}
+                ]},
+            {name: "Central Region", id: "MWI.2", options: [
+                    {name: "Dowa", id: "MWI.2.2"}
+                ]}
+        ];
+        const mockSelectedFilters = {
+            ...initialSelectedFilters,
+            region: [
+                {name: "Karonga", id: "MWI.1.2"},
+                {name: "Central Region", id: "MWI.2", options: [
+                    {name: "Dowa", id: "MWI.2.2"}
+                ]}]
+        };
+
+        const store = new Vuex.Store({
+            modules: {
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState({selectedFilters: mockSelectedFilters}),
+                    getters: {
+                        regionOptions: () => {
+                            return stateRegionFilterOptions;
+                        }
+                    }
+                }
+            }
+        });
+        const wrapper = shallowMount(Filters, {localVue, store});
+        const vm = (wrapper as any).vm;
+        const regionFilters = vm.regionFilters;
+        expect(regionFilters.available).toStrictEqual(stateRegionFilterOptions);
+        expect(regionFilters.selected).toStrictEqual([ "MWI.1.2", "MWI.2"]);
+    });
+
     it ("invokes store action when sex filter is edited", () => {
         const mockFilterUpdated = jest.fn();
         const store = new Vuex.Store({
@@ -189,6 +228,47 @@ describe("Filters component", () => {
 
         expect(mockFilterUpdated.mock.calls[0][1]).toStrictEqual([FilterType.Survey, [
             {id: "s1", name: "survey 1"}
+        ]]);
+    });
+
+    it ("invokes store actions when region filter is edited", () => {
+        const mockFilterUpdated = jest.fn();
+        const store = new Vuex.Store({
+            modules: {
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState(),
+                    actions: {
+                        filterUpdated: mockFilterUpdated
+                    },
+                    getters: {
+                        regionOptions: () => {
+                            return [
+                                    {name: "Northern Region", id: "MWI.1", options: [
+                                            {name: "Chitipa", id: "MWI.1.1"},
+                                            {name: "Karonga", id: "MWI.1.2"}
+                                        ]},
+                                    {name: "Central Region", id: "MWI.2", options: [
+                                            {name: "Dowa", id: "MWI.2.2"}
+                                        ]}
+                                ]
+
+                        }
+                    }
+                }
+            }
+        });
+        const wrapper = shallowMount(Filters, {localVue, store});
+        const vm = (wrapper as any).vm;
+        const newFilter = ["MWI.1.1", "MWI.1.2", "MWI.2"];
+        vm.updateRegionFilter(newFilter);
+
+        expect(mockFilterUpdated.mock.calls[0][1]).toStrictEqual([FilterType.Region, [
+            {name: "Chitipa", id: "MWI.1.1"},
+            {name: "Karonga", id: "MWI.1.2"},
+            {name: "Central Region", id: "MWI.2", options: [
+                    {name: "Dowa", id: "MWI.2.2"}
+                ]}
         ]]);
     });
 
