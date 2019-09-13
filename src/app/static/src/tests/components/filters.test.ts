@@ -231,6 +231,40 @@ describe("Filters component", () => {
         ]]);
     });
 
+    it ("invokes store actions when age filter is edited", () => {
+        const mockFilterUpdated = jest.fn();
+        const store = new Vuex.Store({
+            modules: {
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState(),
+                    actions: {
+                        filterUpdated: mockFilterUpdated
+                    },
+                    getters: {
+                        selectedDataFilterOptions: () => {
+                            return {
+                                age: [
+                                    {id: "a1", name: "0-4"},
+                                    {id: "a2", name: "5-9"}
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        const wrapper = shallowMount(Filters, {localVue, store});
+        const vm = (wrapper as any).vm;
+        const newFilter = ["a1", "a2"];
+        vm.updateAgeFilter(newFilter);
+
+        expect(mockFilterUpdated.mock.calls[0][1]).toStrictEqual([FilterType.Age, [
+            {id: "a1", name: "0-4"},
+            {id: "a2", name: "5-9"}
+        ]]);
+    });
+
     it ("invokes store actions when region filter is edited", () => {
         const mockFilterUpdated = jest.fn();
         const store = new Vuex.Store({
