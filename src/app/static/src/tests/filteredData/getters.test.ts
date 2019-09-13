@@ -116,7 +116,7 @@ describe("FilteredData mutations", () => {
                         type: "FeatureCollection",
                         features: []
                     },
-                    filters: testFilters}
+                    filters: {regions: testFilters}}
             }),
             surveyAndProgram: {...initialSurveyAndProgramDataState},
             filteredData: testState

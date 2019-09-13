@@ -84,8 +84,8 @@ export interface ModelSubmitResponse {
   id: string;
 }
 export interface NestedFilterOption {
-  name: string;
-  id: string;
+  name?: string;
+  id?: string;
   options?: {
     [k: string]: any;
   }[];
@@ -140,6 +140,15 @@ export type SurveyResponseData = {
   [k: string]: any;
 }[];
 export type URI = string;
+export interface ValidateBaselineRequest {
+  pjnz: string | null;
+  shape: string | null;
+  population: string | null;
+}
+export interface ValidateBaselineResponse {
+  complete: boolean;
+  consistent: boolean;
+}
 export interface ValidateInputRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
   path: string | null;
@@ -158,18 +167,22 @@ export interface PjnzResponse {
   data: {
     country: string;
   };
+  filters?: null;
 }
 export interface ShapeResponse {
   filename: string;
   type: "shape";
   data: GeoJSONObject;
   filters: {
-    name: string;
-    id: string;
-    options?: {
-      [k: string]: any;
+    regions?: {
+      name?: string;
+      id?: string;
+      options?: {
+        [k: string]: any;
+      }[];
     }[];
-  }[];
+    [k: string]: any;
+  };
 }
 /**
  * TODO: Validate against a URL e.g. https://geojson.org/schema/FeatureCollection.json
@@ -191,6 +204,7 @@ export interface PopulationResponse {
   filename: string;
   type: "population";
   data: null;
+  filters?: null;
 }
 export interface ProgrammeResponse {
   filename: string;

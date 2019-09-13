@@ -127,7 +127,7 @@
                             break;
                         }
 
-                        const index = ids.indexOf(option.id);
+                        const index = ids.indexOf(option.id!!); //TODO: id should be required in the hintr schema
                         if (index > -1) {
                             ids.splice(index, 1); //remove index from array
                             found.push(option);
