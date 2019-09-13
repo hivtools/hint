@@ -272,6 +272,45 @@ describe("Filters component", () => {
         ]]);
     });
 
+    it ("transforms FilterOption in treeselectNormalizer", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        const result = vm.treeselectNormalizer({id: "1", name: "name1"});
+        expect(result).toStrictEqual({id: "1", label: "name1"});
+    });
+
+    it ("transforms NestedFilterOption in treeselectNormalizer", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        const result = vm.treeselectNormalizer(
+            {
+                id: "1",
+                name: "name1",
+                options:
+                    [
+                        {id: "1.1", name: "name1.1"},
+                        {id: "1.2", name: "name1.2"}
+                    ]
+            });
+        expect(result).toStrictEqual(
+            {
+                id: "1",
+                label: "name1",
+                children:
+                    [
+                        {id: "1.1", label: "name1.1"},
+                        {id: "1.2", label: "name1.2"}
+                    ]
+            });
+    });
+
+    it ("returns child treenode unchanged in treeselectNormalizer", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        const result = vm.treeselectNormalizer({id: "1", label: "name1"});
+        expect(result).toStrictEqual({id: "1", label: "name1"});
+    });
+
     const getWrapper = (state?: Partial<FilteredDataState>, selectedDataFilterOptions: object = {}) => {
 
         const store = new Vuex.Store({
