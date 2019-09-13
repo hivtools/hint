@@ -126,4 +126,31 @@ describe("FilteredData mutations", () => {
         expect(filters).toStrictEqual(testFilters);
 
     });
+
+    it("gets unfilteredData when selectedDataType is survey", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState, selectedDataType: DataType.ANC},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testData = [
+            {
+                area_id: "area1",
+
+            }
+        ];
+        const testRootState = {
+            version: "",
+            selectedDataType: null,
+            baseline: {...initialBaselineState},
+            surveyAndProgram: mockSurveyAndProgramState(
+                {anc: mockAncResponse(
+                        {filters: testFilters}
+                    )}),
+            filteredData: testState
+        };
+
+        const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null) as AgeFilters;
+        expect(filters.age).toStrictEqual(testFilters.age);
+    });
 });

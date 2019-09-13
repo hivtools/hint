@@ -1,6 +1,6 @@
 import {RootState} from "../../root";
 import {DataType, FilteredDataState} from "./filteredData";
-import {Indicator} from
+import {Indicators} from "../../types";
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
@@ -56,7 +56,7 @@ export const getters = {
             return null;
         }
 
-        const result = {} as Indicator;
+        const result = {} as { [k: string]: Indicators}
         for(const d in data) {
             const row = d as any;
             const areaId = row.area_id;
@@ -67,12 +67,13 @@ export const getters = {
                 result[areaId] = {};
             }
 
+            const indicators = result[areaId];
             switch(indicator) {
                 case("prevalence"):
-                    result[areaId].prev = value;
+                    indicators.prev = value;
                     break;
                 case("art_coverage"):
-                    result[areaId].art = value;
+                    indicators.art = value;
                     break;
             }
         }
