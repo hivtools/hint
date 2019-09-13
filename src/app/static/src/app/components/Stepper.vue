@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid">
-        <div class="row">
+        <div class="row justify-content-center">
             <template v-for="step in steps">
                 <step :key="step.number"
                       :active="active(step.number)"
@@ -15,7 +15,8 @@
                 </div>
             </template>
         </div>
-        <div class="pt-5">
+        <hr/>
+        <div class="pt-4">
             <baseline v-if="active(1)"></baseline>
             <survey-and-program v-if="active(2)"></survey-and-program>
         </div>

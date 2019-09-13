@@ -84,8 +84,8 @@ export interface ModelSubmitResponse {
   id: string;
 }
 export interface NestedFilterOption {
-  name?: string;
-  id?: string;
+  name: string;
+  id: string;
   options?: {
     [k: string]: any;
   }[];
@@ -175,8 +175,8 @@ export interface ShapeResponse {
   data: GeoJSONObject;
   filters: {
     regions?: {
-      name?: string;
-      id?: string;
+      name: string;
+      id: string;
       options?: {
         [k: string]: any;
       }[];

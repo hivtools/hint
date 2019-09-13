@@ -28,7 +28,7 @@
                 </div>
                 <div class="col-sm-3">
                     <label>Region</label>
-                    <treeselect id="survey-filters" :multiple="true"
+                    <treeselect id="region-filters" :multiple="true"
                                 :options="regionFilters.available"
                                 :value="regionFilters.selected"
                                 :normalizer = "treeselectNormalizer"
@@ -127,7 +127,7 @@
                             break;
                         }
 
-                        const index = ids.indexOf(option.id!!); //TODO: id should be required in the hintr schema
+                        const index = ids.indexOf(option.id);
                         if (index > -1) {
                             ids.splice(index, 1); //remove index from array
                             found.push(option);

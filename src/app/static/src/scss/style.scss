@@ -101,6 +101,10 @@ a {
   overflow: hidden;
 }
 
+.sap-filters {
+  padding-top: 2px;
+}
+
 .vue-treeselect__multi-value-item {
   background-color: $theme-red;
   color: white;
@@ -125,4 +129,8 @@ a {
 
 .vue-treeselect__menu {
   overflow-x: auto;
+}
+
+.vue-treeselect__control {
+  height: calc(1.5em + 0.75rem + 2px);
 }

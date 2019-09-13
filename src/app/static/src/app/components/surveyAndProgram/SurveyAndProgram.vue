@@ -2,7 +2,7 @@
     <div>
         <div class="row">
             <div class="col">
-                <h1 class="h2 mb-4">Upload survey and program data</h1>
+                <h1 class="h2 mb-4">Upload survey and programme data</h1>
             </div>
         </div>
         <div class="row">
@@ -16,7 +16,7 @@
                                  accept="csv,.csv"
                                  name="survey">
                     </file-upload>
-                    <file-upload label="Program"
+                    <file-upload label="Programme"
                                  :valid="programme.valid"
                                  :error="programme.error"
                                  :upload="uploadProgram"
@@ -34,7 +34,7 @@
                     </file-upload>
                 </form>
             </div>
-            <div class="col-sm-6 col-md-8">
+            <div class="col-sm-6 col-md-8 sap-filters">
                 <filters></filters>
             </div>
         </div>
