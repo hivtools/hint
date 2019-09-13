@@ -6,7 +6,7 @@ const FormData = require("form-data");
 
 describe("Survey and program actions", () => {
 
-    it("can upload survey", async () => {
+    it("can upload surveys", async () => {
 
         const commit = jest.fn();
 

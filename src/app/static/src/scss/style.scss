@@ -25,6 +25,7 @@ a {
 .step {
 
   color: $gray-600;
+  max-width: 200px;
 
   .btn {
     color: white;
@@ -45,6 +46,10 @@ a {
   &.active {
     color: inherit;
   }
+}
+
+.step-connector {
+  max-width: 100px;
 }
 
 .no-padding {
@@ -96,6 +101,10 @@ a {
   overflow: hidden;
 }
 
+.sap-filters {
+  padding-top: 2px;
+}
+
 .vue-treeselect__multi-value-item {
   background-color: $theme-red;
   color: white;
@@ -108,8 +117,20 @@ a {
 }
 
 .vue-treeselect__label-container, .vue-treeselect__label-container:hover {
-  .vue-treeselect__checkbox--checked {
-    border-color: $theme-red;
-    background: $theme-red;
+  .vue-treeselect__checkbox--checked, .vue-treeselect__checkbox--indeterminate {
+    border-color: $theme-red !important;
+    background: $theme-red !important;
   }
+}
+
+.vue-treeselect__label-container {
+  width: auto;
+}
+
+.vue-treeselect__menu {
+  overflow-x: auto;
+}
+
+.vue-treeselect__control {
+  height: calc(1.5em + 0.75rem + 2px);
 }

@@ -1,8 +1,8 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {
     Response,
-    InitialiseModelRunResponse,
-    ModelRunResultResponse,
+    ModelSubmitResponse,
+    ModelStatusResponse,
     ValidateInputResponse,
     SurveyResponse, AncResponse, ProgrammeResponse, PopulationResponse, ShapeResponse, PjnzResponse
 } from "./generated";
@@ -10,8 +10,8 @@ import {Commit} from "vuex";
 
 type ResponseData =
     ValidateInputResponse
-    | ModelRunResultResponse
-    | InitialiseModelRunResponse
+    | ModelSubmitResponse
+    | ModelStatusResponse
     | AncResponse
     | PjnzResponse
     | PopulationResponse

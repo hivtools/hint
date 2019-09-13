@@ -12,9 +12,10 @@ import {
     mockProgramResponse,
     mockAgeFilters,
     mockSurveyFilters,
-    mockSurveyResponse, mockAncResponse
+    mockSurveyResponse, mockAncResponse, mockBaselineState
 } from "../mocks";
-import {AgeFilters, SurveyFilters} from "../../app/generated";
+import {AgeFilters, GeoJSONObject, NestedFilterOption, SurveyFilters} from "../../app/generated";
+import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 
 describe("FilteredData mutations", () => {
     it("gets correct selectedDataFilters when selectedDataType is Program", () => {
@@ -23,7 +24,7 @@ describe("FilteredData mutations", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = mockAgeFilters({age: ["age1", "age2"]});
+        const testFilters = mockAgeFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
         const testRootState = {
             version: "",
             selectedDataType: null,
@@ -36,7 +37,7 @@ describe("FilteredData mutations", () => {
         };
 
         const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null) as AgeFilters;
-        expect(filters.age).toStrictEqual(["age1", "age2"]);
+        expect(filters.age).toStrictEqual(testFilters.age);
 
     });
 
@@ -46,7 +47,9 @@ describe("FilteredData mutations", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = mockSurveyFilters({age: ["age1", "age2"], surveys: ["s1", "s2"]});
+        const testFilters = mockSurveyFilters({
+            age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}],
+            surveys: [{id: "s1", name: "Survey 1"}, {id: "s2", name: "Survey 2"}]});
         const testRootState = {
             version: "",
             selectedDataType: null,
@@ -59,8 +62,8 @@ describe("FilteredData mutations", () => {
         };
 
         const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null) as SurveyFilters;
-        expect(filters.age).toStrictEqual(["age1", "age2"]);
-        expect(filters.surveys).toStrictEqual(["s1", "s2"]);
+        expect(filters.age).toStrictEqual(testFilters.age);
+        expect(filters.surveys).toStrictEqual(testFilters.surveys);
 
     });
 
@@ -70,7 +73,7 @@ describe("FilteredData mutations", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = mockAgeFilters({age: ["age1", "age2"]});
+        const testFilters = mockAgeFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
         const testRootState = {
             version: "",
             selectedDataType: null,
@@ -83,8 +86,44 @@ describe("FilteredData mutations", () => {
         };
 
         const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null) as AgeFilters;
-        expect(filters.age).toStrictEqual(["age1", "age2"]);
+        expect(filters.age).toStrictEqual(testFilters.age);
+    });
 
+    it("gets region filters from shape", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testFilters =[
+            {name: "Northern Region", id: "MWI.1", options: [
+                    {name: "Chitipa", id: "MWI.1.1"},
+                    {name: "Karonga", id: "MWI.1.2"}
+                ]},
+            {name: "Central Region", id: "MWI.2", options: [
+                    {name: "Dedza", id: "MWI.2.1"},
+                    {name: "Dowa", id: "MWI.2.2"}
+                ]}
+        ];
+
+        const testRootState = {
+            version: "",
+            selectedDataType: null,
+            baseline: mockBaselineState({shape: {
+                    filename: "test.shape",
+                    type: "shape",
+                    data: {
+                        type: "FeatureCollection",
+                        features: []
+                    },
+                    filters: {regions: testFilters}}
+            }),
+            surveyAndProgram: {...initialSurveyAndProgramDataState},
+            filteredData: testState
+        };
+
+        const filters = getters.regionOptions(testState, null, testRootState, null) as NestedFilterOption[];
+        expect(filters).toStrictEqual(testFilters);
 
     });
 });

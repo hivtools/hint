@@ -3,17 +3,18 @@ import { actions } from './actions';
 import { mutations } from './mutations';
 import { getters } from './getters';
 import { RootState} from "../../root";
+import { FilterOption } from "../../generated";
 
 export enum DataType { ANC, Survey, Program }
 export enum FilterType { Sex, Age, Region, Survey }
 
 export interface SelectedFilters {
-    sex: string[],
-    age: string[],
-    region: string[],
-    survey: string[],
-    getByType: (type: FilterType) => string[],
-    updateByType: (type: FilterType, value: string[]) => void
+    sex: FilterOption[],
+    age: FilterOption[],
+    region: FilterOption[],
+    surveys: FilterOption[],
+    getByType: (type: FilterType) => FilterOption[],
+    updateByType: (type: FilterType, value: FilterOption[]) => void
 }
 
 export interface FilteredDataState {
@@ -25,8 +26,8 @@ export const initialSelectedFilters: SelectedFilters = {
     sex: [],
     age: [],
     region: [],
-    survey: [],
-    getByType: function(type: FilterType): string[] {
+    surveys: [],
+    getByType: function(type: FilterType): FilterOption[] {
         switch (type) {
             case (FilterType.Age):
                 return this.age;
@@ -35,10 +36,10 @@ export const initialSelectedFilters: SelectedFilters = {
             case (FilterType.Sex):
                 return this.sex;
             case (FilterType.Survey):
-                return this.survey;
+                return this.surveys;
         }
     },
-    updateByType: function(type: FilterType, value: string[]) {
+    updateByType: function(type: FilterType, value: FilterOption[]) {
         switch (type) {
             case (FilterType.Age):
                 this.age = value;
@@ -50,7 +51,7 @@ export const initialSelectedFilters: SelectedFilters = {
                 this.sex = value;
                 break;
             case (FilterType.Survey):
-                this.survey = value;
+                this.surveys = value;
                 break;
         }
     }

@@ -37,7 +37,7 @@ describe("FilteredData mutations", () => {
         testFilterUpdated(FilterType.Sex);
     });
 
-    it("adds and removes survey filters", () => {
+    it("adds and removes surveys filters", () => {
         testFilterUpdated(FilterType.Survey);
     });
 
