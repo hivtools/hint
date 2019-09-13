@@ -6,6 +6,7 @@ NETWORK=hint_nw
 HINT=hint
 DB=hint_db
 API=hintr
+REDIS=hintr_redis
 
 $HERE/run-dependencies-for-integration-tests.sh
 
@@ -16,6 +17,7 @@ function cleanup() {
   docker kill $DB
   docker kill $API
   docker kill $HINT
+  docker kill $REDIS
   docker network rm $NETWORK
 }
 

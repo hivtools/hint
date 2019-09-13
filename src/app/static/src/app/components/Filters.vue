@@ -118,11 +118,7 @@
                     selected: (selectedFilterOptions || []).map(f => f.id),
                 }
             },
-            updateFilter(filterType: FilterType, ids: string[], available: FilterOption[]) {
-                const updatedSelected = available.filter(a => ids.indexOf(a.id) > -1);
-                this.filterUpdated([filterType, updatedSelected]);
-            },
-            updateFilterNested(filterType: FilterType, ids: string[], available: NestedFilterOption[]) {
+            updateFilter(filterType: FilterType, ids: string[], available: NestedFilterOption[]) {
 
                 //recursively find multiple ids in the available FilterOptions tree in a single pass.
                 //Mutates ids and found arrays.
@@ -158,7 +154,7 @@
                 this.updateFilter(FilterType.Survey, ids, this.surveyFilters.available);
             },
             updateRegionFilter(ids: string[]){
-                this.updateFilterNested(FilterType.Region, ids, this.regionFilters.available);
+                this.updateFilter(FilterType.Region, ids, this.regionFilters.available);
             }
         },
         components: { Treeselect }

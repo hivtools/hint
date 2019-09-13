@@ -10,7 +10,7 @@ describe("Survey and program actions", () => {
 
         const commit = jest.fn();
 
-        const file = fs.createReadStream("../testdata/surveys.csv");
+        const file = fs.createReadStream("../testdata/survey.csv");
         const formData = new FormData();
         formData.append('file', file);
 
