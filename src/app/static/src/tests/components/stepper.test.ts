@@ -43,7 +43,7 @@ describe("Stepper component", () => {
         expect(steps.at(0).props().number).toBe(1);
         expect(steps.at(0).props().complete).toBe(false);
 
-        expect(steps.at(1).props().text).toBe("Upload surveys and program data");
+        expect(steps.at(1).props().text).toBe("Upload survey and programme data");
         expect(steps.at(1).props().active).toBe(false);
         expect(steps.at(1).props().number).toBe(2);
         expect(steps.at(1).props().complete).toBe(false);
