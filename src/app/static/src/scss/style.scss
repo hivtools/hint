@@ -113,9 +113,9 @@ a {
 }
 
 .vue-treeselect__label-container, .vue-treeselect__label-container:hover {
-  .vue-treeselect__checkbox--checked {
-    border-color: $theme-red;
-    background: $theme-red;
+  .vue-treeselect__checkbox--checked, .vue-treeselect__checkbox--indeterminate {
+    border-color: $theme-red !important;
+    background: $theme-red !important;
   }
 }
 

@@ -32,7 +32,6 @@
                                 :options="regionFilters.available"
                                 :value="regionFilters.selected"
                                 :normalizer = "treeselectNormalizer"
-                                :flat="true"
                                 @input="updateRegionFilter"></treeselect>
                 </div>
             </div>
