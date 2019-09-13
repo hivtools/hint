@@ -1,20 +1,18 @@
 import {getters} from "../../app/store/filteredData/getters"
 import {initialBaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
-import {
-    DataType,
-    FilteredDataState,
-    initialFilteredDataState
-} from "../../app/store/filteredData/filteredData";
+import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 import {RootState} from "../../app/root";
 import {
-    mockSurveyAndProgramState,
-    mockProgramResponse,
     mockAgeFilters,
+    mockAncResponse,
+    mockBaselineState,
+    mockProgramResponse,
+    mockSurveyAndProgramState,
     mockSurveyFilters,
-    mockSurveyResponse, mockAncResponse, mockBaselineState
+    mockSurveyResponse
 } from "../mocks";
-import {AgeFilters, GeoJSONObject, NestedFilterOption, SurveyFilters} from "../../app/generated";
+import {AgeFilters, NestedFilterOption, SurveyFilters} from "../../app/generated";
 import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 
 describe("FilteredData mutations", () => {
@@ -127,16 +125,26 @@ describe("FilteredData mutations", () => {
 
     });
 
-    it("gets unfilteredData when selectedDataType is survey", () => {
+    it("gets unfilteredData when selectedDataType is Survey", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.ANC},
+            state: {...initialFilteredDataState, selectedDataType: DataType.Survey},
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
         const testData = [
             {
+                iso3: "MWI",
                 area_id: "area1",
-
+                survey_id: "s1",
+                indicator: "prevalence",
+                value: 2
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                survey_id: "s2",
+                indicator: "prevalence",
+                value: 3
             }
         ];
         const testRootState = {
@@ -144,13 +152,48 @@ describe("FilteredData mutations", () => {
             selectedDataType: null,
             baseline: {...initialBaselineState},
             surveyAndProgram: mockSurveyAndProgramState(
-                {anc: mockAncResponse(
-                        {filters: testFilters}
+                {survey: mockSurveyResponse(
+                        {data: testData}
                     )}),
             filteredData: testState
         };
 
-        const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null) as AgeFilters;
-        expect(filters.age).toStrictEqual(testFilters.age);
+        const unfilteredData = getters.unfilteredData(testState, null, testRootState, null);
+        expect(unfilteredData).toStrictEqual(testData);
+    });
+
+    it("gets unfilteredData when selectedDataType is Program", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState, selectedDataType: DataType.Program},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testData = [
+            {
+                iso3: "MWI",
+                area_id: "area1",
+                indicator: "prevalence",
+                value: 2
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                indicator: "prevalence",
+                value: 3
+            }
+        ];
+        const testRootState = {
+            version: "",
+            selectedDataType: null,
+            baseline: {...initialBaselineState},
+            surveyAndProgram: mockSurveyAndProgramState(
+                {survey: mockSurveyResponse(
+                        {data: testData}
+                    )}),
+            filteredData: testState
+        };
+
+        const unfilteredData = getters.unfilteredData(testState, null, testRootState, null);
+        expect(unfilteredData).toStrictEqual(testData);
     });
 });
