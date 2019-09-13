@@ -60,7 +60,7 @@
                     },
                     {
                         number: 2,
-                        text: "Upload surveys and program data"
+                        text: "Upload surveys and programme data"
                     },
                     {
                         number: 3,
