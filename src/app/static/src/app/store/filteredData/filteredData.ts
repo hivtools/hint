@@ -20,6 +20,7 @@ export interface SelectedFilters {
 export interface FilteredDataState {
     selectedDataType: DataType | null
     selectedFilters: SelectedFilters
+    regionIndicators: {[k: string]: any};
 }
 
 export const initialSelectedFilters: SelectedFilters = {
@@ -59,7 +60,8 @@ export const initialSelectedFilters: SelectedFilters = {
 
 export const initialFilteredDataState: FilteredDataState = {
    selectedDataType: null,
-   selectedFilters: initialSelectedFilters
+   selectedFilters: initialSelectedFilters,
+   regionIndicators: {}
 };
 
 const namespaced: boolean = true;

@@ -1,5 +1,6 @@
 import {RootState} from "../../root";
 import {DataType, FilteredDataState} from "./filteredData";
+import {Indicator} from
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
@@ -35,5 +36,47 @@ export const getters = {
             ];
         }
         return result;
+    },
+    unfilteredData: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
+        const sapState = rootState.surveyAndProgram;
+        switch(state.selectedDataType){
+            case (DataType.ANC):
+                return sapState.anc ? sapState.anc.data : null;
+            case (DataType.Program):
+                return sapState.program ? sapState.program.data : null;
+            case (DataType.Survey):
+                return sapState.survey ? sapState.survey.data : null;
+            default:
+                return null;
+        }
+    },
+    regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+        const data =  this.unfilteredData(state, getters, rootState, rootGetters);
+        if (!data) {
+            return null;
+        }
+
+        const result = {} as Indicator;
+        for(const d in data) {
+            const row = d as any;
+            const areaId = row.area_id;
+            const value = row.value;
+            const indicator = row.indicator;
+
+            if (!result[areaId]) {
+                result[areaId] = {};
+            }
+
+            switch(indicator) {
+                case("prevalence"):
+                    result[areaId].prev = value;
+                    break;
+                case("art_coverage"):
+                    result[areaId].art = value;
+                    break;
+            }
+        }
+        return result;
+
     }
 };

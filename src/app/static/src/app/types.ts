@@ -10,3 +10,7 @@ export interface PartialFileUploadProps {
     existingFileName: string,
 }
 
+export interface Indicators {
+    prev?: number;
+    art?: number;
+}
