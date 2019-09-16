@@ -35,6 +35,15 @@ describe("Choropleth component", () => {
             }
         }
     ];
+    const testRegionIndicators = {
+        indicators: {
+            "MWI.1.1.1": {prev: 0.1, art: 0.08},
+            "MWI.1.1.2": {prev: 0.05, art: 0.06},
+            "MWI.1.1": {prev: 0.07, art: 0.2}
+        },
+        artRange: {min: 0.06, max:0.2},
+        prevRange: {min: 0.05, max: 0.1}
+    };
     const store = new Vuex.Store({
         modules: {
             baseline: {
@@ -49,15 +58,7 @@ describe("Choropleth component", () => {
                 namespaced: true,
                 getters: {
                     regionIndicators: () => {
-                        return {
-                            indicators: {
-                                "MWI.1.1.1": {prev: 0.1, art: 0.08},
-                                "MWI.1.1.2": {prev: 0.05, art: 0.06},
-                                "MWI.1.1": {prev: 0.07, art: 0.2}
-                            },
-                            artRange: {min: 0.06, max:0.2},
-                            prevRange: {min: 0.05, max: 0.1}
-                        }
+                        return testRegionIndicators;
                     }
                 }
             }
@@ -74,11 +75,36 @@ describe("Choropleth component", () => {
         })
     });
 
+    it("calculates min and max according to indicator", () => {
+        //default to prev
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+
+        const vm = wrapper.vm as any;
+        expect(vm.min).toBe(0.05);
+        expect(vm.max).toBe(0.1);
+
+        //update to ART
+        wrapper.find(MapControl).vm.$emit("indicator-changed", "art");
+
+        Vue.nextTick();
+        expect(vm.min).toBe(0.06);
+        expect(vm.max).toBe(0.2);
+    });
+
+    it("calculates indicators from filteredData", () => {
+        //default to prev
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+
+        const vm = wrapper.vm as any;
+        expect(vm.indicatorData).toEqual(testRegionIndicators);
+    });
+
+
     it("colors features according to indicator", (done) => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         setTimeout(() => {
-            const expectedVal = 0.1 / (0.1 - 0.05); //prev value within the range for first level 3 area
+            const expectedVal = 0.1 / (0.1 - 0.05); //prev value within the indicators range for first level 3 area
             const expectedColor = interpolateCool(expectedVal);
             expect(wrapper.findAll(LGeoJson).at(0).props("optionsStyle").fillColor).toBe(expectedColor);
             done();
@@ -89,7 +115,7 @@ describe("Choropleth component", () => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         setTimeout(() => {
-            const expectedVal = 0.08 / (0.2 - 0.06); //art value within the range for first level 3 area
+            const expectedVal = 0.08 / (0.2 - 0.06); //art value within the indicators range for first level 3 area
             const expectedColor = interpolateWarm(expectedVal);
             wrapper.find(MapControl).vm.$emit("indicator-changed", "art");
             expect(wrapper.findAll(LGeoJson).at(0).props("optionsStyle").fillColor).toBe(expectedColor);

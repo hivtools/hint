@@ -26,7 +26,6 @@
         center: number[],
         featuresByLevel: { [k: number]: any },
         style: any,
-        //indicatorData: { [k: string]: any },
         indicator: Indicator;
         detail: number;
     }
@@ -106,8 +105,7 @@
                 this.detail = newVal
             },
             getColorForRegion: function (region: string) {
-                const indicators = this.indicatorData;
-                let data = indicators.indicators[region];
+                let data = this.indicatorData.indicators[region];
                 data = data && data[this.indicator];
                 data = data && parseFloat(data) / (this.max - this.min);
                 return this.getColor(data);
