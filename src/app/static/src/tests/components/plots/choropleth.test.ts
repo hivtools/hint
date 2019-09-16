@@ -92,13 +92,51 @@ describe("Choropleth component", () => {
     });
 
     it("calculates indicators from filteredData", () => {
-        //default to prev
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         const vm = wrapper.vm as any;
         expect(vm.indicatorData).toEqual(testRegionIndicators);
     });
 
+    it("calculates prevEnabled and artEnabled when true", () => {
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+
+        const vm = wrapper.vm as any;
+        expect(vm.prevEnabled).toBe(true);
+        expect(vm.artEnabled).toBe(true);
+    });
+
+    it("calculates prevEnabled and artEnabled when false", () => {
+        const emptyStore = new Vuex.Store({
+            modules: {
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState({
+                        shape: mockShapeResponse({
+                            data: {features: fakeFeatures} as any
+                        })
+                    })
+                },
+                filteredData: {
+                    namespaced: true,
+                    getters: {
+                        regionIndicators: () => {
+                            return {
+                                indicators: {},
+                                artRange: {min: 0, max: 0},
+                                prevRange: {min: null, max: null}
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        const wrapper = shallowMount(Choropleth, {store: emptyStore, localVue});
+
+        const vm = wrapper.vm as any;
+        expect(vm.prevEnabled).toBe(false);
+        expect(vm.artEnabled).toBe(false);
+    });
 
     it("colors features according to indicator", (done) => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
