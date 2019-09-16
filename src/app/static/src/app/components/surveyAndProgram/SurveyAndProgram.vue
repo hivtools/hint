@@ -33,13 +33,13 @@
             <div class="col-md-9">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link" :class="survey.tabClass">Survey</a>
+                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)">Survey</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="programme.tabClass">Programme</a>
+                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)">Programme</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="anc.tabClass">ANC</a>
+                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)">ANC</a>
                     </li>
                 </ul>
                 <choropleth></choropleth>
@@ -62,7 +62,6 @@
     export default Vue.extend({
         name: "SurveyAndProgram",
         computed: mapState<RootState>({
-            activeTab: state => state.filteredData.selectedDataType,
             anc: ({surveyAndProgram, filteredData}) => ({
                 valid: !!surveyAndProgram.anc,
                 error: surveyAndProgram.ancError,
@@ -87,7 +86,7 @@
                 uploadSurvey: 'surveyAndProgram/uploadSurvey',
                 uploadProgram: 'surveyAndProgram/uploadProgram',
                 uploadANC: 'surveyAndProgram/uploadANC',
-                selectTab: 'surveyAndProgram/selectTab'
+                selectTab: 'filteredData/selectDataType'
             })
         },
         components: {
