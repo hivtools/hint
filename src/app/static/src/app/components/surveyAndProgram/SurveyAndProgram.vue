@@ -2,11 +2,12 @@
     <div>
         <div class="row">
             <div class="col">
-                <h1 class="h2 mb-4">Upload survey and program data</h1>
+                <h1 class="h2 mb-4">Upload survey and programme data</h1>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-6 col-md-4">
+            <div class="col-sm-3">
+
                 <form>
                     <file-upload label="Survey"
                                  :valid="survey.valid"
@@ -16,7 +17,7 @@
                                  accept="csv,.csv"
                                  name="survey">
                     </file-upload>
-                    <file-upload label="Program"
+                    <file-upload label="Programme"
                                  :valid="programme.valid"
                                  :error="programme.error"
                                  :upload="uploadProgram"
@@ -34,8 +35,14 @@
                     </file-upload>
                 </form>
             </div>
-            <div class="col-sm-6 col-md-8">
-                <filters></filters>
+
+            <div class="col-sm-6 col-md-8 sap-filters">
+                <div>
+                    <filters class="mb-2"></filters>
+                </div>
+                <div>
+                    <choropleth></choropleth>
+                </div>
             </div>
         </div>
     </div>
@@ -47,6 +54,7 @@
     import {mapActions, mapState} from "vuex";
     import {SurveyAndProgramDataState} from "../../store/surveyAndProgram/surveyAndProgram";
     import FileUpload from "../FileUpload.vue";
+    import Choropleth from "../plots/Choropleth.vue";
     import Filters from "../Filters.vue";
     import {PartialFileUploadProps} from "../../types";
 
@@ -80,6 +88,7 @@
         },
         components: {
             FileUpload,
+            Choropleth,
             Filters
         }
     })

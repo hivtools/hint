@@ -1,6 +1,6 @@
 <template>
-    <div class="container-fluid">
-        <div class="row">
+    <div class="container-fluid mb-5">
+        <div class="row justify-content-center">
             <template v-for="step in steps">
                 <step :key="step.number"
                       :active="active(step.number)"
@@ -15,11 +15,12 @@
                 </div>
             </template>
         </div>
-        <div class="pt-5">
+        <hr/>
+        <div class="pt-4">
             <baseline v-if="active(1)"></baseline>
             <survey-and-program v-if="active(2)"></survey-and-program>
         </div>
-        <div class="row">
+        <div class="row mt-2">
             <div class="col">
                 <a href="#" id="continue"
                    v-on:click="next"
@@ -59,7 +60,7 @@
                     },
                     {
                         number: 2,
-                        text: "Upload surveys and program data"
+                        text: "Upload survey and programme data"
                     },
                     {
                         number: 3,
