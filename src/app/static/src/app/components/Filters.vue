@@ -1,6 +1,6 @@
 <template>
     <div v-if="hasSelectedDataType">
-        <hr class="mt-2"/>
+        <hr class="my-5"/>
         <h4>Filter current view</h4>
         <div class="py-2">
             <label class="font-weight-bold">Sex</label>
