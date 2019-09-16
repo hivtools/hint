@@ -1,13 +1,7 @@
 <template>
     <div>
         <div class="row">
-            <div class="col">
-                <h1 class="h2 mb-4">Upload survey and programme data</h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-3">
-
+            <div class="col-md-3">
                 <form>
                     <file-upload label="Survey"
                                  :valid="survey.valid"
@@ -34,15 +28,10 @@
                                  name="anc">
                     </file-upload>
                 </form>
+                <filters></filters>
             </div>
-
-            <div class="col-sm-6 col-md-8 sap-filters">
-                <div>
-                    <filters class="mb-2"></filters>
-                </div>
-                <div>
-                    <choropleth></choropleth>
-                </div>
+            <div class="col-md-9 sap-filters">
+                <choropleth></choropleth>
             </div>
         </div>
     </div>

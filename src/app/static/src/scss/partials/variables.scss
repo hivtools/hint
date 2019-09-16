@@ -6,5 +6,12 @@
 @import "../../../node_modules/bootstrap/scss/functions";
 @import "../../../node_modules/bootstrap/scss/variables";
 
-
 $theme-red: #e31837;
+
+// this is really just a way of saying no max width for anything smaller than xl
+$container-max-widths: (
+        sm: 1000px,
+        md: 1001px,
+        lg: 1140px,
+        xl: 1141px
+);

@@ -1,5 +1,5 @@
 <template>
-    <div class="col step no-padding" :class="[{'active': active}]">
+    <div class="col step" :class="[{'active': active}]">
         <button class="btn" :class="[{'btn-red': active || complete}]"
                 :disabled="!enabled"
                 v-on:click="$emit('jump', number)">{{number}}
