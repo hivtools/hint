@@ -77,7 +77,8 @@ describe("Survey and program component", () => {
         const store = createStore(
             {
                 anc: mockAncResponse(),
-                survey: mockSurveyResponse()
+                survey: mockSurveyResponse(),
+                program: mockProgramResponse()
             },
             {
                 selectedDataType: DataType.Program
@@ -88,6 +89,14 @@ describe("Survey and program component", () => {
         wrapper.findAll(".nav-link").at(2).trigger("click");
         Vue.nextTick();
         expect(wrapper.find(".nav-link.active").text()).toBe("ANC");
+
+        wrapper.findAll(".nav-link").at(0).trigger("click");
+        Vue.nextTick();
+        expect(wrapper.find(".nav-link.active").text()).toBe("Survey");
+
+        wrapper.findAll(".nav-link").at(1).trigger("click");
+        Vue.nextTick();
+        expect(wrapper.find(".nav-link.active").text()).toBe("Programme");
 
     });
 
