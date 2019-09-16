@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid">
+    <div class="container-fluid mb-5">
         <div class="row justify-content-center">
             <template v-for="step in steps">
                 <step :key="step.number"
@@ -20,7 +20,7 @@
             <baseline v-if="active(1)"></baseline>
             <survey-and-program v-if="active(2)"></survey-and-program>
         </div>
-        <div class="row">
+        <div class="row mt-2">
             <div class="col">
                 <a href="#" id="continue"
                    v-on:click="next"

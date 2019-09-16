@@ -1,6 +1,8 @@
 @import "partials/variables";
+@import "partials/maps";
 @import "../../node_modules/bootstrap/scss/bootstrap";
-@import '../../node_modules/@riophae/vue-treeselect/dist/vue-treeselect';
+@import "../../node_modules/leaflet/dist/leaflet";
+@import "../../node_modules/@riophae/vue-treeselect/dist/vue-treeselect";
 
 a {
   color: $theme-red;
@@ -120,11 +122,12 @@ a {
   .vue-treeselect__checkbox--checked, .vue-treeselect__checkbox--indeterminate {
     border-color: $theme-red !important;
     background: $theme-red !important;
+    width: auto;
   }
 }
 
-.vue-treeselect__label-container {
-  width: auto;
+.vue-treeselect {
+  z-index: 1001;
 }
 
 .vue-treeselect__menu {
