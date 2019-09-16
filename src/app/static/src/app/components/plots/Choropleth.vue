@@ -15,7 +15,6 @@
     import {mapState} from "vuex";
     import {interpolateCool, interpolateWarm} from "d3-scale-chromatic"
     import {LGeoJson, LMap} from 'vue2-leaflet';
-    import axios from "axios"
     import {Feature} from "geojson";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
@@ -27,11 +26,9 @@
         center: number[],
         featuresByLevel: { [k: number]: any },
         style: any,
-        indicatorData: { [k: string]: any },
+        //indicatorData: { [k: string]: any },
         indicator: Indicator;
         detail: number;
-        max: number;
-        min: number;
     }
 
     export default Vue.extend<Data, any, any, any>({
@@ -44,8 +41,11 @@
         },
         computed: {
             ...mapState<BaselineState>("baseline", {
-                features: state => state.shape && state.shape.data.features
+                features: state => state.shape && state.shape.data.features,
             }),
+            indicatorData: function() {
+                return this.$store.getters['filteredData/regionIndicators'];
+            },
             currentFeatures: function () {
                 return this.featuresByLevel[this.detail || 1]
             },
@@ -54,6 +54,26 @@
                     return interpolateCool
                 } else {
                     return interpolateWarm
+                }
+            },
+            min: function() {
+                if (this.indicator) {
+                    if (this.indicator == "prev") {
+                        return this.indicatorData.prevRange.min;
+                    }
+                    if (this.indicator == "art") {
+                        return this.indicatorData.artRange.min;
+                    }
+                }
+            },
+            max: function() {
+                if (this.indicator) {
+                    if (this.indicator == "prev") {
+                        return this.indicatorData.prevRange.max;
+                    }
+                    if (this.indicator == "art") {
+                        return this.indicatorData.artRange.max;
+                    }
                 }
             }
         },
@@ -67,46 +87,27 @@
                     fillOpacity: 1.0,
                     color: 'grey'
                 },
-                indicatorData: {},
                 indicator: "prev",
-                detail: 4,
-                max: 0.25,
-                min: 0.03
+                detail: 4
             }
         },
         created() {
-            // TODO this data should come from the store
-            // and be a dictionary of all region ids to
-            // required indicators, already filtered/aggregated
-            axios.get('public/testdata/indicators.json')
-                .then(response => {
-                    this.indicatorData = response.data;
-                    this.features.forEach((feature: Feature) => {
-                        const areas = feature.properties!!["area_id"].split(".");
-                        const adminLevel = areas.length;
-                        this.featuresByLevel[adminLevel].push(feature);
-                    });
-                });
+            this.features.forEach((feature: Feature) => {
+                const areas = feature.properties!!["area_id"].split(".");
+                const adminLevel = areas.length;
+                this.featuresByLevel[adminLevel].push(feature);
+            });
         },
         methods: {
             onIndicatorChange: function (newVal: string) {
-                if (newVal) {
-                    if (newVal == "prev") {
-                        this.min = 0.03; // TODO just hard-coding these because I know the min/max of the data!
-                        this.max = 0.25; // should do something cleverer/get this back from the API
-                    }
-                    if (newVal == "art") {
-                        this.min = 0.13;
-                        this.max = 0.35;
-                    }
-                }
-                this.indicator = newVal
+                this.indicator = newVal;
             },
             onDetailChange: function (newVal: number) {
                 this.detail = newVal
             },
             getColorForRegion: function (region: string) {
-                let data = this.indicatorData[region];
+                const indicators = this.indicatorData;
+                let data = indicators.indicators[region];
                 data = data && data[this.indicator];
                 data = data && parseFloat(data) / (this.max - this.min);
                 return this.getColor(data);

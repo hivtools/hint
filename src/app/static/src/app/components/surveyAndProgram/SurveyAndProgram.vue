@@ -36,7 +36,7 @@
                 </form>
             </div>
 
-            <div class="col-sm-6 col-md-8 sap-filters">
+            <div v-if="hasSelectedDataType" class="col-sm-6 col-md-8 sap-filters">
                 <div>
                     <filters class="mb-2"></filters>
                 </div>
@@ -57,28 +57,34 @@
     import Choropleth from "../plots/Choropleth.vue";
     import Filters from "../Filters.vue";
     import {PartialFileUploadProps} from "../../types";
+    import {FilteredDataState} from "../../store/filteredData/filteredData";
 
     const namespace: string = 'surveyAndProgram';
 
     export default Vue.extend({
         name: "SurveyAndProgram",
-        computed: mapState<SurveyAndProgramDataState>(namespace, {
-            anc: state => ({
-                valid: !!state.anc,
-                error: state.ancError,
-                existingFileName: state.anc && state.anc.filename
-            } as PartialFileUploadProps),
-            programme: state => ({
-                valid: state.program != null,
-                error: state.programError,
-                existingFileName: state.program && state.program.filename
-            } as PartialFileUploadProps),
-            survey: state => ({
-                valid: state.survey != null,
-                error: state.surveyError,
-                existingFileName: state.survey && state.survey.filename
-            } as PartialFileUploadProps),
-        }),
+        computed: {
+                ...mapState<SurveyAndProgramDataState>(namespace, {
+                anc: state => ({
+                    valid: !!state.anc,
+                    error: state.ancError,
+                    existingFileName: state.anc && state.anc.filename
+                } as PartialFileUploadProps),
+                programme: state => ({
+                    valid: state.program != null,
+                    error: state.programError,
+                    existingFileName: state.program && state.program.filename
+                } as PartialFileUploadProps),
+                survey: state => ({
+                    valid: state.survey != null,
+                    error: state.surveyError,
+                    existingFileName: state.survey && state.survey.filename
+                } as PartialFileUploadProps),
+            }),
+            ...mapState<FilteredDataState>('filteredData', {
+                hasSelectedDataType: state => state.selectedDataType != null
+            })
+        },
         methods: {
             ...mapActions({
                 uploadSurvey: 'surveyAndProgram/uploadSurvey',

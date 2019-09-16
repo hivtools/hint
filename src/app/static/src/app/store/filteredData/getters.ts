@@ -1,6 +1,6 @@
 import {RootState} from "../../root";
 import {DataType, FilteredDataState} from "./filteredData";
-import {Indicators} from "../../types";
+import {Indicators, IndicatorRange, IndicatorsMap} from "../../types";
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
@@ -44,6 +44,18 @@ export const getters = {
         }
 
         const result = {} as {[k: string]: Indicators};
+        const artRange = {min: null, max: null} as IndicatorRange;
+        const prevRange = {min: null, max: null} as IndicatorRange;
+
+        const updateRange = (r: IndicatorRange, value: number) => {
+            if (r.min == null || r.min > value){
+                r.min = value;
+            }
+            if (r.max == null || r.max < value) {
+                r.max = value;
+            }
+        };
+
         for(const d of data) {
             const row = d as any;
             const areaId = row.area_id;
@@ -58,13 +70,21 @@ export const getters = {
             switch(indicator) {
                 case("prevalence"):
                     indicators.prev = value;
+                    updateRange(prevRange, value);
+
                     break;
                 case("art_coverage"):
                     indicators.art = value;
+                    updateRange(artRange, value);
+
                     break;
             }
         }
-        return result;
+        return {
+            indicators: result,
+            artRange: artRange,
+            prevRange: prevRange
+        };
     }
 };
 

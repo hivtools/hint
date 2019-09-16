@@ -12,13 +12,6 @@ Vue.use(Vuex);
 
 describe("Choropleth component", () => {
 
-    mockAxios.onGet('public/testdata/indicators.json')
-        .reply(200, {
-            "MWI.1.1.1": {prev: 0.1, art: 0.2},
-            "MWI.1.1.2": {prev: 0.05, art: 0.06},
-            "MWI.1.1": {prev: 0.07, art: 0.08}
-        });
-
     const fakeFeatures = [
         {
             "properties": {"iso3": "MWI", "area_id": "MWI.1.1"},
@@ -51,6 +44,22 @@ describe("Choropleth component", () => {
                         data: {features: fakeFeatures} as any
                     })
                 })
+            },
+            filteredData: {
+                namespaced: true,
+                getters: {
+                    regionIndicators: () => {
+                        return {
+                            indicators: {
+                                "MWI.1.1.1": {prev: 0.1, art: 0.08},
+                                "MWI.1.1.2": {prev: 0.05, art: 0.06},
+                                "MWI.1.1": {prev: 0.07, art: 0.2}
+                            },
+                            artRange: {min: 0.06, max:0.2},
+                            prevRange: {min: 0.05, max: 0.1}
+                        }
+                    }
+                }
             }
         }
     });
@@ -69,9 +78,7 @@ describe("Choropleth component", () => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         setTimeout(() => {
-            // max and min are hard-coded to 0.25 and 0.03 for prev
-            // and prev for the first admin level 3 feature has been mocked to 0.1
-            const expectedVal = 0.1 / (0.25 - 0.03);
+            const expectedVal = 0.1 / (0.1 - 0.05); //prev value within the range for first level 3 area
             const expectedColor = interpolateCool(expectedVal);
             expect(wrapper.findAll(LGeoJson).at(0).props("optionsStyle").fillColor).toBe(expectedColor);
             done();
@@ -82,9 +89,7 @@ describe("Choropleth component", () => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         setTimeout(() => {
-            // max and min are hard-coded to 0.35 and 0.13 for art
-            // and art for the first admin level 3 feature has been mocked to 0.2
-            const expectedVal = 0.2 / (0.35 - 0.13);
+            const expectedVal = 0.08 / (0.2 - 0.06); //art value within the range for first level 3 area
             const expectedColor = interpolateWarm(expectedVal);
             wrapper.find(MapControl).vm.$emit("indicator-changed", "art");
             expect(wrapper.findAll(LGeoJson).at(0).props("optionsStyle").fillColor).toBe(expectedColor);

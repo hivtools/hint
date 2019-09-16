@@ -1,5 +1,5 @@
 <template>
-    <div v-if="hasSelectedDataType">
+    <div>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-3">
@@ -57,7 +57,6 @@
         name: "Filters",
         computed: mapState<FilteredDataState>(namespace, {
 
-            hasSelectedDataType: state => state.selectedDataType != null,
             selectedDataFilterOptions: function() {
                 return this.$store.getters['filteredData/selectedDataFilterOptions']
             },

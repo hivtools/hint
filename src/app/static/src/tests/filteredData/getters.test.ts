@@ -282,9 +282,13 @@ describe("FilteredData mutations", () => {
         const regionIndicators = getters.regionIndicators(testState, getters, testRootState, null);
 
         const expected = {
-            "area1": {"prev": 2},
-            "area2": {"prev": 3, "art": 5},
-            "area3": {"art": 4}
+            indicators: {
+                "area1": {"prev": 2},
+                "area2": {"prev": 3, "art": 5},
+                "area3": {"art": 4}
+            },
+            artRange: {min: 4, max: 5},
+            prevRange: {min: 2, max: 3}
         };
 
         expect(regionIndicators).toStrictEqual(expected);

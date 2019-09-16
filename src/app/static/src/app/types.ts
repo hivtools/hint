@@ -13,6 +13,17 @@ export interface PartialFileUploadProps {
 }
 
 export interface Indicators {
-    prev?: number;
-    art?: number;
+    prev?: number,
+    art?: number
+}
+
+export interface IndicatorRange {
+    max: number | null,
+    min: number | null
+}
+
+export interface IndicatorsMap {
+    indicators: {[k: string]: Indicators},
+    artRange: IndicatorRange,
+    prevRange: IndicatorRange
 }
