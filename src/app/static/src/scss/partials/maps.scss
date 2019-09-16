@@ -29,6 +29,10 @@
   }
 }
 
+.vue-treeselect__menu {
+  overflow-x: auto;
+}
+
 .vue-treeselect__control {
   height: calc(1.5em + 0.75rem + 2px);
 }
