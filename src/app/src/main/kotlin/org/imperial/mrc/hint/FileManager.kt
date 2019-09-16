@@ -35,8 +35,8 @@ class LocalFileManager(
     override fun saveFile(file: MultipartFile, type: FileType): String {
         val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
         val fileName = file.originalFilename!!
-        val path = "$id/$type/$fileName"
-        val localFile = File("${appProperties.uploadDirectory}/$path")
+        val path = "${appProperties.uploadDirectory}/$id/$type/$fileName"
+        val localFile = File(path)
 
         if (localFile.parentFile.exists()) {
             FileUtils.cleanDirectory(localFile.parentFile)

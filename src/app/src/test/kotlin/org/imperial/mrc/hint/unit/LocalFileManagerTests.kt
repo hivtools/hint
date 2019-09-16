@@ -37,7 +37,7 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `can save file and return path`() {
+    fun `can save file and return full path`() {
 
         val sut = LocalFileManager(mock(), mockConfig, mockProperties)
 
@@ -47,7 +47,7 @@ class LocalFileManagerTests {
         val path = sut.saveFile(mockFile, FileType.Survey)
         val savedFile = File("$tmpUploadDirectory/fake-id/survey/some-file-name.pjnz")
         assertThat(savedFile.readLines().first()).isEqualTo("pjnz content")
-        assertThat(path).isEqualTo("fake-id/survey/some-file-name.pjnz")
+        assertThat(path).isEqualTo("tmp/fake-id/survey/some-file-name.pjnz")
     }
 
     @Test

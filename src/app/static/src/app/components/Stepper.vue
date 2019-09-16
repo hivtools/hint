@@ -1,6 +1,6 @@
 <template>
-    <div class="container-fluid mb-5">
-        <div class="row justify-content-center">
+    <div class="container mb-5">
+        <div class="row">
             <template v-for="step in steps">
                 <step :key="step.number"
                       :active="active(step.number)"
@@ -10,7 +10,7 @@
                       :complete="complete[step.number]"
                       @jump="jump">
                 </step>
-                <div class="col no-padding step-connector" v-if="step.number < steps.length">
+                <div class="col step-connector" v-if="step.number < steps.length">
                     <hr/>
                 </div>
             </template>

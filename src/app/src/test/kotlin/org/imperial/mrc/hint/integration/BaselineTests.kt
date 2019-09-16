@@ -20,15 +20,19 @@ class BaselineTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get shape data`(isAuthorized: IsAuthorized) {
+        val postEntity = getTestEntity("malawi.geojson")
+        testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/shape/")
-        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get population data`(isAuthorized: IsAuthorized) {
+        val postEntity = getTestEntity("population.csv")
+        testRestTemplate.postForEntity<String>("/baseline/population/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/population/")
-        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
     }
 
     @ParameterizedTest
