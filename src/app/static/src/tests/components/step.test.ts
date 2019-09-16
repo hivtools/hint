@@ -27,7 +27,7 @@ describe("Step component", () => {
             }
         });
 
-        expect(wrapper.classes()).toStrictEqual(["col", "step", "no-padding", "active"]);
+        expect(wrapper.classes()).toStrictEqual(["col", "step", "active"]);
         expect(wrapper.find("button").classes()).toStrictEqual(["btn", "btn-red"]);
     });
 
@@ -39,7 +39,7 @@ describe("Step component", () => {
             }
         });
 
-        expect(wrapper.classes()).toStrictEqual(["col", "step", "no-padding"]);
+        expect(wrapper.classes()).toStrictEqual(["col", "step"]);
         expect(wrapper.find("button").classes()).toStrictEqual(["btn"]);
     });
 
