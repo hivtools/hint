@@ -30,7 +30,18 @@
                 </form>
                 <filters></filters>
             </div>
-            <div class="col-md-9 sap-filters">
+            <div class="col-md-9">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" :class="survey.tabClass">Survey</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="programme.tabClass">Programme</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="anc.tabClass">ANC</a>
+                    </li>
+                </ul>
                 <choropleth></choropleth>
             </div>
         </div>
@@ -41,38 +52,42 @@
 
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
-    import {SurveyAndProgramDataState} from "../../store/surveyAndProgram/surveyAndProgram";
     import FileUpload from "../FileUpload.vue";
     import Choropleth from "../plots/Choropleth.vue";
     import Filters from "../Filters.vue";
     import {PartialFileUploadProps} from "../../types";
-
-    const namespace: string = 'surveyAndProgram';
+    import {RootState} from "../../root";
+    import {DataType} from "../../store/filteredData/filteredData";
 
     export default Vue.extend({
         name: "SurveyAndProgram",
-        computed: mapState<SurveyAndProgramDataState>(namespace, {
-            anc: state => ({
-                valid: !!state.anc,
-                error: state.ancError,
-                existingFileName: state.anc && state.anc.filename
+        computed: mapState<RootState>({
+            activeTab: state => state.filteredData.selectedDataType,
+            anc: ({surveyAndProgram, filteredData}) => ({
+                valid: !!surveyAndProgram.anc,
+                error: surveyAndProgram.ancError,
+                existingFileName: surveyAndProgram.anc && surveyAndProgram.anc.filename,
+                tabClass: {"disabled": !surveyAndProgram.anc, "active": filteredData.selectedDataType == DataType.ANC}
             } as PartialFileUploadProps),
-            programme: state => ({
-                valid: state.program != null,
-                error: state.programError,
-                existingFileName: state.program && state.program.filename
+            programme: ({surveyAndProgram, filteredData}) => ({
+                valid: surveyAndProgram.program != null,
+                error: surveyAndProgram.programError,
+                existingFileName: surveyAndProgram.program && surveyAndProgram.program.filename,
+                tabClass: {"disabled": !surveyAndProgram.program, "active": filteredData.selectedDataType == DataType.Program}
             } as PartialFileUploadProps),
-            survey: state => ({
-                valid: state.survey != null,
-                error: state.surveyError,
-                existingFileName: state.survey && state.survey.filename
+            survey: ({surveyAndProgram, filteredData}) => ({
+                valid: surveyAndProgram.survey != null,
+                error: surveyAndProgram.surveyError,
+                existingFileName: surveyAndProgram.survey && surveyAndProgram.survey.filename,
+                tabClass: {"disabled": !surveyAndProgram.survey, "active": filteredData.selectedDataType == DataType.Survey}
             } as PartialFileUploadProps),
         }),
         methods: {
             ...mapActions({
                 uploadSurvey: 'surveyAndProgram/uploadSurvey',
                 uploadProgram: 'surveyAndProgram/uploadProgram',
-                uploadANC: 'surveyAndProgram/uploadANC'
+                uploadANC: 'surveyAndProgram/uploadANC',
+                selectTab: 'surveyAndProgram/selectTab'
             })
         },
         components: {

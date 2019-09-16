@@ -2,6 +2,7 @@
   border: 1px solid #adb5bd;
   background: white;
 }
+
 .legend i {
   width: 18px;
   height: 18px;
@@ -30,4 +31,25 @@
 
 .vue-treeselect__control {
   height: calc(1.5em + 0.75rem + 2px);
+}
+
+.nav-tabs {
+  border-bottom: 1px solid $theme-red;
+
+  .nav-link {
+
+    &:not(.disabled) {
+      cursor: pointer;
+    }
+
+    &.active {
+      color: white;
+      background-color: $theme-red;
+      border-color: $theme-red;
+    }
+
+    &:hover {
+      border-color: $theme-red;
+    }
+  }
 }
