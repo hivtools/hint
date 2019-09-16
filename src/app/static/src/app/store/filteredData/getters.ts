@@ -37,27 +37,14 @@ export const getters = {
         }
         return result;
     },
-    unfilteredData: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
-        const sapState = rootState.surveyAndProgram;
-        switch(state.selectedDataType){
-            case (DataType.ANC):
-                return sapState.anc ? sapState.anc.data : null;
-            case (DataType.Program):
-                return sapState.program ? sapState.program.data : null;
-            case (DataType.Survey):
-                return sapState.survey ? sapState.survey.data : null;
-            default:
-                return null;
-        }
-    },
     regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-        const data =  this.unfilteredData(state, getters, rootState, rootGetters);
+        const data =  getUnfilteredData(state, rootState);
         if (!data) {
             return null;
         }
 
-        const result = {} as { [k: string]: Indicators}
-        for(const d in data) {
+        const result = {} as {[k: string]: Indicators};
+        for(const d of data) {
             const row = d as any;
             const areaId = row.area_id;
             const value = row.value;
@@ -78,6 +65,19 @@ export const getters = {
             }
         }
         return result;
+    }
+};
 
+export const getUnfilteredData = (state: FilteredDataState, rootState: RootState) => {
+    const sapState = rootState.surveyAndProgram;
+    switch(state.selectedDataType){
+        case (DataType.ANC):
+            return sapState.anc ? sapState.anc.data : null;
+        case (DataType.Program):
+            return sapState.program ? sapState.program.data : null;
+        case (DataType.Survey):
+            return sapState.survey ? sapState.survey.data : null;
+        default:
+            return null;
     }
 };

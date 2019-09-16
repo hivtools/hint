@@ -1,4 +1,4 @@
-import {getters} from "../../app/store/filteredData/getters"
+import {getters, getUnfilteredData} from "../../app/store/filteredData/getters"
 import {initialBaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
 import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
@@ -158,7 +158,7 @@ describe("FilteredData mutations", () => {
             filteredData: testState
         };
 
-        const unfilteredData = getters.unfilteredData(testState, null, testRootState, null);
+        const unfilteredData = getUnfilteredData(testState, testRootState);
         expect(unfilteredData).toStrictEqual(testData);
     });
 
@@ -172,14 +172,100 @@ describe("FilteredData mutations", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
+                indicator: "art_coverage",
+                value: 2
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                indicator: "art_coverage",
+                value: 3
+            }
+        ];
+        const testRootState = {
+            version: "",
+            selectedDataType: null,
+            baseline: {...initialBaselineState},
+            surveyAndProgram: mockSurveyAndProgramState(
+                {program: mockProgramResponse(
+                        {data: testData}
+                    )}),
+            filteredData: testState
+        };
+
+        const unfilteredData = getUnfilteredData(testState, testRootState);
+        expect(unfilteredData).toStrictEqual(testData);
+    });
+
+    it("gets unfilteredData when selectedDataType is ANC", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState, selectedDataType: DataType.ANC},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testData = [
+            {
+                iso3: "MWI",
+                area_id: "area1",
                 indicator: "prevalence",
                 value: 2
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
+                indicator: "arevalence",
+                value: 3
+            }
+        ];
+        const testRootState = {
+            version: "",
+            selectedDataType: null,
+            baseline: {...initialBaselineState},
+            surveyAndProgram: mockSurveyAndProgramState(
+                {anc: mockAncResponse(
+                        {data: testData}
+                    )}),
+            filteredData: testState
+        };
+
+        const unfilteredData = getUnfilteredData(testState, testRootState);
+        expect(unfilteredData).toStrictEqual(testData);
+    });
+
+    it("gets regionIndicators", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState, selectedDataType: DataType.Survey},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testData = [
+            {
+                iso3: "MWI",
+                area_id: "area1",
+                survey_id: "s1",
+                indicator: "prevalence",
+                value: 2
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                survey_id: "s1",
                 indicator: "prevalence",
                 value: 3
+            },
+            {
+                iso3: "MWI",
+                area_id: "area3",
+                survey_id: "s1",
+                indicator: "art_coverage",
+                value: 4
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                survey_id: "s1",
+                indicator: "art_coverage",
+                value: 5
             }
         ];
         const testRootState = {
@@ -193,7 +279,15 @@ describe("FilteredData mutations", () => {
             filteredData: testState
         };
 
-        const unfilteredData = getters.unfilteredData(testState, null, testRootState, null);
-        expect(unfilteredData).toStrictEqual(testData);
+        const regionIndicators = getters.regionIndicators(testState, getters, testRootState, null);
+
+        const expected = {
+            "area1": {"prev": 2},
+            "area2": {"prev": 3, "art": 5},
+            "area3": {"art": 4}
+        };
+
+        expect(regionIndicators).toStrictEqual(expected);
     });
+
 });
