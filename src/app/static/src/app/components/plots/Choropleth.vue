@@ -6,7 +6,9 @@
             </l-geo-json>
         </template>
         <map-control @indicator-changed="onIndicatorChange"
-                     @detail-changed="onDetailChange"></map-control>
+                     @detail-changed="onDetailChange"
+                     :indicator="indicator"
+                    :artEnabled="artEnabled" :prevEnabled="prevEnabled"></map-control>
         <map-legend :getColor="getColor" :max="max" :min="min"></map-legend>
     </l-map>
 </template>
@@ -74,6 +76,20 @@
                         return this.indicatorData.artRange.max;
                     }
                 }
+            },
+            prevEnabled: function() {
+                const result = !!(this.indicatorData.prevRange.min || this.indicatorData.prevRange.max);
+                if (!result && this.indicator == "prev") {
+                    this.indicator = "art";
+                }
+                return result;
+            },
+            artEnabled: function() {
+                const result = !!(this.indicatorData.artRange.min || this.indicatorData.artRange.max);
+                if (!result && this.indicator == "art") {
+                    this.indicator = "prev";
+                }
+                return result;
             }
         },
         data(): Data {
