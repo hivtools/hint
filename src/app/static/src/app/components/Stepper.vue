@@ -1,6 +1,6 @@
 <template>
-    <div class="container mb-5">
-        <div class="row">
+    <div class="container-fluid mb-5">
+        <div class="row justify-content-center">
             <template v-for="step in steps">
                 <step :key="step.number"
                       :active="active(step.number)"
@@ -10,12 +10,13 @@
                       :complete="complete[step.number]"
                       @jump="jump">
                 </step>
-                <div class="col no-padding" v-if="step.number < steps.length">
+                <div class="col no-padding step-connector" v-if="step.number < steps.length">
                     <hr/>
                 </div>
             </template>
         </div>
-        <div class="pt-5">
+        <hr/>
+        <div class="pt-4">
             <baseline v-if="active(1)"></baseline>
             <survey-and-program v-if="active(2)"></survey-and-program>
         </div>
@@ -59,7 +60,7 @@
                     },
                     {
                         number: 2,
-                        text: "Upload survey and program data"
+                        text: "Upload survey and programme data"
                     },
                     {
                         number: 3,

@@ -24,7 +24,7 @@ describe("Survey and program mutations", () => {
         })
     };
 
-    it("sets survey data and filename on SurveyLoaded", () => {
+    it("sets surveys data and filename on SurveyLoaded", () => {
         const testState = {...initialSurveyAndProgramDataState};
         mutations.SurveyLoaded(testState, testPayload);
         expect(testState.survey!!.data).toStrictEqual(testData);

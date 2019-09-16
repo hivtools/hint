@@ -5,6 +5,7 @@ HERE=$(dirname "$0")
 NETWORK=hint_nw
 DB=hint_db
 API=hintr
+REDIS=hintr_redis
 
 "$HERE"/run-dependencies.sh
 
@@ -14,6 +15,7 @@ trap cleanup ERR
 function cleanup() {
   docker kill $DB
   docker kill $API
+  docker kill $REDIS
   docker network rm $NETWORK
 }
 
