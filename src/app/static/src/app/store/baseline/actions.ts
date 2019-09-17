@@ -1,4 +1,4 @@
-import {ActionContext, ActionTree} from 'vuex';
+import {ActionContext, ActionTree, Commit} from 'vuex';
 import {BaselineState} from "./baseline";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
@@ -17,6 +17,7 @@ export interface BaselineActions {
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async uploadPJNZ({commit}, formData) {
+        commit({type: "PJNZLoaded", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("PJNZUploaded")
             .withError("PJNZUploadError")
@@ -24,6 +25,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadShape({commit}, formData) {
+        commit({type: "ShapeUploaded", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("ShapeUploaded")
             .withError("ShapeUploadError")
@@ -31,6 +33,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadPopulation({commit}, formData) {
+        commit({type: "PopulationUploaded", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("PopulationUploaded")
             .withError("PopulationUploadError")

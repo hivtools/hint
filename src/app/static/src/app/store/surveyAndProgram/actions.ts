@@ -22,6 +22,7 @@ function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
 export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
 
     async uploadSurvey({commit}, formData) {
+        commit({type: "SurveyLoaded", payload: null});
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("SurveyError")
             .withSuccess("SurveyLoaded")
@@ -34,6 +35,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     },
 
     async uploadProgram({commit}, formData) {
+        commit({type: "ProgramLoaded", payload: null});
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("ProgramError")
             .withSuccess("ProgramLoaded")
@@ -46,6 +48,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     },
 
     async uploadANC({commit}, formData) {
+        commit({type: "ANCLoaded", payload: null});
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("ANCError")
             .withSuccess("ANCLoaded")

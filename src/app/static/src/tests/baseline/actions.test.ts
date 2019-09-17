@@ -24,10 +24,11 @@ describe("Baseline actions", () => {
         const commit = jest.fn();
         await actions.uploadPJNZ({commit} as any, new FormData());
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUploaded", payload: {data: {country: "Malawi"}}});
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZLoaded", payload: null});
+        expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUploaded", payload: {data: {country: "Malawi"}}});
     });
 
-    testUploadErrorCommitted("/baseline/pjnz/", "PJNZUploadError", actions.uploadPJNZ);
+    testUploadErrorCommitted("/baseline/pjnz/", "PJNZUploadError", "PJNZLoaded", actions.uploadPJNZ);
 
     it("commits response after shape file upload", async () => {
 
@@ -39,6 +40,10 @@ describe("Baseline actions", () => {
         await actions.uploadShape({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "ShapeUploaded",
+            payload: null
+        });
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "ShapeUploaded",
             payload: mockShape
         });
@@ -55,11 +60,15 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "PopulationUploaded",
+            payload: null
+        });
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "PopulationUploaded",
             payload: mockPop
         });
     });
 
-    testUploadErrorCommitted("/baseline/shape/", "ShapeUploadError", actions.uploadShape);
+    testUploadErrorCommitted("/baseline/shape/", "ShapeUploadError", "ShapeUploaded", actions.uploadShape);
 
     it("gets baseline data and commits it", (done) => {
 

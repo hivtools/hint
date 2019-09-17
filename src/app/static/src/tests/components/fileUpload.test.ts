@@ -1,8 +1,11 @@
 import {shallowMount, Slots} from '@vue/test-utils';
+import Vue from 'vue';
+
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import Tick from "../../app/components/Tick.vue";
 import FileUpload from "../../app/components/FileUpload.vue";
 import {mockFileList} from "../mocks";
+import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 
 describe("File upload component", () => {
 
@@ -124,4 +127,49 @@ describe("File upload component", () => {
             done();
         });
     });
+
+    it("renders loading spinner while uploading with success", async () => {
+        const uploader = jest.fn();
+        const wrapper = createSut({
+            upload: uploader,
+            valid: false
+        });
+
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAll(Tick).length).toBe(0);
+
+        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAll(Tick).length).toBe(0);
+
+        wrapper.setProps({valid: true});
+
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAll(Tick).length).toBe(1);
+    });
+
+    it("renders loading spinner while uploading with error", async () => {
+        const uploader = jest.fn();
+        const wrapper = createSut({
+            upload: uploader,
+            valid: false,
+            error: ""
+        });
+
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAll(Tick).length).toBe(0);
+
+        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAll(Tick).length).toBe(0);
+
+        wrapper.setProps({error: "Some error"});
+
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAll(Tick).length).toBe(0);
+
+    });
+
 });

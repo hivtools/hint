@@ -32,10 +32,12 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
             state.country = data.data.country;
             state.pjnzFilename = data.filename;
          }
+        state.pjnzError = "";
     },
 
     ShapeUploaded(state: BaselineState, action: PayloadWithType<ShapeResponse>) {
-        state.shape = action.payload
+        state.shape = action.payload;
+        state.shapeError = "";
     },
 
     ShapeUploadError(state: BaselineState, action: PayloadWithType<string>) {
@@ -43,7 +45,8 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
     },
 
     PopulationUploaded(state: BaselineState, action: PayloadWithType<PopulationResponse>) {
-        state.population = action.payload
+        state.population = action.payload;
+        state.populationError = "";
     },
 
     PopulationUploadError(state: BaselineState, action: PayloadWithType<string>) {

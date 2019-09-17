@@ -63,32 +63,35 @@ describe("Baseline mutations", () => {
         expect(testState.pjnzError).toBe("Some error");
     });
 
-    it("sets country and filename if present on PJNZLoaded", () => {
+    it("sets country and filename and clears error if present on PJNZLoaded", () => {
 
-        const testState = {...initialBaselineState};
+        const testState = {...initialBaselineState, pjnzError : "test"};
         mutations.PJNZLoaded(testState, {
             payload: mockPJNZResponse({filename: "file.pjnz", data: {country: "Malawi"}})
         });
         expect(testState.pjnzFilename).toBe("file.pjnz");
         expect(testState.country).toBe("Malawi");
+        expect(testState.pjnzError).toBe("");
     });
 
     it("does nothing on PJNZLoaded if no data present", () => {
 
-        const testState = {...initialBaselineState};
+        const testState = {...initialBaselineState, pjnzError: ""};
         mutations.PJNZLoaded(testState, {payload: null});
         expect(testState.pjnzFilename).toBe("");
         expect(testState.country).toBe("");
+        expect(testState.pjnzError).toBe("");
     });
 
-    it("sets shape on ShapeLoaded", () => {
+    it("sets shape and clears error on ShapeLoaded", () => {
 
         const mockShape = mockShapeResponse();
-        const testState = {...initialBaselineState};
+        const testState = {...initialBaselineState, shapeError: ""};
         mutations.ShapeUploaded(testState, {
             payload: mockShape
         });
         expect(testState.shape).toBe(mockShape);
+        expect(testState.shapeError).toBe("");
     });
 
     it("sets error on ShapeUploadError", () => {
@@ -98,14 +101,15 @@ describe("Baseline mutations", () => {
         expect(testState.shapeError).toBe("Some error");
     });
 
-    it("sets response on PopulationLoaded", () => {
+    it("sets response and clears error on PopulationLoaded", () => {
 
         const mockPop = mockPopulationResponse();
-        const testState = {...initialBaselineState};
+        const testState = {...initialBaselineState, populationError: "test"};
         mutations.PopulationUploaded(testState, {
             payload: mockPop
         });
         expect(testState.population).toBe(mockPop);
+        expect(testState.populationError).toBe("");
     });
 
     it("sets error on PopulationUploadError", () => {
