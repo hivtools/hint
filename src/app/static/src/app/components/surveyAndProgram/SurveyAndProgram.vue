@@ -1,38 +1,36 @@
 <template>
-    <div>
-        <div class="row">
-            <div class="col-md-3">
-                <form>
-                    <file-upload label="Survey"
-                                 :valid="survey.valid"
-                                 :error="survey.error"
-                                 :upload="uploadSurvey"
-                                 :existingFileName="survey.existingFileName"
-                                 accept="csv,.csv"
-                                 name="survey">
-                    </file-upload>
-                    <file-upload label="Programme"
-                                 :valid="programme.valid"
-                                 :error="programme.error"
-                                 :upload="uploadProgram"
-                                 :existingFileName="programme.existingFileName"
-                                 accept="csv,.csv"
-                                 name="program">
-                    </file-upload>
-                    <file-upload label="ANC"
-                                 :valid="anc.valid"
-                                 :error="anc.error"
-                                 :upload="uploadANC"
-                                 :existingFileName="anc.existingFileName"
-                                 accept="csv,.csv"
-                                 name="anc">
-                    </file-upload>
-                </form>
-                <filters></filters>
-            </div>
-            <div class="col-md-9 sap-filters">
-                <choropleth></choropleth>
-            </div>
+    <div class="row">
+        <div class="col-md-3">
+            <form>
+                <file-upload label="Survey"
+                             :valid="survey.valid"
+                             :error="survey.error"
+                             :upload="uploadSurvey"
+                             :existingFileName="survey.existingFileName"
+                             accept="csv,.csv"
+                             name="survey">
+                </file-upload>
+                <file-upload label="Programme"
+                             :valid="programme.valid"
+                             :error="programme.error"
+                             :upload="uploadProgram"
+                             :existingFileName="programme.existingFileName"
+                             accept="csv,.csv"
+                             name="program">
+                </file-upload>
+                <file-upload label="ANC"
+                             :valid="anc.valid"
+                             :error="anc.error"
+                             :upload="uploadANC"
+                             :existingFileName="anc.existingFileName"
+                             accept="csv,.csv"
+                             name="anc">
+                </file-upload>
+            </form>
+            <filters></filters>
+        </div>
+        <div class="col-md-9 sap-filters">
+            <choropleth></choropleth>
         </div>
     </div>
 </template>
