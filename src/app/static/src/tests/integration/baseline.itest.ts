@@ -36,7 +36,7 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadShape({commit} as any, formData);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUploaded");
+        expect(commit.mock.calls[1][0]["type"]).toBe("ShapeUploaded");
 
     }, 10000);
 
@@ -47,7 +47,7 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadPopulation({commit} as any, formData);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUploaded");
+        expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUploaded");
     });
 
 });

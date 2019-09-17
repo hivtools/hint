@@ -17,8 +17,8 @@ describe("Survey and program actions", () => {
         await actions.uploadSurvey({commit} as any, formData);
 
 
-        expect(commit.mock.calls[0][0]["type"]).toBe("SurveyLoaded");
-        expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.Survey);
+        expect(commit.mock.calls[1][0]["type"]).toBe("SurveyLoaded");
+        expectSelectedDataTypeUpdate(commit.mock.calls[2], DataType.Survey);
     });
 
     it("can upload program", async () => {
@@ -31,8 +31,8 @@ describe("Survey and program actions", () => {
 
         await actions.uploadProgram({commit} as any, formData);
 
-        expect(commit.mock.calls[0][0]["type"]).toBe("ProgramLoaded");
-        expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.Program);
+        expect(commit.mock.calls[1][0]["type"]).toBe("ProgramLoaded");
+        expectSelectedDataTypeUpdate(commit.mock.calls[2], DataType.Program);
     });
 
     it("can upload anc", async () => {
@@ -45,8 +45,8 @@ describe("Survey and program actions", () => {
 
         await actions.uploadANC({commit} as any, formData);
 
-        expect(commit.mock.calls[0][0]["type"]).toBe("ANCLoaded");
-        expectSelectedDataTypeUpdate(commit.mock.calls[1], DataType.ANC);
+        expect(commit.mock.calls[1][0]["type"]).toBe("ANCLoaded");
+        expectSelectedDataTypeUpdate(commit.mock.calls[2], DataType.ANC);
     });
 
     function expectSelectedDataTypeUpdate(params: any[], dataType: DataType){
