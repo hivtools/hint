@@ -169,7 +169,26 @@ describe("File upload component", () => {
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAll(Tick).length).toBe(0);
-
     });
+
+    it("file input label gets uploading class while uploading", async () => {
+        const uploader = jest.fn();
+        const wrapper = createSut({
+            upload: uploader,
+            valid: false,
+            error: ""
+        });
+
+        expect(wrapper.find(".custom-file-label").classes()).not.toContain("uploading");
+
+        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+
+        expect(wrapper.find(".custom-file-label").classes()).toContain("uploading");
+
+        wrapper.setProps({error: "Some error"});
+
+        expect(wrapper.find(".custom-file-label").classes()).not.toContain("uploading");
+    });
+
 
 });
