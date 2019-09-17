@@ -1,11 +1,19 @@
 package org.imperial.mrc.hint.controllers
 
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.imperial.mrc.hint.APIClient
+import org.imperial.mrc.hint.FileManager
+import org.imperial.mrc.hint.models.ModelRunParameters
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/model")
-class ModelRunController {
+class ModelRunController(val fileManager: FileManager, val apiClient: APIClient) {
 
-
+    @PostMapping("/run/")
+    @ResponseBody
+    fun uploadSurvey(@RequestBody params: ModelRunParameters): ResponseEntity<String> {
+        val allFiles = fileManager.getAllFiles()
+        return apiClient.submit(allFiles, params)
+    }
 }

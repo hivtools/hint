@@ -64,7 +64,7 @@ class LocalFileManager(
 
         val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
         return enumValues<FileType>().associate {
-            it.name to (File("${appProperties.uploadDirectory}/$id/${it}")
+            it.toString() to (File("${appProperties.uploadDirectory}/$id/${it}")
                     .listFiles()?.first()?.path ?: "")
         }
 
