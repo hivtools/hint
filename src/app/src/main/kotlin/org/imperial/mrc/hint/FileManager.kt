@@ -24,6 +24,7 @@ enum class FileType {
 interface FileManager {
     fun saveFile(file: MultipartFile, type: FileType): String
     fun getFile(type: FileType): File?
+    fun getAllFiles(): Map<String, String>
 }
 
 @Component
@@ -57,6 +58,16 @@ class LocalFileManager(
                 .listFiles()
 
         return pjnzFiles?.first()
+    }
+
+    override fun getAllFiles(): Map<String, String> {
+
+        val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
+        return enumValues<FileType>().associate {
+            it.name to (File("${appProperties.uploadDirectory}/$id/${it}")
+                    .listFiles()?.first()?.path ?: "")
+        }
+
     }
 }
 

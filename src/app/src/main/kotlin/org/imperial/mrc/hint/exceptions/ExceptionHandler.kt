@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.servlet.http.HttpServletRequest
 import javax.validation.ConstraintViolationException
 
-
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 class HintExceptionHandler : ResponseEntityExceptionHandler() {

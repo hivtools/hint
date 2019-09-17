@@ -8,7 +8,6 @@ import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.HintrController
 import org.junit.jupiter.api.AfterEach
-import org.mockito.internal.verification.Times
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.mock.web.MockMultipartFile
@@ -42,7 +41,7 @@ abstract class HintrControllerTests {
 
     protected fun getMockAPIClient(type: FileType): APIClient {
         return mock {
-            on { validate("test-path", type) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
+            on { validateBaseline("test-path", type) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
         }
     }
 
@@ -58,7 +57,7 @@ abstract class HintrControllerTests {
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
         verify(mockFileManager).saveFile(mockFile, fileType)
-        verify(mockApiClient).validate("test-path", fileType)
+        verify(mockApiClient).validateBaseline("test-path", fileType)
     }
 
     protected fun assertGetsIfExists(fileType: FileType,
@@ -72,7 +71,7 @@ abstract class HintrControllerTests {
         var result = getAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
-        verify(mockApiClient).validate("test-path", fileType)
+        verify(mockApiClient).validateBaseline("test-path", fileType)
 
         // should return a null result when null is returned from the file manager
         sut = getSut(mock(), mockApiClient)
