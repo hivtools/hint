@@ -6,17 +6,18 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 interface APIClient {
-    fun validate(path: String, type: FileType): ResponseEntity<String>
+    fun validateBaseline(path: String, type: FileType): ResponseEntity<String>
+    fun validateSurveyAndProgramme(path: String, shapePath: String, type: FileType): ResponseEntity<String>
 }
 
 @Component
-class HintAPIClient(
+class HintrAPIClient(
         appProperties: AppProperties,
         private val objectMapper: ObjectMapper) : APIClient {
 
     private val baseUrl = appProperties.apiUrl
 
-    override fun validate(path: String, type: FileType): ResponseEntity<String> {
+    override fun validateBaseline(path: String, type: FileType): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().toLowerCase(),
@@ -31,4 +32,19 @@ class HintAPIClient(
                 .asResponseEntity()
     }
 
+    override fun validateSurveyAndProgramme(path: String, shapePath: String, type: FileType): ResponseEntity<String> {
+
+        val json = objectMapper.writeValueAsString(
+                mapOf("type" to type.toString().toLowerCase(),
+                        "path" to path,
+                        "shape" to shapePath))
+
+        return "$baseUrl/validate/survey-and-programme"
+                .httpPost()
+                .header("Content-Type" to "application/json")
+                .body(json)
+                .response()
+                .second
+                .asResponseEntity()
+    }
 }
