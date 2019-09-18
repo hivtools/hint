@@ -33,9 +33,15 @@ class ModelRunTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get model run status`(isAuthorized: IsAuthorized) {
-        val entity = getJsonEntity()
-        val runResult = testRestTemplate.postForEntity<String>("/model/run/", entity)
-        val id = ObjectMapper().readValue<JsonNode>(runResult.body!!)["data"]["id"].textValue()
+
+        val id = when(isAuthorized){
+            IsAuthorized.TRUE -> {
+                val entity = getJsonEntity()
+                val runResult = testRestTemplate.postForEntity<String>("/model/run/", entity)
+                ObjectMapper().readValue<JsonNode>(runResult.body!!)["data"]["id"].textValue()
+            }
+            IsAuthorized.FALSE -> "nonsense"
+        }
 
         val responseEntity = testRestTemplate.getForEntity<String>("/model/status/${id}")
         assertSecureWithSuccess(isAuthorized, responseEntity, "ModelStatusResponse")
