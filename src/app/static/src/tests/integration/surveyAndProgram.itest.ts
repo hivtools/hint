@@ -1,5 +1,4 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
-import {DataType} from "../../app/store/filteredData/filteredData";
 
 const fs = require("fs");
 const FormData = require("form-data");
@@ -16,9 +15,13 @@ describe("Survey and program actions", () => {
 
         await actions.uploadSurvey({commit} as any, formData);
 
+        // Unfortunately we can't test the success path because it relies on a persistent
+        // session between uploading a shape file and a survey file. But the success path is
+        // under test in the unit tests
+        expect(commit.mock.calls[1][0]["type"]).toBe("SurveyError");
+        expect(commit.mock.calls[1][0]["payload"])
+            .toBe("You must upload a shape file before uploading survey or programme data")
 
-        expect(commit.mock.calls[1][0]["type"]).toBe("SurveyLoaded");
-        expectSelectedDataTypeUpdate(commit.mock.calls[2], DataType.Survey);
     });
 
     it("can upload program", async () => {
@@ -31,8 +34,12 @@ describe("Survey and program actions", () => {
 
         await actions.uploadProgram({commit} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe("ProgramLoaded");
-        expectSelectedDataTypeUpdate(commit.mock.calls[2], DataType.Program);
+        // Unfortunately we can't test the success path because it relies on a persistent
+        // session between uploading a shape file and a program file. But the success path is
+        // under test in the unit tests
+        expect(commit.mock.calls[1][0]["type"]).toBe("ProgramError");
+        expect(commit.mock.calls[1][0]["payload"])
+            .toBe("You must upload a shape file before uploading survey or programme data")
     });
 
     it("can upload anc", async () => {
@@ -45,17 +52,14 @@ describe("Survey and program actions", () => {
 
         await actions.uploadANC({commit} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe("ANCLoaded");
-        expectSelectedDataTypeUpdate(commit.mock.calls[2], DataType.ANC);
+        // Unfortunately we can't test the success path because it relies on a persistent
+        // session between uploading a shape file and an anc file. But the success path is
+        // under test in the unit tests
+        expect(commit.mock.calls[1][0]["type"]).toBe("ANCError");
+        expect(commit.mock.calls[1][0]["payload"])
+            .toBe("You must upload a shape file before uploading survey or programme data")
+
     });
 
-    function expectSelectedDataTypeUpdate(params: any[], dataType: DataType){
-        expect(params[0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
-        expect(params[1]).toStrictEqual({
-            type: "SelectedDataTypeUpdated",
-            payload: dataType
-        });
-        expect(params[2]).toStrictEqual({root: true});
-    }
 
 });

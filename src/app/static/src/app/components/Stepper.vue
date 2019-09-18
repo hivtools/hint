@@ -19,6 +19,7 @@
         <div class="pt-4">
             <baseline v-if="active(1)"></baseline>
             <survey-and-program v-if="active(2)"></survey-and-program>
+            <p v-if="active(3)">Functionality coming soon.</p>
         </div>
         <div class="row mt-2">
             <div class="col">
@@ -87,7 +88,7 @@
                 return {
                     1: this.baselineComplete,
                     2: this.surveyAndProgramComplete,
-                    3: false,
+                    3: this.surveyAndProgramComplete, // for now just mark as complete as soon as it's ready
                     4: false,
                     5: false
                 }
