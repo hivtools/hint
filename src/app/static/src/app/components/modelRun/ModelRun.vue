@@ -43,6 +43,11 @@
                     this.poll(newVal)
                 }
             }
+        },
+        created() {
+            if (this.runId){
+                this.poll(this.runId);
+            }
         }
     });
 </script>
