@@ -12,5 +12,6 @@ export interface ModelRunMutations {
 export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
     ModelRunStarted(state: ModelRunState, action: PayloadWithType<ModelSubmitResponse>) {
         state.modelRunId = action.payload.id;
+        state.status = "Started"
     }
 };

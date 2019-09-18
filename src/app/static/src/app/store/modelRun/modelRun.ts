@@ -5,10 +5,14 @@ import {mutations} from "./mutations";
 
 export interface ModelRunState {
     modelRunId: string
+    status: ModelRunStatus
 }
 
+export type ModelRunStatus = "NotStarted" | "Started" | "Complete"
+
 export const initialModelRunState : ModelRunState = {
-    modelRunId: ""
+    modelRunId: "",
+    status: "NotStarted"
 };
 
 const namespaced: boolean = true;
