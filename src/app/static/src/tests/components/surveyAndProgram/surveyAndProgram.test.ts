@@ -19,8 +19,7 @@ describe("Survey and program component", () => {
             modules: {
                 surveyAndProgram: {
                     namespaced: true,
-                    state: mockSurveyAndProgramState(),
-
+                    state: mockSurveyAndProgramState()
                 }
             }
         });

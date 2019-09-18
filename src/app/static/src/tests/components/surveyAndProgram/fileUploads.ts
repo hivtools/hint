@@ -22,7 +22,8 @@ export function testUploadComponent(name: string, position: number) {
         actions = {
             uploadSurvey: jest.fn(),
             uploadProgram: jest.fn(),
-            uploadANC: jest.fn()
+            uploadANC: jest.fn(),
+            getSurveyAndProgramData: jest.fn()
         };
 
         switch (name) {

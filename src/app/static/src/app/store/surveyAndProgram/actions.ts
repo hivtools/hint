@@ -39,7 +39,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("ProgramError")
             .withSuccess("ProgramLoaded")
-            .postAndReturn<ProgrammeResponse>("/disease/program/", formData)
+            .postAndReturn<ProgrammeResponse>("/disease/programme/", formData)
             .then((response) => {
                 if (response) {
                     commitSelectedDataTypeUpdated(commit, DataType.Program);
