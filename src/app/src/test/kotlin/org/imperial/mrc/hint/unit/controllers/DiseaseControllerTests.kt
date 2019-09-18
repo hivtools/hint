@@ -1,11 +1,19 @@
 package org.imperial.mrc.hint.unit.controllers
 
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.DiseaseController
 import org.imperial.mrc.hint.controllers.HintrController
+import org.imperial.mrc.hint.exceptions.HintException
+import org.imperial.mrc.hint.helpers.JSONValidator
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.springframework.http.HttpStatus
 
 class DiseaseControllerTests: HintrControllerTests() {
 
@@ -32,5 +40,16 @@ class DiseaseControllerTests: HintrControllerTests() {
         assertValidates(FileType.ANC) {
             sut ->  (sut as DiseaseController).uploadANC(mockFile)
         }
+    }
+
+    @Test
+    fun `throws error if the shape file does not exist`() {
+
+        val mockApiClient = getMockAPIClient(FileType.Survey)
+        val sut = DiseaseController(mock(), mockApiClient)
+
+        val exception = assertThrows<HintException> { sut.uploadSurvey(mockFile) }
+        assertThat(exception.httpStatus).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(exception.message).isEqualTo("You must upload a shape file before uploading survey or programme data")
     }
 }
