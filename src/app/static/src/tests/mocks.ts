@@ -17,6 +17,7 @@ import {
     SurveyFilters, AncResponse, PopulationResponse
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
+import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 
 
 export const mockAxios = new MockAdapter(axios);
@@ -38,6 +39,13 @@ export const mockBaselineState = (props?: Partial<BaselineState>) => {
 export const mockSurveyAndProgramState = (props?: Partial<SurveyAndProgramDataState>) => {
     return {
         ...initialSurveyAndProgramDataState,
+        ...props
+    }
+};
+
+export const mockModelRunState = (props?: Partial<ModelRunState>) => {
+    return {
+        ...initialModelRunState,
         ...props
     }
 };
