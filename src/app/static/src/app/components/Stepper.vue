@@ -17,7 +17,7 @@
         </div>
         <hr/>
         <div v-if="!ready">
-LOADING
+            LOADING
         </div>
         <div v-if="ready">
             <div class="pt-4">
@@ -45,6 +45,7 @@ LOADING
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
     import {RootState} from "../root";
+    import {localStorageManager} from "../localStorageManager";
 
     type CompleteStatus = {
         [key: number]: boolean
@@ -104,7 +105,8 @@ LOADING
         },
         methods: {
             jump(num: number) {
-                this.activeStep = num
+                this.activeStep = num;
+                localStorageManager.setItem("activeStep", num);
             },
             active(num: number) {
                 return this.activeStep == num;
@@ -116,7 +118,7 @@ LOADING
             },
             next() {
                 if (this.complete[this.activeStep]) {
-                    this.activeStep = this.activeStep + 1;
+                    this.jump(this.activeStep + 1);
                 }
             }
         },
@@ -124,6 +126,25 @@ LOADING
             Step,
             Baseline,
             SurveyAndProgram
+        },
+        watch: {
+            ready: function (newVal) {
+                if (newVal) {
+                    const activeStep = localStorageManager.getInt("activeStep");
+                    if (activeStep) {
+
+                        const invalidSteps = [1, 2, 3, 4, 5]
+                            .filter((i) => i < activeStep && !this.complete[i]);
+
+                        if (invalidSteps.length == 0) {
+                            this.jump(activeStep)
+                        }
+                        else {
+                            localStorageManager.removeItem("activeStep");
+                        }
+                    }
+                }
+            }
         }
     })
 

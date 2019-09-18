@@ -12,6 +12,7 @@
                 form.classList.add('was-validated');
             }
         }
+        localStorage.clear();
     </script>
 </head>
 <body>
