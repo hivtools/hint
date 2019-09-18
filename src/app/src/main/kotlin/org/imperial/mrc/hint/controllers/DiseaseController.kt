@@ -29,4 +29,23 @@ class DiseaseController(fileManager: FileManager,
     fun uploadANC(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
         return saveAndValidate(file, FileType.ANC)
     }
+
+    @GetMapping("/survey/")
+    @ResponseBody
+    fun getSurvey(): ResponseEntity<String> {
+        return getAndValidate(FileType.Survey)
+    }
+
+    @GetMapping("/programme/")
+    @ResponseBody
+    fun getProgramme(): ResponseEntity<String> {
+        return getAndValidate(FileType.Programme)
+    }
+
+    @GetMapping("/anc/")
+    @ResponseBody
+    fun getANC(): ResponseEntity<String> {
+        return getAndValidate(FileType.ANC)
+    }
+
 }
