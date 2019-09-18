@@ -2,11 +2,20 @@ package org.imperial.mrc.hint.integration
 
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.helpers.getTestEntity
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.postForEntity
 
 class DiseaseTests : SecureIntegrationTests() {
+
+    @BeforeEach
+    fun `upload shape file`() {
+        testRestTemplate.postForEntity<String>("/baseline/shape/",
+                getTestEntity("malawi.geojson"))
+    }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
