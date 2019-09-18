@@ -92,4 +92,28 @@ class LocalFileManagerTests {
                 .isNull()
     }
 
+    @Test
+    fun `gets all files`() {
+
+        listOf(File("$tmpUploadDirectory/fake-id/survey/survey.csv"),
+                File("$tmpUploadDirectory/fake-id/programme/prog.csv"),
+                File("$tmpUploadDirectory/fake-id/population/pop.csv"),
+                File("$tmpUploadDirectory/fake-id/shape/shape.csv"),
+                File("$tmpUploadDirectory/fake-id/pjnz/file.pjnz"),
+                File("$tmpUploadDirectory/fake-id/anc/anc.csv")).map {
+            it.mkdirs()
+            it.createNewFile()
+        }
+
+        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val result = sut.getAllFiles()
+
+        assertThat(result["survey"]).isEqualTo("$tmpUploadDirectory/fake-id/survey/survey.csv")
+        assertThat(result["programme"]).isEqualTo("$tmpUploadDirectory/fake-id/programme/prog.csv")
+        assertThat(result["population"]).isEqualTo("$tmpUploadDirectory/fake-id/population/pop.csv")
+        assertThat(result["shape"]).isEqualTo("$tmpUploadDirectory/fake-id/shape/shape.csv")
+        assertThat(result["pjnz"]).isEqualTo("$tmpUploadDirectory/fake-id/pjnz/file.pjnz")
+        assertThat(result["anc"]).isEqualTo("$tmpUploadDirectory/fake-id/anc/anc.csv")
+    }
+
 }
