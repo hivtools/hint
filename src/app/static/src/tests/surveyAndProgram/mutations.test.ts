@@ -92,4 +92,10 @@ describe("Survey and program mutations", () => {
         expect(complete(testState, null, testRootState, null)).toBe(true);
     });
 
+    it("sets ready state", () => {
+        const testState = {...initialSurveyAndProgramDataState};
+        mutations.Ready(testState);
+        expect(testState.ready).toBe(true);
+    });
+
 });

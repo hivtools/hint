@@ -3,7 +3,8 @@ import {RootState} from "../../root";
 import {DataType} from "../filteredData/filteredData";
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {api} from "../../apiService";
-import {ProgrammeResponse, SurveyResponse} from "../../generated";
+import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
+import {BaselineErrorActionTypes} from "../baseline/actions";
 
 export type SurveyAndProgramActionTypes = "SurveyLoaded" | "ProgramLoaded" | "ANCLoaded"
 export type SurveyAndProgramActionErrorTypes = "SurveyError" | "ProgramError" | "ANCError"
@@ -12,6 +13,7 @@ export interface SurveyAndProgramActions {
     uploadSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
     uploadProgram: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
     uploadANC: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void
+    getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void;
 }
 
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
@@ -55,5 +57,24 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
                     commitSelectedDataTypeUpdated(commit, DataType.ANC);
                 }
             });
+    },
+
+    async getSurveyAndProgramData({commit}) {
+
+        await Promise.all(
+            [api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
+                .ignoreErrors()
+                .withSuccess("SurveyLoaded")
+                .get<SurveyResponse>("/disease/survey/"),
+                api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
+                    .ignoreErrors()
+                    .withSuccess("ProgramLoaded")
+                    .get<ProgrammeResponse>("/disease/programme/"),
+                api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
+                    .ignoreErrors()
+                    .withSuccess("ANCLoaded")
+                    .get<AncResponse>("/disease/anc/")]);
+
+        commit({type: "Ready", payload: true});
     }
 };

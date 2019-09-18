@@ -16,17 +16,22 @@
             </template>
         </div>
         <hr/>
-        <div class="pt-4">
-            <baseline v-if="active(1)"></baseline>
-            <survey-and-program v-if="active(2)"></survey-and-program>
-            <p v-if="active(3)">Functionality coming soon.</p>
+        <div v-if="!ready">
+LOADING
         </div>
-        <div class="row mt-2">
-            <div class="col">
-                <a href="#" id="continue"
-                   v-on:click="next"
-                   class="text-uppercase font-weight-bold float-right"
-                   :class="{'disabled': !complete[activeStep]}">continue</a>
+        <div v-if="ready">
+            <div class="pt-4">
+                <baseline v-if="active(1)"></baseline>
+                <survey-and-program v-if="active(2)"></survey-and-program>
+                <p v-if="active(3)">Functionality coming soon.</p>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+                    <a href="#" id="continue"
+                       v-on:click="next"
+                       class="text-uppercase font-weight-bold float-right"
+                       :class="{'disabled': !complete[activeStep]}">continue</a>
+                </div>
             </div>
         </div>
     </div>
@@ -35,7 +40,7 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {mapGetters, mapState} from "vuex";
+    import {mapState} from "vuex";
     import Step from "./Step.vue";
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
@@ -78,13 +83,13 @@
             }
         },
         computed: {
-            baselineComplete: function() {
-              return this.$store.getters['baseline/complete']
+            baselineComplete: function () {
+                return this.$store.getters['baseline/complete']
             },
-            surveyAndProgramComplete: function() {
+            surveyAndProgramComplete: function () {
                 return this.$store.getters['surveyAndProgram/complete']
             },
-            complete: function(): CompleteStatus {
+            complete: function (): CompleteStatus {
                 return {
                     1: this.baselineComplete,
                     2: this.surveyAndProgramComplete,
@@ -92,7 +97,10 @@
                     4: false,
                     5: false
                 }
-            }
+            },
+            ...mapState<RootState>({
+                ready: state => state.surveyAndProgram.ready && state.baseline.ready
+            })
         },
         methods: {
             jump(num: number) {
@@ -107,7 +115,7 @@
                     .length >= num - 1
             },
             next() {
-               if (this.complete[this.activeStep]) {
+                if (this.complete[this.activeStep]) {
                     this.activeStep = this.activeStep + 1;
                 }
             }

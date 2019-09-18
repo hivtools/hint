@@ -1,10 +1,10 @@
 import { Module } from 'vuex';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import {RootState} from "../../root";
+import {InputState, RootState} from "../../root";
 import {ProgrammeResponse, SurveyResponse, AncResponse} from "../../generated";
 
-export interface SurveyAndProgramDataState {
+export interface SurveyAndProgramDataState extends InputState {
     survey: SurveyResponse | null
     surveyError: string,
     program: ProgrammeResponse | null
@@ -19,7 +19,8 @@ export const initialSurveyAndProgramDataState: SurveyAndProgramDataState = {
     program: null,
     programError: "",
     anc: null,
-    ancError: ""
+    ancError: "",
+    ready: false
 };
 
 export const surveyAndProgramGetters = {
@@ -30,12 +31,10 @@ export const surveyAndProgramGetters = {
 
 const namespaced: boolean = true;
 
-const getters = surveyAndProgramGetters
-
 export const surveyAndProgram: Module<SurveyAndProgramDataState, RootState> = {
     namespaced,
     state: initialSurveyAndProgramDataState,
-    getters,
+    getters: surveyAndProgramGetters,
     actions,
     mutations
 };

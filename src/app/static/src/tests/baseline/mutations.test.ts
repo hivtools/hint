@@ -115,4 +115,10 @@ describe("Baseline mutations", () => {
         expect(testState.populationError).toBe("Some error");
     });
 
+    it("sets ready state", () => {
+        const testState = {...initialBaselineState};
+        mutations.Ready(testState);
+        expect(testState.ready).toBe(true);
+    })
+
 });

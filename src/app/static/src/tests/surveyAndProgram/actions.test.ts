@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
-import {mockAxios, mockFailure, mockShapeResponse, mockSuccess} from "../mocks";
+import {mockAncResponse, mockAxios, mockFailure, mockProgramResponse, mockSuccess, mockSurveyResponse} from "../mocks";
 import {DataType} from "../../app/store/filteredData/filteredData";
 
 const FormData = require("form-data");
@@ -126,6 +126,46 @@ describe("Survey and program actions", () => {
 
         //Should not have set selectedDataType
         expect(commit.mock.calls.length).toEqual(1);
+    });
+
+    it("gets data, commits it and marks state ready", async () => {
+
+        mockAxios.onGet(`/disease/survey/`)
+            .reply(200, mockSuccess(mockSurveyResponse()));
+
+        mockAxios.onGet(`/disease/programme/`)
+            .reply(200, mockSuccess(mockProgramResponse()));
+
+        mockAxios.onGet(`/disease/anc/`)
+            .reply(200, mockSuccess(mockAncResponse()));
+
+        const commit = jest.fn();
+        await actions.getSurveyAndProgramData({commit} as any);
+
+        const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+        expect(calls).toContain("SurveyLoaded");
+        expect(calls).toContain("ProgramLoaded");
+        expect(calls).toContain("ANCLoaded");
+        expect(calls).toContain("Ready");
+
+    });
+
+    it("fails silently and marks state ready if getting data fails", async () => {
+
+        mockAxios.onGet(`/disease/survey/`)
+            .reply(500);
+
+        mockAxios.onGet(`/disease/anc/`)
+            .reply(500);
+
+        mockAxios.onGet(`/disease/programme/`)
+            .reply(500);
+
+        const commit = jest.fn();
+        await actions.getSurveyAndProgramData({commit} as any);
+
+        expect(commit).toBeCalledTimes(1);
+        expect(commit.mock.calls[0][0]["type"]).toContain("Ready");
     });
 
 });

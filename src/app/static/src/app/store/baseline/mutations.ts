@@ -12,7 +12,8 @@ export interface BaselineMutations {
     ShapeUploaded: BaselineMutation
     ShapeUploadError: BaselineMutation
     PopulationUploaded: BaselineMutation
-    PopulationUploadError: BaselineMutation
+    PopulationUploadError: BaselineMutation,
+    Ready: BaselineMutation
 }
 
 export const mutations: MutationTree<BaselineState> & BaselineMutations = {
@@ -48,5 +49,9 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
 
     PopulationUploadError(state: BaselineState, action: PayloadWithType<string>) {
         state.populationError = action.payload;
+    },
+
+    Ready(state: BaselineState) {
+        state.ready = true;
     }
 };

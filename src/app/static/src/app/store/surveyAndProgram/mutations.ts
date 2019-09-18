@@ -11,7 +11,8 @@ export interface SurveyAndProgramMutations {
     ProgramLoaded: SurveyAndProgramMutation
     ProgramError: SurveyAndProgramMutation,
     ANCLoaded: SurveyAndProgramMutation
-    ANCError: SurveyAndProgramMutation
+    ANCError: SurveyAndProgramMutation,
+    Ready: SurveyAndProgramMutation
 }
 
 export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgramMutations = {
@@ -37,5 +38,9 @@ export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgr
 
     ANCError(state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
         state.ancError = action.payload;
+    },
+
+    Ready(state: SurveyAndProgramDataState) {
+        state.ready = true;
     }
 };

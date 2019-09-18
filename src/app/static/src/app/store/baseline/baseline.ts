@@ -1,10 +1,10 @@
 import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
-import {RootState} from "../../root";
+import {InputState, RootState} from "../../root";
 import {PopulationResponse, ShapeResponse} from "../../generated";
 
-export interface BaselineState {
+export interface BaselineState extends InputState {
     pjnzError: string
     country: string
     pjnzFilename: string
@@ -21,7 +21,8 @@ export const initialBaselineState: BaselineState = {
     shape: null,
     shapeError: "",
     population: null,
-    populationError: ""
+    populationError: "",
+    ready: false
 };
 
 export const baselineGetters = {

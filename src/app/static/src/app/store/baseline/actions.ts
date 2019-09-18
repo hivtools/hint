@@ -38,19 +38,22 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async getBaselineData({commit}) {
-        api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .ignoreErrors()
-            .withSuccess("PJNZLoaded")
-            .get<PjnzResponse>("/baseline/pjnz/");
 
-        api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .ignoreErrors()
-            .withSuccess("PopulationUploaded")
-            .get<PjnzResponse>("/baseline/population/");
+        await Promise.all([
+            api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .ignoreErrors()
+                .withSuccess("PJNZLoaded")
+                .get<PjnzResponse>("/baseline/pjnz/"),
+            api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .ignoreErrors()
+                .withSuccess("PopulationUploaded")
+                .get<PjnzResponse>("/baseline/population/"),
+            api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .ignoreErrors()
+                .withSuccess("ShapeUploaded")
+                .get<PjnzResponse>("/baseline/shape/")
+        ]);
 
-        return api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .ignoreErrors()
-            .withSuccess("ShapeUploaded")
-            .get<PjnzResponse>("/baseline/shape/");
+        commit({type: "Ready", payload: true});
     }
 };

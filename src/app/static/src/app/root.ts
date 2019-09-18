@@ -14,8 +14,8 @@ export interface RootState {
     filteredData: FilteredDataState
 }
 
-export interface StepGetters {
-    complete: boolean
+export interface InputState {
+    ready: boolean
 }
 
 export const storeOptions: StoreOptions<RootState> = {
