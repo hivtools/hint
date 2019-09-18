@@ -13,7 +13,7 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadPJNZ({commit} as any, formData);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PJNZUploaded");
+        expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUploaded");
     });
 
     it("can get baseline data", (done) => {
