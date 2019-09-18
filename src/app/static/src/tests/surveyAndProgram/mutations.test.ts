@@ -8,6 +8,7 @@ import {initialBaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
 import {initialFilteredDataState} from "../../app/store/filteredData/filteredData";
+import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 
 describe("Survey and program mutations", () => {
 
@@ -77,6 +78,7 @@ describe("Survey and program mutations", () => {
             filteredData: {...initialFilteredDataState},
             baseline: {...initialBaselineState},
             surveyAndProgram: testState,
+            modelRun: {...initialModelRunState}
         };
         const complete = testStore.getters!!.complete;
 

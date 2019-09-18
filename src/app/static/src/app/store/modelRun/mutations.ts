@@ -14,7 +14,8 @@ export interface ModelRunMutations {
 export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
     ModelRunStarted(state: ModelRunState, action: PayloadWithType<ModelSubmitResponse>) {
         state.modelRunId = action.payload.id;
-        state.status = "Started"
+        state.status = "Started";
+        state.success = false;
     },
 
     RunStatusUpdated(state: ModelRunState, action: PayloadWithType<ModelStatusResponse>) {
@@ -22,6 +23,10 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
             state.status = "Complete";
             clearInterval(state.statusPollId);
             state.statusPollId = -1;
+
+            if (action.payload.success){
+                state.success = true;
+            }
         }
     },
 
