@@ -90,9 +90,6 @@
     export default Vue.extend({
         props: ["size"],
         computed: {
-            radius() {
-                return this.size == "xs" ? 7 : 10;
-            },
             height() {
                 return this.size == "xs" ? "40px" : "200px";
             },
