@@ -18,7 +18,7 @@ class DiseaseController(fileManager: FileManager,
         return saveAndValidate(file, FileType.Survey)
     }
 
-    @PostMapping("/program/")
+    @PostMapping("/programme/")
     @ResponseBody
     fun uploadProgramme(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
         return saveAndValidate(file, FileType.Programme)

@@ -16,10 +16,10 @@
             </template>
         </div>
         <hr/>
-        <div v-if="!ready">
-            LOADING
+        <div v-if="!ready" class="text-center">
+            <loading-spinner size="lg"></loading-spinner>
         </div>
-        <div v-if="ready">
+        <div v-if="ready" class="content">
             <div class="pt-4">
                 <baseline v-if="active(1)"></baseline>
                 <survey-and-program v-if="active(2)"></survey-and-program>
@@ -46,6 +46,7 @@
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
     import {RootState} from "../root";
     import {localStorageManager} from "../localStorageManager";
+    import LoadingSpinner from "./LoadingSpinner.vue";
 
     type CompleteStatus = {
         [key: number]: boolean
@@ -125,7 +126,8 @@
         components: {
             Step,
             Baseline,
-            SurveyAndProgram
+            SurveyAndProgram,
+            LoadingSpinner
         },
         watch: {
             ready: function (newVal) {
@@ -138,8 +140,7 @@
 
                         if (invalidSteps.length == 0) {
                             this.jump(activeStep)
-                        }
-                        else {
+                        } else {
                             localStorageManager.removeItem("activeStep");
                         }
                     }

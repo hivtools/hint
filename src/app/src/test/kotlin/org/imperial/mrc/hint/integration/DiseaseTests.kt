@@ -34,7 +34,7 @@ class DiseaseTests : SecureIntegrationTests() {
     @EnumSource(IsAuthorized::class)
     fun `can upload program file`(isAuthorized: IsAuthorized) {
         val postEntity = getTestEntity("programme.csv")
-        val entity = testRestTemplate.postForEntity<String>("/disease/program/", postEntity)
+        val entity = testRestTemplate.postForEntity<String>("/disease/programme/", postEntity)
         assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
 
         if (isAuthorized == IsAuthorized.TRUE) {
