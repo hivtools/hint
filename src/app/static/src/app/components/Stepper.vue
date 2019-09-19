@@ -16,8 +16,8 @@
             </template>
         </div>
         <hr/>
-        <div v-if="!ready">
-LOADING
+        <div v-if="!ready" class="text-center">
+            <loading-spinner size="lg"></loading-spinner>
         </div>
         <div v-if="ready">
             <div class="pt-4">
@@ -45,6 +45,7 @@ LOADING
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
     import {RootState} from "../root";
+    import LoadingSpinner from "./LoadingSpinner.vue";
 
     type CompleteStatus = {
         [key: number]: boolean
@@ -123,7 +124,8 @@ LOADING
         components: {
             Step,
             Baseline,
-            SurveyAndProgram
+            SurveyAndProgram,
+            LoadingSpinner
         }
     })
 
