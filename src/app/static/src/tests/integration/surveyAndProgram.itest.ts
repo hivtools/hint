@@ -17,7 +17,7 @@ describe("Survey and program actions", () => {
         await actions.uploadSurvey({commit} as any, formData);
 
         // Unfortunately we can't test the success path because it relies on a persistent
-        // session between uploading a shape file and an anc file. But the success path is
+        // session between uploading a shape file and a survey file. But the success path is
         // under test in the unit tests
         expect(commit.mock.calls[0][0]["type"]).toBe("SurveyError");
         expect(commit.mock.calls[0][0]["payload"])
@@ -35,7 +35,7 @@ describe("Survey and program actions", () => {
         await actions.uploadProgram({commit} as any, formData);
 
         // Unfortunately we can't test the success path because it relies on a persistent
-        // session between uploading a shape file and an anc file. But the success path is
+        // session between uploading a shape file and a program file. But the success path is
         // under test in the unit tests
         expect(commit.mock.calls[0][0]["type"]).toBe("ProgramError");
         expect(commit.mock.calls[0][0]["payload"])

@@ -12,7 +12,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: APIClient)
 
     @PostMapping("/run/")
     @ResponseBody
-    fun uploadSurvey(@RequestBody params: ModelRunParameters): ResponseEntity<String> {
+    fun run(@RequestBody params: ModelRunParameters): ResponseEntity<String> {
         val allFiles = fileManager.getAllFiles()
         return apiClient.submit(allFiles, params)
     }

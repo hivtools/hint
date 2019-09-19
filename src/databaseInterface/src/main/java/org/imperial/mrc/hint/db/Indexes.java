@@ -6,7 +6,10 @@ package org.imperial.mrc.hint.db;
 
 import javax.annotation.Generated;
 
+import org.imperial.mrc.hint.db.tables.File;
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
+import org.imperial.mrc.hint.db.tables.SessionFile;
+import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
 import org.jooq.Index;
 import org.jooq.OrderField;
@@ -30,7 +33,10 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index FILE_PKEY = Indexes0.FILE_PKEY;
     public static final Index ONETIME_TOKEN_PKEY = Indexes0.ONETIME_TOKEN_PKEY;
+    public static final Index SESSION_FILE_PKEY = Indexes0.SESSION_FILE_PKEY;
+    public static final Index USER_SESSION_PKEY = Indexes0.USER_SESSION_PKEY;
     public static final Index USERS_PKEY = Indexes0.USERS_PKEY;
 
     // -------------------------------------------------------------------------
@@ -38,7 +44,10 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
+        public static Index FILE_PKEY = Internal.createIndex("file_pkey", File.FILE, new OrderField[] { File.FILE.HASH }, true);
         public static Index ONETIME_TOKEN_PKEY = Internal.createIndex("onetime_token_pkey", OnetimeToken.ONETIME_TOKEN, new OrderField[] { OnetimeToken.ONETIME_TOKEN.TOKEN }, true);
+        public static Index SESSION_FILE_PKEY = Internal.createIndex("session_file_pkey", SessionFile.SESSION_FILE, new OrderField[] { SessionFile.SESSION_FILE.SESSION }, true);
+        public static Index USER_SESSION_PKEY = Internal.createIndex("user_session_pkey", UserSession.USER_SESSION, new OrderField[] { UserSession.USER_SESSION.SESSION }, true);
         public static Index USERS_PKEY = Internal.createIndex("users_pkey", Users.USERS, new OrderField[] { Users.USERS.ID }, true);
     }
 }
