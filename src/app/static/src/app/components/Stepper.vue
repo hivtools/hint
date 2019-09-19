@@ -19,7 +19,7 @@
         <div v-if="!ready" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
         </div>
-        <div v-if="ready">
+        <div v-if="ready" class="content">
             <div class="pt-4">
                 <baseline v-if="active(1)"></baseline>
                 <survey-and-program v-if="active(2)"></survey-and-program>

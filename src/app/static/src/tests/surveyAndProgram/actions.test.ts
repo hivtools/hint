@@ -60,7 +60,7 @@ describe("Survey and program actions", () => {
 
     it("sets data after program file upload", async () => {
 
-        mockAxios.onPost(`/disease/program/`)
+        mockAxios.onPost(`/disease/programme/`)
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
@@ -78,7 +78,7 @@ describe("Survey and program actions", () => {
 
     it("sets error message after failed program upload", async () => {
 
-        mockAxios.onPost(`/disease/program/`)
+        mockAxios.onPost(`/disease/programme/`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();

@@ -7,6 +7,7 @@ import Step from "../../app/components/Step.vue";
 import {mockBaselineState, mockPopulationResponse, mockShapeResponse, mockSurveyAndProgramState} from "../mocks";
 import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations} from '../../app/store/baseline/mutations';
+import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -31,6 +32,20 @@ describe("Stepper component", () => {
             }
         })
     };
+
+    it("renders loading spinner while states are not ready", () => {
+        const store = createSut();
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAll(".content").length).toBe(0);
+    });
+
+    it("does not render loading spinner once states are ready", () => {
+        const store = createSut({ready: true}, {ready: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAll(".content").length).toBe(1);
+    });
 
     it("renders steps", () => {
         const store = createSut({ready: true}, {ready: true});
