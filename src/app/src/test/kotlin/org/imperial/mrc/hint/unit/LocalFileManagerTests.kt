@@ -116,4 +116,13 @@ class LocalFileManagerTests {
         assertThat(result["anc"]).isEqualTo("$tmpUploadDirectory/fake-id/anc/anc.csv")
     }
 
+    @Test
+    fun `does not include entries for missing files`() {
+
+        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val result = sut.getAllFiles()
+
+        assertThat(result.any()).isFalse()
+    }
+
 }
