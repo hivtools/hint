@@ -1,11 +1,13 @@
 package org.imperial.mrc.hint
 
-import org.apache.tomcat.util.http.fileupload.FileUtils
-import org.pac4j.core.config.Config
-import org.pac4j.core.context.WebContext
+import org.imperial.mrc.hint.db.StateRepository
+import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
+import java.security.DigestInputStream
+import java.security.MessageDigest
+import javax.xml.bind.DatatypeConverter
 
 enum class FileType {
 
@@ -28,35 +30,33 @@ interface FileManager {
 
 @Component
 class LocalFileManager(
-        private val context: WebContext,
-        private val pac4jConfig: Config,
+        private val session: Session,
+        private val stateRepository: StateRepository,
         private val appProperties: AppProperties) : FileManager {
 
     override fun saveFile(file: MultipartFile, type: FileType): String {
-        val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
-        val fileName = file.originalFilename!!
-        val path = "${appProperties.uploadDirectory}/$id/$type/$fileName"
-        val localFile = File(path)
-
-        if (localFile.parentFile.exists()) {
-            FileUtils.cleanDirectory(localFile.parentFile)
-        } else {
-            FileUtils.forceMkdirParent(localFile)
+        val md = MessageDigest.getInstance("MD5")
+        file.inputStream.use {
+            DigestInputStream(it, md)
         }
 
-        localFile.writeBytes(file.bytes)
+        val hash = DatatypeConverter.printHexBinary(md.digest())
+        if (stateRepository.saveNewHash(hash)) {
+            File("${appProperties.uploadDirectory}/$hash").writeBytes(file.bytes)
+        }
 
-        return path
+        stateRepository.saveSessionFile(session.getId(), type, hash, file.originalFilename!!)
+        return hash
     }
 
     override fun getFile(type: FileType): File? {
 
-        val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
-
-        val pjnzFiles = File("${appProperties.uploadDirectory}/$id/$type")
-                .listFiles()
-
-        return pjnzFiles?.first()
+        val hash = stateRepository.getSessionFileHash(session.getId(), type)
+        return if (hash == null) {
+            File("${appProperties.uploadDirectory}/$hash")
+        } else {
+            null
+        }
     }
 }
 
