@@ -54,7 +54,7 @@
         },
         data(): Data {
             return {
-                detail: 4, // TODO this is the only level of data in the Malawi test set
+                detail: 5, // TODO this is the only level of data in the Malawi test set
                 detailOptions: [
                     // TODO something cleverer with calculated admin levels and labels
                     {id: 1, label: "Country"},

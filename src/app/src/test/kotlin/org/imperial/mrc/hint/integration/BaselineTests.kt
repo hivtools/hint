@@ -13,6 +13,8 @@ class BaselineTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get pjnz data`(isAuthorized: IsAuthorized) {
+        val postEntity = getTestEntity("Botswana2018.PJNZ")
+        testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/pjnz/")
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
     }
@@ -20,15 +22,19 @@ class BaselineTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get shape data`(isAuthorized: IsAuthorized) {
+        val postEntity = getTestEntity("malawi.geojson")
+        testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/shape/")
-        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get population data`(isAuthorized: IsAuthorized) {
+        val postEntity = getTestEntity("population.csv")
+        testRestTemplate.postForEntity<String>("/baseline/population/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/population/")
-        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
     }
 
     @ParameterizedTest
@@ -37,6 +43,11 @@ class BaselineTests : SecureIntegrationTests() {
         val postEntity = getTestEntity("Botswana2018.PJNZ")
         val responseEntity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
         assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
+
+        if (isAuthorized == IsAuthorized.TRUE) {
+            val data = getResponseData(responseEntity)
+            assertThat(data["type"].asText()).isEqualTo("pjnz")
+        }
     }
 
     @ParameterizedTest

@@ -8,7 +8,6 @@ import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.HintrController
 import org.junit.jupiter.api.AfterEach
-import org.mockito.internal.verification.Times
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.mock.web.MockMultipartFile
@@ -35,6 +34,10 @@ abstract class HintrControllerTests {
             } doReturn "test-path"
 
             on {
+                getFile(FileType.Shape)
+            } doReturn File("shape-path")
+
+            on {
                 getFile(type)
             } doReturn File("test-path")
         }
@@ -42,7 +45,9 @@ abstract class HintrControllerTests {
 
     protected fun getMockAPIClient(type: FileType): APIClient {
         return mock {
-            on { validate("test-path", type) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
+            on { validateBaseline("test-path", type) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
+            on { validateSurveyAndProgramme("test-path", "shape-path", type) } doReturn
+                    ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
         }
     }
 
@@ -58,7 +63,11 @@ abstract class HintrControllerTests {
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
         verify(mockFileManager).saveFile(mockFile, fileType)
-        verify(mockApiClient).validate("test-path", fileType)
+
+        when(fileType){
+            FileType.PJNZ, FileType.Population, FileType.Shape ->   verify(mockApiClient).validateBaseline("test-path", fileType)
+            else ->   verify(mockApiClient).validateSurveyAndProgramme("test-path", "shape-path", fileType)
+        }
     }
 
     protected fun assertGetsIfExists(fileType: FileType,
@@ -72,7 +81,7 @@ abstract class HintrControllerTests {
         var result = getAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
-        verify(mockApiClient).validate("test-path", fileType)
+        verify(mockApiClient).validateBaseline("test-path", fileType)
 
         // should return a null result when null is returned from the file manager
         sut = getSut(mock(), mockApiClient)
@@ -83,5 +92,4 @@ abstract class HintrControllerTests {
         assertThat(data).isEqualTo("null")
         verifyNoMoreInteractions(mockApiClient)
     }
-
 }

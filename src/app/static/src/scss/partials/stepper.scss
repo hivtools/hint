@@ -1,0 +1,47 @@
+.step {
+
+  color: $gray-500;
+  max-width: 200px;
+  font-weight: bold;
+
+  .btn {
+    color: white;
+    margin: 0 auto;
+    display: block;
+
+    @extend .rounded-circle;
+    @extend .mb-1;
+
+    height: 50px;
+    width: 50px;
+
+    &:not(.btn-red) {
+      background: $gray-500;
+    }
+  }
+
+  &.active {
+    color: inherit;
+  }
+
+  &:first-child {
+    padding-left: 15px;
+    padding-right: 0;
+  }
+
+  &:last-child {
+    padding-left: 0;
+    padding-right: 15px;
+  }
+
+  @for $i from 2 to 8 {
+    &:nth-child(#{$i}) {
+      padding: 0 !important;
+    }
+  }
+}
+
+.step-connector {
+  max-width: 100px;
+  padding: 0 !important;
+}

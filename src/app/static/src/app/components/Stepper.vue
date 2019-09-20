@@ -1,6 +1,6 @@
 <template>
-    <div class="container-fluid mb-5">
-        <div class="row justify-content-center">
+    <div class="container mb-5">
+        <div class="row">
             <template v-for="step in steps">
                 <step :key="step.number"
                       :active="active(step.number)"
@@ -10,7 +10,7 @@
                       :complete="complete[step.number]"
                       @jump="jump">
                 </step>
-                <div class="col no-padding step-connector" v-if="step.number < steps.length">
+                <div class="col step-connector" v-if="step.number < steps.length">
                     <hr/>
                 </div>
             </template>
@@ -19,6 +19,7 @@
         <div class="pt-4">
             <baseline v-if="active(1)"></baseline>
             <survey-and-program v-if="active(2)"></survey-and-program>
+            <p v-if="active(3)">Functionality coming soon.</p>
         </div>
         <div class="row mt-2">
             <div class="col">
@@ -87,7 +88,7 @@
                 return {
                     1: this.baselineComplete,
                     2: this.surveyAndProgramComplete,
-                    3: false,
+                    3: this.surveyAndProgramComplete, // for now just mark as complete as soon as it's ready
                     4: false,
                     5: false
                 }

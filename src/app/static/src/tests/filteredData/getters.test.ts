@@ -213,7 +213,7 @@ describe("FilteredData mutations", () => {
             {
                 iso3: "MWI",
                 area_id: "area2",
-                indicator: "arevalence",
+                indicator: "prevalence",
                 value: 3
             }
         ];
@@ -243,29 +243,29 @@ describe("FilteredData mutations", () => {
                 iso3: "MWI",
                 area_id: "area1",
                 survey_id: "s1",
-                indicator: "prevalence",
-                value: 2
+                indicator: "prev",
+                est: 2
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 survey_id: "s1",
-                indicator: "prevalence",
-                value: 3
+                indicator: "prev",
+                est: 3
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
                 survey_id: "s1",
-                indicator: "art_coverage",
-                value: 4
+                indicator: "artcov",
+                est: 4
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 survey_id: "s1",
-                indicator: "art_coverage",
-                value: 5
+                indicator: "artcov",
+                est: 5
             }
         ];
         const testRootState = {

@@ -1,8 +1,9 @@
 @import "partials/variables";
-@import "partials/maps";
 @import "../../node_modules/bootstrap/scss/bootstrap";
 @import "../../node_modules/leaflet/dist/leaflet";
 @import "../../node_modules/@riophae/vue-treeselect/dist/vue-treeselect";
+@import "partials/maps";
+@import "partials/stepper";
 
 a {
   color: $theme-red;
@@ -22,40 +23,6 @@ a {
 
 .btn-red {
   @include button-variant($theme-red, darken($theme-red, 10%))
-}
-
-.step {
-
-  color: $gray-600;
-  max-width: 200px;
-
-  .btn {
-    color: white;
-    margin: 0 auto;
-    display: block;
-
-    @extend .rounded-circle;
-    @extend .mb-1;
-
-    height: 50px;
-    width: 50px;
-
-    &:not(.btn-red) {
-      background: $gray-500;
-    }
-  }
-
-  &.active {
-    color: inherit;
-  }
-}
-
-.step-connector {
-  max-width: 100px;
-}
-
-.no-padding {
-  padding: 0 !important;
 }
 
 .tick {
@@ -101,39 +68,4 @@ a {
 
 .custom-file, .custom-file label {
   overflow: hidden;
-}
-
-.sap-filters {
-  padding-top: 2px;
-}
-
-.vue-treeselect__multi-value-item {
-  background-color: $theme-red;
-  color: white;
-}
-
-.vue-treeselect__multi-value-item, .vue-treeselect__multi-value-item:hover {
-  .vue-treeselect__value-remove {
-    color: white;
-  }
-}
-
-.vue-treeselect__label-container, .vue-treeselect__label-container:hover {
-  .vue-treeselect__checkbox--checked, .vue-treeselect__checkbox--indeterminate {
-    border-color: $theme-red !important;
-    background: $theme-red !important;
-    width: auto;
-  }
-}
-
-.vue-treeselect {
-  z-index: 1001;
-}
-
-.vue-treeselect__menu {
-  overflow-x: auto;
-}
-
-.vue-treeselect__control {
-  height: calc(1.5em + 0.75rem + 2px);
 }

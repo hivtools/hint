@@ -103,7 +103,7 @@
                     color: 'grey'
                 },
                 indicator: "prev",
-                detail: 4
+                detail: 5
             }
         },
         created() {

@@ -1,11 +1,6 @@
 <template>
     <div>
         <div class="row">
-            <div class="col">
-                <h1 class="h2 mb-4">Upload baseline data</h1>
-            </div>
-        </div>
-        <div class="row">
             <div class="col-sm-6 col-md-8">
                 <form>
                     <file-upload label="PJNZ"

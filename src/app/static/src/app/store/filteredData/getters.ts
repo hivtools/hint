@@ -1,6 +1,6 @@
 import {RootState} from "../../root";
 import {DataType, FilteredDataState} from "./filteredData";
-import {Indicators, IndicatorRange, IndicatorsMap} from "../../types";
+import {IndicatorRange, Indicators} from "../../types";
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
@@ -59,8 +59,27 @@ export const getters = {
         for(const d of data) {
             const row = d as any;
             const areaId = row.area_id;
-            const value = row.value;
-            const indicator = row.indicator;
+
+            //TODO: This will change when we have a metadata endpoint telling us which column to use as value for each
+            //input data type and indicator
+            //We will also have to deal will potential multiple values per row
+            let indicator: string = "";
+            let valueColumn: string = "";
+            switch(state.selectedDataType) {
+                case (DataType.Survey):
+                    indicator = row["indicator"];
+                    valueColumn = "est";
+                    break;
+                case (DataType.Program):
+                    indicator = "prev";
+                    valueColumn = "current_art";
+                    break;
+                case (DataType.ANC):
+                    indicator = "prev";
+                    valueColumn = "ancrt_test_pos";
+            }
+
+            const value = row[valueColumn];
 
             if (!result[areaId]) {
                 result[areaId] = {};
@@ -68,16 +87,18 @@ export const getters = {
 
             const indicators = result[areaId];
             switch(indicator) {
-                case("prevalence"):
+                case("prev"):
                     indicators.prev = value;
                     updateRange(prevRange, value);
 
                     break;
-                case("art_coverage"):
+                case("artcov"):
                     indicators.art = value;
                     updateRange(artRange, value);
 
                     break;
+
+                 //TODO: Also expect recent and vls (viral load suppression) values for survey, need to add these as options
             }
         }
         return {

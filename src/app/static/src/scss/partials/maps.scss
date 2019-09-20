@@ -8,3 +8,30 @@
   float: left;
   margin-right: 8px;
 }
+
+.vue-treeselect__multi-value-item {
+  background-color: $theme-red;
+  color: white;
+}
+
+.vue-treeselect__multi-value-item, .vue-treeselect__multi-value-item:hover {
+  .vue-treeselect__value-remove {
+    color: white;
+  }
+}
+
+.vue-treeselect__label-container, .vue-treeselect__label-container:hover {
+  .vue-treeselect__checkbox--checked, .vue-treeselect__checkbox--indeterminate {
+    border-color: $theme-red !important;
+    background: $theme-red !important;
+    width: auto;
+  }
+}
+
+.vue-treeselect__menu {
+  overflow-x: auto;
+}
+
+.vue-treeselect__control {
+  height: calc(1.5em + 0.75rem + 2px);
+}

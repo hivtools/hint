@@ -37,7 +37,7 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `can save file and return path`() {
+    fun `can save file and return full path`() {
 
         val sut = LocalFileManager(mock(), mockConfig, mockProperties)
 
@@ -47,7 +47,7 @@ class LocalFileManagerTests {
         val path = sut.saveFile(mockFile, FileType.Survey)
         val savedFile = File("$tmpUploadDirectory/fake-id/survey/some-file-name.pjnz")
         assertThat(savedFile.readLines().first()).isEqualTo("pjnz content")
-        assertThat(path).isEqualTo("fake-id/survey/some-file-name.pjnz")
+        assertThat(path).isEqualTo("tmp/fake-id/survey/some-file-name.pjnz")
     }
 
     @Test
@@ -90,6 +90,39 @@ class LocalFileManagerTests {
         val sut = LocalFileManager(mock(), mockConfig, mockProperties)
         assertThat(sut.getFile(FileType.Survey))
                 .isNull()
+    }
+
+    @Test
+    fun `gets all files`() {
+
+        listOf(File("$tmpUploadDirectory/fake-id/survey/survey.csv"),
+                File("$tmpUploadDirectory/fake-id/programme/prog.csv"),
+                File("$tmpUploadDirectory/fake-id/population/pop.csv"),
+                File("$tmpUploadDirectory/fake-id/shape/shape.csv"),
+                File("$tmpUploadDirectory/fake-id/pjnz/file.pjnz"),
+                File("$tmpUploadDirectory/fake-id/anc/anc.csv")).map {
+            it.mkdirs()
+            it.createNewFile()
+        }
+
+        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val result = sut.getAllFiles()
+
+        assertThat(result["survey"]).isEqualTo("$tmpUploadDirectory/fake-id/survey/survey.csv")
+        assertThat(result["programme"]).isEqualTo("$tmpUploadDirectory/fake-id/programme/prog.csv")
+        assertThat(result["population"]).isEqualTo("$tmpUploadDirectory/fake-id/population/pop.csv")
+        assertThat(result["shape"]).isEqualTo("$tmpUploadDirectory/fake-id/shape/shape.csv")
+        assertThat(result["pjnz"]).isEqualTo("$tmpUploadDirectory/fake-id/pjnz/file.pjnz")
+        assertThat(result["anc"]).isEqualTo("$tmpUploadDirectory/fake-id/anc/anc.csv")
+    }
+
+    @Test
+    fun `does not include entries for missing files`() {
+
+        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val result = sut.getAllFiles()
+
+        assertThat(result.any()).isFalse()
     }
 
 }

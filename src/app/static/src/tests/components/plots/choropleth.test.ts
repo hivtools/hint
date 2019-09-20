@@ -2,10 +2,11 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Choropleth from "../../../app/components/plots/Choropleth.vue";
 import Vue from "vue";
 import Vuex from "vuex";
-import {mockAxios, mockBaselineState, mockShapeResponse} from "../../mocks";
+import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../../mocks";
 import {LGeoJson} from 'vue2-leaflet';
 import MapControl from "../../../app/components/plots/MapControl.vue";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic"
+import {DataType} from "../../../app/store/filteredData/filteredData";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -14,13 +15,6 @@ describe("Choropleth component", () => {
 
     const fakeFeatures = [
         {
-            "properties": {"iso3": "MWI", "area_id": "MWI.1.1"},
-            "geometry": {
-                "type": "MultiPolygon",
-                "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
-            }
-        },
-        {
             "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1"},
             "geometry": {
                 "type": "MultiPolygon",
@@ -28,7 +22,14 @@ describe("Choropleth component", () => {
             }
         },
         {
-            "properties": {"iso3": "MWI", "area_id": "MWI.1.1.2"},
+            "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1.1"},
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
+            }
+        },
+        {
+            "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1.2"},
             "geometry": {
                 "type": "MultiPolygon",
                 "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
@@ -37,9 +38,9 @@ describe("Choropleth component", () => {
     ];
     const testRegionIndicators = {
         indicators: {
-            "MWI.1.1.1": {prev: 0.1, art: 0.08},
-            "MWI.1.1.2": {prev: 0.05, art: 0.06},
-            "MWI.1.1": {prev: 0.07, art: 0.2}
+            "MWI.1.1.1.1": {prev: 0.1, art: 0.08},
+            "MWI.1.1.1.2": {prev: 0.05, art: 0.06},
+            "MWI.1.1.1": {prev: 0.07, art: 0.2}
         },
         artRange: {min: 0.06, max:0.2},
         prevRange: {min: 0.05, max: 0.1}
@@ -66,7 +67,7 @@ describe("Choropleth component", () => {
     });
 
     it("gets features from store and renders those with the right admin level", (done) => {
-        // admin level is hard-coded to 4
+        // admin level is hard-coded to 5
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         setTimeout(() => {
