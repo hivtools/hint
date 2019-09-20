@@ -18,6 +18,7 @@
         <hr/>
         <div v-if="!ready" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
+            <h2 id="loading-message">Loading your data</h2>
         </div>
         <div v-if="ready" class="content">
             <div class="pt-4">
