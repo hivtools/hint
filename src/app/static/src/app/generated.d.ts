@@ -11,7 +11,6 @@ export interface AgeFilters {
   }[];
 }
 export type AncResponseData = {
-  iso3: string;
   area_id: string;
   [k: string]: any;
 }[];
@@ -95,8 +94,8 @@ export interface PjnzResponseData {
 }
 export type PopulationResponseData = null;
 export type ProgrammeResponseData = {
-  iso3: string;
   area_id: string;
+  current_art: number;
   [k: string]: any;
 }[];
 export interface Response {
@@ -210,8 +209,8 @@ export interface ProgrammeResponse {
   filename: string;
   type: "programme";
   data: {
-    iso3: string;
     area_id: string;
+    current_art: number;
     [k: string]: any;
   }[];
   filters: {
@@ -225,7 +224,6 @@ export interface AncResponse {
   filename: string;
   type: "anc";
   data: {
-    iso3: string;
     area_id: string;
     [k: string]: any;
   }[];
@@ -255,4 +253,9 @@ export interface SurveyResponse {
       id: string;
     }[];
   };
+}
+export interface ValidateSurveyAndProgrammeRequest {
+  type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
+  path: string | null;
+  shape: string | null;
 }
