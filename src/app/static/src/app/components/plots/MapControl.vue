@@ -7,10 +7,10 @@
                         Indicator:
                     </label>
                     <div class="col">
-                        <tree-select v-model="indicator"
+                        <tree-select :value="indicator"
                                      :multiple="false"
                                      :options="indicatorOptions"
-                                     @input="$emit('indicator-changed', indicator)"></tree-select>
+                                     @input="indicatorChanged"></tree-select>
                     </div>
                 </div>
                 <div class="row form-group">
@@ -73,6 +73,11 @@
                     {id: "prev", label: "prevalence", isDisabled: !this.prevEnabled},
                     {id: "art", label: "ART coverage", isDisabled: !this.artEnabled}
                 ];
+            }
+        },
+        methods: {
+            indicatorChanged: function(newVal: string) {
+                this.$emit("indicator-changed", newVal);
             }
         }
     });
