@@ -1,5 +1,5 @@
 import {Mutation, MutationTree} from "vuex";
-import {ModelRunState} from "./modelRun";
+import {ModelRunState, ModelRunStatus} from "./modelRun";
 import {PayloadWithType} from "../../types";
 import {ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 
@@ -14,13 +14,13 @@ export interface ModelRunMutations {
 export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
     ModelRunStarted(state: ModelRunState, action: PayloadWithType<ModelSubmitResponse>) {
         state.modelRunId = action.payload.id;
-        state.status = "Started";
+        state.status = ModelRunStatus.Started;
         state.success = false;
     },
 
     RunStatusUpdated(state: ModelRunState, action: PayloadWithType<ModelStatusResponse>) {
         if (action.payload.done){
-            state.status = "Complete";
+            state.status = ModelRunStatus.Complete;
             clearInterval(state.statusPollId);
             state.statusPollId = -1;
 
@@ -32,6 +32,7 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
 
     PollingForStatusStarted(state: ModelRunState, action: PayloadWithType<number>) {
         state.statusPollId = action.payload
+
     }
 
 };

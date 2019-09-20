@@ -6,6 +6,7 @@ import ModelRun from "../../../app/components/modelRun/ModelRun.vue";
 import {actions} from "../../../app/store/modelRun/actions";
 import {mutations} from "../../../app/store/modelRun/mutations";
 import {ModelRunState} from "../../../app/store/modelRun/modelRun";
+import {ModelRunStatus} from "../../../app/store/modelRun/modelRun";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -40,13 +41,13 @@ describe("Model run component", () => {
 
         setTimeout(() => {
             expect(wrapper.find("button").attributes().disabled).toBe("disabled");
-            expect(store.state.modelRun.status).toBe("Started");
+            expect(store.state.modelRun.status).toBe(ModelRunStatus.Started);
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).not.toBe(-1);
 
             setTimeout(() => {
                 expect(wrapper.find("button").attributes().disabled).toBeUndefined();
-                expect(store.state.modelRun.status).toBe("Complete");
+                expect(store.state.modelRun.status).toBe(ModelRunStatus.Complete);
                 expect(store.state.modelRun.modelRunId).toBe("1234");
                 expect(store.state.modelRun.statusPollId).toBe(-1);
                 done();
@@ -60,11 +61,33 @@ describe("Model run component", () => {
 
         setTimeout(() => {
             expect(wrapper.find("button").attributes().disabled).toBeUndefined();
-            expect(store.state.modelRun.status).toBe("Complete");
+            expect(store.state.modelRun.status).toBe(ModelRunStatus.Complete);
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).toBe(-1);
             done();
         }, 2500);
+    });
+
+    it("button is disabled if status is started", () => {
+
+        const actions = {
+            run: jest.fn(),
+        };
+
+        const store = new Vuex.Store({
+            modules: {
+                modelRun: {
+                    namespaced: true,
+                    state: mockModelRunState({
+                        status: ModelRunStatus.Started
+                    }),
+                    actions
+                }
+            }
+        });
+
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        expect(wrapper.find("button").attributes().disabled).toBe("disabled");
     });
 
 });
