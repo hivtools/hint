@@ -1,13 +1,17 @@
 package org.imperial.mrc.hint
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
+import org.imperial.mrc.hint.models.ModelRunParameters
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 interface APIClient {
     fun validateBaseline(path: String, type: FileType): ResponseEntity<String>
     fun validateSurveyAndProgramme(path: String, shapePath: String, type: FileType): ResponseEntity<String>
+    fun submit(data: Map<String, String>, parameters: ModelRunParameters): ResponseEntity<String>
+    fun getStatus(id: String): ResponseEntity<String>
 }
 
 @Component
@@ -43,6 +47,29 @@ class HintrAPIClient(
                 .httpPost()
                 .header("Content-Type" to "application/json")
                 .body(json)
+                .response()
+                .second
+                .asResponseEntity()
+    }
+
+    override fun submit(data: Map<String, String>, parameters: ModelRunParameters): ResponseEntity<String> {
+
+        val json = objectMapper.writeValueAsString(
+                mapOf("parameters" to parameters,
+                        "data" to data))
+
+        return "$baseUrl/model/submit"
+                .httpPost()
+                .header("Content-Type" to "application/json")
+                .body(json)
+                .response()
+                .second
+                .asResponseEntity()
+    }
+
+    override fun getStatus(id: String): ResponseEntity<String> {
+        return "$baseUrl/model/status/${id}"
+                .httpGet()
                 .response()
                 .second
                 .asResponseEntity()
