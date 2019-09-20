@@ -8,6 +8,7 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.LocalFileManager
 import org.imperial.mrc.hint.db.StateRepository
+import org.imperial.mrc.hint.models.SessionFile
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -22,7 +23,7 @@ class LocalFileManagerTests {
         on { uploadDirectory } doReturn tmpUploadDirectory
     }
 
-    private val mockSessionId = mock<Session> {
+    private val mockSession = mock<Session> {
         on { getId() } doReturn "fake-id"
     }
 
@@ -35,10 +36,10 @@ class LocalFileManagerTests {
     fun `saves file if file is new and returns path`() {
 
         val mockStateRepository = mock<StateRepository> {
-            on { saveNewHash(any())} doReturn true
+            on { saveNewHash(any()) } doReturn true
         }
 
-        val sut = LocalFileManager(mockSessionId, mockStateRepository, mockProperties)
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
@@ -51,10 +52,10 @@ class LocalFileManagerTests {
     fun `does not save file if file matches an existing hash and returns path`() {
 
         val mockStateRepository = mock<StateRepository> {
-            on { saveNewHash(any())} doReturn false
+            on { saveNewHash(any()) } doReturn false
         }
 
-        val sut = LocalFileManager(mockSessionId, mockStateRepository, mockProperties)
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
@@ -66,11 +67,11 @@ class LocalFileManagerTests {
     fun `gets file if it exists`() {
 
         val mockStateRepository = mock<StateRepository> {
-            on { saveNewHash(any())} doReturn true
-            on { getSessionFileHash(any(), any())} doReturn "test"
+            on { saveNewHash(any()) } doReturn true
+            on { getSessionFileHash(any(), any()) } doReturn "test"
         }
 
-        val sut = LocalFileManager(mockSessionId, mockStateRepository, mockProperties)
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
@@ -81,8 +82,23 @@ class LocalFileManagerTests {
     @Test
     fun `returns null if no file exists`() {
 
-        val sut = LocalFileManager(mockSessionId, mock(), mockProperties)
+        val sut = LocalFileManager(mockSession, mock(), mockProperties)
         assertThat(sut.getFile(FileType.Survey))
                 .isNull()
     }
+
+    @Test
+    fun `gets all files`() {
+
+        val stateRepo = mock<StateRepository> {
+            on { getFilesForSession("fake-id") } doReturn listOf(SessionFile("hash.csv", "survey"))
+        }
+
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
+        val result = sut.getAllFiles()
+
+        assertThat(result["survey"]).isEqualTo("$tmpUploadDirectory/hash.csv")
+        assertThat(result.count()).isEqualTo(1)
+    }
+
 }

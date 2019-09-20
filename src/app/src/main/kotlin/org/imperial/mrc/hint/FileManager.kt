@@ -26,6 +26,7 @@ enum class FileType {
 interface FileManager {
     fun saveFile(file: MultipartFile, type: FileType): String
     fun getFile(type: FileType): File?
+    fun getAllFiles(): Map<String, String>
 }
 
 @Component
@@ -53,13 +54,17 @@ class LocalFileManager(
     }
 
     override fun getFile(type: FileType): File? {
-
         val hash = stateRepository.getSessionFileHash(session.getId(), type)
         return if (hash != null) {
             File("${appProperties.uploadDirectory}/$hash")
         } else {
             null
         }
+    }
+
+    override fun getAllFiles(): Map<String, String> {
+        val hashes = stateRepository.getFilesForSession(session.getId())
+        return hashes.associate { it.type to "${appProperties.uploadDirectory}/${it}" }
     }
 }
 
