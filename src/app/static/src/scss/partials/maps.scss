@@ -54,6 +54,8 @@
 
     &:hover {
       border-color: $theme-red;
+      background: darken($theme-red, 10%);
+      color: white !important;
     }
   }
 }
