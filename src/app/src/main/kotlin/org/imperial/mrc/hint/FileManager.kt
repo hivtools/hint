@@ -64,7 +64,7 @@ class LocalFileManager(
 
     override fun getAllFiles(): Map<String, String> {
         val hashes = stateRepository.getFilesForSession(session.getId())
-        return hashes.associate { it.type to "${appProperties.uploadDirectory}/${it}" }
+        return hashes.associate { it.type to "${appProperties.uploadDirectory}/${it.path}" }
     }
 }
 
