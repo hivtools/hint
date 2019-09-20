@@ -36,23 +36,25 @@ class LocalFileManager(
 
     override fun saveFile(file: MultipartFile, type: FileType): String {
         val md = MessageDigest.getInstance("MD5")
-        file.inputStream.use {
-            DigestInputStream(it, md)
+        val bytes = file.inputStream.use {
+            DigestInputStream(it, md).readBytes()
         }
 
         val hash = DatatypeConverter.printHexBinary(md.digest())
+        val path = "${appProperties.uploadDirectory}/$hash"
         if (stateRepository.saveNewHash(hash)) {
-            File("${appProperties.uploadDirectory}/$hash").writeBytes(file.bytes)
+            File(appProperties.uploadDirectory).mkdirs()
+            File(path).writeBytes(bytes)
         }
 
         stateRepository.saveSessionFile(session.getId(), type, hash, file.originalFilename!!)
-        return hash
+        return path
     }
 
     override fun getFile(type: FileType): File? {
 
         val hash = stateRepository.getSessionFileHash(session.getId(), type)
-        return if (hash == null) {
+        return if (hash != null) {
             File("${appProperties.uploadDirectory}/$hash")
         } else {
             null

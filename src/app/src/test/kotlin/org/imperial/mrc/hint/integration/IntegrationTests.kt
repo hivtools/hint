@@ -12,6 +12,8 @@ import org.junit.jupiter.api.TestInfo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.test.web.client.getForEntity
+import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
@@ -27,7 +29,7 @@ abstract class IntegrationTests {
     }
 }
 
-abstract class SecureIntegrationTests : IntegrationTests() {
+abstract class SecureIntegrationTests: CleanDatabaseTests() {
 
     @Autowired
     lateinit var testRestTemplate: TestRestTemplate
@@ -37,6 +39,7 @@ abstract class SecureIntegrationTests : IntegrationTests() {
         val isAuthorized = info.displayName.contains("TRUE")
         if (isAuthorized) {
             authorize()
+            testRestTemplate.getForEntity<String>("/")
         } else {
             clear()
         }

@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.db
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.Tables.*
 import org.jooq.DSLContext
+import org.jooq.Record
 import org.springframework.stereotype.Component
 
 interface StateRepository {
@@ -41,29 +42,41 @@ class JooqStateRepository(private val dsl: DSLContext) : StateRepository {
                     .set(FILE.HASH, hash)
                     .execute()
             true
-        }
-        else {
+        } else {
             false
         }
     }
 
     override fun saveSessionFile(sessionId: String, type: FileType, hash: String, fileName: String) {
 
-        val count = dsl.insertInto(SESSION_FILE)
-                .set(SESSION_FILE.HASH, hash)
-                .set(SESSION_FILE.TYPE, type.toString())
-                .set(SESSION_FILE.SESSION, sessionId)
-                .set(SESSION_FILE.FILENAME, fileName)
-                .execute()
+        if (getSessionFileRecord(sessionId, type) == null) {
+            dsl.insertInto(SESSION_FILE)
+                    .set(SESSION_FILE.HASH, hash)
+                    .set(SESSION_FILE.TYPE, type.toString())
+                    .set(SESSION_FILE.SESSION, sessionId)
+                    .set(SESSION_FILE.FILENAME, fileName)
+                    .execute()
+        } else {
+            dsl.update(SESSION_FILE)
+                    .set(SESSION_FILE.HASH, hash)
+                    .set(SESSION_FILE.FILENAME, fileName)
+                    .where(SESSION_FILE.SESSION.eq(sessionId))
+                    .and(SESSION_FILE.TYPE.eq(type.toString()))
+                    .execute()
+        }
+
     }
 
     override fun getSessionFileHash(sessionId: String, type: FileType): String? {
+        return getSessionFileRecord(sessionId, type)?.into(String::class.java)
+    }
 
+    private fun getSessionFileRecord(sessionId: String, type: FileType): Record? {
         return dsl.select(SESSION_FILE.HASH)
                 .from(SESSION_FILE)
                 .where(SESSION_FILE.SESSION.eq(sessionId))
                 .and(SESSION_FILE.TYPE.eq(type.toString()))
-                .fetchAny()?.into(String::class.java)
+                .fetchAny()
     }
 
 }
