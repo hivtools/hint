@@ -40,7 +40,8 @@ class LocalFileManager(
             DigestInputStream(it, md).readBytes()
         }
 
-        val hash = DatatypeConverter.printHexBinary(md.digest())
+        val extension = file.originalFilename!!.split(".").last()
+        val hash = "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
         val path = "${appProperties.uploadDirectory}/$hash"
         if (stateRepository.saveNewHash(hash)) {
             File(appProperties.uploadDirectory).mkdirs()

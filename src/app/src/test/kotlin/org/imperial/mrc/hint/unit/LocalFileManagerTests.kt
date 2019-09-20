@@ -59,7 +59,7 @@ class LocalFileManagerTests {
                 "application/zip", "pjnz content".toByteArray())
 
         val path = sut.saveFile(mockFile, FileType.Survey)
-        assertThat(path).isEqualTo("tmp/D41D8CD98F00B204E9800998ECF8427E")
+        assertThat(path).isEqualTo("tmp/C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
     }
 
     @Test
@@ -67,7 +67,7 @@ class LocalFileManagerTests {
 
         val mockStateRepository = mock<StateRepository> {
             on { saveNewHash(any())} doReturn true
-            on { getSessionFileHash(any(), any())} doReturn "D41D8CD98F00B204E9800998ECF8427E"
+            on { getSessionFileHash(any(), any())} doReturn "test"
         }
 
         val sut = LocalFileManager(mockSessionId, mockStateRepository, mockProperties)
@@ -75,7 +75,7 @@ class LocalFileManagerTests {
                 "application/zip", "pjnz content".toByteArray())
 
         sut.saveFile(mockFile, FileType.Survey)
-        assertThat(sut.getFile(FileType.Survey)).isNotNull()
+        assertThat(sut.getFile(FileType.Survey)!!.path).isEqualTo("tmp/test")
     }
 
     @Test
