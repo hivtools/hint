@@ -3,11 +3,9 @@ import {
     SurveyAndProgramDataState, surveyAndProgramGetters
 } from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations} from "../../app/store/surveyAndProgram/mutations";
-import { mockSurveyResponse} from "../mocks";
-import {initialBaselineState} from "../../app/store/baseline/baseline";
+import {mockModelRunState, mockRootState, mockSurveyResponse} from "../mocks";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
-import {initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 
 describe("Survey and program mutations", () => {
 
@@ -72,12 +70,7 @@ describe("Survey and program mutations", () => {
             getters: surveyAndProgramGetters
         };
         const testState = testStore.state as SurveyAndProgramDataState;
-        const testRootState = {
-            version: "",
-            filteredData: {...initialFilteredDataState},
-            baseline: {...initialBaselineState},
-            surveyAndProgram: testState,
-        };
+        const testRootState = mockRootState({surveyAndProgram: testState});
         const complete = testStore.getters!!.complete;
 
         expect(complete(testState, null, testRootState, null)).toBe(false);

@@ -1,5 +1,5 @@
 import {mutations} from "../../app/store/baseline/mutations";
-import {mockPJNZResponse, mockPopulationResponse, mockShapeResponse} from "../mocks";
+import {mockModelRunState, mockPJNZResponse, mockPopulationResponse, mockRootState, mockShapeResponse} from "../mocks";
 import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
 import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {Module} from "vuex";
@@ -25,12 +25,7 @@ describe("Baseline mutations", () => {
             getters: baselineGetters
         };
         const testState = testStore.state as BaselineState;
-        const testRootState = {
-            version: "",
-            filteredData: {...initialFilteredDataState},
-            baseline: testState,
-            surveyAndProgram: {...initialSurveyAndProgramDataState}
-        };
+        const testRootState = mockRootState({baseline: testState});
         const complete = testStore.getters!!.complete;
 
         mutations.PJNZUpdated(testState, {

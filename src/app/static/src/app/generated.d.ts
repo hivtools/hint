@@ -256,3 +256,8 @@ export interface SurveyResponse {
     }[];
   };
 }
+export interface ValidateSurveyAndProgrammeRequest {
+  type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
+  path: string | null;
+  shape: string | null;
+}

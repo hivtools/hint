@@ -20,6 +20,7 @@
             <baseline v-if="active(1)"></baseline>
             <survey-and-program v-if="active(2)"></survey-and-program>
             <p v-if="active(3)">Functionality coming soon.</p>
+            <model-run v-if="active(4)"></model-run>
         </div>
         <div class="row mt-2">
             <div class="col">
@@ -35,11 +36,11 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {mapGetters, mapState} from "vuex";
+
     import Step from "./Step.vue";
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
-    import {RootState} from "../root";
+    import ModelRun from "./modelRun/ModelRun.vue";
 
     type CompleteStatus = {
         [key: number]: boolean
@@ -50,7 +51,7 @@
         steps: { number: number, text: string }[]
     }
 
-    export default Vue.extend({
+    export default Vue.extend<Data, any, any, any>({
         data(): Data {
             return {
                 activeStep: 1,
@@ -103,7 +104,7 @@
             },
             enabled(num: number) {
                 return this.steps.slice(0, num)
-                    .filter((s) => this.complete[s.number])
+                    .filter((s: { number: number }) => this.complete[s.number])
                     .length >= num - 1
             },
             next() {
@@ -115,7 +116,8 @@
         components: {
             Step,
             Baseline,
-            SurveyAndProgram
+            SurveyAndProgram,
+            ModelRun
         }
     })
 
