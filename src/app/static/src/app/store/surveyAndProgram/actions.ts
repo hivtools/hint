@@ -6,7 +6,7 @@ import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {BaselineErrorActionTypes} from "../baseline/actions";
 
-export type SurveyAndProgramActionTypes = "SurveyLoaded" | "ProgramLoaded" | "ANCLoaded"
+export type SurveyAndProgramActionTypes = "SurveyUpdated" | "ProgramUpdated" | "ANCUpdated"
 export type SurveyAndProgramActionErrorTypes = "SurveyError" | "ProgramError" | "ANCError"
 
 export interface SurveyAndProgramActions {
@@ -24,9 +24,10 @@ function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
 export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
 
     async uploadSurvey({commit}, formData) {
+        commit({type: "SurveyUpdated", payload: null});
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("SurveyError")
-            .withSuccess("SurveyLoaded")
+            .withSuccess("SurveyUpdated")
             .postAndReturn<SurveyResponse>("/disease/survey/", formData)
             .then((response) => {
                 if (response) {
@@ -36,9 +37,10 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     },
 
     async uploadProgram({commit}, formData) {
+        commit({type: "ProgramUpdated", payload: null});
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("ProgramError")
-            .withSuccess("ProgramLoaded")
+            .withSuccess("ProgramUpdated")
             .postAndReturn<ProgrammeResponse>("/disease/programme/", formData)
             .then((response) => {
                 if (response) {
@@ -48,9 +50,10 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     },
 
     async uploadANC({commit}, formData) {
+        commit({type: "ANCUpdated", payload: null});
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("ANCError")
-            .withSuccess("ANCLoaded")
+            .withSuccess("ANCUpdated")
             .postAndReturn<ProgrammeResponse>("/disease/anc/", formData)
             .then((response) => {
                 if (response) {
@@ -64,15 +67,15 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         await Promise.all(
             [api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
                 .ignoreErrors()
-                .withSuccess("SurveyLoaded")
+                .withSuccess("SurveyUpdated")
                 .get<SurveyResponse>("/disease/survey/"),
                 api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
                     .ignoreErrors()
-                    .withSuccess("ProgramLoaded")
+                    .withSuccess("ProgramUpdated")
                     .get<ProgrammeResponse>("/disease/programme/"),
                 api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
                     .ignoreErrors()
-                    .withSuccess("ANCLoaded")
+                    .withSuccess("ANCUpdated")
                     .get<AncResponse>("/disease/anc/")]);
 
         commit({type: "Ready", payload: true});

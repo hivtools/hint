@@ -1,10 +1,10 @@
 import { Module } from 'vuex';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import {InputState, RootState} from "../../root";
+import {ReadyState, RootState} from "../../root";
 import {ProgrammeResponse, SurveyResponse, AncResponse} from "../../generated";
 
-export interface SurveyAndProgramDataState extends InputState {
+export interface SurveyAndProgramDataState extends ReadyState {
     survey: SurveyResponse | null
     surveyError: string,
     program: ProgrammeResponse | null

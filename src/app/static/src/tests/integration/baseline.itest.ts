@@ -13,7 +13,7 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadPJNZ({commit} as any, formData);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PJNZUploaded");
+        expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
     });
 
     it("can get baseline data", async () => {
@@ -21,9 +21,9 @@ describe("Baseline actions", () => {
         await actions.getBaselineData({commit} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-        expect(calls).toContain("PJNZLoaded");
-        expect(calls).toContain("ShapeUploaded");
-        expect(calls).toContain("PopulationUploaded");
+        expect(calls).toContain("PJNZUpdated");
+        expect(calls).toContain("ShapeUpdated");
+        expect(calls).toContain("PopulationUpdated");
     });
 
     it("can upload shape file", async () => {
@@ -33,7 +33,7 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadShape({commit} as any, formData);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUploaded");
+        expect(commit.mock.calls[1][0]["type"]).toBe("ShapeUpdated");
 
     }, 10000);
 
@@ -44,7 +44,7 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadPopulation({commit} as any, formData);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUploaded");
+        expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUpdated");
     });
 
 });

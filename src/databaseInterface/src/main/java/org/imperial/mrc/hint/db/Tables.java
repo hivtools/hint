@@ -6,7 +6,10 @@ package org.imperial.mrc.hint.db;
 
 import javax.annotation.Generated;
 
+import org.imperial.mrc.hint.db.tables.File;
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
+import org.imperial.mrc.hint.db.tables.SessionFile;
+import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
 
 
@@ -24,9 +27,24 @@ import org.imperial.mrc.hint.db.tables.Users;
 public class Tables {
 
     /**
+     * The table <code>public.file</code>.
+     */
+    public static final File FILE = org.imperial.mrc.hint.db.tables.File.FILE;
+
+    /**
      * The table <code>public.onetime_token</code>.
      */
     public static final OnetimeToken ONETIME_TOKEN = org.imperial.mrc.hint.db.tables.OnetimeToken.ONETIME_TOKEN;
+
+    /**
+     * The table <code>public.session_file</code>.
+     */
+    public static final SessionFile SESSION_FILE = org.imperial.mrc.hint.db.tables.SessionFile.SESSION_FILE;
+
+    /**
+     * The table <code>public.user_session</code>.
+     */
+    public static final UserSession USER_SESSION = org.imperial.mrc.hint.db.tables.UserSession.USER_SESSION;
 
     /**
      * The table <code>public.users</code>.

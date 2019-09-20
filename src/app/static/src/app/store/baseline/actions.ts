@@ -4,7 +4,7 @@ import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {PjnzResponse} from "../../generated";
 
-export type BaselineActionTypes = "PJNZUploaded" | "PJNZLoaded" | "ShapeUploaded" | "PopulationUploaded"
+export type BaselineActionTypes = "PJNZUpdated" | "ShapeUpdated" | "PopulationUpdated"
 export type BaselineErrorActionTypes = "PJNZUploadError" | "ShapeUploadError" | "PopulationUploadError"
 
 export interface BaselineActions {
@@ -17,40 +17,42 @@ export interface BaselineActions {
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async uploadPJNZ({commit}, formData) {
+        commit({type: "PJNZUpdated", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .withSuccess("PJNZUploaded")
+            .withSuccess("PJNZUpdated")
             .withError("PJNZUploadError")
             .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData);
     },
 
     async uploadShape({commit}, formData) {
+        commit({type: "ShapeUpdated", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .withSuccess("ShapeUploaded")
+            .withSuccess("ShapeUpdated")
             .withError("ShapeUploadError")
             .postAndReturn<PjnzResponse>("/baseline/shape/", formData);
     },
 
     async uploadPopulation({commit}, formData) {
+        commit({type: "PopulationUpdated", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .withSuccess("PopulationUploaded")
+            .withSuccess("PopulationUpdated")
             .withError("PopulationUploadError")
             .postAndReturn<PjnzResponse>("/baseline/population/", formData);
     },
 
     async getBaselineData({commit}) {
-
         await Promise.all([
             api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
                 .ignoreErrors()
-                .withSuccess("PJNZLoaded")
+                .withSuccess("PJNZUpdated")
                 .get<PjnzResponse>("/baseline/pjnz/"),
             api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
                 .ignoreErrors()
-                .withSuccess("PopulationUploaded")
+                .withSuccess("PopulationUpdated")
                 .get<PjnzResponse>("/baseline/population/"),
             api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
                 .ignoreErrors()
-                .withSuccess("ShapeUploaded")
+                .withSuccess("ShapeUpdated")
                 .get<PjnzResponse>("/baseline/shape/")
         ]);
 
