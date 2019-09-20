@@ -13,6 +13,7 @@
                    v-on:change="handleFileSelect"/>
             <label :for="name"
                    class="custom-file-label"
+                   :disabled="uploading"
                    :class="{'selected': selectedFileName || existingFileName, 'uploading': uploading}">
                 {{selectedFileName || existingFileName || "Choose a file" }}
             </label>
