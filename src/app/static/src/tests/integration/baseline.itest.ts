@@ -13,7 +13,7 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadPJNZ({commit} as any, formData);
-        expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUploaded");
+        expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
     });
 
     it("can get baseline data", (done) => {
@@ -22,9 +22,9 @@ describe("Baseline actions", () => {
 
         setTimeout(() => {
             const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-            expect(calls).toContain("PJNZLoaded");
-            expect(calls).toContain("ShapeUploaded");
-            expect(calls).toContain("PopulationUploaded");
+            expect(calls).toContain("PJNZUpdated");
+            expect(calls).toContain("ShapeUpdated");
+            expect(calls).toContain("PopulationUpdated");
             done();
         }, 50);
     });
@@ -36,7 +36,7 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadShape({commit} as any, formData);
-        expect(commit.mock.calls[1][0]["type"]).toBe("ShapeUploaded");
+        expect(commit.mock.calls[1][0]["type"]).toBe("ShapeUpdated");
 
     }, 10000);
 
@@ -47,7 +47,7 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadPopulation({commit} as any, formData);
-        expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUploaded");
+        expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUpdated");
     });
 
 });

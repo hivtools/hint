@@ -134,8 +134,8 @@ describe("Stepper component", () => {
         expect(continueLink.classes()).toContain("disabled");
 
         //invoke the mutation
-        store.commit("baseline/ShapeUploaded", {
-            "type": "ShapeUploaded",
+        store.commit("baseline/ShapeUpdated", {
+            "type": "ShapeUpdated",
             "payload": mockShapeResponse()
         });
 

@@ -15,12 +15,12 @@ describe("Survey and program actions", () => {
         await actions.uploadSurvey({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "SurveyLoaded",
+            type: "SurveyUpdated",
             payload: null
         });
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "SurveyLoaded",
+            type: "SurveyUpdated",
             payload: {data: "SOME DATA"}
         });
 
@@ -38,7 +38,7 @@ describe("Survey and program actions", () => {
         await actions.uploadSurvey({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "SurveyLoaded",
+            type: "SurveyUpdated",
             payload: null
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
@@ -59,12 +59,12 @@ describe("Survey and program actions", () => {
         await actions.uploadProgram({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ProgramLoaded",
+            type: "ProgramUpdated",
             payload: null
         });
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ProgramLoaded",
+            type: "ProgramUpdated",
             payload: "TEST"
         });
 
@@ -82,7 +82,7 @@ describe("Survey and program actions", () => {
         await actions.uploadProgram({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ProgramLoaded",
+            type: "ProgramUpdated",
             payload: null
         });
 
@@ -104,12 +104,12 @@ describe("Survey and program actions", () => {
         await actions.uploadANC({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ANCLoaded",
+            type: "ANCUpdated",
             payload: null
         });
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ANCLoaded",
+            type: "ANCUpdated",
             payload: "TEST"
         });
 
@@ -127,7 +127,7 @@ describe("Survey and program actions", () => {
         await actions.uploadANC({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ANCLoaded",
+            type: "ANCUpdated",
             payload: null
         });
 

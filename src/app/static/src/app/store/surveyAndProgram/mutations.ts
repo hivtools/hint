@@ -6,16 +6,16 @@ import {ProgrammeResponse, SurveyResponse, AncResponse} from "../../generated";
 type SurveyAndProgramMutation = Mutation<SurveyAndProgramDataState>
 
 export interface SurveyAndProgramMutations {
-    SurveyLoaded: SurveyAndProgramMutation
+    SurveyUpdated: SurveyAndProgramMutation
     SurveyError: SurveyAndProgramMutation,
-    ProgramLoaded: SurveyAndProgramMutation
+    ProgramUpdated: SurveyAndProgramMutation
     ProgramError: SurveyAndProgramMutation,
-    ANCLoaded: SurveyAndProgramMutation
+    ANCUpdated: SurveyAndProgramMutation
     ANCError: SurveyAndProgramMutation
 }
 
 export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgramMutations = {
-    SurveyLoaded(state: SurveyAndProgramDataState, action: PayloadWithType<SurveyResponse>) {
+    SurveyUpdated(state: SurveyAndProgramDataState, action: PayloadWithType<SurveyResponse>) {
         state.survey = action.payload;
         state.surveyError = "";
     },
@@ -24,7 +24,7 @@ export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgr
         state.surveyError = action.payload;
     },
 
-    ProgramLoaded(state: SurveyAndProgramDataState, action: PayloadWithType<ProgrammeResponse>) {
+    ProgramUpdated(state: SurveyAndProgramDataState, action: PayloadWithType<ProgrammeResponse>) {
         state.program = action.payload;
         state.programError = "";
     },
@@ -33,7 +33,7 @@ export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgr
         state.programError = action.payload;
     },
 
-    ANCLoaded(state: SurveyAndProgramDataState, action: PayloadWithType<AncResponse>) {
+    ANCUpdated(state: SurveyAndProgramDataState, action: PayloadWithType<AncResponse>) {
         state.anc = action.payload;
         state.ancError = "";
     },

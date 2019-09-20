@@ -24,9 +24,9 @@ describe("Survey and program mutations", () => {
         })
     };
 
-    it("sets surveys data and filename and clears error on SurveyLoaded", () => {
+    it("sets surveys data and filename and clears error on SurveyUpdated", () => {
         const testState = {...initialSurveyAndProgramDataState, surveyError: "test"};
-        mutations.SurveyLoaded(testState, testPayload);
+        mutations.SurveyUpdated(testState, testPayload);
         expect(testState.survey!!.data).toStrictEqual(testData);
         expect(testState.survey!!.filename).toBe("somefile.csv");
         expect(testState.surveyError).toBe("");
@@ -38,9 +38,9 @@ describe("Survey and program mutations", () => {
         expect(testState.surveyError).toBe("Some error");
     });
 
-    it("sets program data and filename and clears error on ProgramLoaded", () => {
+    it("sets program data and filename and clears error on ProgramUpdated", () => {
         const testState = {...initialSurveyAndProgramDataState, programError: "test"};
-        mutations.ProgramLoaded(testState, testPayload);
+        mutations.ProgramUpdated(testState, testPayload);
         expect(testState.program!!.data).toStrictEqual(testData);
         expect(testState.program!!.filename).toBe("somefile.csv");
         expect(testState.programError).toBe("");
@@ -52,9 +52,9 @@ describe("Survey and program mutations", () => {
         expect(testState.programError).toBe("Some error");
     });
 
-    it("sets anc data and filename and clears error on ANCLoaded", () => {
+    it("sets anc data and filename and clears error on ANCUpdated", () => {
         const testState = {...initialSurveyAndProgramDataState, ancError: "test"};
-        mutations.ANCLoaded(testState, testPayload);
+        mutations.ANCUpdated(testState, testPayload);
         expect(testState.anc!!.data).toStrictEqual(testData);
         expect(testState.anc!!.filename).toBe("somefile.csv");
         expect(testState.ancError).toBe("");
@@ -66,7 +66,7 @@ describe("Survey and program mutations", () => {
         expect(testState.ancError).toBe("Some error");
     });
 
-    it("finds complete is true after all files are uploaded", () => {
+    it("finds complete is true after all files are upUpdated", () => {
         const testStore:  Module<SurveyAndProgramDataState, RootState> = {
             state: {...initialSurveyAndProgramDataState},
             getters: surveyAndProgramGetters
@@ -82,13 +82,13 @@ describe("Survey and program mutations", () => {
 
         expect(complete(testState, null, testRootState, null)).toBe(false);
 
-        mutations.SurveyLoaded(testState, testPayload);
+        mutations.SurveyUpdated(testState, testPayload);
         expect(complete(testState, null, testRootState, null)).toBe(false);
 
-        mutations.ProgramLoaded(testState, testPayload);
+        mutations.ProgramUpdated(testState, testPayload);
         expect(complete(testState, null, testRootState, null)).toBe(false);
 
-        mutations.ANCLoaded(testState, testPayload);
+        mutations.ANCUpdated(testState, testPayload);
         expect(complete(testState, null, testRootState, null)).toBe(true);
     });
 
