@@ -8,11 +8,15 @@ export interface ModelRunState {
     status: ModelRunStatus
 }
 
-export type ModelRunStatus = "NotStarted" | "Started" | "Complete"
+export enum ModelRunStatus {
+    "NotStarted",
+    "Started",
+    "Complete"
+}
 
-export const initialModelRunState : ModelRunState = {
+export const initialModelRunState: ModelRunState = {
     modelRunId: "",
-    status: "NotStarted"
+    status: ModelRunStatus.NotStarted
 };
 
 const namespaced: boolean = true;

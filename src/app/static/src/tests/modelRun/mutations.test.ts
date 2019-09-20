@@ -1,4 +1,4 @@
-import {initialModelRunState} from "../../app/store/modelRun/modelRun";
+import {initialModelRunState, ModelRunStatus} from "../../app/store/modelRun/modelRun";
 import {mutations} from "../../app/store/modelRun/mutations";
 
 describe("Model run mutations", () => {
@@ -7,6 +7,6 @@ describe("Model run mutations", () => {
         const testState = {...initialModelRunState};
         mutations.ModelRunStarted(testState, {payload: {id: "1234"}});
         expect(testState.modelRunId).toBe("1234");
-        expect(testState.status).toBe("Started");
+        expect(testState.status).toBe(ModelRunStatus.Started);
     });
 });

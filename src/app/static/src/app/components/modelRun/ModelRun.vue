@@ -1,7 +1,7 @@
 <template>
     <button class="btn btn-red btn-lg"
             v-on:click="runModelWithParams"
-            :disabled="status === 'Started'">Run model
+            :disabled="disabled">Run model
     </button>
 </template>
 
@@ -9,14 +9,14 @@
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
     import {ModelSubmitParameters} from "../../generated";
-    import {ModelRunState} from "../../store/modelRun/modelRun";
+    import {ModelRunState, ModelRunStatus} from "../../store/modelRun/modelRun";
 
     const namespace: string = 'modelRun';
 
     export default Vue.extend<any, any, any, any>({
         name: "ModelRun",
         computed: mapState<ModelRunState>(namespace, {
-            status: state => state.status
+            disabled: state => state.status == ModelRunStatus.Started
         }),
         methods: {
             ...mapActions({
