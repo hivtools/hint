@@ -37,7 +37,7 @@ class Pac4jConfig {
 @Component
 class Session(private val webContext: WebContext, private val pac4jConfig: Config) {
 
-    fun getId() = pac4jConfig.sessionStore.getOrCreateSessionId(webContext)
+    fun getId(): String = pac4jConfig.sessionStore.getOrCreateSessionId(webContext)
 
     fun getUserProfile(): CommonProfile {
         val manager = ProfileManager<CommonProfile>(webContext)

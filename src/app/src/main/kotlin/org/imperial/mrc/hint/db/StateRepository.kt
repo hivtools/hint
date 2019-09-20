@@ -75,7 +75,6 @@ class JooqStateRepository(private val dsl: DSLContext) : StateRepository {
         return getSessionFileRecord(sessionId, type)?.into(String::class.java)
     }
 
-
     override fun getFilesForSession(sessionId: String): List<SessionFile> {
         return dsl.select(SESSION_FILE.HASH, SESSION_FILE.TYPE)
                 .from(SESSION_FILE)
