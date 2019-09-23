@@ -38,6 +38,7 @@ describe("Stepper component", () => {
         const wrapper = shallowMount(Stepper, {store, localVue});
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
+        expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
     });
 
     it("does not render loading spinner once states are ready", () => {
@@ -45,6 +46,7 @@ describe("Stepper component", () => {
         const wrapper = shallowMount(Stepper, {store, localVue});
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAll(".content").length).toBe(1);
+        expect(wrapper.findAll("#loading-message").length).toBe(0);
     });
 
     it("renders steps", () => {
@@ -150,8 +152,8 @@ describe("Stepper component", () => {
         expect(continueLink.classes()).toContain("disabled");
 
         //invoke the mutation
-        store.commit("baseline/ShapeUploaded", {
-            "type": "ShapeUploaded",
+        store.commit("baseline/ShapeUpdated", {
+            "type": "ShapeUpdated",
             "payload": mockShapeResponse()
         });
 

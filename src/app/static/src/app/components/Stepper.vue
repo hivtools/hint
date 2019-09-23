@@ -18,12 +18,14 @@
         <hr/>
         <div v-if="!ready" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
+            <h2 id="loading-message">Loading your data</h2>
         </div>
         <div v-if="ready" class="content">
             <div class="pt-4">
                 <baseline v-if="active(1)"></baseline>
                 <survey-and-program v-if="active(2)"></survey-and-program>
                 <p v-if="active(3)">Functionality coming soon.</p>
+                <model-run v-if="active(4)"></model-run>
             </div>
             <div class="row mt-2">
                 <div class="col">
@@ -47,6 +49,7 @@
     import {RootState} from "../root";
     import {localStorageManager} from "../localStorageManager";
     import LoadingSpinner from "./LoadingSpinner.vue";
+    import ModelRun from "./modelRun/ModelRun.vue";
 
     type CompleteStatus = {
         [key: number]: boolean
@@ -57,7 +60,7 @@
         steps: { number: number, text: string }[]
     }
 
-    export default Vue.extend({
+    export default Vue.extend<Data, any, any, any>({
         data(): Data {
             return {
                 activeStep: 1,
@@ -114,7 +117,7 @@
             },
             enabled(num: number) {
                 return this.steps.slice(0, num)
-                    .filter((s) => this.complete[s.number])
+                    .filter((s: { number: number }) => this.complete[s.number])
                     .length >= num - 1
             },
             next() {
@@ -127,7 +130,8 @@
             Step,
             Baseline,
             SurveyAndProgram,
-            LoadingSpinner
+            LoadingSpinner,
+            ModelRun
         },
         watch: {
             ready: function (newVal) {

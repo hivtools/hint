@@ -1,10 +1,10 @@
 import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
-import {InputState, RootState} from "../../root";
+import {ReadyState, RootState} from "../../root";
 import {PopulationResponse, ShapeResponse} from "../../generated";
 
-export interface BaselineState extends InputState {
+export interface BaselineState extends ReadyState {
     pjnzError: string
     country: string
     pjnzFilename: string

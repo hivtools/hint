@@ -1,5 +1,4 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
-import {DataType} from "../../app/store/filteredData/filteredData";
 
 const fs = require("fs");
 const FormData = require("form-data");
@@ -19,9 +18,10 @@ describe("Survey and program actions", () => {
         // Unfortunately we can't test the success path because it relies on a persistent
         // session between uploading a shape file and a survey file. But the success path is
         // under test in the unit tests
-        expect(commit.mock.calls[0][0]["type"]).toBe("SurveyError");
-        expect(commit.mock.calls[0][0]["payload"])
+        expect(commit.mock.calls[1][0]["type"]).toBe("SurveyError");
+        expect(commit.mock.calls[1][0]["payload"])
             .toBe("You must upload a shape file before uploading survey or programme data")
+
     });
 
     it("can upload program", async () => {
@@ -37,8 +37,8 @@ describe("Survey and program actions", () => {
         // Unfortunately we can't test the success path because it relies on a persistent
         // session between uploading a shape file and a program file. But the success path is
         // under test in the unit tests
-        expect(commit.mock.calls[0][0]["type"]).toBe("ProgramError");
-        expect(commit.mock.calls[0][0]["payload"])
+        expect(commit.mock.calls[1][0]["type"]).toBe("ProgramError");
+        expect(commit.mock.calls[1][0]["payload"])
             .toBe("You must upload a shape file before uploading survey or programme data")
     });
 
@@ -55,10 +55,9 @@ describe("Survey and program actions", () => {
         // Unfortunately we can't test the success path because it relies on a persistent
         // session between uploading a shape file and an anc file. But the success path is
         // under test in the unit tests
-        expect(commit.mock.calls[0][0]["type"]).toBe("ANCError");
-        expect(commit.mock.calls[0][0]["payload"])
+        expect(commit.mock.calls[1][0]["type"]).toBe("ANCError");
+        expect(commit.mock.calls[1][0]["payload"])
             .toBe("You must upload a shape file before uploading survey or programme data")
     });
-
 
 });

@@ -2,6 +2,7 @@
     <div class="form-group">
         <label class="font-weight-bold">{{label}}</label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
+        <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <slot></slot>
         <div class="custom-file">
             <input type="file"
@@ -10,7 +11,10 @@
                    :id="name"
                    :accept="accept"
                    v-on:change="handleFileSelect"/>
-            <label :for="name" :class="['custom-file-label', {'selected': selectedFileName || existingFileName}]">
+            <label :for="name"
+                   class="custom-file-label"
+                   :disabled="uploading"
+                   :class="{'selected': selectedFileName || existingFileName, 'uploading': uploading}">
                 {{selectedFileName || existingFileName || "Choose a file" }}
             </label>
         </div>
@@ -23,10 +27,12 @@
 
     import Tick from "./Tick.vue";
     import ErrorAlert from "./ErrorAlert.vue";
+    import LoadingSpinner from "./LoadingSpinner.vue";
 
     interface Data {
         selectedFile: File | null
-        selectedFileName: string
+        selectedFileName: string,
+        uploading: boolean
     }
 
     interface Computed {
@@ -52,7 +58,8 @@
         data(): Data {
             return {
                 selectedFile: null,
-                selectedFileName: ""
+                selectedFileName: "",
+                uploading: false
             }
         },
         props: {
@@ -82,12 +89,26 @@
                 if (this.selectedFile) {
                     const formData = new FormData();
                     formData.append('file', this.selectedFile);
+                    this.uploading = true;
                     this.upload(formData);
+                }
+            }
+        },
+        watch: {
+            valid: function (newVal: boolean) {
+                if (newVal) {
+                    this.uploading = false;
+                }
+            },
+            error: function (newVal: string) {
+                if (newVal) {
+                    this.uploading = false;
                 }
             }
         },
         components: {
             Tick,
+            LoadingSpinner,
             ErrorAlert
         }
     });

@@ -6,15 +6,17 @@ import {
     surveyAndProgram,
     SurveyAndProgramDataState
 } from "./store/surveyAndProgram/surveyAndProgram";
+import {initialModelRunState, modelRun, ModelRunState} from "./store/modelRun/modelRun";
 
 export interface RootState {
     version: string;
     baseline: BaselineState,
     surveyAndProgram: SurveyAndProgramDataState,
-    filteredData: FilteredDataState
+    filteredData: FilteredDataState,
+    modelRun: ModelRunState
 }
 
-export interface InputState {
+export interface ReadyState {
     ready: boolean
 }
 
@@ -23,11 +25,13 @@ export const storeOptions: StoreOptions<RootState> = {
         version: '0.0.0',
         baseline: initialBaselineState,
         surveyAndProgram: initialSurveyAndProgramDataState,
-        filteredData: initialFilteredDataState
+        filteredData: initialFilteredDataState,
+        modelRun: initialModelRunState
     },
     modules: {
         baseline,
         surveyAndProgram,
-        filteredData
+        filteredData,
+        modelRun
     }
 };
