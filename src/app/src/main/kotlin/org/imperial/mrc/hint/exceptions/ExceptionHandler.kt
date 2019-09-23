@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.exceptions
 
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.postgresql.util.PSQLException
+import org.slf4j.LoggerFactory
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
@@ -24,22 +25,25 @@ class HintExceptionHandler : ResponseEntityExceptionHandler() {
                                          headers: HttpHeaders,
                                          status: HttpStatus,
                                          request: WebRequest): ResponseEntity<Any> {
+        logger.error(e.message)
         return ErrorDetail(status, e.message ?: "Something went wrong").toResponseEntity()
     }
 
     @ExceptionHandler(HintException::class)
-    protected fun handleHintException(e: HintException): ResponseEntity<Any>
-    {
+    protected fun handleHintException(e: HintException): ResponseEntity<Any> {
+        logger.error(e.message)
         return ErrorDetail(e.httpStatus, e.message!!).toResponseEntity()
     }
 
     @ExceptionHandler(ConstraintViolationException::class)
     protected fun handleConstraintViolationException(e: ConstraintViolationException, request: HttpServletRequest): ResponseEntity<*> {
+        logger.error(e.message)
         return ErrorDetail(HttpStatus.BAD_REQUEST, e.message!!).toResponseEntity()
     }
 
     @ExceptionHandler(PSQLException::class)
-    protected fun handlePSQLException(e: PSQLException, request: HttpServletRequest) : ResponseEntity<Any> {
+    protected fun handlePSQLException(e: PSQLException, request: HttpServletRequest): ResponseEntity<Any> {
+        logger.error(e.message)
         return ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.").toResponseEntity()
     }
 

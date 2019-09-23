@@ -7,7 +7,7 @@ HINT=hint
 $HERE/../../../../scripts/run-dependencies.sh
 
 . $HERE/../../../../scripts/common # sets GIT_BRANCH
-$HERE/../../../../scripts/build-app.sh
+$HERE/../../../../scripts/build-app.sh node
 
 TEST_CONFIG=$HERE/test.properties
 HINT_IMAGE=mrcide/$HINT:$GIT_BRANCH

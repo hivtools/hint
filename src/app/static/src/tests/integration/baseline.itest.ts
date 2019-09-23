@@ -1,9 +1,14 @@
 import {actions} from "../../app/store/baseline/actions";
+import {login} from "./integrationTest";
 
 const fs = require("fs");
 const FormData = require("form-data");
 
 describe("Baseline actions", () => {
+
+    beforeAll(async () => {
+        await login();
+    });
 
     it("can upload PJNZ file", async () => {
         const commit = jest.fn();
@@ -14,6 +19,8 @@ describe("Baseline actions", () => {
 
         await actions.uploadPJNZ({commit} as any, formData);
         expect(commit.mock.calls[0][0]["type"]).toBe("PJNZUploaded");
+        expect(commit.mock.calls[0][0]["payload"]["filename"])
+            .toBe("E66ECF0E9BE8BE814547EA7574700DD3.PJNZ");
     });
 
     it("can get baseline data", (done) => {
@@ -37,6 +44,8 @@ describe("Baseline actions", () => {
 
         await actions.uploadShape({commit} as any, formData);
         expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUploaded");
+        expect(commit.mock.calls[0][0]["payload"]["filename"])
+            .toBe("A59C122F27303D93467C0F2D09489878.geojson");
 
     }, 10000);
 
@@ -48,6 +57,8 @@ describe("Baseline actions", () => {
 
         await actions.uploadPopulation({commit} as any, formData);
         expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUploaded");
+        expect(commit.mock.calls[0][0]["payload"]["filename"])
+            .toBe("365A2F42B939E5390AA4DE2720708F77.csv");
     });
 
 });

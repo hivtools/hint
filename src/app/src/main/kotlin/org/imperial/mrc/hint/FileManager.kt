@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint
 
+import org.apache.tomcat.util.http.fileupload.FileUtils
 import org.imperial.mrc.hint.db.StateRepository
 import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Component
@@ -45,8 +46,9 @@ class LocalFileManager(
         val hash = "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
         val path = "${appProperties.uploadDirectory}/$hash"
         if (stateRepository.saveNewHash(hash)) {
-            File(appProperties.uploadDirectory).mkdirs()
-            File(path).writeBytes(bytes)
+            val localFile = File(path)
+            FileUtils.forceMkdirParent(localFile)
+            localFile.writeBytes(bytes)
         }
 
         stateRepository.saveSessionFile(session.getId(), type, hash, file.originalFilename!!)
