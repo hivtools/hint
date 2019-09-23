@@ -5,8 +5,6 @@ import Vuex from "vuex";
 import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../../mocks";
 import {LGeoJson} from 'vue2-leaflet';
 import MapControl from "../../../app/components/plots/MapControl.vue";
-import {interpolateCool, interpolateWarm} from "d3-scale-chromatic"
-import {DataType} from "../../../app/store/filteredData/filteredData";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -38,12 +36,27 @@ describe("Choropleth component", () => {
     ];
     const testRegionIndicators = {
         indicators: {
-            "MWI.1.1.1.1": {prev: 0.1, art: 0.08},
-            "MWI.1.1.1.2": {prev: 0.05, art: 0.06},
-            "MWI.1.1.1": {prev: 0.07, art: 0.2}
+            "MWI.1.1.1.1": {
+                prev: {value: 0.1, color: "rgb(1,1,1)"},
+                art: {value: 0.08, color: "rgb(2,2,2)"}
+                },
+            "MWI.1.1.1.2": {
+                prev: {value: 0.05, color: "rgb(3,3,3)"},
+                art: {value: 0.06, color: "rgb(4,4,4)"}
+            },
+            "MWI.1.1.1": {
+                prev: {value: 0.07, color: "rgb(5,5,5)"},
+                art:{value: 0.2, color: "rgb(6,6,6)" }
+            }
         },
         artRange: {min: 0.06, max:0.2},
         prevRange: {min: 0.05, max: 0.1}
+    };
+    const testColorFunctions = () => {
+        return {
+            prev: jest.fn(),
+            art: jest.fn()
+        }
     };
     const store = new Vuex.Store({
         modules: {
@@ -60,7 +73,8 @@ describe("Choropleth component", () => {
                 getters: {
                     regionIndicators: () => {
                         return testRegionIndicators;
-                    }
+                    },
+                    colorFunctions: testColorFunctions
                 }
             }
         }
@@ -127,7 +141,8 @@ describe("Choropleth component", () => {
                                 artRange: {min: 0, max: 0},
                                 prevRange: {min: null, max: null}
                             }
-                        }
+                        },
+                        colorFunctions: testColorFunctions
                     }
                 }
             }
@@ -143,8 +158,7 @@ describe("Choropleth component", () => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         setTimeout(() => {
-            const expectedVal = 0.1 / (0.1 - 0.05); //prev value within the indicators range for first level 3 area
-            const expectedColor = interpolateCool(expectedVal);
+            const expectedColor = "rgb(1,1,1)";
             expect(wrapper.findAll(LGeoJson).at(0).props("optionsStyle").fillColor).toBe(expectedColor);
             done();
         })
@@ -154,8 +168,7 @@ describe("Choropleth component", () => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         setTimeout(() => {
-            const expectedVal = 0.08 / (0.2 - 0.06); //art value within the indicators range for first level 3 area
-            const expectedColor = interpolateWarm(expectedVal);
+            const expectedColor = "rgb(2,2,2)";
             wrapper.find(MapControl).vm.$emit("indicator-changed", "art");
             expect(wrapper.findAll(LGeoJson).at(0).props("optionsStyle").fillColor).toBe(expectedColor);
             done();

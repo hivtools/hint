@@ -17,6 +17,7 @@ import {
     SurveyFilters, AncResponse, PopulationResponse
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
+import {RootState} from "../app/root";
 
 
 export const mockAxios = new MockAdapter(axios);
@@ -47,7 +48,17 @@ export const mockFilteredDataState = (props?: Partial<FilteredDataState>) => {
         ...initialFilteredDataState,
         ...props
     }
-}
+};
+
+export const mockRootState = (props?: Partial<RootState>): RootState => {
+    return {
+        version: "",
+        filteredData: mockFilteredDataState(),
+        baseline: mockBaselineState(),
+        surveyAndProgram: mockSurveyAndProgramState(),
+        ...props
+    }
+};
 
 export const mockFile = (filename: string, type: string = "text/csv"): File => {
     return new File([new ArrayBuffer(10)], filename, {

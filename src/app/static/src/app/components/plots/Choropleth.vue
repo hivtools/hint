@@ -47,15 +47,14 @@
             indicatorData: function() {
                 return this.$store.getters['filteredData/regionIndicators'];
             },
+            colorFunctions: function() {
+                return this.$store.getters['filteredData/colorFunctions'];
+            },
             currentFeatures: function () {
                 return this.featuresByLevel[this.detail || 1]
             },
             getColor: function () {
-                if (this.indicator == "prev") {
-                    return interpolateCool
-                } else {
-                    return interpolateWarm
-                }
+                return this.colorFunctions[this.indicator];
             },
             min: function() {
                 if (this.indicator) {
@@ -123,8 +122,8 @@
             getColorForRegion: function (region: string) {
                 let data = this.indicatorData.indicators[region];
                 data = data && data[this.indicator];
-                data = data && parseFloat(data) / (this.max - this.min);
-                return this.getColor(data);
+                data = data && data.color;
+                return data;
             }
         }
     })

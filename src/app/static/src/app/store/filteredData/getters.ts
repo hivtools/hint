@@ -1,6 +1,7 @@
 import {RootState} from "../../root";
 import {DataType, FilteredDataState} from "./filteredData";
-import {IndicatorRange, Indicators} from "../../types";
+import {IndicatorRange, Indicators, IndicatorValues} from "../../types";
+import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
@@ -36,6 +37,12 @@ export const getters = {
             ];
         }
         return result;
+    },
+    colorFunctions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+      return {
+          art: interpolateWarm,
+          prev: interpolateCool
+      }
     },
     regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         const data =  getUnfilteredData(state, rootState);
@@ -88,17 +95,28 @@ export const getters = {
             const indicators = result[areaId];
             switch(indicator) {
                 case("prev"):
-                    indicators.prev = value;
+                    indicators.prev = {value: value, color: ""};
                     updateRange(prevRange, value);
 
                     break;
                 case("artcov"):
-                    indicators.art = value;
+                    indicators.art = {value: value, color: ""};
                     updateRange(artRange, value);
 
                     break;
 
                  //TODO: Also expect recent and vls (viral load suppression) values for survey, need to add these as options
+            }
+        }
+        //Now add the colours - we do this in a second step now, because we are calculating the range as we add the values
+        //but once the range comes from the API, we can calculate the colours as we populate the values
+        for (const region in result) {
+            const indicators = result[region];
+            if (indicators.art) {
+                indicators.art.color = getColor(indicators.art, artRange, getters.colorFunctions.art);
+            }
+            if (indicators.prev) {
+                indicators.prev.color = getColor(indicators.prev, prevRange, getters.colorFunctions.prev);
             }
         }
         return {
@@ -107,6 +125,11 @@ export const getters = {
             prevRange: prevRange
         };
     }
+};
+
+const getColor = (data: IndicatorValues, range: IndicatorRange, colorFunction: (t: number) => string) => {
+    const colorValue = data!.value / (range.max! - range.min!);
+    return colorFunction(colorValue);
 };
 
 export const getUnfilteredData = (state: FilteredDataState, rootState: RootState) => {

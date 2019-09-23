@@ -7,15 +7,24 @@ import {
     mockAgeFilters,
     mockAncResponse,
     mockBaselineState,
-    mockProgramResponse,
+    mockProgramResponse, mockRootState,
     mockSurveyAndProgramState,
     mockSurveyFilters,
     mockSurveyResponse
 } from "../mocks";
 import {AgeFilters, NestedFilterOption, SurveyFilters} from "../../app/generated";
 import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
 
 describe("FilteredData mutations", () => {
+
+    const testGetters = {
+        colorFunctions: {
+            art: function(t: number) {return `rgb(${t},0,0)`;},
+            prev: function(t: number) {return `rgb(0,${t},0)`;}
+        }
+    };
+
     it("gets correct selectedDataFilters when selectedDataType is Program", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
             state: {...initialFilteredDataState, selectedDataType: DataType.Program},
@@ -131,35 +140,20 @@ describe("FilteredData mutations", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testData = [
-            {
-                iso3: "MWI",
-                area_id: "area1",
-                survey_id: "s1",
-                indicator: "prevalence",
-                value: 2
-            },
-            {
-                iso3: "MWI",
-                area_id: "area2",
-                survey_id: "s2",
-                indicator: "prevalence",
-                value: 3
-            }
-        ];
+
         const testRootState = {
             version: "",
             selectedDataType: null,
             baseline: {...initialBaselineState},
             surveyAndProgram: mockSurveyAndProgramState(
                 {survey: mockSurveyResponse(
-                        {data: testData}
+                        {data: "TEST" as any}
                     )}),
             filteredData: testState
         };
 
         const unfilteredData = getUnfilteredData(testState, testRootState);
-        expect(unfilteredData).toStrictEqual(testData);
+        expect(unfilteredData).toStrictEqual("TEST");
     });
 
     it("gets unfilteredData when selectedDataType is Program", () => {
@@ -168,31 +162,20 @@ describe("FilteredData mutations", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testData = [
-            {
-                iso3: "MWI",
-                area_id: "area1",
-                current_art: 2
-            },
-            {
-                iso3: "MWI",
-                area_id: "area2",
-                current_art: 3
-            }
-        ];
+
         const testRootState = {
             version: "",
             selectedDataType: null,
             baseline: {...initialBaselineState},
             surveyAndProgram: mockSurveyAndProgramState(
                 {program: mockProgramResponse(
-                        {data: testData}
+                        {data: "TEST" as any}
                     )}),
             filteredData: testState
         };
 
         const unfilteredData = getUnfilteredData(testState, testRootState);
-        expect(unfilteredData).toStrictEqual(testData);
+        expect(unfilteredData).toStrictEqual("TEST");
     });
 
     it("gets unfilteredData when selectedDataType is ANC", () => {
@@ -201,33 +184,26 @@ describe("FilteredData mutations", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testData = [
-            {
-                iso3: "MWI",
-                area_id: "area1",
-                indicator: "prevalence",
-                value: 2
-            },
-            {
-                iso3: "MWI",
-                area_id: "area2",
-                indicator: "prevalence",
-                value: 3
-            }
-        ];
+
         const testRootState = {
             version: "",
             selectedDataType: null,
             baseline: {...initialBaselineState},
             surveyAndProgram: mockSurveyAndProgramState(
                 {anc: mockAncResponse(
-                        {data: testData}
+                        {data: "TEST" as any}
                     )}),
             filteredData: testState
         };
 
         const unfilteredData = getUnfilteredData(testState, testRootState);
-        expect(unfilteredData).toStrictEqual(testData);
+        expect(unfilteredData).toStrictEqual("TEST");
+    });
+
+    it("gets colorFunctions", () => {
+        const result = getters.colorFunctions(initialFilteredDataState, null, mockRootState(), null);
+        expect(result.art(0.1)).toEqual(interpolateWarm(0.1));
+        expect(result.prev(0.1)).toEqual(interpolateCool(0.1));
     });
 
     it("gets regionIndicators for survey", () => {
@@ -266,24 +242,29 @@ describe("FilteredData mutations", () => {
                 est: 5
             }
         ];
-        const testRootState = {
-            version: "",
-            selectedDataType: null,
-            baseline: {...initialBaselineState},
+        const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
                 {survey: mockSurveyResponse(
                         {data: testData}
                     )}),
-            filteredData: testState
-        };
+            filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, getters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
 
         const expected = {
             indicators: {
-                "area1": {"prev": 2},
-                "area2": {"prev": 3, "art": 5},
-                "area3": {"art": 4}
+                "area1":
+                    {
+                        "prev": {value: 2, color: "rgb(0,2,0)"}
+                    },
+                "area2":
+                    {
+                        "prev": {value: 3, color: "rgb(0,3,0)"},
+                        "art": {value: 5, color: "rgb(5,0,0)"}
+                    },
+                "area3": {
+                    "art": {value: 4, color: "rgb(4,0,0)"}
+                }
             },
             artRange: {min: 4, max: 5},
             prevRange: {min: 2, max: 3}
@@ -310,23 +291,23 @@ describe("FilteredData mutations", () => {
                 current_art: 3
             }
         ];
-        const testRootState = {
-            version: "",
-            selectedDataType: null,
-            baseline: {...initialBaselineState},
+        const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
                 {program: mockProgramResponse(
                         {data: testData}
                     )}),
-            filteredData: testState
-        };
+            filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, getters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
 
         const expected = {
             indicators: {
-                "area1": {"prev": 2},
-                "area2": {"prev": 3},
+                "area1": {
+                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                },
+                "area2": {
+                    "prev": {value: 3, color: "rgb(0,3,0)"}
+                }
             },
             artRange: {min: null, max: null},
             prevRange: {min: 2, max: 3}
@@ -353,23 +334,23 @@ describe("FilteredData mutations", () => {
                 ancrt_test_pos: 3
             }
         ];
-        const testRootState = {
-            version: "",
-            selectedDataType: null,
-            baseline: {...initialBaselineState},
+        const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
                 {anc: mockAncResponse(
                         {data: testData}
                     )}),
-            filteredData: testState
-        };
+            filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, getters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
 
         const expected = {
             indicators: {
-                "area1": {"prev": 2},
-                "area2": {"prev": 3},
+                "area1": {
+                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                },
+                "area2": {
+                    "prev": {value: 3, color: "rgb(0,3,0)"}
+                }
             },
             artRange: {min: null, max: null},
             prevRange: {min: 2, max: 3}

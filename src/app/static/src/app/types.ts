@@ -12,9 +12,14 @@ export interface PartialFileUploadProps {
     existingFileName: string,
 }
 
+export interface IndicatorValues {
+    value: number,
+    color: string
+}
+
 export interface Indicators {
-    prev?: number,
-    art?: number
+    prev?: IndicatorValues,
+    art?: IndicatorValues
 }
 
 export interface IndicatorRange {
