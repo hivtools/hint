@@ -16,25 +16,11 @@ Vue.use(Vuex);
 
 describe("Filters component", () => {
 
-    it("renders filter controls if selected data type", () => {
-        const wrapper = getWrapper({selectedDataType: DataType.Survey});
-        expect(wrapper.findAll("treeselect-stub").length).toBe(4);
-    });
-
-    it("does not render filter controls if no selected data type", () => {
-        const wrapper = getWrapper();
-        expect(wrapper.findAll("treeselect-stub").length).toBe(0);
-    });
-
-    it ("computes hasSelectedDataType when true", () => {
-        const wrapper = getWrapper({selectedDataType: DataType.Survey});
-        expect((wrapper as any).vm.hasSelectedDataType).toBe(true);
-    });
-
-    it ("computes hasSelectedDataType when false", () => {
-        const wrapper = getWrapper();
-        expect((wrapper as any).vm.hasSelectedDataType).toBe(false);
-    });
+    const stubGetters = {
+        selectedDataFilterOptions: () => {
+            return {};
+        }
+    };
 
     it ("computes available sexFilters for non-ANC", () => {
         const wrapper = getWrapper({selectedDataType: DataType.Survey});
@@ -95,6 +81,7 @@ describe("Filters component", () => {
                 filteredData: {
                     namespaced: true,
                     state: mockFilteredDataState({selectedFilters: mockSelectedFilters}),
+                    getters: stubGetters
                 }
             }
         });
@@ -162,6 +149,9 @@ describe("Filters component", () => {
                     getters: {
                         regionOptions: () => {
                             return stateRegionFilterOptions;
+                        },
+                        selectedDataFilterOptions: () => {
+                            return {};
                         }
                     }
                 }
@@ -183,6 +173,11 @@ describe("Filters component", () => {
                     state: mockFilteredDataState(),
                     actions: {
                         filterUpdated: mockFilterUpdated
+                    },
+                    getters: {
+                        selectedDataFilterOptions: () => {
+                            return {};
+                        }
                     }
                 }
             }
@@ -276,6 +271,7 @@ describe("Filters component", () => {
                         filterUpdated: mockFilterUpdated
                     },
                     getters: {
+                        ...stubGetters,
                         regionOptions: () => {
                             return [
                                     {name: "Northern Region", id: "MWI.1", options: [
@@ -352,9 +348,7 @@ describe("Filters component", () => {
                 filteredData: {
                     namespaced: true,
                     state: mockFilteredDataState(state),
-                    getters: {
-                        selectedDataFilterOptions: () => selectedDataFilterOptions
-                    }
+                    getters: stubGetters
                 }
             }
         });
