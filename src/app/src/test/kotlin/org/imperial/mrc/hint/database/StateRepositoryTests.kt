@@ -41,6 +41,20 @@ class StateRepositoryTests {
     }
 
     @Test
+    fun `saveSession is idempotent`() {
+        userRepo.addUser("email", "pw")
+        val uid = userRepo.getUser("email")!!.id
+        sut.saveSession("sid", uid)
+        sut.saveSession("sid", uid)
+
+        val session = dsl.selectFrom(USER_SESSION)
+                .fetchOne()
+
+        assertThat(session[USER_SESSION.USER_ID]).isEqualTo(uid)
+        assertThat(session[USER_SESSION.SESSION]).isEqualTo("sid")
+    }
+
+    @Test
     fun `saveNewHash returns true if a new hash is saved`() {
         val result = sut.saveNewHash("newhash")
         assertThat(result).isTrue()
