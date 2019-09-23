@@ -1,0 +1,32 @@
+import {shallowMount} from "@vue/test-utils";
+import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
+
+describe("Loading spinner", () => {
+
+    it("is 200px by default", () => {
+        const wrapper = shallowMount(LoadingSpinner);
+        expect(wrapper.attributes().height).toBe("200px");
+        expect(wrapper.attributes().width).toBe("200px");
+    });
+
+    it("is 40px when small", () => {
+        const wrapper = shallowMount(LoadingSpinner, {
+            propsData: {
+                size: "xs"
+            }
+        });
+        expect(wrapper.attributes().height).toBe("40px");
+        expect(wrapper.attributes().width).toBe("40px");
+    });
+
+    it("gets size as class", () => {
+        const wrapper = shallowMount(LoadingSpinner, {
+            propsData: {
+                size: "xs"
+            }
+        });
+        expect(wrapper.classes()).toContain("xs");
+    });
+
+});
+

@@ -2,6 +2,7 @@ import {Mutation, MutationTree} from 'vuex';
 import {BaselineState} from "./baseline";
 import {PjnzResponse, PopulationResponse, ShapeResponse} from "../../generated";
 import {PayloadWithType} from "../../types";
+import {readyStateMutations} from "../shared/readyStateMutations";
 
 type BaselineMutation = Mutation<BaselineState>
 
@@ -12,6 +13,7 @@ export interface BaselineMutations {
     ShapeUploadError: BaselineMutation
     PopulationUpdated: BaselineMutation
     PopulationUploadError: BaselineMutation
+    Ready: BaselineMutation
 }
 
 export const mutations: MutationTree<BaselineState> & BaselineMutations = {
@@ -22,10 +24,10 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
 
     PJNZUpdated(state: BaselineState, action: PayloadWithType<PjnzResponse | null>) {
         const data = action.payload;
-        if (data){
+        if (data) {
             state.country = data.data.country;
             state.pjnzFilename = data.filename;
-         }
+        }
         state.pjnzError = "";
     },
 
@@ -45,5 +47,7 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
 
     PopulationUploadError(state: BaselineState, action: PayloadWithType<string>) {
         state.populationError = action.payload;
-    }
+    },
+
+    ...readyStateMutations
 };

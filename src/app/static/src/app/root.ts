@@ -16,8 +16,8 @@ export interface RootState {
     modelRun: ModelRunState
 }
 
-export interface StepGetters {
-    complete: boolean
+export interface ReadyState {
+    ready: boolean
 }
 
 export const storeOptions: StoreOptions<RootState> = {

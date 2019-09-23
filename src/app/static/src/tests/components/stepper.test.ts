@@ -7,6 +7,7 @@ import Step from "../../app/components/Step.vue";
 import {mockBaselineState, mockPopulationResponse, mockShapeResponse, mockSurveyAndProgramState} from "../mocks";
 import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations} from '../../app/store/baseline/mutations';
+import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -32,8 +33,24 @@ describe("Stepper component", () => {
         })
     };
 
-    it("renders steps", () => {
+    it("renders loading spinner while states are not ready", () => {
         const store = createSut();
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAll(".content").length).toBe(0);
+        expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
+    });
+
+    it("does not render loading spinner once states are ready", () => {
+        const store = createSut({ready: true}, {ready: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAll(".content").length).toBe(1);
+        expect(wrapper.findAll("#loading-message").length).toBe(0);
+    });
+
+    it("renders steps", () => {
+        const store = createSut({ready: true}, {ready: true});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
 
@@ -100,7 +117,7 @@ describe("Stepper component", () => {
     });
 
     it("cannot continue when the active step is not complete", () => {
-        const store = createSut({country: ""});
+        const store = createSut({country: "", ready: true}, {ready: true});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).toContain("disabled");
@@ -115,8 +132,9 @@ describe("Stepper component", () => {
         const store = createSut({
             country: "testCountry",
             shape: mockShapeResponse(),
-            population: mockPopulationResponse()
-        });
+            population: mockPopulationResponse(),
+            ready: true
+        }, {ready: true});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).not.toContain("disabled");
@@ -127,8 +145,8 @@ describe("Stepper component", () => {
     });
 
     it("updates from completed state when active step data is populated", (done) => {
-        const baselineState = {country: "Malawi", population: mockPopulationResponse()};
-        const store = createSut(baselineState);
+        const baselineState = {country: "Malawi", population: mockPopulationResponse(), ready: true};
+        const store = createSut(baselineState, {ready: true});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).toContain("disabled");
