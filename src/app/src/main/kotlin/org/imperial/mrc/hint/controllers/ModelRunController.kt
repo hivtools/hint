@@ -16,4 +16,10 @@ class ModelRunController(val fileManager: FileManager, val apiClient: APIClient)
         val allFiles = fileManager.getAllFiles()
         return apiClient.submit(allFiles, params)
     }
+
+    @GetMapping("/status/{id}")
+    @ResponseBody
+    fun status(@PathVariable("id")id: String): ResponseEntity<String> {
+        return apiClient.getStatus(id)
+    }
 }
