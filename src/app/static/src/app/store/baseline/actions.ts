@@ -4,7 +4,7 @@ import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {PjnzResponse} from "../../generated";
 
-export type BaselineActionTypes = "PJNZUpdated" | "PJNZLoaded" | "ShapeUpdated" | "PopulationUpdated"
+export type BaselineActionTypes = "PJNZUpdated" | "ShapeUpdated" | "PopulationUpdated"
 export type BaselineErrorActionTypes = "PJNZUploadError" | "ShapeUploadError" | "PopulationUploadError"
 
 export interface BaselineActions {
@@ -41,19 +41,21 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async getBaselineData({commit}) {
-        api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .ignoreErrors()
-            .withSuccess("PJNZUpdated")
-            .get<PjnzResponse>("/baseline/pjnz/");
+        await Promise.all([
+            api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .ignoreErrors()
+                .withSuccess("PJNZUpdated")
+                .get<PjnzResponse>("/baseline/pjnz/"),
+            api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .ignoreErrors()
+                .withSuccess("PopulationUpdated")
+                .get<PjnzResponse>("/baseline/population/"),
+            api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .ignoreErrors()
+                .withSuccess("ShapeUpdated")
+                .get<PjnzResponse>("/baseline/shape/")
+        ]);
 
-        api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .ignoreErrors()
-            .withSuccess("PopulationUpdated")
-            .get<PjnzResponse>("/baseline/population/");
-
-        return api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .ignoreErrors()
-            .withSuccess("ShapeUpdated")
-            .get<PjnzResponse>("/baseline/shape/");
+        commit({type: "Ready", payload: true});
     }
 };

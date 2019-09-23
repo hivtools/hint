@@ -70,7 +70,7 @@ describe("Baseline actions", () => {
 
     testUploadErrorCommitted("/baseline/shape/", "ShapeUploadError", "ShapeUpdated", actions.uploadShape);
 
-    it("gets baseline data and commits it", (done) => {
+    it("gets baseline data, commits it and marks state as ready", async () => {
 
         const mockShape = mockShapeResponse();
         const mockPopulation = mockPopulationResponse();
@@ -84,20 +84,16 @@ describe("Baseline actions", () => {
             .reply(200, mockSuccess(mockPopulation));
 
         const commit = jest.fn();
-        actions.getBaselineData({commit} as any);
+        await actions.getBaselineData({commit} as any);
 
-        setTimeout(() => {
-            const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-            expect(calls).toContain("PJNZUpdated");
-            expect(calls).toContain("ShapeUpdated");
-            expect(calls).toContain("PopulationUpdated");
-
-            done();
-        });
-
+        const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+        expect(calls).toContain("PJNZUpdated");
+        expect(calls).toContain("ShapeUpdated");
+        expect(calls).toContain("PopulationUpdated");
+        expect(calls).toContain("Ready");
     });
 
-    it("fails silently if getting baseline data fails", (done) => {
+    it("fails silently and marks state ready if getting baseline data fails", async () => {
 
         mockAxios.onGet(`/baseline/pjnz/`)
             .reply(500);
@@ -105,13 +101,14 @@ describe("Baseline actions", () => {
         mockAxios.onGet(`/baseline/shape/`)
             .reply(500);
 
-        const commit = jest.fn();
-        actions.getBaselineData({commit} as any);
+        mockAxios.onGet(`/baseline/population/`)
+            .reply(500);
 
-        setTimeout(() => {
-            expect(commit).toBeCalledTimes(0);
-            done();
-        });
+        const commit = jest.fn();
+        await actions.getBaselineData({commit} as any);
+
+        expect(commit).toBeCalledTimes(1);
+        expect(commit.mock.calls[0][0]["type"]).toContain("Ready");
     });
 
 });

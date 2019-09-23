@@ -3,7 +3,8 @@ import {RootState} from "../../root";
 import {DataType} from "../filteredData/filteredData";
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {api} from "../../apiService";
-import {ProgrammeResponse, SurveyResponse} from "../../generated";
+import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
+import {BaselineErrorActionTypes} from "../baseline/actions";
 
 export type SurveyAndProgramActionTypes = "SurveyUpdated" | "ProgramUpdated" | "ANCUpdated"
 export type SurveyAndProgramActionErrorTypes = "SurveyError" | "ProgramError" | "ANCError"
@@ -12,6 +13,7 @@ export interface SurveyAndProgramActions {
     uploadSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
     uploadProgram: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
     uploadANC: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void
+    getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void;
 }
 
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
@@ -39,7 +41,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("ProgramError")
             .withSuccess("ProgramUpdated")
-            .postAndReturn<ProgrammeResponse>("/disease/program/", formData)
+            .postAndReturn<ProgrammeResponse>("/disease/programme/", formData)
             .then((response) => {
                 if (response) {
                     commitSelectedDataTypeUpdated(commit, DataType.Program);
@@ -58,5 +60,24 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
                     commitSelectedDataTypeUpdated(commit, DataType.ANC);
                 }
             });
+    },
+
+    async getSurveyAndProgramData({commit}) {
+
+        await Promise.all(
+            [api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
+                .ignoreErrors()
+                .withSuccess("SurveyUpdated")
+                .get<SurveyResponse>("/disease/survey/"),
+                api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
+                    .ignoreErrors()
+                    .withSuccess("ProgramUpdated")
+                    .get<ProgrammeResponse>("/disease/programme/"),
+                api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
+                    .ignoreErrors()
+                    .withSuccess("ANCUpdated")
+                    .get<AncResponse>("/disease/anc/")]);
+
+        commit({type: "Ready", payload: true});
     }
 };
