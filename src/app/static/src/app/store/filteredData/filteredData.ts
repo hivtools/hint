@@ -5,7 +5,7 @@ import { getters } from './getters';
 import { RootState} from "../../root";
 import { FilterOption } from "../../generated";
 
-export enum DataType { ANC, Survey, Program }
+export enum DataType { ANC, Program, Survey }
 export enum FilterType { Sex, Age, Region, Survey }
 
 export interface SelectedFilters {

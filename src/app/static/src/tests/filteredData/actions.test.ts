@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/filteredData/actions";
-import {FilterType} from "../../app/store/filteredData/filteredData";
+import {DataType, FilterType} from "../../app/store/filteredData/filteredData";
 
 describe("filteredData actions", () => {
     it("commits mutation on filterUpdated", async () => {
@@ -9,6 +9,14 @@ describe("filteredData actions", () => {
         await actions.filterUpdated({commit} as any, [FilterType.Survey, newFilters]);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "FilterUpdated", payload: [FilterType.Survey, newFilters]});
+    });
+
+    it("commits mutation on selectDataType", async () => {
+
+        const commit = jest.fn();
+        await actions.selectDataType({commit} as any, DataType.Survey);
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
     });
 
 });

@@ -126,7 +126,9 @@ describe("FilteredData mutations", () => {
                         type: "FeatureCollection",
                         features: []
                     },
-                    filters: {regions: testFilters}
+                    filters: {
+                        regions: {options: testFilters} as any
+                    }
                 }
             }),
             filteredData: testState
