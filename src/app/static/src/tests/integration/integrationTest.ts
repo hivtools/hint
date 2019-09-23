@@ -28,6 +28,4 @@ export const login = async () => {
         }
     } as any);
 
-    // GET the homepage to save the session
-    await axios.get("http://localhost:8080/");
 };
