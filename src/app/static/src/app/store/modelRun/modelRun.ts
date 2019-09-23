@@ -2,10 +2,14 @@ import {Module} from "vuex";
 import {RootState} from "../../root";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
+import {BaselineState} from "../baseline/baseline";
 
 export interface ModelRunState {
     modelRunId: string
-    status: ModelRunStatus
+    status: ModelRunStatus,
+    statusPollId: number,
+    success: boolean,
+    errors: any[]
 }
 
 export enum ModelRunStatus {
@@ -16,6 +20,9 @@ export enum ModelRunStatus {
 
 export const initialModelRunState: ModelRunState = {
     modelRunId: "",
+    statusPollId: -1,
+    success: false,
+    errors: [],
     status: ModelRunStatus.NotStarted
 };
 

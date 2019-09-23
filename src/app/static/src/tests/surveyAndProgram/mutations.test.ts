@@ -71,6 +71,7 @@ describe("Survey and program mutations", () => {
         };
         const testState = testStore.state as SurveyAndProgramDataState;
         const testRootState = mockRootState({surveyAndProgram: testState});
+
         const complete = testStore.getters!!.complete;
 
         expect(complete(testState, null, testRootState, null)).toBe(false);
