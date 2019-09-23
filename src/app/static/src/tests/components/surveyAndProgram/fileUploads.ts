@@ -6,7 +6,7 @@ import FileUpload from "../../../app/components/FileUpload.vue";
 import {SurveyAndProgramDataState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {SurveyAndProgramMutations} from "../../../app/store/surveyAndProgram/mutations";
-import {mockSurveyAndProgramState} from "../../mocks";
+import {mockFilteredDataState, mockSurveyAndProgramState} from "../../mocks";
 
 export function testUploadComponent(name: string, position: number) {
 
@@ -45,6 +45,10 @@ export function testUploadComponent(name: string, position: number) {
                     state: mockSurveyAndProgramState(state),
                     actions: {...actions},
                     mutations: {...mutations}
+                },
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState()
                 }
             }
         })
