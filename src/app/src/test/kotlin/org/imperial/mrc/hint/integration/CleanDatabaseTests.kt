@@ -28,6 +28,8 @@ abstract class CleanDatabaseTests
 
         val tableFields = Tables::class.java.fields
 
+        // this table has foreign keys
+        // so has to be deleted first
         dsl.deleteFrom(SESSION_FILE)
                 .execute()
 
