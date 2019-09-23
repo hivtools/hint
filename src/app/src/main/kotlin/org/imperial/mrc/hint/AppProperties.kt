@@ -20,7 +20,6 @@ interface AppProperties {
     val uploadDirectory: String
     val dbUser: String
     val dbPassword: String
-    val useAuth: Boolean
 }
 
 //prevent auto-wiring of default Properties
@@ -41,7 +40,6 @@ class ConfiguredAppProperties(private val props: HintProperties = properties): A
     override val uploadDirectory = propString("upload_dir")
     override val dbUser: String = propString("db_user")
     override val dbPassword: String = propString("db_password")
-    override val useAuth = propString("use_auth").toBoolean()
 
     companion object {
 

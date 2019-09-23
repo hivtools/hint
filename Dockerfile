@@ -6,4 +6,8 @@ COPY ./src/app/static/public /static/public
 COPY ./src/app/templates /templates
 
 ADD ./src/app/build/distributions/app-boot.tar /
+
+ARG SPRING_PROFILES_ACTIVE
+ENV SPRING_PROFILES_ACTIVE $SPRING_PROFILES_ACTIVE
+
 ENTRYPOINT ["/app-boot/bin/app"]
