@@ -16,11 +16,13 @@
     export default Vue.extend<any, any, any, any>({
         name: "ModelRun",
         computed: mapState<ModelRunState>(namespace, {
+            runId: state => state.modelRunId,
             disabled: state => state.status == ModelRunStatus.Started
         }),
         methods: {
             ...mapActions({
-                run: 'modelRun/run'
+                run: 'modelRun/run',
+                poll: 'modelRun/poll'
             }),
             runModelWithParams: function () {
                 const params: ModelSubmitParameters = {
@@ -33,6 +35,18 @@
                 };
 
                 this.run(params);
+            }
+        },
+        watch: {
+            runId: function (newVal) {
+                if (newVal) {
+                    this.poll(newVal)
+                }
+            }
+        },
+        created() {
+            if (this.runId){
+                this.poll(this.runId);
             }
         }
     });

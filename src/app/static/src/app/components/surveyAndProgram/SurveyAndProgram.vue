@@ -27,21 +27,26 @@
                              name="anc">
                 </file-upload>
             </form>
-            <filters></filters>
+            <div v-if="hasSelectedDataType">
+                <filters></filters>
+            </div>
         </div>
-        <div class="col-md-9">
-            <ul class="nav nav-tabs">
-                <li class="nav-item">
-                    <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)">Survey</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)">Programme</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)">ANC</a>
-                </li>
-            </ul>
-            <choropleth></choropleth>
+
+        <div v-if="hasSelectedDataType" class="col-md-9 sap-filters">
+            <div>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)">Survey</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)">Programme</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)">ANC</a>
+                    </li>
+                </ul>
+                <choropleth></choropleth>
+            </div>
         </div>
     </div>
 </template>
@@ -57,9 +62,15 @@
     import {RootState} from "../../root";
     import {DataType} from "../../store/filteredData/filteredData";
 
+    const namespace: string = 'surveyAndProgram';
+
+
     export default Vue.extend({
         name: "SurveyAndProgram",
         computed: mapState<RootState>({
+            hasSelectedDataType: ({filteredData}) => {
+                return filteredData.selectedDataType != null;
+            },
             anc: ({surveyAndProgram, filteredData}) => ({
                 valid: !!surveyAndProgram.anc,
                 error: surveyAndProgram.ancError,
