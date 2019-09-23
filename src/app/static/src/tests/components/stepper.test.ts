@@ -13,9 +13,8 @@ import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/stor
 import {mutations} from '../../app/store/baseline/mutations';
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
-import {ModelRunState} from "../../app/store/modelRun/modelRun.vue";
+import {ModelRunState} from "../../app/store/modelRun/modelRun";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
-
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
