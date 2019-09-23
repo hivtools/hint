@@ -16,17 +16,14 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
     });
 
-    it("can get baseline data", (done) => {
+    it("can get baseline data", async () => {
         const commit = jest.fn();
-        actions.getBaselineData({commit} as any);
+        await actions.getBaselineData({commit} as any);
 
-        setTimeout(() => {
-            const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-            expect(calls).toContain("PJNZUpdated");
-            expect(calls).toContain("ShapeUpdated");
-            expect(calls).toContain("PopulationUpdated");
-            done();
-        }, 50);
+        const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+        expect(calls).toContain("PJNZUpdated");
+        expect(calls).toContain("ShapeUpdated");
+        expect(calls).toContain("PopulationUpdated");
     });
 
     it("can upload shape file", async () => {

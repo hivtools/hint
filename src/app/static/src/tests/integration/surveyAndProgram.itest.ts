@@ -58,8 +58,6 @@ describe("Survey and program actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("ANCError");
         expect(commit.mock.calls[1][0]["payload"])
             .toBe("You must upload a shape file before uploading survey or programme data")
-
     });
-
 
 });

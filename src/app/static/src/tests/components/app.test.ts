@@ -21,9 +21,12 @@ import {surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAn
 
 describe("App", () => {
 
-    const actions = {
-        uploadPJNZ: jest.fn(),
+    const baselineActions = {
         getBaselineData: jest.fn()
+    };
+
+    const surveyAndProgramActions = {
+        getSurveyAndProgramData: jest.fn()
     };
 
     const store = new Vuex.Store({
@@ -31,14 +34,15 @@ describe("App", () => {
             baseline: {
                 namespaced: true,
                 state: mockBaselineState(),
-                actions: {...actions},
+                actions: {...baselineActions},
                 mutations: {...mutations},
                 getters: {...baselineGetters}
             },
             surveyAndProgram: {
                 namespaced: true,
                 state: mockSurveyAndProgramState(),
-                getters: {...surveyAndProgramGetters}
+                getters: {...surveyAndProgramGetters},
+                actions: surveyAndProgramActions
             },
             selectedData: {
                 namespaced: true,
@@ -51,7 +55,7 @@ describe("App", () => {
         }
     });
 
-    it("loads baseline data on mount", (done) => {
+    it("loads input data on mount", (done) => {
 
         let c = app.$options;
         mount({
@@ -61,8 +65,10 @@ describe("App", () => {
         }, {store});
 
         setTimeout(() => {
-            expect(actions.getBaselineData).toHaveBeenCalled();
+            expect(baselineActions.getBaselineData).toHaveBeenCalled();
+            expect(surveyAndProgramActions.getSurveyAndProgramData).toHaveBeenCalled();
             done();
         });
-    })
+    });
+
 });

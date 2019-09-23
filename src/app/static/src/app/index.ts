@@ -11,10 +11,12 @@ export const app = new Vue({
     },
     render: h => h(Stepper),
     methods: {
-        ...mapActions({loadBaseline: 'baseline/getBaselineData'})
+        ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
+        ...mapActions({loadSurveyAndProgram: 'surveyAndProgram/getSurveyAndProgramData'})
     },
     beforeMount: function () {
-        this.loadBaseline()
+        this.loadBaseline();
+        this.loadSurveyAndProgram();
     }
 });
 
