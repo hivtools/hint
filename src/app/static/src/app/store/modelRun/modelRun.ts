@@ -3,6 +3,7 @@ import {RootState} from "../../root";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {BaselineState} from "../baseline/baseline";
+import {localStorageManager} from "../../localStorageManager";
 
 export interface ModelRunState {
     modelRunId: string
@@ -18,12 +19,15 @@ export enum ModelRunStatus {
     "Complete"
 }
 
+export const localStorageKey = "modelRun";
+
 export const initialModelRunState: ModelRunState = {
     modelRunId: "",
-    statusPollId: -1,
     success: false,
     errors: [],
-    status: ModelRunStatus.NotStarted
+    status: ModelRunStatus.NotStarted,
+    ...localStorageManager.getItem<ModelRunState>(localStorageKey),
+    statusPollId: -1 // this will never be valid after a reload, so always set to -1
 };
 
 const namespaced: boolean = true;
