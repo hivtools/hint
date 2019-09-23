@@ -141,7 +141,7 @@
                     if (activeStep) {
                         const invalidSteps = [1, 2, 3, 4, 5]
                             .filter((i) => i < activeStep && !this.complete[i]);
-                        
+
                         if (invalidSteps.length == 0) {
                             this.jump(activeStep)
                         } else {

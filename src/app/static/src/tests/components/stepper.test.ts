@@ -173,7 +173,7 @@ describe("Stepper component", () => {
         const store = createSut({ready: true});
         const wrapper = shallowMount(Stepper, {store, localVue});
 
-        await makeStateReady(store, wrapper);
+        await setActiveStepAndMakStateReady(store, wrapper);
 
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().active).toBe(true);
@@ -190,7 +190,7 @@ describe("Stepper component", () => {
         });
         const wrapper = shallowMount(Stepper, {store, localVue});
 
-        await makeStateReady(store, wrapper);
+        await setActiveStepAndMakStateReady(store, wrapper);
 
         const steps = wrapper.findAll(Step);
         expect(steps.at(1).props().active).toBe(true);
@@ -209,7 +209,7 @@ describe("Stepper component", () => {
         expect(window.localStorage.getItem("activeStep")).toBe("2");
     });
 
-    async function makeStateReady(store: Store<any>, wrapper: Wrapper<any>) {
+    async function setActiveStepAndMakStateReady(store: Store<any>, wrapper: Wrapper<any>) {
 
         window.localStorage.setItem("activeStep", "2");
 
