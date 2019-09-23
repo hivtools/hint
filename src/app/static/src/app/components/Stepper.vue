@@ -137,10 +137,14 @@
             ready: function (newVal) {
                 if (newVal) {
                     const activeStep = localStorageManager.getInt("activeStep");
+                    console.log("--------------------")
+                    console.log(activeStep)
                     if (activeStep) {
-
                         const invalidSteps = [1, 2, 3, 4, 5]
                             .filter((i) => i < activeStep && !this.complete[i]);
+
+                        console.log("--------------------")
+                        console.log(invalidSteps)
 
                         if (invalidSteps.length == 0) {
                             this.jump(activeStep)

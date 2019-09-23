@@ -11,7 +11,6 @@ export interface AgeFilters {
   }[];
 }
 export type AncResponseData = {
-  iso3: string;
   area_id: string;
   [k: string]: any;
 }[];
@@ -30,6 +29,11 @@ export interface FilterOption {
   id: string;
 }
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
+export interface LevelLabels {
+  id: number;
+  area_level_label: string;
+  display: boolean;
+}
 export type ModelResultResponse = number;
 export interface ModelStatusResponse {
   id: string;
@@ -95,8 +99,8 @@ export interface PjnzResponseData {
 }
 export type PopulationResponseData = null;
 export type ProgrammeResponseData = {
-  iso3: string;
   area_id: string;
+  current_art: number;
   [k: string]: any;
 }[];
 export interface Response {
@@ -174,6 +178,11 @@ export interface ShapeResponse {
   type: "shape";
   data: GeoJSONObject;
   filters: {
+    level_labels?: {
+      id: number;
+      area_level_label: string;
+      display: boolean;
+    }[];
     regions?: {
       name: string;
       id: string;
@@ -210,8 +219,8 @@ export interface ProgrammeResponse {
   filename: string;
   type: "programme";
   data: {
-    iso3: string;
     area_id: string;
+    current_art: number;
     [k: string]: any;
   }[];
   filters: {
@@ -225,7 +234,6 @@ export interface AncResponse {
   filename: string;
   type: "anc";
   data: {
-    iso3: string;
     area_id: string;
     [k: string]: any;
   }[];
