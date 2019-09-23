@@ -31,10 +31,8 @@ class MvcConfig(val config: Config, val appProperties: AppProperties) : WebMvcCo
     }
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        if (appProperties.useAuth) {
-            registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
-                    .addPathPatterns("/**")
-                    .excludePathPatterns("/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
-        }
+        registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
+                .addPathPatterns("/**")
+                .excludePathPatterns("/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
     }
 }

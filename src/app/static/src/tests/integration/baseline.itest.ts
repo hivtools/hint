@@ -22,19 +22,17 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("E66ECF0E9BE8BE814547EA7574700DD3.PJNZ");
+
     });
 
-    it("can get baseline data", (done) => {
+    it("can get baseline data", async () => {
         const commit = jest.fn();
-        actions.getBaselineData({commit} as any);
+        await actions.getBaselineData({commit} as any);
 
-        setTimeout(() => {
-            const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-            expect(calls).toContain("PJNZUpdated");
-            expect(calls).toContain("ShapeUpdated");
-            expect(calls).toContain("PopulationUpdated");
-            done();
-        }, 50);
+        const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+        expect(calls).toContain("PJNZUpdated");
+        expect(calls).toContain("ShapeUpdated");
+        expect(calls).toContain("PopulationUpdated");
     });
 
     it("can upload shape file", async () => {
@@ -62,7 +60,6 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("365A2F42B939E5390AA4DE2720708F77.csv");
-
     });
 
 });

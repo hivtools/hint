@@ -31,7 +31,6 @@ describe("Survey and program actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("SurveyUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("3C8D2C858C3C9F56AA7FF2693C32A821.csv")
-
     });
 
     it("can upload program", async () => {
@@ -62,8 +61,6 @@ describe("Survey and program actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("ANCUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("7E326D1FAEBD08A122563B47410C3BCB.csv")
-
     });
-
 
 });
