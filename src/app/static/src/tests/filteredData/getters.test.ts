@@ -1,21 +1,31 @@
-import {getters} from "../../app/store/filteredData/getters"
+
+import {getters, getUnfilteredData} from "../../app/store/filteredData/getters"
+import {initialBaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
-import {
-    DataType,
-    FilteredDataState,
-    initialFilteredDataState
-} from "../../app/store/filteredData/filteredData";
+import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 import {RootState} from "../../app/root";
 import {
-    mockSurveyAndProgramState,
-    mockProgramResponse,
     mockAgeFilters,
+    mockAncResponse,
+    mockBaselineState,
+    mockProgramResponse,
+    mockSurveyAndProgramState,
     mockSurveyFilters,
-    mockSurveyResponse, mockAncResponse, mockBaselineState, mockRootState
+    mockSurveyResponse,
+    mockRootState
 } from "../mocks";
 import {AgeFilters, NestedFilterOption, SurveyFilters} from "../../app/generated";
+import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
+import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 
 describe("FilteredData mutations", () => {
+
+    const testGetters = {
+        colorFunctions: {
+            art: function(t: number) {return `rgb(${t},0,0)`;},
+            prev: function(t: number) {return `rgb(0,${t},0)`;}
+        }
+    };
 
     it("gets correct selectedDataFilters when selectedDataType is Program", () => {
         const testStore: Module<FilteredDataState, RootState> = {
@@ -116,7 +126,9 @@ describe("FilteredData mutations", () => {
                         type: "FeatureCollection",
                         features: []
                     },
-                    filters: {regions: testFilters}
+                    filters: {
+                        regions: {options: testFilters} as any
+                    }
                 }
             }),
             filteredData: testState
@@ -126,4 +138,221 @@ describe("FilteredData mutations", () => {
         expect(filters).toStrictEqual(testFilters);
 
     });
+
+    it("gets unfilteredData when selectedDataType is Survey", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState, selectedDataType: DataType.Survey},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+
+        const testRootState = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState(
+                {survey: mockSurveyResponse(
+                        {data: "TEST" as any}
+                    )}),
+            filteredData: testState
+        });
+
+        const unfilteredData = getUnfilteredData(testState, testRootState);
+        expect(unfilteredData).toStrictEqual("TEST");
+    });
+
+    it("gets unfilteredData when selectedDataType is Program", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState, selectedDataType: DataType.Program},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+
+        const testRootState = mockRootState({
+           surveyAndProgram: mockSurveyAndProgramState(
+                {program: mockProgramResponse(
+                        {data: "TEST" as any}
+                    )}),
+            filteredData: testState
+        });
+
+        const unfilteredData = getUnfilteredData(testState, testRootState);
+        expect(unfilteredData).toStrictEqual("TEST");
+    });
+
+    it("gets unfilteredData when selectedDataType is ANC", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState, selectedDataType: DataType.ANC},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+
+        const testRootState = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState(
+                {anc: mockAncResponse(
+                        {data: "TEST" as any}
+                    )}),
+            filteredData: testState
+        });
+
+        const unfilteredData = getUnfilteredData(testState, testRootState);
+        expect(unfilteredData).toStrictEqual("TEST");
+    });
+
+    it("gets colorFunctions", () => {
+        const result = getters.colorFunctions(initialFilteredDataState, null, mockRootState(), null);
+        expect(result.art(0.1)).toEqual(interpolateWarm(0.1));
+        expect(result.prev(0.1)).toEqual(interpolateCool(0.1));
+    });
+
+    it("gets regionIndicators for survey", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState, selectedDataType: DataType.Survey},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testData = [
+            {
+                iso3: "MWI",
+                area_id: "area1",
+                survey_id: "s1",
+                indicator: "prev",
+                est: 2
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                survey_id: "s1",
+                indicator: "prev",
+                est: 3
+            },
+            {
+                iso3: "MWI",
+                area_id: "area3",
+                survey_id: "s1",
+                indicator: "artcov",
+                est: 4
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                survey_id: "s1",
+                indicator: "artcov",
+                est: 5
+            }
+        ];
+        const testRootState = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState(
+                {survey: mockSurveyResponse(
+                        {data: testData}
+                    )}),
+            filteredData: testState});
+
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+
+        const expected = {
+            indicators: {
+                "area1":
+                    {
+                        "prev": {value: 2, color: "rgb(0,2,0)"}
+                    },
+                "area2":
+                    {
+                        "prev": {value: 3, color: "rgb(0,3,0)"},
+                        "art": {value: 5, color: "rgb(5,0,0)"}
+                    },
+                "area3": {
+                    "art": {value: 4, color: "rgb(4,0,0)"}
+                }
+            },
+            artRange: {min: 4, max: 5},
+            prevRange: {min: 2, max: 3}
+        };
+
+        expect(regionIndicators).toStrictEqual(expected);
+    });
+
+    it("gets regionIndicators for programme", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState, selectedDataType: DataType.Program},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testData = [
+            {
+                iso3: "MWI",
+                area_id: "area1",
+                current_art: 2
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                current_art: 3
+            }
+        ];
+        const testRootState = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState(
+                {program: mockProgramResponse(
+                        {data: testData}
+                    )}),
+            filteredData: testState});
+
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+
+        const expected = {
+            indicators: {
+                "area1": {
+                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                },
+                "area2": {
+                    "prev": {value: 3, color: "rgb(0,3,0)"}
+                }
+            },
+            artRange: {min: null, max: null},
+            prevRange: {min: 2, max: 3}
+        };
+
+        expect(regionIndicators).toStrictEqual(expected);
+    });
+
+    it("gets regionIndicators for ANC", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState, selectedDataType: DataType.ANC},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testData = [
+            {
+                iso3: "MWI",
+                area_id: "area1",
+                ancrt_test_pos: 2
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                ancrt_test_pos: 3
+            }
+        ];
+        const testRootState = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState(
+                {anc: mockAncResponse(
+                        {data: testData}
+                    )}),
+            filteredData: testState});
+
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+
+        const expected = {
+            indicators: {
+                "area1": {
+                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                },
+                "area2": {
+                    "prev": {value: 3, color: "rgb(0,3,0)"}
+                }
+            },
+            artRange: {min: null, max: null},
+            prevRange: {min: 2, max: 3}
+        };
+
+        expect(regionIndicators).toStrictEqual(expected);
+    });
+
 });

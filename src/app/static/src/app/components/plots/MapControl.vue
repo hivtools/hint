@@ -7,10 +7,10 @@
                         Indicator:
                     </label>
                     <div class="col">
-                        <tree-select v-model="indicator"
+                        <tree-select :value="indicator"
                                      :multiple="false"
                                      :options="indicatorOptions"
-                                     @input="$emit('indicator-changed', indicator)"></tree-select>
+                                     @input="indicatorChanged"></tree-select>
                     </div>
                 </div>
                 <div class="row form-group">
@@ -37,8 +37,6 @@
 
     interface Data {
         detail: any;
-        indicator: Indicator,
-        indicatorOptions: any[],
         detailOptions: any[],
         optionsLoaded: boolean
     }
@@ -49,14 +47,14 @@
             TreeSelect,
             LControl
         },
+        props: {
+            indicator: String,
+            artEnabled: Boolean,
+            prevEnabled: Boolean
+        },
         data(): Data {
             return {
-                detail: 4, // TODO this is the only level of data in the Malawi test set
-                indicator: "prev",
-                indicatorOptions: [
-                    {id: "prev", label: "prevalence"},
-                    {id: "art", label: "ART coverage"}
-                ],
+                detail: 5, // TODO this is the only level of data in the Malawi test set
                 detailOptions: [
                     // TODO something cleverer with calculated admin levels and labels
                     {id: 1, label: "Country"},
@@ -67,6 +65,19 @@
                     {id: 6, label: "Admin level 6"}
                 ],
                 optionsLoaded: false
+            }
+        },
+        computed: {
+            indicatorOptions: function() {
+                return [
+                    {id: "prev", label: "prevalence", isDisabled: !this.prevEnabled},
+                    {id: "art", label: "ART coverage", isDisabled: !this.artEnabled}
+                ];
+            }
+        },
+        methods: {
+            indicatorChanged: function(newVal: string) {
+                this.$emit("indicator-changed", newVal);
             }
         }
     });

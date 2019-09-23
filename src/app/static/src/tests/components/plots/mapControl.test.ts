@@ -5,11 +5,11 @@ import TreeSelect from '@riophae/vue-treeselect'
 describe("Map control component", () => {
 
     it("renders indicator options", () => {
-        const wrapper = shallowMount(MapControl);
+        const wrapper = shallowMount(MapControl, {propsData: {prevEnabled: true, artEnabled: false}});
 
         expect(wrapper.findAll(TreeSelect).at(0).props("options"))
-            .toStrictEqual([{id: "prev", label: "prevalence"},
-                {id: "art", label: "ART coverage"}]);
+            .toStrictEqual([{id: "prev", label: "prevalence", isDisabled: false},
+                {id: "art", label: "ART coverage", isDisabled: true}]);
     });
 
     it("renders detail options", () => {

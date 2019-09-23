@@ -1,5 +1,5 @@
 <template>
-    <div v-if="hasSelectedDataType">
+    <div>
         <hr class="my-5"/>
         <h4>Filter current view</h4>
         <div class="py-2">
@@ -55,7 +55,6 @@
         name: "Filters",
         computed: mapState<FilteredDataState>(namespace, {
 
-            hasSelectedDataType: state => state.selectedDataType != null,
             selectedDataFilterOptions: function () {
                 return this.$store.getters['filteredData/selectedDataFilterOptions']
             },
