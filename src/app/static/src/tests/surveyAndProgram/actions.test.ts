@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
-import {mockAxios, mockFailure, mockShapeResponse, mockSuccess} from "../mocks";
+import {mockAxios, mockFailure, mockSuccess} from "../mocks";
 import {DataType} from "../../app/store/filteredData/filteredData";
 
 const FormData = require("form-data");
@@ -15,13 +15,18 @@ describe("Survey and program actions", () => {
         await actions.uploadSurvey({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "SurveyLoaded",
+            type: "SurveyUpdated",
+            payload: null
+        });
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "SurveyUpdated",
             payload: {data: "SOME DATA"}
         });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[1][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
-        expect(commit.mock.calls[1][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
+        expect(commit.mock.calls[2][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
+        expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
     });
 
     it("sets error message after failed surveys upload", async () => {
@@ -33,29 +38,16 @@ describe("Survey and program actions", () => {
         await actions.uploadSurvey({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "SurveyUpdated",
+            payload: null
+        });
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "SurveyError",
             payload: "error message"
         });
 
         //Should not have set selectedDataType
-        expect(commit.mock.calls.length).toEqual(1);
-    });
-
-    it("sets error message on bad request", async () => {
-
-        mockAxios.onPost(`/disease/survey/`)
-            .reply(400, mockFailure("error message"));
-
-        const commit = jest.fn();
-        await actions.uploadSurvey({commit} as any, new FormData());
-
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "SurveyError",
-            payload: "error message"
-        });
-
-        //Should not have set selectedDataType
-        expect(commit.mock.calls.length).toEqual(1);
+        expect(commit.mock.calls.length).toEqual(2);
     });
 
     it("sets data after program file upload", async () => {
@@ -67,13 +59,18 @@ describe("Survey and program actions", () => {
         await actions.uploadProgram({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ProgramLoaded",
+            type: "ProgramUpdated",
+            payload: null
+        });
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "ProgramUpdated",
             payload: "TEST"
         });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[1][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
-        expect(commit.mock.calls[1][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
+        expect(commit.mock.calls[2][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
+        expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
     });
 
     it("sets error message after failed program upload", async () => {
@@ -85,12 +82,17 @@ describe("Survey and program actions", () => {
         await actions.uploadProgram({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "ProgramUpdated",
+            payload: null
+        });
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "ProgramError",
             payload: "error message"
         });
 
         //Should not have set selectedDataType
-        expect(commit.mock.calls.length).toEqual(1);
+        expect(commit.mock.calls.length).toEqual(2);
     });
 
     it("sets data after anc file upload", async () => {
@@ -102,13 +104,18 @@ describe("Survey and program actions", () => {
         await actions.uploadANC({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ANCLoaded",
+            type: "ANCUpdated",
+            payload: null
+        });
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "ANCUpdated",
             payload: "TEST"
         });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[1][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
-        expect(commit.mock.calls[1][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.ANC});
+        expect(commit.mock.calls[2][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
+        expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.ANC});
     });
 
     it("sets error message after failed anc upload", async () => {
@@ -120,12 +127,17 @@ describe("Survey and program actions", () => {
         await actions.uploadANC({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "ANCUpdated",
+            payload: null
+        });
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "ANCError",
             payload: "error message"
         });
 
         //Should not have set selectedDataType
-        expect(commit.mock.calls.length).toEqual(1);
+        expect(commit.mock.calls.length).toEqual(2);
     });
 
 });

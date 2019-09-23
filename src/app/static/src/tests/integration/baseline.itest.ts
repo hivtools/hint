@@ -18,8 +18,9 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadPJNZ({commit} as any, formData);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PJNZUploaded");
-        expect(commit.mock.calls[0][0]["payload"]["filename"])
+
+        expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("E66ECF0E9BE8BE814547EA7574700DD3.PJNZ");
     });
 
@@ -29,9 +30,9 @@ describe("Baseline actions", () => {
 
         setTimeout(() => {
             const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-            expect(calls).toContain("PJNZLoaded");
-            expect(calls).toContain("ShapeUploaded");
-            expect(calls).toContain("PopulationUploaded");
+            expect(calls).toContain("PJNZUpdated");
+            expect(calls).toContain("ShapeUpdated");
+            expect(calls).toContain("PopulationUpdated");
             done();
         }, 50);
     });
@@ -43,8 +44,9 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadShape({commit} as any, formData);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUploaded");
-        expect(commit.mock.calls[0][0]["payload"]["filename"])
+
+        expect(commit.mock.calls[1][0]["type"]).toBe("ShapeUpdated");
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("A59C122F27303D93467C0F2D09489878.geojson");
 
     }, 10000);
@@ -56,9 +58,11 @@ describe("Baseline actions", () => {
         formData.append('file', file);
 
         await actions.uploadPopulation({commit} as any, formData);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUploaded");
-        expect(commit.mock.calls[0][0]["payload"]["filename"])
+
+        expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUpdated");
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("365A2F42B939E5390AA4DE2720708F77.csv");
+
     });
 
 });

@@ -5,7 +5,7 @@ import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {ProgrammeResponse, SurveyResponse} from "../../generated";
 
-export type SurveyAndProgramActionTypes = "SurveyLoaded" | "ProgramLoaded" | "ANCLoaded"
+export type SurveyAndProgramActionTypes = "SurveyUpdated" | "ProgramUpdated" | "ANCUpdated"
 export type SurveyAndProgramActionErrorTypes = "SurveyError" | "ProgramError" | "ANCError"
 
 export interface SurveyAndProgramActions {
@@ -22,9 +22,10 @@ function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
 export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
 
     async uploadSurvey({commit}, formData) {
+        commit({type: "SurveyUpdated", payload: null});
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("SurveyError")
-            .withSuccess("SurveyLoaded")
+            .withSuccess("SurveyUpdated")
             .postAndReturn<SurveyResponse>("/disease/survey/", formData)
             .then((response) => {
                 if (response) {
@@ -34,9 +35,10 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     },
 
     async uploadProgram({commit}, formData) {
+        commit({type: "ProgramUpdated", payload: null});
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("ProgramError")
-            .withSuccess("ProgramLoaded")
+            .withSuccess("ProgramUpdated")
             .postAndReturn<ProgrammeResponse>("/disease/program/", formData)
             .then((response) => {
                 if (response) {
@@ -46,9 +48,10 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     },
 
     async uploadANC({commit}, formData) {
+        commit({type: "ANCUpdated", payload: null});
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("ANCError")
-            .withSuccess("ANCLoaded")
+            .withSuccess("ANCUpdated")
             .postAndReturn<ProgrammeResponse>("/disease/anc/", formData)
             .then((response) => {
                 if (response) {
