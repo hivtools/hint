@@ -1,8 +1,8 @@
 matrix:
   include:
-    - language: node_js
-      node_js:
-      - 10
+    - language: java
+      jdk:
+        - openjdk8
       cache: npm
       install:
       - npm install codecov -g

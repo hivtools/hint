@@ -1,11 +1,14 @@
 package org.imperial.mrc.hint
 
 import org.apache.tomcat.util.http.fileupload.FileUtils
-import org.pac4j.core.config.Config
-import org.pac4j.core.context.WebContext
+import org.imperial.mrc.hint.db.StateRepository
+import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
+import java.security.DigestInputStream
+import java.security.MessageDigest
+import javax.xml.bind.DatatypeConverter
 
 enum class FileType {
 
@@ -29,46 +32,41 @@ interface FileManager {
 
 @Component
 class LocalFileManager(
-        private val context: WebContext,
-        private val pac4jConfig: Config,
+        private val session: Session,
+        private val stateRepository: StateRepository,
         private val appProperties: AppProperties) : FileManager {
 
     override fun saveFile(file: MultipartFile, type: FileType): String {
-        val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
-        val fileName = file.originalFilename!!
-        val path = "${appProperties.uploadDirectory}/$id/$type/$fileName"
-        val localFile = File(path)
-
-        if (localFile.parentFile.exists()) {
-            FileUtils.cleanDirectory(localFile.parentFile)
-        } else {
-            FileUtils.forceMkdirParent(localFile)
+        val md = MessageDigest.getInstance("MD5")
+        val bytes = file.inputStream.use {
+            DigestInputStream(it, md).readBytes()
         }
 
-        localFile.writeBytes(file.bytes)
+        val extension = file.originalFilename!!.split(".").last()
+        val hash = "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
+        val path = "${appProperties.uploadDirectory}/$hash"
+        if (stateRepository.saveNewHash(hash)) {
+            val localFile = File(path)
+            FileUtils.forceMkdirParent(localFile)
+            localFile.writeBytes(bytes)
+        }
 
+        stateRepository.saveSessionFile(session.getId(), type, hash, file.originalFilename!!)
         return path
     }
 
     override fun getFile(type: FileType): File? {
-
-        val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
-
-        val pjnzFiles = File("${appProperties.uploadDirectory}/$id/$type")
-                .listFiles()
-
-        return pjnzFiles?.first()
+        val hash = stateRepository.getSessionFileHash(session.getId(), type)
+        return if (hash != null) {
+            File("${appProperties.uploadDirectory}/$hash")
+        } else {
+            null
+        }
     }
 
     override fun getAllFiles(): Map<String, String> {
-
-        val id = pac4jConfig.sessionStore.getOrCreateSessionId(context)
-        return enumValues<FileType>().associate {
-            it.toString() to (File("${appProperties.uploadDirectory}/$id/${it}")
-                    .listFiles()?.first()?.path)
-        }.filterValues { it != null }
-                .mapValues { it.value!! }
-
+        val hashes = stateRepository.getFilesForSession(session.getId())
+        return hashes.associate { it.type to "${appProperties.uploadDirectory}/${it.path}" }
     }
 }
 
