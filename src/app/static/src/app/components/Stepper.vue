@@ -98,7 +98,7 @@
                     1: this.baselineComplete,
                     2: this.surveyAndProgramComplete,
                     3: this.surveyAndProgramComplete, // for now just mark as complete as soon as it's ready
-                    4: false,
+                    4: this.$store.state.modelRun.success,
                     5: false
                 }
             },

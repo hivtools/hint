@@ -14,7 +14,7 @@ import {
     ProgrammeResponse,
     SurveyResponse,
     AgeFilters,
-    SurveyFilters, AncResponse, PopulationResponse
+    SurveyFilters, AncResponse, PopulationResponse, ModelStatusResponse
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
@@ -174,6 +174,19 @@ export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}):
         data: null,
         type: "population",
         filename: "test.csv",
+        ...props
+    }
+};
+
+export const mockModelStatusResponse = (props: Partial<ModelStatusResponse> = {}): ModelStatusResponse => {
+    return {
+        timeRemaining: "",
+        done: true,
+        success: true,
+        progress: "100%",
+        queue: 1,
+        id: "1234",
+        status: "finished",
         ...props
     }
 };

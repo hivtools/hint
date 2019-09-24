@@ -2,11 +2,18 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
-import Stepper from "../../app/components/Stepper.vue";
-import Step from "../../app/components/Step.vue";
-import {mockBaselineState, mockPopulationResponse, mockShapeResponse, mockSurveyAndProgramState} from "../mocks";
+import {
+    mockBaselineState,
+    mockModelRunState,
+    mockPopulationResponse,
+    mockShapeResponse,
+    mockSurveyAndProgramState
+} from "../mocks";
 import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations} from '../../app/store/baseline/mutations';
+import Stepper from "../../app/components/Stepper.vue";
+import Step from "../../app/components/Step.vue";
+import {ModelRunState} from "../../app/store/modelRun/modelRun";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 
 const localVue = createLocalVue();
@@ -14,7 +21,8 @@ Vue.use(Vuex);
 
 describe("Stepper component", () => {
     const createSut = (baselineState?: Partial<BaselineState>,
-                       surveyAndProgramState?: Partial<SurveyAndProgramDataState>) => {
+                       surveyAndProgramState?: Partial<SurveyAndProgramDataState>,
+                       modelRunState?: Partial<ModelRunState>) => {
 
         return new Vuex.Store({
             modules: {
@@ -28,12 +36,17 @@ describe("Stepper component", () => {
                     namespaced: true,
                     state: mockSurveyAndProgramState(surveyAndProgramState),
                     getters: surveyAndProgramGetters
+                },
+                modelRun: {
+                    namespaced: true,
+                    state: mockModelRunState(modelRunState)
                 }
             }
         })
     };
-
+    
     it("renders loading spinner while states are not ready", () => {
+
         const store = createSut();
         const wrapper = shallowMount(Stepper, {store, localVue});
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
@@ -161,6 +174,20 @@ describe("Stepper component", () => {
             expect(wrapper.find("#continue").classes()).not.toContain("disabled");
             done();
         });
+    });
+
+    it("model run step is not complete without success", () => {
+        const store = createSut({}, {}, {success: false});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(3).props().complete).toBe(false);
+    });
+
+    it("model run step is complete on success", () => {
+        const store = createSut({}, {}, {success: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(3).props().complete).toBe(true);
     });
 
 });
