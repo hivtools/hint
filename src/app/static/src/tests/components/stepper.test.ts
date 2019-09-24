@@ -50,7 +50,6 @@ describe("Stepper component", () => {
         })
     };
 
-
     afterEach(() => {
         localStorage.clear();
     });

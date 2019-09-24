@@ -16,7 +16,7 @@ class HintrApiClientTests {
     @Test
     fun `can validate baseline`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.validateBaseline("fakepath", FileType.PJNZ)
+        val result = sut.validateBaselineIndividual("fakepath", FileType.PJNZ)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")
     }
