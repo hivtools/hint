@@ -22,7 +22,6 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
     },
 
     poll({commit, state}, runId) {
-
         const id = setInterval(() => {
             api<ModelRunActionTypes, ModelRunErrorTypes>(commit)
                 .withSuccess("RunStatusUpdated")

@@ -2,7 +2,7 @@ export class LocalStorageManager {
 
     setItem = (key: string, value: any) => {
         if (value) {
-            window.localStorage.setItem(key, value);
+            window.localStorage.setItem(key, JSON.stringify(value));
         } else {
             this.removeItem(key);
         }
@@ -19,6 +19,16 @@ export class LocalStorageManager {
     getInt = (key: string): number | null => {
         const item = this.getString(key);
         return item ? parseInt(item) : null
+    };
+
+    getItem = <T>(key: string): T | null => {
+        const item = this.getString(key);
+        if (item) {
+            return JSON.parse(item) as T;
+        }
+        else {
+            return null;
+        }
     };
 }
 
