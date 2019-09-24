@@ -29,6 +29,11 @@ export interface FilterOption {
   id: string;
 }
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
+export interface LevelLabels {
+  id: number;
+  area_level_label: string;
+  display: boolean;
+}
 export type ModelResultResponse = number;
 export interface ModelStatusResponse {
   id: string;
@@ -173,6 +178,11 @@ export interface ShapeResponse {
   type: "shape";
   data: GeoJSONObject;
   filters: {
+    level_labels?: {
+      id: number;
+      area_level_label: string;
+      display: boolean;
+    }[];
     regions?: {
       name: string;
       id: string;
