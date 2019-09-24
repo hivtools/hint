@@ -6,7 +6,9 @@
             </l-geo-json>
         </template>
         <map-control @indicator-changed="onIndicatorChange"
-                     @detail-changed="onDetailChange"></map-control>
+                     @detail-changed="onDetailChange"
+                     :indicator="indicator"
+                    :artEnabled="artEnabled" :prevEnabled="prevEnabled"></map-control>
         <map-legend :getColor="getColor" :max="max" :min="min"></map-legend>
     </l-map>
 </template>
@@ -15,23 +17,20 @@
     import {mapState} from "vuex";
     import {interpolateCool, interpolateWarm} from "d3-scale-chromatic"
     import {LGeoJson, LMap} from 'vue2-leaflet';
-    import axios from "axios"
     import {Feature} from "geojson";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
     import {Indicator} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
+    import {FilteredDataState} from "../../store/filteredData/filteredData";
 
     interface Data {
         zoom: number,
         center: number[],
         featuresByLevel: { [k: number]: any },
         style: any,
-        indicatorData: { [k: string]: any },
         indicator: Indicator;
         detail: number;
-        max: number;
-        min: number;
     }
 
     export default Vue.extend<Data, any, any, any>({
@@ -44,17 +43,50 @@
         },
         computed: {
             ...mapState<BaselineState>("baseline", {
-                features: state => state.shape && state.shape.data.features
+                features: state => state.shape && state.shape.data.features,
             }),
+            ...mapState<FilteredDataState>("filteredData", {
+                selectedDataType: state => state.selectedDataType
+            }),
+            indicatorData: function() {
+                return this.$store.getters['filteredData/regionIndicators'];
+            },
+            colorFunctions: function() {
+                return this.$store.getters['filteredData/colorFunctions'];
+            },
             currentFeatures: function () {
                 return this.featuresByLevel[this.detail || 1]
             },
             getColor: function () {
-                if (this.indicator == "prev") {
-                    return interpolateCool
-                } else {
-                    return interpolateWarm
+                return this.colorFunctions[this.indicator];
+            },
+            min: function() {
+                if (this.indicator) {
+                    if (this.indicator == "prev") {
+                        return this.indicatorData.prevRange.min;
+                    }
+                    if (this.indicator == "art") {
+                        return this.indicatorData.artRange.min;
+                    }
                 }
+            },
+            max: function() {
+                if (this.indicator) {
+                    if (this.indicator == "prev") {
+                        return this.indicatorData.prevRange.max;
+                    }
+                    if (this.indicator == "art") {
+                        return this.indicatorData.artRange.max;
+                    }
+                }
+            },
+            prevEnabled: function() {
+                const result = !!(this.indicatorData.prevRange.min || this.indicatorData.prevRange.max);
+                return result;
+            },
+            artEnabled: function() {
+                const result = !!(this.indicatorData.artRange.min || this.indicatorData.artRange.max);
+                return result;
             }
         },
         data(): Data {
@@ -67,50 +99,40 @@
                     fillOpacity: 1.0,
                     color: 'grey'
                 },
-                indicatorData: {},
                 indicator: "prev",
-                detail: 4,
-                max: 0.25,
-                min: 0.03
+                detail: 5
             }
         },
         created() {
-            // TODO this data should come from the store
-            // and be a dictionary of all region ids to
-            // required indicators, already filtered/aggregated
-            axios.get('public/testdata/indicators.json')
-                .then(response => {
-                    this.indicatorData = response.data;
-                    this.features.forEach((feature: Feature) => {
-                        const areas = feature.properties!!["area_id"].split(".");
-                        const adminLevel = areas.length;
-                        this.featuresByLevel[adminLevel].push(feature);
-                    });
-                });
+            this.features.forEach((feature: Feature) => {
+                const areas = feature.properties!!["area_id"].split(".");
+                const adminLevel = areas.length;
+                this.featuresByLevel[adminLevel].push(feature);
+            });
         },
         methods: {
             onIndicatorChange: function (newVal: string) {
-                if (newVal) {
-                    if (newVal == "prev") {
-                        this.min = 0.03; // TODO just hard-coding these because I know the min/max of the data!
-                        this.max = 0.25; // should do something cleverer/get this back from the API
-                    }
-                    if (newVal == "art") {
-                        this.min = 0.13;
-                        this.max = 0.35;
-                    }
-                }
-                this.indicator = newVal
+                this.indicator = newVal;
             },
             onDetailChange: function (newVal: number) {
                 this.detail = newVal
             },
             getColorForRegion: function (region: string) {
-                let data = this.indicatorData[region];
+                let data = this.indicatorData.indicators[region];
                 data = data && data[this.indicator];
-                data = data && parseFloat(data) / (this.max - this.min);
-                return this.getColor(data);
+                data = data && data.color;
+                return data;
             }
-        }
+        },
+        watch: {
+            selectedDataType: function (newVal) {
+                //Update indicator to one which is enabled if required
+                if (!this.prevEnabled && this.artEnabled && this.indicator == "prev") {
+                    this.indicator = "art";
+                } else if (!this.artEnabled && this.prevEnabled && this.indicator == "art") {
+                    this.indicator = "prev";
+                }
+            }
+        },
     })
 </script>

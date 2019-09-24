@@ -12,3 +12,23 @@ export interface PartialFileUploadProps {
     existingFileName: string
 }
 
+export interface IndicatorValues {
+    value: number,
+    color: string
+}
+
+export interface Indicators {
+    prev?: IndicatorValues,
+    art?: IndicatorValues
+}
+
+export interface IndicatorRange {
+    max: number | null,
+    min: number | null
+}
+
+export interface IndicatorsMap {
+    indicators: {[k: string]: Indicators},
+    artRange: IndicatorRange,
+    prevRange: IndicatorRange
+}

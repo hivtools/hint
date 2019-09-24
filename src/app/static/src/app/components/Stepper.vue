@@ -47,6 +47,7 @@
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
     import {RootState} from "../root";
+    import {localStorageManager} from "../localStorageManager";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import ModelRun from "./modelRun/ModelRun.vue";
 
@@ -56,7 +57,12 @@
 
     interface Data {
         activeStep: number
-        steps: { number: number, text: string }[]
+        steps: Step[]
+    }
+
+    interface Step {
+        number: number,
+        text: string
     }
 
     export default Vue.extend<Data, any, any, any>({
@@ -98,7 +104,7 @@
                     1: this.baselineComplete,
                     2: this.surveyAndProgramComplete,
                     3: this.surveyAndProgramComplete, // for now just mark as complete as soon as it's ready
-                    4: false,
+                    4: this.$store.state.modelRun.success,
                     5: false
                 }
             },
@@ -108,7 +114,8 @@
         },
         methods: {
             jump(num: number) {
-                this.activeStep = num
+                this.activeStep = num;
+                localStorageManager.setItem("activeStep", num);
             },
             active(num: number) {
                 return this.activeStep == num;
@@ -120,7 +127,7 @@
             },
             next() {
                 if (this.complete[this.activeStep]) {
-                    this.activeStep = this.activeStep + 1;
+                    this.jump(this.activeStep + 1);
                 }
             }
         },
@@ -130,6 +137,24 @@
             SurveyAndProgram,
             LoadingSpinner,
             ModelRun
+        },
+        watch: {
+            ready: function (newVal) {
+                if (newVal) {
+                    const activeStep = localStorageManager.getInt("activeStep");
+
+                    if (activeStep) {
+                        const invalidSteps = this.steps.map((s: Step) => s.number)
+                            .filter((i: number) => i < activeStep && !this.complete[i]);
+
+                        if (invalidSteps.length == 0) {
+                            this.jump(activeStep)
+                        } else {
+                            localStorageManager.removeItem("activeStep");
+                        }
+                    }
+                }
+            }
         }
     })
 

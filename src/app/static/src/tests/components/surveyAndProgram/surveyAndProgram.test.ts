@@ -25,7 +25,7 @@ describe("Survey and program component", () => {
     testUploadComponent("anc", 2);
 
     const createStore = (surveyAndProgramState: Partial<SurveyAndProgramDataState> = {},
-                         filteredDataState: Partial<FilteredDataState> = {}) => {
+                         filteredDataState: Partial<FilteredDataState> = {selectedDataType: DataType.Survey}) => {
         return new Vuex.Store({
             modules: {
                 surveyAndProgram: {
@@ -42,8 +42,53 @@ describe("Survey and program component", () => {
         });
     };
 
+    it("renders filters and map if there is a selected data type", () => {
+        const store = new Vuex.Store({
+            modules: {
+                surveyAndProgram: {
+                    namespaced: true,
+                    state: mockSurveyAndProgramState(),
+
+                },
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState({selectedDataType: DataType.Survey})
+
+                }
+            }
+        });
+
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+
+        expect(wrapper.findAll("filters-stub").length).toBe(1);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+    });
+
+    it("does not render filters and map if there is no selected data type", () => {
+        const store = new Vuex.Store({
+            modules: {
+                surveyAndProgram: {
+                    namespaced: true,
+                    state: mockSurveyAndProgramState(),
+
+                },
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState({selectedDataType: null})
+                }
+            }
+        });
+
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+
+        expect(wrapper.findAll("filters-stub").length).toBe(0);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+    });
+
     it("renders filters", () => {
-        const wrapper = shallowMount(SurveyAndProgram, {store: createStore(), localVue});
+        const wrapper = shallowMount(SurveyAndProgram, {
+            store: createStore(),
+            localVue});
         expect(wrapper.findAll("filters-stub").length).toBe(1);
     });
 
@@ -98,6 +143,9 @@ describe("Survey and program component", () => {
         Vue.nextTick();
         expect(wrapper.find(".nav-link.active").text()).toBe("Programme");
 
+
+        expect(wrapper.findAll("filters-stub").length).toBe(1);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
     });
 
 });
