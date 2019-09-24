@@ -21,7 +21,8 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("Botswana2018.PJNZ");
+            .toBe("E66ECF0E9BE8BE814547EA7574700DD3.PJNZ");
+
     });
 
     it("can get baseline data", async () => {
@@ -44,7 +45,7 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[1][0]["type"]).toBe("ShapeUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("malawi.geojson");
+            .toBe("A59C122F27303D93467C0F2D09489878.geojson");
 
     }, 10000);
 
@@ -58,8 +59,7 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("population.csv");
-
+            .toBe("365A2F42B939E5390AA4DE2720708F77.csv");
     });
 
 });
