@@ -9,7 +9,7 @@
                      @detail-changed="onDetailChange"
                      :indicator="indicator"
                     :artEnabled="artEnabled" :prevEnabled="prevEnabled"></map-control>
-        <map-legend :getColor="getColor" :max="max" :min="min"></map-legend>
+        <map-legend v-if="showLegend" :getColor="getColor" :max="max" :min="min"></map-legend>
     </l-map>
 </template>
 <script lang="ts">
@@ -22,7 +22,7 @@
     import MapLegend from "./MapLegend.vue";
     import {Indicator} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {FilteredDataState} from "../../store/filteredData/filteredData";
+    import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
 
     interface Data {
         zoom: number,
@@ -60,6 +60,9 @@
             getColor: function () {
                 return this.colorFunctions[this.indicator];
             },
+            showLegend: function() {
+              return this.max || this.min;
+            },
             min: function() {
                 if (this.indicator) {
                     if (this.indicator == "prev") {
@@ -71,7 +74,6 @@
                 }
             },
             max: function() {
-                //alert("max");
                 if (this.indicator) {
                     if (this.indicator == "prev") {
                         return this.indicatorData.prevRange.max;
@@ -82,14 +84,10 @@
                 }
             },
             prevEnabled: function() {
-                //alert("prevEnabled");
-                const result = !!(this.indicatorData.prevRange.min || this.indicatorData.prevRange.max);
-                return result;
+                return true;
             },
             artEnabled: function() {
-                //alert("artEnabled");
-                const result = !!(this.indicatorData.artRange.min || this.indicatorData.artRange.max);
-                return result;
+                return this.selectedDataType == DataType.Survey;
             }
         },
         data(): Data {

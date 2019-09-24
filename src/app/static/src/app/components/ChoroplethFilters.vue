@@ -5,6 +5,7 @@
         <div class="py-2">
             <label class="font-weight-bold">Sex</label>
             <treeselect id="sex-filters" :multiple="false"
+                        :clearable="false"
                         :options="sexFilters.available"
                         :value="sexFilters.selected"
                         :normalizer="treeselectNormalizer"
@@ -14,6 +15,7 @@
         <div class="py-2">
             <label class="font-weight-bold">Age</label>
             <treeselect id="age-filters" :multiple="false"
+                        :clearable="false"
                         :options="ageFilters.available"
                         :value="ageFilters.selected"
                         :normalizer="treeselectNormalizer"
@@ -23,6 +25,7 @@
         <div class="py-2">
             <label class="font-weight-bold">Survey</label>
             <treeselect id="survey-filters" :multiple="false"
+                        :clearable="false"
                         :options="surveyFilters.available"
                         :value="surveyFilters.selected"
                         :normalizer="treeselectNormalizer"
@@ -51,6 +54,12 @@
         selected: string
     }
 
+    const sexFilterOptions = [
+        {id: "both", name: "both"},
+        {id: "female", name: "female"},
+        {id: "male", name: "male"}
+    ];
+
     export default Vue.extend({
         name: "Filters",
         computed: mapState<FilteredDataState>(namespace, {
@@ -62,12 +71,8 @@
 
             sexFilters: function (state): ChoroplethFiltersForType {
                 const available = (state.selectedDataType == DataType.ANC ?
-                    [{id: "female", name: "female"}] :
-                    [
-                        {id: "female", name: "female"},
-                        {id: "male", name: "male"},
-                        {id: "both", name: "both"}
-                    ]) as FilterOption[];
+                    undefined :
+                    sexFilterOptions) as FilterOption[];
                 return this.buildViewFiltersForType(available, this.selectedChoroplethFilters.sex)
             },
 
@@ -78,7 +83,7 @@
 
             surveyFilters: function (state): ChoroplethFiltersForType {
                 return this.buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
-                    this.selectedChoroplethFilters.surveys);
+                    this.selectedChoroplethFilters.survey);
             }
         }),
         methods: {
@@ -97,7 +102,7 @@
                     disabled: availableFilterOptions == undefined
                 }
             },
-            updateFilter(filterType: FilterType, id: string, available: NestedFilterOption[]) {
+            updateFilter(filterType: FilterType, id: string, available: FilterOption[]) {
                 const newFilter = available.filter(o => o.id == id)[0];
 
                 this.filterUpdated([filterType, newFilter]);
@@ -110,30 +115,25 @@
             },
             updateSurveyFilter(id: string) {
                 this.updateFilter(FilterType.Survey, id, this.surveyFilters.available);
-            }
-        },
-        watch: {
-            selectedDataType: function (newVal: DataType) {
-                alert("updating selected Data Type");
+            },
+            refreshSelectedChoroplethFilters(){
                 //if the selected data type has changed, we should update the choropleth filters if the dataset of that
                 //type does not include any of the selected filters as values. Set the filter to the first available value
-                let updatedFilters = {...this.selectedChoroplethFilters} as SelectedChoroplethFilters;
-                let availableFilters = this.selectedDataFilterOptions;
+                const availableFilters = this.selectedDataFilterOptions;
                 const selectedChoroplethFilters = this.selectedChoroplethFilters;
 
                 const getNewFilter = function(filterName: string, available: FilterOption[]) {
-                    alert("available:" + JSON.stringify(available));
-                    alert("selected:" + JSON.stringify(selectedChoroplethFilters[filterName]));
-                    if (available && available.length > 0 //leave unchanged if none - control will be disabled anyway
-                        && ( !selectedChoroplethFilters[filterName] ||
-                            available.filter(f => f.id == selectedChoroplethFilters[filterName].id).length == 0)) {
-                        alert("updating to " + available[0].id);
+                    const currentValue = selectedChoroplethFilters[filterName] ?
+                                            selectedChoroplethFilters[filterName].id : null;
+
+                    if (available && available.length > 0 //leave unchanged if none avilable - control will be disabled anyway
+                        && ((!currentValue) || available.filter(f => f.id == currentValue).length == 0)) {
                         return available[0].id;
                     }
                     return null;
                 };
 
-                const newSexFilter = getNewFilter("sex", availableFilters.sex);
+                const newSexFilter = getNewFilter("sex", sexFilterOptions);
                 if (newSexFilter) {
                     this.updateSexFilter(newSexFilter);
                 }
@@ -141,12 +141,19 @@
                 if (newAgeFilter) {
                     this.updateAgeFilter(newAgeFilter);
                 }
-                const newSurveyFilter = getNewFilter("survey", availableFilters.survey);
+                const newSurveyFilter = getNewFilter("survey", availableFilters.surveys);
                 if (newSurveyFilter) {
                     this.updateSurveyFilter(newSurveyFilter);
                 }
-
             }
+        },
+        watch: {
+            selectedDataType: function (newVal: DataType) {
+                this.refreshSelectedChoroplethFilters();
+            }
+        },
+        created() {
+            this.refreshSelectedChoroplethFilters();
         },
         components: {Treeselect}
     });

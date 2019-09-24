@@ -139,15 +139,15 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
 
 const includeRowForSelectedChoroplethFilters = (row: any, dataType: DataType, selectedFilters: SelectedChoroplethFilters) => {
 
-    if (dataType != DataType.ANC && row.sex != selectedFilters.sex) {
+    if (dataType != DataType.ANC && row.sex != selectedFilters.sex!.id) {
         return false;
     }
 
-    if (row.age_group_id != selectedFilters.age) {
+    if (row.age_group_id != selectedFilters.age!.id) {
         return false;
     }
 
-    if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey) {
+    if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey!.id) {
         return false;
     }
 
