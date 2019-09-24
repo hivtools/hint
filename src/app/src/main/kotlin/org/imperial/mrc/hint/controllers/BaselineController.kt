@@ -14,7 +14,7 @@ class BaselineController(private val fileManager: FileManager,
 
     @PostMapping("/pjnz/")
     @ResponseBody
-    fun uploadPJNZ(@RequestParam("file") file: MultipartFile): ResponseEntity<String>  {
+    fun uploadPJNZ(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
         return saveAndValidate(file, FileType.PJNZ)
     }
 
@@ -27,8 +27,7 @@ class BaselineController(private val fileManager: FileManager,
     @PostMapping("/shape/")
     @ResponseBody
     fun uploadShape(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
-        return saveAndValidate(file,
-                FileType.Shape)
+        return saveAndValidate(file, FileType.Shape)
     }
 
     @GetMapping("/shape/")
