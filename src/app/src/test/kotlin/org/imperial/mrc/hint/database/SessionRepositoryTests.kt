@@ -2,7 +2,7 @@ package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.db.StateRepository
+import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.db.Tables.SESSION_FILE
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.tables.UserSession.USER_SESSION
@@ -16,10 +16,10 @@ import org.springframework.transaction.annotation.Transactional
 @ActiveProfiles(profiles = ["test"])
 @SpringBootTest
 @Transactional
-class StateRepositoryTests {
+class SessionRepositoryTests {
 
     @Autowired
-    private lateinit var sut: StateRepository
+    private lateinit var sut: SessionRepository
 
     @Autowired
     private lateinit var userRepo: UserRepository

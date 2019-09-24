@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.LocalFileManager
-import org.imperial.mrc.hint.db.StateRepository
+import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.models.SessionFile
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
@@ -35,7 +35,7 @@ class LocalFileManagerTests {
     @Test
     fun `saves file if file is new and returns path`() {
 
-        val mockStateRepository = mock<StateRepository> {
+        val mockStateRepository = mock<SessionRepository> {
             on { saveNewHash(any()) } doReturn true
         }
 
@@ -51,7 +51,7 @@ class LocalFileManagerTests {
     @Test
     fun `does not save file if file matches an existing hash and returns path`() {
 
-        val mockStateRepository = mock<StateRepository> {
+        val mockStateRepository = mock<SessionRepository> {
             on { saveNewHash(any()) } doReturn false
         }
 
@@ -66,7 +66,7 @@ class LocalFileManagerTests {
     @Test
     fun `gets file if it exists`() {
 
-        val mockStateRepository = mock<StateRepository> {
+        val mockStateRepository = mock<SessionRepository> {
             on { saveNewHash(any()) } doReturn true
             on { getSessionFileHash(any(), any()) } doReturn "test"
         }
@@ -90,7 +90,7 @@ class LocalFileManagerTests {
     @Test
     fun `gets all files`() {
 
-        val stateRepo = mock<StateRepository> {
+        val stateRepo = mock<SessionRepository> {
             on { getFilesForSession("fake-id") } doReturn listOf(SessionFile("hash.csv", "survey"))
         }
 

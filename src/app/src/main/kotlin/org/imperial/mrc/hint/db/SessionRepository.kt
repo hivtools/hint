@@ -5,11 +5,9 @@ import org.imperial.mrc.hint.db.Tables.*
 import org.imperial.mrc.hint.models.SessionFile
 import org.jooq.DSLContext
 import org.jooq.Record
-import org.jooq.Record1
-import org.jooq.Result
 import org.springframework.stereotype.Component
 
-interface StateRepository {
+interface SessionRepository {
     fun saveSession(sessionId: String, userId: String)
     // returns true if a new hash is saved, false if it already exists
     fun saveNewHash(hash: String): Boolean
@@ -19,7 +17,7 @@ interface StateRepository {
 }
 
 @Component
-class JooqStateRepository(private val dsl: DSLContext) : StateRepository {
+class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
 
     override fun saveSession(sessionId: String, userId: String) {
 

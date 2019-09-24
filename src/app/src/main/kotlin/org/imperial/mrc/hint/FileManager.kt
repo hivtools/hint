@@ -1,7 +1,7 @@
 package org.imperial.mrc.hint
 
 import org.apache.tomcat.util.http.fileupload.FileUtils
-import org.imperial.mrc.hint.db.StateRepository
+import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
@@ -33,7 +33,7 @@ interface FileManager {
 @Component
 class LocalFileManager(
         private val session: Session,
-        private val stateRepository: StateRepository,
+        private val sessionRepository: SessionRepository,
         private val appProperties: AppProperties) : FileManager {
 
     override fun saveFile(file: MultipartFile, type: FileType): String {
@@ -45,18 +45,18 @@ class LocalFileManager(
         val extension = file.originalFilename!!.split(".").last()
         val hash = "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
         val path = "${appProperties.uploadDirectory}/$hash"
-        if (stateRepository.saveNewHash(hash)) {
+        if (sessionRepository.saveNewHash(hash)) {
             val localFile = File(path)
             FileUtils.forceMkdirParent(localFile)
             localFile.writeBytes(bytes)
         }
 
-        stateRepository.saveSessionFile(session.getId(), type, hash, file.originalFilename!!)
+        sessionRepository.saveSessionFile(session.getId(), type, hash, file.originalFilename!!)
         return path
     }
 
     override fun getFile(type: FileType): File? {
-        val hash = stateRepository.getSessionFileHash(session.getId(), type)
+        val hash = sessionRepository.getSessionFileHash(session.getId(), type)
         return if (hash != null) {
             File("${appProperties.uploadDirectory}/$hash")
         } else {
@@ -65,7 +65,7 @@ class LocalFileManager(
     }
 
     override fun getAllFiles(): Map<String, String> {
-        val hashes = stateRepository.getFilesForSession(session.getId())
+        val hashes = sessionRepository.getFilesForSession(session.getId())
         return hashes.associate { it.type to "${appProperties.uploadDirectory}/${it.path}" }
     }
 }
