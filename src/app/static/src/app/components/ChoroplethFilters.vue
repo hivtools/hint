@@ -114,6 +114,7 @@
         },
         watch: {
             selectedDataType: function (newVal: DataType) {
+                alert("updating selected Data Type");
                 //if the selected data type has changed, we should update the choropleth filters if the dataset of that
                 //type does not include any of the selected filters as values. Set the filter to the first available value
                 let updatedFilters = {...this.selectedChoroplethFilters} as SelectedChoroplethFilters;
@@ -121,22 +122,26 @@
                 const selectedChoroplethFilters = this.selectedChoroplethFilters;
 
                 const getNewFilter = function(filterName: string, available: FilterOption[]) {
-                    if (available  && available.length > 0 //leave unchanged if none - control will be disabled anyway
-                        && available.filter(f => f.id == selectedChoroplethFilters[filterName].id).length == 0) {
+                    alert("available:" + JSON.stringify(available));
+                    alert("selected:" + JSON.stringify(selectedChoroplethFilters[filterName]));
+                    if (available && available.length > 0 //leave unchanged if none - control will be disabled anyway
+                        && ( !selectedChoroplethFilters[filterName] ||
+                            available.filter(f => f.id == selectedChoroplethFilters[filterName].id).length == 0)) {
+                        alert("updating to " + available[0].id);
                         return available[0].id;
                     }
                     return null;
                 };
 
-                const newSexFilter = getNewFilter("sex", availableFilters.sexFilters);
+                const newSexFilter = getNewFilter("sex", availableFilters.sex);
                 if (newSexFilter) {
                     this.updateSexFilter(newSexFilter);
                 }
-                const newAgeFilter = getNewFilter("age", availableFilters.ageFilters);
+                const newAgeFilter = getNewFilter("age", availableFilters.age);
                 if (newAgeFilter) {
                     this.updateAgeFilter(newAgeFilter);
                 }
-                const newSurveyFilter = getNewFilter("survey", availableFilters.surveyFilters);
+                const newSurveyFilter = getNewFilter("survey", availableFilters.survey);
                 if (newSurveyFilter) {
                     this.updateSurveyFilter(newSurveyFilter);
                 }
