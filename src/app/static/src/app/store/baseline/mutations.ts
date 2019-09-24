@@ -3,7 +3,6 @@ import {BaselineState} from "./baseline";
 import {PjnzResponse, PopulationResponse, ShapeResponse} from "../../generated";
 import {PayloadWithType} from "../../types";
 import {readyStateMutations} from "../shared/readyStateMutations";
-import {ReadyState} from "../../root";
 
 type BaselineMutation = Mutation<BaselineState>
 

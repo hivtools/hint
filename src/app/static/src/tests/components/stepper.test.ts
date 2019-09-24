@@ -50,7 +50,6 @@ describe("Stepper component", () => {
         })
     };
 
-
     afterEach(() => {
         localStorage.clear();
     });
@@ -252,7 +251,7 @@ describe("Stepper component", () => {
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(true);
     });
-
+    
     it("model run step becomes complete on success", async () => {
         const store = createSut({}, {});
         const wrapper = shallowMount(Stepper, {store, localVue});

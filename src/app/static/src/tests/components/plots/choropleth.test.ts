@@ -5,6 +5,8 @@ import Vuex from "vuex";
 import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../../mocks";
 import {LGeoJson} from 'vue2-leaflet';
 import MapControl from "../../../app/components/plots/MapControl.vue";
+import {mutations} from "../../../app/store/filteredData/mutations";
+import {DataType, initialFilteredDataState} from "../../../app/store/filteredData/filteredData";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -183,6 +185,82 @@ describe("Choropleth component", () => {
             expect(wrapper.findAll(LGeoJson).length).toBe(0);
             done();
         })
+    });
+
+    it("updates indicator to art if necessary when selectedDataType changes", () => {
+        //defaults to prev, should get updated to art on data type change if no prev data
+        const filteredData = {...initialFilteredDataState};
+        const testStore = new Vuex.Store({
+            modules: {
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState({
+                        shape: mockShapeResponse({
+                            data: {features: fakeFeatures} as any
+                        })
+                    })
+                },
+                filteredData: {
+                    namespaced: true,
+                    state: filteredData,
+                    getters: {
+                        regionIndicators: () => {
+                            return {
+                                indicators: {},
+                                artRange: {min: 10, max: 20},
+                                prevRange: {min: null, max: null}
+                            }
+                        },
+                        colorFunctions: testColorFunctions
+                    },
+                    mutations: mutations
+                }
+            }
+        });
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+        const vm = wrapper.vm as any;
+        expect(vm.indicator).toBe("prev");
+
+        testStore.commit({type: "filteredData/SelectedDataTypeUpdated", payload: DataType.ANC});
+        expect(vm.indicator).toBe("art");
+    });
+
+    it("updates indicator to prev if necessary when selectedDataType changes", () => {
+        //defaults to prev, should get updated to art on data type change if no prev data
+        const filteredData = {...initialFilteredDataState};
+        const testStore = new Vuex.Store({
+            modules: {
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState({
+                        shape: mockShapeResponse({
+                            data: {features: fakeFeatures} as any
+                        })
+                    })
+                },
+                filteredData: {
+                    namespaced: true,
+                    state: filteredData,
+                    getters: {
+                        regionIndicators: () => {
+                            return {
+                                indicators: {},
+                                artRange: {min: null, max: null},
+                                prevRange: {min: 10, max: 20}
+                            }
+                        },
+                        colorFunctions: testColorFunctions
+                    },
+                    mutations: mutations
+                }
+            }
+        });
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+        const vm = wrapper.vm as any;
+        vm.indicator = "art";
+
+        testStore.commit({type: "filteredData/SelectedDataTypeUpdated", payload: DataType.ANC});
+        expect(vm.indicator).toBe("prev");
     });
 
 });
