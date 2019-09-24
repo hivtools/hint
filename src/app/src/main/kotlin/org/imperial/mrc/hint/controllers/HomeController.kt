@@ -16,7 +16,7 @@ class HomeController(
 
     @GetMapping("/")
     fun index(model: Model): String {
-      //  sessionRepository.saveSession(session.getId(), session.getUserProfile().id)
+        sessionRepository.saveSession(session.getId(), session.getUserProfile().id)
         model["title"] = appProperties.applicationTitle
         return "index"
     }
