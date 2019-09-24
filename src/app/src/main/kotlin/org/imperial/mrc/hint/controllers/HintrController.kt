@@ -30,7 +30,7 @@ abstract class HintrController(private val fileManager: FileManager,
     private fun validate(path: String, type: FileType): ResponseEntity<String> {
         return when (type)
         {
-            FileType.PJNZ, FileType.Population, FileType.Shape -> apiClient.validateBaseline(path, type)
+            FileType.PJNZ, FileType.Population, FileType.Shape -> apiClient.validateBaselineIndividual(path, type)
             else -> {
                 val shapePath = fileManager.getFile(FileType.Shape)?.path
                         ?: throw HintException("You must upload a shape file before uploading survey or programme data",
