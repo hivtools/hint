@@ -1,7 +1,8 @@
 import {RootState} from "../../root";
-import {DataType, FilteredDataState} from "./filteredData";
+import {DataType, FilteredDataState, SelectedChoroplethFilters, SelectedFilters} from "./filteredData";
 import {IndicatorRange, Indicators, IndicatorValues} from "../../types";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
+import {FilterOption} from "../../generated";
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
@@ -31,7 +32,7 @@ export const getters = {
     },
     regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         const data =  getUnfilteredData(state, rootState);
-        if (!data) {
+        if (!data || (state.selectedDataType == null)) {
             return null;
         }
 
@@ -50,6 +51,11 @@ export const getters = {
 
         for(const d of data) {
             const row = d as any;
+
+            if (!includeRowForSelectedChoroplethFilters(row, state.selectedDataType, state.selectedChoroplethFilters)) {
+                continue;
+            }
+
             const areaId = row.area_id;
 
             //TODO: This will change when we have a metadata endpoint telling us which column to use as value for each
@@ -81,12 +87,12 @@ export const getters = {
             switch(indicator) {
                 case("prev"):
                     indicators.prev = {value: value, color: ""};
-                    updateRange(prevRange, value);
+                    updateRange(prevRange, indicators.prev!.value);
 
                     break;
                 case("artcov"):
                     indicators.art = {value: value, color: ""};
-                    updateRange(artRange, value);
+                    updateRange(artRange, indicators.art!.value);
 
                     break;
 
@@ -129,4 +135,21 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
         default:
             return null;
     }
+};
+
+const includeRowForSelectedChoroplethFilters = (row: any, dataType: DataType, selectedFilters: SelectedChoroplethFilters) => {
+
+    if (dataType != DataType.ANC && row.sex != selectedFilters.sex) {
+        return false;
+    }
+
+    if (row.age_group_id != selectedFilters.age) {
+        return false;
+    }
+
+    if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey) {
+        return false;
+    }
+
+    return true;
 };

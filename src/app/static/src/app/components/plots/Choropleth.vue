@@ -67,6 +67,7 @@
                 }
             },
             max: function() {
+                //alert("max");
                 if (this.indicator) {
                     if (this.indicator == "prev") {
                         return this.indicatorData.prevRange.max;
@@ -77,6 +78,7 @@
                 }
             },
             prevEnabled: function() {
+                //alert("prevEnabled");
                 const result = !!(this.indicatorData.prevRange.min || this.indicatorData.prevRange.max);
                 if (!result && this.indicator == "prev") {
                     this.indicator = "art";
@@ -84,6 +86,7 @@
                 return result;
             },
             artEnabled: function() {
+                //alert("artEnabled");
                 const result = !!(this.indicatorData.artRange.min || this.indicatorData.artRange.max);
                 if (!result && this.indicator == "art") {
                     this.indicator = "prev";

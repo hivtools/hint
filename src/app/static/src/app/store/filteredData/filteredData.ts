@@ -17,9 +17,17 @@ export interface SelectedFilters {
     updateByType: (type: FilterType, value: FilterOption[]) => void
 }
 
+export interface SelectedChoroplethFilters {
+    sex: FilterOption | null,
+    age: FilterOption | null,
+    survey: FilterOption | null,
+    updateByType: (type: FilterType, value: FilterOption) => void
+}
+
 export interface FilteredDataState {
     selectedDataType: DataType | null
     selectedFilters: SelectedFilters
+    selectedChoroplethFilters: SelectedChoroplethFilters
     regionIndicators: {[k: string]: any};
 }
 
@@ -58,9 +66,29 @@ export const initialSelectedFilters: SelectedFilters = {
     }
 };
 
+export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
+    sex: null,
+    age: null,
+    survey: null,
+    updateByType: function(type: FilterType, value: FilterOption) {
+        switch (type) {
+            case (FilterType.Age):
+                this.age = value;
+                break;
+            case (FilterType.Sex):
+                this.sex = value;
+                break;
+            case (FilterType.Survey):
+                this.survey = value;
+                break;
+        }
+    }
+};
+
 export const initialFilteredDataState: FilteredDataState = {
    selectedDataType: null,
    selectedFilters: initialSelectedFilters,
+   selectedChoroplethFilters: initialSelectedChoroplethFilters,
    regionIndicators: {}
 };
 
