@@ -22,6 +22,7 @@
     import MapLegend from "./MapLegend.vue";
     import {Indicator} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
+    import {FilteredDataState} from "../../store/filteredData/filteredData";
 
     interface Data {
         zoom: number,
@@ -43,6 +44,9 @@
         computed: {
             ...mapState<BaselineState>("baseline", {
                 features: state => state.shape && state.shape.data.features,
+            }),
+            ...mapState<FilteredDataState>("filteredData", {
+                selectedDataType: state => state.selectedDataType
             }),
             indicatorData: function() {
                 return this.$store.getters['filteredData/regionIndicators'];
@@ -78,16 +82,10 @@
             },
             prevEnabled: function() {
                 const result = !!(this.indicatorData.prevRange.min || this.indicatorData.prevRange.max);
-                if (!result && this.indicator == "prev") {
-                    this.indicator = "art";
-                }
                 return result;
             },
             artEnabled: function() {
                 const result = !!(this.indicatorData.artRange.min || this.indicatorData.artRange.max);
-                if (!result && this.indicator == "art") {
-                    this.indicator = "prev";
-                }
                 return result;
             }
         },
@@ -125,6 +123,16 @@
                 data = data && data.color;
                 return data;
             }
-        }
+        },
+        watch: {
+            selectedDataType: function (newVal) {
+                //Update indicator to one which is enabled if required
+                if (!this.prevEnabled && this.artEnabled && this.indicator == "prev") {
+                    this.indicator = "art";
+                } else if (!this.artEnabled && this.prevEnabled && this.indicator == "art") {
+                    this.indicator = "prev";
+                }
+            }
+        },
     })
 </script>
