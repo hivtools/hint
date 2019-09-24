@@ -2,7 +2,6 @@ import {Module} from "vuex";
 import {RootState} from "../../root";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-import {BaselineState} from "../baseline/baseline";
 import {localStorageManager} from "../../localStorageManager";
 
 export interface ModelRunState {
