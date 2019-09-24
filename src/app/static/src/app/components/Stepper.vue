@@ -57,7 +57,12 @@
 
     interface Data {
         activeStep: number
-        steps: { number: number, text: string }[]
+        steps: Step[]
+    }
+
+    interface Step {
+        number: number,
+        text: string
     }
 
     export default Vue.extend<Data, any, any, any>({
@@ -139,8 +144,8 @@
                     const activeStep = localStorageManager.getInt("activeStep");
 
                     if (activeStep) {
-                        const invalidSteps = [1, 2, 3, 4, 5]
-                            .filter((i) => i < activeStep && !this.complete[i]);
+                        const invalidSteps = this.steps.map((s: Step) => s.number)
+                            .filter((i: number) => i < activeStep && !this.complete[i]);
 
                         if (invalidSteps.length == 0) {
                             this.jump(activeStep)
