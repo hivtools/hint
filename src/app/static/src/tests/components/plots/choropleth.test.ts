@@ -187,7 +187,7 @@ describe("Choropleth component", () => {
         })
     });
 
-    it("updates indicator if necessary when selectedDataType changes", () => {
+    it("updates indicator to art if necessary when selectedDataType changes", () => {
         //defaults to prev, should get updated to art on data type change if no prev data
         const filteredData = {...initialFilteredDataState};
         const testStore = new Vuex.Store({
@@ -223,6 +223,44 @@ describe("Choropleth component", () => {
 
         testStore.commit({type: "filteredData/SelectedDataTypeUpdated", payload: DataType.ANC});
         expect(vm.indicator).toBe("art");
+    });
+
+    it("updates indicator to prev if necessary when selectedDataType changes", () => {
+        //defaults to prev, should get updated to art on data type change if no prev data
+        const filteredData = {...initialFilteredDataState};
+        const testStore = new Vuex.Store({
+            modules: {
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState({
+                        shape: mockShapeResponse({
+                            data: {features: fakeFeatures} as any
+                        })
+                    })
+                },
+                filteredData: {
+                    namespaced: true,
+                    state: filteredData,
+                    getters: {
+                        regionIndicators: () => {
+                            return {
+                                indicators: {},
+                                artRange: {min: null, max: null},
+                                prevRange: {min: 10, max: 20}
+                            }
+                        },
+                        colorFunctions: testColorFunctions
+                    },
+                    mutations: mutations
+                }
+            }
+        });
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+        const vm = wrapper.vm as any;
+        vm.indicator = "art";
+
+        testStore.commit({type: "filteredData/SelectedDataTypeUpdated", payload: DataType.ANC});
+        expect(vm.indicator).toBe("prev");
     });
 
 });
