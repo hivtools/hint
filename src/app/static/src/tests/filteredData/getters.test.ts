@@ -204,7 +204,16 @@ describe("FilteredData mutations", () => {
 
     it("gets regionIndicators for survey", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Survey},
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: DataType.Survey,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: {id: "s1", name: "Survey 1"},
+                    sex: {id: "both", name: "both"},
+                    updateByType: jest.fn()
+                }
+            },
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -214,28 +223,36 @@ describe("FilteredData mutations", () => {
                 area_id: "area1",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 2
+                est: 2,
+                age_group_id: "1",
+                sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 3
+                est: 3,
+                age_group_id: "1",
+                sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
                 survey_id: "s1",
                 indicator: "artcov",
-                est: 4
+                est: 4,
+                age_group_id: "1",
+                sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 survey_id: "s1",
                 indicator: "artcov",
-                est: 5
+                est: 5,
+                age_group_id: "1",
+                sex: "both"
             }
         ];
         const testRootState = mockRootState({
@@ -271,7 +288,16 @@ describe("FilteredData mutations", () => {
 
     it("gets regionIndicators for programme", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Program},
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: DataType.Program,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: null,
+                    sex: {id: "both", name: "both"},
+                    updateByType: jest.fn()
+                }
+            },
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -279,12 +305,16 @@ describe("FilteredData mutations", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-                current_art: 2
+                current_art: 2,
+                age_group_id: "1",
+                sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
-                current_art: 3
+                current_art: 3,
+                age_group_id: "1",
+                sex: "both"
             }
         ];
         const testRootState = mockRootState({
@@ -314,7 +344,16 @@ describe("FilteredData mutations", () => {
 
     it("gets regionIndicators for ANC", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.ANC},
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: DataType.ANC,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: null,
+                    sex: null,
+                    updateByType: jest.fn()
+                }
+             },
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -322,12 +361,14 @@ describe("FilteredData mutations", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-                ancrt_test_pos: 2
+                ancrt_test_pos: 2,
+                age_group_id: "1"
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
-                ancrt_test_pos: 3
+                ancrt_test_pos: 3,
+                age_group_id: "1"
             }
         ];
         const testRootState = mockRootState({

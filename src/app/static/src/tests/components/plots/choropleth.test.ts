@@ -72,6 +72,7 @@ describe("Choropleth component", () => {
             },
             filteredData: {
                 namespaced: true,
+                state: mockFilteredDataState({selectedDataType: DataType.Survey}),
                 getters: {
                     regionIndicators: () => {
                         return testRegionIndicators;
@@ -123,7 +124,7 @@ describe("Choropleth component", () => {
         expect(vm.artEnabled).toBe(true);
     });
 
-    it("calculates prevEnabled and artEnabled when false", () => {
+    it("calculates artEnabled when false", () => {
         const emptyStore = new Vuex.Store({
             modules: {
                 baseline: {
@@ -136,13 +137,10 @@ describe("Choropleth component", () => {
                 },
                 filteredData: {
                     namespaced: true,
+                    state: mockFilteredDataState({selectedDataType: DataType.Program}),
                     getters: {
                         regionIndicators: () => {
-                            return {
-                                indicators: {},
-                                artRange: {min: 0, max: 0},
-                                prevRange: {min: null, max: null}
-                            }
+                            return testRegionIndicators;
                         },
                         colorFunctions: testColorFunctions
                     }
@@ -152,7 +150,6 @@ describe("Choropleth component", () => {
         const wrapper = shallowMount(Choropleth, {store: emptyStore, localVue});
 
         const vm = wrapper.vm as any;
-        expect(vm.prevEnabled).toBe(false);
         expect(vm.artEnabled).toBe(false);
     });
 
@@ -187,44 +184,6 @@ describe("Choropleth component", () => {
         })
     });
 
-    it("updates indicator to art if necessary when selectedDataType changes", () => {
-        //defaults to prev, should get updated to art on data type change if no prev data
-        const filteredData = {...initialFilteredDataState};
-        const testStore = new Vuex.Store({
-            modules: {
-                baseline: {
-                    namespaced: true,
-                    state: mockBaselineState({
-                        shape: mockShapeResponse({
-                            data: {features: fakeFeatures} as any
-                        })
-                    })
-                },
-                filteredData: {
-                    namespaced: true,
-                    state: filteredData,
-                    getters: {
-                        regionIndicators: () => {
-                            return {
-                                indicators: {},
-                                artRange: {min: 10, max: 20},
-                                prevRange: {min: null, max: null}
-                            }
-                        },
-                        colorFunctions: testColorFunctions
-                    },
-                    mutations: mutations
-                }
-            }
-        });
-        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
-        const vm = wrapper.vm as any;
-        expect(vm.indicator).toBe("prev");
-
-        testStore.commit({type: "filteredData/SelectedDataTypeUpdated", payload: DataType.ANC});
-        expect(vm.indicator).toBe("art");
-    });
-
     it("updates indicator to prev if necessary when selectedDataType changes", () => {
         //defaults to prev, should get updated to art on data type change if no prev data
         const filteredData = {...initialFilteredDataState};
@@ -242,12 +201,8 @@ describe("Choropleth component", () => {
                     namespaced: true,
                     state: filteredData,
                     getters: {
-                        regionIndicators: () => {
-                            return {
-                                indicators: {},
-                                artRange: {min: null, max: null},
-                                prevRange: {min: 10, max: 20}
-                            }
+                        regionIndicators:  () => {
+                            return testRegionIndicators;
                         },
                         colorFunctions: testColorFunctions
                     },
