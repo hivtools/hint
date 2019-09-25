@@ -263,7 +263,7 @@ describe("Choropleth component", () => {
         expect(vm.indicator).toBe("prev");
     });
 
-    it("options onEachFeature returns functions which generates correct tooltip", () => {
+    it("options onEachFeature returns function which generates correct tooltip", () => {
 
         const filteredData = {...initialFilteredDataState};
         const testStore = new Vuex.Store({
