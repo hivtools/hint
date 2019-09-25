@@ -211,7 +211,8 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
                     sex: {id: "both", name: "both"},
-                    updateByType: jest.fn()
+                    updateByType: jest.fn(),
+                    getByType: jest.fn()
                 }
             },
             getters: getters
@@ -295,7 +296,8 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
                     sex: {id: "both", name: "both"},
-                    updateByType: jest.fn()
+                    updateByType: jest.fn(),
+                    getByType: jest.fn()
                 }
             },
             getters: getters
@@ -373,7 +375,8 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "both", name: "both"},
-                    updateByType: jest.fn()
+                    updateByType: jest.fn(),
+                    getByType: jest.fn()
                 }
             },
             getters: getters
@@ -407,14 +410,14 @@ describe("FilteredData mutations", () => {
         const expected = {
             indicators: {
                 "area1": {
-                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                    "art": {value: 2, color: "rgb(2,0,0)"}
                 },
                 "area2": {
-                    "prev": {value: 3, color: "rgb(0,3,0)"}
+                    "art": {value: 3, color: "rgb(3,0,0)"}
                 }
             },
-            artRange: {min: null, max: null},
-            prevRange: {min: 2, max: 3}
+            artRange: {min: 2, max: 3},
+            prevRange: {min: null, max: null}
         };
 
         expect(regionIndicators).toStrictEqual(expected);
@@ -429,7 +432,8 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"}, //Should be ignored for this data type
                     sex: {id: "both", name: "both"},
-                    updateByType: jest.fn()
+                    updateByType: jest.fn(),
+                    getByType: jest.fn()
                 }
             },
             getters: getters
@@ -475,11 +479,11 @@ describe("FilteredData mutations", () => {
         const expected = {
             indicators: {
                 "area1": {
-                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                    "art": {value: 2, color: "rgb(2,0,0)"}
                 }
             },
-            artRange: {min: null, max: null},
-            prevRange: {min: 2, max: 2}
+            artRange: {min: 2, max: 2},
+            prevRange: {min: null, max: null}
         };
 
         expect(regionIndicators).toStrictEqual(expected);
@@ -494,7 +498,8 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: null,
-                    updateByType: jest.fn()
+                    updateByType: jest.fn(),
+                    getByType: jest.fn()
                 }
              },
             getters: getters
@@ -548,7 +553,8 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "male", name: "male"}, //should be ignored
-                    updateByType: jest.fn()
+                    updateByType: jest.fn(),
+                    getByType: jest.fn()
                 }
             },
             getters: getters

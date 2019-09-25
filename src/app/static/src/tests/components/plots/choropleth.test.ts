@@ -177,7 +177,7 @@ describe("Choropleth component", () => {
                 },
                 filteredData: {
                     namespaced: true,
-                    state: mockFilteredDataState({selectedDataType: DataType.Program}),
+                    state: mockFilteredDataState({selectedDataType: DataType.ANC}),
                     getters: {
                         regionIndicators: () => {
                             return testRegionIndicators;
@@ -191,6 +191,35 @@ describe("Choropleth component", () => {
 
         const vm = wrapper.vm as any;
         expect(vm.artEnabled).toBe(false);
+    });
+
+    it("calculates prevtEnabled when false", () => {
+        const emptyStore = new Vuex.Store({
+            modules: {
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState({
+                        shape: mockShapeResponse({
+                            data: {features: fakeFeatures} as any
+                        })
+                    })
+                },
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState({selectedDataType: DataType.Program}),
+                    getters: {
+                        regionIndicators: () => {
+                            return testRegionIndicators;
+                        },
+                        colorFunctions: testColorFunctions
+                    }
+                }
+            }
+        });
+        const wrapper = shallowMount(Choropleth, {store: emptyStore, localVue});
+
+        const vm = wrapper.vm as any;
+        expect(vm.prevEnabled).toBe(false);
     });
 
     it("colors features according to indicator", (done) => {

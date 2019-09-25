@@ -84,10 +84,10 @@
                 }
             },
             prevEnabled: function() {
-                return true;
+                return this.selectedDataType != DataType.Program;
             },
             artEnabled: function() {
-                return this.selectedDataType == DataType.Survey;
+                return this.selectedDataType == DataType.Survey || this.selectedDataType == DataType.Program;
             }
         },
         data(): Data {

@@ -69,7 +69,7 @@ export const getters = {
                     valueColumn = "est";
                     break;
                 case (DataType.Program):
-                    indicator = "prev";
+                    indicator = "artcov";
                     valueColumn = "current_art";
                     break;
                 case (DataType.ANC):
