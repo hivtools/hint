@@ -61,7 +61,7 @@
                 return this.colorFunctions[this.indicator];
             },
             showLegend: function() {
-              return this.max || this.min;
+              return !!(this.max || this.min);
             },
             min: function() {
                 if (this.indicator) {

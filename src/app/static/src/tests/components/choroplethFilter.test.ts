@@ -236,7 +236,8 @@ describe("ChoroplethFilters component", () => {
             age: {id: "a2", name: "5-9"},
             survey: {id: "s1", name: "Survey 1"},
             sex: {id: "female", name: "female"},
-            updateByType: jest.fn()
+            updateByType: jest.fn(),
+            getByType: jest.fn()
         };
         const mockFilterUpdated = jest.fn();
         const store = new Vuex.Store({
@@ -279,7 +280,8 @@ describe("ChoroplethFilters component", () => {
             age: {id: "a3", name: "10-15"},
             survey:  {id: "s1", name: "Survey 1"},
             sex: {id: "male", name: "male"},
-            updateByType: jest.fn()
+            updateByType: jest.fn(),
+            getByType: jest.fn()
         };
         const mockFilterUpdated = jest.fn();
         const store = new Vuex.Store({
