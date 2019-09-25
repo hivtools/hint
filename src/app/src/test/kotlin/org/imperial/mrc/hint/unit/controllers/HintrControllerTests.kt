@@ -51,6 +51,10 @@ abstract class HintrControllerTests {
             on {
                 getSessionFile("sid", type)
             } doReturn SessionFile("hash", "original.csv", type.toString())
+
+            on {
+                getSessionFile("sid", FileType.Shape)
+            } doReturn SessionFile("hash", "original.csv", "shape")
         }
     }
 
@@ -107,7 +111,7 @@ abstract class HintrControllerTests {
         verify(mockApiClient).validateBaselineIndividual("original.csv", "test-path", fileType)
 
         // should return a null result when null is returned from the session repo
-        sut = getSut(mockFileManager, mock(), mockRepo, mockApiClient)
+        sut = getSut(mockFileManager, mockSession, mock(), mockApiClient)
         result = getAction(sut)
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
