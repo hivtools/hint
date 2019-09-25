@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 interface APIClient {
-    fun validateBaselineIndividual(path: String, type: FileType): ResponseEntity<String>
-    fun validateSurveyAndProgramme(path: String, shapePath: String, type: FileType): ResponseEntity<String>
+    fun validateBaselineIndividual(originalFilename: String, path: String, type: FileType): ResponseEntity<String>
+    fun validateSurveyAndProgramme(originalFilename: String, path: String, shapePath: String, type: FileType): ResponseEntity<String>
     fun submit(data: Map<String, String>, parameters: ModelRunParameters): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
 }
@@ -21,11 +21,12 @@ class HintrAPIClient(
 
     private val baseUrl = appProperties.apiUrl
 
-    override fun validateBaselineIndividual(path: String, type: FileType): ResponseEntity<String> {
+    override fun validateBaselineIndividual(originalFilename: String, path: String, type: FileType): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().toLowerCase(),
-                        "path" to path))
+                        "path" to path,
+                        "originalFilename" to originalFilename))
 
         return "$baseUrl/validate/baseline-individual"
                 .httpPost()
@@ -36,12 +37,13 @@ class HintrAPIClient(
                 .asResponseEntity()
     }
 
-    override fun validateSurveyAndProgramme(path: String, shapePath: String, type: FileType): ResponseEntity<String> {
+    override fun validateSurveyAndProgramme(originalFilename: String, path: String, shapePath: String, type: FileType): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().toLowerCase(),
                         "path" to path,
-                        "shape" to shapePath))
+                        "shape" to shapePath,
+                        "originalFilename" to originalFilename))
 
         return "$baseUrl/validate/survey-and-programme"
                 .httpPost()

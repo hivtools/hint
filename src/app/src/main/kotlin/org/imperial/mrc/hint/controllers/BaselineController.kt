@@ -3,14 +3,18 @@ package org.imperial.mrc.hint.controllers
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
+import org.imperial.mrc.hint.db.SessionRepository
+import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/baseline")
-class BaselineController(private val fileManager: FileManager,
-                         apiClient: APIClient) : HintrController(fileManager, apiClient) {
+class BaselineController(fileManager: FileManager,
+                         session: Session,
+                         sessionRepository: SessionRepository,
+                         apiClient: APIClient) : HintrController(fileManager, session, sessionRepository, apiClient) {
 
     @PostMapping("/pjnz/")
     @ResponseBody

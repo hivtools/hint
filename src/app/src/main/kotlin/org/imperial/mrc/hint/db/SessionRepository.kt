@@ -6,13 +6,14 @@ import org.imperial.mrc.hint.models.SessionFile
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 
 interface SessionRepository {
     fun saveSession(sessionId: String, userId: String)
     // returns true if a new hash is saved, false if it already exists
     fun saveNewHash(hash: String): Boolean
     fun saveSessionFile(sessionId: String, type: FileType, hash: String, fileName: String)
-    fun getSessionFileHash(sessionId: String, type: FileType): String?
+    fun getSessionFile(sessionId: String, type: FileType): SessionFile?
     fun getFilesForSession(sessionId: String): List<SessionFile>
 }
 
@@ -69,12 +70,17 @@ class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
 
     }
 
-    override fun getSessionFileHash(sessionId: String, type: FileType): String? {
-        return getSessionFileRecord(sessionId, type)?.into(String::class.java)
+    override fun getSessionFile(sessionId: String, type: FileType): SessionFile? {
+        return dsl.select(SESSION_FILE.HASH, SESSION_FILE.FILENAME, SESSION_FILE.TYPE)
+                .from(SESSION_FILE)
+                .where(SESSION_FILE.SESSION.eq(sessionId))
+                .and(SESSION_FILE.TYPE.eq(type.toString()))
+                .fetchAny()
+                ?.into(SessionFile::class.java)
     }
 
     override fun getFilesForSession(sessionId: String): List<SessionFile> {
-        return dsl.select(SESSION_FILE.HASH, SESSION_FILE.TYPE)
+        return dsl.select(SESSION_FILE.HASH, SESSION_FILE.FILENAME, SESSION_FILE.TYPE)
                 .from(SESSION_FILE)
                 .where(SESSION_FILE.SESSION.eq(sessionId))
                 .fetchInto(SessionFile::class.java)

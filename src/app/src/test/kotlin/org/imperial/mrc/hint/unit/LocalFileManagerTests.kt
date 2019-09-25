@@ -64,34 +64,18 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `gets file if it exists`() {
-
-        val mockStateRepository = mock<SessionRepository> {
-            on { saveNewHash(any()) } doReturn true
-            on { getSessionFileHash(any(), any()) } doReturn "test"
-        }
-
-        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
-        val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
-                "application/zip", "pjnz content".toByteArray())
-
-        sut.saveFile(mockFile, FileType.Survey)
-        assertThat(sut.getFile(FileType.Survey)!!.path).isEqualTo("tmp/test")
-    }
-
-    @Test
-    fun `returns null if no file exists`() {
+    fun `gets path`() {
 
         val sut = LocalFileManager(mockSession, mock(), mockProperties)
-        assertThat(sut.getFile(FileType.Survey))
-                .isNull()
+        assertThat(sut.getPath(SessionFile("hash", "original.csv", "survey"))).isEqualTo("tmp/hash")
     }
+
 
     @Test
     fun `gets all files`() {
 
         val stateRepo = mock<SessionRepository> {
-            on { getFilesForSession("fake-id") } doReturn listOf(SessionFile("hash.csv", "survey"))
+            on { getFilesForSession("fake-id") } doReturn listOf(SessionFile("hash.csv", "original.csv", "survey"))
         }
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
