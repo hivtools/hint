@@ -21,7 +21,7 @@ fun main(args: Array<String>) {
 
 @Configuration
 @EnableWebMvc
-class MvcConfig(val config: Config, val appProperties: AppProperties) : WebMvcConfigurer {
+class MvcConfig(val config: Config) : WebMvcConfigurer {
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/public/**")
                 .addResourceLocations("file:/static/public/", "file:static/public/")
@@ -31,10 +31,8 @@ class MvcConfig(val config: Config, val appProperties: AppProperties) : WebMvcCo
     }
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        if (appProperties.useAuth) {
-            registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
-                    .addPathPatterns("/**")
-                    .excludePathPatterns("/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
-        }
+        registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
+                .addPathPatterns("/**")
+                .excludePathPatterns("/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
     }
 }

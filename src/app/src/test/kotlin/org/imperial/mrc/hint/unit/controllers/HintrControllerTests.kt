@@ -45,7 +45,7 @@ abstract class HintrControllerTests {
 
     protected fun getMockAPIClient(type: FileType): APIClient {
         return mock {
-            on { validateBaseline("test-path", type) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
+            on { validateBaselineIndividual("test-path", type) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
             on { validateSurveyAndProgramme("test-path", "shape-path", type) } doReturn
                     ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
         }
@@ -65,7 +65,7 @@ abstract class HintrControllerTests {
         verify(mockFileManager).saveFile(mockFile, fileType)
 
         when(fileType){
-            FileType.PJNZ, FileType.Population, FileType.Shape ->   verify(mockApiClient).validateBaseline("test-path", fileType)
+            FileType.PJNZ, FileType.Population, FileType.Shape ->   verify(mockApiClient).validateBaselineIndividual("test-path", fileType)
             else ->   verify(mockApiClient).validateSurveyAndProgramme("test-path", "shape-path", fileType)
         }
     }
@@ -81,7 +81,7 @@ abstract class HintrControllerTests {
         var result = getAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
-        verify(mockApiClient).validateBaseline("test-path", fileType)
+        verify(mockApiClient).validateBaselineIndividual("test-path", fileType)
 
         // should return a null result when null is returned from the file manager
         sut = getSut(mock(), mockApiClient)

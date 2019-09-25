@@ -1,6 +1,6 @@
-import {createLocalVue, shallowMount} from '@vue/test-utils';
+import {createLocalVue, shallowMount, Wrapper} from '@vue/test-utils';
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, {Store} from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {
     mockBaselineState,
@@ -11,9 +11,12 @@ import {
 } from "../mocks";
 import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations} from '../../app/store/baseline/mutations';
+import {mutations as surveyAndProgramMutations} from '../../app/store/surveyAndProgram/mutations';
+import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations';
+import {ModelRunState} from "../../app/store/modelRun/modelRun";
+
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
-import {ModelRunState} from "../../app/store/modelRun/modelRun";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 
 const localVue = createLocalVue();
@@ -35,16 +38,22 @@ describe("Stepper component", () => {
                 surveyAndProgram: {
                     namespaced: true,
                     state: mockSurveyAndProgramState(surveyAndProgramState),
-                    getters: surveyAndProgramGetters
+                    getters: surveyAndProgramGetters,
+                    mutations: surveyAndProgramMutations
                 },
                 modelRun: {
                     namespaced: true,
-                    state: mockModelRunState(modelRunState)
+                    state: mockModelRunState(modelRunState),
+                    mutations: modelRunMutations
                 }
             }
         })
     };
-    
+
+    afterEach(() => {
+        localStorage.clear();
+    });
+
     it("renders loading spinner while states are not ready", () => {
 
         const store = createSut();
@@ -176,6 +185,59 @@ describe("Stepper component", () => {
         });
     });
 
+    it("clears step from localStorage if all previous steps are not complete, once state becomes ready", async () => {
+        const store = createSut({ready: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+
+        await setActiveStepAndMakStateReady(store, wrapper);
+
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(0).props().active).toBe(true);
+        expect(!window.localStorage.getItem("activeStep")).toBe(true);
+    });
+
+    it("reloads step from localStorage if all previous steps are complete, once state becomes ready", async () => {
+
+        const store = createSut({
+            ready: true,
+            country: "Malawi",
+            shape: mockShapeResponse(),
+            population: mockPopulationResponse()
+        });
+        const wrapper = shallowMount(Stepper, {store, localVue});
+
+        await setActiveStepAndMakStateReady(store, wrapper);
+
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(1).props().active).toBe(true);
+    });
+
+    it("saves step in localStorage on jump", async () => {
+
+        const store = createSut({
+            country: "testCountry",
+            shape: mockShapeResponse(),
+            population: mockPopulationResponse()
+        });
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const steps = wrapper.findAll(Step);
+        steps.at(1).vm.$emit("jump", 2);
+        expect(window.localStorage.getItem("activeStep")).toBe("2");
+    });
+
+    async function setActiveStepAndMakStateReady(store: Store<any>, wrapper: Wrapper<any>) {
+
+        window.localStorage.setItem("activeStep", "2");
+
+        store.commit("surveyAndProgram/Ready", {
+            "type": "Ready",
+            "payload": true
+        });
+
+        await Vue.nextTick();
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
+    }
+
     it("model run step is not complete without success", () => {
         const store = createSut({}, {}, {success: false});
         const wrapper = shallowMount(Stepper, {store, localVue});
@@ -186,6 +248,29 @@ describe("Stepper component", () => {
     it("model run step is complete on success", () => {
         const store = createSut({}, {}, {success: true});
         const wrapper = shallowMount(Stepper, {store, localVue});
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(3).props().complete).toBe(true);
+    });
+    
+    it("model run step becomes complete on success", async () => {
+        const store = createSut({}, {});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+
+        store.commit("modelRun/RunStatusUpdated", {
+            "type": "RunStatusUpdated",
+            "payload": {
+                id: "1234",
+                success: true,
+                done: true,
+                queue: 1,
+                progress: "",
+                timeRemaining: "",
+                status: "running"
+            }
+        });
+
+        await Vue.nextTick();
+
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(true);
     });

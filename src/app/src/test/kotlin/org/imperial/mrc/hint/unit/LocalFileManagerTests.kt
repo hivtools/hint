@@ -7,11 +7,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.LocalFileManager
+import org.imperial.mrc.hint.db.SessionRepository
+import org.imperial.mrc.hint.models.SessionFile
+import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import org.pac4j.core.config.Config
-import org.pac4j.core.context.WebContext
-import org.pac4j.core.context.session.SessionStore
 import org.springframework.mock.web.MockMultipartFile
 import java.io.File
 
@@ -23,12 +23,8 @@ class LocalFileManagerTests {
         on { uploadDirectory } doReturn tmpUploadDirectory
     }
 
-    private val mockSessionStore = mock<SessionStore<WebContext>> {
-        on { getOrCreateSessionId(any()) } doReturn "fake-id"
-    }
-
-    private val mockConfig = mock<Config> {
-        on { sessionStore } doReturn mockSessionStore
+    private val mockSession = mock<Session> {
+        on { getId() } doReturn "fake-id"
     }
 
     @AfterEach
@@ -37,57 +33,56 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `can save file and return full path`() {
+    fun `saves file if file is new and returns path`() {
 
-        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val mockStateRepository = mock<SessionRepository> {
+            on { saveNewHash(any()) } doReturn true
+        }
 
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
         val path = sut.saveFile(mockFile, FileType.Survey)
-        val savedFile = File("$tmpUploadDirectory/fake-id/survey/some-file-name.pjnz")
+        val savedFile = File(path)
         assertThat(savedFile.readLines().first()).isEqualTo("pjnz content")
-        assertThat(path).isEqualTo("tmp/fake-id/survey/some-file-name.pjnz")
     }
 
     @Test
-    fun `empties directory if it already exists`() {
+    fun `does not save file if file matches an existing hash and returns path`() {
 
-        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val mockStateRepository = mock<SessionRepository> {
+            on { saveNewHash(any()) } doReturn false
+        }
 
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
-        sut.saveFile(mockFile, FileType.PJNZ)
-        var savedFiles = File("$tmpUploadDirectory/fake-id/pjnz").listFiles()
-        assertThat(savedFiles?.count()).isEqualTo(1)
-        assertThat(savedFiles?.first()?.name).isEqualTo("some-file-name.pjnz")
-
-        val newMockFile = MockMultipartFile("data", "new-file-name.pjnz",
-                "application/zip", "new content".toByteArray())
-
-        sut.saveFile(newMockFile, FileType.PJNZ)
-        savedFiles = File("$tmpUploadDirectory/fake-id/pjnz").listFiles()
-        assertThat(savedFiles?.count()).isEqualTo(1)
-        assertThat(savedFiles?.first()?.name).isEqualTo("new-file-name.pjnz")
+        val path = sut.saveFile(mockFile, FileType.Survey)
+        assertThat(path).isEqualTo("tmp/C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
     }
 
     @Test
     fun `gets file if it exists`() {
 
-        val file = File("$tmpUploadDirectory/fake-id/survey/Malawi_file_name.pjnz")
+        val mockStateRepository = mock<SessionRepository> {
+            on { saveNewHash(any()) } doReturn true
+            on { getSessionFileHash(any(), any()) } doReturn "test"
+        }
 
-        file.mkdirs()
-        file.createNewFile()
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
+        val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
+                "application/zip", "pjnz content".toByteArray())
 
-        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
-        assertThat(sut.getFile(FileType.Survey)).isNotNull()
+        sut.saveFile(mockFile, FileType.Survey)
+        assertThat(sut.getFile(FileType.Survey)!!.path).isEqualTo("tmp/test")
     }
 
     @Test
     fun `returns null if no file exists`() {
 
-        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val sut = LocalFileManager(mockSession, mock(), mockProperties)
         assertThat(sut.getFile(FileType.Survey))
                 .isNull()
     }
@@ -95,34 +90,15 @@ class LocalFileManagerTests {
     @Test
     fun `gets all files`() {
 
-        listOf(File("$tmpUploadDirectory/fake-id/survey/survey.csv"),
-                File("$tmpUploadDirectory/fake-id/programme/prog.csv"),
-                File("$tmpUploadDirectory/fake-id/population/pop.csv"),
-                File("$tmpUploadDirectory/fake-id/shape/shape.csv"),
-                File("$tmpUploadDirectory/fake-id/pjnz/file.pjnz"),
-                File("$tmpUploadDirectory/fake-id/anc/anc.csv")).map {
-            it.mkdirs()
-            it.createNewFile()
+        val stateRepo = mock<SessionRepository> {
+            on { getFilesForSession("fake-id") } doReturn listOf(SessionFile("hash.csv", "survey"))
         }
 
-        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
         val result = sut.getAllFiles()
 
-        assertThat(result["survey"]).isEqualTo("$tmpUploadDirectory/fake-id/survey/survey.csv")
-        assertThat(result["programme"]).isEqualTo("$tmpUploadDirectory/fake-id/programme/prog.csv")
-        assertThat(result["population"]).isEqualTo("$tmpUploadDirectory/fake-id/population/pop.csv")
-        assertThat(result["shape"]).isEqualTo("$tmpUploadDirectory/fake-id/shape/shape.csv")
-        assertThat(result["pjnz"]).isEqualTo("$tmpUploadDirectory/fake-id/pjnz/file.pjnz")
-        assertThat(result["anc"]).isEqualTo("$tmpUploadDirectory/fake-id/anc/anc.csv")
-    }
-
-    @Test
-    fun `does not include entries for missing files`() {
-
-        val sut = LocalFileManager(mock(), mockConfig, mockProperties)
-        val result = sut.getAllFiles()
-
-        assertThat(result.any()).isFalse()
+        assertThat(result["survey"]).isEqualTo("$tmpUploadDirectory/hash.csv")
+        assertThat(result.count()).isEqualTo(1)
     }
 
 }

@@ -1,7 +1,8 @@
 import {Mutation, MutationTree} from "vuex";
-import {ModelRunState, ModelRunStatus} from "./modelRun";
+import {localStorageKey, ModelRunState, ModelRunStatus} from "./modelRun";
 import {PayloadWithType} from "../../types";
 import {ModelStatusResponse, ModelSubmitResponse} from "../../generated";
+import {localStorageManager} from "../../localStorageManager";
 
 type ModelRunMutation = Mutation<ModelRunState>
 
@@ -16,6 +17,8 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
         state.modelRunId = action.payload.id;
         state.status = ModelRunStatus.Started;
         state.success = false;
+
+        localStorageManager.setItem(localStorageKey, state);
     },
 
     RunStatusUpdated(state: ModelRunState, action: PayloadWithType<ModelStatusResponse>) {
@@ -27,12 +30,13 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
             if (action.payload.success){
                 state.success = true;
             }
+
+            localStorageManager.setItem(localStorageKey, state);
         }
     },
 
     PollingForStatusStarted(state: ModelRunState, action: PayloadWithType<number>) {
-        state.statusPollId = action.payload
-
+        state.statusPollId = action.payload;
     }
 
 };

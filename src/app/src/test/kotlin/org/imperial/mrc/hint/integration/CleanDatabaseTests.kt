@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.integration
 import org.jooq.Table
 import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
 import org.imperial.mrc.hint.db.Tables
+import org.imperial.mrc.hint.db.Tables.SESSION_FILE
 import org.imperial.mrc.hint.helpers.tmpUploadDirectory
 import org.jooq.DSLContext
 import org.junit.jupiter.api.AfterEach
@@ -27,10 +28,17 @@ abstract class CleanDatabaseTests
 
         val tableFields = Tables::class.java.fields
 
+//        // this table has foreign keys
+//        // so has to be deleted first
+//        dsl.deleteFrom(SESSION_FILE)
+//                .execute()
+
         for (tableField in tableFields){
             val table = tableField.get(null) as Table<*>
-            dsl.deleteFrom(table)
+            dsl.truncate(table)
+                    .cascade()
                     .execute()
+
         }
 
         userRepo.addUser("test.user@example.com", "password")

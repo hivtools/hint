@@ -118,15 +118,4 @@ class AppPropertiesTests {
         assertThat(sut.dbPassword).isEqualTo("test")
     }
 
-    @Test
-    fun `can read useAuth`(){
-        var props = readPropsFromTempFile("use_auth=false")
-        var sut = ConfiguredAppProperties(props)
-        assertThat(sut.useAuth).isFalse()
-
-        props = readPropsFromTempFile("use_auth=true")
-        sut = ConfiguredAppProperties(props)
-        assertThat(sut.useAuth).isTrue()
-
-    }
 }

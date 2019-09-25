@@ -14,11 +14,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 class SecurityConfigTests {
 
     @Test
-    fun `adds security filter when useAuth is true`() {
-        val mockProps = mock<AppProperties> {
-            on { useAuth } doReturn true
-        }
-        val sut = MvcConfig(mock(), mockProps)
+    fun `adds security filter`() {
+
+        val sut = MvcConfig(mock())
 
         val mockNestedInterceptor = mock<InterceptorRegistration>()
         val mockInterceptor = mock<InterceptorRegistration>() {
@@ -30,19 +28,6 @@ class SecurityConfigTests {
         }
         sut.addInterceptors(interceptors)
         verify(interceptors).addInterceptor(any())
-    }
-
-    @Test
-    fun `does not add security filter when useAuth is false`() {
-        val mockProps = mock<AppProperties> {
-            on { useAuth } doReturn false
-        }
-        val sut = MvcConfig(mock(), mockProps)
-
-        val interceptors = mock<InterceptorRegistry>()
-        sut.addInterceptors(interceptors)
-
-        verify(interceptors, Times(0)).addInterceptor(any())
     }
 
 }
