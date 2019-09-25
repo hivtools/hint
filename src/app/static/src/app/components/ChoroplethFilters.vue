@@ -45,7 +45,7 @@
         SelectedChoroplethFilters
     } from "../store/filteredData/filteredData";
     import Treeselect from '@riophae/vue-treeselect';
-    import {FilterOption, NestedFilterOption} from "../generated";
+    import {FilterOption} from "../generated";
 
     const namespace: string = 'filteredData';
 
@@ -71,7 +71,9 @@
 
             sexFilters: function (state): ChoroplethFiltersForType {
                 const available = (state.selectedDataType == DataType.ANC ?
-                    undefined :
+                    [
+                        {"id": "female", "name": "female"}
+                    ] :
                     sexFilterOptions) as FilterOption[];
                 return this.buildViewFiltersForType(available, this.selectedChoroplethFilters.sex)
             },
@@ -91,7 +93,7 @@
                 filterUpdated: 'filteredData/choroplethFilterUpdated',
             }),
             treeselectNormalizer(anyNode: any) {
-                const node = anyNode as NestedFilterOption;
+                const node = anyNode as FilterOption;
                 return {id: node.id, label: node.name};
             },
             buildViewFiltersForType(availableFilterOptions: FilterOption[],
@@ -119,29 +121,28 @@
             refreshSelectedChoroplethFilters(){
                 //if the selected data type has changed, we should update the choropleth filters if the dataset of that
                 //type does not include any of the selected filters as values. Set the filter to the first available value
-                const availableFilters = this.selectedDataFilterOptions;
                 const selectedChoroplethFilters = this.selectedChoroplethFilters;
 
                 const getNewFilter = function(filterName: string, available: FilterOption[]) {
                     const currentValue = selectedChoroplethFilters[filterName] ?
                                             selectedChoroplethFilters[filterName].id : null;
 
-                    if (available && available.length > 0 //leave unchanged if none avilable - control will be disabled anyway
+                    if (available && available.length > 0 //leave unchanged if none available - control will be disabled anyway
                         && ((!currentValue) || available.filter(f => f.id == currentValue).length == 0)) {
                         return available[0].id;
                     }
                     return null;
                 };
 
-                const newSexFilter = getNewFilter("sex", sexFilterOptions);
+                const newSexFilter = getNewFilter("sex", this.sexFilters.available);
                 if (newSexFilter) {
                     this.updateSexFilter(newSexFilter);
                 }
-                const newAgeFilter = getNewFilter("age", availableFilters.age);
+                const newAgeFilter = getNewFilter("age", this.ageFilters.available);
                 if (newAgeFilter) {
                     this.updateAgeFilter(newAgeFilter);
                 }
-                const newSurveyFilter = getNewFilter("survey", availableFilters.surveys);
+                const newSurveyFilter = getNewFilter("survey", this.surveyFilters.available);
                 if (newSurveyFilter) {
                     this.updateSurveyFilter(newSurveyFilter);
                 }
