@@ -95,10 +95,11 @@
                 return {
                     onEachFeature: function onEachFeature(feature: any, layer: any) {
                         const values = indicatorData.indicators[feature.properties.area_id];
+                        const value = values && values[indicator] && values[indicator].value;
                         layer.bindPopup(`<div>
-                            <strong>${feature.properties.area_name}</strong>
-                            <br/>${values[indicator].value}
-                        </div>`);
+                                <strong>${feature.properties.area_name}</strong>
+                                <br/>${value}
+                            </div>`);
                     }
                 }
             }
