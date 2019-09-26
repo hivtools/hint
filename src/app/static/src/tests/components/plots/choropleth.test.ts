@@ -315,9 +315,9 @@ describe("Choropleth component", () => {
 
         onEachFeatureFunction(mockFeature, mockLayer);
         expect(mockLayer.bindPopup.mock.calls[0][0]).toEqual(`<div>
-                        <strong>Area 1</strong>
-                        <br/>1
-                    </div>`);
+                            <strong>Area 1</strong>
+                            <br/>1
+                        </div>`);
 
     });
 
