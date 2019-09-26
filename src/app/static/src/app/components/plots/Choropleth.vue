@@ -2,6 +2,7 @@
     <l-map ref="map" :zoom="zoom" :center="center" style="height: 800px; width: 100%">
         <template v-for="feature in currentFeatures">
             <l-geo-json :geojson="feature"
+                        :options="options"
                         :optionsStyle="{...style, fillColor: getColorForRegion(feature.properties['area_id'])}">
             </l-geo-json>
         </template>
@@ -18,6 +19,7 @@
     import {interpolateCool, interpolateWarm} from "d3-scale-chromatic"
     import {LGeoJson, LMap} from 'vue2-leaflet';
     import {Feature} from "geojson";
+    import {Layer} from "leaflet";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
     import {Indicator} from "../../types";
@@ -87,6 +89,22 @@
             artEnabled: function() {
                 const result = !!(this.indicatorData.artRange.min || this.indicatorData.artRange.max);
                 return result;
+            },
+            options: function() {
+                const indicatorData = this.indicatorData;
+                const indicator = this.indicator;
+                return {
+                    onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
+                        const area_id = feature.properties && feature.properties["area_id"];
+                        const area_name = feature.properties && feature.properties["area_name"];
+                        const values = indicatorData.indicators[area_id];
+                        const value = values && values[indicator] && values[indicator].value;
+                        layer.bindPopup(`<div>
+                                <strong>${area_name}</strong>
+                                <br/>${value}
+                            </div>`);
+                    }
+                }
             }
         },
         data(): Data {
