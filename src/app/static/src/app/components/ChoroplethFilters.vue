@@ -38,7 +38,7 @@
                         :clearable="true"
                         :options="regionFilters.available"
                         :value="regionFilters.selected"
-                        :normalizer="treeselectNormalizer"
+                        :normalizer="treeselectNestedNormalizer"
                         @input="selectRegion"></treeselect>
         </div>
     </div>
@@ -75,7 +75,10 @@
             selectedDataType: state => state.selectedDataType,
             selectedChoroplethFilters: state => state.selectedChoroplethFilters,
             selectedDataFilterOptions: function () {
-                return this.$store.getters['filteredData/selectedDataFilterOptions']
+                return this.$store.getters['filteredData/selectedDataFilterOptions'];
+            },
+            regionOptions: function () {
+                return this.$store.getters['filteredData/regionOptions'];
             },
 
             sexFilters: function (state): ChoroplethFiltersForType {
@@ -96,7 +99,7 @@
             },
 
             regionFilters: function (state): ChoroplethFiltersForType {
-                return this.buildViewFiltersForType(this.selectedDataFilterOptions.regions,
+                return this.buildViewFiltersForType(this.regionOptions,
                     this.selectedChoroplethFilters.region);
             }
         }),
@@ -107,6 +110,21 @@
             treeselectNormalizer(anyNode: any) {
                 const node = anyNode as FilterOption;
                 return {id: node.id, label: node.name};
+            },
+            treeselectNestedNormalizer(anyNode: any) {
+                //In the nested case, this gets called for the child nodes we add in below - just return these unchanged
+                if (anyNode.label) {
+                    return anyNode;
+                }
+
+                const node = anyNode as NestedFilterOption;
+                const result = {id: node.id, label: node.name};
+                if (node.options) {
+                    if (node.options && node.options.length > 0) {
+                        (result as any).children = node.options.map(o => this.treeselectNestedNormalizer(o));
+                    }
+                }
+                return result;
             },
             buildViewFiltersForType(availableFilterOptions: FilterOption[],
                                     selectedFilterOption?: FilterOption) {
@@ -150,7 +168,7 @@
                 };
 
                 const newFilter = findOptionForId(id, this.regionFilters.available);
-                this.filterUpdated(FilterType.Region, newFilter);
+                this.filterUpdated([FilterType.Region, newFilter]);
             },
             getNewSelectedFilterOption(filterName: string, available: FilterOption[]) {
                 //if the selected data type has changed, we should update the choropleth filters if the dataset of that

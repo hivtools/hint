@@ -210,7 +210,8 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
-                    sex: {id: "both", name: "both"}
+                    sex: {id: "both", name: "both"},
+                    region: null
                 }
             },
             getters: getters
@@ -293,7 +294,8 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
-                    sex: {id: "both", name: "both"}
+                    sex: {id: "both", name: "both"},
+                    region: null
                 }
             },
             getters: getters
@@ -370,7 +372,8 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: null,
-                    sex: {id: "both", name: "both"}
+                    sex: {id: "both", name: "both"},
+                    region: null
                 }
             },
             getters: getters
@@ -425,7 +428,8 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"}, //Should be ignored for this data type
-                    sex: {id: "both", name: "both"}
+                    sex: {id: "both", name: "both"},
+                    region: null
                 }
             },
             getters: getters
@@ -489,7 +493,8 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: null,
-                    sex: null
+                    sex: null,
+                    region: null
                 }
              },
             getters: getters
@@ -542,7 +547,8 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: null,
-                    sex: {id: "male", name: "male"} //should be ignored
+                    sex: {id: "male", name: "male"}, //should be ignored
+                    region: null
                 }
             },
             getters: getters
@@ -592,6 +598,38 @@ describe("FilteredData mutations", () => {
 
         expect(regionIndicators).toStrictEqual(expected);
     });
+
+    it("gets flattened region filter", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: DataType.ANC,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: null,
+                    sex: {id: "male", name: "male"},
+                    region: {
+                        id: "R1",
+                        name: "Region 1",
+                        options: [
+                            {id: "R2", name: "Region 2"},
+                            {id: "R3", name: "Region 3"}
+                        ]
+                    }
+                }
+            },
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+
+
+        const regionIndicators = getters.flattenedRegionFilter(testState, testGetters, mockRootState(), null);
+
+        const expected = ["R1", "R2", "R3"]
+
+        expect(regionIndicators).toStrictEqual(expected);
+    });
+
 
 
 });

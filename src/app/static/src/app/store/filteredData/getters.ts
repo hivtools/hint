@@ -2,7 +2,7 @@ import {RootState} from "../../root";
 import {DataType, FilteredDataState, SelectedChoroplethFilters, SelectedFilters} from "./filteredData";
 import {IndicatorRange, Indicators, IndicatorValues} from "../../types";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
-import {FilterOption} from "../../generated";
+import {FilterOption, NestedFilterOption} from "../../generated";
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
@@ -30,6 +30,18 @@ export const getters = {
           prev: interpolateCool
       }
     },
+    flattenedRegionFilter: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+        const flattenOption = (regionFilter: NestedFilterOption): string[] =>  {
+            let result = [regionFilter.id];
+            if (regionFilter.options) {
+                regionFilter.options.forEach(o =>
+                    result.splice(result.length, 0, ...flattenOption(o as NestedFilterOption)));
+            }
+            return result
+        };
+
+        return state.selectedChoroplethFilters.region ? flattenOption(state.selectedChoroplethFilters.region) : [];
+    },
     regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         const data =  getUnfilteredData(state, rootState);
         if (!data || (state.selectedDataType == null)) {
@@ -49,10 +61,15 @@ export const getters = {
             }
         };
 
+        const flattenedRegions = getters.flattenedRegionFilter;
+
         for(const d of data) {
             const row = d as any;
 
-            if (!includeRowForSelectedChoroplethFilters(row, state.selectedDataType, state.selectedChoroplethFilters)) {
+            if (!includeRowForSelectedChoroplethFilters(row,
+                state.selectedDataType,
+                state.selectedChoroplethFilters,
+                flattenedRegions)) {
                 continue;
             }
 
@@ -142,7 +159,10 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
     }
 };
 
-const includeRowForSelectedChoroplethFilters = (row: any, dataType: DataType, selectedFilters: SelectedChoroplethFilters) => {
+const includeRowForSelectedChoroplethFilters = (row: any,
+                                                dataType: DataType,
+                                                selectedFilters: SelectedChoroplethFilters,
+                                                flattenedRegionFilter: string[]) => {
 
     if (dataType != DataType.ANC && row.sex != selectedFilters.sex!.id) {
         return false;
@@ -154,6 +174,10 @@ const includeRowForSelectedChoroplethFilters = (row: any, dataType: DataType, se
 
     if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey!.id) {
         return false;
+    }
+
+    if (flattenedRegionFilter.length && flattenedRegionFilter.indexOf(row.area_id) < 0) {
+        return false
     }
 
     return true;
