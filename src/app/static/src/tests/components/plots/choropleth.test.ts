@@ -287,5 +287,63 @@ describe("Choropleth component", () => {
         expect(vm.indicator).toBe("prev");
     });
 
+    it("options onEachFeature returns function which generates correct tooltip", () => {
+
+        const filteredData = {...initialFilteredDataState};
+        const testStore = new Vuex.Store({
+            modules: {
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState({
+                        shape: mockShapeResponse({
+                            data: {features: fakeFeatures} as any
+                        })
+                    })
+                },
+                filteredData: {
+                    namespaced: true,
+                    state: filteredData,
+                    getters: {
+                        regionIndicators: () => {
+                            return {
+                                indicators: {
+                                        area_1: {prev: {value: 1}},
+                                        area_2: {prev: {value: 2}
+                                    }
+                                },
+                                artRange: {min: null, max: null},
+                                prevRange: {min: 10, max: 20}
+                            }
+                        },
+                        colorFunctions: testColorFunctions
+                    },
+                    mutations: mutations
+                }
+            }
+        });
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+        const vm = wrapper.vm as any;
+        const options = vm.options;
+        const onEachFeatureFunction = options.onEachFeature;
+
+        const mockLayer = {
+            bindPopup: jest.fn()
+        };
+
+        const mockFeature = {
+            properties: {
+                area_id: "area_1",
+                area_name: "Area 1"
+            }
+        };
+
+        onEachFeatureFunction(mockFeature, mockLayer);
+        expect(mockLayer.bindPopup.mock.calls[0][0]).toEqual(`<div>
+                            <strong>Area 1</strong>
+                            <br/>1
+                        </div>`);
+
+    });
+
 });
 

@@ -6,7 +6,7 @@
   "scripts": {
     "sass": "gulp sass",
     "js": "webpack",
-    "build": "webpack && gulp sass",
+    "build": "webpack && gulp sass && gulp cssmap",
     "test": "jest -c jest.config.js",
     "integration-test": "jest -c jest.integration.config.js"
   },
@@ -56,6 +56,7 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
-    "@types/geojson": "^7946.0.7"
+    "@types/geojson": "^7946.0.7",
+    "@types/leaflet": "^1.5.2"
   }
 }
