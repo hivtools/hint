@@ -136,11 +136,12 @@ export const getters = {
 };
 
 const getColor = (data: IndicatorValues, range: IndicatorRange, colorFunction: (t: number) => string) => {
-    let rangeNum = (range.max  && (range.max != range.min)) ? //Avoid dividing by zero if only one value...
-                    range.max - (range.min || 0) :
+    const min = (range.min || 0);
+    let rangeNum = (range.max  && (range.max != min)) ? //Avoid dividing by zero if only one value...
+                    range.max - min :
                     1;
 
-    const colorValue = data!.value / rangeNum;
+    const colorValue = (data!.value - min) / rangeNum;
 
     return colorFunction(colorValue);
 };
