@@ -116,31 +116,30 @@
             selectSurvey(id: string) {
                 this.selectFilterOption(FilterType.Survey, id, this.surveyFilters.available);
             },
-            refreshSelectedChoroplethFilters(){
+            getNewSelectedFilterOption(filterName: string, available: FilterOption[]) {
                 //if the selected data type has changed, we should update the choropleth filters if the dataset of that
                 //type does not include any of the selected filters as values. Set the filter to the first available value
                 const selectedChoroplethFilters = this.selectedChoroplethFilters;
 
-                const getNewFilter = function(filterName: string, available: FilterOption[]) {
-                    const currentValue = selectedChoroplethFilters[filterName] ?
-                                            selectedChoroplethFilters[filterName].id : null;
+                const currentValue = selectedChoroplethFilters[filterName] ?
+                    selectedChoroplethFilters[filterName].id : null;
 
-                    if (available && available.length > 0 //leave unchanged if none available - control will be disabled anyway
-                        && ((!currentValue) || available.filter(f => f.id == currentValue).length == 0)) {
-                        return available[0].id;
-                    }
-                    return null;
-                };
-
-                const newSexFilter = getNewFilter("sex", this.sexFilters.available);
+                if (available && available.length > 0 //leave unchanged if none available - control will be disabled anyway
+                    && ((!currentValue) || available.filter(f => f.id == currentValue).length == 0)) {
+                    return available[0].id;
+                }
+                return null;
+            },
+            refreshSelectedChoroplethFilters(){
+                const newSexFilter = this.getNewSelectedFilterOption("sex", this.sexFilters.available);
                 if (newSexFilter) {
                     this.selectSex(newSexFilter);
                 }
-                const newAgeFilter = getNewFilter("age", this.ageFilters.available);
+                const newAgeFilter = this.getNewSelectedFilterOption("age", this.ageFilters.available);
                 if (newAgeFilter) {
                     this.selectAge(newAgeFilter);
                 }
-                const newSurveyFilter = getNewFilter("survey", this.surveyFilters.available);
+                const newSurveyFilter = this.getNewSelectedFilterOption("survey", this.surveyFilters.available);
                 if (newSurveyFilter) {
                     this.selectSurvey(newSurveyFilter);
                 }

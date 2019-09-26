@@ -1,31 +1,61 @@
 import {mutations} from "../../app/store/filteredData/mutations";
-import {DataType, FilterType, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
+import {
+    DataType,
+    FilterType,
+    initialFilteredDataState, SelectedChoroplethFilters,
+    SelectedFilters
+} from "../../app/store/filteredData/filteredData";
 
 describe("FilteredData mutations", () => {
 
+    const getSelectedFiltersByType = (selectedFilters: SelectedFilters, filterType: FilterType) => {
+        switch (filterType) {
+            case (FilterType.Age):
+                return selectedFilters.age;
+            case (FilterType.Region):
+                return selectedFilters.region;
+            case (FilterType.Sex):
+                return selectedFilters.sex;
+            case (FilterType.Survey):
+                return selectedFilters.surveys;
+        }
+    };
+
+    const getSelectedChoroplethFilterByType = (selectedFilters: SelectedChoroplethFilters, filterType: FilterType) => {
+        switch (filterType) {
+            case (FilterType.Age):
+                return selectedFilters.age;
+            case (FilterType.Sex):
+                return selectedFilters.sex;
+            case (FilterType.Survey):
+                return selectedFilters.survey;
+            default:
+                return null;
+        }
+    };
 
     const testFilterUpdated = (filterType: FilterType) => {
         const testState = {...initialFilteredDataState};
 
         //initial sate
-        expect(testState.selectedFilters.getByType(filterType)).toStrictEqual([]);
+        expect(getSelectedFiltersByType(testState.selectedFilters, filterType)).toStrictEqual([]);
 
         mutations.FilterUpdated(testState, {
             payload: [filterType, ["value1", "value2"]]
         });
-        expect(testState.selectedFilters.getByType(filterType)).toStrictEqual(["value1", "value2"]);
+        expect(getSelectedFiltersByType(testState.selectedFilters, filterType)).toStrictEqual(["value1", "value2"]);
     };
 
     const testChoroplethFilterUpdated = (filterType: FilterType) => {
         const testState = {...initialFilteredDataState};
 
         //initial sate
-        expect(testState.selectedChoroplethFilters.getByType(filterType)).toBeNull();
+        expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType)).toBeNull();
 
         mutations.ChoroplethFilterUpdated(testState, {
             payload: [filterType, {id: "id", name: "name"}]
         });
-        expect(testState.selectedChoroplethFilters.getByType(filterType)).toStrictEqual({id: "id", name: "name"});
+        expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType)).toStrictEqual({id: "id", name: "name"});
     };
 
     it("sets selectedDataType on SelectedDataTypeUpdated", () => {
