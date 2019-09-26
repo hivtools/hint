@@ -7,13 +7,15 @@ import {
     SurveyAndProgramDataState
 } from "./store/surveyAndProgram/surveyAndProgram";
 import {initialModelRunState, modelRun, ModelRunState} from "./store/modelRun/modelRun";
+import {initialStepperState, stepper, StepperState} from "./store/stepper/stepper";
 
 export interface RootState {
     version: string;
     baseline: BaselineState,
     surveyAndProgram: SurveyAndProgramDataState,
     filteredData: FilteredDataState,
-    modelRun: ModelRunState
+    modelRun: ModelRunState,
+    stepper: StepperState
 }
 
 export interface ReadyState {
@@ -26,12 +28,14 @@ export const storeOptions: StoreOptions<RootState> = {
         baseline: initialBaselineState,
         surveyAndProgram: initialSurveyAndProgramDataState,
         filteredData: initialFilteredDataState,
-        modelRun: initialModelRunState
+        modelRun: initialModelRunState,
+        stepper: initialStepperState
     },
     modules: {
         baseline,
         surveyAndProgram,
         filteredData,
-        modelRun
+        modelRun,
+        stepper
     }
 };
