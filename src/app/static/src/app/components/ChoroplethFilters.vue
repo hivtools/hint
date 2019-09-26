@@ -10,7 +10,7 @@
                         :value="sexFilters.selected"
                         :normalizer="treeselectNormalizer"
                         :disabled="sexFilters.disabled"
-                        @input="updateSexFilter"></treeselect>
+                        @input="selectSex"></treeselect>
         </div>
         <div class="py-2">
             <label class="font-weight-bold">Age</label>
@@ -20,7 +20,7 @@
                         :value="ageFilters.selected"
                         :normalizer="treeselectNormalizer"
                         :disabled="ageFilters.disabled"
-                        @input="updateAgeFilter"></treeselect>
+                        @input="selectAge"></treeselect>
         </div>
         <div class="py-2">
             <label class="font-weight-bold">Survey</label>
@@ -30,7 +30,7 @@
                         :value="surveyFilters.selected"
                         :normalizer="treeselectNormalizer"
                         :disabled="surveyFilters.disabled"
-                        @input="updateSurveyFilter"></treeselect>
+                        @input="selectSurvey"></treeselect>
         </div>
     </div>
 </template>
@@ -71,9 +71,7 @@
 
             sexFilters: function (state): ChoroplethFiltersForType {
                 const available = (state.selectedDataType == DataType.ANC ?
-                    [
-                        {"id": "female", "name": "female"}
-                    ] :
+                    undefined :
                     sexFilterOptions) as FilterOption[];
                 return this.buildViewFiltersForType(available, this.selectedChoroplethFilters.sex)
             },
@@ -104,19 +102,19 @@
                     disabled: availableFilterOptions == undefined
                 }
             },
-            updateFilter(filterType: FilterType, id: string, available: FilterOption[]) {
+            selectFilterOption(filterType: FilterType, id: string, available: FilterOption[]) {
                 const newFilter = available.filter(o => o.id == id)[0];
 
                 this.filterUpdated([filterType, newFilter]);
             },
-            updateSexFilter(id: string) {
-                this.updateFilter(FilterType.Sex, id, this.sexFilters.available);
+            selectSex(id: string) {
+                this.selectFilterOption(FilterType.Sex, id, this.sexFilters.available);
             },
-            updateAgeFilter(id: string) {
-                this.updateFilter(FilterType.Age, id, this.ageFilters.available);
+            selectAge(id: string) {
+                this.selectFilterOption(FilterType.Age, id, this.ageFilters.available);
             },
-            updateSurveyFilter(id: string) {
-                this.updateFilter(FilterType.Survey, id, this.surveyFilters.available);
+            selectSurvey(id: string) {
+                this.selectFilterOption(FilterType.Survey, id, this.surveyFilters.available);
             },
             refreshSelectedChoroplethFilters(){
                 //if the selected data type has changed, we should update the choropleth filters if the dataset of that
@@ -136,15 +134,15 @@
 
                 const newSexFilter = getNewFilter("sex", this.sexFilters.available);
                 if (newSexFilter) {
-                    this.updateSexFilter(newSexFilter);
+                    this.selectSex(newSexFilter);
                 }
                 const newAgeFilter = getNewFilter("age", this.ageFilters.available);
                 if (newAgeFilter) {
-                    this.updateAgeFilter(newAgeFilter);
+                    this.selectAge(newAgeFilter);
                 }
                 const newSurveyFilter = getNewFilter("survey", this.surveyFilters.available);
                 if (newSurveyFilter) {
-                    this.updateSurveyFilter(newSurveyFilter);
+                    this.selectSurvey(newSurveyFilter);
                 }
             }
         },

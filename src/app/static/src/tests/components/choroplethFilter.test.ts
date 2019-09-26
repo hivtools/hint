@@ -34,9 +34,7 @@ describe("ChoroplethFilters component", () => {
     it ("computes available sexFilters for ANC", () => {
         const wrapper = getWrapper({selectedDataType: DataType.ANC});
         const sexFilters = (wrapper as any).vm.sexFilters;
-        expect(sexFilters.available).toStrictEqual([
-            {"id": "female", "name": "female"}
-        ]);
+        expect(sexFilters.available).toBeUndefined();
     });
 
     it ("computes ageFilters", () => {
@@ -145,7 +143,7 @@ describe("ChoroplethFilters component", () => {
         const callCount = mockFilterUpdated.mock.calls.length;
 
         const newFilter = "female";
-        vm.updateSexFilter(newFilter);
+        vm.selectSex(newFilter);
 
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Sex,  {id: "female", name: "female"}]);
     });
@@ -178,7 +176,7 @@ describe("ChoroplethFilters component", () => {
 
         const callCount = mockFilterUpdated.mock.calls.length;
         const newFilter = "s1" ;
-        vm.updateSurveyFilter(newFilter);
+        vm.selectSurvey(newFilter);
 
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Survey, {id: "s1", name: "survey 1"}]);
     });
@@ -211,7 +209,7 @@ describe("ChoroplethFilters component", () => {
         const callCount = mockFilterUpdated.mock.calls.length;
 
         const newFilter = "a2";
-        vm.updateAgeFilter(newFilter);
+        vm.selectAge(newFilter);
 
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Age, {id: "a2", name: "5-9"}]);
     });
@@ -312,9 +310,10 @@ describe("ChoroplethFilters component", () => {
         const callCount = mockFilterUpdated.mock.calls.length;
 
         vm.refreshSelectedChoroplethFilters();
-        expect(mockFilterUpdated.mock.calls.length).toBe(callCount+2);
-        expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Sex, {id: "female", name: "female"}]);
-        expect(mockFilterUpdated.mock.calls[callCount+1][1]).toStrictEqual([FilterType.Age, {id: "a1", name: "0-4"}]);
+        //Sex should be left unchanged as there are no available sex options for ANC
+        expect(mockFilterUpdated.mock.calls.length).toBe(callCount+1);
+        expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Age, {id: "a1", name: "0-4"}]);
+
     });
 
     const getWrapper = (state?: Partial<FilteredDataState>, selectedDataFilterOptions: object = {}) => {
