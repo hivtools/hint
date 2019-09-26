@@ -32,6 +32,15 @@
                         :disabled="surveyFilters.disabled"
                         @input="selectSurvey"></treeselect>
         </div>
+        <div class="py-2">
+            <label class="font-weight-bold">Region</label>
+            <treeselect id="region-filters" :multiple="false"
+                        :clearable="true"
+                        :options="regionFilters.available"
+                        :value="regionFilters.selected"
+                        :normalizer="treeselectNormalizer"
+                        @input="selectRegion"></treeselect>
+        </div>
     </div>
 </template>
 
@@ -45,7 +54,7 @@
         SelectedChoroplethFilters
     } from "../store/filteredData/filteredData";
     import Treeselect from '@riophae/vue-treeselect';
-    import {FilterOption} from "../generated";
+    import {FilterOption, NestedFilterOption} from "../generated";
 
     const namespace: string = 'filteredData';
 
@@ -84,6 +93,11 @@
             surveyFilters: function (state): ChoroplethFiltersForType {
                 return this.buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
                     this.selectedChoroplethFilters.survey);
+            },
+
+            regionFilters: function (state): ChoroplethFiltersForType {
+                return this.buildViewFiltersForType(this.selectedDataFilterOptions.regions,
+                    this.selectedChoroplethFilters.region);
             }
         }),
         methods: {
@@ -115,6 +129,28 @@
             },
             selectSurvey(id: string) {
                 this.selectFilterOption(FilterType.Survey, id, this.surveyFilters.available);
+            },
+            selectRegion(id: string) {
+                const findOptionForId = (id: string, options: NestedFilterOption[]) : NestedFilterOption | null => {
+                    const filtered = options.filter(o => o.id == id);
+                    if (filtered.length){
+                        return filtered[0];
+                    }
+                    else {
+                        for (const option of options) {
+                            if (option.options) {
+                                const result = findOptionForId(id, option.options as NestedFilterOption[]);
+                                if (result) {
+                                    return result;
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                };
+
+                const newFilter = findOptionForId(id, this.regionFilters.available);
+                this.filterUpdated(FilterType.Region, newFilter);
             },
             getNewSelectedFilterOption(filterName: string, available: FilterOption[]) {
                 //if the selected data type has changed, we should update the choropleth filters if the dataset of that

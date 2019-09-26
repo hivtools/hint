@@ -3,7 +3,7 @@ import { actions } from './actions';
 import { mutations } from './mutations';
 import { getters } from './getters';
 import { RootState} from "../../root";
-import { FilterOption } from "../../generated";
+import {FilterOption, NestedFilterOption} from "../../generated";
 
 export enum DataType { ANC, Program, Survey }
 export enum FilterType { Sex, Age, Region, Survey }
@@ -18,7 +18,8 @@ export interface SelectedFilters {
 export interface SelectedChoroplethFilters {
     sex: FilterOption | null,
     age: FilterOption | null,
-    survey: FilterOption | null
+    survey: FilterOption | null,
+    region: NestedFilterOption | null
 }
 
 export interface FilteredDataState {
@@ -38,7 +39,8 @@ export const initialSelectedFilters: SelectedFilters = {
 export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
     sex: null,
     age: null,
-    survey: null
+    survey: null,
+    region: null
 };
 
 export const initialFilteredDataState: FilteredDataState = {

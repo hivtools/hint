@@ -1,7 +1,7 @@
 import {PayloadWithType} from "../../types";
 import {Mutation, MutationTree} from "vuex";
 import {DataType, FilteredDataState, FilterType} from "./filteredData";
-import {FilterOption} from "../../generated";
+import {FilterOption, NestedFilterOption} from "../../generated";
 
 type FilteredDataMutation = Mutation<FilteredDataState>
 
@@ -45,6 +45,9 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
                 break;
             case (FilterType.Survey):
                 filters.survey = value;
+                break;
+            case (FilterType.Region):
+                filters.region = value as NestedFilterOption;
                 break;
         }
     }
