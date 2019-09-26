@@ -16,15 +16,14 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapState} from "vuex";
-    import {interpolateCool, interpolateWarm} from "d3-scale-chromatic"
     import {LGeoJson, LMap} from 'vue2-leaflet';
     import {Feature} from "geojson";
     import {Layer} from "leaflet";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
     import {Indicator} from "../../types";
-    import {BaselineState} from "../../store/baseline/baseline";
     import {FilteredDataState} from "../../store/filteredData/filteredData";
+    import {BaselineState} from "../../store/baseline/baseline";
 
     interface Data {
         zoom: number,

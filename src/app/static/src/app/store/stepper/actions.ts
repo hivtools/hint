@@ -1,7 +1,6 @@
 import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
-import {StepDescription, StepperState} from "./stepper";
-import {localStorageManager} from "../../localStorageManager";
+import {StepperState} from "./stepper";
 
 export interface StepperActions {
     jump: (store: ActionContext<StepperState, RootState>, step: number) => void,
@@ -9,7 +8,8 @@ export interface StepperActions {
 }
 
 export const actions: StepperActions & ActionTree<StepperState, RootState> = {
-    jump({commit}, step) {
+    jump({commit, rootState}, step) {
+        console.log("jumping", step);
         commit({type: "Jump", payload: step});
     },
 
@@ -17,22 +17,6 @@ export const actions: StepperActions & ActionTree<StepperState, RootState> = {
         const {state, getters} = store;
         if (getters.complete[state.activeStep]) {
             actions.jump(store, state.activeStep + 1);
-        }
-    },
-
-    load(store) {
-        const {state, getters} = store;
-        const activeStep = localStorageManager.getInt("activeStep");
-
-        if (activeStep) {
-            const invalidSteps = state.steps.map((s: StepDescription) => s.number)
-                .filter((i: number) => i < activeStep && !getters.complete[i]);
-
-            if (invalidSteps.length == 0) {
-                actions.jump(store, activeStep);
-            } else {
-                localStorageManager.removeItem("activeStep");
-            }
         }
     }
 };

@@ -79,8 +79,10 @@
         methods: {
             ...mapActions(namespace, {
                 jump: 'jump',
-                next: 'next',
-                load: 'load'
+                next: 'next'
+            }),
+            ...mapActions({
+                reload: "reload"
             }),
             active(num: number) {
                 return this.activeStep == num;
@@ -101,7 +103,7 @@
         watch: {
             ready: function (newVal) {
                 if (newVal) {
-                    this.load()
+                    this.reload()
                 }
             }
         }

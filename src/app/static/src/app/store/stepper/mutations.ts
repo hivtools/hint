@@ -12,6 +12,5 @@ export interface StepperMutations {
 export const mutations: StepperMutations & MutationTree<StepperState> = {
     Jump(state: StepperState, action: PayloadWithType<number>) {
         state.activeStep = action.payload;
-        localStorageManager.setItem("activeStep", action.payload);
     }
 };
