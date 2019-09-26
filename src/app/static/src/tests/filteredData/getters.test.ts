@@ -210,9 +210,7 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
-                    sex: {id: "both", name: "both"},
-                    updateByType: jest.fn(),
-                    getByType: jest.fn()
+                    sex: {id: "both", name: "both"}
                 }
             },
             getters: getters
@@ -295,9 +293,7 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
-                    sex: {id: "both", name: "both"},
-                    updateByType: jest.fn(),
-                    getByType: jest.fn()
+                    sex: {id: "both", name: "both"}
                 }
             },
             getters: getters
@@ -374,9 +370,7 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: null,
-                    sex: {id: "both", name: "both"},
-                    updateByType: jest.fn(),
-                    getByType: jest.fn()
+                    sex: {id: "both", name: "both"}
                 }
             },
             getters: getters
@@ -431,9 +425,7 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"}, //Should be ignored for this data type
-                    sex: {id: "both", name: "both"},
-                    updateByType: jest.fn(),
-                    getByType: jest.fn()
+                    sex: {id: "both", name: "both"}
                 }
             },
             getters: getters
@@ -497,9 +489,7 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: null,
-                    sex: null,
-                    updateByType: jest.fn(),
-                    getByType: jest.fn()
+                    sex: null
                 }
              },
             getters: getters
@@ -552,9 +542,7 @@ describe("FilteredData mutations", () => {
                 selectedChoroplethFilters: {
                     age: {id: "1", name: "0-99"},
                     survey: null,
-                    sex: {id: "male", name: "male"}, //should be ignored
-                    updateByType: jest.fn(),
-                    getByType: jest.fn()
+                    sex: {id: "male", name: "male"} //should be ignored
                 }
             },
             getters: getters
