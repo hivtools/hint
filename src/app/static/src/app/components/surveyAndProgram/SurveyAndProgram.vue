@@ -28,7 +28,7 @@
                 </file-upload>
             </form>
             <div v-if="hasSelectedDataType">
-                <filters></filters>
+                <choropleth-filters></choropleth-filters>
             </div>
         </div>
 
@@ -57,7 +57,7 @@
     import {mapActions, mapState} from "vuex";
     import FileUpload from "../FileUpload.vue";
     import Choropleth from "../plots/Choropleth.vue";
-    import Filters from "../Filters.vue";
+    import ChoroplethFilters from "../ChoroplethFilters.vue";
     import {PartialFileUploadProps} from "../../types";
     import {RootState} from "../../root";
     import {DataType} from "../../store/filteredData/filteredData";
@@ -107,7 +107,7 @@
         components: {
             FileUpload,
             Choropleth,
-            Filters
+            ChoroplethFilters
         }
     })
 </script>

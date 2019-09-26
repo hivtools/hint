@@ -60,7 +60,7 @@ describe("Survey and program component", () => {
 
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        expect(wrapper.findAll("filters-stub").length).toBe(1);
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
     });
 
@@ -89,7 +89,7 @@ describe("Survey and program component", () => {
         const wrapper = shallowMount(SurveyAndProgram, {
             store: createStore(),
             localVue});
-        expect(wrapper.findAll("filters-stub").length).toBe(1);
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
     });
 
     it("tabs are disabled if no data is present", () => {
@@ -144,7 +144,7 @@ describe("Survey and program component", () => {
         expect(wrapper.find(".nav-link.active").text()).toBe("Programme");
 
 
-        expect(wrapper.findAll("filters-stub").length).toBe(1);
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
     });
 

@@ -11,6 +11,15 @@ describe("filteredData actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "FilterUpdated", payload: [FilterType.Survey, newFilters]});
     });
 
+    it("commits mutation on choroplethFilterUpdated", async () => {
+
+        const commit = jest.fn();
+        const newFilter = {id: "s1", name: "survey1"};
+        await actions.choroplethFilterUpdated({commit} as any, [FilterType.Survey, newFilter]);
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "ChoroplethFilterUpdated", payload: [FilterType.Survey, newFilter]});
+    });
+
     it("commits mutation on selectDataType", async () => {
 
         const commit = jest.fn();
