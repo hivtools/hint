@@ -17,3 +17,9 @@ gulp.task('sass', function () {
         }))
         .pipe(gulp.dest('public/css'));
 });
+
+gulp.task('cssmap', function () {
+    //Avoid pac4j session error state resulting from DevTools request for this css map
+    return gulp.src('node_modules/@riophae/vue-treeselect/dist/vue-treeselect.css.map')
+        .pipe(gulp.dest('public/css'));
+});
