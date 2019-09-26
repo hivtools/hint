@@ -90,7 +90,6 @@
             },
             artEnabled: function() {
                 return this.selectedDataType == DataType.Survey || this.selectedDataType == DataType.Program;
-
             },
             options: function() {
                 const indicatorData = this.indicatorData;

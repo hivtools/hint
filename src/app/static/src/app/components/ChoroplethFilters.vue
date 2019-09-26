@@ -38,7 +38,7 @@
                         :clearable="true"
                         :options="regionFilters.available"
                         :value="regionFilters.selected"
-                        :normalizer="treeselectNestedNormalizer"
+                        :normalizer="treeselectNormalizer"
                         @input="selectRegion"></treeselect>
         </div>
     </div>
@@ -108,10 +108,6 @@
                 filterUpdated: 'filteredData/choroplethFilterUpdated',
             }),
             treeselectNormalizer(anyNode: any) {
-                const node = anyNode as FilterOption;
-                return {id: node.id, label: node.name};
-            },
-            treeselectNestedNormalizer(anyNode: any) {
                 //In the nested case, this gets called for the child nodes we add in below - just return these unchanged
                 if (anyNode.label) {
                     return anyNode;
@@ -121,7 +117,7 @@
                 const result = {id: node.id, label: node.name};
                 if (node.options) {
                     if (node.options && node.options.length > 0) {
-                        (result as any).children = node.options.map(o => this.treeselectNestedNormalizer(o));
+                        (result as any).children = node.options.map(o => this.treeselectNormalizer(o));
                     }
                 }
                 return result;
