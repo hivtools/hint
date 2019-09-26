@@ -19,6 +19,7 @@
     import {interpolateCool, interpolateWarm} from "d3-scale-chromatic"
     import {LGeoJson, LMap} from 'vue2-leaflet';
     import {Feature} from "geojson";
+    import {Layer} from "leaflet";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
     import {Indicator} from "../../types";
@@ -93,11 +94,13 @@
                 const indicatorData = this.indicatorData;
                 const indicator = this.indicator;
                 return {
-                    onEachFeature: function onEachFeature(feature: any, layer: any) {
-                        const values = indicatorData.indicators[feature.properties.area_id];
+                    onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
+                        const area_id = feature.properties && feature.properties["area_id"];
+                        const area_name = feature.properties && feature.properties["area_name"];
+                        const values = indicatorData.indicators[area_id];
                         const value = values && values[indicator] && values[indicator].value;
                         layer.bindPopup(`<div>
-                                <strong>${feature.properties.area_name}</strong>
+                                <strong>${area_name}</strong>
                                 <br/>${value}
                             </div>`);
                     }
