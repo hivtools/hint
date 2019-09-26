@@ -46,7 +46,6 @@
     import Step from "./Step.vue";
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
-    import {localStorageManager} from "../localStorageManager";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import ModelRun from "./modelRun/ModelRun.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
@@ -79,7 +78,9 @@
         },
         methods: {
             ...mapActions(namespace, {
-                jump: 'jump'
+                jump: 'jump',
+                next: 'next',
+                load: 'load'
             }),
             active(num: number) {
                 return this.activeStep == num;
@@ -88,11 +89,6 @@
                 return this.steps.slice(0, num)
                     .filter((s: { number: number }) => this.complete[s.number])
                     .length >= num - 1
-            },
-            next() {
-                if (this.complete[this.activeStep]) {
-                    this.jump(this.activeStep + 1);
-                }
             }
         },
         components: {
@@ -105,18 +101,7 @@
         watch: {
             ready: function (newVal) {
                 if (newVal) {
-                    const activeStep = localStorageManager.getInt("activeStep");
-
-                    if (activeStep) {
-                        const invalidSteps = this.steps.map((s: StepDescription) => s.number)
-                            .filter((i: number) => i < activeStep && !this.complete[i]);
-
-                        if (invalidSteps.length == 0) {
-                            this.jump(activeStep)
-                        } else {
-                            localStorageManager.removeItem("activeStep");
-                        }
-                    }
+                    this.load()
                 }
             }
         }
