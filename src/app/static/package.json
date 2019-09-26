@@ -6,7 +6,7 @@
   "scripts": {
     "sass": "gulp sass",
     "js": "webpack",
-    "build": "webpack && gulp sass",
+    "build": "webpack && gulp sass && gulp cssmap",
     "test": "jest -c jest.config.js",
     "integration-test": "jest -c jest.integration.config.js"
   },
