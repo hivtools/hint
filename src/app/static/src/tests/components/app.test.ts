@@ -1,8 +1,14 @@
 import {createLocalVue, mount} from '@vue/test-utils';
 import Vuex from 'vuex';
-import {mockAxios, mockModelRunState, mockSuccess, mockSurveyAndProgramState} from "../mocks";
+import {mockAxios, mockModelRunState, mockStepperState, mockSuccess, mockSurveyAndProgramState} from "../mocks";
 import {mockBaselineState} from "../mocks";
-import {mutations} from "../../app/store/baseline/mutations";
+import {mutations as baselineMutations} from "../../app/store/baseline/mutations";
+import {baselineGetters} from "../../app/store/baseline/baseline";
+import {surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {getters} from "../../app/store/stepper/getters";
+import {mutations as stepperMutations} from "../../app/store/stepper/mutations";
+import {actions as stepperActions} from "../../app/store/stepper/actions";
+import {actions} from "../../app/store/root/actions";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -14,10 +20,15 @@ mockAxios.onGet(`/baseline/shape/`)
     .reply(200, mockSuccess(null));
 mockAxios.onGet(`/baseline/population/`)
     .reply(200, mockSuccess(null));
+mockAxios.onGet(`/disease/survey/`)
+    .reply(200, mockSuccess(null));
+mockAxios.onGet(`/disease/programme/`)
+    .reply(200, mockSuccess(null));
+mockAxios.onGet(`/disease/anc/`)
+    .reply(200, mockSuccess(null));
 
 import {app} from "../../app"
-import {baselineGetters} from "../../app/store/baseline/baseline";
-import {surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {mutations} from "../../app/store/root/mutations";
 
 describe("App", () => {
 
@@ -35,7 +46,7 @@ describe("App", () => {
                 namespaced: true,
                 state: mockBaselineState(),
                 actions: {...baselineActions},
-                mutations: {...mutations},
+                mutations: {...baselineMutations},
                 getters: {...baselineGetters}
             },
             surveyAndProgram: {
@@ -51,8 +62,17 @@ describe("App", () => {
             modelRun: {
                 namespaced: true,
                 state: mockModelRunState()
+            },
+            stepper: {
+                namespaced: true,
+                state: mockStepperState(),
+                actions: stepperActions,
+                mutations: stepperMutations,
+                getters
             }
-        }
+        },
+        actions,
+        mutations
     });
 
     it("loads input data on mount", (done) => {

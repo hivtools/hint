@@ -1,8 +1,11 @@
-import {ActionTree} from "vuex";
+import {ActionContext, ActionTree, Store} from "vuex";
 import {RootState} from "../../root";
 import {StepDescription} from "../stepper/stepper";
 
-export const actions: ActionTree<RootState, RootState> = {
+export interface RootActions {
+    reload: (store: ActionContext<RootState, RootState>) => void;
+}
+export const actions: ActionTree<RootState, RootState> & RootActions = {
 
     reload(store) {
         const {state, getters, commit} = store;

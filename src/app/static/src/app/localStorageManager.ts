@@ -1,16 +1,20 @@
-import {RootState, serialiseState} from "./root";
+import {RootState} from "./root";
 
 const appStateKey = "appState";
+
+export const serialiseState = (rootState: RootState): Partial<RootState> => {
+    return {
+        modelRun: {...rootState.modelRun, statusPollId: -1},
+        filteredData: rootState.filteredData,
+        stepper: rootState.stepper
+    };
+};
 
 export class LocalStorageManager {
 
     saveState = (state: RootState) => {
         const partialState = serialiseState(state);
         window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
-    };
-
-    removeState = () => {
-        window.localStorage.removeItem(appStateKey);
     };
 
     getState = () : Partial<RootState> | null => {

@@ -1,9 +1,12 @@
-import {MutationTree} from "vuex";
+import {Mutation, MutationTree} from "vuex";
 import {emptyState, RootState} from "../../root";
 
-export const mutations: MutationTree<RootState> = {
+export interface RootMutations {
+    Reset: Mutation<RootState>
+}
+
+export const mutations: MutationTree<RootState> & RootMutations = {
     Reset(state: RootState) {
-        console.log("resetting");
         Object.assign(state, emptyState);
     }
 };
