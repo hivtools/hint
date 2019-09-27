@@ -28,7 +28,6 @@
 
     interface Data {
         zoom: number,
-        center: number[],
         featuresByLevel: { [k: number]: any },
         style: any,
         indicator: Indicator;
@@ -45,11 +44,14 @@
         },
         computed: {
             ...mapState<BaselineState>("baseline", {
-                features: state => state.shape && state.shape.data.features,
+                features: state => state.shape && state.shape.data.features
             }),
             ...mapState<FilteredDataState>("filteredData", {
                 selectedDataType: state => state.selectedDataType
             }),
+            center: function() {
+                return this.$store.getters['filteredData/selectedRegionCenter'];
+            },
             indicatorData: function() {
                 return this.$store.getters['filteredData/regionIndicators'];
             },
@@ -108,7 +110,6 @@
         data(): Data {
             return {
                 zoom: 7, // TODO: will this always be appropriate?
-                center: [-13.2543, 34.3015], // TODO: this is hardcoded to Malawi! where will this come from?
                 featuresByLevel: {1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
                 style: {
                     weight: 1,
@@ -148,6 +149,10 @@
                 } else if (!this.artEnabled && this.prevEnabled && this.indicator == "art") {
                     this.indicator = "prev";
                 }
+                alert(JSON.stringify(this.features));
+            },
+            features: function (newVal) {
+
             }
         },
     })
