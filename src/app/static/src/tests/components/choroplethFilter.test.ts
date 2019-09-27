@@ -9,6 +9,7 @@ import {
     initialSelectedChoroplethFilters
 } from "../../app/store/filteredData/filteredData";
 import {mockFilteredDataState} from "../mocks";
+import {getters} from "../../app/store/filteredData/getters";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -119,6 +120,47 @@ describe("ChoroplethFilters component", () => {
         expect(surveyFilters.selected).toStrictEqual( "s1" );
     });
 
+    it ("computes regionFilters", () => {
+        const stateRegionFilterOptions =
+            {
+                id: "a1",
+                name: "region",
+                options: [
+                    {id: "a2", name: "sub-region"}
+                ]
+            };
+        const mockSelectedFilters = {
+            ...initialSelectedChoroplethFilters,
+            region: {id: "a2", name: "sub-region"}
+        };
+        const store = new Vuex.Store({
+            modules: {
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState({selectedChoroplethFilters: mockSelectedFilters}),
+                    getters: {
+                        selectedDataFilterOptions: () => {
+                            return {
+                                sex: null,
+                                age: null,
+                                region: null,
+                                survey: null
+                            }
+                        },
+                        regionOptions: () => {
+                            return stateRegionFilterOptions
+                        }
+                    }
+                }
+            }
+        });
+        const wrapper = shallowMount(ChoroplethFilters, {localVue, store});
+        const vm = (wrapper as any).vm;
+        const regionFilters = vm.regionFilters;
+        expect(regionFilters.available).toStrictEqual([stateRegionFilterOptions]);
+        expect(regionFilters.selected).toStrictEqual( "a2" );
+    });
+
     it ("invokes store action when sex filter is edited", () => {
         const mockFilterUpdated = jest.fn();
         const store = new Vuex.Store({
@@ -214,11 +256,73 @@ describe("ChoroplethFilters component", () => {
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Age, {id: "a2", name: "5-9"}]);
     });
 
+    it ("invokes store actions when region filter is edited", () => {
+        const mockFilterUpdated = jest.fn();
+        const store = new Vuex.Store({
+            modules: {
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState(),
+                    actions: {
+                        choroplethFilterUpdated: mockFilterUpdated
+                    },
+                    getters: {
+                        ...getters,
+                        selectedDataFilterOptions: () => {
+                            return {
+                                sex: null,
+                                age: null,
+                                region: null,
+                                survey: null
+                            }
+                        },
+                        regionOptions: () => {
+                            return {
+                                id: "a1",
+                                name: "area1",
+                                options: [
+                                    {id: "a2", name: "area1.1"}
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        const wrapper = shallowMount(ChoroplethFilters, {localVue, store});
+        const vm = (wrapper as any).vm;
+        const callCount = mockFilterUpdated.mock.calls.length;
+
+        vm.selectRegion("a2");
+
+        expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Region, {id: "a2", name: "area1.1"}]);
+    });
+
     it ("transforms FilterOption in treeselectNormalizer", () => {
         const wrapper = getWrapper();
         const vm = (wrapper as any).vm;
         const result = vm.treeselectNormalizer({id: "1", name: "name1"});
         expect(result).toStrictEqual({id: "1", label: "name1"});
+    });
+
+    it ("transforms NestedFilterOption in treeselectNormalizer", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        const result = vm.treeselectNormalizer({
+            id: "1",
+            name: "name1",
+            options: [
+                {id: "2", name: "name2"},
+                {id: "3", name: "name3"}
+            ]});
+        expect(result).toStrictEqual({
+            id: "1",
+            label: "name1",
+            children: [
+                {id: "2", label: "name2"},
+                {id: "3", label: "name3"}
+            ]
+        });
     });
 
     it ("refreshSelectedChoroplethFilters leaves selected filters unchanged if they are available for new data type", () => {
@@ -279,6 +383,13 @@ describe("ChoroplethFilters component", () => {
             sex: {id: "male", name: "male"},
             region: null
         };
+        const mockRegionOptions = {
+            id: "a1",
+            name: "All",
+            options: [
+                {id: "a2", name: "Region"}
+            ]
+        };
         const mockFilterUpdated = jest.fn();
         const store = new Vuex.Store({
             modules: {
@@ -294,6 +405,9 @@ describe("ChoroplethFilters component", () => {
                                 age: stateAgeFilterOptions,
                                 survey: null
                             }
+                        },
+                        regionOptions: () => {
+                            return mockRegionOptions;
                         }
                     },
                     actions: {
@@ -309,8 +423,9 @@ describe("ChoroplethFilters component", () => {
 
         vm.refreshSelectedChoroplethFilters();
         //Sex should be left unchanged as there are no available sex options for ANC
-        expect(mockFilterUpdated.mock.calls.length).toBe(callCount+1);
+        expect(mockFilterUpdated.mock.calls.length).toBe(callCount+2);
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Age, {id: "a1", name: "0-4"}]);
+        expect(mockFilterUpdated.mock.calls[callCount+1][1]).toStrictEqual([FilterType.Region, mockRegionOptions]);
 
     });
 
