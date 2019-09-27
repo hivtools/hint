@@ -21,26 +21,13 @@ export const getters = {
     regionOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
         const shape = rootState.baseline && rootState.baseline.shape ? rootState.baseline.shape : null;
         return shape && shape.filters &&
-                        shape.filters.regions &&
-                        (shape.filters.regions as any).options ? (shape.filters.regions as any).options : [];
+                        shape.filters.regions ? (shape.filters.regions as any) : null;
     },
     colorFunctions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
       return {
           art: interpolateWarm,
           prev: interpolateCool
       }
-    },
-    flattenedRegionFilter: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-        const flattenOption = (regionFilter: NestedFilterOption): string[] =>  {
-            let result = [regionFilter.id];
-            if (regionFilter.options) {
-                regionFilter.options.forEach(o =>
-                    result.splice(result.length, 0, ...flattenOption(o as NestedFilterOption)));
-            }
-            return result
-        };
-
-        return state.selectedChoroplethFilters.region ? flattenOption(state.selectedChoroplethFilters.region) : [];
     },
     regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         const data =  getUnfilteredData(state, rootState);
@@ -132,7 +119,27 @@ export const getters = {
             artRange: artRange,
             prevRange: prevRange
         };
+    },
+    flattenedRegionOptions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+        const option = getters.regionOptions;
+        return option ? flattenOption(option) : {};
+    },
+    flattenedRegionFilter: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+        return state.selectedChoroplethFilters.region ? flattenOption(state.selectedChoroplethFilters.region) : {};
+    },
+};
+
+const flattenOption = (regionFilter: NestedFilterOption) => {
+    let result = {} as any;
+    result[regionFilter.id] = regionFilter;
+    if (regionFilter.options) {
+        regionFilter.options.forEach(o =>
+            result = {
+                ...result,
+                ...flattenOption(o as NestedFilterOption)
+            });
     }
+    return result;
 };
 
 const getColor = (data: IndicatorValues, range: IndicatorRange, colorFunction: (t: number) => string) => {
@@ -163,7 +170,7 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
 const includeRowForSelectedChoroplethFilters = (row: any,
                                                 dataType: DataType,
                                                 selectedFilters: SelectedChoroplethFilters,
-                                                flattenedRegionFilter: string[]) => {
+                                                flattenedRegionFilter: object) => {
 
     if (dataType != DataType.ANC && row.sex != selectedFilters.sex!.id) {
         return false;
@@ -177,7 +184,8 @@ const includeRowForSelectedChoroplethFilters = (row: any,
         return false;
     }
 
-    if (flattenedRegionFilter.length && flattenedRegionFilter.indexOf(row.area_id) < 0) {
+    const flattenedRegionIds = Object.keys(flattenedRegionFilter);
+    if (flattenedRegionIds.length && flattenedRegionIds.indexOf(row.area_id) < 0) {
         return false
     }
 

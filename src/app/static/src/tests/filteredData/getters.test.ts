@@ -25,7 +25,7 @@ describe("FilteredData mutations", () => {
             art: function(t: number) {return `rgb(${t},0,0)`;},
             prev: function(t: number) {return `rgb(0,${t},0)`;}
         },
-        flattenedRegionFilter: []
+        flattenedRegionFilter: {}
     };
 
     it("gets correct selectedDataFilters when selectedDataType is Program", () => {
@@ -103,7 +103,10 @@ describe("FilteredData mutations", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = [
+        const testFilters = {
+            id: "MWI",
+            name: "Malawi",
+            options: [
             {
                 name: "Northern Region", id: "MWI.1", options: [
                     {name: "Chitipa", id: "MWI.1.1"},
@@ -115,8 +118,8 @@ describe("FilteredData mutations", () => {
                     {name: "Dedza", id: "MWI.2.1"},
                     {name: "Dowa", id: "MWI.2.2"}
                 ]
-            }
-        ];
+            }]
+        };
 
         const testRootState = mockRootState({
             baseline: mockBaselineState({
@@ -128,7 +131,7 @@ describe("FilteredData mutations", () => {
                         features: []
                     },
                     filters: {
-                        regions: {options: testFilters} as any
+                        regions: testFilters as any
                     }
                 }
             }),
@@ -677,7 +680,10 @@ describe("FilteredData mutations", () => {
 
         const testRegionGetters = {
             ...testGetters,
-            flattenedRegionFilter: ["area1", "area2"]
+            flattenedRegionFilter: {
+                "area1": {},
+                "area2": {}
+            }
 
         };
 
@@ -739,7 +745,46 @@ describe("FilteredData mutations", () => {
 
         const regionIndicators = getters.flattenedRegionFilter(testState, testGetters, mockRootState(), null);
 
-        const expected = ["R1", "R2", "R3", "R4"];
+        const expected = {
+            "R1": {
+                id: "R1",
+                name: "Region 1",
+                options: [
+                    {
+                        id: "R2",
+                        name: "Region 2"
+                    },
+                    {
+                        id: "R3",
+                        name: "Region 3",
+                        options: [
+                            {
+                                id: "R4",
+                                name: "Region 4"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "R2": {
+                id: "R2",
+                name: "Region 2"
+            },
+            "R3": {
+                id: "R3",
+                name: "Region 3",
+                options: [
+                    {
+                        id: "R4",
+                        name: "Region 4"
+                    }
+                ]
+            },
+            "R4": {
+                id: "R4",
+                name: "Region 4"
+            }
+        };
 
         expect(regionIndicators).toStrictEqual(expected);
     });
@@ -762,7 +807,7 @@ describe("FilteredData mutations", () => {
 
         const regionIndicators = getters.flattenedRegionFilter(testState, testGetters, mockRootState(), null);
 
-        const expected = [] as string[];
+        const expected = {};
 
         expect(regionIndicators).toStrictEqual(expected);
     });

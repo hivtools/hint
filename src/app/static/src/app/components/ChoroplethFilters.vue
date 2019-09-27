@@ -35,7 +35,7 @@
         <div class="py-2">
             <label class="font-weight-bold">Region</label>
             <treeselect id="region-filters" :multiple="false"
-                        :clearable="true"
+                        :clearable="false"
                         :options="regionFilters.available"
                         :value="regionFilters.selected"
                         :normalizer="treeselectNormalizer"
@@ -77,10 +77,12 @@
             selectedDataFilterOptions: function () {
                 return this.$store.getters['filteredData/selectedDataFilterOptions'];
             },
-            regionOptions: function () {
+            regionOptions: function() {
                 return this.$store.getters['filteredData/regionOptions'];
             },
-
+            flattenedRegionOptions: function() {
+                return this.$store.getters['filteredData/flattenedRegionOptions'];
+            },
             sexFilters: function (state): ChoroplethFiltersForType {
                 const available = (state.selectedDataType == DataType.ANC ?
                     undefined :
@@ -99,7 +101,7 @@
             },
 
             regionFilters: function (state): ChoroplethFiltersForType {
-                return this.buildViewFiltersForType(this.regionOptions,
+                return this.buildViewFiltersForType([this.regionOptions],
                     this.selectedChoroplethFilters.region);
             }
         }),
@@ -145,25 +147,7 @@
                 this.selectFilterOption(FilterType.Survey, id, this.surveyFilters.available);
             },
             selectRegion(id: string) {
-                const findOptionForId = (id: string, options: NestedFilterOption[]) : NestedFilterOption | null => {
-                    const filtered = options.filter(o => o.id == id);
-                    if (filtered.length){
-                        return filtered[0];
-                    }
-                    else {
-                        for (const option of options) {
-                            if (option.options) {
-                                const result = findOptionForId(id, option.options as NestedFilterOption[]);
-                                if (result) {
-                                    return result;
-                                }
-                            }
-                        }
-                        return null;
-                    }
-                };
-
-                const newFilter = findOptionForId(id, this.regionFilters.available);
+                const newFilter = this.flattenedRegionOptions[id];
                 this.filterUpdated([FilterType.Region, newFilter]);
             },
             getNewSelectedFilterOption(filterName: string, available: FilterOption[]) {
@@ -192,6 +176,10 @@
                 const newSurveyFilter = this.getNewSelectedFilterOption("survey", this.surveyFilters.available);
                 if (newSurveyFilter) {
                     this.selectSurvey(newSurveyFilter);
+                }
+
+                if (!this.selectedChoroplethFilters.region && this.regionOptions) {
+                   this.filterUpdated([FilterType.Region, this.regionOptions]);
                 }
             }
         },
