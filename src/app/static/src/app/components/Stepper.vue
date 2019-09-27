@@ -73,7 +73,7 @@
         },
         methods: {
             ...mapActions(namespace, ["jump", "next"]),
-            ...mapActions(["reload"]),
+            ...mapActions(["validate"]),
             isActive(num: number) {
                 return this.ready && this.activeStep == num;
             },
@@ -96,7 +96,7 @@
         watch: {
             ready: function (newVal) {
                 if (newVal) {
-                    this.reload()
+                    this.validate()
                 }
             }
         }

@@ -20,7 +20,7 @@ describe("root actions", () => {
             }
         };
 
-        actions.reload(mockContext as any);
+        actions.validate(mockContext as any);
         expect(mockContext.commit).not.toHaveBeenCalled();
     });
 
@@ -42,7 +42,7 @@ describe("root actions", () => {
             }
         };
 
-        actions.reload(mockContext as any);
+        actions.validate(mockContext as any);
         expect(mockContext.commit).toHaveBeenCalled();
     })
 });

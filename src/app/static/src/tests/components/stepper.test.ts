@@ -302,8 +302,8 @@ describe("Stepper component", () => {
         expect(steps.at(3).props().complete).toBe(true);
     });
 
-    it("reloads state once ready", async () => {
-        const spy = jest.spyOn(rootActions as any, "reload");
+    it("validates state once ready", async () => {
+        const spy = jest.spyOn(rootActions as any, "validate");
         const store = createSut({ready: true});
         const wrapper = shallowMount(Stepper, {store, localVue});
         expect(spy).not.toHaveBeenCalled();

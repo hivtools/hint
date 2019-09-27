@@ -25,7 +25,7 @@ export const initialModelRunState: ModelRunState = {
     success: false,
     errors: [],
     status: ModelRunStatus.NotStarted,
-    statusPollId: -1 // this will never be valid after a reload, so always set to -1
+    statusPollId: -1
 };
 
 const namespaced: boolean = true;
