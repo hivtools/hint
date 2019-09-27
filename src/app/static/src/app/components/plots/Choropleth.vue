@@ -1,7 +1,8 @@
 <template>
-    <l-map ref="map" :zoom="zoom" :center="center" style="height: 800px; width: 100%">
+    <l-map ref="map" :bound="mapBounds" :center="center" style="height: 800px; width: 100%">
         <template v-for="feature in currentFeatures">
             <l-geo-json :geojson="feature"
+                        :ref="feature.properties['area_id']"
                         :options="options"
                         :optionsStyle="{...style, fillColor: getColorForRegion(feature.properties['area_id'])}">
             </l-geo-json>
@@ -27,7 +28,6 @@
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
 
     interface Data {
-        zoom: number,
         featuresByLevel: { [k: number]: any },
         style: any,
         indicator: Indicator;
@@ -47,7 +47,8 @@
                 features: state => state.shape && state.shape.data.features
             }),
             ...mapState<FilteredDataState>("filteredData", {
-                selectedDataType: state => state.selectedDataType
+                selectedDataType: state => state.selectedDataType,
+                selectedRegion: state => state.selectedChoroplethFilters.region
             }),
             center: function() {
                 return this.$store.getters['filteredData/selectedRegionCenter'];
@@ -105,11 +106,17 @@
                             </div>`);
                     }
                 }
+            },
+            mapBounds: function() {
+                const selectedAreaId = this.selectedRegion.id;
+                const geoJson = this.$refs[selectedAreaId]; //This doesn't work, because the geoJson elements don't exist yet on first pass
+                //Construct an LGeoJson from the raw geometry?
+                return geoJson.getBounds();
             }
         },
         data(): Data {
             return {
-                zoom: 7, // TODO: will this always be appropriate?
+                //zoom: 7, // TODO: will this always be appropriate?
                 featuresByLevel: {1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
                 style: {
                     weight: 1,
