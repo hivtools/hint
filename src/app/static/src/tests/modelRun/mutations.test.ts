@@ -1,6 +1,5 @@
-import {initialModelRunState, localStorageKey, ModelRunState, ModelRunStatus} from "../../app/store/modelRun/modelRun";
+import {initialModelRunState, ModelRunStatus} from "../../app/store/modelRun/modelRun";
 import {mutations} from "../../app/store/modelRun/mutations";
-import {localStorageManager} from "../../app/localStorageManager";
 
 describe("Model run mutations", () => {
 
@@ -15,34 +14,31 @@ describe("Model run mutations", () => {
         expect(testState.status).toBe(ModelRunStatus.Started);
     });
 
-    it("saves state in localStorage when run started", () => {
-
+    it("sets run status, success and poll id when done", () => {
         const testState = {...initialModelRunState};
-        mutations.ModelRunStarted(testState, {payload: {id: "1234"}});
-
-        const savedState = localStorageManager.getItem<ModelRunState>(localStorageKey)!!;
-        expect(savedState.modelRunId).toBe("1234");
-        expect(savedState.status).toBe(ModelRunStatus.Started);
+        mutations.RunStatusUpdated(testState, {payload: {id: "1234", done: true, success: true}});
+        expect(testState.success).toBe(true);
+        expect(testState.status).toBe(ModelRunStatus.Complete);
+        expect(testState.statusPollId).toBe(-1);
     });
 
-    it("saves state in localStorage when status updated", () => {
+    it("does not update status if not done", () => {
+        const testState = {...initialModelRunState, status: ModelRunStatus.Started};
+        mutations.RunStatusUpdated(testState, {payload: {id: "1234", done: false}});
+        expect(testState.status).toBe(ModelRunStatus.Started);
+    });
 
+    it("does not update success if not successful", () => {
         const testState = {...initialModelRunState};
-        mutations.RunStatusUpdated(testState, {
-            payload: {
-                id: "1234",
-                success: true,
-                done: true,
-                queue: 1,
-                progress: "",
-                timeRemaining: "",
-                status: "running"
-            }
-        });
+        mutations.RunStatusUpdated(testState, {payload: {id: "1234", done: true, success: false}});
+        expect(testState.status).toBe(ModelRunStatus.Complete);
+        expect(testState.success).toBe(false);
+    });
 
-        const savedState = localStorageManager.getItem<ModelRunState>(localStorageKey)!!;
-        expect(savedState.status).toBe(ModelRunStatus.Complete);
-        expect(savedState.success).toBe(true);
+    it("sets poll id", () => {
+        const testState = {...initialModelRunState};
+        mutations.PollingForStatusStarted(testState, {payload: 2});
+        expect(testState.statusPollId).toBe(2);
     });
 
 });

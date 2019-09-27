@@ -16,7 +16,6 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapState} from "vuex";
-    import {interpolateCool, interpolateWarm} from "d3-scale-chromatic"
     import {LGeoJson, LMap} from 'vue2-leaflet';
     import {Feature} from "geojson";
     import {Layer} from "leaflet";

@@ -3,11 +3,11 @@
         <div class="row">
             <template v-for="step in steps">
                 <step :key="step.number"
-                      :active="active(step.number)"
+                      :active="isActive(step.number)"
                       :number="step.number"
                       :text="step.text"
-                      :enabled="enabled(step.number)"
-                      :complete="complete[step.number]"
+                      :enabled="isEnabled(step.number)"
+                      :complete="isComplete(step.number)"
                       @jump="jump">
                 </step>
                 <div class="col step-connector" v-if="step.number < steps.length">
@@ -22,17 +22,17 @@
         </div>
         <div v-if="ready" class="content">
             <div class="pt-4">
-                <baseline v-if="active(1)"></baseline>
-                <survey-and-program v-if="active(2)"></survey-and-program>
-                <p v-if="active(3)">Functionality coming soon.</p>
-                <model-run v-if="active(4)"></model-run>
+                <baseline v-if="isActive(1)"></baseline>
+                <survey-and-program v-if="isActive(2)"></survey-and-program>
+                <p v-if="isActive(3)">Functionality coming soon.</p>
+                <model-run v-if="isActive(4)"></model-run>
             </div>
             <div class="row mt-2">
                 <div class="col">
                     <a href="#" id="continue"
                        v-on:click="next"
                        class="text-uppercase font-weight-bold float-right"
-                       :class="{'disabled': !complete[activeStep]}">continue</a>
+                       :class="{'disabled': !isComplete(activeStep)}">continue</a>
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {mapActions, mapState} from "vuex";
+    import {mapActions, mapGetters, mapState} from "vuex";
     import Step from "./Step.vue";
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
@@ -69,26 +69,21 @@
                 activeStep: state => state.activeStep,
                 steps: state => state.steps
             }),
-            ready: function () {
-                return this.$store.getters['stepper/ready']
-            },
-            complete: function (): CompleteStatus {
-                return this.$store.getters['stepper/complete']
-            }
+            ...mapGetters(namespace, ["ready", "complete"])
         },
         methods: {
-            ...mapActions(namespace, {
-                jump: 'jump',
-                next: 'next',
-                load: 'load'
-            }),
-            active(num: number) {
-                return this.activeStep == num;
+            ...mapActions(namespace, ["jump", "next"]),
+            ...mapActions(["validate"]),
+            isActive(num: number) {
+                return this.ready && this.activeStep == num;
             },
-            enabled(num: number) {
-                return this.steps.slice(0, num)
+            isEnabled(num: number) {
+                return this.ready && this.steps.slice(0, num)
                     .filter((s: { number: number }) => this.complete[s.number])
                     .length >= num - 1
+            },
+            isComplete(num: number) {
+                return this.ready && this.complete[num];
             }
         },
         components: {
@@ -101,7 +96,7 @@
         watch: {
             ready: function (newVal) {
                 if (newVal) {
-                    this.load()
+                    this.validate()
                 }
             }
         }

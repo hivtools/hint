@@ -17,8 +17,6 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
         state.modelRunId = action.payload.id;
         state.status = ModelRunStatus.Started;
         state.success = false;
-
-        localStorageManager.setItem(localStorageKey, state);
     },
 
     RunStatusUpdated(state: ModelRunState, action: PayloadWithType<ModelStatusResponse>) {
@@ -30,8 +28,6 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
             if (action.payload.success){
                 state.success = true;
             }
-
-            localStorageManager.setItem(localStorageKey, state);
         }
     },
 

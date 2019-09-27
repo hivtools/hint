@@ -4,6 +4,7 @@ import { mutations } from './mutations';
 import { getters } from './getters';
 import { RootState} from "../../root";
 import { FilterOption } from "../../generated";
+import {localStorageManager} from "../../localStorageManager";
 
 export enum DataType { ANC, Program, Survey }
 export enum FilterType { Sex, Age, Region, Survey }
@@ -49,10 +50,11 @@ export const initialFilteredDataState: FilteredDataState = {
 };
 
 const namespaced: boolean = true;
+const existingState = localStorageManager.getState();
 
 export const filteredData: Module<FilteredDataState, RootState> = {
     namespaced,
-    state: initialFilteredDataState,
+    state: {...initialFilteredDataState, ...existingState && existingState.filteredData},
     actions,
     mutations,
     getters
