@@ -48,7 +48,7 @@ export const getters = {
             }
         };
 
-        const flattenedRegions = getters.flattenedRegionFilter;
+        const flattenedRegions = getters.flattenedSelectedRegionFilter;
 
         for(const d of data) {
             const row = d as any;
@@ -108,10 +108,10 @@ export const getters = {
         for (const region in result) {
             const indicators = result[region];
             if (indicators.art) {
-                indicators.art.color = getColor(indicators.art, artRange, getters.colorFunctions.art);
+                indicators.art.color = getColor(indicators.art!.value, artRange.min, artRange.max, getters.colorFunctions.art);
             }
             if (indicators.prev) {
-                indicators.prev.color = getColor(indicators.prev, prevRange, getters.colorFunctions.prev);
+                indicators.prev.color = getColor(indicators.prev!.value, prevRange.min, prevRange.max, getters.colorFunctions.prev);
             }
         }
         return {
@@ -124,7 +124,7 @@ export const getters = {
         const option = getters.regionOptions;
         return option ? flattenOption(option) : {};
     },
-    flattenedRegionFilter: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+    flattenedSelectedRegionFilter: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         return state.selectedChoroplethFilters.region ? flattenOption(state.selectedChoroplethFilters.region) : {};
     },
 };
@@ -142,13 +142,13 @@ const flattenOption = (regionFilter: NestedFilterOption) => {
     return result;
 };
 
-const getColor = (data: IndicatorValues, range: IndicatorRange, colorFunction: (t: number) => string) => {
-    const min = (range.min || 0);
-    let rangeNum = (range.max  && (range.max != min)) ? //Avoid dividing by zero if only one value...
-                    range.max - min :
+export const getColor = (value: number, min: number | null, max: number | null, colorFunction: (t: number) => string) => {
+    min = (min || 0);
+    let rangeNum = (max  && (max != min)) ? //Avoid dividing by zero if only one value...
+                    max - min :
                     1;
 
-    const colorValue = (data!.value - min) / rangeNum;
+    const colorValue = (value - min) / rangeNum;
 
     return colorFunction(colorValue);
 };

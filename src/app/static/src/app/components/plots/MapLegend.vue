@@ -1,7 +1,7 @@
 <template>
     <l-control position="bottomright">
         <div class="map-control p-3">
-            <div class="legend" v-for="level in levels" v-bind:key="level.val">
+            <div class="legend" v-for="level in levels" v-bind:key="level.idx">
                 <i v-bind:style="level.style"></i>
                 <span class="level">{{level.val}}</span>
                 <span class="hidden" style="display: none">{{level.style}}</span>
@@ -13,11 +13,12 @@
 <script lang="ts">
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
+    import {getColor} from '../../store/filteredData/getters';
 
     export default Vue.extend({
         name: "MapLegend",
         props: {
-            "getColor": Function,
+            "colorFunction": Function,
             "max": Number,
             "min": Number
         },
@@ -30,7 +31,7 @@
                 return [0, 1, 2, 3, 4, 5].map((i) => {
                     const val = Math.round((this.min + (i * step)) * 100)/100;
                     return {
-                        val, style: {background: this.getColor(val/(this.max - this.min))}
+                        val, idx: i, style: {background: getColor(val, this.min, this.max, this.colorFunction as (t: number) => string)}
                     }
                 });
             }

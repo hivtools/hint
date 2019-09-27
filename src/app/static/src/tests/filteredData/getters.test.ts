@@ -25,7 +25,7 @@ describe("FilteredData mutations", () => {
             art: function(t: number) {return `rgb(${t},0,0)`;},
             prev: function(t: number) {return `rgb(0,${t},0)`;}
         },
-        flattenedRegionFilter: {}
+        flattenedSelectedRegionFilter: {}
     };
 
     it("gets correct selectedDataFilters when selectedDataType is Program", () => {
@@ -680,7 +680,7 @@ describe("FilteredData mutations", () => {
 
         const testRegionGetters = {
             ...testGetters,
-            flattenedRegionFilter: {
+            flattenedSelectedRegionFilter: {
                 "area1": {},
                 "area2": {}
             }
@@ -707,7 +707,28 @@ describe("FilteredData mutations", () => {
         expect(regionIndicators).toStrictEqual(expected);
     });
 
-    it("gets flattened region filter", () => {
+    it("gets flattened selected region filter", () => {
+
+        const testRegions = {
+            id: "R1",
+            name: "Region 1",
+            options: [
+                {
+                    id: "R2",
+                    name: "Region 2"
+                },
+                {
+                    id: "R3",
+                    name: "Region 3",
+                    options: [
+                        {
+                            id: "R4",
+                            name: "Region 4"
+                        }
+                    ]
+                }
+            ]
+        };
         const testStore:  Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
@@ -716,26 +737,7 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "male", name: "male"},
-                    region: {
-                        id: "R1",
-                        name: "Region 1",
-                        options: [
-                            {
-                                id: "R2",
-                                name: "Region 2"
-                            },
-                            {
-                                id: "R3",
-                                name: "Region 3",
-                                options: [
-                                    {
-                                        id: "R4",
-                                        name: "Region 4"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
+                    region: testRegions
                 }
             },
             getters: getters
@@ -743,53 +745,19 @@ describe("FilteredData mutations", () => {
         const testState = testStore.state as FilteredDataState;
 
 
-        const regionIndicators = getters.flattenedRegionFilter(testState, testGetters, mockRootState(), null);
+        const flattenedRegionFilter = getters.flattenedSelectedRegionFilter(testState, testGetters, mockRootState(), null);
 
         const expected = {
-            "R1": {
-                id: "R1",
-                name: "Region 1",
-                options: [
-                    {
-                        id: "R2",
-                        name: "Region 2"
-                    },
-                    {
-                        id: "R3",
-                        name: "Region 3",
-                        options: [
-                            {
-                                id: "R4",
-                                name: "Region 4"
-                            }
-                        ]
-                    }
-                ]
-            },
-            "R2": {
-                id: "R2",
-                name: "Region 2"
-            },
-            "R3": {
-                id: "R3",
-                name: "Region 3",
-                options: [
-                    {
-                        id: "R4",
-                        name: "Region 4"
-                    }
-                ]
-            },
-            "R4": {
-                id: "R4",
-                name: "Region 4"
-            }
+            "R1": testRegions,
+            "R2": testRegions.options[0],
+            "R3": testRegions.options[1],
+            "R4": testRegions.options[1].options!![0]
         };
 
-        expect(regionIndicators).toStrictEqual(expected);
+        expect(flattenedRegionFilter).toStrictEqual(expected);
     });
 
-    it("gets flattened region filter when region filter is null", () => {
+    it("gets flattened selected region filter when region filter is null", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
@@ -805,13 +773,76 @@ describe("FilteredData mutations", () => {
         };
         const testState = testStore.state as FilteredDataState;
 
-        const regionIndicators = getters.flattenedRegionFilter(testState, testGetters, mockRootState(), null);
+        const flattenedRegionFilter = getters.flattenedSelectedRegionFilter(testState, testGetters, mockRootState(), null);
 
         const expected = {};
 
-        expect(regionIndicators).toStrictEqual(expected);
+        expect(flattenedRegionFilter).toStrictEqual(expected);
     });
 
+    it("gets flattened region options", () => {
+
+        const testRegions = {
+            id: "R1",
+            name: "Region 1",
+            options: [
+                {
+                    id: "R2",
+                    name: "Region 2"
+                },
+                {
+                    id: "R3",
+                    name: "Region 3",
+                    options: [
+                        {
+                            id: "R4",
+                            name: "Region 4"
+                        }
+                    ]
+                }
+            ]
+        };
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {
+                ...initialFilteredDataState
+            }
+        };
+        const testState = testStore.state as FilteredDataState;
+        const filterGetters = {
+            ...testGetters,
+            regionOptions: testRegions
+        };
+
+        const flattenedRegionOptions = getters.flattenedRegionOptions(testState, filterGetters, mockRootState(), null);
+
+        const expected = {
+            "R1": testRegions,
+            "R2": testRegions.options[0],
+            "R3": testRegions.options[1],
+            "R4": testRegions.options[1].options!![0]
+        };
+
+        expect(flattenedRegionOptions).toStrictEqual(expected);
+    });
+
+    it("gets flattened selected region options when region filter is null", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {
+                ...initialFilteredDataState
+            }
+        };
+        const testState = testStore.state as FilteredDataState;
+        const filterGetters = {
+            ...testGetters,
+            regionOptions: null
+        };
+
+        const flattenedRegionOptions = getters.flattenedRegionOptions(testState, filterGetters, mockRootState(), null);
+
+        const expected = {};
+
+        expect(flattenedRegionOptions).toStrictEqual(expected);
+    });
 
 
 });

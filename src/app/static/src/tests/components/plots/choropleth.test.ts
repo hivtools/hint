@@ -109,46 +109,6 @@ describe("Choropleth component", () => {
         expect(vm.max).toBe(0.2);
     });
 
-    it("calculates showLegend as true if there is a range value", () => {
-        const wrapper = shallowMount(Choropleth, {store, localVue});
-
-        const vm = wrapper.vm as any;
-        expect(vm.showLegend).toBe(true);
-    });
-
-    it("calculates showLegend as false if there is no range value", () => {
-        const testStore = new Vuex.Store({
-            modules: {
-                baseline: {
-                    namespaced: true,
-                    state: mockBaselineState({
-                        shape: mockShapeResponse({
-                            data: {features: fakeFeatures} as any
-                        })
-                    })
-                },
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState({selectedDataType: DataType.Survey}),
-                    getters: {
-                        regionIndicators: () => {
-                            return {
-                                indicators: {},
-                                prevRange: {min: 0, max: 0},
-                                artRange: {min: 0, max: 0}
-                            };
-                        },
-                        colorFunctions: testColorFunctions
-                    }
-                }
-            }
-        });
-        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
-
-        const vm = wrapper.vm as any;
-        expect(vm.showLegend).toBe(false);
-    });
-
     it("calculates indicators from filteredData", () => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
 

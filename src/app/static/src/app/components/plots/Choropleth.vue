@@ -10,7 +10,7 @@
                      @detail-changed="onDetailChange"
                      :indicator="indicator"
                     :artEnabled="artEnabled" :prevEnabled="prevEnabled"></map-control>
-        <map-legend v-if="showLegend" :getColor="getColor" :max="max" :min="min"></map-legend>
+        <map-legend :colorFunction="selectedColorFunction" :max="max" :min="min"></map-legend>
     </l-map>
 </template>
 <script lang="ts">
@@ -59,11 +59,8 @@
             currentFeatures: function () {
                 return this.featuresByLevel[this.detail || 1]
             },
-            getColor: function () {
+            selectedColorFunction: function () {
                 return this.colorFunctions[this.indicator];
-            },
-            showLegend: function() {
-              return !!(this.max || this.min);
             },
             min: function() {
                 if (this.indicator) {
