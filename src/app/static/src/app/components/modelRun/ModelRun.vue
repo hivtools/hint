@@ -1,8 +1,16 @@
 <template>
-    <button class="btn btn-red btn-lg"
-            v-on:click="runModelWithParams"
-            :disabled="disabled">Run model
-    </button>
+    <div>
+        <button class="btn btn-red btn-lg"
+                v-on:click="runModelWithParams"
+                :disabled="running">Run model
+        </button>
+        <h4 v-if="success" class="mt-3" id="model-run-complete">Model run complete
+            <tick color="#e31837" width="20px"></tick>
+        </h4>
+        <modal :open="running">
+            <h4>Running model</h4>
+        </modal>
+    </div>
 </template>
 
 <script lang="ts">
@@ -10,6 +18,8 @@
     import {mapActions, mapState} from "vuex";
     import {ModelSubmitParameters} from "../../generated";
     import {ModelRunState, ModelRunStatus} from "../../store/modelRun/modelRun";
+    import Modal from "../Modal.vue";
+    import Tick from "../Tick.vue";
 
     const namespace: string = 'modelRun';
 
@@ -17,7 +27,8 @@
         name: "ModelRun",
         computed: mapState<ModelRunState>(namespace, {
             runId: state => state.modelRunId,
-            disabled: state => state.status == ModelRunStatus.Started
+            running: state => state.status == ModelRunStatus.Started,
+            success: state => state.success
         }),
         methods: {
             ...mapActions({
@@ -45,9 +56,13 @@
             }
         },
         created() {
-            if (this.runId){
+            if (this.runId) {
                 this.poll(this.runId);
             }
+        },
+        components: {
+            Modal,
+            Tick
         }
     });
 </script>
