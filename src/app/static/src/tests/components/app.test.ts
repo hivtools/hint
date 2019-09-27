@@ -1,14 +1,7 @@
 import {createLocalVue, mount} from '@vue/test-utils';
 import Vuex from 'vuex';
-import {mockAxios, mockModelRunState, mockStepperState, mockSuccess, mockSurveyAndProgramState} from "../mocks";
-import {mockBaselineState} from "../mocks";
-import {mutations as baselineMutations} from "../../app/store/baseline/mutations";
-import {baselineGetters} from "../../app/store/baseline/baseline";
-import {surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
-import {getters} from "../../app/store/stepper/getters";
-import {mutations as stepperMutations} from "../../app/store/stepper/mutations";
-import {actions as stepperActions} from "../../app/store/stepper/actions";
-import {actions} from "../../app/store/root/actions";
+import Vue from "vue";
+import {mockAxios, mockSuccess} from "../mocks";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -29,6 +22,8 @@ mockAxios.onGet(`/disease/anc/`)
 
 import {app} from "../../app"
 import {mutations} from "../../app/store/root/mutations";
+import {RootState, storeOptions} from "../../app/root";
+import {localStorageManager} from "../../app/localStorageManager";
 
 describe("App", () => {
 
@@ -40,40 +35,11 @@ describe("App", () => {
         getSurveyAndProgramData: jest.fn()
     };
 
-    const store = new Vuex.Store({
-        modules: {
-            baseline: {
-                namespaced: true,
-                state: mockBaselineState(),
-                actions: {...baselineActions},
-                mutations: {...baselineMutations},
-                getters: {...baselineGetters}
-            },
-            surveyAndProgram: {
-                namespaced: true,
-                state: mockSurveyAndProgramState(),
-                getters: {...surveyAndProgramGetters},
-                actions: surveyAndProgramActions
-            },
-            selectedData: {
-                namespaced: true,
-                state: {state: null},
-            },
-            modelRun: {
-                namespaced: true,
-                state: mockModelRunState()
-            },
-            stepper: {
-                namespaced: true,
-                state: mockStepperState(),
-                actions: stepperActions,
-                mutations: stepperMutations,
-                getters
-            }
-        },
-        actions,
-        mutations
-    });
+    const localStoreOptions = storeOptions;
+    localStoreOptions.modules!!.baseline!!.actions = baselineActions;
+    localStoreOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
+
+    const store = new Vuex.Store<RootState>(localStoreOptions);
 
     it("loads input data on mount", (done) => {
 
@@ -89,6 +55,15 @@ describe("App", () => {
             expect(surveyAndProgramActions.getSurveyAndProgramData).toHaveBeenCalled();
             done();
         });
+    });
+
+    it("updates local storage on every mutation", async () => {
+
+        const spy = jest.spyOn(localStorageManager, "saveState");
+        store.commit("baseline/PopulationUploadError", {payload: "test"});
+
+        await Vue.nextTick();
+        expect(spy).toHaveBeenCalled();
     });
 
 });

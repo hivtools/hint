@@ -7,6 +7,7 @@ import {LGeoJson} from 'vue2-leaflet';
 import MapControl from "../../../app/components/plots/MapControl.vue";
 import {mutations} from "../../../app/store/filteredData/mutations";
 import {DataType, initialFilteredDataState} from "../../../app/store/filteredData/filteredData";
+import {actions} from "../../../app/store/filteredData/actions";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -78,7 +79,8 @@ describe("Choropleth component", () => {
                         return testRegionIndicators;
                     },
                     colorFunctions: testColorFunctions
-                }
+                },
+                actions
             }
         }
     });

@@ -8,7 +8,7 @@ export interface StepperActions {
 }
 
 export const actions: StepperActions & ActionTree<StepperState, RootState> = {
-    jump({commit, rootState}, step) {
+    jump({commit}, step) {
         commit({type: "Jump", payload: step});
     },
 
