@@ -6,18 +6,22 @@ import {
     mockBaselineState,
     mockModelRunState,
     mockPopulationResponse,
-    mockShapeResponse,
+    mockShapeResponse, mockStepperState,
     mockSurveyAndProgramState
 } from "../mocks";
 import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations} from '../../app/store/baseline/mutations';
 import {mutations as surveyAndProgramMutations} from '../../app/store/surveyAndProgram/mutations';
 import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations';
+import {mutations as stepperMutations} from '../../app/store/stepper/mutations';
+
 import {ModelRunState} from "../../app/store/modelRun/modelRun";
 
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
+import {actions} from "../../app/store/stepper/actions";
+import {getters} from "../../app/store/stepper/getters";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -45,6 +49,13 @@ describe("Stepper component", () => {
                     namespaced: true,
                     state: mockModelRunState(modelRunState),
                     mutations: modelRunMutations
+                },
+                stepper: {
+                    namespaced: true,
+                    state: mockStepperState(),
+                    mutations: stepperMutations,
+                    actions: actions,
+                    getters
                 }
             }
         })
