@@ -8,6 +8,7 @@ type FilteredDataMutation = Mutation<FilteredDataState>
 export interface SelectedDataMutations {
     SelectedDataTypeUpdated: FilteredDataMutation
     FilterUpdated: FilteredDataMutation
+    ChoroplethFilterUpdated: FilteredDataMutation
 }
 
 export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations  = {
@@ -15,6 +16,36 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
         state.selectedDataType = action.payload;
     },
     FilterUpdated(state: FilteredDataState, action: PayloadWithType<[FilterType, FilterOption[]]>) {
-        state.selectedFilters.updateByType(action.payload[0], action.payload[1]);
+        const value = action.payload[1];
+        const filters =  state.selectedFilters;
+        switch (action.payload[0]) {
+            case (FilterType.Age):
+                filters.age = value;
+                break;
+            case (FilterType.Region):
+                filters.region = value;
+                break;
+            case (FilterType.Sex):
+                filters.sex = value;
+                break;
+            case (FilterType.Survey):
+                filters.surveys = value;
+                break;
+        }
+    },
+    ChoroplethFilterUpdated(state: FilteredDataState, action: PayloadWithType<[FilterType, FilterOption]>) {
+        const value = action.payload[1];
+        const filters =  state.selectedChoroplethFilters;
+        switch (action.payload[0]) {
+            case (FilterType.Age):
+                filters.age = value;
+                break;
+            case (FilterType.Sex):
+                filters.sex = value;
+                break;
+            case (FilterType.Survey):
+                filters.survey = value;
+                break;
+        }
     }
 };

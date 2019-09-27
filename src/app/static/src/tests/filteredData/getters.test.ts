@@ -204,7 +204,15 @@ describe("FilteredData mutations", () => {
 
     it("gets regionIndicators for survey", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Survey},
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: DataType.Survey,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: {id: "s1", name: "Survey 1"},
+                    sex: {id: "both", name: "both"}
+                }
+            },
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -214,28 +222,36 @@ describe("FilteredData mutations", () => {
                 area_id: "area1",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 2
+                est: 2,
+                age_group_id: "1",
+                sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 3
+                est: 3,
+                age_group_id: "1",
+                sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
                 survey_id: "s1",
                 indicator: "artcov",
-                est: 4
+                est: 4,
+                age_group_id: "1",
+                sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 survey_id: "s1",
                 indicator: "artcov",
-                est: 5
+                est: 5,
+                age_group_id: "1",
+                sex: "both"
             }
         ];
         const testRootState = mockRootState({
@@ -269,9 +285,17 @@ describe("FilteredData mutations", () => {
         expect(regionIndicators).toStrictEqual(expected);
     });
 
-    it("gets regionIndicators for programme", () => {
+    it("filters regionIndicators for survey", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Program},
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: DataType.Survey,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: {id: "s1", name: "Survey 1"},
+                    sex: {id: "both", name: "both"}
+                }
+            },
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -279,12 +303,93 @@ describe("FilteredData mutations", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-                current_art: 2
+                survey_id: "s1",
+                indicator: "prev",
+                est: 2,
+                age_group_id: "1",
+                sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
-                current_art: 3
+                survey_id: "s2",
+                indicator: "prev",
+                est: 3,
+                age_group_id: "1",
+                sex: "both"
+            },
+            {
+                iso3: "MWI",
+                area_id: "area3",
+                survey_id: "s1",
+                indicator: "prev",
+                est: 4,
+                age_group_id: "2",
+                sex: "both"
+            },
+            {
+                iso3: "MWI",
+                area_id: "area4",
+                survey_id: "s1",
+                indicator: "prev",
+                est: 5,
+                age_group_id: "1",
+                sex: "female"
+            },
+
+        ];
+        const testRootState = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState(
+                {survey: mockSurveyResponse(
+                        {data: testData}
+                    )}),
+            filteredData: testState});
+
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+
+        const expected = {
+            indicators: {
+                "area1":
+                    {
+                        "prev": {value: 2, color: "rgb(0,2,0)"}
+                    }
+            },
+            artRange: {min: null, max: null},
+            prevRange: {min: 2, max: 2}
+        };
+
+        expect(regionIndicators).toStrictEqual(expected);
+    });
+
+
+    it("gets regionIndicators for programme", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: DataType.Program,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: null,
+                    sex: {id: "both", name: "both"}
+                }
+            },
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testData = [
+            {
+                iso3: "MWI",
+                area_id: "area1",
+                current_art: 2,
+                age_group_id: "1",
+                sex: "both"
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                current_art: 3,
+                age_group_id: "1",
+                sex: "both"
             }
         ];
         const testRootState = mockRootState({
@@ -299,22 +404,30 @@ describe("FilteredData mutations", () => {
         const expected = {
             indicators: {
                 "area1": {
-                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                    "art": {value: 2, color: "rgb(2,0,0)"}
                 },
                 "area2": {
-                    "prev": {value: 3, color: "rgb(0,3,0)"}
+                    "art": {value: 3, color: "rgb(3,0,0)"}
                 }
             },
-            artRange: {min: null, max: null},
-            prevRange: {min: 2, max: 3}
+            artRange: {min: 2, max: 3},
+            prevRange: {min: null, max: null}
         };
 
         expect(regionIndicators).toStrictEqual(expected);
     });
 
-    it("gets regionIndicators for ANC", () => {
+    it("filters regionIndicators for programme", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.ANC},
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: DataType.Program,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: {id: "s1", name: "Survey 1"}, //Should be ignored for this data type
+                    sex: {id: "both", name: "both"}
+                }
+            },
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -322,12 +435,78 @@ describe("FilteredData mutations", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-                ancrt_test_pos: 2
+                current_art: 2,
+                age_group_id: "1",
+                sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
-                ancrt_test_pos: 3
+                current_art: 3,
+                age_group_id: "2",
+                sex: "both"
+            },
+            {
+                iso3: "MWI",
+                area_id: "area3",
+                current_art: 4,
+                age_group_id: "1",
+                sex: "male"
+            },
+            {
+                iso3: "MWI",
+                area_id: "area4",
+                current_art: 5,
+            }
+        ];
+        const testRootState = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState(
+                {program: mockProgramResponse(
+                        {data: testData}
+                    )}),
+            filteredData: testState});
+
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+
+        const expected = {
+            indicators: {
+                "area1": {
+                    "art": {value: 2, color: "rgb(2,0,0)"}
+                }
+            },
+            artRange: {min: 2, max: 2},
+            prevRange: {min: null, max: null}
+        };
+
+        expect(regionIndicators).toStrictEqual(expected);
+    });
+
+    it("gets regionIndicators for ANC", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: DataType.ANC,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: null,
+                    sex: null
+                }
+             },
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testData = [
+            {
+                iso3: "MWI",
+                area_id: "area1",
+                ancrt_test_pos: 2,
+                age_group_id: "1"
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                ancrt_test_pos: 3,
+                age_group_id: "1"
             }
         ];
         const testRootState = mockRootState({
@@ -354,5 +533,65 @@ describe("FilteredData mutations", () => {
 
         expect(regionIndicators).toStrictEqual(expected);
     });
+
+    it("filters regionIndicators for ANC", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: DataType.ANC,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: null,
+                    sex: {id: "male", name: "male"} //should be ignored
+                }
+            },
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testData = [
+            {
+                iso3: "MWI",
+                area_id: "area1",
+                ancrt_test_pos: 2,
+                age_group_id: "1"
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                ancrt_test_pos: 3,
+                age_group_id: "1"
+            },
+            {
+                iso3: "MWI",
+                area_id: "area3",
+                ancrt_test_pos: 2,
+                age_group_id: "2"
+            }
+        ];
+        const testRootState = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState(
+                {anc: mockAncResponse(
+                        {data: testData}
+                    )}),
+            filteredData: testState});
+
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+
+        const expected = {
+            indicators: {
+                "area1": {
+                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                },
+                "area2": {
+                    "prev": {value: 3, color: "rgb(0,3,0)"}
+                }
+            },
+            artRange: {min: null, max: null},
+            prevRange: {min: 2, max: 3}
+        };
+
+        expect(regionIndicators).toStrictEqual(expected);
+    });
+
 
 });

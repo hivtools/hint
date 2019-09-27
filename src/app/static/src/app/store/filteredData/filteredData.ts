@@ -13,14 +13,19 @@ export interface SelectedFilters {
     sex: FilterOption[],
     age: FilterOption[],
     region: FilterOption[],
-    surveys: FilterOption[],
-    getByType: (type: FilterType) => FilterOption[],
-    updateByType: (type: FilterType, value: FilterOption[]) => void
+    surveys: FilterOption[]
+}
+
+export interface SelectedChoroplethFilters {
+    sex: FilterOption | null,
+    age: FilterOption | null,
+    survey: FilterOption | null
 }
 
 export interface FilteredDataState {
     selectedDataType: DataType | null
     selectedFilters: SelectedFilters
+    selectedChoroplethFilters: SelectedChoroplethFilters
     regionIndicators: {[k: string]: any};
 }
 
@@ -28,40 +33,19 @@ export const initialSelectedFilters: SelectedFilters = {
     sex: [],
     age: [],
     region: [],
-    surveys: [],
-    getByType: function(type: FilterType): FilterOption[] {
-        switch (type) {
-            case (FilterType.Age):
-                return this.age;
-            case (FilterType.Region):
-                return this.region;
-            case (FilterType.Sex):
-                return this.sex;
-            case (FilterType.Survey):
-                return this.surveys;
-        }
-    },
-    updateByType: function(type: FilterType, value: FilterOption[]) {
-        switch (type) {
-            case (FilterType.Age):
-                this.age = value;
-                break;
-            case (FilterType.Region):
-                this.region = value;
-                break;
-            case (FilterType.Sex):
-                this.sex = value;
-                break;
-            case (FilterType.Survey):
-                this.surveys = value;
-                break;
-        }
-    }
+    surveys: []
+};
+
+export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
+    sex: null,
+    age: null,
+    survey: null
 };
 
 export const initialFilteredDataState: FilteredDataState = {
    selectedDataType: null,
    selectedFilters: initialSelectedFilters,
+   selectedChoroplethFilters: initialSelectedChoroplethFilters,
    regionIndicators: {}
 };
 

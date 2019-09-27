@@ -10,7 +10,7 @@
                      @detail-changed="onDetailChange"
                      :indicator="indicator"
                     :artEnabled="artEnabled" :prevEnabled="prevEnabled"></map-control>
-        <map-legend :getColor="getColor" :max="max" :min="min"></map-legend>
+        <map-legend v-if="showLegend" :getColor="getColor" :max="max" :min="min"></map-legend>
     </l-map>
 </template>
 <script lang="ts">
@@ -22,8 +22,8 @@
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
     import {Indicator} from "../../types";
-    import {FilteredDataState} from "../../store/filteredData/filteredData";
     import {BaselineState} from "../../store/baseline/baseline";
+    import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
 
     interface Data {
         zoom: number,
@@ -61,6 +61,9 @@
             getColor: function () {
                 return this.colorFunctions[this.indicator];
             },
+            showLegend: function() {
+              return !!(this.max || this.min);
+            },
             min: function() {
                 if (this.indicator) {
                     if (this.indicator == "prev") {
@@ -82,12 +85,11 @@
                 }
             },
             prevEnabled: function() {
-                const result = !!(this.indicatorData.prevRange.min || this.indicatorData.prevRange.max);
-                return result;
+                return this.selectedDataType != DataType.Program;
             },
             artEnabled: function() {
-                const result = !!(this.indicatorData.artRange.min || this.indicatorData.artRange.max);
-                return result;
+
+                return this.selectedDataType == DataType.Survey || this.selectedDataType == DataType.Program;
             },
             options: function() {
                 const indicatorData = this.indicatorData;

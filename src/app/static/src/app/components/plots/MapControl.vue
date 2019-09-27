@@ -9,6 +9,7 @@
                     <div class="col">
                         <tree-select :value="indicator"
                                      :multiple="false"
+                                     :clearable="false"
                                      :options="indicatorOptions"
                                      @input="indicatorChanged"></tree-select>
                     </div>
@@ -20,6 +21,7 @@
                     <div class="col">
                         <tree-select v-model="detail"
                                      :multiple="false"
+                                     :clearable="false"
                                      :options="detailOptions"
                                      @input="$emit('detail-changed', detail)"></tree-select>
                     </div>

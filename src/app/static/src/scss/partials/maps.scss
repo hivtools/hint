@@ -37,6 +37,10 @@
   height: calc(1.5em + 0.75rem + 2px);
 }
 
+.vue-treeselect--disabled .vue-treeselect__single-value{
+  color: $gray-500;
+}
+
 .nav-tabs {
   border-bottom: 1px solid $theme-red;
 
