@@ -110,6 +110,18 @@ describe("FilteredData mutations", () => {
         expect(filters.surveys).toBeUndefined();
     });
 
+    it("gets null selectedDataFilters when unknown data type", () => {
+        const testStore: Module<FilteredDataState, RootState> = {
+            state: {...initialFilteredDataState, selectedDataType: 99 as any},
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testRootState = mockRootState();
+
+        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null)!;
+        expect(filters).toBeNull();
+    });
+
     it("gets region filters from shape", () => {
         const testStore: Module<FilteredDataState, RootState> = {
             state: {...initialFilteredDataState},
