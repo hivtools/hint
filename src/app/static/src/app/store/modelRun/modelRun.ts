@@ -25,15 +25,15 @@ export const initialModelRunState: ModelRunState = {
     success: false,
     errors: [],
     status: ModelRunStatus.NotStarted,
-    ...localStorageManager.getItem<ModelRunState>(localStorageKey),
-    statusPollId: -1 // this will never be valid after a reload, so always set to -1
+    statusPollId: -1
 };
 
 const namespaced: boolean = true;
+const existingState = localStorageManager.getState();
 
 export const modelRun: Module<ModelRunState, RootState> = {
     namespaced,
-    state: initialModelRunState,
+    state: {...initialModelRunState, ...existingState && existingState.modelRun},
     actions,
     mutations
 };

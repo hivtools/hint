@@ -147,7 +147,7 @@ describe("Filters component", () => {
                     namespaced: true,
                     state: mockFilteredDataState({selectedFilters: mockSelectedFilters}),
                     getters: {
-                        regionOptions: () => {
+                        regionOptionsTree: () => {
                             return stateRegionFilterOptions;
                         },
                         selectedDataFilterOptions: () => {
@@ -272,7 +272,7 @@ describe("Filters component", () => {
                     },
                     getters: {
                         ...stubGetters,
-                        regionOptions: () => {
+                        regionOptionsTree: () => {
                             return [
                                     {name: "Northern Region", id: "MWI.1", options: [
                                             {name: "Chitipa", id: "MWI.1.1"},

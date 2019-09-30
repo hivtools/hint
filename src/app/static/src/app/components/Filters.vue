@@ -58,8 +58,8 @@
             selectedDataFilterOptions: function () {
                 return this.$store.getters['filteredData/selectedDataFilterOptions']
             },
-            regionOptions: function () {
-                return this.$store.getters['filteredData/regionOptions']
+            regionOptionsTree: function () {
+                return this.$store.getters['filteredData/regionOptionsTree']
             },
 
             sexFilters: function (state): FiltersForType {
@@ -84,7 +84,7 @@
             },
 
             regionFilters: function (state): FiltersForType {
-                return this.buildViewFiltersForType(this.regionOptions,
+                return this.buildViewFiltersForType(this.regionOptionsTree,
                     state.selectedFilters.region);
             }
         }),
