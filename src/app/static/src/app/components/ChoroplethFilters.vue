@@ -39,11 +39,10 @@
     import {
         DataType,
         FilteredDataState,
-        FilterType,
-        SelectedChoroplethFilters
+        FilterType
     } from "../store/filteredData/filteredData";
     import FilterSelect from "./FilterSelect.vue";
-    import {FilterOption, NestedFilterOption} from "../generated";
+    import {FilterOption} from "../generated";
 
     const namespace: string = 'filteredData';
 
@@ -52,24 +51,16 @@
         selected: string
     }
 
-    const sexFilterOptions = [
-        {id: "both", name: "both"},
-        {id: "female", name: "female"},
-        {id: "male", name: "male"}
-    ];
-
     export default Vue.extend({
         name: "ChoroplethFilters",
         computed: {
-            ...mapGetters(namespace, ["selectedDataFilterOptions", "regionOptionsTree", "flattenedRegionOptions"]),
+            ...mapGetters(namespace, ["selectedDataFilterOptions", "flattenedRegionOptions"]),
             ...mapState<FilteredDataState>(namespace, {
                 selectedDataType: state => state.selectedDataType,
                 selectedChoroplethFilters: state => state.selectedChoroplethFilters,
                 sexFilters: function (state): ChoroplethFiltersForType {
-                    const available = (state.selectedDataType == DataType.ANC ?
-                        undefined :
-                        sexFilterOptions) as FilterOption[];
-                    return this.buildViewFiltersForType(available, this.selectedChoroplethFilters.sex)
+                   return this.buildViewFiltersForType(this.selectedDataFilterOptions.sex,
+                       this.selectedChoroplethFilters.sex)
                 },
 
                 ageFilters: function (state): ChoroplethFiltersForType {
@@ -83,7 +74,7 @@
                 },
 
                 regionFilters: function (state): ChoroplethFiltersForType {
-                    return this.buildViewFiltersForType([this.regionOptionsTree],
+                    return this.buildViewFiltersForType(this.selectedDataFilterOptions.regions,
                         this.selectedChoroplethFilters.region);
                 }
             })
@@ -146,8 +137,8 @@
                     this.selectSurvey(newSurveyFilter);
                 }
 
-                if (!this.selectedChoroplethFilters.region && this.regionOptionsTree) {
-                   this.filterUpdated([FilterType.Region, this.regionOptionsTree]);
+                if (!this.selectedChoroplethFilters.region && this.regionFilters.available) {
+                   this.filterUpdated([FilterType.Region, this.regionFilters.available[0]]);
                 }
             }
         },

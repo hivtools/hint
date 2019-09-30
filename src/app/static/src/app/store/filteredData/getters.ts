@@ -4,16 +4,40 @@ import {IndicatorRange, Indicators, IndicatorValues} from "../../types";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
 import {FilterOption, NestedFilterOption} from "../../generated";
 
+const sexFilterOptions = [
+    {id: "both", name: "both"},
+    {id: "female", name: "female"},
+    {id: "male", name: "male"}
+];
+
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
         const sapState = rootState.surveyAndProgram;
+        const regions = [getters.regionOptionsTree];
         switch(state.selectedDataType){
             case (DataType.ANC):
-                return sapState.anc ? sapState.anc.filters : null;
+                return sapState.anc ?
+                    {
+                        ...sapState.anc.filters,
+                        regions,
+                        sex: undefined,
+                        surveys: undefined,
+                    } : null;
             case (DataType.Program):
-                return sapState.program ? sapState.program.filters : null;
+                return sapState.program ?
+                    {
+                        ...sapState.program.filters,
+                        regions,
+                        sex: sexFilterOptions,
+                        surveys: undefined
+                    } : null;
             case (DataType.Survey):
-                return sapState.survey ? sapState.survey.filters : null;
+                return sapState.survey ?
+                    {
+                        ...sapState.survey.filters,
+                        regions,
+                        sex: sexFilterOptions
+                    } : null;
             default:
                 return null;
         }

@@ -25,8 +25,15 @@ describe("FilteredData mutations", () => {
             art: function(t: number) {return `rgb(${t},0,0)`;},
             prev: function(t: number) {return `rgb(0,${t},0)`;}
         },
-        flattenedSelectedRegionFilter: {}
+        flattenedSelectedRegionFilter: {},
+        regionOptionsTree: {id: "MWI", name: "Malawi"}
     };
+
+    const sexOptions = [
+        {id: "both", name: "both"},
+        {id: "female", name: "female"},
+        {id: "male", name: "male"}
+    ];
 
     it("gets correct selectedDataFilters when selectedDataType is Program", () => {
         const testStore: Module<FilteredDataState, RootState> = {
@@ -45,9 +52,10 @@ describe("FilteredData mutations", () => {
             filteredData: testState
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null) as AgeFilters;
+        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null)!;
         expect(filters.age).toStrictEqual(testFilters.age);
-
+        expect(filters.regions).toStrictEqual([testGetters.regionOptionsTree]);
+        expect(filters.sex).toStrictEqual(sexOptions);
     });
 
     it("gets correct selectedDataFilters when selectedDataType is Survey", () => {
@@ -70,8 +78,10 @@ describe("FilteredData mutations", () => {
             filteredData: testState
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null) as SurveyFilters;
+        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null)!;
         expect(filters.age).toStrictEqual(testFilters.age);
+        expect(filters.regions).toStrictEqual([testGetters.regionOptionsTree]);
+        expect(filters.sex).toStrictEqual(sexOptions);
         expect(filters.surveys).toStrictEqual(testFilters.surveys);
 
     });
@@ -93,8 +103,11 @@ describe("FilteredData mutations", () => {
             filteredData: testState
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null) as AgeFilters;
+        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null)!;
         expect(filters.age).toStrictEqual(testFilters.age);
+        expect(filters.regions).toStrictEqual([testGetters.regionOptionsTree]);
+        expect(filters.sex).toBeUndefined();
+        expect(filters.surveys).toBeUndefined();
     });
 
     it("gets region filters from shape", () => {
