@@ -1,8 +1,11 @@
 <template>
-    <l-map ref="map" :bound="mapBounds" :center="center" style="height: 800px; width: 100%">
+    <l-map ref="map" v-bind:center="mapCenter" style="height: 800px; width: 100%">
+        <l-geo-json ref="selectedRegionGeoJson" :geojson="selectedRegionFeature"
+                    class="selectedRegionFeature"
+                    :optionsStyle="{...style, fillColor: 'rgba(0,0,0,0)'}">
+        </l-geo-json>
         <template v-for="feature in currentFeatures">
             <l-geo-json :geojson="feature"
-                        :ref="feature.properties['area_id']"
                         :options="options"
                         :optionsStyle="{...style, fillColor: getColorForRegion(feature.properties['area_id'])}">
             </l-geo-json>
@@ -32,6 +35,7 @@
         style: any,
         indicator: Indicator;
         detail: number;
+        mapBounds: any
     }
 
     export default Vue.extend<Data, any, any, any>({
@@ -50,7 +54,7 @@
                 selectedDataType: state => state.selectedDataType,
                 selectedRegion: state => state.selectedChoroplethFilters.region
             }),
-            center: function() {
+            mapCenter: function() {
                 return this.$store.getters['filteredData/selectedRegionCenter'];
             },
             indicatorData: function() {
@@ -107,16 +111,16 @@
                     }
                 }
             },
-            mapBounds: function() {
+            selectedRegionFeature: function() {
                 const selectedAreaId = this.selectedRegion.id;
-                const geoJson = this.$refs[selectedAreaId]; //This doesn't work, because the geoJson elements don't exist yet on first pass
-                //Construct an LGeoJson from the raw geometry?
-                return geoJson.getBounds();
+                const features = this.features as any[];
+                return features.filter(f => f.properties.area_id == selectedAreaId)[0];
             }
         },
         data(): Data {
             return {
                 //zoom: 7, // TODO: will this always be appropriate?
+                mapBounds: {_southWest: {lat: 0, lng: 0}, _northEast: {lat: 0, lng: 0}},
                 featuresByLevel: {1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
                 style: {
                     weight: 1,
@@ -133,6 +137,7 @@
                 const adminLevel = areas.length;
                 this.featuresByLevel[adminLevel].push(feature);
             });
+            this.updateBounds();
         },
         methods: {
             onIndicatorChange: function (newVal: string) {
@@ -146,6 +151,14 @@
                 data = data && data[this.indicator];
                 data = data && data.color;
                 return data;
+            },
+            updateBounds(){
+                Vue.nextTick().then(() => {
+                    const geoJson = this.$refs.selectedRegionGeoJson;
+                    const bounds = geoJson.getBounds();
+                    const map = this.$refs.map;
+                    map.fitBounds(bounds);
+                });
             }
         },
         watch: {
@@ -156,10 +169,9 @@
                 } else if (!this.artEnabled && this.prevEnabled && this.indicator == "art") {
                     this.indicator = "prev";
                 }
-                alert(JSON.stringify(this.features));
             },
-            features: function (newVal) {
-
+            selectedRegionFeature: function (newVal) {
+                this.updateBounds();
             }
         },
     })
