@@ -1,19 +1,22 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, {Store} from 'vuex';
 import {mockAxios, mockModelRunState, mockModelStatusResponse, mockSuccess} from "../../mocks";
 import ModelRun from "../../../app/components/modelRun/ModelRun.vue";
 import {actions} from "../../../app/store/modelRun/actions";
 import {mutations} from "../../../app/store/modelRun/mutations";
 import {ModelRunState} from "../../../app/store/modelRun/modelRun";
 import {ModelRunStatus} from "../../../app/store/modelRun/modelRun";
+import {RootState} from "../../../app/root";
+import Modal from "../../../app/components/Modal.vue";
+import Tick from "../../../app/components/Tick.vue";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
 
 describe("Model run component", () => {
 
-    const createStore = (state: Partial<ModelRunState> = {}) => {
+    const createStore = (state: Partial<ModelRunState> = {}): Store<RootState> => {
         return new Vuex.Store({
             modules: {
                 modelRun: {
@@ -24,7 +27,6 @@ describe("Model run component", () => {
                 }
             }
         });
-
     };
 
     mockAxios.onPost(`/model/run/`)
@@ -44,12 +46,14 @@ describe("Model run component", () => {
             expect(store.state.modelRun.status).toBe(ModelRunStatus.Started);
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).not.toBe(-1);
+            expect(wrapper.find(Modal).props().open).toBe(true);
 
             setTimeout(() => {
                 expect(wrapper.find("button").attributes().disabled).toBeUndefined();
                 expect(store.state.modelRun.status).toBe(ModelRunStatus.Complete);
                 expect(store.state.modelRun.modelRunId).toBe("1234");
                 expect(store.state.modelRun.statusPollId).toBe(-1);
+                expect(wrapper.find(Modal).props().open).toBe(false);
                 done();
             }, 2500);
         });
@@ -64,30 +68,35 @@ describe("Model run component", () => {
             expect(store.state.modelRun.status).toBe(ModelRunStatus.Complete);
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).toBe(-1);
+            expect(wrapper.find(Modal).props().open).toBe(false);
             done();
         }, 2500);
     });
 
-    it("button is disabled if status is started", () => {
+    it("button is disabled and modal shown if status is started", () => {
 
-        const actions = {
-            run: jest.fn(),
-        };
-
-        const store = new Vuex.Store({
-            modules: {
-                modelRun: {
-                    namespaced: true,
-                    state: mockModelRunState({
-                        status: ModelRunStatus.Started
-                    }),
-                    actions
-                }
-            }
+        const store = createStore({
+            status: ModelRunStatus.Started
         });
 
         const wrapper = shallowMount(ModelRun, {store, localVue});
         expect(wrapper.find("button").attributes().disabled).toBe("disabled");
+        expect(wrapper.find(Modal).props().open).toBe(true);
+        expect(wrapper.find(Modal).find("h4").text()).toBe("Running model");
+    });
+
+    it("displays message and tick if run is successful", () => {
+        const store = createStore({success: true});
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        expect(wrapper.find("#model-run-complete").text()).toBe("Model run complete");
+        expect(wrapper.findAll(Tick).length).toBe(1);
+    });
+
+    it("does not display message or tick if run is not successful", () => {
+        const store = createStore({success: false});
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        expect(wrapper.findAll("#model-run-complete").length).toBe(0);
+        expect(wrapper.findAll(Tick).length).toBe(0);
     });
 
 });

@@ -19,6 +19,7 @@ import {
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {RootState} from "../app/root";
+import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 
 
 export const mockAxios = new MockAdapter(axios);
@@ -51,6 +52,13 @@ export const mockModelRunState = (props?: Partial<ModelRunState>) => {
     }
 };
 
+export const mockStepperState = (props?: Partial<StepperState>) => {
+    return {
+        ...initialStepperState,
+        ...props
+    }
+};
+
 export const mockFilteredDataState = (props?: Partial<FilteredDataState>) => {
     return {
         ...initialFilteredDataState,
@@ -65,6 +73,7 @@ export const mockRootState = (props?: Partial<RootState>): RootState => {
         baseline: mockBaselineState(),
         surveyAndProgram: mockSurveyAndProgramState(),
         modelRun: mockModelRunState(),
+        stepper: mockStepperState(),
         ...props
     }
 };
