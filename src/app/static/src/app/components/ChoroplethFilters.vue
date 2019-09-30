@@ -35,7 +35,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActions, mapState} from "vuex";
+    import {mapActions, mapGetters, mapState} from "vuex";
     import {
         DataType,
         FilteredDataState,
@@ -60,40 +60,34 @@
 
     export default Vue.extend({
         name: "ChoroplethFilters",
-        computed: mapState<FilteredDataState>(namespace, {
-            selectedDataType: state => state.selectedDataType,
-            selectedChoroplethFilters: state => state.selectedChoroplethFilters,
-            selectedDataFilterOptions: function () {
-                return this.$store.getters['filteredData/selectedDataFilterOptions'];
-            },
-            regionOptionsTree: function() {
-                return this.$store.getters['filteredData/regionOptionsTree'];
-            },
-            flattenedRegionOptions: function() {
-                return this.$store.getters['filteredData/flattenedRegionOptions'];
-            },
-            sexFilters: function (state): ChoroplethFiltersForType {
-                const available = (state.selectedDataType == DataType.ANC ?
-                    undefined :
-                    sexFilterOptions) as FilterOption[];
-                return this.buildViewFiltersForType(available, this.selectedChoroplethFilters.sex)
-            },
+        computed: {
+            ...mapGetters(namespace, ["selectedDataFilterOptions", "regionOptionsTree", "flattenedRegionOptions"]),
+            ...mapState<FilteredDataState>(namespace, {
+                selectedDataType: state => state.selectedDataType,
+                selectedChoroplethFilters: state => state.selectedChoroplethFilters,
+                sexFilters: function (state): ChoroplethFiltersForType {
+                    const available = (state.selectedDataType == DataType.ANC ?
+                        undefined :
+                        sexFilterOptions) as FilterOption[];
+                    return this.buildViewFiltersForType(available, this.selectedChoroplethFilters.sex)
+                },
 
-            ageFilters: function (state): ChoroplethFiltersForType {
-                return this.buildViewFiltersForType(this.selectedDataFilterOptions.age,
-                    this.selectedChoroplethFilters.age);
-            },
+                ageFilters: function (state): ChoroplethFiltersForType {
+                    return this.buildViewFiltersForType(this.selectedDataFilterOptions.age,
+                        this.selectedChoroplethFilters.age);
+                },
 
-            surveyFilters: function (state): ChoroplethFiltersForType {
-                return this.buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
-                    this.selectedChoroplethFilters.survey);
-            },
+                surveyFilters: function (state): ChoroplethFiltersForType {
+                    return this.buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
+                        this.selectedChoroplethFilters.survey);
+                },
 
-            regionFilters: function (state): ChoroplethFiltersForType {
-                return this.buildViewFiltersForType([this.regionOptionsTree],
-                    this.selectedChoroplethFilters.region);
-            }
-        }),
+                regionFilters: function (state): ChoroplethFiltersForType {
+                    return this.buildViewFiltersForType([this.regionOptionsTree],
+                        this.selectedChoroplethFilters.region);
+                }
+            })
+        },
         methods: {
             ...mapActions({
                 filterUpdated: 'filteredData/choroplethFilterUpdated',
