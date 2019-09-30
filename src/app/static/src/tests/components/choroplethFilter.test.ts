@@ -298,33 +298,6 @@ describe("ChoroplethFilters component", () => {
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Region, {id: "a2", name: "area1.1"}]);
     });
 
-    it ("transforms FilterOption in treeselectNormalizer", () => {
-        const wrapper = getWrapper();
-        const vm = (wrapper as any).vm;
-        const result = vm.treeselectNormalizer({id: "1", name: "name1"});
-        expect(result).toStrictEqual({id: "1", label: "name1"});
-    });
-
-    it ("transforms NestedFilterOption in treeselectNormalizer", () => {
-        const wrapper = getWrapper();
-        const vm = (wrapper as any).vm;
-        const result = vm.treeselectNormalizer({
-            id: "1",
-            name: "name1",
-            options: [
-                {id: "2", name: "name2"},
-                {id: "3", name: "name3"}
-            ]});
-        expect(result).toStrictEqual({
-            id: "1",
-            label: "name1",
-            children: [
-                {id: "2", label: "name2"},
-                {id: "3", label: "name3"}
-            ]
-        });
-    });
-
     it ("refreshSelectedChoroplethFilters leaves selected filters unchanged if they are available for new data type", () => {
         const stateAgeFilterOptions = [
             {id: "a1", name: "0-4"},
