@@ -77,8 +77,8 @@
             selectedDataFilterOptions: function () {
                 return this.$store.getters['filteredData/selectedDataFilterOptions'];
             },
-            regionOptions: function() {
-                return this.$store.getters['filteredData/regionOptions'];
+            regionOptionsTree: function() {
+                return this.$store.getters['filteredData/regionOptionsTree'];
             },
             flattenedRegionOptions: function() {
                 return this.$store.getters['filteredData/flattenedRegionOptions'];
@@ -101,7 +101,7 @@
             },
 
             regionFilters: function (state): ChoroplethFiltersForType {
-                return this.buildViewFiltersForType([this.regionOptions],
+                return this.buildViewFiltersForType([this.regionOptionsTree],
                     this.selectedChoroplethFilters.region);
             }
         }),
@@ -178,8 +178,8 @@
                     this.selectSurvey(newSurveyFilter);
                 }
 
-                if (!this.selectedChoroplethFilters.region && this.regionOptions) {
-                   this.filterUpdated([FilterType.Region, this.regionOptions]);
+                if (!this.selectedChoroplethFilters.region && this.regionOptionsTree) {
+                   this.filterUpdated([FilterType.Region, this.regionOptionsTree]);
                 }
             }
         },

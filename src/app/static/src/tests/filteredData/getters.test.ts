@@ -138,7 +138,7 @@ describe("FilteredData mutations", () => {
             filteredData: testState
         });
 
-        const filters = getters.regionOptions(testState, null, testRootState, null) as NestedFilterOption[];
+        const filters = getters.regionOptionsTree(testState, null, testRootState, null) as NestedFilterOption[];
         expect(filters).toStrictEqual(testFilters);
 
     });
@@ -509,13 +509,13 @@ describe("FilteredData mutations", () => {
                 iso3: "MWI",
                 area_id: "area1",
                 ancrt_test_pos: 2,
-                age_group_id: "1"
+                age_group_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 ancrt_test_pos: 3,
-                age_group_id: "1"
+                age_group_id: 1
             }
         ];
         const testRootState = mockRootState({
@@ -563,19 +563,19 @@ describe("FilteredData mutations", () => {
                 iso3: "MWI",
                 area_id: "area1",
                 ancrt_test_pos: 2,
-                age_group_id: "1"
+                age_group_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 ancrt_test_pos: 3,
-                age_group_id: "1"
+                age_group_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
                 ancrt_test_pos: 2,
-                age_group_id: "2"
+                age_group_id: 2
             }
         ];
         const testRootState = mockRootState({
@@ -810,7 +810,7 @@ describe("FilteredData mutations", () => {
         const testState = testStore.state as FilteredDataState;
         const filterGetters = {
             ...testGetters,
-            regionOptions: testRegions
+            regionOptionsTree: testRegions
         };
 
         const flattenedRegionOptions = getters.flattenedRegionOptions(testState, filterGetters, mockRootState(), null);
@@ -834,7 +834,7 @@ describe("FilteredData mutations", () => {
         const testState = testStore.state as FilteredDataState;
         const filterGetters = {
             ...testGetters,
-            regionOptions: null
+            regionOptionsTree: null
         };
 
         const flattenedRegionOptions = getters.flattenedRegionOptions(testState, filterGetters, mockRootState(), null);

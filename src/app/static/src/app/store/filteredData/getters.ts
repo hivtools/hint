@@ -18,7 +18,7 @@ export const getters = {
                 return null;
         }
     },
-    regionOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
+    regionOptionsTree: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
         const shape = rootState.baseline && rootState.baseline.shape ? rootState.baseline.shape : null;
         return shape && shape.filters &&
                         shape.filters.regions ? (shape.filters.regions as any) : null;
@@ -121,7 +121,7 @@ export const getters = {
         };
     },
     flattenedRegionOptions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-        const option = getters.regionOptions;
+        const option = getters.regionOptionsTree;
         return option ? flattenOption(option) : {};
     },
     flattenedSelectedRegionFilter: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {

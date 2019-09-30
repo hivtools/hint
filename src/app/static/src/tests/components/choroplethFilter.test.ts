@@ -147,7 +147,7 @@ describe("ChoroplethFilters component", () => {
                                 survey: null
                             }
                         },
-                        regionOptions: () => {
+                        regionOptionsTree: () => {
                             return stateRegionFilterOptions
                         }
                     }
@@ -276,7 +276,7 @@ describe("ChoroplethFilters component", () => {
                                 survey: null
                             }
                         },
-                        regionOptions: () => {
+                        regionOptionsTree: () => {
                             return {
                                 id: "a1",
                                 name: "area1",
@@ -406,7 +406,7 @@ describe("ChoroplethFilters component", () => {
                                 survey: null
                             }
                         },
-                        regionOptions: () => {
+                        regionOptionsTree: () => {
                             return mockRegionOptions;
                         }
                     },

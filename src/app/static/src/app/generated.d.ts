@@ -12,6 +12,16 @@ export interface AgeFilters {
 }
 export type AncResponseData = {
   area_id: string;
+  age_group_id?: number;
+  quarter_id?: number;
+  anc_clients?: number;
+  ancrt_hiv_status?: number;
+  ancrt_known_pos?: number;
+  ancrt_already_art?: number;
+  ancrt_tested?: number;
+  ancrt_test_pos?: number;
+  prevalence?: number;
+  art_coverage?: number;
   [k: string]: any;
 }[];
 export interface Data {
@@ -34,7 +44,61 @@ export interface LevelLabels {
   area_level_label: string;
   display: boolean;
 }
-export type ModelResultResponse = number;
+export type ModelResultData = {
+  area_id: string;
+  sex: string;
+  age_group_id: number;
+  quarter_id: number;
+  indicator_id: number;
+  mode: number;
+  mean: number;
+  lower: number;
+  upper: number;
+  [k: string]: any;
+}[];
+export interface ModelResultFilters {
+  age: {
+    name: string;
+    id: string;
+  }[];
+  quarter: {
+    name: string;
+    id: string;
+  }[];
+  indicator: {
+    name: string;
+    id: string;
+  }[];
+}
+export interface ModelResultResponse {
+  data?: {
+    area_id: string;
+    sex: string;
+    age_group_id: number;
+    quarter_id: number;
+    indicator_id: number;
+    mode: number;
+    mean: number;
+    lower: number;
+    upper: number;
+    [k: string]: any;
+  }[];
+  filters?: {
+    age: {
+      name: string;
+      id: string;
+    }[];
+    quarter: {
+      name: string;
+      id: string;
+    }[];
+    indicator: {
+      name: string;
+      id: string;
+    }[];
+  };
+  [k: string]: any;
+}
 export interface ModelStatusResponse {
   id: string;
   done: boolean | null;
@@ -235,6 +299,16 @@ export interface AncResponse {
   type: "anc";
   data: {
     area_id: string;
+    age_group_id?: number;
+    quarter_id?: number;
+    anc_clients?: number;
+    ancrt_hiv_status?: number;
+    ancrt_known_pos?: number;
+    ancrt_already_art?: number;
+    ancrt_tested?: number;
+    ancrt_test_pos?: number;
+    prevalence?: number;
+    art_coverage?: number;
     [k: string]: any;
   }[];
   filters: {
