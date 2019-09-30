@@ -65,4 +65,12 @@ describe("FilterSelect component", () => {
             ]
         });
     });
+
+    it ("leaves native options unchanged in treeselectNormalizer", () => {
+        const wrapper = shallowMount(FilterSelect, {localVue});
+        const vm = (wrapper as any).vm;
+        const result = vm.treeselectNormalizer({id: "1", label: "name1"});
+        expect(result).toStrictEqual({id: "1", label: "name1"});
+    });
+
 });
