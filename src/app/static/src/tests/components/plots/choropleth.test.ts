@@ -6,7 +6,7 @@ import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../..
 import {LGeoJson} from 'vue2-leaflet';
 import MapControl from "../../../app/components/plots/MapControl.vue";
 import {mutations} from "../../../app/store/filteredData/mutations";
-import {DataType, initialFilteredDataState} from "../../../app/store/filteredData/filteredData";
+import {DataType, FilterType, initialFilteredDataState} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
 
 const localVue = createLocalVue();
@@ -61,38 +61,44 @@ describe("Choropleth component", () => {
             art: jest.fn()
         }
     };
-    const store = new Vuex.Store({
-        modules: {
-            baseline: {
-                namespaced: true,
-                state: mockBaselineState({
-                    shape: mockShapeResponse({
-                        data: {features: fakeFeatures} as any
+
+    function getTestStore() {
+        return new Vuex.Store({
+            modules: {
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState({
+                        shape: mockShapeResponse({
+                            data: {features: fakeFeatures} as any
+                        })
                     })
-                })
-            },
-            filteredData: {
-                namespaced: true,
-                state: mockFilteredDataState(
-                    {
-                        selectedDataType: DataType.Survey,
-                        selectedChoroplethFilters: {
-                            region: {id: "MWI.1.1.1", name: "Test Region"},
-                            sex: null,
-                            age: null,
-                            survey: null
-                        }
-                    }),
-                getters: {
-                    regionIndicators: () => {
-                        return testRegionIndicators;
-                    },
-                    colorFunctions: testColorFunctions
                 },
-                actions
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState(
+                        {
+                            selectedDataType: DataType.Survey,
+                            selectedChoroplethFilters: {
+                                region: {id: "MWI.1.1.1", name: "Test Region"},
+                                sex: null,
+                                age: null,
+                                survey: null
+                            }
+                        }),
+                    getters: {
+                        regionIndicators: () => {
+                            return testRegionIndicators;
+                        },
+                        colorFunctions: testColorFunctions
+                    },
+                    actions,
+                    mutations
+                }
             }
-        }
-    });
+        });
+    }
+
+    const store = getTestStore();
 
     it("gets features from store and renders those with the right admin level", (done) => {
         // admin level is hard-coded to 5
@@ -344,6 +350,23 @@ describe("Choropleth component", () => {
         vm.updateBounds();
         setTimeout(() => {
             expect(mockMapFitBounds.mock.calls[0][0]).toBe("test bounds");
+            done();
+        });
+    });
+
+    it("invokes updateBounds when selected region changes", (done) => {
+        const testStore = getTestStore();
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+
+        const vm = wrapper.vm as any;
+        const mockUpdateBounds = jest.fn();
+        vm.updateBounds = mockUpdateBounds;
+
+        testStore.commit({type: "filteredData/ChoroplethFilterUpdated",
+                            payload: [FilterType.Region, {id: "MWI.1.1.1.2", name: "test area"}]});
+
+        setTimeout(() => {
+            expect(mockUpdateBounds.mock.calls.length).toBe(1);
             done();
         });
     });
