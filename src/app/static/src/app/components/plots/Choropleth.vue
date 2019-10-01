@@ -111,9 +111,12 @@
                 }
             },
             selectedRegionFeature: function() {
-                const selectedAreaId = this.selectedRegion.id;
-                const features = this.features as any[];
-                return features.filter(f => f.properties.area_id == selectedAreaId)[0];
+                if (this.selectedRegion) {
+                    const selectedAreaId = this.selectedRegion.id;
+                    const features = this.features as any[];
+                    return features.filter(f => f.properties.area_id == selectedAreaId)[0];
+                }
+                return null;
             }
         },
         data(): Data {
@@ -154,9 +157,11 @@
             updateBounds(){
                 Vue.nextTick().then(() => {
                     const geoJson = this.$refs.selectedRegionGeoJson;
-                    const bounds = geoJson.getBounds();
-                    const map = this.$refs.map;
-                    map.fitBounds(bounds);
+                    if (geoJson.getBounds) {
+                        const bounds = geoJson.getBounds();
+                        const map = this.$refs.map;
+                        map.fitBounds(bounds);
+                    }
                 });
             }
         },

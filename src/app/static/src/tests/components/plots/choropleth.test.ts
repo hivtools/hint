@@ -90,7 +90,7 @@ describe("Choropleth component", () => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         setTimeout(() => {
-            expect(wrapper.findAll(LGeoJson).length).toBe(2);
+            expect(wrapper.findAll(LGeoJson).length).toBe(3); //1 selected feature and 2 map features
             done();
         })
     });
@@ -189,7 +189,8 @@ describe("Choropleth component", () => {
 
         setTimeout(() => {
             const expectedColor = "rgb(1,1,1)";
-            expect(wrapper.findAll(LGeoJson).at(0).props("optionsStyle").fillColor).toBe(expectedColor);
+            //1st map feaure
+            expect(wrapper.findAll(LGeoJson).at(1).props("optionsStyle").fillColor).toBe(expectedColor);
             done();
         })
     });
@@ -200,7 +201,8 @@ describe("Choropleth component", () => {
         setTimeout(() => {
             const expectedColor = "rgb(2,2,2)";
             wrapper.find(MapControl).vm.$emit("indicator-changed", "art");
-            expect(wrapper.findAll(LGeoJson).at(0).props("optionsStyle").fillColor).toBe(expectedColor);
+            //1st map feature
+            expect(wrapper.findAll(LGeoJson).at(1).props("optionsStyle").fillColor).toBe(expectedColor);
             done();
         })
     });
@@ -210,7 +212,7 @@ describe("Choropleth component", () => {
 
         setTimeout(() => {
             wrapper.find(MapControl).vm.$emit("detail-changed", 1);
-            expect(wrapper.findAll(LGeoJson).length).toBe(0);
+            expect(wrapper.findAll(LGeoJson).length).toBe(1); //map feature
             done();
         })
     });
