@@ -47,4 +47,12 @@ class HintrApiClientTests {
         val result = sut.getStatus(id)
         JSONValidator().validateSuccess(result.body!!, "ModelStatusResponse")
     }
+
+    @Test
+    fun `can get plotting metadata`() {
+        val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val metadataResult = sut.getPlottingMetadata("Malawi");
+
+        JSONValidator().validateSuccess(metadataResult.body!!, "PlottingMetadataResponse")
+    }
 }
