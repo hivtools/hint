@@ -6,7 +6,8 @@ export const serialiseState = (rootState: RootState): Partial<RootState> => {
     return {
         modelRun: {...rootState.modelRun, statusPollId: -1},
         filteredData: rootState.filteredData,
-        stepper: rootState.stepper
+        stepper: rootState.stepper,
+        metadata: rootState.metadata
     };
 };
 

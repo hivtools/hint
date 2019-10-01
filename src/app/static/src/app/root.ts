@@ -1,5 +1,6 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
+import {metadata, MetadataState, initialMetadataState} from "./store/metadata/metadata";
 import {filteredData, FilteredDataState, initialFilteredDataState} from "./store/filteredData/filteredData";
 import {
     initialSurveyAndProgramDataState,
@@ -14,6 +15,7 @@ import {mutations} from "./store/root/mutations";
 export interface RootState {
     version: string;
     baseline: BaselineState,
+    metadata: MetadataState,
     surveyAndProgram: SurveyAndProgramDataState,
     filteredData: FilteredDataState,
     modelRun: ModelRunState,
@@ -33,6 +35,7 @@ const persistState = (store: Store<RootState>) => {
 export const emptyState = {
     version: '0.0.0',
     baseline: initialBaselineState,
+    metadata: initialMetadataState,
     surveyAndProgram: initialSurveyAndProgramDataState,
     filteredData: initialFilteredDataState,
     modelRun: initialModelRunState,
@@ -48,6 +51,7 @@ export const storeOptions: StoreOptions<RootState> = {
     state: initialState,
     modules: {
         baseline,
+        metadata,
         surveyAndProgram,
         filteredData,
         modelRun,
