@@ -2,7 +2,7 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
-import {mockBaselineState, mockPopulationResponse, mockShapeResponse} from "../../mocks";
+import {mockBaselineState, mockMetadataState, mockPopulationResponse, mockShapeResponse} from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import Baseline from "../../../app/components/baseline/Baseline.vue";
 import FileUpload from "../../../app/components/FileUpload.vue";
@@ -32,6 +32,10 @@ describe("Baseline upload component", () => {
                     state: mockBaselineState(baselineState),
                     actions: {...actions},
                     mutations: {...mutations}
+                },
+                metadata: {
+                    namespaced: true,
+                    state: mockMetadataState
                 }
             }
         })

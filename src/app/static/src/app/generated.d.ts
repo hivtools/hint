@@ -241,11 +241,6 @@ export interface Response {
     detail?: string | null;
   }[];
 }
-export interface SessionFile {
-  path: string | null;
-  hash: string;
-  filename: string;
-}
 /**
  * TODO: Validate against a URL e.g. https://geojson.org/schema/FeatureCollection.json
  */
@@ -290,11 +285,7 @@ export interface ValidateBaselineResponse {
 }
 export interface ValidateInputRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
-  file: {
-    path: string | null;
-    hash: string;
-    filename: string;
-  };
+  path: string | null;
 }
 export type ValidateInputResponse =
   | PjnzResponse
@@ -305,7 +296,6 @@ export type ValidateInputResponse =
   | SurveyResponse;
 
 export interface PjnzResponse {
-  hash: string;
   filename: string;
   type: "pjnz";
   data: {
@@ -314,7 +304,6 @@ export interface PjnzResponse {
   filters?: null;
 }
 export interface ShapeResponse {
-  hash: string;
   filename: string;
   type: "shape";
   data: GeoJSONObject;
@@ -351,14 +340,12 @@ export interface GeoJSONObject {
   [k: string]: any;
 }
 export interface PopulationResponse {
-  hash: string;
   filename: string;
   type: "population";
   data: null;
   filters?: null;
 }
 export interface ProgrammeResponse {
-  hash: string;
   filename: string;
   type: "programme";
   data: {
@@ -374,7 +361,6 @@ export interface ProgrammeResponse {
   };
 }
 export interface AncResponse {
-  hash: string;
   filename: string;
   type: "anc";
   data: {
@@ -399,7 +385,6 @@ export interface AncResponse {
   };
 }
 export interface SurveyResponse {
-  hash: string;
   filename: string;
   type: "survey";
   data: {
@@ -421,10 +406,6 @@ export interface SurveyResponse {
 }
 export interface ValidateSurveyAndProgrammeRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
-  file: {
-    path: string | null;
-    hash: string;
-    filename: string;
-  };
+  path: string | null;
   shape: string | null;
 }
