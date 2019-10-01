@@ -14,7 +14,7 @@ describe("Baseline actions", () => {
     it("can upload PJNZ file", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
-        const state = mockBaselineState({country: "Malawi"});
+        const state = {country: "Malawi"} as any;
 
         const file = fs.createReadStream("../testdata/Botswana2018.PJNZ");
         const formData = new FormData();
