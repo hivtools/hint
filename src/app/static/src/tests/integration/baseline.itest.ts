@@ -1,5 +1,6 @@
 import {actions} from "../../app/store/baseline/actions";
 import {login} from "./integrationTest";
+import {mockBaselineState} from "../mocks";
 
 const fs = require("fs");
 const FormData = require("form-data");
@@ -12,12 +13,14 @@ describe("Baseline actions", () => {
 
     it("can upload PJNZ file", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockBaselineState({country: "Malawi"});
 
         const file = fs.createReadStream("../testdata/Botswana2018.PJNZ");
         const formData = new FormData();
         formData.append('file', file);
 
-        await actions.uploadPJNZ({commit} as any, formData);
+        await actions.uploadPJNZ({commit, state, dispatch} as any, formData);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
