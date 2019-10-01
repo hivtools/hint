@@ -73,7 +73,16 @@ describe("Choropleth component", () => {
             },
             filteredData: {
                 namespaced: true,
-                state: mockFilteredDataState({selectedDataType: DataType.Survey}),
+                state: mockFilteredDataState(
+                    {
+                        selectedDataType: DataType.Survey,
+                        selectedChoroplethFilters: {
+                            region: {id: "MWI.1.1.1", name: "Test Region"},
+                            sex: null,
+                            age: null,
+                            survey: null
+                        }
+                    }),
                 getters: {
                     regionIndicators: () => {
                         return testRegionIndicators;
@@ -91,6 +100,16 @@ describe("Choropleth component", () => {
 
         setTimeout(() => {
             expect(wrapper.findAll(LGeoJson).length).toBe(3); //1 selected feature and 2 map features
+            done();
+        })
+    });
+
+    it("finds selectedRegionFeature and renders it as first LGeoJson feature", (done) => {
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+
+        setTimeout(() => {
+            expect(wrapper.findAll(LGeoJson).at(0).classes()).toContain("selectedRegionFeature");
+            expect(wrapper.findAll(LGeoJson).at(0).props("geojson")).toEqual(fakeFeatures[0]);
             done();
         })
     });
@@ -155,7 +174,7 @@ describe("Choropleth component", () => {
         expect(vm.artEnabled).toBe(false);
     });
 
-    it("calculates prevtEnabled when false", () => {
+    it("calculates prevEnabled when false", () => {
         const emptyStore = new Vuex.Store({
             modules: {
                 baseline: {
@@ -189,7 +208,7 @@ describe("Choropleth component", () => {
 
         setTimeout(() => {
             const expectedColor = "rgb(1,1,1)";
-            //1st map feaure
+            //1st map feature
             expect(wrapper.findAll(LGeoJson).at(1).props("optionsStyle").fillColor).toBe(expectedColor);
             done();
         })
@@ -307,6 +326,26 @@ describe("Choropleth component", () => {
                             <br/>1
                         </div>`);
 
+    });
+
+    it("updateBounds updates bounds of map on from selected region geojson", (done) => {
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+        const mockMapFitBounds = jest.fn();
+
+        const vm = wrapper.vm as any;
+        vm.$refs.map = {
+            fitBounds: mockMapFitBounds
+        };
+
+        vm.$refs.selectedRegionGeoJson = {
+            getBounds: () => {return "test bounds";}
+        };
+
+        vm.updateBounds();
+        setTimeout(() => {
+            expect(mockMapFitBounds.mock.calls[0][0]).toBe("test bounds");
+            done();
+        });
     });
 
 });

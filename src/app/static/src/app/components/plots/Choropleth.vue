@@ -1,5 +1,5 @@
 <template>
-    <l-map ref="map" v-bind:center="mapCenter" style="height: 800px; width: 100%">
+    <l-map ref="map" style="height: 800px; width: 100%">
         <l-geo-json ref="selectedRegionGeoJson" :geojson="selectedRegionFeature"
                     class="selectedRegionFeature"
                     :optionsStyle="{...style, fillColor: 'rgba(0,0,0,0)'}">
@@ -33,8 +33,7 @@
         featuresByLevel: { [k: number]: any },
         style: any,
         indicator: Indicator;
-        detail: number;
-        mapBounds: any
+        detail: number
     }
 
     export default Vue.extend<Data, any, any, any>({
@@ -53,9 +52,9 @@
                 selectedDataType: state => state.selectedDataType,
                 selectedRegion: state => state.selectedChoroplethFilters.region
             }),
-            mapCenter: function() {
-                return this.$store.getters['filteredData/selectedRegionCenter'];
-            },
+            //mapCenter: function() {
+            //    return this.$store.getters['filteredData/selectedRegionCenter'];
+            //},
             indicatorData: function() {
                 return this.$store.getters['filteredData/regionIndicators'];
             },
@@ -121,8 +120,6 @@
         },
         data(): Data {
             return {
-                //zoom: 7, // TODO: will this always be appropriate?
-                mapBounds: {_southWest: {lat: 0, lng: 0}, _northEast: {lat: 0, lng: 0}},
                 featuresByLevel: {1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
                 style: {
                     weight: 1,

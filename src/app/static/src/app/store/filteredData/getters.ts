@@ -150,18 +150,6 @@ export const getters = {
     },
     flattenedSelectedRegionFilter: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         return state.selectedChoroplethFilters.region ? flattenOption(state.selectedChoroplethFilters.region) : {};
-    },
-    selectedRegionCenter: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-        const selectedRegionId = rootState.filteredData.selectedChoroplethFilters.region &&
-                                    rootState.filteredData.selectedChoroplethFilters.region.id;
-        const features = rootState.baseline.shape && rootState.baseline.shape.data.features;
-        if (features) {
-            const selectedFeature = features.filter(f => f.properties["area_id"] == selectedRegionId)[0];
-            const x = selectedFeature.properties["center_x"];
-            const y = selectedFeature.properties["center_y"];
-            return [y, x]; //lat, long
-        }
-        return [0,0];
     }
 };
 
