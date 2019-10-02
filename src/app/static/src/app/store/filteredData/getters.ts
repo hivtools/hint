@@ -100,6 +100,7 @@ export const getters = {
                 indicators.prev.color = getColor(indicators.prev, getters.choroplethRanges.prev, getters.colorFunctions.prev);
             }
         }
+        alert(JSON.stringify(result));
         return result;
     },
 
