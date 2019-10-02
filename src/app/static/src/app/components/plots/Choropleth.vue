@@ -141,9 +141,11 @@
                 this.detail = newVal
             },
             getColorForRegion: function (region: string) {
+                alert("region indicators: " + JSON.stringify(this.regionIndicators));
                 let data = this.regionIndicators[region];
                 data = data && data[this.indicator];
                 data = data && data.color;
+                alert("got color: " + JSON.stringify(data));
                 return data;
             }
         },
