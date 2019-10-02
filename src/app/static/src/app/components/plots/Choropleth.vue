@@ -10,7 +10,7 @@
                      @detail-changed="onDetailChange"
                      :indicator="indicator"
                     :artEnabled="artEnabled" :prevEnabled="prevEnabled"></map-control>
-        <map-legend v-if="showLegend" :getColor="getColor" :max="range.max" :min="range.min"></map-legend>
+        <map-legend :getColor="getColor" :max="range.max" :min="range.min"></map-legend>
     </l-map>
 </template>
 <script lang="ts">
@@ -62,9 +62,6 @@
             getColor: function () {
                 return this.colorFunctions[this.indicator];
             },
-            showLegend: function() {
-              return !!(this.max || this.min);
-            },
             /*min: function() {
                 if (this.indicator) {
                     if (this.indicator == "prev") {
@@ -102,7 +99,7 @@
                     onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
                         const area_id = feature.properties && feature.properties["area_id"];
                         const area_name = feature.properties && feature.properties["area_name"];
-                        const values = regionIndicators.indicators[area_id];
+                        const values = regionIndicators[area_id];
                         const value = values && values[indicator] && values[indicator].value;
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
@@ -141,11 +138,9 @@
                 this.detail = newVal
             },
             getColorForRegion: function (region: string) {
-                alert("region indicators: " + JSON.stringify(this.regionIndicators));
                 let data = this.regionIndicators[region];
                 data = data && data[this.indicator];
                 data = data && data.color;
-                alert("got color: " + JSON.stringify(data));
                 return data;
             }
         },
