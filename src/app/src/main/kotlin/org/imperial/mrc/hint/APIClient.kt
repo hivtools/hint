@@ -77,10 +77,9 @@ class HintrAPIClient(
     }
 
     override fun getPlottingMetadata(country: String): ResponseEntity<String> {
-        val response =  "$baseUrl/meta/plotting/${country}"
+        return "$baseUrl/meta/plotting/${country}"
                 .httpGet()
                 .response()
-        return response
                 .second
                 .asResponseEntity()
     }
