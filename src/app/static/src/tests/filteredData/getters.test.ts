@@ -275,6 +275,13 @@ describe("FilteredData mutations", () => {
         expect(result.prev!!.max).toBe(0.6);
     });
 
+    it("gets null choropleth ranges when selectedDataType is unkno2n", () => {
+        const testState = mockFilteredDataState({selectedDataType: 15 as DataType.Survey});
+
+        const result = getters.choroplethRanges(testState, null, mockRootState(), null)!!;
+        expect(result).toBeNull();
+    });
+
     it("gets regionIndicators for survey", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
             state: {
