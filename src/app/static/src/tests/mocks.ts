@@ -14,7 +14,7 @@ import {
     ProgrammeResponse,
     SurveyResponse,
     AgeFilters,
-    SurveyFilters, AncResponse, PopulationResponse, ModelStatusResponse
+    SurveyFilters, AncResponse, PopulationResponse, ModelStatusResponse, PlottingMetadataResponse
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
@@ -205,5 +205,30 @@ export const mockModelStatusResponse = (props: Partial<ModelStatusResponse> = {}
         id: "1234",
         status: "finished",
         ...props
+    }
+};
+
+export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResponse> = {}): PlottingMetadataResponse => {
+    return {
+        anc: {
+            choropleth:  {
+                indicators: {}
+            }
+        },
+        output: {
+            choropleth:  {
+                indicators: {}
+            }
+        },
+        programme: {
+            choropleth:  {
+                indicators: {}
+            }
+        },
+        survey: {
+            choropleth: {
+                indicators: {}
+            }
+        }
     }
 };

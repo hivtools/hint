@@ -13,7 +13,6 @@ export interface MetadataActions {
 export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
 
     async getPlottingMetadata({commit}, country) {
-        commit({type: "PJNZUpdated", payload: null});
         await api<MetadataActionTypes, MetadataErrorActionTypes>(commit)
             .withSuccess("PlottingMetadataFetched")
             .withError("PlottingMetadataError")
