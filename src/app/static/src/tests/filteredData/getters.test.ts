@@ -12,7 +12,7 @@ import {
     mockSurveyAndProgramState,
     mockSurveyFilters,
     mockSurveyResponse,
-    mockRootState, mockMetadataState, mockPlottingMetadataResponse, mockIndicators
+    mockRootState, mockMetadataState, mockPlottingMetadataResponse, mockIndicators, mockFilteredDataState
 } from "../mocks";
 import {AgeFilters, NestedFilterOption, SurveyFilters} from "../../app/generated";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
@@ -205,6 +205,74 @@ describe("FilteredData mutations", () => {
         const result = getters.colorFunctions(initialFilteredDataState, null, mockRootState(), null);
         expect(result.art(0.1)).toEqual(interpolateWarm(0.1));
         expect(result.prev(0.1)).toEqual(interpolateCool(0.1));
+    });
+
+    it("gets choropleth ranges when selectedDataType is ANC", () => {
+        const testState = mockFilteredDataState({selectedDataType: DataType.ANC});
+        const testRootState = mockRootState({
+            metadata: mockMetadataState({
+                plottingMetadata: mockPlottingMetadataResponse({
+                    anc: {
+                        choropleth: {
+                            indicators: {
+                                prevalence: mockIndicators({min: 0.01, max: 0.5})
+                            }
+                        }
+                    }
+                })
+            })
+        });
+
+        const result = getters.choroplethRanges(testState, null, testRootState, null)!!;
+        expect(result.prev!!.min).toBe(0.01);
+        expect(result.prev!!.max).toBe(0.5);
+        expect(result.art).toBe(undefined);
+    });
+
+    it("gets choropleth ranges when selectedDataType is Program", () => {
+        const testState = mockFilteredDataState({selectedDataType: DataType.Program});
+        const testRootState = mockRootState({
+            metadata: mockMetadataState({
+                plottingMetadata: mockPlottingMetadataResponse({
+                    programme: {
+                        choropleth: {
+                            indicators: {
+                                current_art: mockIndicators({min: 0, max: 1})
+                            }
+                        }
+                    }
+                })
+            })
+        });
+
+        const result = getters.choroplethRanges(testState, null, testRootState, null)!!;
+        expect(result.art!!.min).toBe(0);
+        expect(result.art!!.max).toBe(1);
+        expect(result.prev).toBe(undefined);
+    });
+
+    it("gets choropleth ranges when selectedDataType is Survey", () => {
+        const testState = mockFilteredDataState({selectedDataType: DataType.Survey});
+        const testRootState = mockRootState({
+            metadata: mockMetadataState({
+                plottingMetadata: mockPlottingMetadataResponse({
+                    survey: {
+                        choropleth: {
+                            indicators: {
+                                art_coverage: mockIndicators({min: 0, max: 1}),
+                                prevalence: mockIndicators({min: 0.1, max: 0.6})
+                            }
+                        }
+                    }
+                })
+            })
+        });
+
+        const result = getters.choroplethRanges(testState, null, testRootState, null)!!;
+        expect(result.art!!.min).toBe(0);
+        expect(result.art!!.max).toBe(1);
+        expect(result.prev!!.min).toBe(0.1);
+        expect(result.prev!!.max).toBe(0.6);
     });
 
     it("gets regionIndicators for survey", () => {

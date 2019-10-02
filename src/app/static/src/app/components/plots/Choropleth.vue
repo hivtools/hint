@@ -50,38 +50,12 @@
                 selectedDataType: state => state.selectedDataType
             }),
             ...mapGetters('filteredData', ["regionIndicators", "colorFunctions", "choroplethRanges"]),
-            /*regionIndicators: function() {
-                return this.$store.getters['filteredData/regionIndicators'];
-            },
-            colorFunctions: function() {
-                return this.$store.getters['filteredData/colorFunctions'];
-            },*/
             currentFeatures: function () {
                 return this.featuresByLevel[this.detail || 1]
             },
             getColor: function () {
                 return this.colorFunctions[this.indicator];
             },
-            /*min: function() {
-                if (this.indicator) {
-                    if (this.indicator == "prev") {
-                        return this.regionIndicators.prevRange.min;
-                    }
-                    if (this.indicator == "art") {
-                        return this.regionIndicators.artRange.min;
-                    }
-                }
-            },
-            max: function() {
-                if (this.indicator) {
-                    if (this.indicator == "prev") {
-                        return this.regionIndicators.prevRange.max;
-                    }
-                    if (this.indicator == "art") {
-                        return this.regionIndicators.artRange.max;
-                    }
-                }
-            },*/
             range: function() {
                 return this.choroplethRanges[this.indicator];
             },
