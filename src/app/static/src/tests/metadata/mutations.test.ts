@@ -1,17 +1,8 @@
 import {mutations} from "../../app/store/metadata/mutations";
 import {
     mockMetadataState,
-    mockModelRunState,
-    mockPJNZResponse, mockPlottingMetadataResponse,
-    mockPopulationResponse,
-    mockRootState,
-    mockShapeResponse
+    mockPlottingMetadataResponse,
 } from "../mocks";
-import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
-import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
-import {Module} from "vuex";
-import {RootState} from "../../app/root";
-import {initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 
 describe("Metadata mutations", () => {
 

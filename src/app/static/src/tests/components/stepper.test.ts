@@ -150,6 +150,23 @@ describe("Stepper component", () => {
         expect([2, 3, 4].filter(i => steps.at(i).props().enabled).length).toBe(0);
     });
 
+    it("upload surveys step is not enabled is metadata state is not complete", () => {
+        const store = createSut({
+                country: "testCountry",
+                shape: mockShapeResponse(),
+                population: mockPopulationResponse(),
+                ready: true
+            },
+            {ready: true},
+            {plottingMetadata: null});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(0).props().enabled).toBe(true);
+        expect(steps.at(1).props().enabled).toBe(false);
+        expect(steps.at(0).props().complete).toBe(false);
+        expect([1, 2, 3, 4].filter(i => steps.at(i).props().enabled).length).toBe(0);
+    });
+
     it("updates active step when jump event is emitted", () => {
         const store = createSut({
             country: "testCountry",

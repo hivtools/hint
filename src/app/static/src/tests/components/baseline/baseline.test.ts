@@ -7,6 +7,7 @@ import {BaselineState} from "../../../app/store/baseline/baseline";
 import Baseline from "../../../app/components/baseline/Baseline.vue";
 import FileUpload from "../../../app/components/FileUpload.vue";
 import {BaselineMutations} from "../../../app/store/baseline/mutations";
+import {MetadataState} from "../../../app/store/metadata/metadata";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -16,7 +17,7 @@ describe("Baseline upload component", () => {
     let actions: jest.Mocked<BaselineActions>;
     let mutations: jest.Mocked<BaselineMutations>;
 
-    const createSut = (baselineState?: Partial<BaselineState>) => {
+    const createSut = (baselineState?: Partial<BaselineState>, metadataState?: Partial<MetadataState>) => {
 
         actions = {
             uploadPJNZ: jest.fn(),
@@ -35,7 +36,7 @@ describe("Baseline upload component", () => {
                 },
                 metadata: {
                     namespaced: true,
-                    state: mockMetadataState
+                    state: mockMetadataState(metadataState)
                 }
             }
         })
@@ -62,6 +63,19 @@ describe("Baseline upload component", () => {
 
     it("passes pjnz error to file upload", () => {
         const store = createSut({pjnzError: "File upload went wrong"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(0).props().error).toBe("File upload went wrong");
+    });
+
+    it("shows metadata error if present", () => {
+        const store = createSut({}, {plottingMetadataError: "Metadata went wrong"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(0).props().error).toBe("Metadata went wrong");
+    });
+
+    it("shows pjnz error, not metadata error, if both are present", () => {
+        const store = createSut({pjnzError: "File upload went wrong"},
+                                {plottingMetadataError: "Metadata went wrong"});
         const wrapper = shallowMount(Baseline, {store, localVue});
         expect(wrapper.findAll(FileUpload).at(0).props().error).toBe("File upload went wrong");
     });
