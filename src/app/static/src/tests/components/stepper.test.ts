@@ -3,7 +3,7 @@ import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {
-    mockBaselineState,
+    mockBaselineState, mockMetadataState,
     mockModelRunState,
     mockPopulationResponse,
     mockShapeResponse, mockStepperState,
@@ -24,6 +24,7 @@ import {actions} from "../../app/store/stepper/actions";
 import {getters} from "../../app/store/stepper/getters";
 import {StepperState} from "../../app/store/stepper/stepper";
 import {actions as rootActions} from "../../app/store/root/actions"
+import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -31,6 +32,7 @@ Vue.use(Vuex);
 describe("Stepper component", () => {
     const createSut = (baselineState?: Partial<BaselineState>,
                        surveyAndProgramState?: Partial<SurveyAndProgramDataState>,
+                       metadataState?: Partial<MetadataState>,
                        modelRunState?: Partial<ModelRunState>,
                        stepperState?: Partial<StepperState>) => {
 
@@ -60,6 +62,11 @@ describe("Stepper component", () => {
                     mutations: stepperMutations,
                     actions: actions,
                     getters
+                },
+                metadata: {
+                    namespaced: true,
+                    state: mockMetadataState(metadataState),
+                    getters: metadataGetters
                 }
             }
         })
@@ -128,11 +135,13 @@ describe("Stepper component", () => {
 
     it("upload surveys step is enabled when baseline step is complete", () => {
         const store = createSut({
-            country: "testCountry",
-            shape: mockShapeResponse(),
-            population: mockPopulationResponse(),
-            ready: true
-        }, {ready: true});
+                country: "testCountry",
+                shape: mockShapeResponse(),
+                population: mockPopulationResponse(),
+                ready: true
+            },
+            {ready: true},
+            {plottingMetadata: "TEST DATA" as any});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
@@ -141,13 +150,32 @@ describe("Stepper component", () => {
         expect([2, 3, 4].filter(i => steps.at(i).props().enabled).length).toBe(0);
     });
 
+    it("upload surveys step is not enabled if metadata state is not complete", () => {
+        const store = createSut({
+                country: "testCountry",
+                shape: mockShapeResponse(),
+                population: mockPopulationResponse(),
+                ready: true
+            },
+            {ready: true},
+            {plottingMetadata: null});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(0).props().enabled).toBe(true);
+        expect(steps.at(1).props().enabled).toBe(false);
+        expect(steps.at(0).props().complete).toBe(false);
+        expect([1, 2, 3, 4].filter(i => steps.at(i).props().enabled).length).toBe(0);
+    });
+
     it("updates active step when jump event is emitted", () => {
         const store = createSut({
             country: "testCountry",
             shape: mockShapeResponse(),
             population: mockPopulationResponse(),
             ready: true
-        }, {ready: true});
+            },
+            {ready: true},
+            {plottingMetadata: "TEST DATA" as any});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         steps.at(1).vm.$emit("jump", 2);
@@ -169,11 +197,13 @@ describe("Stepper component", () => {
 
     it("can continue when the active step is complete", () => {
         const store = createSut({
-            country: "testCountry",
-            shape: mockShapeResponse(),
-            population: mockPopulationResponse(),
-            ready: true
-        }, {ready: true});
+                country: "testCountry",
+                shape: mockShapeResponse(),
+                population: mockPopulationResponse(),
+                ready: true
+            },
+            {ready: true},
+            {plottingMetadata: "TEST DATA" as any});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).not.toContain("disabled");
@@ -185,7 +215,9 @@ describe("Stepper component", () => {
 
     it("updates from completed state when active step data is populated", (done) => {
         const baselineState = {country: "Malawi", population: mockPopulationResponse(), ready: true};
-        const store = createSut(baselineState, {ready: true});
+        const store = createSut(baselineState,
+            {ready: true},
+            {plottingMetadata: "TEST DATA" as any});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).toContain("disabled");
@@ -209,7 +241,7 @@ describe("Stepper component", () => {
             country: "Malawi",
             shape: mockShapeResponse(),
             population: mockPopulationResponse()
-        }, {}, {}, {activeStep: 2});
+        }, {}, {}, {}, {activeStep: 2});
 
         const wrapper = shallowMount(Stepper, {store, localVue});
         let steps = wrapper.findAll(Step);
@@ -227,6 +259,8 @@ describe("Stepper component", () => {
             country: "Malawi",
             shape: mockShapeResponse(),
             population: mockPopulationResponse()
+        }, {}, {
+            plottingMetadata: "TEST DATA" as any
         });
         const wrapper = shallowMount(Stepper, {store, localVue});
         let steps = wrapper.findAll(Step);
@@ -244,6 +278,8 @@ describe("Stepper component", () => {
             country: "Malawi",
             shape: mockShapeResponse(),
             population: mockPopulationResponse()
+        }, {}, {
+            plottingMetadata: "TEST DATA" as any
         });
         const wrapper = shallowMount(Stepper, {store, localVue});
         let steps = wrapper.findAll(Step);
@@ -266,14 +302,14 @@ describe("Stepper component", () => {
     }
 
     it("model run step is not complete without success", () => {
-        const store = createSut({ready: true}, {ready: true}, {success: false});
+        const store = createSut({ready: true}, {ready: true}, {}, {success: false});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(false);
     });
 
     it("model run step is complete on success", () => {
-        const store = createSut({ready: true}, {ready: true}, {success: true});
+        const store = createSut({ready: true}, {ready: true}, {}, {success: true});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(true);

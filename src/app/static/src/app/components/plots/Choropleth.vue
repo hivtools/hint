@@ -10,12 +10,12 @@
                      @detail-changed="onDetailChange"
                      :indicator="indicator"
                     :artEnabled="artEnabled" :prevEnabled="prevEnabled"></map-control>
-        <map-legend :colorFunction="selectedColorFunction" :max="max" :min="min"></map-legend>
+        <map-legend :colorFunction="selectedColorFunction" :max="range.max" :min="range.min"></map-legend>
     </l-map>
 </template>
 <script lang="ts">
     import Vue from "vue";
-    import {mapState} from "vuex";
+    import {mapGetters, mapState} from "vuex";
     import {LGeoJson, LMap} from 'vue2-leaflet';
     import {Feature} from "geojson";
     import {Layer} from "leaflet";
@@ -49,37 +49,15 @@
             ...mapState<FilteredDataState>("filteredData", {
                 selectedDataType: state => state.selectedDataType
             }),
-            indicatorData: function() {
-                return this.$store.getters['filteredData/regionIndicators'];
-            },
-            colorFunctions: function() {
-                return this.$store.getters['filteredData/colorFunctions'];
-            },
+            ...mapGetters('filteredData', ["regionIndicators", "colorFunctions", "choroplethRanges"]),
             currentFeatures: function () {
                 return this.featuresByLevel[this.detail || 1]
             },
             selectedColorFunction: function () {
                 return this.colorFunctions[this.indicator];
             },
-            min: function() {
-                if (this.indicator) {
-                    if (this.indicator == "prev") {
-                        return this.indicatorData.prevRange.min;
-                    }
-                    if (this.indicator == "art") {
-                        return this.indicatorData.artRange.min;
-                    }
-                }
-            },
-            max: function() {
-                if (this.indicator) {
-                    if (this.indicator == "prev") {
-                        return this.indicatorData.prevRange.max;
-                    }
-                    if (this.indicator == "art") {
-                        return this.indicatorData.artRange.max;
-                    }
-                }
+            range: function() {
+                return this.choroplethRanges[this.indicator];
             },
             prevEnabled: function() {
                 return this.selectedDataType != DataType.Program;
@@ -88,17 +66,18 @@
                 return this.selectedDataType == DataType.Survey || this.selectedDataType == DataType.Program;
             },
             options: function() {
-                const indicatorData = this.indicatorData;
+                const regionIndicators = this.regionIndicators;
                 const indicator = this.indicator;
                 return {
                     onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
                         const area_id = feature.properties && feature.properties["area_id"];
                         const area_name = feature.properties && feature.properties["area_name"];
-                        const values = indicatorData.indicators[area_id];
+
+                        const values = regionIndicators[area_id];
                         let value = values && values[indicator] && values[indicator].value;
                         if (value == null || value == undefined) {
                             value = "";
-                        }
+                        };
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${value}
@@ -136,7 +115,7 @@
                 this.detail = newVal
             },
             getColorForRegion: function (region: string) {
-                let data = this.indicatorData.indicators[region];
+                let data = this.regionIndicators[region];
                 data = data && data[this.indicator];
                 data = data && data.color;
 

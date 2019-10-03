@@ -14,12 +14,18 @@ import {
     ProgrammeResponse,
     SurveyResponse,
     AgeFilters,
-    SurveyFilters, AncResponse, PopulationResponse, ModelStatusResponse
+    SurveyFilters,
+    AncResponse,
+    PopulationResponse,
+    ModelStatusResponse,
+    PlottingMetadataResponse,
+    PrevalenceAndArtCoverageIndicators
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
+import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
 
 
 export const mockAxios = new MockAdapter(axios);
@@ -66,6 +72,12 @@ export const mockFilteredDataState = (props?: Partial<FilteredDataState>) => {
     }
 };
 
+export const mockMetadataState = (props?: Partial<MetadataState>) => {
+    return {
+        ...initialMetadataState,
+        ...props
+    }
+};
 export const mockRootState = (props?: Partial<RootState>): RootState => {
     return {
         version: "",
@@ -74,6 +86,7 @@ export const mockRootState = (props?: Partial<RootState>): RootState => {
         surveyAndProgram: mockSurveyAndProgramState(),
         modelRun: mockModelRunState(),
         stepper: mockStepperState(),
+        metadata: mockMetadataState(),
         ...props
     }
 };
@@ -198,4 +211,55 @@ export const mockModelStatusResponse = (props: Partial<ModelStatusResponse> = {}
         status: "finished",
         ...props
     }
+};
+
+export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResponse> = {}): PlottingMetadataResponse => {
+    return {
+        anc: {
+            choropleth:  {
+                indicators: {}
+            }
+        },
+        output: {
+            choropleth:  {
+                indicators: {}
+            }
+        },
+        programme: {
+            choropleth:  {
+                indicators: {}
+            }
+        },
+        survey: {
+            choropleth: {
+                indicators: {}
+            }
+        },
+        ...props
+    }
+};
+
+export interface Indicators {
+    value_column: string,
+    indicator_column: string,
+    indicator_value: string,
+    name: string,
+    min: number,
+    max: number,
+    colour: string,
+    invert_scale: boolean
+}
+
+export const mockIndicators = (props: Partial<Indicators>) => {
+    return {
+        value_column: "",
+        indicator_column: "",
+        indicator_value: "",
+        name: "",
+        min: 0,
+        max: 0,
+        colour: "",
+        invert_scale: false,
+        ...props
+     };
 };
