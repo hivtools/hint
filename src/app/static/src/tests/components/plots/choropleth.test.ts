@@ -38,23 +38,38 @@ describe("Choropleth component", () => {
         }
     ];
     const testRegionIndicators = {
-        indicators: {
-            "MWI.1.1.1.1": {
-                prev: {value: 0.1, color: "rgb(1,1,1)"},
-                art: {value: 0.08, color: "rgb(2,2,2)"}
-                },
-            "MWI.1.1.1.2": {
-                prev: {value: 0.05, color: "rgb(3,3,3)"},
-                art: {value: 0.06, color: "rgb(4,4,4)"}
+        "MWI.1.1.1.1": {
+            prev: {value: 0.1, color: "rgb(1,1,1)"},
+            art: {value: 0.08, color: "rgb(2,2,2)"}
             },
-            "MWI.1.1.1": {
-                prev: {value: 0.07, color: "rgb(5,5,5)"},
-                art:{value: 0.2, color: "rgb(6,6,6)" }
+        "MWI.1.1.1.2": {
+            prev: {value: 0.05, color: "rgb(3,3,3)"},
+            art: {value: 0.06, color: "rgb(4,4,4)"}
+        },
+        "MWI.1.1.1": {
+            prev: {value: 0.07, color: "rgb(5,5,5)"},
+            art:{value: 0.2, color: "rgb(6,6,6)" }
+        }
+    };
+
+    const testGetters = {
+        regionIndicators: () => {
+            return testRegionIndicators;
+        },
+        colorFunctions: () => {
+            return {
+                prev: jest.fn(),
+                art: jest.fn()
             }
         },
-        artRange: {min: 0.06, max:0.2},
-        prevRange: {min: 0.05, max: 0.1}
+        choroplethRanges: () => {
+            return {
+                prev: {min: 0, max: 0.5},
+                art: {min: 0.1, max: 1}
+            };
+        }
     };
+
     const testColorFunctions = () => {
         return {
             prev: jest.fn(),
@@ -120,27 +135,28 @@ describe("Choropleth component", () => {
         })
     });
 
-    it("calculates min and max according to indicator", () => {
+    it("calculates range according to indicator", () => {
         //default to prev
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         const vm = wrapper.vm as any;
-        expect(vm.min).toBe(0.05);
-        expect(vm.max).toBe(0.1);
+        expect(vm.range.min).toBe(0);
+        expect(vm.range.max).toBe(0.5);
 
         //update to ART
         wrapper.find(MapControl).vm.$emit("indicator-changed", "art");
 
         Vue.nextTick();
-        expect(vm.min).toBe(0.06);
-        expect(vm.max).toBe(0.2);
+
+        expect(vm.range.min).toBe(0.1);
+        expect(vm.range.max).toBe(1);
     });
 
     it("calculates indicators from filteredData", () => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         const vm = wrapper.vm as any;
-        expect(vm.indicatorData).toEqual(testRegionIndicators);
+        expect(vm.regionIndicators).toEqual(testRegionIndicators);
     });
 
     it("calculates prevEnabled and artEnabled when true", () => {
@@ -165,12 +181,7 @@ describe("Choropleth component", () => {
                 filteredData: {
                     namespaced: true,
                     state: mockFilteredDataState({selectedDataType: DataType.ANC}),
-                    getters: {
-                        regionIndicators: () => {
-                            return testRegionIndicators;
-                        },
-                        colorFunctions: testColorFunctions
-                    }
+                    getters: testGetters
                 }
             }
         });
@@ -194,12 +205,7 @@ describe("Choropleth component", () => {
                 filteredData: {
                     namespaced: true,
                     state: mockFilteredDataState({selectedDataType: DataType.Program}),
-                    getters: {
-                        regionIndicators: () => {
-                            return testRegionIndicators;
-                        },
-                        colorFunctions: testColorFunctions
-                    }
+                    getters: testGetters
                 }
             }
         });
@@ -258,12 +264,7 @@ describe("Choropleth component", () => {
                 filteredData: {
                     namespaced: true,
                     state: filteredData,
-                    getters: {
-                        regionIndicators:  () => {
-                            return testRegionIndicators;
-                        },
-                        colorFunctions: testColorFunctions
-                    },
+                    getters: testGetters,
                     mutations: mutations
                 }
             }
@@ -293,18 +294,13 @@ describe("Choropleth component", () => {
                     namespaced: true,
                     state: filteredData,
                     getters: {
+                        ...testGetters,
                         regionIndicators: () => {
                             return {
-                                indicators: {
-                                        area_1: {prev: {value: 1}},
-                                        area_2: {prev: {value: 2}
-                                    }
-                                },
-                                artRange: {min: null, max: null},
-                                prevRange: {min: 10, max: 20}
+                                area_1: {prev: {value: 1}},
+                                area_2: {prev: {value: 2}}
                             }
                         },
-                        colorFunctions: testColorFunctions
                     },
                     mutations: mutations
                 }

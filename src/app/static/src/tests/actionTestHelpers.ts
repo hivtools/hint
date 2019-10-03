@@ -1,4 +1,4 @@
-import {mockAxios, mockFailure} from "./mocks";
+import {mockAxios, mockBaselineState, mockFailure} from "./mocks";
 import {ActionContext} from "vuex";
 import {initialBaselineState} from "../app/store/baseline/baseline";
 import {mutations} from "../app/store/baseline/mutations";
@@ -14,7 +14,9 @@ export function testUploadErrorCommitted(url: string,
             .reply(500, mockFailure("Something went wrong"));
 
         const commit = jest.fn();
-        await action({commit} as any, new FormData());
+        const state = mockBaselineState();
+        const dispatch = jest.fn();
+        await action({commit, state, dispatch} as any, new FormData());
 
         // first a call to clear the data
         expect(commit.mock.calls[0][0]).toStrictEqual({

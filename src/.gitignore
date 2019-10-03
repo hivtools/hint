@@ -6,6 +6,7 @@ build
 userCLI/build
 app/build
 app/uploads
+app/out
 
 ### STS ###
 .apt_generated

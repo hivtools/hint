@@ -5,7 +5,7 @@
                 <form>
                     <file-upload label="PJNZ"
                                  :valid="pjnz.valid"
-                                 :error="pjnz.error"
+                                 :error="pjnz.error || plottingMetadataError"
                                  :upload="uploadPJNZ"
                                  :existingFileName="pjnz.existingFileName"
                                  accept="PJNZ,pjnz,.pjnz,.PJNZ"
@@ -42,29 +42,35 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import FileUpload from "../FileUpload.vue";
     import {PartialFileUploadProps} from "../../types";
+    import {MetadataState} from "../../store/metadata/metadata";
 
     const namespace: string = 'baseline';
 
     export default Vue.extend({
         name: "Baseline",
-        computed: mapState<BaselineState>(namespace, {
-            country: state => state.country,
-            pjnz: state => ({
-                valid: !!state.country,
-                error: state.pjnzError,
-                existingFileName: state.pjnzFilename
-            } as PartialFileUploadProps),
-            shape: state => ({
-                valid: state.shape != null,
-                error: state.shapeError,
-                existingFileName: state.shape && state.shape.filename
-            } as PartialFileUploadProps),
-            population: state => ({
-                valid: state.population != null,
-                error: state.populationError,
-                existingFileName: state.population && state.population.filename
-            } as PartialFileUploadProps),
-        }),
+        computed: {
+            ...mapState<BaselineState>(namespace, {
+                country: state => state.country,
+                pjnz: state => ({
+                    valid: !!state.country,
+                    error: state.pjnzError,
+                    existingFileName: state.pjnzFilename
+                } as PartialFileUploadProps),
+                shape: state => ({
+                    valid: state.shape != null,
+                    error: state.shapeError,
+                    existingFileName: state.shape && state.shape.filename
+                } as PartialFileUploadProps),
+                population: state => ({
+                    valid: state.population != null,
+                    error: state.populationError,
+                    existingFileName: state.population && state.population.filename
+                } as PartialFileUploadProps),
+            }),
+            ...mapState<MetadataState>("metadata", {
+                plottingMetadataError: state => state.plottingMetadataError
+            })
+        },
         methods: {
             ...mapActions({
                 uploadPJNZ: 'baseline/uploadPJNZ',

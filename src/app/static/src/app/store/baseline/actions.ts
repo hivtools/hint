@@ -16,12 +16,15 @@ export interface BaselineActions {
 
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
-    async uploadPJNZ({commit}, formData) {
+    async uploadPJNZ({commit, dispatch, state}, formData) {
         commit({type: "PJNZUpdated", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("PJNZUpdated")
             .withError("PJNZUploadError")
-            .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData);
+            .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData)
+            .then(() => {
+                dispatch('metadata/getPlottingMetadata', state.country, {root: true});
+            });
     },
 
     async uploadShape({commit}, formData) {

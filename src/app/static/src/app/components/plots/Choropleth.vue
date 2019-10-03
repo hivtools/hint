@@ -1,17 +1,18 @@
 <template>
     <l-map ref="map" style="height: 800px; width: 100%">
 
-        <div ref="selectedRegionsGeoJson">
-            <template v-for="selectedRegionFeature in selectedRegionFeatures">
-                <l-geo-json :geojson="selectedRegionFeature"
-                            class="selectedRegionFeature"
-                            :optionsStyle="{...style, fillColor: 'rgba(0,0,0,0)'}">
-                </l-geo-json>
-            </template>
-        </div>
+        <template>
+            <l-geo-json ref="selectedRegionsGeoJson" v-for="selectedRegionFeature in selectedRegionFeatures"
+                        :key="selectedRegionFeature.properties.area_id"
+                        :geojson="selectedRegionFeature"
+                        class="selectedRegionFeature"
+                        :optionsStyle="{...style, fillColor: 'rgba(0,0,0,0)'}">
+            </l-geo-json>
+        </template>
 
         <template v-for="feature in currentFeatures">
-            <l-geo-json :geojson="feature"
+            <l-geo-json ref=""
+                        :geojson="feature"
                         :options="options"
                         :optionsStyle="{...style, fillColor: getColorForRegion(feature.properties['area_id'])}">
             </l-geo-json>
@@ -20,15 +21,15 @@
                      @detail-changed="onDetailChange"
                      :indicator="indicator"
                     :artEnabled="artEnabled" :prevEnabled="prevEnabled"></map-control>
-        <map-legend :colorFunction="selectedColorFunction" :max="max" :min="min"></map-legend>
+        <map-legend :colorFunction="selectedColorFunction" :max="range.max" :min="range.min"></map-legend>
     </l-map>
 </template>
 <script lang="ts">
     import Vue from "vue";
-    import {mapState} from "vuex";
+    import {mapGetters, mapState} from "vuex";
     import {LGeoJson, LMap} from 'vue2-leaflet';
     import {Feature} from "geojson";
-    import {Layer} from "leaflet";
+    import {Layer, Bounds, bounds} from "leaflet";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
     import {Indicator} from "../../types";
@@ -52,46 +53,28 @@
         },
         computed: {
             ...mapState<BaselineState>("baseline", {
-                features: state => state.shape && state.shape.data.features
+                features: state => state.shape && state.shape.data.features,
+                countryFeature: function(state) {
+                    if (state.shape && state.shape.filters && state.shape.filters.regions) {
+                        const countryRegion = state.shape && state.shape.filters && state.shape.filters.regions as any;
+                        return this.getFeatureFromAreaId(countryRegion.id);
+                    }
+                    return null;
+                }
             }),
             ...mapState<FilteredDataState>("filteredData", {
                 selectedDataType: state => state.selectedDataType,
                 selectedRegions: state => state.selectedChoroplethFilters.regions
             }),
-            //mapCenter: function() {
-            //    return this.$store.getters['filteredData/selectedRegionCenter'];
-            //},
-            indicatorData: function() {
-                return this.$store.getters['filteredData/regionIndicators'];
-            },
-            colorFunctions: function() {
-                return this.$store.getters['filteredData/colorFunctions'];
-            },
+            ...mapGetters('filteredData', ["regionIndicators", "colorFunctions", "choroplethRanges"]),
             currentFeatures: function () {
                 return this.featuresByLevel[this.detail || 1]
             },
             selectedColorFunction: function () {
                 return this.colorFunctions[this.indicator];
             },
-            min: function() {
-                if (this.indicator) {
-                    if (this.indicator == "prev") {
-                        return this.indicatorData.prevRange.min;
-                    }
-                    if (this.indicator == "art") {
-                        return this.indicatorData.artRange.min;
-                    }
-                }
-            },
-            max: function() {
-                if (this.indicator) {
-                    if (this.indicator == "prev") {
-                        return this.indicatorData.prevRange.max;
-                    }
-                    if (this.indicator == "art") {
-                        return this.indicatorData.artRange.max;
-                    }
-                }
+            range: function() {
+                return this.choroplethRanges[this.indicator];
             },
             prevEnabled: function() {
                 return this.selectedDataType != DataType.Program;
@@ -100,17 +83,18 @@
                 return this.selectedDataType == DataType.Survey || this.selectedDataType == DataType.Program;
             },
             options: function() {
-                const indicatorData = this.indicatorData;
+                const regionIndicators = this.regionIndicators;
                 const indicator = this.indicator;
                 return {
                     onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
                         const area_id = feature.properties && feature.properties["area_id"];
                         const area_name = feature.properties && feature.properties["area_name"];
-                        const values = indicatorData.indicators[area_id];
+
+                        const values = regionIndicators[area_id];
                         let value = values && values[indicator] && values[indicator].value;
                         if (value == null || value == undefined) {
                             value = "";
-                        }
+                        };
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${value}
@@ -119,9 +103,10 @@
                 }
             },
             selectedRegionFeatures: function() {
-                if (this.selectedRegions) {
-                    const features = this.features as any[];
-                    return (this.selectedRegions as any[]).map(r => features.filter(f => f.properties.area_id == r.id)[0]);
+                if (this.selectedRegions && this.selectedRegions.length > 0) {
+                    return (this.selectedRegions as any[]).map(r => this.getFeatureFromAreaId(r.id));
+                } else if (this.countryFeature) {
+                    return [this.countryFeature];
                 }
                 return [];
             }
@@ -154,7 +139,7 @@
                 this.detail = newVal
             },
             getColorForRegion: function (region: string) {
-                let data = this.indicatorData.indicators[region];
+                let data = this.regionIndicators[region];
                 data = data && data[this.indicator];
                 data = data && data.color;
 
@@ -166,17 +151,31 @@
 
                 return data;
             },
+            getFeatureFromAreaId(areaId: string){
+                return (this.features as any[]).filter(f => f.properties.area_id == areaId)[0];
+            },
             updateBounds(){
                 Vue.nextTick().then(() => {
-                    const geoJsonArray = this.$refs.selectedRegionsGeoJson.children;
-                    for (const geoJson of geoJsonArray) {
-                        if (geoJson.getBounds) {
-                            //TODO: combine bounds!
-                            const bounds = geoJson.getBounds();
+                    const geoJsonArray = this.$refs.selectedRegionsGeoJson;
+
+                    let combinedBounds = null;
+                    if (geoJsonArray) {
+                        for (const geoJson of geoJsonArray) {
+                            const regionBounds = geoJson.getBounds();
+                            if (combinedBounds) {
+                                combinedBounds.extend(regionBounds);
+                            } else {
+                                combinedBounds = regionBounds;
+                            }
+
+                        }
+
+                        if (combinedBounds) {
                             const map = this.$refs.map;
-                            map.fitBounds(bounds);
+                            map.fitBounds(combinedBounds);
                         }
                     }
+
                 });
             }
         },
@@ -189,7 +188,7 @@
                     this.indicator = "prev";
                 }
             },
-            selectedRegionFeature: function (newVal) {
+            selectedRegionFeatures: function (newVal) {
                 this.updateBounds();
             }
         },
