@@ -150,7 +150,7 @@ describe("Stepper component", () => {
         expect([2, 3, 4].filter(i => steps.at(i).props().enabled).length).toBe(0);
     });
 
-    it("upload surveys step is not enabled is metadata state is not complete", () => {
+    it("upload surveys step is not enabled if metadata state is not complete", () => {
         const store = createSut({
                 country: "testCountry",
                 shape: mockShapeResponse(),
