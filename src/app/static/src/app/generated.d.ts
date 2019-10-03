@@ -38,6 +38,16 @@ export interface FilterOption {
   name: string;
   id: string;
 }
+export interface IndicatorMetadata {
+  value_column: string;
+  indicator_column?: string;
+  indicator_value?: string;
+  name: string;
+  min: number;
+  max: number;
+  colour: string;
+  invert_scale: boolean;
+}
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface LevelLabels {
   id: number;
@@ -160,6 +170,62 @@ export interface NestedFilterOption {
 }
 export interface PjnzResponseData {
   country: string;
+}
+export interface PlottingMetadataResponse {
+  survey: PrevalenceAndArtCoverageChoropleth;
+  anc: PrevalenceAndArtCoverageChoropleth;
+  programme: CurrentArtChoropleth;
+  output: PrevalenceAndArtCoverageChoropleth;
+}
+export interface PrevalenceAndArtCoverageChoropleth {
+  choropleth?: {
+    indicators?: PrevalenceAndArtCoverageIndicators;
+    [k: string]: any;
+  };
+  [k: string]: any;
+}
+export interface PrevalenceAndArtCoverageIndicators {
+  prevalence?: {
+    value_column: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+  };
+  art_coverage?: {
+    value_column: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+  };
+  [k: string]: any;
+}
+export interface CurrentArtChoropleth {
+  choropleth?: {
+    indicators?: CurrentArtIndicator;
+    [k: string]: any;
+  };
+  [k: string]: any;
+}
+export interface CurrentArtIndicator {
+  current_art?: {
+    value_column: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+  };
+  [k: string]: any;
 }
 export type PopulationResponseData = null;
 export type ProgrammeResponseData = {

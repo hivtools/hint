@@ -95,7 +95,10 @@
                         const area_id = feature.properties && feature.properties["area_id"];
                         const area_name = feature.properties && feature.properties["area_name"];
                         const values = indicatorData.indicators[area_id];
-                        const value = values && values[indicator] && values[indicator].value;
+                        let value = values && values[indicator] && values[indicator].value;
+                        if (value == null || value == undefined) {
+                            value = "";
+                        }
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${value}
@@ -136,6 +139,13 @@
                 let data = this.indicatorData.indicators[region];
                 data = data && data[this.indicator];
                 data = data && data.color;
+
+                if (data == null || data == undefined) {
+                    //show a lighter grey than the outlines if no data
+                    //so unselected regions are still distinguishable
+                    data = "rgb(200,200,200)";
+                }
+
                 return data;
             }
         },
