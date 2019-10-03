@@ -26,7 +26,7 @@ describe("FilteredData mutations", () => {
             art: function(t: number) {return `rgb(${t},0,0)`;},
             prev: function(t: number) {return `rgb(0,${t},0)`;}
         },
-        flattenedSelectedRegionFilter: {},
+        flattenedSelectedRegionFilters: {},
         regionOptions: {id: "MWI", name: "Malawi"},
         choroplethRanges: {
             prev: {min: 0, max: 1},

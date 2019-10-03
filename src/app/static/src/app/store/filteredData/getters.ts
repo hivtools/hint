@@ -229,7 +229,7 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
 const includeRowForSelectedChoroplethFilters = (row: any,
                                                 dataType: DataType,
                                                 selectedFilters: SelectedChoroplethFilters,
-                                                flattenedRegionFilter: object) => {
+                                                flattenedRegionFilters: object) => {
 
     if (dataType != DataType.ANC && row.sex != selectedFilters.sex!.id) {
         return false;
@@ -243,7 +243,7 @@ const includeRowForSelectedChoroplethFilters = (row: any,
         return false;
     }
 
-    const flattenedRegionIds = Object.keys(flattenedRegionFilter);
+    const flattenedRegionIds = Object.keys(flattenedRegionFilters);
     if (flattenedRegionIds.length && flattenedRegionIds.indexOf(row.area_id) < 0) {
         return false
     }

@@ -94,7 +94,7 @@
                         let value = values && values[indicator] && values[indicator].value;
                         if (value == null || value == undefined) {
                             value = "";
-                        };
+                        }
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${value}
@@ -161,13 +161,14 @@
                     let combinedBounds = null;
                     if (geoJsonArray) {
                         for (const geoJson of geoJsonArray) {
-                            const regionBounds = geoJson.getBounds();
-                            if (combinedBounds) {
-                                combinedBounds.extend(regionBounds);
-                            } else {
-                                combinedBounds = regionBounds;
+                            if (geoJson.getBounds) {
+                                const regionBounds = geoJson.getBounds();
+                                if (combinedBounds) {
+                                    combinedBounds.extend(regionBounds);
+                                } else {
+                                    combinedBounds = regionBounds;
+                                }
                             }
-
                         }
 
                         if (combinedBounds) {

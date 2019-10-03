@@ -94,18 +94,13 @@ describe("Choropleth component", () => {
                         {
                             selectedDataType: DataType.Survey,
                             selectedChoroplethFilters: {
-                                region: {id: "MWI.1.1.1", name: "Test Region"},
+                                regions: [{id: "MWI.1.1.1", name: "Test Region"}],
                                 sex: null,
                                 age: null,
                                 survey: null
                             }
                         }),
-                    getters: {
-                        regionIndicators: () => {
-                            return testRegionIndicators;
-                        },
-                        colorFunctions: testColorFunctions
-                    },
+                    getters: testGetters,
                     actions,
                     mutations
                 }
@@ -330,7 +325,7 @@ describe("Choropleth component", () => {
 
     });
 
-    it("updateBounds updates bounds of map on from selected region geojson", (done) => {
+    it("updateBounds updates bounds of map from selected region geojson", (done) => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
         const mockMapFitBounds = jest.fn();
 
@@ -339,9 +334,9 @@ describe("Choropleth component", () => {
             fitBounds: mockMapFitBounds
         };
 
-        vm.$refs.selectedRegionGeoJson = {
+        vm.$refs.selectedRegionsGeoJson = [{
             getBounds: () => {return "test bounds";}
-        };
+        }];
 
         vm.updateBounds();
         setTimeout(() => {
@@ -359,7 +354,7 @@ describe("Choropleth component", () => {
         vm.updateBounds = mockUpdateBounds;
 
         testStore.commit({type: "filteredData/ChoroplethFilterUpdated",
-                            payload: [FilterType.Region, {id: "MWI.1.1.1.2", name: "test area"}]});
+                            payload: [FilterType.Region, [{id: "MWI.1.1.1.2", name: "test area"}]]});
 
         setTimeout(() => {
             expect(mockUpdateBounds.mock.calls.length).toBe(1);
