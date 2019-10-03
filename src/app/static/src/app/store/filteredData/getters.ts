@@ -13,7 +13,7 @@ const sexFilterOptions = [
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
         const sapState = rootState.surveyAndProgram;
-        const regions = [getters.regionOptionsTree];
+        const regions = getters.regionOptions;
         switch(state.selectedDataType){
             case (DataType.ANC):
                 return sapState.anc ?
@@ -42,10 +42,12 @@ export const getters = {
                 return null;
         }
     },
-    regionOptionsTree: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
+    regionOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
         const shape = rootState.baseline && rootState.baseline.shape ? rootState.baseline.shape : null;
+        //We're skipping the top level, country region as it doesn't really contribute to the filtering
         return shape && shape.filters &&
-                        shape.filters.regions ? (shape.filters.regions as any) : null;
+                        shape.filters.regions &&
+                        (shape.filters.regions as any).options ? (shape.filters.regions as any).options : null;
     },
     colorFunctions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
       return {
@@ -72,7 +74,7 @@ export const getters = {
             }
         };
 
-        const flattenedRegions = getters.flattenedSelectedRegionFilter;
+        const flattenedRegions = getters.flattenedSelectedRegionFilters;
 
         for(const d of data) {
             const row = d as any;
@@ -145,19 +147,30 @@ export const getters = {
         };
     },
     flattenedRegionOptions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-        const option = getters.regionOptionsTree;
-        return option ? flattenOption(option) : {};
+        const options = getters.regionOptions ? getters.regionOptions : [];
+        return flattenOptions(options);
     },
-    flattenedSelectedRegionFilter: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-        return state.selectedChoroplethFilters.region ? flattenOption(state.selectedChoroplethFilters.region) : {};
+    flattenedSelectedRegionFilters: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+        const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
+        return flattenOptions(selectedRegions);
     }
 };
 
-const flattenOption = (regionFilter: NestedFilterOption) => {
+const flattenOptions = (filterOptions: NestedFilterOption[]) => {
+    let result = {};
+    filterOptions.forEach(r =>
+        result = {
+            ...result,
+            ...flattenOption(r)
+        });
+    return result;
+};
+
+const flattenOption = (filterOption: NestedFilterOption) => {
     let result = {} as any;
-    result[regionFilter.id] = regionFilter;
-    if (regionFilter.options) {
-        regionFilter.options.forEach(o =>
+    result[filterOption.id] = filterOption;
+    if (filterOption.options) {
+        filterOption.options.forEach(o =>
             result = {
                 ...result,
                 ...flattenOption(o as NestedFilterOption)

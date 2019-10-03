@@ -4,6 +4,7 @@
         <h4>Filter map</h4>
         <div class="py-2">
             <filter-select label="Sex"
+                    :multiple="false"
                     :options="sexFilters.available"
                     :value="sexFilters.selected"
                     :disabled="sexFilters.disabled"
@@ -11,6 +12,7 @@
         </div>
         <div class="py-2">
             <filter-select label="Age"
+                    :multiple="false"
                     :options="ageFilters.available"
                     :value="ageFilters.selected"
                     :disabled="ageFilters.disabled"
@@ -18,6 +20,7 @@
         </div>
         <div class="py-2">
             <filter-select label="Survey"
+                    :multiple="false"
                     :options="surveyFilters.available"
                     :value="surveyFilters.selected"
                     :disabled="surveyFilters.disabled"
@@ -25,6 +28,7 @@
         </div>
         <div class="py-2">
             <filter-select label="Region"
+                    :multiple="true"
                     :options="regionFilters.available"
                     :value="regionFilters.selected"
                     :disabled="regionFilters.disabled"
@@ -42,19 +46,21 @@
         FilterType
     } from "../store/filteredData/filteredData";
     import FilterSelect from "./FilterSelect.vue";
-    import {FilterOption} from "../generated";
+    import {FilterOption, NestedFilterOption} from "../generated";
 
     const namespace: string = 'filteredData';
 
     interface ChoroplethFiltersForType {
         available: FilterOption[],
-        selected: string
+        selected: string | string[],
+        disabled: boolean
     }
 
     export default Vue.extend({
         name: "ChoroplethFilters",
         computed: {
-            ...mapGetters(namespace, ["selectedDataFilterOptions", "flattenedRegionOptions"]),
+            ...mapGetters(namespace, ["selectedDataFilterOptions", "flattenedRegionOptions",
+                                        "flattenedSelectedRegionFilters"]),
             ...mapState<FilteredDataState>(namespace, {
                 selectedDataType: state => state.selectedDataType,
                 selectedChoroplethFilters: state => state.selectedChoroplethFilters,
@@ -74,8 +80,7 @@
                 },
 
                 regionFilters: function (state): ChoroplethFiltersForType {
-                    return this.buildViewFiltersForType(this.selectedDataFilterOptions.regions,
-                        this.selectedChoroplethFilters.region);
+                    return this.buildRegionFilters();
                 }
             })
         },
@@ -89,6 +94,16 @@
                     available: availableFilterOptions,
                     selected: selectedFilterOption ? selectedFilterOption.id : null,
                     disabled: availableFilterOptions == undefined
+                }
+            },
+            buildRegionFilters() {
+                const selectedRegions = (this.selectedChoroplethFilters.regions ?
+                    this.selectedChoroplethFilters.regions : []) as FilterOption[];
+
+                return {
+                    available: this.selectedDataFilterOptions.regions,
+                    selected: selectedRegions.map(r => r.id),
+                    disabled: false
                 }
             },
             selectFilterOption(filterType: FilterType, id: string, available: FilterOption[]) {
@@ -105,8 +120,8 @@
             selectSurvey(id: string) {
                 this.selectFilterOption(FilterType.Survey, id, this.surveyFilters.available);
             },
-            selectRegion(id: string) {
-                const newFilter = this.flattenedRegionOptions[id];
+            selectRegion(ids: string[]) {
+                const newFilter = ids.map(id => this.flattenedRegionOptions[id]);
                 this.filterUpdated([FilterType.Region, newFilter]);
             },
             getNewSelectedFilterOption(filterName: string, available: FilterOption[]) {
@@ -135,10 +150,6 @@
                 const newSurveyFilter = this.getNewSelectedFilterOption("survey", this.surveyFilters.available);
                 if (newSurveyFilter) {
                     this.selectSurvey(newSurveyFilter);
-                }
-
-                if (!this.selectedChoroplethFilters.region && this.regionFilters.available) {
-                   this.filterUpdated([FilterType.Region, this.regionFilters.available[0]]);
                 }
             }
         },

@@ -1,9 +1,15 @@
 <template>
     <l-map ref="map" style="height: 800px; width: 100%">
-        <l-geo-json ref="selectedRegionGeoJson" :geojson="selectedRegionFeature"
-                    class="selectedRegionFeature"
-                    :optionsStyle="{...style, fillColor: 'rgba(0,0,0,0)'}">
-        </l-geo-json>
+
+        <div ref="selectedRegionsGeoJson">
+            <template v-for="selectedRegionFeature in selectedRegionFeatures">
+                <l-geo-json :geojson="selectedRegionFeature"
+                            class="selectedRegionFeature"
+                            :optionsStyle="{...style, fillColor: 'rgba(0,0,0,0)'}">
+                </l-geo-json>
+            </template>
+        </div>
+
         <template v-for="feature in currentFeatures">
             <l-geo-json :geojson="feature"
                         :options="options"
@@ -50,7 +56,7 @@
             }),
             ...mapState<FilteredDataState>("filteredData", {
                 selectedDataType: state => state.selectedDataType,
-                selectedRegion: state => state.selectedChoroplethFilters.region
+                selectedRegions: state => state.selectedChoroplethFilters.regions
             }),
             //mapCenter: function() {
             //    return this.$store.getters['filteredData/selectedRegionCenter'];
@@ -101,7 +107,10 @@
                         const area_id = feature.properties && feature.properties["area_id"];
                         const area_name = feature.properties && feature.properties["area_name"];
                         const values = indicatorData.indicators[area_id];
-                        const value = values && values[indicator] && values[indicator].value;
+                        let value = values && values[indicator] && values[indicator].value;
+                        if (value == null || value == undefined) {
+                            value = "";
+                        }
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${value}
@@ -109,13 +118,12 @@
                     }
                 }
             },
-            selectedRegionFeature: function() {
-                if (this.selectedRegion) {
-                    const selectedAreaId = this.selectedRegion.id;
+            selectedRegionFeatures: function() {
+                if (this.selectedRegions) {
                     const features = this.features as any[];
-                    return features.filter(f => f.properties.area_id == selectedAreaId)[0];
+                    return (this.selectedRegions as any[]).map(r => features.filter(f => f.properties.area_id == r.id)[0]);
                 }
-                return null;
+                return [];
             }
         },
         data(): Data {
@@ -149,15 +157,25 @@
                 let data = this.indicatorData.indicators[region];
                 data = data && data[this.indicator];
                 data = data && data.color;
+
+                if (data == null || data == undefined) {
+                    //show a lighter grey than the outlines if no data
+                    //so unselected regions are still distinguishable
+                    data = "rgb(200,200,200)";
+                }
+
                 return data;
             },
             updateBounds(){
                 Vue.nextTick().then(() => {
-                    const geoJson = this.$refs.selectedRegionGeoJson;
-                    if (geoJson.getBounds) {
-                        const bounds = geoJson.getBounds();
-                        const map = this.$refs.map;
-                        map.fitBounds(bounds);
+                    const geoJsonArray = this.$refs.selectedRegionsGeoJson.children;
+                    for (const geoJson of geoJsonArray) {
+                        if (geoJson.getBounds) {
+                            //TODO: combine bounds!
+                            const bounds = geoJson.getBounds();
+                            const map = this.$refs.map;
+                            map.fitBounds(bounds);
+                        }
                     }
                 });
             }

@@ -30,7 +30,7 @@ describe("FilteredData mutations", () => {
             case (FilterType.Survey):
                 return selectedFilters.survey;
             case (FilterType.Region):
-                return selectedFilters.region;
+                return selectedFilters.regions;
         }
     };
 

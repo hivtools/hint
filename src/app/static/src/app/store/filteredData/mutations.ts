@@ -33,21 +33,21 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
                 break;
         }
     },
-    ChoroplethFilterUpdated(state: FilteredDataState, action: PayloadWithType<[FilterType, FilterOption]>) {
+    ChoroplethFilterUpdated(state: FilteredDataState, action: PayloadWithType<[FilterType, FilterOption | NestedFilterOption[]]>) {
         const value = action.payload[1];
         const filters =  state.selectedChoroplethFilters;
         switch (action.payload[0]) {
             case (FilterType.Age):
-                filters.age = value;
+                filters.age = value as FilterOption;
                 break;
             case (FilterType.Sex):
-                filters.sex = value;
+                filters.sex = value as FilterOption;
                 break;
             case (FilterType.Survey):
-                filters.survey = value;
+                filters.survey = value as FilterOption;
                 break;
             case (FilterType.Region):
-                filters.region = value as NestedFilterOption;
+                filters.regions = value as NestedFilterOption[];
                 break;
         }
     }

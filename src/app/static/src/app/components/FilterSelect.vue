@@ -1,7 +1,7 @@
 <template>
     <div>
         <label class="font-weight-bold">{{label}}</label>
-        <treeselect id="survey-filters" :multiple="false"
+        <treeselect id="survey-filters" :multiple=multiple
                     :clearable="false"
                     :options=options
                     :value=value
@@ -19,10 +19,11 @@
     export default Vue.extend({
         name: "FilterSelect",
         props: {
+            multiple: Boolean,
             label: String,
             disabled: Boolean,
             options: Array,
-            value: String
+            value: [Array, String]
         },
         methods: {
             treeselectNormalizer(anyNode: any) {
@@ -33,14 +34,13 @@
 
                 const node = anyNode as NestedFilterOption;
                 const result = {id: node.id, label: node.name};
-                if (node.options) {
-                    if (node.options && node.options.length > 0) {
-                        (result as any).children = node.options.map(o => this.treeselectNormalizer(o));
-                    }
+                if (node.options && node.options.length > 0) {
+                    (result as any).children = node.options.map(o => this.treeselectNormalizer(o));
                 }
+
                 return result;
             },
-            select(value: string) {
+            select(value: string[]) {
                 this.$emit("select", value);
             }
         },

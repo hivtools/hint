@@ -20,7 +20,7 @@ export interface SelectedChoroplethFilters {
     sex: FilterOption | null,
     age: FilterOption | null,
     survey: FilterOption | null,
-    region: NestedFilterOption | null
+    regions: NestedFilterOption[] | null
 }
 
 export interface FilteredDataState {
@@ -41,7 +41,7 @@ export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
     sex: null,
     age: null,
     survey: null,
-    region: null
+    regions: null
 };
 
 export const initialFilteredDataState: FilteredDataState = {

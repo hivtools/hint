@@ -115,7 +115,7 @@ describe("ChoroplethFilters component", () => {
             }];
         const mockSelectedFilters = {
             ...initialSelectedChoroplethFilters,
-            region: {id: "a2", name: "sub-region"}
+            regions: [{id: "a2", name: "sub-region"}]
         };
         const mockGetters = {
             selectedDataFilterOptions: () => {
@@ -128,7 +128,7 @@ describe("ChoroplethFilters component", () => {
         const vm = (wrapper as any).vm;
         const regionFilters = vm.regionFilters;
         expect(regionFilters.available).toStrictEqual(stateRegionFilterOptions);
-        expect(regionFilters.selected).toStrictEqual("a2");
+        expect(regionFilters.selected).toStrictEqual(["a2"]);
     });
 
     it("invokes store action when sex filter is edited", () => {
@@ -231,18 +231,18 @@ describe("ChoroplethFilters component", () => {
                             return {
                                 sex: null,
                                 age: null,
-                                region: null,
+                                regions: null,
                                 survey: null
                             }
                         },
-                        regionOptionsTree: () => {
-                            return {
+                        regionOptions: () => {
+                            return [{
                                 id: "a1",
                                 name: "area1",
                                 options: [
                                     {id: "a2", name: "area1.1"}
                                 ]
-                            }
+                            }]
                         }
                     }
                 }
@@ -252,12 +252,12 @@ describe("ChoroplethFilters component", () => {
         const vm = (wrapper as any).vm;
         const callCount = mockFilterUpdated.mock.calls.length;
 
-        vm.selectRegion("a2");
+        vm.selectRegion(["a2"]);
 
-        expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Region, {
+        expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Region, [{
             id: "a2",
             name: "area1.1"
-        }]);
+        }]]);
     });
 
     it("refreshSelectedChoroplethFilters leaves selected filters unchanged if they are available for new data type", () => {
@@ -273,7 +273,7 @@ describe("ChoroplethFilters component", () => {
             age: {id: "a2", name: "5-9"},
             survey: {id: "s1", name: "Survey 1"},
             sex: {id: "female", name: "female"},
-            region: null
+            regions: null
         };
         const mockFilterUpdated = jest.fn();
         const mockState = {
@@ -310,7 +310,7 @@ describe("ChoroplethFilters component", () => {
             age: {id: "a3", name: "10-15"},
             survey: {id: "s1", name: "Survey 1"},
             sex: {id: "male", name: "male"},
-            region: null
+            regions: null
         };
         const mockRegionOptions = [
             {
@@ -343,10 +343,8 @@ describe("ChoroplethFilters component", () => {
 
         vm.refreshSelectedChoroplethFilters();
         //Sex should be left unchanged as there are no available sex options for ANC
-        expect(mockFilterUpdated.mock.calls.length).toBe(callCount + 2);
+        expect(mockFilterUpdated.mock.calls.length).toBe(callCount + 1);
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Age, {id: "a1", name: "0-4"}]);
-        expect(mockFilterUpdated.mock.calls[callCount + 1][1]).toStrictEqual([FilterType.Region, mockRegionOptions[0]]);
-
     });
 
     const getWrapper = (state?: Partial<FilteredDataState>,

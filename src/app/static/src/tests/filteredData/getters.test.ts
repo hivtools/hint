@@ -25,8 +25,8 @@ describe("FilteredData mutations", () => {
             art: function(t: number) {return `rgb(${t},0,0)`;},
             prev: function(t: number) {return `rgb(0,${t},0)`;}
         },
-        flattenedSelectedRegionFilter: {},
-        regionOptionsTree: {id: "MWI", name: "Malawi"}
+        flattenedSelectedRegionFilters: {},
+        regionOptions: {id: "MWI", name: "Malawi"}
     };
 
     const sexOptions = [
@@ -54,7 +54,7 @@ describe("FilteredData mutations", () => {
 
         const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null)!;
         expect(filters.age).toStrictEqual(testFilters.age);
-        expect(filters.regions).toStrictEqual([testGetters.regionOptionsTree]);
+        expect(filters.regions).toStrictEqual(testGetters.regionOptions);
         expect(filters.sex).toStrictEqual(sexOptions);
     });
 
@@ -80,7 +80,7 @@ describe("FilteredData mutations", () => {
 
         const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null)!;
         expect(filters.age).toStrictEqual(testFilters.age);
-        expect(filters.regions).toStrictEqual([testGetters.regionOptionsTree]);
+        expect(filters.regions).toStrictEqual(testGetters.regionOptions);
         expect(filters.sex).toStrictEqual(sexOptions);
         expect(filters.surveys).toStrictEqual(testFilters.surveys);
 
@@ -105,7 +105,7 @@ describe("FilteredData mutations", () => {
 
         const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null)!;
         expect(filters.age).toStrictEqual(testFilters.age);
-        expect(filters.regions).toStrictEqual([testGetters.regionOptionsTree]);
+        expect(filters.regions).toStrictEqual(testGetters.regionOptions);
         expect(filters.sex).toBeUndefined();
         expect(filters.surveys).toBeUndefined();
     });
@@ -156,15 +156,15 @@ describe("FilteredData mutations", () => {
                         features: []
                     },
                     filters: {
-                        regions: testFilters as any
+                        regions: testFilters
                     }
                 }
-            }),
+            } as any),
             filteredData: testState
         });
 
-        const filters = getters.regionOptionsTree(testState, null, testRootState, null) as NestedFilterOption[];
-        expect(filters).toStrictEqual(testFilters);
+        const filters = getters.regionOptions(testState, null, testRootState, null) as NestedFilterOption[];
+        expect(filters).toStrictEqual(testFilters.options); //We skip top level and use its options as our region array
 
     });
 
@@ -240,7 +240,7 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
                     sex: {id: "both", name: "both"},
-                    region: null
+                    regions: null
                 }
             },
             getters: getters
@@ -324,7 +324,7 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
                     sex: {id: "both", name: "both"},
-                    region: null
+                    regions: null
                 }
             },
             getters: getters
@@ -402,7 +402,7 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "both", name: "both"},
-                    region: null
+                    regions: null
                 }
             },
             getters: getters
@@ -458,7 +458,7 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"}, //Should be ignored for this data type
                     sex: {id: "both", name: "both"},
-                    region: null
+                    regions: null
                 }
             },
             getters: getters
@@ -523,7 +523,7 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: null,
-                    region: null
+                    regions: null
                 }
              },
             getters: getters
@@ -577,7 +577,7 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "male", name: "male"}, //should be ignored
-                    region: null
+                    regions: null
                 }
             },
             getters: getters
@@ -637,13 +637,13 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
                     sex: {id: "both", name: "both"},
-                    region: {
+                    regions: [{
                         id: "area1",
                         name: "Area 1",
                         options: [
                             {id: "area2", name: "Area 2"}
                         ]
-                    }
+                    }]
                 }
             }
         };
@@ -705,7 +705,7 @@ describe("FilteredData mutations", () => {
 
         const testRegionGetters = {
             ...testGetters,
-            flattenedSelectedRegionFilter: {
+            flattenedSelectedRegionFilters: {
                 "area1": {},
                 "area2": {}
             }
@@ -734,7 +734,7 @@ describe("FilteredData mutations", () => {
 
     it("gets flattened selected region filter", () => {
 
-        const testRegions = {
+        const testRegions = [{
             id: "R1",
             name: "Region 1",
             options: [
@@ -753,7 +753,7 @@ describe("FilteredData mutations", () => {
                     ]
                 }
             ]
-        };
+        }];
         const testStore:  Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
@@ -762,7 +762,7 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "male", name: "male"},
-                    region: testRegions
+                    regions: testRegions
                 }
             },
             getters: getters
@@ -770,13 +770,13 @@ describe("FilteredData mutations", () => {
         const testState = testStore.state as FilteredDataState;
 
 
-        const flattenedRegionFilter = getters.flattenedSelectedRegionFilter(testState, testGetters, mockRootState(), null);
+        const flattenedRegionFilter = getters.flattenedSelectedRegionFilters(testState, testGetters, mockRootState(), null);
 
         const expected = {
-            "R1": testRegions,
-            "R2": testRegions.options[0],
-            "R3": testRegions.options[1],
-            "R4": testRegions.options[1].options!![0]
+            "R1": testRegions[0],
+            "R2": testRegions[0].options[0],
+            "R3": testRegions[0].options[1],
+            "R4": testRegions[0].options[1].options!![0]
         };
 
         expect(flattenedRegionFilter).toStrictEqual(expected);
@@ -791,14 +791,14 @@ describe("FilteredData mutations", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "male", name: "male"},
-                    region: null
+                    regions: null
                 }
             },
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
 
-        const flattenedRegionFilter = getters.flattenedSelectedRegionFilter(testState, testGetters, mockRootState(), null);
+        const flattenedRegionFilter = getters.flattenedSelectedRegionFilters(testState, testGetters, mockRootState(), null);
 
         const expected = {};
 
@@ -807,7 +807,7 @@ describe("FilteredData mutations", () => {
 
     it("gets flattened region options", () => {
 
-        const testRegions = {
+        const testRegions = [{
             id: "R1",
             name: "Region 1",
             options: [
@@ -826,7 +826,7 @@ describe("FilteredData mutations", () => {
                     ]
                 }
             ]
-        };
+        }];
         const testStore:  Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState
@@ -835,16 +835,16 @@ describe("FilteredData mutations", () => {
         const testState = testStore.state as FilteredDataState;
         const filterGetters = {
             ...testGetters,
-            regionOptionsTree: testRegions
+            regionOptions: testRegions
         };
 
         const flattenedRegionOptions = getters.flattenedRegionOptions(testState, filterGetters, mockRootState(), null);
 
         const expected = {
-            "R1": testRegions,
-            "R2": testRegions.options[0],
-            "R3": testRegions.options[1],
-            "R4": testRegions.options[1].options!![0]
+            "R1": testRegions[0],
+            "R2": testRegions[0].options[0],
+            "R3": testRegions[0].options[1],
+            "R4": testRegions[0].options[1].options!![0]
         };
 
         expect(flattenedRegionOptions).toStrictEqual(expected);
@@ -859,7 +859,7 @@ describe("FilteredData mutations", () => {
         const testState = testStore.state as FilteredDataState;
         const filterGetters = {
             ...testGetters,
-            regionOptionsTree: null
+            regionOptions: null
         };
 
         const flattenedRegionOptions = getters.flattenedRegionOptions(testState, filterGetters, mockRootState(), null);
