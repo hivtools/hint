@@ -1,4 +1,4 @@
-import {mockAxios, mockPopulationResponse, mockShapeResponse, mockSuccess} from "../mocks";
+import {mockAxios, mockBaselineState, mockPopulationResponse, mockShapeResponse, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
 import {testUploadErrorCommitted} from "../actionTestHelpers";
 
@@ -22,7 +22,9 @@ describe("Baseline actions", () => {
             .reply(200, mockSuccess({data: {country: "Malawi"}}));
 
         const commit = jest.fn();
-        await actions.uploadPJNZ({commit} as any, new FormData());
+        const state = mockBaselineState();
+        const dispatch = jest.fn();
+        await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUpdated", payload: {data: {country: "Malawi"}}});

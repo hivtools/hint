@@ -13,7 +13,7 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
     },
     complete: (state: StepperState, getters: any, rootState: RootState, rootGetters: any) => {
         return {
-            1: rootGetters['baseline/complete'],
+            1: rootGetters['baseline/complete'] && rootGetters['metadata/complete'],
             2: rootGetters['surveyAndProgram/complete'],
             3: rootGetters['surveyAndProgram/complete'], // for now just mark as complete as soon as it's ready
             4: rootState.modelRun.success,

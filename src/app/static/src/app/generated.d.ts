@@ -12,6 +12,16 @@ export interface AgeFilters {
 }
 export type AncResponseData = {
   area_id: string;
+  age_group_id?: number;
+  quarter_id?: number;
+  anc_clients?: number;
+  ancrt_hiv_status?: number;
+  ancrt_known_pos?: number;
+  ancrt_already_art?: number;
+  ancrt_tested?: number;
+  ancrt_test_pos?: number;
+  prevalence?: number;
+  art_coverage?: number;
   [k: string]: any;
 }[];
 export interface Data {
@@ -28,13 +38,77 @@ export interface FilterOption {
   name: string;
   id: string;
 }
+export interface IndicatorMetadata {
+  value_column: string;
+  indicator_column?: string;
+  indicator_value?: string;
+  name: string;
+  min: number;
+  max: number;
+  colour: string;
+  invert_scale: boolean;
+}
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface LevelLabels {
   id: number;
   area_level_label: string;
   display: boolean;
 }
-export type ModelResultResponse = number;
+export type ModelResultData = {
+  area_id: string;
+  sex: string;
+  age_group_id: number;
+  quarter_id: number;
+  indicator_id: number;
+  mode: number;
+  mean: number;
+  lower: number;
+  upper: number;
+  [k: string]: any;
+}[];
+export interface ModelResultFilters {
+  age: {
+    name: string;
+    id: string;
+  }[];
+  quarter: {
+    name: string;
+    id: string;
+  }[];
+  indicator: {
+    name: string;
+    id: string;
+  }[];
+}
+export interface ModelResultResponse {
+  data?: {
+    area_id: string;
+    sex: string;
+    age_group_id: number;
+    quarter_id: number;
+    indicator_id: number;
+    mode: number;
+    mean: number;
+    lower: number;
+    upper: number;
+    [k: string]: any;
+  }[];
+  filters?: {
+    age: {
+      name: string;
+      id: string;
+    }[];
+    quarter: {
+      name: string;
+      id: string;
+    }[];
+    indicator: {
+      name: string;
+      id: string;
+    }[];
+  };
+  [k: string]: any;
+}
 export interface ModelStatusResponse {
   id: string;
   done: boolean | null;
@@ -96,6 +170,62 @@ export interface NestedFilterOption {
 }
 export interface PjnzResponseData {
   country: string;
+}
+export interface PlottingMetadataResponse {
+  survey: PrevalenceAndArtCoverageChoropleth;
+  anc: PrevalenceAndArtCoverageChoropleth;
+  programme: CurrentArtChoropleth;
+  output: PrevalenceAndArtCoverageChoropleth;
+}
+export interface PrevalenceAndArtCoverageChoropleth {
+  choropleth?: {
+    indicators?: PrevalenceAndArtCoverageIndicators;
+    [k: string]: any;
+  };
+  [k: string]: any;
+}
+export interface PrevalenceAndArtCoverageIndicators {
+  prevalence?: {
+    value_column: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+  };
+  art_coverage?: {
+    value_column: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+  };
+  [k: string]: any;
+}
+export interface CurrentArtChoropleth {
+  choropleth?: {
+    indicators?: CurrentArtIndicator;
+    [k: string]: any;
+  };
+  [k: string]: any;
+}
+export interface CurrentArtIndicator {
+  current_art?: {
+    value_column: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+  };
+  [k: string]: any;
 }
 export type PopulationResponseData = null;
 export type ProgrammeResponseData = {
@@ -235,6 +365,16 @@ export interface AncResponse {
   type: "anc";
   data: {
     area_id: string;
+    age_group_id?: number;
+    quarter_id?: number;
+    anc_clients?: number;
+    ancrt_hiv_status?: number;
+    ancrt_known_pos?: number;
+    ancrt_already_art?: number;
+    ancrt_tested?: number;
+    ancrt_test_pos?: number;
+    prevalence?: number;
+    art_coverage?: number;
     [k: string]: any;
   }[];
   filters: {
