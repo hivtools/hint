@@ -84,7 +84,13 @@ describe("Choropleth component", () => {
                     namespaced: true,
                     state: mockBaselineState({
                         shape: mockShapeResponse({
-                            data: {features: fakeFeatures} as any
+                            data: {features: fakeFeatures} as any,
+                            filters: {
+                                regions: {
+                                    id: "MWI.1.1.1",
+                                    name: "test country"
+                                }
+                            } as any
                         })
                     })
                 },
@@ -120,7 +126,7 @@ describe("Choropleth component", () => {
         })
     });
 
-    it("finds selectedRegionFeature and renders it as first LGeoJson feature", (done) => {
+    it("finds default selectedRegionFeature and renders it as first LGeoJson feature", (done) => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         setTimeout(() => {
@@ -208,6 +214,19 @@ describe("Choropleth component", () => {
 
         const vm = wrapper.vm as any;
         expect(vm.prevEnabled).toBe(false);
+    });
+
+    it("countryFeature gets top level region", () => {
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+        const vm = wrapper.vm as any;
+        expect(vm.countryFeature).toStrictEqual(fakeFeatures[0]);
+    });
+
+    it("can get feature from area id", () => {
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+        const vm = wrapper.vm as any;
+        const feature = vm.getFeatureFromAreaId("MWI.1.1.1.2");
+        expect(feature).toStrictEqual(fakeFeatures[2]);
     });
 
     it("colors features according to indicator", (done) => {
