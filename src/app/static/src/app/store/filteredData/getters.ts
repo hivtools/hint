@@ -37,17 +37,6 @@ export const getters = {
         }
 
         const result = {} as {[k: string]: Indicators};
-        const artRange = {min: null, max: null} as IndicatorRange;
-        const prevRange = {min: null, max: null} as IndicatorRange;
-
-        const updateRange = (r: IndicatorRange, value: number) => {
-            if (r.min == null || r.min > value){
-                r.min = value;
-            }
-            if (r.max == null || r.max < value) {
-                r.max = value;
-            }
-        };
 
         for(const d of data) {
             const row = d as any;
@@ -73,8 +62,11 @@ export const getters = {
                     valueColumn = "current_art";
                     break;
                 case (DataType.ANC):
+                    //TODO: once using metadata, we need to allow multiple values per row, as in the case on ANC data
+                    //which contains both prevalence and art data in each row (wide format), unlike survey, which
+                    //is int long format, with an indicator column to show which indicator the value each row provides
                     indicator = "prev";
-                    valueColumn = "ancrt_test_pos";
+                    valueColumn = "prevalence";
             }
 
             const value = row[valueColumn];
@@ -87,12 +79,10 @@ export const getters = {
             switch(indicator) {
                 case("prev"):
                     indicators.prev = {value: value, color: ""};
-                    updateRange(prevRange, indicators.prev!.value);
 
                     break;
                 case("artcov"):
                     indicators.art = {value: value, color: ""};
-                    updateRange(artRange, indicators.art!.value);
 
                     break;
 
@@ -104,17 +94,50 @@ export const getters = {
         for (const region in result) {
             const indicators = result[region];
             if (indicators.art) {
-                indicators.art.color = getColor(indicators.art, artRange, getters.colorFunctions.art);
+                indicators.art.color = getColor(indicators.art, getters.choroplethRanges.art, getters.colorFunctions.art);
             }
             if (indicators.prev) {
-                indicators.prev.color = getColor(indicators.prev, prevRange, getters.colorFunctions.prev);
+                indicators.prev.color = getColor(indicators.prev, getters.choroplethRanges.prev, getters.colorFunctions.prev);
             }
         }
-        return {
-            indicators: result,
-            artRange: artRange,
-            prevRange: prevRange
-        };
+        return result;
+    },
+
+    choroplethRanges:  function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+        //TODO: do not hardcode to art and prev, but take indicators from metadata too
+        const metadata = rootState.metadata.plottingMetadata!!;
+        switch(state.selectedDataType) {
+            case (DataType.ANC):
+                const ancRange = metadata.anc.choropleth!!.indicators!!.prevalence!!;
+                return {
+                    prev: {
+                        min: ancRange.min,
+                        max: ancRange.max,
+                    }
+                };
+            case (DataType.Program):
+                const progRange = metadata.programme.choropleth!!.indicators!!.current_art!!;
+                return  {
+                    art: {
+                        min: progRange.min,
+                        max: progRange.max,
+                    }
+                };
+            case (DataType.Survey):
+                const indicators = metadata.survey.choropleth!!.indicators!!;
+                return {
+                    prev: {
+                        min: indicators.prevalence!!.min,
+                        max: indicators.prevalence!!.max
+                    },
+                    art: {
+                        min: indicators.art_coverage!!.min,
+                        max: indicators.art_coverage!!.max
+                    }
+                };
+            default:
+                return null;
+        }
     }
 };
 

@@ -12,11 +12,12 @@ import {
     mockSurveyAndProgramState,
     mockSurveyFilters,
     mockSurveyResponse,
-    mockRootState
+    mockRootState, mockMetadataState, mockPlottingMetadataResponse, mockIndicators, mockFilteredDataState
 } from "../mocks";
 import {AgeFilters, NestedFilterOption, SurveyFilters} from "../../app/generated";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
+import {metadata} from "../../app/store/metadata/metadata";
 
 describe("FilteredData mutations", () => {
 
@@ -24,6 +25,10 @@ describe("FilteredData mutations", () => {
         colorFunctions: {
             art: function(t: number) {return `rgb(${t},0,0)`;},
             prev: function(t: number) {return `rgb(0,${t},0)`;}
+        },
+        choroplethRanges: {
+            prev: {min: 0, max: 1},
+            art: {min: 0, max: 1}
         }
     };
 
@@ -202,6 +207,81 @@ describe("FilteredData mutations", () => {
         expect(result.prev(0.1)).toEqual(interpolateCool(0.1));
     });
 
+    it("gets choropleth ranges when selectedDataType is ANC", () => {
+        const testState = mockFilteredDataState({selectedDataType: DataType.ANC});
+        const testRootState = mockRootState({
+            metadata: mockMetadataState({
+                plottingMetadata: mockPlottingMetadataResponse({
+                    anc: {
+                        choropleth: {
+                            indicators: {
+                                prevalence: mockIndicators({min: 0.01, max: 0.5})
+                            }
+                        }
+                    }
+                })
+            })
+        });
+
+        const result = getters.choroplethRanges(testState, null, testRootState, null)!!;
+        expect(result.prev!!.min).toBe(0.01);
+        expect(result.prev!!.max).toBe(0.5);
+        expect(result.art).toBe(undefined);
+    });
+
+    it("gets choropleth ranges when selectedDataType is Program", () => {
+        const testState = mockFilteredDataState({selectedDataType: DataType.Program});
+        const testRootState = mockRootState({
+            metadata: mockMetadataState({
+                plottingMetadata: mockPlottingMetadataResponse({
+                    programme: {
+                        choropleth: {
+                            indicators: {
+                                current_art: mockIndicators({min: 0, max: 1})
+                            }
+                        }
+                    }
+                })
+            })
+        });
+
+        const result = getters.choroplethRanges(testState, null, testRootState, null)!!;
+        expect(result.art!!.min).toBe(0);
+        expect(result.art!!.max).toBe(1);
+        expect(result.prev).toBe(undefined);
+    });
+
+    it("gets choropleth ranges when selectedDataType is Survey", () => {
+        const testState = mockFilteredDataState({selectedDataType: DataType.Survey});
+        const testRootState = mockRootState({
+            metadata: mockMetadataState({
+                plottingMetadata: mockPlottingMetadataResponse({
+                    survey: {
+                        choropleth: {
+                            indicators: {
+                                art_coverage: mockIndicators({min: 0, max: 1}),
+                                prevalence: mockIndicators({min: 0.1, max: 0.6})
+                            }
+                        }
+                    }
+                })
+            })
+        });
+
+        const result = getters.choroplethRanges(testState, null, testRootState, null)!!;
+        expect(result.art!!.min).toBe(0);
+        expect(result.art!!.max).toBe(1);
+        expect(result.prev!!.min).toBe(0.1);
+        expect(result.prev!!.max).toBe(0.6);
+    });
+
+    it("gets null choropleth ranges when selectedDataType is unkno2n", () => {
+        const testState = mockFilteredDataState({selectedDataType: 15 as DataType.Survey});
+
+        const result = getters.choroplethRanges(testState, null, mockRootState(), null)!!;
+        expect(result).toBeNull();
+    });
+
     it("gets regionIndicators for survey", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
             state: {
@@ -264,22 +344,18 @@ describe("FilteredData mutations", () => {
         const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
 
         const expected = {
-            indicators: {
-                "area1":
-                    {
-                        "prev": {value: 2, color: "rgb(0,2,0)"}
-                    },
-                "area2":
-                    {
-                        "prev": {value: 3, color: "rgb(0,3,0)"},
-                        "art": {value: 5, color: "rgb(5,0,0)"}
-                    },
-                "area3": {
-                    "art": {value: 4, color: "rgb(4,0,0)"}
-                }
-            },
-            artRange: {min: 4, max: 5},
-            prevRange: {min: 2, max: 3}
+            "area1":
+                {
+                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                },
+            "area2":
+                {
+                    "prev": {value: 3, color: "rgb(0,3,0)"},
+                    "art": {value: 5, color: "rgb(5,0,0)"}
+                },
+            "area3": {
+                "art": {value: 4, color: "rgb(4,0,0)"}
+            }
         };
 
         expect(regionIndicators).toStrictEqual(expected);
@@ -343,20 +419,17 @@ describe("FilteredData mutations", () => {
                 {survey: mockSurveyResponse(
                         {data: testData}
                     )}),
-            filteredData: testState});
+            filteredData: testState
+        });
 
         const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
 
         const expected = {
-            indicators: {
                 "area1":
                     {
                         "prev": {value: 2, color: "rgb(0,2,0)"}
                     }
-            },
-            artRange: {min: null, max: null},
-            prevRange: {min: 2, max: 2}
-        };
+            };
 
         expect(regionIndicators).toStrictEqual(expected);
     });
@@ -402,16 +475,12 @@ describe("FilteredData mutations", () => {
         const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
 
         const expected = {
-            indicators: {
-                "area1": {
-                    "art": {value: 2, color: "rgb(2,0,0)"}
-                },
-                "area2": {
-                    "art": {value: 3, color: "rgb(3,0,0)"}
-                }
+            "area1": {
+                "art": {value: 2, color: "rgb(2,0,0)"}
             },
-            artRange: {min: 2, max: 3},
-            prevRange: {min: null, max: null}
+            "area2": {
+                "art": {value: 3, color: "rgb(3,0,0)"}
+            }
         };
 
         expect(regionIndicators).toStrictEqual(expected);
@@ -469,13 +538,9 @@ describe("FilteredData mutations", () => {
         const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
 
         const expected = {
-            indicators: {
-                "area1": {
-                    "art": {value: 2, color: "rgb(2,0,0)"}
-                }
-            },
-            artRange: {min: 2, max: 2},
-            prevRange: {min: null, max: null}
+            "area1": {
+                "art": {value: 2, color: "rgb(2,0,0)"}
+            }
         };
 
         expect(regionIndicators).toStrictEqual(expected);
@@ -499,13 +564,13 @@ describe("FilteredData mutations", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-                ancrt_test_pos: 2,
+                prevalence: 2,
                 age_group_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
-                ancrt_test_pos: 3,
+                prevalence: 3,
                 age_group_id: 1
             }
         ];
@@ -519,16 +584,12 @@ describe("FilteredData mutations", () => {
         const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
 
         const expected = {
-            indicators: {
-                "area1": {
-                    "prev": {value: 2, color: "rgb(0,2,0)"}
-                },
-                "area2": {
-                    "prev": {value: 3, color: "rgb(0,3,0)"}
-                }
+            "area1": {
+                "prev": {value: 2, color: "rgb(0,2,0)"}
             },
-            artRange: {min: null, max: null},
-            prevRange: {min: 2, max: 3}
+            "area2": {
+                "prev": {value: 3, color: "rgb(0,3,0)"}
+            }
         };
 
         expect(regionIndicators).toStrictEqual(expected);
@@ -552,19 +613,19 @@ describe("FilteredData mutations", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-                ancrt_test_pos: 2,
+                prevalence: 2,
                 age_group_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
-                ancrt_test_pos: 3,
+                prevalence: 3,
                 age_group_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
-                ancrt_test_pos: 2,
+                prevalence: 2,
                 age_group_id: 2
             }
         ];
@@ -573,21 +634,18 @@ describe("FilteredData mutations", () => {
                 {anc: mockAncResponse(
                         {data: testData}
                     )}),
-            filteredData: testState});
+            filteredData: testState
+        });
 
         const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
 
         const expected = {
-            indicators: {
-                "area1": {
-                    "prev": {value: 2, color: "rgb(0,2,0)"}
-                },
-                "area2": {
-                    "prev": {value: 3, color: "rgb(0,3,0)"}
-                }
+            "area1": {
+                "prev": {value: 2, color: "rgb(0,2,0)"}
             },
-            artRange: {min: null, max: null},
-            prevRange: {min: 2, max: 3}
+            "area2": {
+                "prev": {value: 3, color: "rgb(0,3,0)"}
+            }
         };
 
         expect(regionIndicators).toStrictEqual(expected);

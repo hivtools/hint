@@ -14,7 +14,12 @@ import {
     ProgrammeResponse,
     SurveyResponse,
     AgeFilters,
-    SurveyFilters, AncResponse, PopulationResponse, ModelStatusResponse, PlottingMetadataResponse
+    SurveyFilters,
+    AncResponse,
+    PopulationResponse,
+    ModelStatusResponse,
+    PlottingMetadataResponse,
+    PrevalenceAndArtCoverageIndicators
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
@@ -229,6 +234,32 @@ export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResp
             choropleth: {
                 indicators: {}
             }
-        }
+        },
+        ...props
     }
+};
+
+export interface Indicators {
+    value_column: string,
+    indicator_column: string,
+    indicator_value: string,
+    name: string,
+    min: number,
+    max: number,
+    colour: string,
+    invert_scale: boolean
+}
+
+export const mockIndicators = (props: Partial<Indicators>) => {
+    return {
+        value_column: "",
+        indicator_column: "",
+        indicator_value: "",
+        name: "",
+        min: 0,
+        max: 0,
+        colour: "",
+        invert_scale: false,
+        ...props
+     };
 };
