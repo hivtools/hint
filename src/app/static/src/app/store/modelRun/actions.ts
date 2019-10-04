@@ -10,6 +10,7 @@ export type ModelRunErrorTypes = "ModelRunError" | "RunStatusError" | "RunResult
 export interface ModelRunActions {
     run: (store: ActionContext<ModelRunState, RootState>, modelRunParams: ModelSubmitParameters) => void
     poll: (store: ActionContext<ModelRunState, RootState>, runId: number) => void
+    getResult: (store: ActionContext<ModelRunState, RootState>) => void
 }
 
 export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {

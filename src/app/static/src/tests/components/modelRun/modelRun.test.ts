@@ -1,7 +1,7 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
-import {mockAxios, mockModelRunState, mockModelStatusResponse, mockSuccess} from "../../mocks";
+import {mockAxios, mockModelResultResponse, mockModelRunState, mockModelStatusResponse, mockSuccess} from "../../mocks";
 import ModelRun from "../../../app/components/modelRun/ModelRun.vue";
 import {actions} from "../../../app/store/modelRun/actions";
 import {mutations} from "../../../app/store/modelRun/mutations";
@@ -34,6 +34,10 @@ describe("Model run component", () => {
 
     mockAxios.onGet(`/model/status/1234`)
         .reply(200, mockSuccess(mockModelStatusResponse()));
+
+    mockAxios.onGet(`/model/result/1234`)
+        .reply(200, mockSuccess(mockModelResultResponse()));
+
 
     it("run models and polls for status", (done) => {
 
