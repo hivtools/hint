@@ -3,6 +3,8 @@ import {localStorageKey, ModelRunState, ModelRunStatus} from "./modelRun";
 import {PayloadWithType} from "../../types";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
+import {readyStateMutations} from "../shared/readyStateMutations";
+import {FilteredDataState} from "../filteredData/filteredData";
 
 type ModelRunMutation = Mutation<ModelRunState>
 
@@ -11,7 +13,8 @@ export interface ModelRunMutations {
     RunStatusUpdated: ModelRunMutation,
     PollingForStatusStarted: ModelRunMutation,
     RunResultFetched: ModelRunMutation,
-    RunResultError: ModelRunMutation
+    RunResultError: ModelRunMutation,
+    Ready: ModelRunMutation
 }
 
 export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
@@ -43,5 +46,7 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
 
     RunResultError(state: ModelRunState, action: PayloadWithType<string>) {
         state.errors.push(action.payload);
-    }
+    },
+
+    ...readyStateMutations
 };
