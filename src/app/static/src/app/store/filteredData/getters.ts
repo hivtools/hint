@@ -14,6 +14,8 @@ export const getters = {
                 return sapState.program ? sapState.program.filters : null;
             case (DataType.Survey):
                 return sapState.survey ? sapState.survey.filters : null;
+            case (DataType.Output):
+                return rootState.modelRun.result ? rootState.modelRun.result.filters : null;
             default:
                 return null;
         }
@@ -37,6 +39,8 @@ export const getters = {
         }
 
         const result = {} as {[k: string]: Indicators};
+
+        const metadata = rootState.metadata.plottingMetadata!!;
 
         for(const d of data) {
             const row = d as any;
@@ -67,6 +71,11 @@ export const getters = {
                     //is int long format, with an indicator column to show which indicator the value each row provides
                     indicator = "prev";
                     valueColumn = "prevalence";
+                    break;
+                case (DataType.Output):
+                    indicator = "prevalence";
+                    valueColumn = metadata.output!!.choropleth!!.indicators!!.prevalence!!.indicator_column!!;
+                    break;
             }
 
             const value = row[valueColumn];
@@ -135,6 +144,14 @@ export const getters = {
                         max: indicators.art_coverage!!.max
                     }
                 };
+            case (DataType.Output):
+                const outputRange = metadata.output.choropleth!!.indicators!!.prevalence!!;
+                return {
+                    prev: {
+                        min: outputRange.min,
+                        max: outputRange.max
+                    }
+                };
             default:
                 return null;
         }
@@ -160,6 +177,8 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
             return sapState.program ? sapState.program.data : null;
         case (DataType.Survey):
             return sapState.survey ? sapState.survey.data : null;
+        case (DataType.Output):
+            return rootState.modelRun.result!!.data;
         default:
             return null;
     }

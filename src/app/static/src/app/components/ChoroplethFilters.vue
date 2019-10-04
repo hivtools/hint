@@ -1,7 +1,6 @@
 <template>
     <div>
-        <hr class="my-5"/>
-        <h4>Filter map</h4>
+        <h4>Filters</h4>
         <div class="py-2">
             <label class="font-weight-bold">Sex</label>
             <treeselect id="sex-filters" :multiple="false"

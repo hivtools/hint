@@ -28,6 +28,7 @@
                 </file-upload>
             </form>
             <div v-if="hasSelectedDataType">
+                <hr class="my-5"/>
                 <choropleth-filters></choropleth-filters>
             </div>
         </div>
