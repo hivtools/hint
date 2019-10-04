@@ -12,6 +12,7 @@ interface APIClient {
     fun validateSurveyAndProgramme(path: String, shapePath: String, type: FileType): ResponseEntity<String>
     fun submit(data: Map<String, String>, parameters: ModelRunParameters): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
+    fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(country: String): ResponseEntity<String>
 }
 
@@ -70,6 +71,14 @@ class HintrAPIClient(
 
     override fun getStatus(id: String): ResponseEntity<String> {
         return "$baseUrl/model/status/${id}"
+                .httpGet()
+                .response()
+                .second
+                .asResponseEntity()
+    }
+
+    override fun getResult(id: String): ResponseEntity<String> {
+        return "$baseUrl/model/result/${id}"
                 .httpGet()
                 .response()
                 .second
