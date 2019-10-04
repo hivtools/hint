@@ -13,10 +13,8 @@
 
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
-    import FileUpload from "../FileUpload.vue";
     import Choropleth from "../plots/Choropleth.vue";
     import ChoroplethFilters from "../ChoroplethFilters.vue";
-    import {PartialFileUploadProps} from "../../types";
     import {RootState} from "../../root";
     import {DataType} from "../../store/filteredData/filteredData";
 
@@ -29,9 +27,7 @@
             this.selectDataType(DataType.Output)
         },
         methods: {
-            ...mapActions({
-                selectDataType: 'filteredData/selectDataType'
-            })
+            ...mapActions(namespace, ["selectDataType"])
         },
         components: {
             Choropleth,

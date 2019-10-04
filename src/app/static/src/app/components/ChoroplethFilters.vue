@@ -21,7 +21,7 @@
                         :disabled="ageFilters.disabled"
                         @input="selectAge"></treeselect>
         </div>
-        <div class="py-2">
+        <div class="py-2" v-if="!isOutput">
             <label class="font-weight-bold">Survey</label>
             <treeselect id="survey-filters" :multiple="false"
                         :clearable="false"
@@ -83,6 +83,10 @@
             surveyFilters: function (state): ChoroplethFiltersForType {
                 return this.buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
                     this.selectedChoroplethFilters.survey);
+            },
+
+            isOutput: function() {
+                return this.selectedDataType == DataType.Output;
             }
         }),
         methods: {

@@ -72,6 +72,9 @@
             hasSelectedDataType: ({filteredData}) => {
                 return filteredData.selectedDataType != null;
             },
+            selectedDataType: ({filteredData}) => {
+                return filteredData.selectedDataType;
+            },
             anc: ({surveyAndProgram, filteredData}) => ({
                 valid: !!surveyAndProgram.anc,
                 error: surveyAndProgram.ancError,
@@ -104,6 +107,11 @@
                 uploadANC: 'surveyAndProgram/uploadANC',
                 selectTab: 'filteredData/selectDataType'
             })
+        },
+        created() {
+            if (this.selectedDataType == DataType.Output) {
+                this.selectTab(2);
+            }
         },
         components: {
             FileUpload,

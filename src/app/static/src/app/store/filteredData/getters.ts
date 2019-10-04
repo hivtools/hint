@@ -73,8 +73,9 @@ export const getters = {
                     valueColumn = "prevalence";
                     break;
                 case (DataType.Output):
-                    indicator = "prevalence";
-                    valueColumn = metadata.output!!.choropleth!!.indicators!!.prevalence!!.indicator_column!!;
+                    //TODO: output data doesn't currently conform to plotting metadata - use that when it does
+                    indicator = "prev";
+                    valueColumn = "mean";
                     break;
             }
 
@@ -195,6 +196,11 @@ const includeRowForSelectedChoroplethFilters = (row: any, dataType: DataType, se
     }
 
     if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey!.id) {
+        return false;
+    }
+
+    //TODO: deal with all indicators in output
+    if (dataType == DataType.Output && row.indicator_id != 2) { //prevalence
         return false;
     }
 
