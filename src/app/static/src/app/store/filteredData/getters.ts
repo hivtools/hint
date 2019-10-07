@@ -179,7 +179,7 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
         case (DataType.Survey):
             return sapState.survey ? sapState.survey.data : null;
         case (DataType.Output):
-            return rootState.modelRun.result!!.data;
+            return rootState.modelRun.result ? rootState.modelRun.result.data : null;
         default:
             return null;
     }
