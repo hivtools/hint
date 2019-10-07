@@ -4,7 +4,7 @@ const appStateKey = "appState";
 
 export const serialiseState = (rootState: RootState): Partial<RootState> => {
     return {
-        modelRun: {...rootState.modelRun, statusPollId: -1},
+        modelRun: {...rootState.modelRun, statusPollId: -1, result: null},
         filteredData: rootState.filteredData,
         stepper: rootState.stepper,
         metadata: rootState.metadata

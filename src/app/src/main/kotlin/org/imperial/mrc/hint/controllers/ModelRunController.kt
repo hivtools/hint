@@ -22,4 +22,10 @@ class ModelRunController(val fileManager: FileManager, val apiClient: APIClient)
     fun status(@PathVariable("id")id: String): ResponseEntity<String> {
         return apiClient.getStatus(id)
     }
+
+    @GetMapping("/result/{id}")
+    @ResponseBody
+    fun result(@PathVariable("id")id: String): ResponseEntity<String> {
+        return apiClient.getResult(id)
+    }
 }

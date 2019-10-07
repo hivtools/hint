@@ -1,6 +1,7 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {
     Response,
+    ModelResultResponse,
     ModelSubmitResponse,
     ModelStatusResponse,
     ValidateInputResponse,
@@ -12,6 +13,7 @@ type ResponseData =
     ValidateInputResponse
     | ModelSubmitResponse
     | ModelStatusResponse
+    | ModelResultResponse
     | AncResponse
     | PjnzResponse
     | PopulationResponse

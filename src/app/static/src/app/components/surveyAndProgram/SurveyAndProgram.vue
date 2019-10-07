@@ -10,7 +10,7 @@
                              accept="csv,.csv"
                              name="survey">
                 </file-upload>
-                <file-upload label="Programme"
+                <file-upload label="ART"
                              :valid="programme.valid"
                              :error="programme.error"
                              :upload="uploadProgram"
@@ -39,7 +39,7 @@
                         <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)">Survey</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)">Programme</a>
+                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)">ART</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)">ANC</a>
