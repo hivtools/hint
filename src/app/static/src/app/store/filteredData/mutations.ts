@@ -1,7 +1,7 @@
 import {PayloadWithType} from "../../types";
 import {Mutation, MutationTree} from "vuex";
 import {DataType, FilteredDataState, FilterType} from "./filteredData";
-import {FilterOption} from "../../generated";
+import {FilterOption, NestedFilterOption} from "../../generated";
 
 type FilteredDataMutation = Mutation<FilteredDataState>
 
@@ -33,18 +33,21 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
                 break;
         }
     },
-    ChoroplethFilterUpdated(state: FilteredDataState, action: PayloadWithType<[FilterType, FilterOption]>) {
+    ChoroplethFilterUpdated(state: FilteredDataState, action: PayloadWithType<[FilterType, FilterOption | NestedFilterOption[]]>) {
         const value = action.payload[1];
         const filters =  state.selectedChoroplethFilters;
         switch (action.payload[0]) {
             case (FilterType.Age):
-                filters.age = value;
+                filters.age = value as FilterOption;
                 break;
             case (FilterType.Sex):
-                filters.sex = value;
+                filters.sex = value as FilterOption;
                 break;
             case (FilterType.Survey):
-                filters.survey = value;
+                filters.survey = value as FilterOption;
+                break;
+            case (FilterType.Region):
+                filters.regions = value as NestedFilterOption[];
                 break;
         }
     }

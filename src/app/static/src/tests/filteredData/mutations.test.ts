@@ -29,8 +29,8 @@ describe("FilteredData mutations", () => {
                 return selectedFilters.sex;
             case (FilterType.Survey):
                 return selectedFilters.survey;
-            default:
-                return null;
+            case (FilterType.Region):
+                return selectedFilters.regions;
         }
     };
 
@@ -92,5 +92,7 @@ describe("FilteredData mutations", () => {
     it("updates survey choropleth filter", () => {
         testChoroplethFilterUpdated(FilterType.Survey);
     });
-
+    it("updates region choropleth filter", () => {
+        testChoroplethFilterUpdated(FilterType.Region);
+    });
 });

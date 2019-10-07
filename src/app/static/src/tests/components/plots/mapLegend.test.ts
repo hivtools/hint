@@ -7,7 +7,7 @@ describe("Map legend component", () => {
         propsData: {
             max: 2,
             min: 1,
-            getColor: (i: number) => `rgb(0,0,${i})`
+            colorFunction: (i: number) => `rgb(0,0,${i * 255})`
         }
     });
 
@@ -29,9 +29,11 @@ describe("Map legend component", () => {
     it("renders icons with colors", () => {
         const icons = wrapper.findAll("i");
         expect(icons.at(0).element.style
-            .getPropertyValue("background")).toBe("rgb(0, 0, 1)");
+            .getPropertyValue("background")).toBe("rgb(0, 0, 0)");
+        expect(icons.at(4).element.style
+            .getPropertyValue("background")).toBe("rgb(0, 0, 204)");
         expect(icons.at(5).element.style
-            .getPropertyValue("background")).toBe("rgb(0, 0, 2)");
+            .getPropertyValue("background")).toBe("rgb(0, 0, 255)");
 
     });
 

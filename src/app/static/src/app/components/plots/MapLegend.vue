@@ -13,11 +13,10 @@
 <script lang="ts">
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
-
     export default Vue.extend({
         name: "MapLegend",
         props: {
-            "getColor": Function,
+            "colorFunction": Function,
             "max": Number,
             "min": Number
         },
@@ -30,7 +29,7 @@
                 return [0, 1, 2, 3, 4, 5].map((i) => {
                     const val = Math.round((this.min + (i * step)) * 100)/100;
                     return {
-                        val, style: {background: this.getColor(val/(this.max - this.min))}
+                        val, style: {background: this.colorFunction((val - this.min)/(this.max - this.min))}
                     }
                 });
             }
