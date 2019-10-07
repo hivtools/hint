@@ -47,7 +47,7 @@ export const getters = {
         //We're skipping the top level, country region as it doesn't really contribute to the filtering
         return shape && shape.filters &&
                         shape.filters.regions &&
-                        (shape.filters.regions as any).options ? (shape.filters.regions as any).options : null;
+                        shape.filters.regions.options ? shape.filters.regions.options : null;
     },
     colorFunctions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
       return {
