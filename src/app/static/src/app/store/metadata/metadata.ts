@@ -4,7 +4,6 @@ import {mutations} from './mutations';
 import {RootState} from "../../root";
 import {PlottingMetadataResponse} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
-import {initialFilteredDataState} from "../filteredData/filteredData";
 
 export interface MetadataState {
     plottingMetadataError: string
