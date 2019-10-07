@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="hasFilters">
         <h4>Filters</h4>
         <div class="py-2">
             <label class="font-weight-bold">Sex</label>
@@ -68,6 +68,10 @@
                 return this.$store.getters['filteredData/selectedDataFilterOptions']
             },
 
+            hasFilters: function(state) {
+                return this.selectedChoroplethFilters != null && this.selectedDataFilterOptions != null;
+            },
+
             sexFilters: function (state): ChoroplethFiltersForType {
                 const available = (state.selectedDataType == DataType.ANC ?
                     undefined :
@@ -134,17 +138,19 @@
                 return null;
             },
             refreshSelectedChoroplethFilters(){
-                const newSexFilter = this.getNewSelectedFilterOption("sex", this.sexFilters.available);
-                if (newSexFilter) {
-                    this.selectSex(newSexFilter);
-                }
-                const newAgeFilter = this.getNewSelectedFilterOption("age", this.ageFilters.available);
-                if (newAgeFilter) {
-                    this.selectAge(newAgeFilter);
-                }
-                const newSurveyFilter = this.getNewSelectedFilterOption("survey", this.surveyFilters.available);
-                if (newSurveyFilter) {
-                    this.selectSurvey(newSurveyFilter);
+                if (this.hasFilters) {
+                    const newSexFilter = this.getNewSelectedFilterOption("sex", this.sexFilters.available);
+                    if (newSexFilter) {
+                        this.selectSex(newSexFilter);
+                    }
+                    const newAgeFilter = this.getNewSelectedFilterOption("age", this.ageFilters.available);
+                    if (newAgeFilter) {
+                        this.selectAge(newAgeFilter);
+                    }
+                    const newSurveyFilter = this.getNewSelectedFilterOption("survey", this.surveyFilters.available);
+                    if (newSurveyFilter) {
+                        this.selectSurvey(newSurveyFilter);
+                    }
                 }
             }
         },

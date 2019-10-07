@@ -35,7 +35,7 @@ export const getters = {
     regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         const data =  getUnfilteredData(state, rootState);
         if (!data || (state.selectedDataType == null)) {
-            return null;
+            return {};
         }
 
         const result = {} as {[k: string]: Indicators};
