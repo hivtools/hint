@@ -25,7 +25,7 @@ describe("Model run actions", () => {
 
     });
 
-    it("invokes getResult when poll updates state to success", (done) => {
+    it("fetches model run result when poll gets success status", (done) => {
 
         mockAxios.onGet(`/model/status/1234`)
             .reply(200, mockSuccess({}));
@@ -44,7 +44,7 @@ describe("Model run actions", () => {
 
     });
 
-    it("does not invoke getResult when poll updates state to success", (done) => {
+    it("does not fetch model run result when poll gets no success status", (done) => {
 
         mockAxios.onGet(`/model/status/1234`)
             .reply(200, mockSuccess({}));
