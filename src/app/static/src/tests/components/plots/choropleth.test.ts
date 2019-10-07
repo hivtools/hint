@@ -111,6 +111,7 @@ describe("Choropleth component", () => {
         wrapper.find(MapControl).vm.$emit("indicator-changed", "art");
 
         Vue.nextTick();
+
         expect(vm.range.min).toBe(0.1);
         expect(vm.range.max).toBe(1);
     });

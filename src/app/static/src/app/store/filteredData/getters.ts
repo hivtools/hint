@@ -2,29 +2,61 @@ import {RootState} from "../../root";
 import {DataType, FilteredDataState, SelectedChoroplethFilters, SelectedFilters} from "./filteredData";
 import {IndicatorRange, Indicators, IndicatorValues} from "../../types";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
-import {FilterOption} from "../../generated";
+import {FilterOption, NestedFilterOption} from "../../generated";
+
+const sexFilterOptions = [
+    {id: "both", name: "both"},
+    {id: "female", name: "female"},
+    {id: "male", name: "male"}
+];
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
         const sapState = rootState.surveyAndProgram;
+        const regions = getters.regionOptions;
         switch(state.selectedDataType){
             case (DataType.ANC):
-                return sapState.anc ? sapState.anc.filters : null;
+                return sapState.anc ?
+                    {
+                        ...sapState.anc.filters,
+                        regions,
+                        sex: undefined,
+                        surveys: undefined,
+                    } : null;
             case (DataType.Program):
-                return sapState.program ? sapState.program.filters : null;
+                return sapState.program ?
+                    {
+                        ...sapState.program.filters,
+                        regions,
+                        sex: sexFilterOptions,
+                        surveys: undefined
+                    } : null;
             case (DataType.Survey):
-                return sapState.survey ? sapState.survey.filters : null;
+                return sapState.survey ?
+                    {
+                        ...sapState.survey.filters,
+                        regions,
+                        sex: sexFilterOptions
+                    } : null;
             case (DataType.Output):
-                return rootState.modelRun.result ? rootState.modelRun.result.filters : null;
+                return rootState.modelRun.result ?
+                    {
+                        ...rootState.modelRun.result.filters,
+                        regions,
+                        sex: sexFilterOptions,
+                        surveys: undefined
+                    }: null;
+
             default:
                 return null;
         }
     },
     regionOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
         const shape = rootState.baseline && rootState.baseline.shape ? rootState.baseline.shape : null;
+        //We're skipping the top level, country region as it doesn't really contribute to the filtering
         return shape && shape.filters &&
                         shape.filters.regions &&
-                        (shape.filters.regions as any).options ? (shape.filters.regions as any).options : [];
+                        (shape.filters.regions as any).options ? (shape.filters.regions as any).options : null;
     },
     colorFunctions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
       return {
@@ -33,19 +65,22 @@ export const getters = {
       }
     },
     regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-        const data =  getUnfilteredData(state, rootState);
+        const data = getUnfilteredData(state, rootState);
         if (!data || (state.selectedDataType == null)) {
             return {};
         }
 
-        const result = {} as {[k: string]: Indicators};
+        const result = {} as { [k: string]: Indicators };
 
-        const metadata = rootState.metadata.plottingMetadata!!;
+        const flattenedRegions = getters.flattenedSelectedRegionFilter;
 
         for(const d of data) {
             const row = d as any;
 
-            if (!includeRowForSelectedChoroplethFilters(row, state.selectedDataType, state.selectedChoroplethFilters)) {
+            if (!includeRowForSelectedChoroplethFilters(row,
+                state.selectedDataType,
+                state.selectedChoroplethFilters,
+                flattenedRegions)) {
                 continue;
             }
 
@@ -56,7 +91,7 @@ export const getters = {
             //We will also have to deal will potential multiple values per row
             let indicator: string = "";
             let valueColumn: string = "";
-            switch(state.selectedDataType) {
+            switch (state.selectedDataType) {
                 case (DataType.Survey):
                     indicator = row["indicator"];
                     valueColumn = "est";
@@ -86,7 +121,7 @@ export const getters = {
             }
 
             const indicators = result[areaId];
-            switch(indicator) {
+            switch (indicator) {
                 case("prev"):
                     indicators.prev = {value: value, color: ""};
 
@@ -96,7 +131,7 @@ export const getters = {
 
                     break;
 
-                 //TODO: Also expect recent and vls (viral load suppression) values for survey, need to add these as options
+                //TODO: Also expect recent and vls (viral load suppression) values for survey, need to add these as options
             }
         }
         //Now add the colours - we do this in a second step now, because we are calculating the range as we add the values
@@ -112,7 +147,14 @@ export const getters = {
         }
         return result;
     },
-
+    flattenedRegionOptions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+        const options = getters.regionOptions ? getters.regionOptions : [];
+        return flattenOptions(options);
+    },
+    flattenedSelectedRegionFilter: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+        const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
+        return flattenOptions(selectedRegions);
+    },
     choroplethRanges:  function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         //TODO: do not hardcode to art and prev, but take indicators from metadata too
         const metadata = rootState.metadata.plottingMetadata!!;
@@ -159,10 +201,34 @@ export const getters = {
     }
 };
 
-const getColor = (data: IndicatorValues, range: IndicatorRange, colorFunction: (t: number) => string) => {
+const flattenOptions = (filterOptions: NestedFilterOption[]) => {
+    let result = {};
+    filterOptions.forEach(r =>
+        result = {
+            ...result,
+            ...flattenOption(r)
+        });
+    return result;
+};
+
+const flattenOption = (filterOption: NestedFilterOption) => {
+    let result = {} as any;
+    result[filterOption.id] = filterOption;
+    if (filterOption.options) {
+        filterOption.options.forEach(o =>
+            result = {
+                ...result,
+                ...flattenOption(o as NestedFilterOption)
+            });
+
+    }
+    return result;
+};
+
+export const getColor = (data: IndicatorValues, range: IndicatorRange, colorFunction: (t: number) => string) => {
     let rangeNum = (range.max  && (range.max != range.min)) ? //Avoid dividing by zero if only one value...
-                    range.max - (range.min || 0) :
-                    1;
+        range.max - (range.min || 0) :
+        1;
 
     const colorValue = data!.value / rangeNum;
 
@@ -185,7 +251,10 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
     }
 };
 
-const includeRowForSelectedChoroplethFilters = (row: any, dataType: DataType, selectedFilters: SelectedChoroplethFilters) => {
+const includeRowForSelectedChoroplethFilters = (row: any,
+                                                dataType: DataType,
+                                                selectedFilters: SelectedChoroplethFilters,
+                                                flattenedRegionFilter: object) => {
 
     if (dataType != DataType.ANC && row.sex != selectedFilters.sex!.id) {
         return false;
@@ -202,6 +271,11 @@ const includeRowForSelectedChoroplethFilters = (row: any, dataType: DataType, se
     //TODO: deal with all indicators in output
     if (dataType == DataType.Output && row.indicator_id != 2) { //prevalence
         return false;
+    }
+
+    const flattenedRegionIds = Object.keys(flattenedRegionFilter);
+    if (flattenedRegionIds.length && flattenedRegionIds.indexOf(row.area_id) < 0) {
+        return false
     }
 
     return true;

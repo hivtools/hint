@@ -10,7 +10,7 @@
                      @detail-changed="onDetailChange"
                      :indicator="indicator"
                     :artEnabled="artEnabled" :prevEnabled="prevEnabled"></map-control>
-        <map-legend :getColor="getColor" :max="range.max" :min="range.min"></map-legend>
+        <map-legend :colorFunction="selectedColorFunction" :max="range.max" :min="range.min"></map-legend>
     </l-map>
 </template>
 <script lang="ts">
@@ -53,7 +53,7 @@
             currentFeatures: function () {
                 return this.featuresByLevel[this.detail || 1]
             },
-            getColor: function () {
+            selectedColorFunction: function () {
                 return this.colorFunctions[this.indicator];
             },
             range: function() {
@@ -63,7 +63,6 @@
                 return this.selectedDataType != DataType.Program;
             },
             artEnabled: function() {
-
                 return this.selectedDataType == DataType.Survey || this.selectedDataType == DataType.Program;
             },
             options: function() {
@@ -73,8 +72,12 @@
                     onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
                         const area_id = feature.properties && feature.properties["area_id"];
                         const area_name = feature.properties && feature.properties["area_name"];
+
                         const values = regionIndicators[area_id];
-                        const value = values && values[indicator] && values[indicator].value;
+                        let value = values && values[indicator] && values[indicator].value;
+                        if (value == null || value == undefined) {
+                            value = "";
+                        };
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${value}
@@ -115,6 +118,13 @@
                 let data = this.regionIndicators[region];
                 data = data && data[this.indicator];
                 data = data && data.color;
+
+                if (data == null || data == undefined) {
+                    //show a lighter grey than the outlines if no data
+                    //so unselected regions are still distinguishable
+                    data = "rgb(200,200,200)";
+                }
+
                 return data;
             }
         },
