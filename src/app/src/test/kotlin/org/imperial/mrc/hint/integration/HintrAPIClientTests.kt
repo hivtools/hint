@@ -49,6 +49,18 @@ class HintrApiClientTests {
     }
 
     @Test
+    fun `can get model run result`() {
+        val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val submitResult = sut.submit(mapOf(), ModelRunParameters(1, 1, 1, mapOf()))
+
+        val id = ObjectMapper().readValue<JsonNode>(submitResult.body!!)["data"]["id"].textValue()
+
+        val result = sut.getResult(id)
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
+    }
+
+    @Test
     fun `can get plotting metadata`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val metadataResult = sut.getPlottingMetadata("Malawi");

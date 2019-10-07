@@ -1,15 +1,17 @@
 import {Module} from "vuex";
-import {RootState} from "../../root";
+import {ReadyState, RootState} from "../../root";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
+import {ModelResultResponse} from "../../generated";
 
-export interface ModelRunState {
+export interface ModelRunState extends ReadyState {
     modelRunId: string
     status: ModelRunStatus,
     statusPollId: number,
     success: boolean,
-    errors: any[]
+    errors: any[],
+    result: ModelResultResponse | null
 }
 
 export enum ModelRunStatus {
@@ -25,7 +27,9 @@ export const initialModelRunState: ModelRunState = {
     success: false,
     errors: [],
     status: ModelRunStatus.NotStarted,
-    statusPollId: -1
+    statusPollId: -1,
+    result: null,
+    ready: false
 };
 
 const namespaced: boolean = true;

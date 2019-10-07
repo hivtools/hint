@@ -1,15 +1,20 @@
 import {Mutation, MutationTree} from "vuex";
 import {localStorageKey, ModelRunState, ModelRunStatus} from "./modelRun";
 import {PayloadWithType} from "../../types";
-import {ModelStatusResponse, ModelSubmitResponse} from "../../generated";
+import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
+import {readyStateMutations} from "../shared/readyStateMutations";
+import {FilteredDataState} from "../filteredData/filteredData";
 
 type ModelRunMutation = Mutation<ModelRunState>
 
 export interface ModelRunMutations {
     ModelRunStarted: ModelRunMutation
     RunStatusUpdated: ModelRunMutation,
-    PollingForStatusStarted: ModelRunMutation
+    PollingForStatusStarted: ModelRunMutation,
+    RunResultFetched: ModelRunMutation,
+    RunResultError: ModelRunMutation,
+    Ready: ModelRunMutation
 }
 
 export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
@@ -33,6 +38,15 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
 
     PollingForStatusStarted(state: ModelRunState, action: PayloadWithType<number>) {
         state.statusPollId = action.payload;
-    }
+    },
 
+    RunResultFetched(state: ModelRunState, action: PayloadWithType<ModelResultResponse>) {
+        state.result = action.payload;
+    },
+
+    RunResultError(state: ModelRunState, action: PayloadWithType<string>) {
+        state.errors.push(action.payload);
+    },
+
+    ...readyStateMutations
 };
