@@ -36,6 +36,8 @@
     import TreeSelect from '@riophae/vue-treeselect'
     import {LControl} from 'vue2-leaflet';
     import {Indicator} from "../../types";
+    import {mapGetters, mapState} from "vuex";
+    import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
 
     interface Data {
         detail: any;
@@ -43,16 +45,16 @@
         optionsLoaded: boolean
     }
 
-    export default Vue.extend({
+    const namespace = "metadata";
+
+    export default Vue.extend<Data, any, any, any>({
         name: 'MapControl',
         components: {
             TreeSelect,
             LControl
         },
         props: {
-            indicator: String,
-            artEnabled: Boolean,
-            prevEnabled: Boolean
+            indicator: String
         },
         data(): Data {
             return {
@@ -70,15 +72,36 @@
             }
         },
         computed: {
+            ...mapState<FilteredDataState>("filteredData", {
+                selectedDataType: state => state.selectedDataType
+            }),
+            ...mapGetters(namespace, ["choroplethIndicatorsMetadata"]),
             indicatorOptions: function() {
-                return [
-                    {id: "prev", label: "prevalence", isDisabled: !this.prevEnabled},
-                    {id: "art", label: "ART coverage", isDisabled: !this.artEnabled}
-                ];
+
+                const result = [];
+
+                if (this.choroplethIndicatorsMetadata) {
+                    if (this.choroplethIndicatorsMetadata.prevalence) {
+                        result.push({id: "prev", label: this.choroplethIndicatorsMetadata.prevalence.name});
+                    }
+
+                    //TODO: For the moment we only support prevalence in ANC and output choro, until we revamp indicators
+                    //to potentially get multiple values per row, depending on plotting metadata. Should be able to remove
+                    //this data type check after this.
+                    if (this.selectedDataType != DataType.Output && this.selectedDataType != DataType.ANC) {
+                        if (this.choroplethIndicatorsMetadata.art_coverage) {
+                            result.push({id: "art", label: this.choroplethIndicatorsMetadata.art_coverage.name});
+                        } else if (this.choroplethIndicatorsMetadata.current_art) {
+                            result.push({id: "art", label: this.choroplethIndicatorsMetadata.current_art.name});
+                        }
+                    }
+                }
+
+                return result;
             }
         },
         methods: {
-            indicatorChanged: function(newVal: string) {
+            indicatorChanged: function (newVal: string) {
                 this.$emit("indicator-changed", newVal);
             }
         }
