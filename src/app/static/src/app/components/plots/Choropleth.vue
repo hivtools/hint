@@ -1,7 +1,8 @@
 <template>
-    <l-map ref="map" :zoom="zoom" :center="center" style="height: 800px; width: 100%">
+    <l-map ref="map" style="height: 800px; width: 100%">
         <template v-for="feature in currentFeatures">
-            <l-geo-json :geojson="feature"
+            <l-geo-json ref=""
+                        :geojson="feature"
                         :options="options"
                         :optionsStyle="{...style, fillColor: getColorForRegion(feature.properties['area_id'])}">
             </l-geo-json>
@@ -17,20 +18,19 @@
     import {mapGetters, mapState} from "vuex";
     import {LGeoJson, LMap} from 'vue2-leaflet';
     import {Feature} from "geojson";
-    import {Layer} from "leaflet";
+    import {Layer, GeoJSON} from "leaflet";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
     import {Indicator} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
+    import {NestedFilterOption} from "../../generated";
 
     interface Data {
-        zoom: number,
-        center: number[],
         featuresByLevel: { [k: number]: any },
         style: any,
         indicator: Indicator;
-        detail: number;
+        detail: number
     }
 
     export default Vue.extend<Data, any, any, any>({
@@ -44,9 +44,17 @@
         computed: {
             ...mapState<BaselineState>("baseline", {
                 features: state => state.shape && state.shape.data.features,
+                countryFeature: function(state) {
+                    if (state.shape && state.shape.filters && state.shape.filters.regions) {
+                        const countryRegion = state.shape && state.shape.filters && state.shape.filters.regions as any;
+                        return this.getFeatureFromAreaId(countryRegion.id);
+                    }
+                    return null;
+                }
             }),
             ...mapState<FilteredDataState>("filteredData", {
-                selectedDataType: state => state.selectedDataType
+                selectedDataType: state => state.selectedDataType,
+                selectedRegions: state => state.selectedChoroplethFilters.regions
             }),
             ...mapGetters('filteredData', ["regionIndicators", "colorFunctions", "choroplethRanges"]),
             currentFeatures: function () {
@@ -76,19 +84,25 @@
                         let value = values && values[indicator] && values[indicator].value;
                         if (value == null || value == undefined) {
                             value = "";
-                        };
+                        }
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${value}
                             </div>`);
                     }
                 }
+            },
+            selectedRegionFeatures: function() {
+                if (this.selectedRegions && this.selectedRegions.length > 0) {
+                    return (this.selectedRegions as NestedFilterOption[]).map(r => this.getFeatureFromAreaId(r.id));
+                } else if (this.countryFeature) {
+                    return [this.countryFeature];
+                }
+                return [];
             }
         },
         data(): Data {
             return {
-                zoom: 7, // TODO: will this always be appropriate?
-                center: [-13.2543, 34.3015], // TODO: this is hardcoded to Malawi! where will this come from?
                 featuresByLevel: {1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
                 style: {
                     weight: 1,
@@ -105,6 +119,9 @@
                 const adminLevel = areas.length;
                 this.featuresByLevel[adminLevel].push(feature);
             });
+        },
+        mounted() {
+            this.updateBounds();
         },
         methods: {
             onIndicatorChange: function (newVal: string) {
@@ -125,6 +142,15 @@
                 }
 
                 return data;
+            },
+            getFeatureFromAreaId(areaId: string){
+                return (this.features as any[]).filter(f => f.properties.area_id == areaId)[0];
+            },
+            updateBounds: function(){
+                const map = this.$refs.map;
+                if (map.fitBounds) {
+                    map.fitBounds(this.selectedRegionFeatures.map((f: Feature) => new GeoJSON(f).getBounds()));
+                }
             }
         },
         watch: {
@@ -135,6 +161,9 @@
                 } else if (!this.artEnabled && this.prevEnabled && this.indicator == "art") {
                     this.indicator = "prev";
                 }
+            },
+            selectedRegionFeatures: function (newVal) {
+                this.updateBounds();
             }
         },
     })

@@ -21,13 +21,12 @@ import {
 import {NestedFilterOption} from "../../app/generated";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
 
-
 export const testGetters = {
     colorFunctions: {
         art: function(t: number) {return `rgb(${t},0,0)`;},
         prev: function(t: number) {return `rgb(0,${t},0)`;}
     },
-    flattenedSelectedRegionFilter: {},
+    flattenedSelectedRegionFilters: {},
     regionOptions: {id: "MWI", name: "Malawi"},
     choroplethRanges: {
         prev: {min: 0, max: 1},
@@ -434,7 +433,8 @@ describe("FilteredData getters", () => {
         };
         const testState = testStore.state as FilteredDataState;
 
-        const flattenedRegionFilter = getters.flattenedSelectedRegionFilter(testState, testGetters, mockRootState(), null);
+
+        const flattenedRegionFilter = getters.flattenedSelectedRegionFilters(testState, testGetters, mockRootState(), null);
 
         const expected = {
             "R1": testRegions[0],
@@ -462,7 +462,7 @@ describe("FilteredData getters", () => {
         };
         const testState = testStore.state as FilteredDataState;
 
-        const flattenedRegionFilter = getters.flattenedSelectedRegionFilter(testState, testGetters, mockRootState(), null);
+        const flattenedRegionFilter = getters.flattenedSelectedRegionFilters(testState, testGetters, mockRootState(), null);
 
         const expected = {};
 

@@ -605,7 +605,7 @@ describe("FilteredData regionIndicator getter", () => {
 
         const testRegionGetters = {
             ...testGetters,
-            flattenedSelectedRegionFilter: {
+            flattenedSelectedRegionFilters: {
                 "area1": {},
                 "area2": {}
             }

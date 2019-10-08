@@ -6,7 +6,12 @@ import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../..
 import {LGeoJson} from 'vue2-leaflet';
 import MapControl from "../../../app/components/plots/MapControl.vue";
 import {mutations} from "../../../app/store/filteredData/mutations";
-import {DataType, initialFilteredDataState} from "../../../app/store/filteredData/filteredData";
+import {
+    DataType,
+    FilteredDataState,
+    FilterType,
+    initialFilteredDataState
+} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
 
 const localVue = createLocalVue();
@@ -16,6 +21,7 @@ describe("Choropleth component", () => {
 
     const fakeFeatures = [
         {
+            "type": "Feature",
             "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1"},
             "geometry": {
                 "type": "MultiPolygon",
@@ -23,6 +29,7 @@ describe("Choropleth component", () => {
             }
         },
         {
+            "type": "Feature",
             "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1.1"},
             "geometry": {
                 "type": "MultiPolygon",
@@ -30,6 +37,7 @@ describe("Choropleth component", () => {
             }
         },
         {
+            "type": "Feature",
             "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1.2"},
             "geometry": {
                 "type": "MultiPolygon",
@@ -70,24 +78,52 @@ describe("Choropleth component", () => {
         }
     };
 
-    const store = new Vuex.Store({
-        modules: {
-            baseline: {
-                namespaced: true,
-                state: mockBaselineState({
-                    shape: mockShapeResponse({
-                        data: {features: fakeFeatures} as any
-                    })
-                })
-            },
-            filteredData: {
-                namespaced: true,
-                state: mockFilteredDataState({selectedDataType: DataType.Survey}),
-                getters: testGetters,
-                actions
-            }
+    const testColorFunctions = () => {
+        return {
+            prev: jest.fn(),
+            art: jest.fn()
         }
-    });
+    };
+
+    function getTestStore(filteredDataProps?: Partial<FilteredDataState>) {
+        return new Vuex.Store({
+            modules: {
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState({
+                        shape: mockShapeResponse({
+                            data: {features: fakeFeatures} as any,
+                            filters: {
+                                regions: {
+                                    id: "MWI.1.1.1",
+                                    name: "test country"
+                                }
+                            } as any
+                        })
+                    })
+                },
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState(
+                        {
+                            selectedDataType: DataType.Survey,
+                            selectedChoroplethFilters: {
+                                regions: [{id: "MWI.1.1.1", name: "Test Region"}],
+                                sex: null,
+                                age: null,
+                                survey: null
+                            },
+                            ...filteredDataProps
+                        }),
+                    getters: testGetters,
+                    actions,
+                    mutations
+                }
+            }
+        });
+    }
+
+    const store = getTestStore();
 
     it("gets features from store and renders those with the right admin level", (done) => {
         // admin level is hard-coded to 5
@@ -155,7 +191,7 @@ describe("Choropleth component", () => {
         expect(vm.artEnabled).toBe(false);
     });
 
-    it("calculates prevtEnabled when false", () => {
+    it("calculates prevEnabled when false", () => {
         const emptyStore = new Vuex.Store({
             modules: {
                 baseline: {
@@ -177,6 +213,19 @@ describe("Choropleth component", () => {
 
         const vm = wrapper.vm as any;
         expect(vm.prevEnabled).toBe(false);
+    });
+
+    it("countryFeature gets top level region", () => {
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+        const vm = wrapper.vm as any;
+        expect(vm.countryFeature).toStrictEqual(fakeFeatures[0]);
+    });
+
+    it("can get feature from area id", () => {
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+        const vm = wrapper.vm as any;
+        const feature = vm.getFeatureFromAreaId("MWI.1.1.1.2");
+        expect(feature).toStrictEqual(fakeFeatures[2]);
     });
 
     it("colors features according to indicator", (done) => {
@@ -290,6 +339,70 @@ describe("Choropleth component", () => {
                             <br/>1
                         </div>`);
 
+    });
+
+    it("updateBounds updates bounds of map from selected region geojson", () => {
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+        const mockMapFitBounds = jest.fn();
+
+        const vm = wrapper.vm as any;
+        vm.$refs.map = {
+            fitBounds: mockMapFitBounds
+        };
+
+        vm.updateBounds();
+        expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
+            [{"_northEast": {"lat": -15.2047, "lng": 35.7117}, "_southWest": {"lat": -15.2117, "lng": 35.7083}}]);
+    });
+
+    it("invokes updateBounds when selected region changes", (done) => {
+        const testStore = getTestStore();
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+
+        const vm = wrapper.vm as any;
+        const mockUpdateBounds = jest.fn();
+        vm.updateBounds = mockUpdateBounds;
+
+        testStore.commit({type: "filteredData/ChoroplethFilterUpdated",
+                            payload: [FilterType.Region, [{id: "MWI.1.1.1.2", name: "test area"}]]});
+
+        setTimeout(() => {
+            expect(mockUpdateBounds.mock.calls.length).toBe(1);
+            done();
+        });
+    });
+
+    it("selectedRegionFeatures gets selected region features", () => {
+        const testStore = getTestStore({
+            selectedChoroplethFilters: {
+                regions: [{id: "MWI.1.1.1.1", name: "area1"}, {id: "MWI.1.1.1.2", name: "area2"}],
+                sex: null,
+                age: null,
+                survey: null
+            }
+        });
+
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+        const vm = wrapper.vm as any;
+
+        const result = vm.selectedRegionFeatures;
+        expect(result).toStrictEqual([fakeFeatures[1], fakeFeatures[2]]);
+    });
+
+    it("selectedRegionFeatures gets top level region feature when no region is selected", () => {
+        const testStore = getTestStore({
+            selectedChoroplethFilters: {
+                regions: [],
+                sex: null,
+                age: null,
+                survey: null
+            }
+        });
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+        const vm = wrapper.vm as any;
+
+        const result = vm.selectedRegionFeatures;
+        expect(result).toStrictEqual([fakeFeatures[0]]);
     });
 
 });

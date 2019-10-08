@@ -72,7 +72,7 @@ export const getters = {
 
         const result = {} as { [k: string]: Indicators };
 
-        const flattenedRegions = getters.flattenedSelectedRegionFilter;
+        const flattenedRegions = getters.flattenedSelectedRegionFilters;
 
         for(const d of data) {
             const row = d as any;
@@ -151,7 +151,7 @@ export const getters = {
         const options = getters.regionOptions ? getters.regionOptions : [];
         return flattenOptions(options);
     },
-    flattenedSelectedRegionFilter: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+    flattenedSelectedRegionFilters: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
         return flattenOptions(selectedRegions);
     },
@@ -254,7 +254,7 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
 const includeRowForSelectedChoroplethFilters = (row: any,
                                                 dataType: DataType,
                                                 selectedFilters: SelectedChoroplethFilters,
-                                                flattenedRegionFilter: object) => {
+                                                flattenedRegionFilters: object) => {
 
     if (dataType != DataType.ANC && row.sex != selectedFilters.sex!.id) {
         return false;
@@ -273,7 +273,7 @@ const includeRowForSelectedChoroplethFilters = (row: any,
         return false;
     }
 
-    const flattenedRegionIds = Object.keys(flattenedRegionFilter);
+    const flattenedRegionIds = Object.keys(flattenedRegionFilters);
     if (flattenedRegionIds.length && flattenedRegionIds.indexOf(row.area_id) < 0) {
         return false
     }

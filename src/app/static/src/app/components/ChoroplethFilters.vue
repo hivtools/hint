@@ -61,7 +61,7 @@
         name: "ChoroplethFilters",
         computed: {
             ...mapGetters(namespace, ["selectedDataFilterOptions", "flattenedRegionOptions",
-                                        "flattenedSelectedRegionFilter"]),
+                                        "flattenedSelectedRegionFilters"]),
             ...mapState<FilteredDataState>(namespace, {
                 selectedDataType: state => state.selectedDataType,
                 selectedChoroplethFilters: state => state.selectedChoroplethFilters,
