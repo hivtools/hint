@@ -8,8 +8,7 @@
         </template>
         <map-control @indicator-changed="onIndicatorChange"
                      @detail-changed="onDetailChange"
-                     :indicator="indicator"
-                    :artEnabled="artEnabled" :prevEnabled="prevEnabled"></map-control>
+                     :indicator="indicator"></map-control>
         <map-legend :colorFunction="selectedColorFunction" :max="range.max" :min="range.min"></map-legend>
     </l-map>
 </template>

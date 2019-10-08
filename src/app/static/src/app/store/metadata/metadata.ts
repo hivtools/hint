@@ -4,6 +4,7 @@ import {mutations} from './mutations';
 import {RootState} from "../../root";
 import {PlottingMetadataResponse} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
+import {DataType} from "../filteredData/filteredData";
 
 export interface MetadataState {
     plottingMetadataError: string
@@ -18,6 +19,36 @@ export const initialMetadataState: MetadataState = {
 export const metadataGetters = {
     complete: (state: MetadataState) => {
         return !!state.plottingMetadata
+    },
+    choroplethIndicatorsMetadata: (state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
+        const selectedDataType = rootState.filteredData.selectedDataType;
+        const plottingMetadata = state.plottingMetadata;
+
+        if (!plottingMetadata) {
+            return null;
+        }
+
+        let metadataForType = null;
+        switch(selectedDataType) {
+            case (DataType.ANC):
+                metadataForType = plottingMetadata.anc;
+                break;
+            case (DataType.Program):
+                metadataForType = plottingMetadata.programme;
+                break;
+            case (DataType.Survey):
+                metadataForType = plottingMetadata.survey;
+                break;
+            case (DataType.Output):
+                metadataForType = plottingMetadata.output;
+                break;
+        }
+
+        if (metadataForType && metadataForType.choropleth) {
+            return metadataForType.choropleth.indicators;
+        }
+
+        return null;
     }
 };
 
