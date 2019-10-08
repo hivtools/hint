@@ -1,11 +1,13 @@
 package org.imperial.mrc.hint.integration
 
+import com.nhaarman.mockito_kotlin.isA
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
 class BaselineTests : SecureIntegrationTests() {
@@ -16,7 +18,7 @@ class BaselineTests : SecureIntegrationTests() {
         val postEntity = getTestEntity("Botswana2018.PJNZ")
         testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/pjnz/")
-        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
     }
 
     @ParameterizedTest

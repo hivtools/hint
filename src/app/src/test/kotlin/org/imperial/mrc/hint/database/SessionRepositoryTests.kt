@@ -103,8 +103,9 @@ class SessionRepositoryTests {
     fun `can get session file hash`() {
         setUpSessionAndHash()
         sut.saveSessionFile("sid", FileType.PJNZ, "newhash", "original.pjnz")
-        val result = sut.getSessionFileHash("sid", FileType.PJNZ)
-        assertThat(result).isEqualTo("newhash")
+        val result = sut.getSessionFile("sid", FileType.PJNZ)!!
+        assertThat(result.hash).isEqualTo("newhash")
+        assertThat(result.filename).isEqualTo("original.pjnz")
     }
 
     private fun setUpSessionAndHash() {

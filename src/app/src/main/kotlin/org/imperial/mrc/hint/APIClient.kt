@@ -4,12 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import org.imperial.mrc.hint.models.ModelRunParameters
+import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 interface APIClient {
-    fun validateBaselineIndividual(path: String, type: FileType): ResponseEntity<String>
-    fun validateSurveyAndProgramme(path: String, shapePath: String, type: FileType): ResponseEntity<String>
+    fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String>
+    fun validateSurveyAndProgramme(file: SessionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
     fun submit(data: Map<String, String>, parameters: ModelRunParameters): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
@@ -23,11 +24,11 @@ class HintrAPIClient(
 
     private val baseUrl = appProperties.apiUrl
 
-    override fun validateBaselineIndividual(path: String, type: FileType): ResponseEntity<String> {
+    override fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().toLowerCase(),
-                        "path" to path))
+                        "file" to file))
 
         return "$baseUrl/validate/baseline-individual"
                 .httpPost()
@@ -38,11 +39,11 @@ class HintrAPIClient(
                 .asResponseEntity()
     }
 
-    override fun validateSurveyAndProgramme(path: String, shapePath: String, type: FileType): ResponseEntity<String> {
+    override fun validateSurveyAndProgramme(file: SessionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().toLowerCase(),
-                        "path" to path,
+                        "file" to file,
                         "shape" to shapePath))
 
         return "$baseUrl/validate/survey-and-programme"

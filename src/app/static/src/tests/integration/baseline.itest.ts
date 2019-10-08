@@ -24,7 +24,7 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("E66ECF0E9BE8BE814547EA7574700DD3.PJNZ");
+            .toBe("Botswana2018.PJNZ");
 
     });
 
@@ -48,7 +48,7 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[1][0]["type"]).toBe("ShapeUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("A59C122F27303D93467C0F2D09489878.geojson");
+            .toBe("malawi.geojson");
 
     }, 10000);
 
@@ -62,7 +62,7 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("365A2F42B939E5390AA4DE2720708F77.csv");
+            .toBe("population.csv");
     });
 
 });
