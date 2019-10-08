@@ -26,6 +26,7 @@
                 <survey-and-program v-if="isActive(2)"></survey-and-program>
                 <p v-if="isActive(3)">Functionality coming soon.</p>
                 <model-run v-if="isActive(4)"></model-run>
+                <model-output v-if="isActive(5)"></model-output>
             </div>
             <div class="row mt-2">
                 <div class="col">
@@ -48,6 +49,7 @@
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import ModelRun from "./modelRun/ModelRun.vue";
+    import ModelOutput from "./modelOutput/ModelOutput.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
 
     type CompleteStatus = {
@@ -91,7 +93,8 @@
             Baseline,
             SurveyAndProgram,
             LoadingSpinner,
-            ModelRun
+            ModelRun,
+            ModelOutput
         },
         watch: {
             ready: function (newVal) {

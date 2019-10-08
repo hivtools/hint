@@ -1,7 +1,6 @@
 <template>
-    <div>
-        <hr class="my-5"/>
-        <h4>Filter map</h4>
+    <div v-if="hasFilters">
+        <h4>Filters</h4>
         <div class="py-2">
             <filter-select label="Sex"
                     :multiple="false"
@@ -18,14 +17,16 @@
                     :disabled="ageFilters.disabled"
                     @select="selectAge"></filter-select>
         </div>
-        <div class="py-2">
+
+        <div class="py-2" v-if="!isOutput">
             <filter-select label="Survey"
-                    :multiple="false"
-                    :options="surveyFilters.available"
-                    :value="surveyFilters.selected"
-                    :disabled="surveyFilters.disabled"
-                    @select="selectSurvey"></filter-select>
+                           :multiple="false"
+                           :options="surveyFilters.available"
+                           :value="surveyFilters.selected"
+                           :disabled="surveyFilters.disabled"
+                           @select="selectSurvey"></filter-select>
         </div>
+
         <div class="py-2">
             <filter-select label="Region"
                     :multiple="true"
@@ -65,8 +66,8 @@
                 selectedDataType: state => state.selectedDataType,
                 selectedChoroplethFilters: state => state.selectedChoroplethFilters,
                 sexFilters: function (state): ChoroplethFiltersForType {
-                   return this.buildViewFiltersForType(this.selectedDataFilterOptions.sex,
-                       this.selectedChoroplethFilters.sex)
+                    return this.buildViewFiltersForType(this.selectedDataFilterOptions.sex,
+                        this.selectedChoroplethFilters.sex)
                 },
 
                 ageFilters: function (state): ChoroplethFiltersForType {
@@ -81,6 +82,14 @@
 
                 regionFilters: function (state): ChoroplethFiltersForType {
                     return this.buildRegionFilters();
+                },
+
+                hasFilters: function (state) {
+                    return this.selectedChoroplethFilters != null && this.selectedDataFilterOptions != null;
+                },
+
+                isOutput: function () {
+                    return this.selectedDataType == DataType.Output;
                 }
             })
         },
@@ -139,17 +148,19 @@
                 return null;
             },
             refreshSelectedChoroplethFilters(){
-                const newSexFilter = this.getNewSelectedFilterOption("sex", this.sexFilters.available);
-                if (newSexFilter) {
-                    this.selectSex(newSexFilter);
-                }
-                const newAgeFilter = this.getNewSelectedFilterOption("age", this.ageFilters.available);
-                if (newAgeFilter) {
-                    this.selectAge(newAgeFilter);
-                }
-                const newSurveyFilter = this.getNewSelectedFilterOption("survey", this.surveyFilters.available);
-                if (newSurveyFilter) {
-                    this.selectSurvey(newSurveyFilter);
+                if (this.hasFilters) {
+                    const newSexFilter = this.getNewSelectedFilterOption("sex", this.sexFilters.available);
+                    if (newSexFilter) {
+                        this.selectSex(newSexFilter);
+                    }
+                    const newAgeFilter = this.getNewSelectedFilterOption("age", this.ageFilters.available);
+                    if (newAgeFilter) {
+                        this.selectAge(newAgeFilter);
+                    }
+                    const newSurveyFilter = this.getNewSelectedFilterOption("survey", this.surveyFilters.available);
+                    if (newSurveyFilter) {
+                        this.selectSurvey(newSurveyFilter);
+                    }
                 }
             }
         },
