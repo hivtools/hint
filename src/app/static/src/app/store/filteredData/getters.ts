@@ -1,8 +1,9 @@
 import {RootState} from "../../root";
 import {DataType, FilteredDataState, SelectedChoroplethFilters, SelectedFilters} from "./filteredData";
 import {IndicatorRange, Indicators, IndicatorValues} from "../../types";
-import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
-import {FilterOption, NestedFilterOption} from "../../generated";
+//import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
+import * as d3ScaleChromatic from "d3-scale-chromatic";
+import {FilterOption, IndicatorMetadata, NestedFilterOption} from "../../generated";
 
 const sexFilterOptions = [
     {id: "both", name: "both"},
@@ -58,12 +59,14 @@ export const getters = {
                         shape.filters.regions &&
                         (shape.filters.regions as any).options ? (shape.filters.regions as any).options : null;
     },
-    colorFunctions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-      return {
-          art: interpolateWarm,
-          prev: interpolateCool
-      }
-    },
+   /* colorFunctions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+
+
+        return {
+          art: {func: d3ScaleChromatic.interpolateWarm, invertScale: true},
+          prev: {func: d3ScaleChromatic.interpolateCool, invertScale: false}
+        }
+    },*/
     regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         const data = getUnfilteredData(state, rootState);
         if (!data || (state.selectedDataType == null)) {
@@ -139,10 +142,10 @@ export const getters = {
         for (const region in result) {
             const indicators = result[region];
             if (indicators.art) {
-                indicators.art.color = getColor(indicators.art, getters.choroplethRanges.art, getters.colorFunctions.art);
+                indicators.art.color = getColor(indicators.art, getters.choroplethMetadata.art);
             }
             if (indicators.prev) {
-                indicators.prev.color = getColor(indicators.prev, getters.choroplethRanges.prev, getters.colorFunctions.prev);
+                indicators.prev.color = getColor(indicators.prev, getters.choroplethMetadata.prev);
             }
         }
         return result;
@@ -155,45 +158,30 @@ export const getters = {
         const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
         return flattenOptions(selectedRegions);
     },
-    choroplethRanges:  function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+    choroplethMetadata:  function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         //TODO: do not hardcode to art and prev, but take indicators from metadata too
         const metadata = rootState.metadata.plottingMetadata!!;
         switch(state.selectedDataType) {
             case (DataType.ANC):
-                const ancRange = metadata.anc.choropleth!!.indicators!!.prevalence!!;
+                const anc = metadata.anc.choropleth!!.indicators!!.prevalence!!;
                 return {
-                    prev: {
-                        min: ancRange.min,
-                        max: ancRange.max,
-                    }
+                    prev: anc
                 };
             case (DataType.Program):
-                const progRange = metadata.programme.choropleth!!.indicators!!.current_art!!;
+                const prog = metadata.programme.choropleth!!.indicators!!.current_art!!;
                 return  {
-                    art: {
-                        min: progRange.min,
-                        max: progRange.max,
-                    }
+                    art: prog
                 };
             case (DataType.Survey):
                 const indicators = metadata.survey.choropleth!!.indicators!!;
                 return {
-                    prev: {
-                        min: indicators.prevalence!!.min,
-                        max: indicators.prevalence!!.max
-                    },
-                    art: {
-                        min: indicators.art_coverage!!.min,
-                        max: indicators.art_coverage!!.max
-                    }
+                    prev: indicators.prevalence!!,
+                    art: indicators.art_coverage!!
                 };
             case (DataType.Output):
-                const outputRange = metadata.output.choropleth!!.indicators!!.prevalence!!;
+                const output = metadata.output.choropleth!!.indicators!!.prevalence!!;
                 return {
-                    prev: {
-                        min: outputRange.min,
-                        max: outputRange.max
-                    }
+                    prev: output
                 };
             default:
                 return null;
@@ -225,9 +213,13 @@ const flattenOption = (filterOption: NestedFilterOption) => {
     return result;
 };
 
-export const getColor = (data: IndicatorValues, range: IndicatorRange, colorFunction: (t: number) => string) => {
-    let rangeNum = (range.max  && (range.max != range.min)) ? //Avoid dividing by zero if only one value...
-        range.max - (range.min || 0) :
+export const getColor = (data: IndicatorValues, indicatorMetadata: IndicatorMetadata) => {
+    const colorFunction = eval(`d3ScaleChromatic.${indicatorMetadata.colour}`);
+    //TODO: invert scale
+    const min = indicatorMetadata.min;
+    const max = indicatorMetadata.max;
+    let rangeNum = (max  && (max != min)) ? //Avoid dividing by zero if only one value...
+        max - (min || 0) :
         1;
 
     const colorValue = data!.value / rangeNum;

@@ -10,7 +10,7 @@
         <map-control @indicator-changed="onIndicatorChange"
                      @detail-changed="onDetailChange"
                      :indicator="indicator"></map-control>
-        <map-legend :colorFunction="selectedColorFunction" :max="range.max" :min="range.min"></map-legend>
+        <map-legend :metadata="metadata"></map-legend>
     </l-map>
 </template>
 <script lang="ts">
@@ -56,15 +56,15 @@
                 selectedDataType: state => state.selectedDataType,
                 selectedRegions: state => state.selectedChoroplethFilters.regions
             }),
-            ...mapGetters('filteredData', ["regionIndicators", "colorFunctions", "choroplethRanges"]),
+            ...mapGetters('filteredData', ["regionIndicators", "choroplethMetadata"]),
             currentFeatures: function () {
                 return this.featuresByLevel[this.detail || 1]
             },
             selectedColorFunction: function () {
-                return this.colorFunctions[this.indicator];
+                return this.colorFunctions[this.indicator].func;
             },
-            range: function() {
-                return this.choroplethRanges[this.indicator];
+            metadata: function() {
+                return this.choroplethMetadata[this.indicator];
             },
             prevEnabled: function() {
                 return this.selectedDataType != DataType.Program;
