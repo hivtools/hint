@@ -627,4 +627,78 @@ describe("FilteredData regionIndicator getter", () => {
 
         expect(regionIndicators).toStrictEqual(expected);
     });
+
+    it("gets empty regionIndicators if no data", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: DataType.Survey,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: null,
+                    sex: null,
+                    regions: null
+                }
+            },
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testRootState = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState(
+                {survey: mockSurveyResponse(
+                        {data: undefined}
+                    )}),
+            filteredData: testState});
+
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+
+        expect(regionIndicators).toStrictEqual({});
+    });
+
+    it("gets empty regionIndicators if no selected daa type", () => {
+        const testStore:  Module<FilteredDataState, RootState> = {
+            state: {
+                ...initialFilteredDataState,
+                selectedDataType: null,
+                selectedChoroplethFilters: {
+                    age: {id: "1", name: "0-99"},
+                    survey: null,
+                    sex: null,
+                    regions: null
+                }
+            },
+            getters: getters
+        };
+        const testState = testStore.state as FilteredDataState;
+        const testData = [
+            {
+                iso3: "MWI",
+                area_id: "area1",
+                survey_id: "s1",
+                indicator: "prev",
+                est: 2,
+                age_group_id: "1",
+                sex: "both"
+            },
+            {
+                iso3: "MWI",
+                area_id: "area2",
+                survey_id: "s1",
+                indicator: "prev",
+                est: 3,
+                age_group_id: "1",
+                sex: "both"
+            }
+        ];
+        const testRootState = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState(
+                {survey: mockSurveyResponse(
+                        {data: testData}
+                    )}),
+            filteredData: testState});
+
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+
+        expect(regionIndicators).toStrictEqual({});
+    });
 });

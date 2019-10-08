@@ -148,5 +148,25 @@ describe("Survey and program component", () => {
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
     });
 
+    it("updated selectedDataType from Output", () => {
+        const filteredDataState = {selectedDataType: DataType.Output};
+        const store = createStore(
+            {
+                anc: mockAncResponse(),
+                survey: mockSurveyResponse(),
+                program: mockProgramResponse()
+            },
+            filteredDataState);
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+
+        const vm = (wrapper as any).vm;
+        expect(vm.selectedDataType).toBe(DataType.Survey);
+
+        expect(wrapper.find(".nav-link.active").text()).toBe("Survey");
+
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+    });
+
 });
 
