@@ -16,6 +16,7 @@ describe("Choropleth component", () => {
 
     const fakeFeatures = [
         {
+            "type": "Feature",
             "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1"},
             "geometry": {
                 "type": "MultiPolygon",
@@ -23,6 +24,7 @@ describe("Choropleth component", () => {
             }
         },
         {
+            "type": "Feature",
             "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1.1"},
             "geometry": {
                 "type": "MultiPolygon",
@@ -30,6 +32,7 @@ describe("Choropleth component", () => {
             }
         },
         {
+            "type": "Feature",
             "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1.2"},
             "geometry": {
                 "type": "MultiPolygon",
@@ -121,17 +124,7 @@ describe("Choropleth component", () => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         setTimeout(() => {
-            expect(wrapper.findAll(LGeoJson).length).toBe(3); //1 selected feature and 2 map features
-            done();
-        })
-    });
-
-    it("finds default selectedRegionFeature and renders it as first LGeoJson feature", (done) => {
-        const wrapper = shallowMount(Choropleth, {store, localVue});
-
-        setTimeout(() => {
-            expect(wrapper.findAll(LGeoJson).at(0).classes()).toContain("selectedRegionFeature");
-            expect(wrapper.findAll(LGeoJson).at(0).props("geojson")).toEqual(fakeFeatures[0]);
+            expect(wrapper.findAll(LGeoJson).length).toBe(2);
             done();
         })
     });
@@ -234,8 +227,7 @@ describe("Choropleth component", () => {
 
         setTimeout(() => {
             const expectedColor = "rgb(1,1,1)";
-            //1st map feature
-            expect(wrapper.findAll(LGeoJson).at(1).props("optionsStyle").fillColor).toBe(expectedColor);
+            expect(wrapper.findAll(LGeoJson).at(0).props("optionsStyle").fillColor).toBe(expectedColor);
             done();
         })
     });
@@ -246,8 +238,7 @@ describe("Choropleth component", () => {
         setTimeout(() => {
             const expectedColor = "rgb(2,2,2)";
             wrapper.find(MapControl).vm.$emit("indicator-changed", "art");
-            //1st map feature
-            expect(wrapper.findAll(LGeoJson).at(1).props("optionsStyle").fillColor).toBe(expectedColor);
+            expect(wrapper.findAll(LGeoJson).at(0).props("optionsStyle").fillColor).toBe(expectedColor);
             done();
         })
     });
@@ -257,7 +248,7 @@ describe("Choropleth component", () => {
 
         setTimeout(() => {
             wrapper.find(MapControl).vm.$emit("detail-changed", 1);
-            expect(wrapper.findAll(LGeoJson).length).toBe(1); //map feature
+            expect(wrapper.findAll(LGeoJson).length).toBe(0);
             done();
         })
     });
@@ -344,7 +335,7 @@ describe("Choropleth component", () => {
 
     });
 
-    it("updateBounds updates bounds of map from selected region geojson", (done) => {
+    it("updateBounds updates bounds of map from selected region geojson", () => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
         const mockMapFitBounds = jest.fn();
 
@@ -353,15 +344,9 @@ describe("Choropleth component", () => {
             fitBounds: mockMapFitBounds
         };
 
-        vm.$refs.selectedRegionsGeoJson = [{
-            getBounds: () => {return "test bounds";}
-        }];
-
         vm.updateBounds();
-        setTimeout(() => {
-            expect(mockMapFitBounds.mock.calls[0][0]).toBe("test bounds");
-            done();
-        });
+        expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
+            [{"_northEast": {"lat": -15.2047, "lng": 35.7117}, "_southWest": {"lat": -15.2117, "lng": 35.7083}}]);
     });
 
     it("invokes updateBounds when selected region changes", (done) => {

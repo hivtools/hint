@@ -1,15 +1,5 @@
 <template>
     <l-map ref="map" style="height: 800px; width: 100%">
-
-        <template>
-            <l-geo-json ref="selectedRegionsGeoJson" v-for="selectedRegionFeature in selectedRegionFeatures"
-                        :key="selectedRegionFeature.properties.area_id"
-                        :geojson="selectedRegionFeature"
-                        class="selectedRegionFeature"
-                        :optionsStyle="{...style, fillColor: 'rgba(0,0,0,0)'}">
-            </l-geo-json>
-        </template>
-
         <template v-for="feature in currentFeatures">
             <l-geo-json ref=""
                         :geojson="feature"
@@ -29,12 +19,13 @@
     import {mapGetters, mapState} from "vuex";
     import {LGeoJson, LMap} from 'vue2-leaflet';
     import {Feature} from "geojson";
-    import {Layer, Bounds, bounds} from "leaflet";
+    import {Layer, GeoJSON} from "leaflet";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
     import {Indicator} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
+    import {NestedFilterOption} from "../../generated";
 
     interface Data {
         featuresByLevel: { [k: number]: any },
@@ -104,7 +95,7 @@
             },
             selectedRegionFeatures: function() {
                 if (this.selectedRegions && this.selectedRegions.length > 0) {
-                    return (this.selectedRegions as any[]).map(r => this.getFeatureFromAreaId(r.id));
+                    return (this.selectedRegions as NestedFilterOption[]).map(r => this.getFeatureFromAreaId(r.id));
                 } else if (this.countryFeature) {
                     return [this.countryFeature];
                 }
@@ -129,6 +120,8 @@
                 const adminLevel = areas.length;
                 this.featuresByLevel[adminLevel].push(feature);
             });
+        },
+        mounted() {
             this.updateBounds();
         },
         methods: {
@@ -154,30 +147,11 @@
             getFeatureFromAreaId(areaId: string){
                 return (this.features as any[]).filter(f => f.properties.area_id == areaId)[0];
             },
-            updateBounds(){
-                Vue.nextTick().then(() => {
-                    const geoJsonArray = this.$refs.selectedRegionsGeoJson;
-
-                    let combinedBounds = null;
-                    if (geoJsonArray) {
-                        for (const geoJson of geoJsonArray) {
-                            if (geoJson.getBounds) {
-                                const regionBounds = geoJson.getBounds();
-                                if (combinedBounds) {
-                                    combinedBounds.extend(regionBounds);
-                                } else {
-                                    combinedBounds = regionBounds;
-                                }
-                            }
-                        }
-
-                        if (combinedBounds) {
-                            const map = this.$refs.map;
-                            map.fitBounds(combinedBounds);
-                        }
-                    }
-
-                });
+            updateBounds: function(){
+                const map = this.$refs.map;
+                if (map.fitBounds) {
+                    map.fitBounds(this.selectedRegionFeatures.map((f: Feature) => new GeoJSON(f).getBounds()));
+                }
             }
         },
         watch: {
