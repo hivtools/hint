@@ -102,8 +102,8 @@ describe("Survey and program component", () => {
         expectTabEnabled({survey: mockSurveyResponse()}, "Survey", 0);
     });
 
-    it("programme tab is enabled when program data is present", () => {
-        expectTabEnabled({program: mockProgramResponse()}, "Programme", 1);
+    it("programme (ART) tab is enabled when program data is present", () => {
+        expectTabEnabled({program: mockProgramResponse()}, "ART", 1);
     });
 
     it("ANC tab is enabled when ANC data is present", () => {
@@ -129,7 +129,7 @@ describe("Survey and program component", () => {
                 selectedDataType: DataType.Program
             });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.find(".nav-link.active").text()).toBe("Programme");
+        expect(wrapper.find(".nav-link.active").text()).toBe("ART");
 
         wrapper.findAll(".nav-link").at(2).trigger("click");
         Vue.nextTick();
@@ -141,8 +141,28 @@ describe("Survey and program component", () => {
 
         wrapper.findAll(".nav-link").at(1).trigger("click");
         Vue.nextTick();
-        expect(wrapper.find(".nav-link.active").text()).toBe("Programme");
+        expect(wrapper.find(".nav-link.active").text()).toBe("ART");
 
+
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+    });
+
+    it("updated selectedDataType from Output", () => {
+        const filteredDataState = {selectedDataType: DataType.Output};
+        const store = createStore(
+            {
+                anc: mockAncResponse(),
+                survey: mockSurveyResponse(),
+                program: mockProgramResponse()
+            },
+            filteredDataState);
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+
+        const vm = (wrapper as any).vm;
+        expect(vm.selectedDataType).toBe(DataType.Survey);
+
+        expect(wrapper.find(".nav-link.active").text()).toBe("Survey");
 
         expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);

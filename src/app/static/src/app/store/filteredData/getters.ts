@@ -38,6 +38,15 @@ export const getters = {
                         regions,
                         sex: sexFilterOptions
                     } : null;
+            case (DataType.Output):
+                return rootState.modelRun.result ?
+                    {
+                        ...rootState.modelRun.result.filters,
+                        regions,
+                        sex: sexFilterOptions,
+                        surveys: undefined
+                    }: null;
+
             default:
                 return null;
         }
@@ -58,14 +67,14 @@ export const getters = {
     regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         const data = getUnfilteredData(state, rootState);
         if (!data || (state.selectedDataType == null)) {
-            return null;
+            return {};
         }
 
         const result = {} as { [k: string]: Indicators };
 
         const flattenedRegions = getters.flattenedSelectedRegionFilters;
 
-        for (const d of data) {
+        for(const d of data) {
             const row = d as any;
 
             if (!includeRowForSelectedChoroplethFilters(row,
@@ -97,6 +106,12 @@ export const getters = {
                     //is int long format, with an indicator column to show which indicator the value each row provides
                     indicator = "prev";
                     valueColumn = "prevalence";
+                    break;
+                case (DataType.Output):
+                    //TODO: output data doesn't currently conform to plotting metadata - use that when it does
+                    indicator = "prev";
+                    valueColumn = "mean";
+                    break;
             }
 
             const value = row[valueColumn];
@@ -172,6 +187,14 @@ export const getters = {
                         max: indicators.art_coverage!!.max
                     }
                 };
+            case (DataType.Output):
+                const outputRange = metadata.output.choropleth!!.indicators!!.prevalence!!;
+                return {
+                    prev: {
+                        min: outputRange.min,
+                        max: outputRange.max
+                    }
+                };
             default:
                 return null;
         }
@@ -221,6 +244,8 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
             return sapState.program ? sapState.program.data : null;
         case (DataType.Survey):
             return sapState.survey ? sapState.survey.data : null;
+        case (DataType.Output):
+            return rootState.modelRun.result ? rootState.modelRun.result.data : null;
         default:
             return null;
     }
@@ -240,6 +265,11 @@ const includeRowForSelectedChoroplethFilters = (row: any,
     }
 
     if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey!.id) {
+        return false;
+    }
+
+    //TODO: deal with all indicators in output
+    if (dataType == DataType.Output && row.indicator_id != 2) { //prevalence
         return false;
     }
 

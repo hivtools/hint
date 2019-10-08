@@ -1,5 +1,6 @@
 import {initialModelRunState, ModelRunStatus} from "../../app/store/modelRun/modelRun";
 import {mutations} from "../../app/store/modelRun/mutations";
+import {mockModelResultResponse} from "../mocks";
 
 describe("Model run mutations", () => {
 
@@ -39,6 +40,19 @@ describe("Model run mutations", () => {
         const testState = {...initialModelRunState};
         mutations.PollingForStatusStarted(testState, {payload: 2});
         expect(testState.statusPollId).toBe(2);
+    });
+
+    it("sets result", () => {
+        const testState = {...initialModelRunState};
+        const testResponse = mockModelResultResponse();
+        mutations.RunResultFetched(testState, {payload: testResponse});
+        expect(testState.result).toBe(testResponse);
+    });
+
+    it("sets result error", () => {
+        const testState = {...initialModelRunState};
+        mutations.RunResultError(testState, {payload: "Test Error"});
+        expect(testState.errors).toStrictEqual(["Test Error"]);
     });
 
 });

@@ -10,7 +10,7 @@
                              accept="csv,.csv"
                              name="survey">
                 </file-upload>
-                <file-upload label="Programme"
+                <file-upload label="ART"
                              :valid="programme.valid"
                              :error="programme.error"
                              :upload="uploadProgram"
@@ -28,6 +28,7 @@
                 </file-upload>
             </form>
             <div v-if="hasSelectedDataType">
+                <hr class="my-5"/>
                 <choropleth-filters></choropleth-filters>
             </div>
         </div>
@@ -39,7 +40,7 @@
                         <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)">Survey</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)">Programme</a>
+                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)">ART</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)">ANC</a>
@@ -70,6 +71,9 @@
         computed: mapState<RootState>({
             hasSelectedDataType: ({filteredData}) => {
                 return filteredData.selectedDataType != null;
+            },
+            selectedDataType: ({filteredData}) => {
+                return filteredData.selectedDataType;
             },
             anc: ({surveyAndProgram, filteredData}) => ({
                 valid: !!surveyAndProgram.anc,
@@ -103,6 +107,11 @@
                 uploadANC: 'surveyAndProgram/uploadANC',
                 selectTab: 'filteredData/selectDataType'
             })
+        },
+        created() {
+            if (this.selectedDataType == DataType.Output) {
+                this.selectTab(2);
+            }
         },
         components: {
             FileUpload,

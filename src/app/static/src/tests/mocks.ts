@@ -19,7 +19,7 @@ import {
     PopulationResponse,
     ModelStatusResponse,
     PlottingMetadataResponse,
-    PrevalenceAndArtCoverageIndicators
+    PrevalenceAndArtCoverageIndicators, ModelResultResponse
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
@@ -209,6 +209,12 @@ export const mockModelStatusResponse = (props: Partial<ModelStatusResponse> = {}
         queue: 1,
         id: "1234",
         status: "finished",
+        ...props
+    }
+};
+
+export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}): ModelResultResponse => {
+    return {
         ...props
     }
 };

@@ -6,7 +6,7 @@ import { RootState} from "../../root";
 import {FilterOption, NestedFilterOption} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 
-export enum DataType { ANC, Program, Survey }
+export enum DataType { ANC, Program, Survey, Output }
 export enum FilterType { Sex, Age, Region, Survey }
 
 export interface SelectedFilters {
