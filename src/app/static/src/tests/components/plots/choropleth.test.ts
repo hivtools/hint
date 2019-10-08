@@ -6,7 +6,12 @@ import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../..
 import {LGeoJson} from 'vue2-leaflet';
 import MapControl from "../../../app/components/plots/MapControl.vue";
 import {mutations} from "../../../app/store/filteredData/mutations";
-import {DataType, FilterType, initialFilteredDataState} from "../../../app/store/filteredData/filteredData";
+import {
+    DataType,
+    FilteredDataState,
+    FilterType,
+    initialFilteredDataState
+} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
 
 const localVue = createLocalVue();
@@ -80,7 +85,7 @@ describe("Choropleth component", () => {
         }
     };
 
-    function getTestStore() {
+    function getTestStore(filteredDataProps?: Partial<FilteredDataState>) {
         return new Vuex.Store({
             modules: {
                 baseline: {
@@ -107,7 +112,8 @@ describe("Choropleth component", () => {
                                 sex: null,
                                 age: null,
                                 survey: null
-                            }
+                            },
+                            ...filteredDataProps
                         }),
                     getters: testGetters,
                     actions,
@@ -364,6 +370,39 @@ describe("Choropleth component", () => {
             expect(mockUpdateBounds.mock.calls.length).toBe(1);
             done();
         });
+    });
+
+    it("selectedRegionFeatures gets selected region features", () => {
+        const testStore = getTestStore({
+            selectedChoroplethFilters: {
+                regions: [{id: "MWI.1.1.1.1", name: "area1"}, {id: "MWI.1.1.1.2", name: "area2"}],
+                sex: null,
+                age: null,
+                survey: null
+            }
+        });
+
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+        const vm = wrapper.vm as any;
+
+        const result = vm.selectedRegionFeatures;
+        expect(result).toStrictEqual([fakeFeatures[1], fakeFeatures[2]]);
+    });
+
+    it("selectedRegionFeatures gets top level region feature when no region is selected", () => {
+        const testStore = getTestStore({
+            selectedChoroplethFilters: {
+                regions: [],
+                sex: null,
+                age: null,
+                survey: null
+            }
+        });
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+        const vm = wrapper.vm as any;
+
+        const result = vm.selectedRegionFeatures;
+        expect(result).toStrictEqual([fakeFeatures[0]]);
     });
 
 });
