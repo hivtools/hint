@@ -9,6 +9,7 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.LocalFileManager
 import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.models.SessionFile
+import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -43,8 +44,8 @@ class LocalFileManagerTests {
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
-        val path = sut.saveFile(mockFile, FileType.Survey)
-        val savedFile = File(path)
+        val file = sut.saveFile(mockFile, FileType.Survey)
+        val savedFile = File(file.path)
         assertThat(savedFile.readLines().first()).isEqualTo("pjnz content")
     }
 
@@ -59,8 +60,10 @@ class LocalFileManagerTests {
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
-        val path = sut.saveFile(mockFile, FileType.Survey)
-        assertThat(path).isEqualTo("tmp/C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
+        val file = sut.saveFile(mockFile, FileType.Survey)
+        assertThat(file.path).isEqualTo("tmp/C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
+        assertThat(file.filename).isEqualTo("some-file-name.pjnz")
+        assertThat(file.hash).isEqualTo("C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
     }
 
     @Test
@@ -68,7 +71,7 @@ class LocalFileManagerTests {
 
         val mockStateRepository = mock<SessionRepository> {
             on { saveNewHash(any()) } doReturn true
-            on { getSessionFileHash(any(), any()) } doReturn "test"
+            on { getSessionFile(any(), any()) } doReturn SessionFile("test", "filename")
         }
 
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
@@ -91,7 +94,7 @@ class LocalFileManagerTests {
     fun `gets all files`() {
 
         val stateRepo = mock<SessionRepository> {
-            on { getFilesForSession("fake-id") } doReturn listOf(SessionFile("hash.csv", "survey"))
+            on { getHashesForSession("fake-id") } doReturn mapOf("survey" to "hash.csv")
         }
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties)

@@ -9,6 +9,7 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.HintrAPIClient
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.models.ModelRunParameters
+import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.junit.jupiter.api.Test
 
 class HintrApiClientTests {
@@ -16,7 +17,8 @@ class HintrApiClientTests {
     @Test
     fun `can validate baseline`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.validateBaselineIndividual("fakepath", FileType.PJNZ)
+        val file = SessionFileWithPath("fakepath", "hash", "filename")
+        val result = sut.validateBaselineIndividual(file, FileType.PJNZ)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")
     }
@@ -24,7 +26,8 @@ class HintrApiClientTests {
     @Test
     fun `can validate survey and programme`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.validateSurveyAndProgramme("fakepath", "fakepath", FileType.ANC)
+        val file = SessionFileWithPath("fakepath", "hash", "filename")
+        val result = sut.validateSurveyAndProgramme(file, "fakepath", FileType.ANC)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")
     }

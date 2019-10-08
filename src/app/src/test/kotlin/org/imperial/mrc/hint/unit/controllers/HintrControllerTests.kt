@@ -7,6 +7,7 @@ import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.HintrController
+import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.junit.jupiter.api.AfterEach
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -31,22 +32,22 @@ abstract class HintrControllerTests {
                 saveFile(argWhere {
                     it.originalFilename == "some-file-name.csv"
                 }, eq(type))
-            } doReturn "test-path"
+            } doReturn SessionFileWithPath("test-path", "hash", "some-file-name.csv")
 
             on {
                 getFile(FileType.Shape)
-            } doReturn File("shape-path")
+            } doReturn SessionFileWithPath("shape-path", "hash", "shape-file-name.csv")
 
             on {
                 getFile(type)
-            } doReturn File("test-path")
+            } doReturn SessionFileWithPath("test-path", "hash", "some-file-name.csv")
         }
     }
 
     protected fun getMockAPIClient(type: FileType): APIClient {
         return mock {
-            on { validateBaselineIndividual("test-path", type) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
-            on { validateSurveyAndProgramme("test-path", "shape-path", type) } doReturn
+            on { validateBaselineIndividual(argWhere { it.path == "test-path" }, eq(type)) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
+            on { validateSurveyAndProgramme(argWhere { it.path == "test-path" }, eq("shape-path"), eq(type)) } doReturn
                     ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
         }
     }
@@ -64,9 +65,12 @@ abstract class HintrControllerTests {
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
         verify(mockFileManager).saveFile(mockFile, fileType)
 
-        when(fileType){
-            FileType.PJNZ, FileType.Population, FileType.Shape ->   verify(mockApiClient).validateBaselineIndividual("test-path", fileType)
-            else ->   verify(mockApiClient).validateSurveyAndProgramme("test-path", "shape-path", fileType)
+        when (fileType) {
+            FileType.PJNZ, FileType.Population, FileType.Shape -> verify(mockApiClient)
+                    .validateBaselineIndividual(
+                            SessionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
+            else -> verify(mockApiClient)
+                    .validateSurveyAndProgramme(SessionFileWithPath("test-path", "hash", "some-file-name.csv"), "shape-path", fileType)
         }
     }
 
@@ -81,7 +85,8 @@ abstract class HintrControllerTests {
         var result = getAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
-        verify(mockApiClient).validateBaselineIndividual("test-path", fileType)
+        verify(mockApiClient)
+                .validateBaselineIndividual(SessionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
 
         // should return a null result when null is returned from the file manager
         sut = getSut(mock(), mockApiClient)

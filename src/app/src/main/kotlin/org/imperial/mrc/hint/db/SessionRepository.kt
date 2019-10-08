@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.db
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.Tables.*
 import org.imperial.mrc.hint.models.SessionFile
+import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.springframework.stereotype.Component
@@ -11,9 +12,10 @@ interface SessionRepository {
     fun saveSession(sessionId: String, userId: String)
     // returns true if a new hash is saved, false if it already exists
     fun saveNewHash(hash: String): Boolean
+
     fun saveSessionFile(sessionId: String, type: FileType, hash: String, fileName: String)
-    fun getSessionFileHash(sessionId: String, type: FileType): String?
-    fun getFilesForSession(sessionId: String): List<SessionFile>
+    fun getSessionFile(sessionId: String, type: FileType): SessionFile?
+    fun getHashesForSession(sessionId: String): Map<String, String>
 }
 
 @Component
@@ -69,19 +71,19 @@ class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
 
     }
 
-    override fun getSessionFileHash(sessionId: String, type: FileType): String? {
-        return getSessionFileRecord(sessionId, type)?.into(String::class.java)
+    override fun getSessionFile(sessionId: String, type: FileType): SessionFile? {
+        return getSessionFileRecord(sessionId, type)?.into(SessionFile::class.java)
     }
 
-    override fun getFilesForSession(sessionId: String): List<SessionFile> {
+    override fun getHashesForSession(sessionId: String): Map<String, String> {
         return dsl.select(SESSION_FILE.HASH, SESSION_FILE.TYPE)
                 .from(SESSION_FILE)
                 .where(SESSION_FILE.SESSION.eq(sessionId))
-                .fetchInto(SessionFile::class.java)
+                .associate { it[SESSION_FILE.TYPE] to it[SESSION_FILE.HASH] }
     }
 
     private fun getSessionFileRecord(sessionId: String, type: FileType): Record? {
-        return dsl.select(SESSION_FILE.HASH)
+        return dsl.select(SESSION_FILE.HASH, SESSION_FILE.FILENAME)
                 .from(SESSION_FILE)
                 .where(SESSION_FILE.SESSION.eq(sessionId))
                 .and(SESSION_FILE.TYPE.eq(type.toString()))
