@@ -27,6 +27,9 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
         if (data) {
             state.country = data.data.country;
             state.pjnzFilename = data.filename;
+        } else {
+            state.country = "";
+            state.pjnzFilename = "";
         }
         state.pjnzError = "";
     },
