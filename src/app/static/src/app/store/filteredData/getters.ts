@@ -260,7 +260,7 @@ const includeRowForSelectedChoroplethFilters = (row: any,
         return false;
     }
 
-    if (row.age_group_id != selectedFilters.age!.id) {
+    if (dataType != DataType.ANC && row.age_group_id != selectedFilters.age!.id) {
         return false;
     }
 
