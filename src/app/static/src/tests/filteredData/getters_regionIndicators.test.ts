@@ -339,13 +339,13 @@ describe("FilteredData regionIndicator getter", () => {
         expect(regionIndicators).toStrictEqual(expected);
     });
 
-    it("filters regionIndicators for ANC", () => {
+    it("does not filter regionIndicators for ANC by age or sex", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.ANC,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
+                    age: {id: "1", name: "0-99"}, //should be ignored
                     survey: null,
                     sex: {id: "male", name: "male"}, //should be ignored
                     regions: null
@@ -370,7 +370,7 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area3",
-                prevalence: 2,
+                prevalence: 4,
                 age_group_id: 2
             }
         ];
@@ -390,6 +390,9 @@ describe("FilteredData regionIndicator getter", () => {
             },
             "area2": {
                 "prev": {value: 3, color: "rgb(0,3,0)"}
+            },
+            "area3": {
+                "prev": {value: 4, color: "rgb(0,4,0)"}
             }
         };
 
