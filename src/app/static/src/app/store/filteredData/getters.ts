@@ -269,7 +269,7 @@ const includeRowForSelectedChoroplethFilters = (row: any,
         return false;
     }
 
-    if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter) {
+    if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter!.id) {
         return false;
     }
 
