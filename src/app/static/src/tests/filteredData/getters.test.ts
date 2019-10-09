@@ -426,6 +426,7 @@ describe("FilteredData getters", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "male", name: "male"},
+                    quarter: null,
                     regions: testRegions
                 }
             },
@@ -455,6 +456,7 @@ describe("FilteredData getters", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "male", name: "male"},
+                    quarter: null,
                     regions: null
                 }
             },
