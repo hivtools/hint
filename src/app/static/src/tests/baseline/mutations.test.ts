@@ -69,9 +69,9 @@ describe("Baseline mutations", () => {
         expect(testState.pjnzError).toBe("");
     });
 
-    it("does nothing on PJNZUpdated if no data present", () => {
+    it("clears country and filename on PJNZUpdated if no data present", () => {
 
-        const testState = {...initialBaselineState, pjnzError: ""};
+        const testState = {...initialBaselineState, pjnzError: "", country: "test", pjnzFilename: "test"};
         mutations.PJNZUpdated(testState, {payload: null});
         expect(testState.pjnzFilename).toBe("");
         expect(testState.country).toBe("");
