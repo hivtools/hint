@@ -1,11 +1,12 @@
 <template>
     <div>
-        <label class="font-weight-bold">{{label}}</label>
+        <label :class="'font-weight-bold' + (disabled ? ' disabled-label' : '')">{{label}}</label>
         <treeselect id="survey-filters" :multiple=multiple
                     :clearable="false"
                     :options=options
-                    :value=value
+                    :value=treeselectValue
                     :disabled=disabled
+                    :placeholder=placeholder
                     :normalizer="treeselectNormalizer"
                     @input="select"></treeselect>
     </div>
@@ -25,24 +26,38 @@
             options: Array,
             value: [Array, String]
         },
+        computed: {
+            treeselectValue() {
+                return this.disabled ? null : this.value;
+            },
+            placeholder() {
+                return this.disabled ? "Not used" : "Select...";
+            }
+        },
         methods: {
             treeselectNormalizer(anyNode: any) {
-                //In the nested case, this gets called for the child nodes we add in below - just return these unchanged
-                if (anyNode.label) {
-                    return anyNode;
-                }
+                const normalize = (anyNode: any) => {
+                    //In the nested case, this gets called for the child nodes we add in below - just return these unchanged
+                    if (anyNode.label) {
+                        return anyNode;
+                    }
 
-                const node = anyNode as NestedFilterOption;
-                const result = {id: node.id, label: node.name};
-                if (node.options && node.options.length > 0) {
-                    (result as any).children = node.options.map(o => this.treeselectNormalizer(o));
-                }
+                    const node = anyNode as NestedFilterOption;
+                    const result = {id: node.id, label: node.name};
+                    if (node.options && node.options.length > 0) {
+                        (result as any).children = node.options.map(o => normalize(o));
+                    }
 
-                return result;
+                    return result;
+                };
+
+                return normalize(anyNode);
             },
             select(value: string[]) {
-                this.$emit("select", value);
-            }
+                if (!this.disabled) {
+                    this.$emit("select", value);
+                }
+            },
         },
         components: {Treeselect}
     });
