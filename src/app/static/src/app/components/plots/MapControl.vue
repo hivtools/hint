@@ -81,14 +81,12 @@
                 const result = [];
 
                 if (this.choroplethIndicatorsMetadata) {
+                    //TODO: Remove harcoded knowledge of which indicators should exist, and just accept all indicators
                     if (this.choroplethIndicatorsMetadata.prevalence) {
                         result.push({id: "prev", label: this.choroplethIndicatorsMetadata.prevalence.name});
                     }
 
-                    //TODO: For the moment we only support prevalence in ANC and output choro, until we revamp indicators
-                    //to potentially get multiple values per row, depending on plotting metadata. Should be able to remove
-                    //this data type check after this.
-                    if (this.selectedDataType != DataType.Output && this.selectedDataType != DataType.ANC) {
+                    if (this.selectedDataType != DataType.Output) { //TODO: only accepting prevalence for output for now
                         if (this.choroplethIndicatorsMetadata.art_coverage) {
                             result.push({id: "art", label: this.choroplethIndicatorsMetadata.art_coverage.name});
                         } else if (this.choroplethIndicatorsMetadata.current_art) {
