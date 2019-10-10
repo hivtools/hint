@@ -22,10 +22,10 @@
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
     import {Dict, Indicator, IndicatorRange, Indicators, LevelLabel} from "../../types";
-    import {BaselineState} from "../../store/baseline/baseline";
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
     import {NestedFilterOption} from "../../generated";
-    import {mapGetterByName, mapStateProp} from "../../utils";
+    import {mapGettersByNames, mapStateProps} from "../../utils";
+    import {BaselineState} from "../../store/baseline/baseline";
 
     interface Data {
         style: any,
@@ -33,15 +33,24 @@
         detail: number
     }
 
-    interface Computed {
+    interface BaselineComputed {
         features: Feature[]
         countryRegion: unknown
         featureLevels: LevelLabel[]
+    }
+
+    interface FilteredDataComputed {
         selectedDataType: DataType | null
         selectedRegions: NestedFilterOption[]
+    }
+
+    interface FilteredDataGetters {
         regionIndicators: Dict<Indicators>
         colorFunctions: Dict<(t: number) => string>
         choroplethRanges: Dict<IndicatorRange>
+    }
+
+    interface Computed extends BaselineComputed, FilteredDataComputed, FilteredDataGetters {
         countryFeature: Feature
         maxLevel: number
         featuresByLevel: Dict<Feature[]>
@@ -71,19 +80,21 @@
             MapControl
         },
         computed: {
-            features: mapStateProp<BaselineState, Feature[]>("baseline",
-                state => state.shape!!.data.features as Feature[]),
-            countryRegion: mapStateProp<BaselineState, unknown>("baseline",
-                state => state.shape!!.filters.regions),
-            featureLevels: mapStateProp<BaselineState, LevelLabel[]>("baseline",
-                state => state.shape!!.filters.level_labels || []),
-            selectedDataType: mapStateProp<FilteredDataState, DataType | null>("filteredData",
-                state => state.selectedDataType),
-            selectedRegions: mapStateProp<FilteredDataState, NestedFilterOption[]>("filteredData",
-                state => state.selectedChoroplethFilters.regions || []),
-            regionIndicators: mapGetterByName<Dict<Indicators>>("filteredData", "regionIndicators"),
-            colorFunctions: mapGetterByName<Dict<(t: number) => string>>("filteredData", "colorFunctions"),
-            choroplethRanges: mapGetterByName<Dict<IndicatorRange>>("filteredData", "choroplethRanges"),
+            ...mapStateProps<BaselineState, keyof BaselineComputed>("baseline",
+                {
+                    features: state => state.shape!!.data.features as Feature[],
+                    countryRegion: state => state.shape!!.filters.regions,
+                    featureLevels: state => state.shape!!.filters.level_labels || []
+                }
+            ),
+            ...mapStateProps<FilteredDataState, keyof FilteredDataComputed>("filteredData",
+                {
+                    selectedDataType: state => state.selectedDataType,
+                    selectedRegions: state => state.selectedChoroplethFilters.regions || []
+                }
+            ),
+            ...mapGettersByNames<keyof FilteredDataGetters>("filteredData",
+                ["regionIndicators", "colorFunctions", "choroplethRanges"]),
             countryFeature: function (): Feature {
                 return this.getFeatureFromAreaId((this.countryRegion as NestedFilterOption).id)!!;
             },
@@ -193,7 +204,7 @@
             },
             updateBounds: function () {
                 const map = this.$refs.map as LMap;
-                if (map.fitBounds) {
+                if (map && map.fitBounds) {
                     map.fitBounds(this.selectedRegionFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                 }
             }
