@@ -10,6 +10,7 @@
                         <tree-select :value="indicator"
                                      :multiple="false"
                                      :clearable="false"
+                                     :searchable="false"
                                      :options="indicatorOptions"
                                      @input="indicatorChanged"></tree-select>
                     </div>
@@ -22,6 +23,7 @@
                         <tree-select v-model="detail"
                                      :multiple="false"
                                      :clearable="false"
+                                     :searchable="false"
                                      :options="detailOptions"
                                      @input="$emit('detail-changed', detail)"></tree-select>
                     </div>
@@ -38,11 +40,11 @@
     import {Indicator} from "../../types";
     import {mapGetters, mapState} from "vuex";
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
+    import {BaselineState} from "../../store/baseline/baseline";
 
     interface Data {
         detail: any;
-        detailOptions: any[],
-        optionsLoaded: boolean
+        optionsLoaded: boolean;
     }
 
     const namespace = "metadata";
@@ -54,26 +56,28 @@
             LControl
         },
         props: {
-            indicator: String
+            indicator: String,
+            initialDetail: Number
         },
         data(): Data {
             return {
-                detail: 5, // TODO this is the only level of data in the Malawi test set
-                detailOptions: [
-                    // TODO something cleverer with calculated admin levels and labels
-                    {id: 1, label: "Country"},
-                    {id: 2, label: "Admin level 2"},
-                    {id: 3, label: "Admin level 3"},
-                    {id: 4, label: "Admin level 4"},
-                    {id: 5, label: "Admin level 5"},
-                    {id: 6, label: "Admin level 6"}
-                ],
-                optionsLoaded: false
+                optionsLoaded: false,
+                detail: this.initialDetail
             }
         },
         computed: {
             ...mapState<FilteredDataState>("filteredData", {
                 selectedDataType: state => state.selectedDataType
+            }),
+            ...mapState<BaselineState>("baseline", {
+                detailOptions: state => {
+                    const levels = state.shape && state.shape.filters && state.shape.filters.level_labels ?
+                                    state.shape.filters.level_labels : [];
+
+                    return levels.filter(l => l.display).map(l => {
+                        return {id: l.id, label: l.area_level_label}
+                    });
+                }
             }),
             ...mapGetters(namespace, ["choroplethIndicatorsMetadata"]),
             indicatorOptions: function() {
