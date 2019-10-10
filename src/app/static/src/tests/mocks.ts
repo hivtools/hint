@@ -138,7 +138,10 @@ export const mockShapeResponse = (props: Partial<ShapeResponse> = {}): ShapeResp
         },
         type: "shape",
         filename: "test.csv",
-        filters: [],
+        filters: {
+            level_labels: [{id: 1, area_level_label: "Country", display: true}],
+            regions: {name: "Malawi", id: 1, options : []} as any
+        },
         ...props
     }
 };

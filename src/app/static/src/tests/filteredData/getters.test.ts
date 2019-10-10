@@ -197,7 +197,7 @@ describe("FilteredData getters", () => {
             filteredData: testState
         });
 
-        const filters = getters.regionOptions(testState, null, testRootState, null) as NestedFilterOption[];
+        const filters = getters.regionOptions(testState, null, testRootState) as NestedFilterOption[];
         expect(filters).toStrictEqual(testFilters.options); //We skip top level and use its options as our region array
 
     });
@@ -315,7 +315,7 @@ describe("FilteredData getters", () => {
             })
         });
 
-        const result = getters.choroplethRanges(testState, null, testRootState, null)!!;
+        const result = getters.choroplethRanges(testState, null, testRootState)!!;
         expect(result.prev!!.min).toBe(0.01);
         expect(result.prev!!.max).toBe(0.5);
         expect(result.art).toBe(undefined);
@@ -337,7 +337,7 @@ describe("FilteredData getters", () => {
             })
         });
 
-        const result = getters.choroplethRanges(testState, null, testRootState, null)!!;
+        const result = getters.choroplethRanges(testState, null, testRootState)!!;
         expect(result.art!!.min).toBe(0);
         expect(result.art!!.max).toBe(1);
         expect(result.prev).toBe(undefined);
@@ -360,7 +360,7 @@ describe("FilteredData getters", () => {
             })
         });
 
-        const result = getters.choroplethRanges(testState, null, testRootState, null)!!;
+        const result = getters.choroplethRanges(testState, null, testRootState)!!;
         expect(result.art!!.min).toBe(0);
         expect(result.art!!.max).toBe(1);
         expect(result.prev!!.min).toBe(0.1);
@@ -384,7 +384,7 @@ describe("FilteredData getters", () => {
             })
         });
 
-        const result = getters.choroplethRanges(testState, null, testRootState, null)!!;
+        const result = getters.choroplethRanges(testState, null, testRootState)!!;
         expect(result.prev!!.min).toBe(0.1);
         expect(result.prev!!.max).toBe(0.6);
     });
@@ -392,8 +392,8 @@ describe("FilteredData getters", () => {
     it("gets null choropleth ranges when selectedDataType is unknown", () => {
         const testState = mockFilteredDataState({selectedDataType: 15 as DataType.Survey});
 
-        const result = getters.choroplethRanges(testState, null, mockRootState(), null)!!;
-        expect(result).toBeNull();
+        const result = getters.choroplethRanges(testState, null, mockRootState())!!;
+        expect(result).toStrictEqual({});
     });
 
     it("gets flattened selected region filter", () => {
@@ -434,7 +434,7 @@ describe("FilteredData getters", () => {
         const testState = testStore.state as FilteredDataState;
 
 
-        const flattenedRegionFilter = getters.flattenedSelectedRegionFilters(testState, testGetters, mockRootState(), null);
+        const flattenedRegionFilter = getters.flattenedSelectedRegionFilters(testState);
 
         const expected = {
             "R1": testRegions[0],
@@ -462,7 +462,7 @@ describe("FilteredData getters", () => {
         };
         const testState = testStore.state as FilteredDataState;
 
-        const flattenedRegionFilter = getters.flattenedSelectedRegionFilters(testState, testGetters, mockRootState(), null);
+        const flattenedRegionFilter = getters.flattenedSelectedRegionFilters(testState);
 
         const expected = {};
 
@@ -502,7 +502,7 @@ describe("FilteredData getters", () => {
             regionOptions: testRegions
         };
 
-        const flattenedRegionOptions = getters.flattenedRegionOptions(testState, filterGetters, mockRootState(), null);
+        const flattenedRegionOptions = getters.flattenedRegionOptions(testState, filterGetters);
 
         const expected = {
             "R1": testRegions[0],
@@ -526,7 +526,7 @@ describe("FilteredData getters", () => {
             regionOptions: null
         };
 
-        const flattenedRegionOptions = getters.flattenedRegionOptions(testState, filterGetters, mockRootState(), null);
+        const flattenedRegionOptions = getters.flattenedRegionOptions(testState, filterGetters);
 
         const expected = {};
 

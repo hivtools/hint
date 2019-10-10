@@ -1,8 +1,9 @@
 import {RootState} from "../../root";
-import {DataType, FilteredDataState, SelectedChoroplethFilters, SelectedFilters} from "./filteredData";
-import {IndicatorRange, Indicators, IndicatorValues} from "../../types";
+import {DataType, FilteredDataState, SelectedChoroplethFilters} from "./filteredData";
+import {Dict, IndicatorRange, Indicators, IndicatorValues} from "../../types";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
-import {FilterOption, NestedFilterOption} from "../../generated";
+import {NestedFilterOption} from "../../generated";
+import {flattenOptions} from "../../utils";
 
 const sexFilterOptions = [
     {id: "both", name: "both"},
@@ -14,7 +15,7 @@ export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
         const sapState = rootState.surveyAndProgram;
         const regions = getters.regionOptions;
-        switch(state.selectedDataType){
+        switch (state.selectedDataType) {
             case (DataType.ANC):
                 return sapState.anc ?
                     {
@@ -45,36 +46,36 @@ export const getters = {
                         regions,
                         sex: sexFilterOptions,
                         surveys: undefined
-                    }: null;
+                    } : null;
 
             default:
                 return null;
         }
     },
-    regionOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
+    regionOptions: (state: FilteredDataState, getters: any, rootState: RootState): NestedFilterOption[] => {
         const shape = rootState.baseline && rootState.baseline.shape ? rootState.baseline.shape : null;
         //We're skipping the top level, country region as it doesn't really contribute to the filtering
         return shape && shape.filters &&
-                        shape.filters.regions &&
-                        (shape.filters.regions as any).options ? (shape.filters.regions as any).options : null;
+        shape.filters.regions &&
+        (shape.filters.regions as any).options ? (shape.filters.regions as any).options : null;
     },
-    colorFunctions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-      return {
-          art: interpolateWarm,
-          prev: interpolateCool
-      }
+    colorFunctions: function (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any): Dict<(t: number) => string> {
+        return {
+            art: interpolateWarm,
+            prev: interpolateCool
+        }
     },
-    regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+    regionIndicators: function (state: FilteredDataState, getters: any, rootState: RootState): Dict<Indicators> {
         const data = getUnfilteredData(state, rootState);
         if (!data || (state.selectedDataType == null)) {
             return {};
         }
 
-        const result = {} as { [k: string]: Indicators };
+        const result = {} as Dict<Indicators>;
 
         const flattenedRegions = getters.flattenedSelectedRegionFilters;
 
-        for(const d of data) {
+        for (const d of data) {
             const row = d as any;
 
             if (!includeRowForSelectedChoroplethFilters(row,
@@ -147,18 +148,18 @@ export const getters = {
         }
         return result;
     },
-    flattenedRegionOptions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+    flattenedRegionOptions: function (state: FilteredDataState, getters: any): Dict<NestedFilterOption> {
         const options = getters.regionOptions ? getters.regionOptions : [];
         return flattenOptions(options);
     },
-    flattenedSelectedRegionFilters: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+    flattenedSelectedRegionFilters: function (state: FilteredDataState): Dict<NestedFilterOption> {
         const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
         return flattenOptions(selectedRegions);
     },
-    choroplethRanges:  function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+    choroplethRanges: function (state: FilteredDataState, getters: any, rootState: RootState): Dict<IndicatorRange> {
         //TODO: do not hardcode to art and prev, but take indicators from metadata too
         const metadata = rootState.metadata.plottingMetadata!!;
-        switch(state.selectedDataType) {
+        switch (state.selectedDataType) {
             case (DataType.ANC):
                 const ancRange = metadata.anc.choropleth!!.indicators!!.prevalence!!;
                 return {
@@ -169,7 +170,7 @@ export const getters = {
                 };
             case (DataType.Program):
                 const progRange = metadata.programme.choropleth!!.indicators!!.current_art!!;
-                return  {
+                return {
                     art: {
                         min: progRange.min,
                         max: progRange.max,
@@ -196,37 +197,13 @@ export const getters = {
                     }
                 };
             default:
-                return null;
+                return {};
         }
     }
 };
 
-const flattenOptions = (filterOptions: NestedFilterOption[]) => {
-    let result = {};
-    filterOptions.forEach(r =>
-        result = {
-            ...result,
-            ...flattenOption(r)
-        });
-    return result;
-};
-
-const flattenOption = (filterOption: NestedFilterOption) => {
-    let result = {} as any;
-    result[filterOption.id] = filterOption;
-    if (filterOption.options) {
-        filterOption.options.forEach(o =>
-            result = {
-                ...result,
-                ...flattenOption(o as NestedFilterOption)
-            });
-
-    }
-    return result;
-};
-
 export const getColor = (data: IndicatorValues, range: IndicatorRange, colorFunction: (t: number) => string) => {
-    let rangeNum = (range.max  && (range.max != range.min)) ? //Avoid dividing by zero if only one value...
+    let rangeNum = (range.max && (range.max != range.min)) ? //Avoid dividing by zero if only one value...
         range.max - (range.min || 0) :
         1;
 
@@ -237,7 +214,7 @@ export const getColor = (data: IndicatorValues, range: IndicatorRange, colorFunc
 
 export const getUnfilteredData = (state: FilteredDataState, rootState: RootState) => {
     const sapState = rootState.surveyAndProgram;
-    switch(state.selectedDataType){
+    switch (state.selectedDataType) {
         case (DataType.ANC):
             return sapState.anc ? sapState.anc.data : null;
         case (DataType.Program):
