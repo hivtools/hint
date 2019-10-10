@@ -15,6 +15,45 @@ import {testGetters} from "./getters.test";
 
 describe("FilteredData regionIndicator getter", () => {
 
+    const testRootGetters  = (testIndicatorsMetadata: any) => {
+        return {
+            "metadata/choroplethIndicatorsMetadata": testIndicatorsMetadata
+        }
+    };
+    const testAncIndicatorsMetadata = {
+        art_coverage: {
+            value_column: "art_coverage",
+                indicator_column: "",
+                indicator_value: ""
+        },
+        prevalence: {
+            value_column: "prevalence",
+                indicator_column: "",
+                indicator_value: ""
+        }
+    };
+
+    const testSurveyIndicatorsMetadata = {
+        art_coverage: {
+            value_column: "est",
+            indicator_column: "indicator",
+            indicator_value: "art"
+        },
+        prevalence: {
+            value_column: "est",
+            indicator_column: "indicator",
+            indicator_value: "prev"
+        }
+    };
+
+    const testProgrammeIndicatorsMetadata = {
+        current_art: {
+            value_column: "current_art",
+            indicator_column: "",
+            indicator_value: ""
+        }
+    };
+
     it("gets regionIndicators for survey", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
             state: {
@@ -75,7 +114,8 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
+                                    testRootGetters(testSurveyIndicatorsMetadata));
 
         const expected = {
 
@@ -159,7 +199,8 @@ describe("FilteredData regionIndicator getter", () => {
             filteredData: testState
         });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
+                                    testRootGetters(testSurveyIndicatorsMetadata));
 
         const expected = {
             "area1":
@@ -210,7 +251,8 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
+                                    testRootGetters(testProgrammeIndicatorsMetadata));
 
         const expected = {
             "area1": {
@@ -274,7 +316,8 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
+                                    testRootGetters(testProgrammeIndicatorsMetadata));
 
         const expected = {
             "area1": {
@@ -304,7 +347,7 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-
+                art_coverage: 0,
                 prevalence: 2,
 
                 age_group_id: 1
@@ -312,7 +355,7 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area2",
-
+                art_coverage: 4,
                 prevalence: 3,
                 age_group_id: 1
             }
@@ -324,14 +367,17 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
+                                    testRootGetters(testAncIndicatorsMetadata));
 
         const expected = {
 
             "area1": {
+                "art": {value: 0, color: "rgb(0,0,0)"},
                 "prev": {value: 2, color: "rgb(0,2,0)"}
             },
             "area2": {
+                "art": {value: 4, color: "rgb(4,0,0)"},
                 "prev": {value: 3, color: "rgb(0,3,0)"}
             }
         };
@@ -359,18 +405,21 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area1",
                 prevalence: 2,
+                art_coverage: 0,
                 age_group_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 prevalence: 3,
+                art_coverage: 4,
                 age_group_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
                 prevalence: 4,
+                art_coverage: 5,
                 age_group_id: 2
             }
         ];
@@ -382,16 +431,20 @@ describe("FilteredData regionIndicator getter", () => {
             filteredData: testState
         });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
+                                    testRootGetters(testAncIndicatorsMetadata));
 
         const expected = {
             "area1": {
+                "art": {value: 0, color: "rgb(0,0,0)"},
                 "prev": {value: 2, color: "rgb(0,2,0)"}
             },
             "area2": {
+                "art": {value: 4, color: "rgb(4,0,0)"},
                 "prev": {value: 3, color: "rgb(0,3,0)"}
             },
             "area3": {
+                "art": {value: 5, color: "rgb(5,0,0)"},
                 "prev": {value: 4, color: "rgb(0,4,0)"}
             }
         };
@@ -615,7 +668,8 @@ describe("FilteredData regionIndicator getter", () => {
 
         };
 
-        const regionIndicators = getters.regionIndicators(testState, testRegionGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testRegionGetters, testRootState,
+                                    testRootGetters(testSurveyIndicatorsMetadata));
 
         const expected = {
             "area1":

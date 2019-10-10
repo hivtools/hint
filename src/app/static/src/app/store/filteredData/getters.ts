@@ -118,6 +118,11 @@ export const getters = {
                     continue;
                 }
 
+                if (row[metadata.value_column] === undefined) {
+                    //No value for this indicator in this row
+                    continue;
+                }
+
                 const value = row[metadata.value_column];
 
                 if (!result[areaId]) {
