@@ -15,7 +15,7 @@ import {mutations as surveyAndProgramMutations} from '../../app/store/surveyAndP
 import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations';
 import {mutations as stepperMutations} from '../../app/store/stepper/mutations';
 
-import {ModelRunState} from "../../app/store/modelRun/modelRun";
+import {modelRunGetters, ModelRunState} from "../../app/store/modelRun/modelRun";
 
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
@@ -56,7 +56,8 @@ describe("Stepper component", () => {
                 modelRun: {
                     namespaced: true,
                     state: mockModelRunState(modelRunState),
-                    mutations: modelRunMutations
+                    mutations: modelRunMutations,
+                    getters: modelRunGetters
                 },
                 stepper: {
                     namespaced: true,

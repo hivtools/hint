@@ -32,6 +32,12 @@ export const initialModelRunState: ModelRunState = {
     ready: false
 };
 
+export const modelRunGetters = {
+    complete: (state: ModelRunState) => {
+        return state.success && state.errors.length == 0
+    }
+};
+
 const namespaced: boolean = true;
 const existingState = localStorageManager.getState();
 
@@ -39,5 +45,6 @@ export const modelRun: Module<ModelRunState, RootState> = {
     namespaced,
     state: {...initialModelRunState, ...existingState && existingState.modelRun},
     actions,
+    getters: modelRunGetters,
     mutations
 };
