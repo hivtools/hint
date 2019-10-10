@@ -27,6 +27,15 @@
                            @select="selectSurvey"></filter-select>
         </div>
 
+        <div class="py-2" v-if="!isOutput">
+            <filter-select label="Quarter"
+                           :multiple="false"
+                           :options="quarterFilters.available"
+                           :value="quarterFilters.selected"
+                           :disabled="quarterFilters.disabled"
+                           @select="selectQuarter"></filter-select>
+        </div>
+
         <div class="py-2">
             <filter-select label="Region"
                     :multiple="true"
@@ -65,6 +74,7 @@
             ...mapState<FilteredDataState>(namespace, {
                 selectedDataType: state => state.selectedDataType,
                 selectedChoroplethFilters: state => state.selectedChoroplethFilters,
+
                 sexFilters: function (state): ChoroplethFiltersForType {
                     return this.buildViewFiltersForType(this.selectedDataFilterOptions.sex,
                         this.selectedChoroplethFilters.sex)
@@ -78,6 +88,11 @@
                 surveyFilters: function (state): ChoroplethFiltersForType {
                     return this.buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
                         this.selectedChoroplethFilters.survey);
+                },
+
+                quarterFilters: function (state): ChoroplethFiltersForType {
+                    return this.buildViewFiltersForType(this.selectedDataFilterOptions.quarter,
+                        this.selectedChoroplethFilters.quarter);
                 },
 
                 regionFilters: function (state): ChoroplethFiltersForType {
@@ -129,6 +144,9 @@
             selectSurvey(id: string) {
                 this.selectFilterOption(FilterType.Survey, id, this.surveyFilters.available);
             },
+            selectQuarter(id: string) {
+                this.selectFilterOption(FilterType.Quarter, id, this.quarterFilters.available);
+            },
             selectRegion(ids: string[]) {
                 const newFilter = ids.map(id => this.flattenedRegionOptions[id]);
                 this.filterUpdated([FilterType.Region, newFilter]);
@@ -160,6 +178,10 @@
                     const newSurveyFilter = this.getNewSelectedFilterOption("survey", this.surveyFilters.available);
                     if (newSurveyFilter) {
                         this.selectSurvey(newSurveyFilter);
+                    }
+                    const newQuarterFilter = this.getNewSelectedFilterOption("quarter", this.quarterFilters.available);
+                    if (newQuarterFilter) {
+                        this.selectQuarter(newQuarterFilter);
                     }
                 }
             }

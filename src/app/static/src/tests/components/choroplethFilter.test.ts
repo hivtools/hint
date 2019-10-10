@@ -104,6 +104,32 @@ describe("ChoroplethFilters component", () => {
         expect(surveyFilters.selected).toStrictEqual("s1");
     });
 
+    it("computes quarterFilters", () => {
+        const stateQuarterFilterOptions = [
+            {id: "1", name: "Jan-Mar 2019"},
+            {id: "2", name: "Apr-Jun 2019"}
+        ];
+        const mockSelectedFilters = {
+            ...initialSelectedChoroplethFilters,
+            quarter: {id: "1", name: "Jan-Mar 2019"}
+        };
+
+        const mockState = {selectedChoroplethFilters: mockSelectedFilters};
+        const mockGetters = {
+            selectedDataFilterOptions: () => {
+                return {
+                    quarter: stateQuarterFilterOptions
+                }
+            }
+        };
+
+        const wrapper = getWrapper(mockState, mockGetters);
+        const vm = (wrapper as any).vm;
+        const quarterFilters = vm.quarterFilters;
+        expect(quarterFilters.available).toStrictEqual(stateQuarterFilterOptions);
+        expect(quarterFilters.selected).toStrictEqual("1");
+    });
+
     it("computes regionFilters", () => {
         const stateRegionFilterOptions = [
             {
@@ -215,6 +241,32 @@ describe("ChoroplethFilters component", () => {
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Age, {id: "a2", name: "5-9"}]);
     });
 
+    it("invokes store actions when quarter filter is edited", () => {
+        const mockFilterUpdated = jest.fn();
+        const mockActions = {
+            choroplethFilterUpdated: mockFilterUpdated
+        };
+        const mockGetters = {
+            selectedDataFilterOptions: () => {
+                return {
+                    quarter: [
+                        {id: "1", name: "Jan-Mar 2019"},
+                        {id: "2", name: "Apr-Jun 2019"}
+                    ]
+                }
+            }
+        };
+
+        const wrapper = getWrapper({}, mockGetters, mockActions);
+        const vm = (wrapper as any).vm;
+        const callCount = mockFilterUpdated.mock.calls.length;
+
+        const newFilter = "2";
+        vm.selectQuarter(newFilter);
+
+        expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Quarter, {id: "2", name: "Apr-Jun 2019"}]);
+    });
+
     it("invokes store actions when region filter is edited", () => {
         const mockFilterUpdated = jest.fn();
         const store = new Vuex.Store({
@@ -269,10 +321,15 @@ describe("ChoroplethFilters component", () => {
             {id: "s1", name: "Survey 1"},
             {id: "s2", name: "Survey 2"}
         ];
+        const stateQuarterFilterOptions = [
+            {id: "1", name: "Jan-Mar 2019"},
+            {id: "2", name: "Apr-Jun 2019"}
+        ];
         const mockSelectedFilters = {
             age: {id: "a2", name: "5-9"},
             survey: {id: "s1", name: "Survey 1"},
             sex: {id: "female", name: "female"},
+            quarter: {id: "1", name: "Jan-Mar 2019"},
             regions: null
         };
         const mockFilterUpdated = jest.fn();
@@ -285,7 +342,8 @@ describe("ChoroplethFilters component", () => {
             selectedDataFilterOptions: () => {
                 return {
                     age: stateAgeFilterOptions,
-                    survey: stateSurveyFilterOptions
+                    survey: stateSurveyFilterOptions,
+                    quarter: stateQuarterFilterOptions
                 }
             }
         };
@@ -306,13 +364,11 @@ describe("ChoroplethFilters component", () => {
             {id: "a1", name: "0-4"},
             {id: "a2", name: "5-9"}
         ];
-        const mockSelectedFilters = {
-            age: {id: "a3", name: "10-15"},
-            survey: {id: "s1", name: "Survey 1"},
-            sex: {id: "male", name: "male"},
-            regions: null
-        };
-        const mockRegionOptions = [
+        const stateQuarterFilterOptions = [
+            {id: "1", name: "Jan-Mar 2019"},
+            {id: "2", name: "Apr-Jun 2019"}
+        ];
+        const stateRegionOptions = [
             {
                 id: "a1",
                 name: "All",
@@ -321,6 +377,15 @@ describe("ChoroplethFilters component", () => {
                 ]
             }
         ];
+        const mockSelectedFilters = {
+            age: {id: "a3", name: "10-15"},
+            survey: {id: "s1", name: "Survey 1"},
+            sex: {id: "male", name: "male"},
+            quarter: {id: "3", name: "Jul-Sep 2019"},
+            regions: null
+        };
+
+
         const mockFilterUpdated = jest.fn();
         const wrapper = getWrapper({
                 selectedChoroplethFilters: mockSelectedFilters,
@@ -331,7 +396,8 @@ describe("ChoroplethFilters component", () => {
                     return {
                         age: stateAgeFilterOptions,
                         survey: null,
-                        regions: mockRegionOptions
+                        regions: stateRegionOptions,
+                        quarter: stateQuarterFilterOptions
                     }
                 }
             },
@@ -343,8 +409,9 @@ describe("ChoroplethFilters component", () => {
 
         vm.refreshSelectedChoroplethFilters();
         //Sex should be left unchanged as there are no available sex options for ANC
-        expect(mockFilterUpdated.mock.calls.length).toBe(callCount + 1);
+        expect(mockFilterUpdated.mock.calls.length).toBe(callCount + 2);
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Age, {id: "a1", name: "0-4"}]);
+        expect(mockFilterUpdated.mock.calls[callCount+1][1]).toStrictEqual([FilterType.Quarter, {id: "1", name: "Jan-Mar 2019"}]);
     });
 
     const getWrapper = (state?: Partial<FilteredDataState>,

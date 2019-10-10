@@ -21,7 +21,7 @@ export const getters = {
                         ...sapState.anc.filters,
                         regions,
                         sex: undefined,
-                        surveys: undefined,
+                        surveys: undefined
                     } : null;
             case (DataType.Program):
                 return sapState.program ?
@@ -36,7 +36,8 @@ export const getters = {
                     {
                         ...sapState.survey.filters,
                         regions,
-                        sex: sexFilterOptions
+                        sex: sexFilterOptions,
+                        quarter: undefined
                     } : null;
             case (DataType.Output):
                 return rootState.modelRun.result ?
@@ -265,6 +266,10 @@ const includeRowForSelectedChoroplethFilters = (row: any,
     }
 
     if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey!.id) {
+        return false;
+    }
+
+    if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter!.id) {
         return false;
     }
 
