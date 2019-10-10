@@ -1,5 +1,4 @@
-
-import {getters, getUnfilteredData} from "../../app/store/filteredData/getters"
+import {getters} from "../../app/store/filteredData/getters"
 import {Module} from "vuex";
 import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 import {RootState} from "../../app/root";
@@ -20,6 +19,7 @@ import {
 } from "../mocks";
 import {NestedFilterOption} from "../../app/generated";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
+import {getUnfilteredData} from "../../app/store/filteredData/utils";
 
 export const testGetters = {
     colorFunctions: {

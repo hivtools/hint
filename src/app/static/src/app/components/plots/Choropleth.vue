@@ -80,29 +80,31 @@
             MapControl
         },
         computed: {
-            ...mapStateProps<BaselineState, keyof BaselineComputed>("baseline",
-                {
+            ...mapStateProps<BaselineState, keyof BaselineComputed>("baseline", {
                     features: state => state.shape!!.data.features as Feature[],
                     countryRegion: state => state.shape!!.filters.regions,
                     featureLevels: state => state.shape!!.filters.level_labels || []
                 }
             ),
-            ...mapStateProps<FilteredDataState, keyof FilteredDataComputed>("filteredData",
-                {
+            ...mapStateProps<FilteredDataState, keyof FilteredDataComputed>("filteredData", {
                     selectedDataType: state => state.selectedDataType,
                     selectedRegions: state => state.selectedChoroplethFilters.regions || []
                 }
             ),
-            ...mapGettersByNames<keyof FilteredDataGetters>("filteredData",
-                ["regionIndicators", "colorFunctions", "choroplethRanges"]),
-            countryFeature: function (): Feature {
+            ...mapGettersByNames<keyof FilteredDataGetters>("filteredData", [
+                    "regionIndicators",
+                    "colorFunctions",
+                    "choroplethRanges"
+                ]
+            ),
+            countryFeature(): Feature {
                 return this.getFeatureFromAreaId((this.countryRegion as NestedFilterOption).id)!!;
             },
-            maxLevel: function () {
+            maxLevel() {
                 const levelNums: number[] = Object.keys(this.featuresByLevel).map(k => parseInt(k));
                 return Math.max(...levelNums);
             },
-            featuresByLevel: function () {
+            featuresByLevel() {
                 const result = {} as any;
                 this.featureLevels.forEach((l: any) => {
                     if (l.display) {
@@ -120,22 +122,22 @@
 
                 return result;
             },
-            currentFeatures: function () {
+            currentFeatures() {
                 return this.featuresByLevel[this.detail]
             },
-            selectedColorFunction: function () {
+            selectedColorFunction() {
                 return this.colorFunctions[this.indicator];
             },
-            range: function () {
+            range() {
                 return this.choroplethRanges[this.indicator];
             },
-            prevEnabled: function () {
+            prevEnabled() {
                 return this.selectedDataType != DataType.Program;
             },
-            artEnabled: function () {
+            artEnabled() {
                 return this.selectedDataType == DataType.Survey || this.selectedDataType == DataType.Program;
             },
-            options: function () {
+            options() {
                 const regionIndicators = this.regionIndicators;
                 const indicator = this.indicator;
                 return {
@@ -153,7 +155,7 @@
                     }
                 }
             },
-            selectedRegionFeatures: function (): Feature[] {
+            selectedRegionFeatures(): Feature[] {
                 if (this.selectedRegions && this.selectedRegions.length > 0) {
                     return this.selectedRegions.map((r: NestedFilterOption) => this.getFeatureFromAreaId(r.id)!!);
                 } else if (this.countryFeature) {
