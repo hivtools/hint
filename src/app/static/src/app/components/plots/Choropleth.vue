@@ -18,7 +18,7 @@
     import Vue from "vue";
     import {LGeoJson, LMap} from 'vue2-leaflet';
     import {Feature} from "geojson";
-    import {BoundsExpression, BoundsLiteral, GeoJSON, Layer} from "leaflet";
+    import {GeoJSON, Layer} from "leaflet";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
     import {Dict, Indicator, IndicatorRange, Indicators, LevelLabel} from "../../types";

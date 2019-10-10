@@ -2,7 +2,7 @@ import {RootState} from "../../root";
 import {DataType, FilteredDataState, SelectedChoroplethFilters} from "./filteredData";
 import {Dict, IndicatorRange, Indicators, IndicatorValues} from "../../types";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
-import {NestedFilterOption} from "../../generated";
+import {FilterOption, NestedFilterOption} from "../../generated";
 import {flattenOptions} from "../../utils";
 
 const sexFilterOptions = [
@@ -12,7 +12,7 @@ const sexFilterOptions = [
 ];
 
 export const getters = {
-    selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
+    selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState): Dict<FilterOption[]| undefined> | null => {
         const sapState = rootState.surveyAndProgram;
         const regions = getters.regionOptions;
         switch (state.selectedDataType) {
@@ -59,7 +59,8 @@ export const getters = {
         shape.filters.regions &&
         (shape.filters.regions as any).options ? (shape.filters.regions as any).options : null;
     },
-    colorFunctions: function (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any): Dict<(t: number) => string> {
+    colorFunctions: function (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any):
+        Dict<(t: number) => string> {
         return {
             art: interpolateWarm,
             prev: interpolateCool
