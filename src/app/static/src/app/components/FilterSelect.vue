@@ -17,7 +17,25 @@
     import Treeselect from '@riophae/vue-treeselect';
     import {NestedFilterOption} from "../generated";
 
-    export default Vue.extend({
+    interface Methods {
+        treeselectNormalizer: (anyNode: any) => void;
+        select: (value: string[]) => void
+    }
+
+    interface Computed {
+        treeselectValue: string[] | string | null
+        placeholder: string
+    }
+
+    interface Props {
+        multiple: boolean,
+        label: string,
+        disabled: boolean,
+        options: any[],
+        value: string[] | string
+    }
+
+    export default Vue.extend<{}, Methods, Computed, Props>({
         name: "FilterSelect",
         props: {
             multiple: Boolean,
@@ -36,22 +54,18 @@
         },
         methods: {
             treeselectNormalizer(anyNode: any) {
-                const normalize = (anyNode: any) => {
-                    //In the nested case, this gets called for the child nodes we add in below - just return these unchanged
-                    if (anyNode.label) {
-                        return anyNode;
-                    }
+                //In the nested case, this gets called for the child nodes we add in below - just return these unchanged
+                if (anyNode.label) {
+                    return anyNode;
+                }
 
-                    const node = anyNode as NestedFilterOption;
-                    const result = {id: node.id, label: node.name};
-                    if (node.options && node.options.length > 0) {
-                        (result as any).children = node.options.map(o => normalize(o));
-                    }
+                const node = anyNode as NestedFilterOption;
+                const result = {id: node.id, label: node.name};
+                if (node.options && node.options.length > 0) {
+                    (result as any).children = node.options.map(o => this.treeselectNormalizer(o));
+                }
 
-                    return result;
-                };
-
-                return normalize(anyNode);
+                return result;
             },
             select(value: string[]) {
                 if (!this.disabled) {
