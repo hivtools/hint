@@ -8,5 +8,8 @@ export interface RootMutations {
 export const mutations: MutationTree<RootState> & RootMutations = {
     Reset(state: RootState) {
         Object.assign(state, emptyState);
+        state.surveyAndProgram.ready = true;
+        state.baseline.ready = true;
+        state.modelRun.ready = true;
     }
 };

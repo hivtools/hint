@@ -28,6 +28,7 @@ export interface ReadyState {
 
 const persistState = (store: Store<RootState>) => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
+        console.log(mutation.type);
         localStorageManager.saveState(state);
     })
 };
@@ -42,13 +43,7 @@ export const emptyState = {
     stepper: initialStepperState
 };
 
-export const initialState = {
-    ...emptyState,
-    ...localStorageManager.getState()
-};
-
 export const storeOptions: StoreOptions<RootState> = {
-    state: initialState,
     modules: {
         baseline,
         metadata,
