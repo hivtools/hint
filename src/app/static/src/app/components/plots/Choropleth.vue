@@ -7,7 +7,8 @@
                         :optionsStyle="{...style, fillColor: getColorForRegion(feature.properties['area_id'])}">
             </l-geo-json>
         </template>
-        <map-control @indicator-changed="onIndicatorChange"
+        <map-control :initialDetail=detail
+                     @indicator-changed="onIndicatorChange"
                      @detail-changed="onDetailChange"
                      :indicator="indicator"></map-control>
         <map-legend :colorFunction="selectedColorFunction" :max="range.max" :min="range.min"></map-legend>
@@ -27,7 +28,7 @@
     import {NestedFilterOption} from "../../generated";
 
     interface Data {
-        featuresByLevel: { [k: number]: any },
+        //featuresByLevel: { [k: number]: any },
         style: any,
         indicator: Indicator;
         detail: number
@@ -50,15 +51,40 @@
                         return this.getFeatureFromAreaId(countryRegion.id);
                     }
                     return null;
-                }
+                },
+                featureLevels: state => state.shape && state.shape.filters && state.shape.filters.level_labels ?
+                                            state.shape.filters.level_labels : []
+
             }),
             ...mapState<FilteredDataState>("filteredData", {
                 selectedDataType: state => state.selectedDataType,
                 selectedRegions: state => state.selectedChoroplethFilters.regions
             }),
             ...mapGetters('filteredData', ["regionIndicators", "colorFunctions", "choroplethRanges"]),
+            maxLevel: function() {
+                const levelNums: number[] =  Object.keys(this.featuresByLevel).map(k => parseInt(k));
+                return Math.max(...levelNums);
+            },
+            featuresByLevel: function() {
+                const result   = {} as any;
+                this.featureLevels.forEach((l: any) => {
+                    if (l.display) {
+                        result[l.id] = [];
+                    }
+                });
+
+                this.features.forEach((feature: Feature) => {
+                    const areas = feature.properties!!["area_id"].split(".");
+                    const adminLevel = areas.length - 1;  //Country (e.g. "MWI") is level 0
+                    if (result[adminLevel]) {
+                        result[adminLevel].push(feature);
+                    }
+                });
+
+                return result;
+            },
             currentFeatures: function () {
-                return this.featuresByLevel[this.detail || 1]
+                return this.featuresByLevel[this.detail]
             },
             selectedColorFunction: function () {
                 return this.colorFunctions[this.indicator];
@@ -103,22 +129,17 @@
         },
         data(): Data {
             return {
-                featuresByLevel: {1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
                 style: {
                     weight: 1,
                     fillOpacity: 1.0,
                     color: 'grey'
                 },
                 indicator: "prev",
-                detail: 5
+                detail: 0
             }
         },
         created() {
-            this.features.forEach((feature: Feature) => {
-                const areas = feature.properties!!["area_id"].split(".");
-                const adminLevel = areas.length;
-                this.featuresByLevel[adminLevel].push(feature);
-            });
+            this.detail = this.maxLevel
         },
         mounted() {
             this.updateBounds();
