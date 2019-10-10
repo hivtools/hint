@@ -59,7 +59,7 @@ describe("FilteredData getters", () => {
             filteredData: testState
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null) as any;
+        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
         expect(filters.regions).toStrictEqual(testGetters.regionOptions);
         expect(filters.sex).toStrictEqual(sexOptions);
@@ -85,7 +85,7 @@ describe("FilteredData getters", () => {
             filteredData: testState
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null) as any;
+        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
         expect(filters.regions).toStrictEqual(testGetters.regionOptions);
         expect(filters.sex).toStrictEqual(sexOptions);
@@ -110,7 +110,7 @@ describe("FilteredData getters", () => {
             filteredData: testState
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null) as any;
+        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
         expect(filters.regions).toStrictEqual(testGetters.regionOptions);
         expect(filters.sex).toBeUndefined();
@@ -137,7 +137,7 @@ describe("FilteredData getters", () => {
             filteredData: testState
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null) as any;
+        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
         expect(filters.regions).toStrictEqual(testGetters.regionOptions);
         expect(filters.sex).toStrictEqual(sexOptions);
@@ -152,7 +152,7 @@ describe("FilteredData getters", () => {
         const testState = testStore.state as FilteredDataState;
         const testRootState = mockRootState();
 
-        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState, null)!;
+        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState)!;
         expect(filters).toBeNull();
     });
 
@@ -197,7 +197,7 @@ describe("FilteredData getters", () => {
             filteredData: testState
         });
 
-        const filters = getters.regionOptions(testState, null, testRootState) as NestedFilterOption[];
+        const filters = getters.regionOptions(testState, null, testRootState);
         expect(filters).toStrictEqual(testFilters.options); //We skip top level and use its options as our region array
 
     });

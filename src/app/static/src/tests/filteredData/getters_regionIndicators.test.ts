@@ -75,7 +75,7 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState);
 
         const expected = {
 
@@ -159,7 +159,7 @@ describe("FilteredData regionIndicator getter", () => {
             filteredData: testState
         });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState);
 
         const expected = {
             "area1":
@@ -210,7 +210,7 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState);
 
         const expected = {
             "area1": {
@@ -274,7 +274,7 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState);
 
         const expected = {
             "area1": {
@@ -324,7 +324,7 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState);
 
         const expected = {
 
@@ -382,7 +382,7 @@ describe("FilteredData regionIndicator getter", () => {
             filteredData: testState
         });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState);
 
         const expected = {
             "area1": {
@@ -439,7 +439,7 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState);
 
         const expected = {
             "area1": {
@@ -517,7 +517,7 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState);
 
         const expected = {
             "area1": {
@@ -615,7 +615,7 @@ describe("FilteredData regionIndicator getter", () => {
 
         };
 
-        const regionIndicators = getters.regionIndicators(testState, testRegionGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testRegionGetters, testRootState);
 
         const expected = {
             "area1":
@@ -653,7 +653,7 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState);
 
         expect(regionIndicators).toStrictEqual({});
     });
@@ -700,7 +700,7 @@ describe("FilteredData regionIndicator getter", () => {
                     )}),
             filteredData: testState});
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState);
 
         expect(regionIndicators).toStrictEqual({});
     });
