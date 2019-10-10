@@ -6,19 +6,9 @@
     <link rel="stylesheet" href="/public/css/style.css"/>
 </head>
 <body>
-<header class="mb-5">
-    <nav class="navbar navbar-dark bg-secondary">
-        <div class="container-fluid">
-            <div class="navbar-header text-light">
-                ${title}
-            </div>
-            <div class="logout">
-                <a href="/logout">Logout</a>
-            </div>
-        </div>
-    </nav>
-</header>
 <div id="app">
+    <user-header :title="${title}"></user-header>
+    <stepper></stepper>
 </div>
 <script src="/public/js/app.js"></script>
 </body>

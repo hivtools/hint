@@ -16,7 +16,25 @@
     import Treeselect from '@riophae/vue-treeselect';
     import {NestedFilterOption} from "../generated";
 
-    export default Vue.extend({
+    interface Methods {
+        treeselectNormalizer: (anyNode: any) => void;
+        select: (value: string[]) => void
+    }
+
+    interface Computed {
+        treeselectValue: string[] | string | null
+        placeholder: string
+    }
+
+    interface Props {
+        multiple: boolean,
+        label: string,
+        disabled: boolean,
+        options: any[],
+        value: string[] | string
+    }
+
+    export default Vue.extend<{}, Methods, Computed, Props>({
         name: "FilterSelect",
         props: {
             multiple: Boolean,
