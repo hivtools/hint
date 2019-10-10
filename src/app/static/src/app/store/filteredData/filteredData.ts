@@ -1,12 +1,12 @@
-import { Module } from 'vuex';
-import { actions } from './actions';
-import { mutations } from './mutations';
-import { getters } from './getters';
-import { RootState} from "../../root";
+import {Module} from 'vuex';
+import {actions} from './actions';
+import {mutations} from './mutations';
+import {getters} from './getters';
+import {RootState} from "../../root";
 import {FilterOption, NestedFilterOption} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 
-export enum DataType { ANC, Program, Survey, Output }
+export enum DataType { ANC = "anc", Program = "programme", Survey = "survey", Output = "output"}
 export enum FilterType { Sex, Age, Region, Survey, Quarter }
 
 export interface SelectedFilters {
@@ -29,7 +29,7 @@ export interface FilteredDataState {
     selectedDataType: DataType | null
     selectedFilters: SelectedFilters
     selectedChoroplethFilters: SelectedChoroplethFilters
-    regionIndicators: {[k: string]: any};
+    regionIndicators: { [k: string]: any };
 }
 
 export const initialSelectedFilters: SelectedFilters = {
@@ -49,10 +49,10 @@ export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
 };
 
 export const initialFilteredDataState: FilteredDataState = {
-   selectedDataType: null,
-   selectedFilters: initialSelectedFilters,
-   selectedChoroplethFilters: initialSelectedChoroplethFilters,
-   regionIndicators: {}
+    selectedDataType: null,
+    selectedFilters: initialSelectedFilters,
+    selectedChoroplethFilters: initialSelectedChoroplethFilters,
+    regionIndicators: {}
 };
 
 const namespaced: boolean = true;

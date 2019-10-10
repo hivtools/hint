@@ -172,48 +172,29 @@ export interface PjnzResponseData {
   country: string;
 }
 export interface PlottingMetadataResponse {
-  survey: PrevalenceAndArtCoverageChoropleth;
-  anc: PrevalenceAndArtCoverageChoropleth;
-  programme: CurrentArtChoropleth;
-  output: PrevalenceAndArtCoverageChoropleth;
+  survey: Choropleth;
+  anc: Choropleth;
+  programme: Choropleth;
+  output: Choropleth;
 }
-export interface PrevalenceAndArtCoverageChoropleth {
+
+export interface Indicator {
+  value_column: string;
+  indicator_column?: string;
+  indicator_value?: string;
+  name: string;
+  id: string;
+  min: number;
+  max: number;
+  colour: string;
+  invert_scale: boolean;
+}
+export interface Choropleth {
   choropleth?: {
-    indicators?: PrevalenceAndArtCoverageIndicators;
-    [k: string]: any;
+    indicators?: Indicator[];
   };
-  [k: string]: any;
 }
-export interface PrevalenceAndArtCoverageIndicators {
-  prevalence?: {
-    value_column: string;
-    indicator_column?: string;
-    indicator_value?: string;
-    name: string;
-    min: number;
-    max: number;
-    colour: string;
-    invert_scale: boolean;
-  };
-  art_coverage?: {
-    value_column: string;
-    indicator_column?: string;
-    indicator_value?: string;
-    name: string;
-    min: number;
-    max: number;
-    colour: string;
-    invert_scale: boolean;
-  };
-  [k: string]: any;
-}
-export interface CurrentArtChoropleth {
-  choropleth?: {
-    indicators?: CurrentArtIndicator;
-    [k: string]: any;
-  };
-  [k: string]: any;
-}
+
 export interface CurrentArtIndicator {
   current_art?: {
     value_column: string;
@@ -337,7 +318,6 @@ export interface GeoJSONObject {
   features: {
     [k: string]: any;
   }[];
-  [k: string]: any;
 }
 export interface PopulationResponse {
   filename: string;
