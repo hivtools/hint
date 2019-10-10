@@ -33,7 +33,7 @@ const namespaced: boolean = true;
 
 export const surveyAndProgram: Module<SurveyAndProgramDataState, RootState> = {
     namespaced,
-    state: initialSurveyAndProgramDataState,
+    state: {...initialSurveyAndProgramDataState},
     getters: surveyAndProgramGetters,
     actions,
     mutations

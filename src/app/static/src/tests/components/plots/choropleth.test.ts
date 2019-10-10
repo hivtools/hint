@@ -115,7 +115,8 @@ describe("Choropleth component", () => {
                                 regions: [{id: "MWI.1.1.1", name: "Test Region"}],
                                 sex: null,
                                 age: null,
-                                survey: null
+                                survey: null,
+                                quarter: null
                             },
                             ...filteredDataProps
                         }),
@@ -401,7 +402,8 @@ describe("Choropleth component", () => {
                 regions: [{id: "MWI.1.1.1.1", name: "area1"}, {id: "MWI.1.1.1.2", name: "area2"}],
                 sex: null,
                 age: null,
-                survey: null
+                survey: null,
+                quarter: null
             }
         });
 
@@ -418,7 +420,8 @@ describe("Choropleth component", () => {
                 regions: [],
                 sex: null,
                 age: null,
-                survey: null
+                survey: null,
+                quarter: null
             }
         });
         const wrapper = shallowMount(Choropleth, {store: testStore, localVue});

@@ -7,19 +7,21 @@ import {FilterOption, NestedFilterOption} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 
 export enum DataType { ANC, Program, Survey, Output }
-export enum FilterType { Sex, Age, Region, Survey }
+export enum FilterType { Sex, Age, Region, Survey, Quarter }
 
 export interface SelectedFilters {
     sex: FilterOption[],
     age: FilterOption[],
     region: FilterOption[],
-    surveys: FilterOption[]
+    surveys: FilterOption[],
+    quarter: FilterOption[]
 }
 
 export interface SelectedChoroplethFilters {
     sex: FilterOption | null,
     age: FilterOption | null,
     survey: FilterOption | null,
+    quarter: FilterOption | null,
     regions: NestedFilterOption[] | null
 }
 
@@ -34,14 +36,16 @@ export const initialSelectedFilters: SelectedFilters = {
     sex: [],
     age: [],
     region: [],
-    surveys: []
+    surveys: [],
+    quarter: []
 };
 
 export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
     sex: null,
     age: null,
     survey: null,
-    regions: null
+    regions: null,
+    quarter: null
 };
 
 export const initialFilteredDataState: FilteredDataState = {

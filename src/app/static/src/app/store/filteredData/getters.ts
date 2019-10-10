@@ -17,7 +17,7 @@ export const getters = {
                         ...sapState.anc.filters,
                         regions,
                         sex: undefined,
-                        surveys: undefined,
+                        surveys: undefined
                     } : null;
             case (DataType.Program):
                 return sapState.program ?
@@ -32,7 +32,8 @@ export const getters = {
                     {
                         ...sapState.survey.filters,
                         regions,
-                        sex: sexFilterOptions
+                        sex: sexFilterOptions,
+                        quarter: undefined
                     } : null;
             case (DataType.Output):
                 return rootState.modelRun.result ?
