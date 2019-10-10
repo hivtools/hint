@@ -97,7 +97,11 @@ describe("Choropleth component", () => {
                                 regions: {
                                     id: "MWI.1.1.1",
                                     name: "test country"
-                                }
+                                },
+                                level_labels: [
+                                    {id: 3, display: true, area_level_label: "Admin Level 3"},
+                                    {id: 4, display: true, area_level_label: "Admin Level 4"}
+                                ]
                             } as any
                         })
                     })
@@ -213,6 +217,25 @@ describe("Choropleth component", () => {
 
         const vm = wrapper.vm as any;
         expect(vm.prevEnabled).toBe(false);
+    });
+
+    it("calculates featuresByLevel", () => {
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+        const vm = wrapper.vm as any;
+
+        expect(vm.featuresByLevel).toStrictEqual(
+            {
+                3: [fakeFeatures[0]],
+                4: [fakeFeatures[1], fakeFeatures[2]]
+            }
+        );
+    });
+
+    it("sets initial detail to max level", () => {
+        const wrapper = shallowMount(Choropleth, {store, localVue});
+        const vm = wrapper.vm as any;
+
+        expect(vm.detail).toBe(4);
     });
 
     it("countryFeature gets top level region", () => {

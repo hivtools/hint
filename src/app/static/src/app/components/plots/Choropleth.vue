@@ -28,7 +28,6 @@
     import {NestedFilterOption} from "../../generated";
 
     interface Data {
-        //featuresByLevel: { [k: number]: any },
         style: any,
         indicator: Indicator;
         detail: number
