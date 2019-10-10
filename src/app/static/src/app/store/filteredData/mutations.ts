@@ -31,6 +31,9 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
             case (FilterType.Survey):
                 filters.surveys = value;
                 break;
+            case (FilterType.Quarter):
+                filters.quarter = value;
+                break;
         }
     },
     ChoroplethFilterUpdated(state: FilteredDataState, action: PayloadWithType<[FilterType, FilterOption | NestedFilterOption[]]>) {
@@ -45,6 +48,9 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
                 break;
             case (FilterType.Survey):
                 filters.survey = value as FilterOption;
+                break;
+            case (FilterType.Quarter):
+                filters.quarter = value as FilterOption;
                 break;
             case (FilterType.Region):
                 filters.regions = value as NestedFilterOption[];

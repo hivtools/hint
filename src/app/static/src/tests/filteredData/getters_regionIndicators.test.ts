@@ -63,6 +63,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
                     sex: {id: "both", name: "both"},
+                    quarter: {id: "1", name: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -146,6 +147,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
                     sex: {id: "both", name: "both"},
+                    quarter: {id: "1", name: "Jan - Mar  2019"}, //should be ignored
                     regions: null
                 }
             },
@@ -222,6 +224,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "both", name: "both"},
+                    quarter: {id: "1", name: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -234,6 +237,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area1",
                 current_art: 2,
                 age_group_id: "1",
+                quarter_id: 1,
                 sex: "both"
             },
             {
@@ -241,6 +245,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area2",
                 current_art: 3,
                 age_group_id: "1",
+                quarter_id: 1,
                 sex: "both"
             }
         ];
@@ -275,6 +280,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"}, //Should be ignored for this data type
                     sex: {id: "both", name: "both"},
+                    quarter:  {id: "1", name: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -287,6 +293,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area1",
                 current_art: 2,
                 age_group_id: "1",
+                quarter_id: 1,
                 sex: "both"
             },
             {
@@ -307,7 +314,15 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area4",
                 current_art: 5,
-            }
+            },
+            {
+                iso3: "MWI",
+                area_id: "area5",
+                current_art: 6,
+                age_group_id: "1",
+                quarter_id: 2,
+                sex: "both"
+            },
         ];
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
@@ -337,6 +352,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: null,
+                    quarter: {id: "1", name: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -350,14 +366,16 @@ describe("FilteredData regionIndicator getter", () => {
                 art_coverage: 0,
                 prevalence: 2,
 
-                age_group_id: 1
+                age_group_id: 1,
+                quarter_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 art_coverage: 4,
                 prevalence: 3,
-                age_group_id: 1
+                age_group_id: 1,
+                quarter_id: 1
             }
         ];
         const testRootState = mockRootState({
@@ -385,7 +403,7 @@ describe("FilteredData regionIndicator getter", () => {
         expect(regionIndicators).toStrictEqual(expected);
     });
 
-    it("does not filter regionIndicators for ANC by age or sex", () => {
+    it("filter regionIndicators for ANC", () => {
         const testStore:  Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
@@ -394,6 +412,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"}, //should be ignored
                     survey: null,
                     sex: {id: "male", name: "male"}, //should be ignored
+                    quarter: {id: "1", name: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -406,21 +425,32 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area1",
                 prevalence: 2,
                 art_coverage: 0,
-                age_group_id: 1
+                age_group_id: 1,
+                quarter_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 prevalence: 3,
                 art_coverage: 4,
-                age_group_id: 1
+                age_group_id: 1,
+                quarter_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
                 prevalence: 4,
                 art_coverage: 5,
-                age_group_id: 2
+                age_group_id: 2,
+                quarter_id: 1
+            },
+            {
+                iso3: "MWI",
+                area_id: "area4",
+                prevalence: 4,
+                art_coverage: 6,
+                age_group_id: 1,
+                quarter_id: 2
             }
         ];
         const testRootState = mockRootState({
@@ -461,6 +491,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "both", name: "both"},
+                    quarter: {id: "1", name: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -515,6 +546,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: {id: "both", name: "both"},
+                    quarter: {id: "1", name: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -593,6 +625,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"},
                     sex: {id: "both", name: "both"},
+                    quarter: {id: "1", name: "Jan - Mar  2019"},
                     regions: [{
                         id: "area1",
                         name: "Area 1",
@@ -694,6 +727,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: null,
+                    quarter: null,
                     regions: null
                 }
             },
@@ -721,6 +755,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"},
                     survey: null,
                     sex: null,
+                    quarter: null,
                     regions: null
                 }
             },

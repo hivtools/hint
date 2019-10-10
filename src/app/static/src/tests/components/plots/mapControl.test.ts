@@ -6,6 +6,7 @@ import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../..
 import {DataType} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
 import Vue from "vue";
+import {store} from "../../../app/main";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -27,6 +28,21 @@ describe("Map control component", () => {
 
         return new Vuex.Store({
             modules: {
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState(
+                        {
+                            shape: mockShapeResponse({
+                                filters: {
+                                    level_labels: [
+                                        {id: 4, display: true, area_level_label: "Admin Level 4"},
+                                        {id: 5, display: true, area_level_label: "Admin Level 5"}
+                                    ]
+                                }
+                            })
+                        }
+                    )
+                },
                 filteredData: {
                     namespaced: true,
                     state: mockFilteredDataState({selectedDataType: selectedDataType})
@@ -43,6 +59,18 @@ describe("Map control component", () => {
             }
         });
     };
+
+    it("renders tree selects with expected properties", () => {
+        const wrapper = shallowMount(MapControl, {store, localVue});
+
+        expect(wrapper.findAll(TreeSelect).at(0).props("searchable")).toBe(false);
+        expect(wrapper.findAll(TreeSelect).at(0).props("multiple")).toBe(false);
+        expect(wrapper.findAll(TreeSelect).at(0).props("clearable")).toBe(false);
+
+        expect(wrapper.findAll(TreeSelect).at(1).props("searchable")).toBe(false);
+        expect(wrapper.findAll(TreeSelect).at(1).props("multiple")).toBe(false);
+        expect(wrapper.findAll(TreeSelect).at(1).props("clearable")).toBe(false);
+    });
 
     it("renders indicator options", () => {
         const store = getStore();
@@ -102,12 +130,8 @@ describe("Map control component", () => {
         const wrapper = shallowMount(MapControl, {store, localVue});
 
         expect(wrapper.findAll(TreeSelect).at(1).props("options"))
-            .toStrictEqual([{id: 1, label: "Country"},
-                {id: 2, label: "Admin level 2"},
-                {id: 3, label: "Admin level 3"},
-                {id: 4, label: "Admin level 4"},
-                {id: 5, label: "Admin level 5"},
-                {id: 6, label: "Admin level 6"}]);
+            .toStrictEqual([{id: 4, label: "Admin Level 4"},
+                             {id: 5, label: "Admin Level 5"}]);
     });
 
     it("emits indicator-changed event with indicator", () => {

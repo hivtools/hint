@@ -18,6 +18,8 @@ describe("FilteredData mutations", () => {
                 return selectedFilters.sex;
             case (FilterType.Survey):
                 return selectedFilters.surveys;
+            case (FilterType.Quarter):
+                return selectedFilters.quarter;
         }
     };
 
@@ -31,6 +33,8 @@ describe("FilteredData mutations", () => {
                 return selectedFilters.survey;
             case (FilterType.Region):
                 return selectedFilters.regions;
+            case (FilterType.Quarter):
+                return selectedFilters.quarter;
         }
     };
 
@@ -83,6 +87,10 @@ describe("FilteredData mutations", () => {
         testFilterUpdated(FilterType.Survey);
     });
 
+    it("adds and removes quarter filters", () => {
+        testFilterUpdated(FilterType.Quarter);
+    });
+
     it("updates age choropleth filter", () => {
         testChoroplethFilterUpdated(FilterType.Age);
     });
@@ -94,5 +102,8 @@ describe("FilteredData mutations", () => {
     });
     it("updates region choropleth filter", () => {
         testChoroplethFilterUpdated(FilterType.Region);
+    });
+    it("updates quarter choropleth filter", () => {
+        testChoroplethFilterUpdated(FilterType.Quarter);
     });
 });
