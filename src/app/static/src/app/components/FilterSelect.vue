@@ -1,11 +1,12 @@
 <template>
     <div>
-        <label class="font-weight-bold">{{label}}</label>
+        <label :class="'font-weight-bold' + (disabled ? ' disabled-label' : '')">{{label}}</label>
         <treeselect id="survey-filters" :multiple=multiple
                     :clearable="false"
                     :options=options
-                    :value=value
+                    :value=treeselectValue
                     :disabled=disabled
+                    :placeholder=placeholder
                     :normalizer="treeselectNormalizer"
                     @input="select"></treeselect>
     </div>
@@ -43,6 +44,14 @@
             options: Array,
             value: [Array, String]
         },
+        computed: {
+            treeselectValue() {
+                return this.disabled ? null : this.value;
+            },
+            placeholder() {
+                return this.disabled ? "Not used" : "Select...";
+            }
+        },
         methods: {
             treeselectNormalizer(anyNode: any) {
                 //In the nested case, this gets called for the child nodes we add in below - just return these unchanged
@@ -59,8 +68,10 @@
                 return result;
             },
             select(value: string[]) {
-                this.$emit("select", value);
-            }
+                if (!this.disabled) {
+                    this.$emit("select", value);
+                }
+            },
         },
         components: {Treeselect}
     });
