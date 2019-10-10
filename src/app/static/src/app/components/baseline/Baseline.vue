@@ -54,7 +54,7 @@
                 pjnz: state => ({
                     valid: !!state.country,
                     error: state.pjnzError,
-                    existingFileName: state.pjnzFilename
+                    existingFileName: state.pjnz && state.pjnz.filename
                 } as PartialFileUploadProps),
                 shape: state => ({
                     valid: state.shape != null,

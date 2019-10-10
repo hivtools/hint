@@ -7,7 +7,7 @@
 </head>
 <body>
 <div id="app">
-    <user-header :title="${title}"></user-header>
+    <user-header title="${title}"></user-header>
     <stepper></stepper>
 </div>
 <script src="/public/js/app.js"></script>
