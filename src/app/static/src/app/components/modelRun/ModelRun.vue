@@ -1,5 +1,6 @@
 <template>
     <div>
+        <custom-form id="model-run-options"></custom-form>
         <button class="btn btn-red btn-lg"
                 v-on:click="runModelWithParams"
                 :disabled="running">Run model
@@ -20,6 +21,7 @@
     import {ModelRunState, ModelRunStatus} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
+    import CustomForm from "../forms/CustomForm.vue";
 
     const namespace: string = 'modelRun';
 
@@ -62,7 +64,8 @@
         },
         components: {
             Modal,
-            Tick
+            Tick,
+            CustomForm
         }
     });
 </script>

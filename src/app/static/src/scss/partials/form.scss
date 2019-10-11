@@ -1,0 +1,10 @@
+.custom-form {
+  select.form-control {
+    height: calc(1.5em + 0.75rem + 2px) !important;
+  }
+
+  .group-label {
+    position: absolute;
+    bottom: 0;
+  }
+}
