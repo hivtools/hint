@@ -61,6 +61,11 @@ describe("user header", () => {
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
     });
 
+    it("contains logout link", () => {
+        const wrapper = shallowMount(UserHeader);
+        expect(wrapper.find("a[href='/logout']")).toBeDefined();
+    });
+
     it("downloads file", () => {
         const wrapper = shallowMount(UserHeader,
             {

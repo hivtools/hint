@@ -41,7 +41,7 @@ class HintApplicationTests(@Autowired val restTemplate: TestRestTemplate) : Inte
         authorize()
         val rootEntity = restTemplate.getForEntity<String>("/")
         assertThat(rootEntity.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(rootEntity.body!!).contains("<a href=\"/logout\">Logout</a>")
+        assertThat(rootEntity.body!!).doesNotContain("<title>Login</title>")
     }
 
     @Test
