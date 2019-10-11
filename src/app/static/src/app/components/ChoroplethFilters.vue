@@ -115,7 +115,7 @@
             buildViewFiltersForType(availableFilterOptions: FilterOption[],
                                     selectedFilterOption?: FilterOption) {
                 return {
-                    available: availableFilterOptions,
+                    available: availableFilterOptions ? availableFilterOptions : [],
                     selected: selectedFilterOption ? selectedFilterOption.id : null,
                     disabled: availableFilterOptions == undefined
                 }
