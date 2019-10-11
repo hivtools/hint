@@ -3,7 +3,6 @@ import {Module} from "vuex";
 import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 import {RootState} from "../../app/root";
 import {
-    mockAgeFilters,
     mockAncResponse,
     mockBaselineState,
     mockProgramResponse,
@@ -15,9 +14,8 @@ import {
     mockPlottingMetadataResponse,
     mockIndicators,
     mockFilteredDataState,
-    mockModelRunState, mockModelResultResponse
+    mockModelRunState, mockModelResultResponse, mockProgramFilters
 } from "../mocks";
-import {NestedFilterOption} from "../../app/generated";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
 import {getUnfilteredData} from "../../app/store/filteredData/utils";
 
@@ -57,7 +55,7 @@ describe("FilteredData getters", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = mockAgeFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
+        const testFilters = mockProgramFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
                 {
@@ -110,7 +108,7 @@ describe("FilteredData getters", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = mockAgeFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
+        const testFilters = mockProgramFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
                 {
@@ -536,25 +534,6 @@ describe("FilteredData getters", () => {
             "R3": testRegions[0].options[1],
             "R4": testRegions[0].options[1].options!![0]
         };
-
-        expect(flattenedRegionOptions).toStrictEqual(expected);
-    });
-
-    it("gets flattened selected region options when region filter is null", () => {
-        const testStore: Module<FilteredDataState, RootState> = {
-            state: {
-                ...initialFilteredDataState
-            }
-        };
-        const testState = testStore.state as FilteredDataState;
-        const filterGetters = {
-            ...testGetters,
-            regionOptions: null
-        };
-
-        const flattenedRegionOptions = getters.flattenedRegionOptions(testState, filterGetters);
-
-        const expected = {};
 
         expect(flattenedRegionOptions).toStrictEqual(expected);
     });

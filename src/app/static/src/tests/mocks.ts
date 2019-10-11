@@ -1,25 +1,24 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {BaselineState, initialBaselineState} from "../app/store/baseline/baseline";
-import {PasswordState, initialPasswordState} from "../app/store/password/password";
+import {initialPasswordState, PasswordState} from "../app/store/password/password";
 import {
     initialSurveyAndProgramDataState,
     SurveyAndProgramDataState
 } from "../app/store/surveyAndProgram/surveyAndProgram";
 
 import {
-    PjnzResponse,
-    ShapeResponse,
-    Response,
-    ProgrammeResponse,
-    SurveyResponse,
-    AgeFilters,
-    SurveyFilters,
     AncResponse,
-    PopulationResponse,
+    ModelResultResponse,
     ModelStatusResponse,
+    PjnzResponse,
     PlottingMetadataResponse,
-    PrevalenceAndArtCoverageIndicators, ModelResultResponse
+    PopulationResponse, ProgrammeFilters,
+    ProgrammeResponse,
+    Response,
+    ShapeResponse,
+    SurveyFilters,
+    SurveyResponse
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
@@ -124,6 +123,7 @@ export const mockFailure = (errorMessage: string): Response => {
 export const mockPJNZResponse = (props: Partial<PjnzResponse> = {}): PjnzResponse => {
     return {
         data: {country: "Malawi"},
+        hash: "1234.csv",
         filename: "test.pjnz",
         type: "pjnz",
         ...props
@@ -137,6 +137,7 @@ export const mockShapeResponse = (props: Partial<ShapeResponse> = {}): ShapeResp
             "features": []
         },
         type: "shape",
+        hash: "1234.csv",
         filename: "test.csv",
         filters: {
             level_labels: [{id: 1, area_level_label: "Country", display: true}],
@@ -150,6 +151,7 @@ export const mockSurveyResponse = (props: Partial<SurveyResponse> = {}): SurveyR
     return {
         type: "survey",
         filename: "test.csv",
+        hash: "1234.csv",
         data: [],
         filters: {
             "age": [],
@@ -164,7 +166,8 @@ export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): Pro
         type: "programme",
         filename: "test.csv",
         data: [],
-        filters: {"age": []},
+        hash: "1234.csv",
+        filters: {"age": [], "quarter": []},
         ...props
     }
 };
@@ -173,15 +176,17 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
     return {
         type: "anc",
         filename: "test.csv",
+        hash: "1234.csv",
         data: [],
-        filters: {"age": []},
+        filters: {"quarter": []},
         ...props
     }
 };
 
-export const mockAgeFilters = (props: Partial<AgeFilters> = {}): AgeFilters => {
+export const mockProgramFilters = (props: Partial<ProgrammeFilters> = {}): ProgrammeFilters => {
     return {
-       age: [],
+        age: [],
+        quarter: [],
         ...props
     }
 };
@@ -198,6 +203,7 @@ export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}):
     return {
         data: null,
         type: "population",
+        hash: "1234.csv",
         filename: "test.csv",
         ...props
     }
@@ -225,17 +231,17 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
 export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResponse> = {}): PlottingMetadataResponse => {
     return {
         anc: {
-            choropleth:  {
+            choropleth: {
                 indicators: {}
             }
         },
         output: {
-            choropleth:  {
+            choropleth: {
                 indicators: {}
             }
         },
         programme: {
-            choropleth:  {
+            choropleth: {
                 indicators: {}
             }
         },
@@ -270,5 +276,5 @@ export const mockIndicators = (props: Partial<Indicators>) => {
         colour: "",
         invert_scale: false,
         ...props
-     };
+    };
 };
