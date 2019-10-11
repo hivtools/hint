@@ -96,7 +96,7 @@ export const getters = {
 
         for (const row of data) {
 
-            if (getters.filterOut(row)) {
+            if (getters.excludeRow(row)) {
                 continue;
             }
 
@@ -146,7 +146,7 @@ export const getters = {
 
         return result;
     },
-    filterOut: function (state: FilteredDataState, getters: any): (row: any) => boolean {
+    excludeRow: function (state: FilteredDataState, getters: any): (row: any) => boolean {
         const dataType = state.selectedDataType;
         const selectedFilters = state.selectedChoroplethFilters;
         const selectedRegionFilters = getters.flattenedSelectedRegionFilters;

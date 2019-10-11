@@ -37,7 +37,7 @@ export function testGetters(state: FilteredDataState, regionFilters: any = {}) {
         }
     } as any;
 
-    self.filterOut = getters.filterOut(state, self);
+    self.excludeRow = getters.excludeRow(state, self);
     return self;
 }
 
