@@ -1,10 +1,11 @@
-import {CustomVue, Dictionary, mapGetters, mapState} from "vuex";
+import {CustomVue, mapGetters, mapState} from "vuex";
 import {NestedFilterOption} from "./generated";
+import {Dict} from "./types";
 
 export type ComputedWithType<T> = () => T;
 
 export const mapStateProp = <S, T>(namespace: string, func: (s: S) => T): ComputedWithType<T> => {
-    return (mapState<S>(namespace, {prop: (state) => func(state)}) as Dictionary<ComputedWithType<T>>)["prop"]
+    return (mapState<S>(namespace, {prop: (state) => func(state)}) as Dict<ComputedWithType<T>>)["prop"]
 };
 
 export const mapStatePropByName = <T>(namespace: string, name: string): ComputedWithType<T> => {
@@ -12,7 +13,7 @@ export const mapStatePropByName = <T>(namespace: string, name: string): Computed
 };
 
 export const mapStateProps = <S, K extends string>(namespace: string,
-                                                  map: Dictionary<(this: CustomVue, state: S) => any>) => {
+                                                  map: Dict<(this: CustomVue, state: S) => any>) => {
     type R = { [key in K]: any }
     return mapState<S>(namespace, map) as R
 };
