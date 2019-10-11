@@ -32,8 +32,12 @@
                     const step = (max - min) / 5;
                     return [0, 1, 2, 3, 4, 5].map((i) => {
                         const val = Math.round((min + (i * step)) * 100) / 100;
+                        let valAsProportion = (val - min) / (max - min);
+                        if (this.metadata.invert_scale) {
+                            valAsProportion = 1 - valAsProportion;
+                        }
                         return {
-                            val, style: {background: colorFunction((val - min) / (max - min))}
+                            val, style: {background: colorFunction(valAsProportion)}
                         }
                     });
                 }

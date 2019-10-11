@@ -11,7 +11,6 @@
                      @indicator-changed="onIndicatorChange"
                      @detail-changed="onDetailChange"
                      :indicator="indicator"></map-control>
-        <!-- TODO: Invert scale -->
         <map-legend :metadata="indicatorMetadata"></map-legend>
     </l-map>
 </template>

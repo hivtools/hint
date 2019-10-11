@@ -198,9 +198,11 @@ const getColor = (value: number, metadata: IndicatorMetadata) => {
         max - (min || 0) :
         1;
 
-    const colorValue = value / rangeNum;
+    let colorValue = (value - min) / rangeNum;
 
-    //TODO: invert scale
+    if (metadata.invert_scale) {
+        colorValue = 1 - colorValue;
+    }
     return colorFunction(colorValue);
 };
 
