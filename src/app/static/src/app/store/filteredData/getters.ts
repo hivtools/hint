@@ -75,6 +75,29 @@ export const getters = {
 
         const flattenedRegions = getters.flattenedSelectedRegionFilters;
 
+        //TODO: output data doesn't currently conform to plotting metadata, so for now we fake the metadata
+        //Use the real metadata for all other data types
+        let indicatorsMeta = state.selectedDataType == DataType.Output ?
+            {
+                prevalence: {
+                    value_column: "mean",
+                    indicator_column: "indicator_id",
+                    indicator_value: "2"
+                }
+            } :
+            rootGetters['metadata/choroplethIndicatorsMetadata'];
+
+        //TODO: ...and here's a workaround for a small bug in the current Survey metadata - 'art' for
+        //indicator value, should be 'artcov'
+        if (state.selectedDataType == DataType.Survey) {
+            indicatorsMeta = {
+                ...indicatorsMeta
+            };
+            indicatorsMeta.art_coverage.indicator_value = "artcov";
+        }
+
+        const indicators = Object.keys(indicatorsMeta);
+
         for(const d of data) {
             const row = d as any;
 
@@ -87,65 +110,48 @@ export const getters = {
 
             const areaId = row.area_id;
 
-            //TODO: This will change when we have a metadata endpoint telling us which column to use as value for each
-            //input data type and indicator
-            //We will also have to deal will potential multiple values per row
-            let indicator: string = "";
-            let valueColumn: string = "";
-            switch (state.selectedDataType) {
-                case (DataType.Survey):
-                    indicator = row["indicator"];
-                    valueColumn = "est";
-                    break;
-                case (DataType.Program):
-                    indicator = "artcov";
-                    valueColumn = "current_art";
-                    break;
-                case (DataType.ANC):
-                    //TODO: once using metadata, we need to allow multiple values per row, as in the case on ANC data
-                    //which contains both prevalence and art data in each row (wide format), unlike survey, which
-                    //is int long format, with an indicator column to show which indicator the value each row provides
-                    indicator = "prev";
-                    valueColumn = "prevalence";
-                    break;
-                case (DataType.Output):
-                    //TODO: output data doesn't currently conform to plotting metadata - use that when it does
-                    indicator = "prev";
-                    valueColumn = "mean";
-                    break;
-            }
+            for (const indicator of indicators) {
 
-            const value = row[valueColumn];
+                const metadata = indicatorsMeta[indicator];
 
-            if (!result[areaId]) {
-                result[areaId] = {};
-            }
+                if (metadata.indicator_column && metadata.indicator_value != row[metadata.indicator_column]) {
+                    //This data is in long format, and the indicator column's value does not match that for this indicator
+                    continue;
+                }
 
-            const indicators = result[areaId];
-            switch (indicator) {
-                case("prev"):
-                    indicators.prev = {value: value, color: ""};
+                if (row[metadata.value_column] === undefined) {
+                    //No value for this indicator in this row
+                    continue;
+                }
 
-                    break;
-                case("artcov"):
-                    indicators.art = {value: value, color: ""};
+                const value = row[metadata.value_column];
 
-                    break;
+                if (!result[areaId]) {
+                    result[areaId] = {};
+                }
 
-                //TODO: Also expect recent and vls (viral load suppression) values for survey, need to add these as options
+                //TODO: Rather than hardcoded 'prev' and 'art', emit data with the indicator names (keys) from the metadata
+                //and make the plotting components agnostic about art/prev/anything else
+                const regionValues = result[areaId];
+                switch (indicator) {
+                    case("prevalence"):
+                        regionValues.prev = {
+                            value: value,
+                            color: getColor(value, getters.choroplethRanges.prev, getters.colorFunctions.prev)
+                        };
+                        break;
+                    case("art_coverage"):
+                    case("current_art"):
+                        regionValues.art = {
+                            value: value,
+                            color: getColor(value, getters.choroplethRanges.art, getters.colorFunctions.art)
+                        };
+                        break;
+                }
+
             }
         }
-        //Now add the colours - we do this in a second step now, because we are calculating the range as we add the values
-        //but once the range comes from the API, we can calculate the colours as we populate the values
-        for (const region in result) {
-            const indicators = result[region];
-            if (indicators.art) {
-                indicators.art.color = getColor(indicators.art, getters.choroplethRanges.art, getters.colorFunctions.art);
-            }
-            if (indicators.prev) {
-                indicators.prev.color = getColor(indicators.prev, getters.choroplethRanges.prev, getters.colorFunctions.prev);
-            }
-        }
+
         return result;
     },
     flattenedRegionOptions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
@@ -161,11 +167,15 @@ export const getters = {
         const metadata = rootState.metadata.plottingMetadata!!;
         switch(state.selectedDataType) {
             case (DataType.ANC):
-                const ancRange = metadata.anc.choropleth!!.indicators!!.prevalence!!;
+                const ancIndicators = metadata.anc.choropleth!!.indicators!;
                 return {
                     prev: {
-                        min: ancRange.min,
-                        max: ancRange.max,
+                        min: ancIndicators.prevalence!!.min,
+                        max: ancIndicators.prevalence!!.max,
+                    },
+                    art: {
+                        min: ancIndicators.art_coverage!!.min,
+                        max: ancIndicators.art_coverage!!.max
                     }
                 };
             case (DataType.Program):
@@ -177,15 +187,15 @@ export const getters = {
                     }
                 };
             case (DataType.Survey):
-                const indicators = metadata.survey.choropleth!!.indicators!!;
+                const survIndicators = metadata.survey.choropleth!!.indicators!!;
                 return {
                     prev: {
-                        min: indicators.prevalence!!.min,
-                        max: indicators.prevalence!!.max
+                        min: survIndicators.prevalence!!.min,
+                        max: survIndicators.prevalence!!.max
                     },
                     art: {
-                        min: indicators.art_coverage!!.min,
-                        max: indicators.art_coverage!!.max
+                        min: survIndicators.art_coverage!!.min,
+                        max: survIndicators.art_coverage!!.max
                     }
                 };
             case (DataType.Output):
@@ -226,12 +236,12 @@ const flattenOption = (filterOption: NestedFilterOption) => {
     return result;
 };
 
-export const getColor = (data: IndicatorValues, range: IndicatorRange, colorFunction: (t: number) => string) => {
+const getColor = (value: number, range: IndicatorRange, colorFunction: (t: number) => string) => {
     let rangeNum = (range.max  && (range.max != range.min)) ? //Avoid dividing by zero if only one value...
         range.max - (range.min || 0) :
         1;
 
-    const colorValue = data!.value / rangeNum;
+    const colorValue = value / rangeNum;
 
     return colorFunction(colorValue);
 };
@@ -270,11 +280,6 @@ const includeRowForSelectedChoroplethFilters = (row: any,
     }
 
     if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter!.id) {
-        return false;
-    }
-
-    //TODO: deal with all indicators in output
-    if (dataType == DataType.Output && row.indicator_id != 2) { //prevalence
         return false;
     }
 

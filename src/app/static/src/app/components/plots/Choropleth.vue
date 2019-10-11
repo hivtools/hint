@@ -95,7 +95,7 @@
                 return this.selectedDataType != DataType.Program;
             },
             artEnabled: function() {
-                return this.selectedDataType == DataType.Survey || this.selectedDataType == DataType.Program;
+                return this.selectedDataType in [DataType.Survey, DataType.Program, DataType.ANC];
             },
             options: function() {
                 const regionIndicators = this.regionIndicators;
