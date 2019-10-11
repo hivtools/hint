@@ -2,13 +2,14 @@
     <header class="mb-5">
         <nav class="navbar navbar-dark bg-secondary">
             <div class="container-fluid">
-                <div class="navbar-header text-light">
+                <div class="navbar-header">
                     {{title}}
                 </div>
                 <div class="dropdown">
                     <a href="#"
                        class="dropdown-toggle"
-                       v-on:click="toggle">
+                       v-on:click="toggle"
+                       v-on:blur="close">
                         File
                     </a>
                     <div class="dropdown-menu" :class="show && 'show'">
@@ -41,6 +42,7 @@
     interface Methods {
         toggle: () => void;
         save: () => void;
+        close: () => void;
     }
 
     export default Vue.extend<Data, Methods, any, "title" | "user">({
@@ -69,6 +71,9 @@
         methods: {
             toggle() {
                 this.show = !this.show;
+            },
+            close() {
+                this.show = false;
             },
             save() {
                 const state = serialiseState(this.$store.state);

@@ -46,18 +46,20 @@ describe("user header", () => {
         });
     };
 
-    it("opens dropdown", () => {
+    it("toggles dropdown on click", () => {
         const wrapper = shallowMount(UserHeader);
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        wrapper.find(".dropdown-toggle").trigger("click");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
     });
 
-    it("closes dropdown", () => {
+    it("closes dropdown on blur", () => {
         const wrapper = shallowMount(UserHeader);
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        wrapper.find(".dropdown-toggle").trigger("click");
+        wrapper.find(".dropdown-toggle").trigger("blur");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
     });
 
