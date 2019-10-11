@@ -37,7 +37,7 @@ docker run --rm -d \
   $HINTR_IMAGE
 
 # Need to give the database a little time to initialise before we can run the migration
-sleep 10s
+docker exec -it $DB wait-for-db
 docker run --rm --network=$NETWORK \
   $DB_MIGRATE_IMAGE \
   -url=jdbc:postgresql://$DB/hint

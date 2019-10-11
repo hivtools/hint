@@ -135,7 +135,7 @@
                 return this.selectedDataType != DataType.Program;
             },
             artEnabled() {
-                return this.selectedDataType == DataType.Survey || this.selectedDataType == DataType.Program;
+                return !!this.selectedDataType && (this.selectedDataType in [DataType.Survey, DataType.Program, DataType.ANC]);
             },
             options() {
                 const regionIndicators = this.regionIndicators;

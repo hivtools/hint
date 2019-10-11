@@ -307,6 +307,7 @@ describe("FilteredData getters", () => {
                     anc: {
                         choropleth: {
                             indicators: {
+                                art_coverage: mockIndicators({min: 0, max: 1}),
                                 prevalence: mockIndicators({min: 0.01, max: 0.5})
                             }
                         }
@@ -318,7 +319,8 @@ describe("FilteredData getters", () => {
         const result = getters.choroplethRanges(testState, null, testRootState)!!;
         expect(result.prev!!.min).toBe(0.01);
         expect(result.prev!!.max).toBe(0.5);
-        expect(result.art).toBe(undefined);
+        expect(result.art!!.min).toBe(0);
+        expect(result.art!!.max).toBe(1);
     });
 
     it("gets choropleth ranges when selectedDataType is Program", () => {

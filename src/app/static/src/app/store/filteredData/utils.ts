@@ -8,12 +8,12 @@ export const sexFilterOptions = [
     {id: "male", name: "male"}
 ];
 
-export const getColor = (data: IndicatorValues, range: IndicatorRange, colorFunction: (t: number) => string) => {
+export const getColor = (value: number, range: IndicatorRange, colorFunction: (t: number) => string) => {
     let rangeNum = (range.max && (range.max != range.min)) ? //Avoid dividing by zero if only one value...
         range.max - (range.min || 0) :
         1;
 
-    const colorValue = data!.value / rangeNum;
+    const colorValue = value / rangeNum;
 
     return colorFunction(colorValue);
 };
@@ -36,11 +36,6 @@ export const includeRowForSelectedChoroplethFilters = (row: any,
     }
 
     if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter!.id) {
-        return false;
-    }
-
-    //TODO: deal with all indicators in output
-    if (dataType == DataType.Output && row.indicator_id != 2) { //prevalence
         return false;
     }
 

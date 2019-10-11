@@ -125,14 +125,6 @@ describe("Map control component", () => {
             .toStrictEqual([{id: "prev", label: "Prevalence"}]);
     });
 
-    it("does not render ART for ANC data type", () => {
-        const store = getStore(null, DataType.ANC);
-        const wrapper = shallowMount(MapControl, {store, localVue});
-
-        expect(wrapper.findAll(TreeSelect).at(0).props("options"))
-            .toStrictEqual([{id: "prev", label: "Prevalence"}]);
-    });
-
     it("renders detail options", () => {
         const store = getStore();
         const wrapper = shallowMount(MapControl, {store, localVue});

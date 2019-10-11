@@ -185,7 +185,7 @@ describe("Choropleth component", () => {
                 },
                 filteredData: {
                     namespaced: true,
-                    state: mockFilteredDataState({selectedDataType: DataType.ANC}),
+                    state: mockFilteredDataState({selectedDataType: DataType.Output}),
                     getters: testGetters
                 }
             }
@@ -308,7 +308,7 @@ describe("Choropleth component", () => {
         const vm = wrapper.vm as any;
         vm.indicator = "art";
 
-        testStore.commit({type: "filteredData/SelectedDataTypeUpdated", payload: DataType.ANC});
+        testStore.commit({type: "filteredData/SelectedDataTypeUpdated", payload: DataType.Output});
         expect(vm.indicator).toBe("prev");
     });
 
