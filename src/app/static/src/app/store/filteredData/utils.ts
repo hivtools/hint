@@ -35,6 +35,10 @@ export const includeRowForSelectedChoroplethFilters = (row: any,
         return false;
     }
 
+    if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter!.id) {
+        return false;
+    }
+
     //TODO: deal with all indicators in output
     if (dataType == DataType.Output && row.indicator_id != 2) { //prevalence
         return false;
