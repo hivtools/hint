@@ -440,7 +440,6 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area3",
                 prevalence: 4,
-                art_coverage: 5,
                 age_group_id: 2,
                 quarter_id: 1
             },
@@ -474,8 +473,7 @@ describe("FilteredData regionIndicator getter", () => {
                 "prev": {value: 3, color: "rgb(0,3,0)"}
             },
             "area3": {
-                "art": {value: 5, color: "rgb(5,0,0)"},
-                "prev": {value: 4, color: "rgb(0,4,0)"}
+                "prev": {value: 4, color: "rgb(0,4,0)"} //No art value in this row
             }
         };
 
