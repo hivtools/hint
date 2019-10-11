@@ -11,7 +11,8 @@
                      @indicator-changed="onIndicatorChange"
                      @detail-changed="onDetailChange"
                      :indicator="indicator"></map-control>
-        <map-legend :colorFunction="selectedColorFunction" :max="range.max" :min="range.min"></map-legend>
+        <!-- TODO: Invert scale -->
+        <map-legend :metadata="indicatorMetadata"></map-legend>
     </l-map>
 </template>
 <script lang="ts">
@@ -22,14 +23,13 @@
     import {Layer, GeoJSON} from "leaflet";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
-    import {Indicator} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
-    import {NestedFilterOption} from "../../generated";
+    import {IndicatorMetadata, NestedFilterOption} from "../../generated";
 
     interface Data {
         style: any,
-        indicator: Indicator;
+        indicator: string | null;
         detail: number
     }
 
@@ -59,7 +59,8 @@
                 selectedDataType: state => state.selectedDataType,
                 selectedRegions: state => state.selectedChoroplethFilters.regions
             }),
-            ...mapGetters('filteredData', ["regionIndicators", "colorFunctions", "choroplethRanges"]),
+            ...mapGetters('filteredData', ["regionIndicators", "colorFunctions"]),
+            ...mapGetters('metadata', ['choroplethIndicators', 'choroplethIndicatorsMetadata']),
             maxLevel: function() {
                 const levelNums: number[] =  Object.keys(this.featuresByLevel).map(k => parseInt(k));
                 return Math.max(...levelNums);
@@ -85,17 +86,8 @@
             currentFeatures: function () {
                 return this.featuresByLevel[this.detail]
             },
-            selectedColorFunction: function () {
-                return this.colorFunctions[this.indicator];
-            },
-            range: function() {
-                return this.choroplethRanges[this.indicator];
-            },
-            prevEnabled: function() {
-                return this.selectedDataType != DataType.Program;
-            },
-            artEnabled: function() {
-                return this.selectedDataType in [DataType.Survey, DataType.Program, DataType.ANC];
+            indicatorMetadata: function() {
+                return this.choroplethIndicatorsMetadata[this.indicator];
             },
             options: function() {
                 const regionIndicators = this.regionIndicators;
@@ -133,12 +125,13 @@
                     fillOpacity: 1.0,
                     color: 'grey'
                 },
-                indicator: "prev",
+                indicator: "",
                 detail: 0
             }
         },
         created() {
-            this.detail = this.maxLevel
+            this.detail = this.maxLevel;
+            this.refreshIndicator();
         },
         mounted() {
             this.updateBounds();
@@ -171,16 +164,16 @@
                 if (map.fitBounds) {
                     map.fitBounds(this.selectedRegionFeatures.map((f: Feature) => new GeoJSON(f).getBounds()));
                 }
+            },
+            refreshIndicator: function() {
+                if (!this.indicator || this.choroplethIndicators.indexOf (this.indicator) < 0) {
+                    this.indicator = this.choroplethIndicators.length > 0 ? this.choroplethIndicators[0] : null;
+                }
             }
         },
         watch: {
             selectedDataType: function (newVal) {
-                //Update indicator to one which is enabled if required
-                if (!this.prevEnabled && this.artEnabled && this.indicator == "prev") {
-                    this.indicator = "art";
-                } else if (!this.artEnabled && this.prevEnabled && this.indicator == "art") {
-                    this.indicator = "prev";
-                }
+                this.refreshIndicator();
             },
             selectedRegionFeatures: function (newVal) {
                 this.updateBounds();

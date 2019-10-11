@@ -45,7 +45,11 @@ export const metadataGetters = {
                 break;
         }
 
-        return metadataForType && metadataForType.choropleth ? metadataForType.choropleth.indicators : null;
+        return  metadataForType && metadataForType.choropleth ? metadataForType.choropleth.indicators : null;
+    },
+    choroplethIndicators:(state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
+        const metadata = getters.choroplethIndicatorsMetadata;
+        return  metadata ? Object.keys(metadata) : [];
     }
 };
 

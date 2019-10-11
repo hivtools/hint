@@ -1,14 +1,19 @@
 import {RootState} from "../../root";
 import {DataType, FilteredDataState, SelectedChoroplethFilters, SelectedFilters} from "./filteredData";
-import {IndicatorRange, Indicators, IndicatorValues} from "../../types";
-import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
-import {FilterOption, NestedFilterOption} from "../../generated";
+
+import * as d3ScaleChromatic from "d3-scale-chromatic";
+import {IndicatorMetadata, NestedFilterOption} from "../../generated";
+import {IndicatorValues} from "../../types";
 
 const sexFilterOptions = [
     {id: "both", name: "both"},
     {id: "female", name: "female"},
     {id: "male", name: "male"}
 ];
+
+export const colorFunctionFromName = function(name: string) {
+    return (d3ScaleChromatic as any)[name];
+};
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
@@ -59,19 +64,13 @@ export const getters = {
                         shape.filters.regions &&
                         (shape.filters.regions as any).options ? (shape.filters.regions as any).options : null;
     },
-    colorFunctions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-      return {
-          art: interpolateWarm,
-          prev: interpolateCool
-      }
-    },
     regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
         const data = getUnfilteredData(state, rootState);
         if (!data || (state.selectedDataType == null)) {
             return {};
         }
 
-        const result = {} as { [k: string]: Indicators };
+        const result = {} as { [r: string]: {[i: string]: IndicatorValues} };
 
         const flattenedRegions = getters.flattenedSelectedRegionFilters;
 
@@ -79,10 +78,25 @@ export const getters = {
         //Use the real metadata for all other data types
         let indicatorsMeta = state.selectedDataType == DataType.Output ?
             {
+                art_coverage: {
+                    value_column: "mean",
+                    indicator_column: "indicator_id",
+                    indicator_value: "4",
+                    name: "ART coverage",
+                    min: 0,
+                    max: 1,
+                    colour: "interpolateViridis",
+                    invert_scale: false
+                },
                 prevalence: {
                     value_column: "mean",
                     indicator_column: "indicator_id",
-                    indicator_value: "2"
+                    indicator_value: "2",
+                    name: "Prevalence",
+                    min: 0,
+                    max: 0.5,
+                    colour: "interpolateMagma",
+                    invert_scale: true
                 }
             } :
             rootGetters['metadata/choroplethIndicatorsMetadata'];
@@ -133,7 +147,7 @@ export const getters = {
                 //TODO: Rather than hardcoded 'prev' and 'art', emit data with the indicator names (keys) from the metadata
                 //and make the plotting components agnostic about art/prev/anything else
                 const regionValues = result[areaId];
-                switch (indicator) {
+                /*switch (indicator) {
                     case("prevalence"):
                         regionValues.prev = {
                             value: value,
@@ -147,6 +161,11 @@ export const getters = {
                             color: getColor(value, getters.choroplethRanges.art, getters.colorFunctions.art)
                         };
                         break;
+                }*/
+
+                regionValues[indicator] = {
+                    value: value,
+                    color: getColor(value, metadata)
                 }
 
             }
@@ -162,54 +181,6 @@ export const getters = {
         const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
         return flattenOptions(selectedRegions);
     },
-    choroplethRanges:  function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-        //TODO: do not hardcode to art and prev, but take indicators from metadata too
-        const metadata = rootState.metadata.plottingMetadata!!;
-        switch(state.selectedDataType) {
-            case (DataType.ANC):
-                const ancIndicators = metadata.anc.choropleth!!.indicators!;
-                return {
-                    prev: {
-                        min: ancIndicators.prevalence!!.min,
-                        max: ancIndicators.prevalence!!.max,
-                    },
-                    art: {
-                        min: ancIndicators.art_coverage!!.min,
-                        max: ancIndicators.art_coverage!!.max
-                    }
-                };
-            case (DataType.Program):
-                const progRange = metadata.programme.choropleth!!.indicators!!.current_art!!;
-                return  {
-                    art: {
-                        min: progRange.min,
-                        max: progRange.max,
-                    }
-                };
-            case (DataType.Survey):
-                const survIndicators = metadata.survey.choropleth!!.indicators!!;
-                return {
-                    prev: {
-                        min: survIndicators.prevalence!!.min,
-                        max: survIndicators.prevalence!!.max
-                    },
-                    art: {
-                        min: survIndicators.art_coverage!!.min,
-                        max: survIndicators.art_coverage!!.max
-                    }
-                };
-            case (DataType.Output):
-                const outputRange = metadata.output.choropleth!!.indicators!!.prevalence!!;
-                return {
-                    prev: {
-                        min: outputRange.min,
-                        max: outputRange.max
-                    }
-                };
-            default:
-                return null;
-        }
-    }
 };
 
 const flattenOptions = (filterOptions: NestedFilterOption[]) => {
@@ -236,13 +207,18 @@ const flattenOption = (filterOption: NestedFilterOption) => {
     return result;
 };
 
-const getColor = (value: number, range: IndicatorRange, colorFunction: (t: number) => string) => {
-    let rangeNum = (range.max  && (range.max != range.min)) ? //Avoid dividing by zero if only one value...
-        range.max - (range.min || 0) :
+const getColor = (value: number, metadata: IndicatorMetadata) => {
+    const max = metadata.max;
+    const min = metadata.min;
+    const colorFunction = colorFunctionFromName(metadata.colour);
+
+    let rangeNum = (max  && (max != min)) ? //Avoid dividing by zero if only one value...
+        max - (min || 0) :
         1;
 
     const colorValue = value / rangeNum;
 
+    //TODO: invert scale
     return colorFunction(colorValue);
 };
 

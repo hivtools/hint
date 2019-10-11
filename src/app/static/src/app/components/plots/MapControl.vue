@@ -37,7 +37,6 @@
     import Vue from "vue";
     import TreeSelect from '@riophae/vue-treeselect'
     import {LControl} from 'vue2-leaflet';
-    import {Indicator} from "../../types";
     import {mapGetters, mapState} from "vuex";
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
     import {BaselineState} from "../../store/baseline/baseline";
@@ -66,9 +65,6 @@
             }
         },
         computed: {
-            ...mapState<FilteredDataState>("filteredData", {
-                selectedDataType: state => state.selectedDataType
-            }),
             ...mapState<BaselineState>("baseline", {
                 detailOptions: state => {
                     const levels = state.shape && state.shape.filters && state.shape.filters.level_labels ?
@@ -79,27 +75,12 @@
                     });
                 }
             }),
-            ...mapGetters(namespace, ["choroplethIndicatorsMetadata"]),
+            ...mapGetters(namespace, ["choroplethIndicators", "choroplethIndicatorsMetadata"]),
             indicatorOptions: function() {
-
-                const result = [];
-
-                if (this.choroplethIndicatorsMetadata) {
-                    //TODO: Remove harcoded knowledge of which indicators should exist, and just accept all indicators
-                    if (this.choroplethIndicatorsMetadata.prevalence) {
-                        result.push({id: "prev", label: this.choroplethIndicatorsMetadata.prevalence.name});
-                    }
-
-                    if (this.selectedDataType != DataType.Output) { //TODO: only accepting prevalence for output for now
-                        if (this.choroplethIndicatorsMetadata.art_coverage) {
-                            result.push({id: "art", label: this.choroplethIndicatorsMetadata.art_coverage.name});
-                        } else if (this.choroplethIndicatorsMetadata.current_art) {
-                            result.push({id: "art", label: this.choroplethIndicatorsMetadata.current_art.name});
-                        }
-                    }
-                }
-
-                return result;
+                const indicators = this.choroplethIndicators ? this.choroplethIndicators : [];//TODO: sort out types...
+                return (indicators as string[]).map(i => {
+                    return {id: i as string, label: this.choroplethIndicatorsMetadata[i as string].name};
+                });
             }
         },
         methods: {
