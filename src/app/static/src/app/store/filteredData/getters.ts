@@ -144,25 +144,7 @@ export const getters = {
                     result[areaId] = {};
                 }
 
-                //TODO: Rather than hardcoded 'prev' and 'art', emit data with the indicator names (keys) from the metadata
-                //and make the plotting components agnostic about art/prev/anything else
                 const regionValues = result[areaId];
-                /*switch (indicator) {
-                    case("prevalence"):
-                        regionValues.prev = {
-                            value: value,
-                            color: getColor(value, getters.choroplethRanges.prev, getters.colorFunctions.prev)
-                        };
-                        break;
-                    case("art_coverage"):
-                    case("current_art"):
-                        regionValues.art = {
-                            value: value,
-                            color: getColor(value, getters.choroplethRanges.art, getters.colorFunctions.art)
-                        };
-                        break;
-                }*/
-
                 regionValues[indicator] = {
                     value: value,
                     color: getColor(value, metadata)
