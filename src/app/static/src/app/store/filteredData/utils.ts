@@ -18,35 +18,6 @@ export const getColor = (value: number, range: IndicatorRange, colorFunction: (t
     return colorFunction(colorValue);
 };
 
-export const includeRowForSelectedChoroplethFilters = (row: any,
-                                                dataType: DataType,
-                                                selectedFilters: SelectedChoroplethFilters,
-                                                flattenedRegionFilters: object) => {
-
-    if (dataType != DataType.ANC && row.sex != selectedFilters.sex!.id) {
-        return false;
-    }
-
-    if (dataType != DataType.ANC && row.age_group_id != selectedFilters.age!.id) {
-        return false;
-    }
-
-    if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey!.id) {
-        return false;
-    }
-
-    if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter!.id) {
-        return false;
-    }
-
-    const flattenedRegionIds = Object.keys(flattenedRegionFilters);
-    if (flattenedRegionIds.length && flattenedRegionIds.indexOf(row.area_id) < 0) {
-        return false
-    }
-
-    return true;
-};
-
 export const getUnfilteredData = (state: FilteredDataState, rootState: RootState) => {
     const sapState = rootState.surveyAndProgram;
     switch (state.selectedDataType) {

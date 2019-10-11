@@ -21,18 +21,27 @@ import {NestedFilterOption} from "../../app/generated";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
 import {getUnfilteredData} from "../../app/store/filteredData/utils";
 
-export const testGetters = {
-    colorFunctions: {
-        art: function(t: number) {return `rgb(${t},0,0)`;},
-        prev: function(t: number) {return `rgb(0,${t},0)`;}
-    },
-    flattenedSelectedRegionFilters: {},
-    regionOptions: {id: "MWI", name: "Malawi"},
-    choroplethRanges: {
-        prev: {min: 0, max: 1},
-        art: {min: 0, max: 1}
-    }
-};
+export function testGetters(state: FilteredDataState, regionFilters: any = {}) {
+    const self = {
+        colorFunctions: {
+            art: function (t: number) {
+                return `rgb(${t},0,0)`;
+            },
+            prev: function (t: number) {
+                return `rgb(0,${t},0)`;
+            }
+        },
+        flattenedSelectedRegionFilters: regionFilters,
+        regionOptions: {id: "MWI", name: "Malawi"},
+        choroplethRanges: {
+            prev: {min: 0, max: 1},
+            art: {min: 0, max: 1}
+        }
+    } as any;
+
+    self.filterOut = getters.filterOut(state, self);
+    return self;
+}
 
 describe("FilteredData getters", () => {
 
@@ -59,9 +68,10 @@ describe("FilteredData getters", () => {
             filteredData: testState
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState)!!;
+        const mockGetters = testGetters(testState);
+        const filters = getters.selectedDataFilterOptions(testState, mockGetters, testRootState)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
-        expect(filters.regions).toStrictEqual(testGetters.regionOptions);
+        expect(filters.regions).toStrictEqual(mockGetters.regionOptions);
         expect(filters.sex).toStrictEqual(sexOptions);
     });
 
@@ -85,9 +95,10 @@ describe("FilteredData getters", () => {
             filteredData: testState
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState)!!;
+        const mockGetters = testGetters(testState);
+        const filters = getters.selectedDataFilterOptions(testState, mockGetters, testRootState)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
-        expect(filters.regions).toStrictEqual(testGetters.regionOptions);
+        expect(filters.regions).toStrictEqual(mockGetters.regionOptions);
         expect(filters.sex).toStrictEqual(sexOptions);
         expect(filters.surveys).toStrictEqual(testFilters.surveys);
 
@@ -110,9 +121,10 @@ describe("FilteredData getters", () => {
             filteredData: testState
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState)!!;
+        const mockGetters = testGetters(testState);
+        const filters = getters.selectedDataFilterOptions(testState, mockGetters, testRootState)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
-        expect(filters.regions).toStrictEqual(testGetters.regionOptions);
+        expect(filters.regions).toStrictEqual(mockGetters.regionOptions);
         expect(filters.sex).toBeUndefined();
         expect(filters.surveys).toBeUndefined();
     });
@@ -123,10 +135,11 @@ describe("FilteredData getters", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters ={
+        const testFilters = {
             age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}],
             quarter: [{id: "1", name: "2019 Q1"}],
-            indicator: []};
+            indicator: []
+        };
         const testRootState = mockRootState({
             modelRun: mockModelRunState(
                 {
@@ -137,9 +150,10 @@ describe("FilteredData getters", () => {
             filteredData: testState
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, testGetters, testRootState)!!;
+        const mockGetters = testGetters(testState);
+        const filters = getters.selectedDataFilterOptions(testState, mockGetters, testRootState)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
-        expect(filters.regions).toStrictEqual(testGetters.regionOptions);
+        expect(filters.regions).toStrictEqual(mockGetters.regionOptions);
         expect(filters.sex).toStrictEqual(sexOptions);
         expect(filters.surveys).toBeUndefined();
     });
@@ -166,18 +180,18 @@ describe("FilteredData getters", () => {
             id: "MWI",
             name: "Malawi",
             options: [
-            {
-                name: "Northern Region", id: "MWI.1", options: [
-                    {name: "Chitipa", id: "MWI.1.1"},
-                    {name: "Karonga", id: "MWI.1.2"}
-                ]
-            },
-            {
-                name: "Central Region", id: "MWI.2", options: [
-                    {name: "Dedza", id: "MWI.2.1"},
-                    {name: "Dowa", id: "MWI.2.2"}
-                ]
-            }]
+                {
+                    name: "Northern Region", id: "MWI.1", options: [
+                        {name: "Chitipa", id: "MWI.1.1"},
+                        {name: "Karonga", id: "MWI.1.2"}
+                    ]
+                },
+                {
+                    name: "Central Region", id: "MWI.2", options: [
+                        {name: "Dedza", id: "MWI.2.1"},
+                        {name: "Dowa", id: "MWI.2.2"}
+                    ]
+                }]
         };
 
         const testRootState = mockRootState({
@@ -203,7 +217,7 @@ describe("FilteredData getters", () => {
     });
 
     it("gets unfilteredData when selectedDataType is Survey", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {...initialFilteredDataState, selectedDataType: DataType.Survey},
             getters: getters
         };
@@ -211,9 +225,11 @@ describe("FilteredData getters", () => {
 
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
-                {survey: mockSurveyResponse(
+                {
+                    survey: mockSurveyResponse(
                         {data: "TEST" as any}
-                    )}),
+                    )
+                }),
             filteredData: testState
         });
 
@@ -222,17 +238,19 @@ describe("FilteredData getters", () => {
     });
 
     it("gets unfilteredData when selectedDataType is Program", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {...initialFilteredDataState, selectedDataType: DataType.Program},
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
 
         const testRootState = mockRootState({
-           surveyAndProgram: mockSurveyAndProgramState(
-                {program: mockProgramResponse(
+            surveyAndProgram: mockSurveyAndProgramState(
+                {
+                    program: mockProgramResponse(
                         {data: "TEST" as any}
-                    )}),
+                    )
+                }),
             filteredData: testState
         });
 
@@ -241,7 +259,7 @@ describe("FilteredData getters", () => {
     });
 
     it("gets unfilteredData when selectedDataType is ANC", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {...initialFilteredDataState, selectedDataType: DataType.ANC},
             getters: getters
         };
@@ -249,9 +267,11 @@ describe("FilteredData getters", () => {
 
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
-                {anc: mockAncResponse(
+                {
+                    anc: mockAncResponse(
                         {data: "TEST" as any}
-                    )}),
+                    )
+                }),
             filteredData: testState
         });
 
@@ -260,7 +280,7 @@ describe("FilteredData getters", () => {
     });
 
     it("gets unfilteredData when selectedDataType is Output", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {...initialFilteredDataState, selectedDataType: DataType.Output},
             getters: getters
         };
@@ -268,9 +288,11 @@ describe("FilteredData getters", () => {
 
         const testRootState = mockRootState({
             modelRun: mockModelRunState(
-                {result: mockModelResultResponse(
+                {
+                    result: mockModelResultResponse(
                         {data: "TEST" as any}
-                    )}),
+                    )
+                }),
             filteredData: testState
         });
 
@@ -279,7 +301,7 @@ describe("FilteredData getters", () => {
     });
 
     it("gets unfilteredData when selectedDataType is unknown", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {...initialFilteredDataState, selectedDataType: 99 as DataType.Output},
             getters: getters
         };
@@ -420,7 +442,7 @@ describe("FilteredData getters", () => {
                 }
             ]
         }];
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.ANC,
@@ -450,7 +472,7 @@ describe("FilteredData getters", () => {
     });
 
     it("gets flattened selected region filter when region filter is null", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.ANC,
@@ -495,7 +517,7 @@ describe("FilteredData getters", () => {
                 }
             ]
         }];
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState
             }
@@ -519,7 +541,7 @@ describe("FilteredData getters", () => {
     });
 
     it("gets flattened selected region options when region filter is null", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState
             }
