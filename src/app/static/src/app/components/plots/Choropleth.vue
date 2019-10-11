@@ -206,7 +206,7 @@
             },
             updateBounds: function () {
                 const map = this.$refs.map as LMap;
-                if (map && map.fitBounds) {
+                if (map.fitBounds) {
                     map.fitBounds(this.selectedRegionFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                 }
             }

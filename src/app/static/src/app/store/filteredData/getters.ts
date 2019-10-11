@@ -72,32 +72,30 @@ export const getters = {
 
         const flattenedRegions = getters.flattenedSelectedRegionFilters;
 
-        for (const d of data) {
-            //TODO: output data doesn't currently conform to plotting metadata, so for now we fake the metadata
-            //Use the real metadata for all other data types
-            let indicatorsMeta = state.selectedDataType == DataType.Output ?
-                {
-                    prevalence: {
-                        value_column: "mean",
-                        indicator_column: "indicator_id",
-                        indicator_value: "2"
-                    }
-                } :
-                rootGetters['metadata/choroplethIndicatorsMetadata'];
+        //TODO: output data doesn't currently conform to plotting metadata, so for now we fake the metadata
+        //Use the real metadata for all other data types
+        let indicatorsMeta = state.selectedDataType == DataType.Output ?
+            {
+                prevalence: {
+                    value_column: "mean",
+                    indicator_column: "indicator_id",
+                    indicator_value: "2"
+                }
+            } :
+            rootGetters['metadata/choroplethIndicatorsMetadata'];
 
-            //TODO: ...and here's a workaround for a small bug in the current Survey metadata - 'art' for
-            //indicator value, should be 'artcov'
-            if (state.selectedDataType == DataType.Survey) {
-                indicatorsMeta = {
-                    ...indicatorsMeta
-                };
-                indicatorsMeta.art_coverage.indicator_value = "artcov";
-            }
+        //TODO: ...and here's a workaround for a small bug in the current Survey metadata - 'art' for
+        //indicator value, should be 'artcov'
+        if (state.selectedDataType == DataType.Survey) {
+            indicatorsMeta = {
+                ...indicatorsMeta
+            };
+            indicatorsMeta.art_coverage.indicator_value = "artcov";
+        }
 
-            const indicators = Object.keys(indicatorsMeta);
+        const indicators = Object.keys(indicatorsMeta);
 
-            const row = d as any;
-
+        for (const row of data) {
             if (!includeRowForSelectedChoroplethFilters(row,
                 state.selectedDataType,
                 state.selectedChoroplethFilters,
