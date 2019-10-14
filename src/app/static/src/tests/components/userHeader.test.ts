@@ -63,6 +63,16 @@ describe("user header", () => {
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
     });
 
+    it("does not close dropdown on blur if dropdown item is focused", () => {
+        const wrapper = shallowMount(UserHeader);
+        wrapper.find(".dropdown-toggle").trigger("click");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        const fakeTarget = new EventTarget();
+        (fakeTarget as HTMLElement).className = "dropdown-item";
+        wrapper.find(".dropdown-toggle").trigger("blur", {relatedTarget: fakeTarget});
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+    });
+
     it("contains logout link", () => {
         const wrapper = shallowMount(UserHeader);
         expect(wrapper.find("a[href='/logout']")).toBeDefined();

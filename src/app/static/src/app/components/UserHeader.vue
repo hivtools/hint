@@ -13,7 +13,7 @@
                         File
                     </a>
                     <div class="dropdown-menu" :class="show && 'show'">
-                        <a class="dropdown-item" ref="save" v-on:click="save">Save
+                        <a class="dropdown-item" ref="save" tabindex="0" v-on:click="save">Save
                             <download-icon size="20" class="icon"></download-icon>
                         </a>
                         <a class="dropdown-item" ref="load" href="#">Load
@@ -42,7 +42,7 @@
     interface Methods {
         toggle: () => void;
         save: () => void;
-        close: () => void;
+        close: (e: FocusEvent) => void;
     }
 
     export default Vue.extend<Data, Methods, any, "title" | "user">({
@@ -72,7 +72,11 @@
             toggle() {
                 this.show = !this.show;
             },
-            close() {
+            close(e: FocusEvent) {
+                if (e.relatedTarget && (e.relatedTarget as HTMLElement).className == "dropdown-item") {
+                    return;
+                }
+
                 this.show = false;
             },
             save() {

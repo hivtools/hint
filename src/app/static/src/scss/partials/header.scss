@@ -10,6 +10,11 @@
 header {
   a {
     color: #f8f9fa;
+
+    &:hover {
+      text-decoration: underline;
+      color: #f8f9fa;
+    }
   }
 
   .icon {
@@ -33,6 +38,10 @@ header {
     .dropdown-item {
       color: $theme-red !important;
       cursor: pointer;
+
+      &:focus {
+        outline: none !important;
+      }
 
       &:hover, &.active, :active {
         background-color: $gray-200;
