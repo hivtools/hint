@@ -1,9 +1,9 @@
 <template>
     <div>
-        <custom-form id="model-run-options"
+        <dynamic-form id="model-run-options"
                      ref="modelRunForm"
                      @submit="runModelWithParams"
-                     :include-submit-button="false"></custom-form>
+                     :include-submit-button="false"></dynamic-form>
         <button class="btn btn-red btn-lg"
                 v-on:click="submitForm"
                 :disabled="running">Run model
@@ -23,7 +23,7 @@
     import {ModelRunState, ModelRunStatus} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
-    import CustomForm from "../forms/CustomForm.vue";
+    import DynamicForm from "../forms/DynamicForm.vue";
 
     const namespace: string = 'modelRun';
 
@@ -61,7 +61,7 @@
         components: {
             Modal,
             Tick,
-            CustomForm
+            DynamicForm
         }
     });
 </script>

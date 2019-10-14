@@ -3,7 +3,8 @@
         <div v-for="section in form.controlSections">
             <h3>{{section.label}}</h3>
             <p class="text-muted">{{section.description}}</p>
-            <control-group v-for="group in section.controlGroups" :group="group"></control-group>
+            <dynamic-form-control-group v-for="group in section.controlGroups"
+                                        :group="group"></dynamic-form-control-group>
         </div>
         <button v-if="includeSubmitButton" class="btn btn-red" v-on:click="submit">{{submitText}}</button>
     </b-form>
@@ -14,11 +15,11 @@
     import Vue from "vue";
     import {BForm} from "bootstrap-vue";
     import {formMeta} from "./fakeFormMeta";
-    import ControlGroup from "./ControlGroup.vue";
     import {Dictionary} from "vuex";
+    import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
 
     export default Vue.extend({
-        name: "CustomForm",
+        name: "DynamicForm",
         props: {
             id: {
                 type: String,
@@ -40,7 +41,7 @@
         },
         components: {
             BForm,
-            ControlGroup
+            DynamicFormControlGroup
         },
         methods: {
             submit(e: Event) {
@@ -54,6 +55,7 @@
                     data[key] = value;
                 });
                 this.$emit("submit", data);
+                return data;
             }
         }
     })

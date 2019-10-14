@@ -10,7 +10,7 @@ export interface ControlGroup {
 }
 
 export type ControlType = "multiselect" | "select" | "number"
-export type Control = SelectControl | NumericalInputControl
+export type Control = SelectControl | NumberControl
 
 export interface FormControl {
     name: string,
@@ -25,7 +25,7 @@ export interface SelectControl extends FormControl {
     options: string[]
 }
 
-export interface NumericalInputControl extends FormControl {
+export interface NumberControl extends FormControl {
     min?: number
     max?: number
     default?: number
