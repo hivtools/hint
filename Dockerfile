@@ -12,6 +12,6 @@ ARG SPRING_PROFILES_ACTIVE
 ENV SPRING_PROFILES_ACTIVE $SPRING_PROFILES_ACTIVE
 
 # This path is needed for the eventual configuration
-CMD mkdir -p /etc/hint
+RUN mkdir -p /etc/hint
 
 ENTRYPOINT ["/entrypoint"]
