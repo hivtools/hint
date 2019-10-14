@@ -47,7 +47,7 @@ export const metadataGetters = {
 
         const result =  metadataForType && metadataForType.choropleth ? metadataForType.choropleth.indicators : null;
         //TODO: take this out when hintr is returning expected array
-        if (result && ((result as any).prevalence || (result as any).art_coverage || (result as any).current_art)) {
+        /*if (result && ((result as any).prevalence || (result as any).art_coverage || (result as any).current_art)) {
             const arrayResult = [] as IndicatorMetadata[];
             const indicators = Object.keys((result as any));
             for (const indicator of indicators) {
@@ -58,7 +58,8 @@ export const metadataGetters = {
             return arrayResult;
         } else {
             return result;
-        }
+        }*/
+        return result;
     },
     choroplethIndicators:(state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
         const metadata = getters.choroplethIndicatorsMetadata;

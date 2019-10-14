@@ -12,7 +12,13 @@ const sexFilterOptions = [
 ];
 
 export const colorFunctionFromName = function(name: string) {
-    return (d3ScaleChromatic as any)[name];
+    let result =  (d3ScaleChromatic as any)[name];
+    if (!result){
+        //This is trying to be defensive against typos in metadata...
+        console.log(`Unknown color function: ${name}`);
+        result = d3ScaleChromatic.interpolateWarm;
+    }
+    return result;
 };
 
 export const getters = {
@@ -76,7 +82,7 @@ export const getters = {
 
         //TODO: output data doesn't currently conform to plotting metadata, so for now we fake the metadata
         //Use the real metadata for all other data types
-        let indicatorsMeta = state.selectedDataType == DataType.Output ?
+       /* let indicatorsMeta = state.selectedDataType == DataType.Output ?
             [
                 {
                     indicator: "art_coverage",
@@ -114,7 +120,8 @@ export const getters = {
                 art_coverage[0].indicator_value = "artcov";
             }
 
-        }
+        }*/
+        const indicatorsMeta = rootGetters['metadata/choroplethIndicatorsMetadata'];
 
         for(const d of data) {
             const row = d as any;
@@ -207,6 +214,7 @@ const getColor = (value: number, metadata: IndicatorMetadata) => {
     if (metadata.invert_scale) {
         colorValue = 1 - colorValue;
     }
+
     return colorFunction(colorValue);
 };
 
