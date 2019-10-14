@@ -26,27 +26,3 @@ export const mapGettersByNames = <K extends string>(namespace: string, names: st
     type R = { [key in K]: any }
     return mapGetters(namespace, names) as R
 };
-
-export const flattenOptions = (filterOptions: NestedFilterOption[]): { [k: string]: NestedFilterOption } => {
-    let result = {};
-    filterOptions.forEach(r =>
-        result = {
-            ...result,
-            ...flattenOption(r)
-        });
-    return result;
-};
-
-const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => {
-    let result = {} as any;
-    result[filterOption.id] = filterOption;
-    if (filterOption.options) {
-        filterOption.options.forEach(o =>
-            result = {
-                ...result,
-                ...flattenOption(o as NestedFilterOption)
-            });
-
-    }
-    return result;
-};

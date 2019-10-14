@@ -3,7 +3,7 @@ import {DataType, FilteredDataState} from "./filteredData";
 import {Dict, IndicatorRange, Indicators} from "../../types";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
 import {FilterOption, NestedFilterOption} from "../../generated";
-import {flattenOptions} from "../../utils";
+import {flattenOptions} from "./utils";
 import {getColor, getUnfilteredData, sexFilterOptions} from "./utils";
 
 export const getters = {

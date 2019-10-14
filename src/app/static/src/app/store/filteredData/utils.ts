@@ -1,6 +1,7 @@
-import {IndicatorRange, IndicatorValues} from "../../types";
-import {DataType, FilteredDataState, SelectedChoroplethFilters} from "./filteredData";
+import {IndicatorRange} from "../../types";
+import {DataType, FilteredDataState} from "./filteredData";
 import {RootState} from "../../root";
+import {NestedFilterOption} from "../../generated";
 
 export const sexFilterOptions = [
     {id: "both", name: "both"},
@@ -32,4 +33,28 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
         default:
             return null;
     }
+};
+
+export const flattenOptions = (filterOptions: NestedFilterOption[]): { [k: string]: NestedFilterOption } => {
+    let result = {};
+    filterOptions.forEach(r =>
+        result = {
+            ...result,
+            ...flattenOption(r)
+        });
+    return result;
+};
+
+const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => {
+    let result = {} as any;
+    result[filterOption.id] = filterOption;
+    if (filterOption.options) {
+        filterOption.options.forEach(o =>
+            result = {
+                ...result,
+                ...flattenOption(o as NestedFilterOption)
+            });
+
+    }
+    return result;
 };

@@ -17,7 +17,8 @@ import {
     mockModelRunState, mockModelResultResponse, mockProgramFilters
 } from "../mocks";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
-import {getUnfilteredData} from "../../app/store/filteredData/utils";
+import {flattenOptions, getUnfilteredData} from "../../app/store/filteredData/utils";
+import {NestedFilterOption} from "../../app/generated";
 
 export function testGetters(state: FilteredDataState, regionFilters: any = {}) {
     const self = {
@@ -416,6 +417,21 @@ describe("FilteredData getters", () => {
 
         const result = getters.choroplethRanges(testState, null, mockRootState())!!;
         expect(result).toStrictEqual({});
+    });
+
+    it("can flatten options", () => {
+
+        const testData: NestedFilterOption[] = [
+            {
+                id: "1", name: "name1", options: [{
+                    id: "2", name: "nested", options: []
+                }]
+            }
+        ];
+
+        const result = flattenOptions(testData);
+        expect(result["1"]).toStrictEqual(testData[0]);
+        expect(result["2"]).toStrictEqual({id: "2", name: "nested", options: []});
     });
 
     it("gets flattened selected region filter", () => {
