@@ -77,8 +77,9 @@ export const getters = {
         //TODO: output data doesn't currently conform to plotting metadata, so for now we fake the metadata
         //Use the real metadata for all other data types
         let indicatorsMeta = state.selectedDataType == DataType.Output ?
-            {
-                art_coverage: {
+            [
+                {
+                    indicator: "art_coverage",
                     value_column: "mean",
                     indicator_column: "indicator_id",
                     indicator_value: "4",
@@ -88,7 +89,8 @@ export const getters = {
                     colour: "interpolateViridis",
                     invert_scale: false
                 },
-                prevalence: {
+                {
+                    indicator: "prevalence",
                     value_column: "mean",
                     indicator_column: "indicator_id",
                     indicator_value: "2",
@@ -98,19 +100,17 @@ export const getters = {
                     colour: "interpolateMagma",
                     invert_scale: true
                 }
-            } :
+            ]:
             rootGetters['metadata/choroplethIndicatorsMetadata'];
 
         //TODO: ...and here's a workaround for a small bug in the current Survey metadata - 'art' for
         //indicator value, should be 'artcov'
-        if (state.selectedDataType == DataType.Survey) {
+        /*if (state.selectedDataType == DataType.Survey) {
             indicatorsMeta = {
                 ...indicatorsMeta
             };
             indicatorsMeta.art_coverage.indicator_value = "artcov";
-        }
-
-        const indicators = Object.keys(indicatorsMeta);
+        }*/
 
         for(const d of data) {
             const row = d as any;
@@ -124,9 +124,9 @@ export const getters = {
 
             const areaId = row.area_id;
 
-            for (const indicator of indicators) {
+            for (const metadata of indicatorsMeta) {
 
-                const metadata = indicatorsMeta[indicator];
+                const indicator = metadata.indicator;
 
                 if (metadata.indicator_column && metadata.indicator_value != row[metadata.indicator_column]) {
                     //This data is in long format, and the indicator column's value does not match that for this indicator

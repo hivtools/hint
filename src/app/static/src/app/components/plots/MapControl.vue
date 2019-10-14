@@ -40,6 +40,7 @@
     import {mapGetters, mapState} from "vuex";
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
     import {BaselineState} from "../../store/baseline/baseline";
+    import {IndicatorMetadata} from "../../generated";
 
     interface Data {
         detail: any;
@@ -77,10 +78,8 @@
             }),
             ...mapGetters(namespace, ["choroplethIndicators", "choroplethIndicatorsMetadata"]),
             indicatorOptions: function() {
-                const indicators = this.choroplethIndicators ? this.choroplethIndicators : [];//TODO: sort out types...
-                return (indicators as string[]).map(i => {
-                    return {id: i as string, label: this.choroplethIndicatorsMetadata[i as string].name};
-                });
+                const indicators = this.choroplethIndicatorsMetadata ? this.choroplethIndicatorsMetadata : [];
+                return indicators.map((i: IndicatorMetadata) => { return {id: i.indicator, label: i.name}; });
             }
         },
         methods: {

@@ -2,7 +2,7 @@ import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {RootState} from "../../root";
-import {PlottingMetadataResponse} from "../../generated";
+import {IndicatorMetadata, PlottingMetadataResponse} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../filteredData/filteredData";
 
@@ -45,11 +45,24 @@ export const metadataGetters = {
                 break;
         }
 
-        return  metadataForType && metadataForType.choropleth ? metadataForType.choropleth.indicators : null;
+        const result =  metadataForType && metadataForType.choropleth ? metadataForType.choropleth.indicators : null;
+        //TODO: take this out when hintr is returning expected array
+        if ((result as any).prevalence || (result as any).art_coverage) {
+            const arrayResult = [] as IndicatorMetadata[];
+            const indicators = Object.keys((result as any));
+            for (const indicator of indicators) {
+                const meta = (result as any)[indicator];
+                meta.indicator = indicator;
+                arrayResult.push(meta);
+            }
+            return arrayResult;
+        } else {
+            return result;
+        }
     },
     choroplethIndicators:(state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
         const metadata = getters.choroplethIndicatorsMetadata;
-        return  metadata ? Object.keys(metadata) : [];
+        return  metadata ? metadata.map((i: IndicatorMetadata) => i.indicator) : [];
     }
 };
 
