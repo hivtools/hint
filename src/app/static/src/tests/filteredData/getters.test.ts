@@ -1,10 +1,8 @@
-
 import {getters, getUnfilteredData} from "../../app/store/filteredData/getters"
 import {Module} from "vuex";
 import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 import {RootState} from "../../app/root";
 import {
-    mockAgeFilters,
     mockAncResponse,
     mockBaselineState,
     mockProgramResponse,
@@ -16,7 +14,7 @@ import {
     mockPlottingMetadataResponse,
     mockIndicators,
     mockFilteredDataState,
-    mockModelRunState, mockModelResultResponse
+    mockModelRunState, mockModelResultResponse, mockProgramFilters
 } from "../mocks";
 import {NestedFilterOption} from "../../app/generated";
 import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
@@ -48,7 +46,7 @@ describe("FilteredData getters", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = mockAgeFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
+        const testFilters = mockProgramFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
                 {
@@ -99,7 +97,7 @@ describe("FilteredData getters", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = mockAgeFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
+        const testFilters = mockProgramFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
                 {
