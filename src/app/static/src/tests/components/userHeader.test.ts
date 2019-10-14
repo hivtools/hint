@@ -94,10 +94,11 @@ describe("user header", () => {
         })], {type: "application/json"});
         expect((window.URL.createObjectURL as jest.Mock).mock.calls[0][0]).toStrictEqual(expectedBlob);
 
-        expect(link.attributes("href")).toBe('test.url');
+        const hiddenLink = wrapper.find({ref: "save"});
+        expect(hiddenLink.attributes("href")).toBe('test.url');
 
         const re = new RegExp("naomi-(.*)\.json");
-        expect((link.attributes("download") as string).match(re)).toBeDefined();
+        expect((hiddenLink.attributes("download") as string).match(re)).toBeDefined();
     });
 
 });

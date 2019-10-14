@@ -13,9 +13,10 @@
                         File
                     </a>
                     <div class="dropdown-menu" :class="show && 'show'">
-                        <a class="dropdown-item" ref="save" v-on:mousedown="save">Save
+                        <a class="dropdown-item" v-on:mousedown="save">Save
                             <download-icon size="20" class="icon"></download-icon>
                         </a>
+                        <a style="display:none" ref="save"></a>
                         <a class="dropdown-item" ref="load" href="#">Load
                             <upload-icon size="20" class="icon"></upload-icon>
                         </a>
