@@ -163,10 +163,10 @@ describe("Choropleth component", () => {
         //update to ART
         wrapper.find(MapControl).vm.$emit("indicator-changed", "art");
 
-        Vue.nextTick();S
+        Vue.nextTick();
 
         expect(vm.indicatorMetadata.indicator).toBe("art");
-        expect(vm.indicatorMetadata.name).toBe("ART coverage");
+        expect(vm.indicatorMetadata.name).toBe("ART Coverage");
         expect(vm.indicatorMetadata.min).toBe(0.1);
         expect(vm.indicatorMetadata.max).toBe(1);
     });

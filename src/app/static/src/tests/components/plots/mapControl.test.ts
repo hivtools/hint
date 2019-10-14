@@ -16,14 +16,16 @@ describe("Map control component", () => {
     const getStore = (choroplethIndicatorsMetadata?: any, selectedDataType: DataType = DataType.Survey) => {
 
         if (!choroplethIndicatorsMetadata) {
-            choroplethIndicatorsMetadata = {
-                art_coverage: {
+            choroplethIndicatorsMetadata = [
+                {
+                    indicator: "art_coverage",
                     name: "ART coverage"
                 },
-                prevalence: {
+                {
+                    indicator: "prevalence",
                     name: "Prevalence"
                 }
-            }
+            ]
         }
 
         return new Vuex.Store({
@@ -77,52 +79,8 @@ describe("Map control component", () => {
         const wrapper = shallowMount(MapControl, {store, localVue});
 
         expect(wrapper.findAll(TreeSelect).at(0).props("options"))
-            .toStrictEqual([{id: "prev", label: "Prevalence"},
-                {id: "art", label: "ART coverage"}]);
-    });
-
-    it("renders indicator options with prevalence metadata only", () => {
-        const store = getStore({
-            prevalence: {
-                name: "Prevalence"
-            }
-        });
-        const wrapper = shallowMount(MapControl, {store, localVue});
-
-        expect(wrapper.findAll(TreeSelect).at(0).props("options"))
-            .toStrictEqual([{id: "prev", label: "Prevalence"}]);
-    });
-
-    it("renders indicator options with ART coverage metadata only", () => {
-        const store = getStore({
-            art_coverage: {
-                name: "ART coverage"
-            }
-        });
-        const wrapper = shallowMount(MapControl, {store, localVue});
-
-        expect(wrapper.findAll(TreeSelect).at(0).props("options"))
-            .toStrictEqual([{id: "art", label: "ART coverage"}]);
-    });
-
-    it("renders indicator options with Current ART metadata only", () => {
-        const store = getStore({
-            current_art: {
-                name: "Number on ART"
-            }
-        });
-        const wrapper = shallowMount(MapControl, {store, localVue});
-
-        expect(wrapper.findAll(TreeSelect).at(0).props("options"))
-            .toStrictEqual([{id: "art", label: "Number on ART"}]);
-    });
-
-    it("does not render ART for Output data type", () => {
-        const store = getStore(null, DataType.Output);
-        const wrapper = shallowMount(MapControl, {store, localVue});
-
-        expect(wrapper.findAll(TreeSelect).at(0).props("options"))
-            .toStrictEqual([{id: "prev", label: "Prevalence"}]);
+            .toStrictEqual([{id: "art_coverage", label: "ART coverage"},
+                {id: "prevalence", label: "Prevalence"}]);
     });
 
     it("renders detail options", () => {
@@ -137,8 +95,8 @@ describe("Map control component", () => {
     it("emits indicator-changed event with indicator", () => {
         const store = getStore();
         const wrapper = shallowMount(MapControl, {store, localVue});
-        wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "art");
-        expect(wrapper.emitted("indicator-changed")[0][0]).toBe("art");
+        wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "art_coverage");
+        expect(wrapper.emitted("indicator-changed")[0][0]).toBe("art_coverage");
     });
 
     it("emits detail-changed event with detail", () => {

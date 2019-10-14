@@ -201,6 +201,7 @@ const flattenOption = (filterOption: NestedFilterOption) => {
 };
 
 const getColor = (value: number, metadata: IndicatorMetadata) => {
+    //throw (JSON.stringify(metadata));
     const max = metadata.max;
     const min = metadata.min;
     const colorFunction = colorFunctionFromName(metadata.colour);
@@ -215,6 +216,7 @@ const getColor = (value: number, metadata: IndicatorMetadata) => {
         colorValue = 1 - colorValue;
     }
 
+    //throw("color value: " + colorValue);
     return colorFunction(colorValue);
 };
 
