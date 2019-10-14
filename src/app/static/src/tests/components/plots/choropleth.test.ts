@@ -2,7 +2,7 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Choropleth from "../../../app/components/plots/Choropleth.vue";
 import Vue from "vue";
 import Vuex from "vuex";
-import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../../mocks";
+import {mockBaselineState, mockFilteredDataState, mockPlottingMetadataResponse, mockShapeResponse} from "../../mocks";
 import {LGeoJson} from 'vue2-leaflet';
 import MapControl from "../../../app/components/plots/MapControl.vue";
 import {mutations} from "../../../app/store/filteredData/mutations";
@@ -69,13 +69,22 @@ describe("Choropleth component", () => {
                 prev: jest.fn(),
                 art: jest.fn()
             }
-        },
-        choroplethRanges: () => {
-            return {
-                prev: {min: 0, max: 0.5},
-                art: {min: 0.1, max: 1}
-            };
         }
+    };
+
+    const testMetadataGetters = {
+        choroplethIndicators: () => {return ["prev", "art"]; },
+        choroplethIndicatorsMetadata: () => {
+            return [
+                {indicator: "prev", name: "Prevalence", min: 0, max: 0.5},
+                {indicator: "art", name: "ART Coverage", min: 0.1, max: 1}
+            ];
+        }
+    };
+
+    const testMetadataModule = {
+        namespaced: true,
+        getters: testMetadataGetters
     };
 
     const testColorFunctions = () => {
@@ -123,7 +132,8 @@ describe("Choropleth component", () => {
                     getters: testGetters,
                     actions,
                     mutations
-                }
+                },
+                metadata: testMetadataModule
             }
         });
     }
@@ -140,21 +150,25 @@ describe("Choropleth component", () => {
         })
     });
 
-    it("calculates range according to indicator", () => {
+    it("calculates indicatorMetadata according to indicator", () => {
         //default to prev
         const wrapper = shallowMount(Choropleth, {store, localVue});
 
         const vm = wrapper.vm as any;
-        expect(vm.range.min).toBe(0);
-        expect(vm.range.max).toBe(0.5);
+        expect(vm.indicatorMetadata.indicator).toBe("prev");
+        expect(vm.indicatorMetadata.name).toBe("Prevalence");
+        expect(vm.indicatorMetadata.min).toBe(0);
+        expect(vm.indicatorMetadata.max).toBe(0.5);
 
         //update to ART
         wrapper.find(MapControl).vm.$emit("indicator-changed", "art");
 
-        Vue.nextTick();
+        Vue.nextTick();S
 
-        expect(vm.range.min).toBe(0.1);
-        expect(vm.range.max).toBe(1);
+        expect(vm.indicatorMetadata.indicator).toBe("art");
+        expect(vm.indicatorMetadata.name).toBe("ART coverage");
+        expect(vm.indicatorMetadata.min).toBe(0.1);
+        expect(vm.indicatorMetadata.max).toBe(1);
     });
 
     it("calculates indicators from filteredData", () => {
@@ -162,62 +176,6 @@ describe("Choropleth component", () => {
 
         const vm = wrapper.vm as any;
         expect(vm.regionIndicators).toEqual(testRegionIndicators);
-    });
-
-    it("calculates prevEnabled and artEnabled when true", () => {
-        const wrapper = shallowMount(Choropleth, {store, localVue});
-
-        const vm = wrapper.vm as any;
-        expect(vm.prevEnabled).toBe(true);
-        expect(vm.artEnabled).toBe(true);
-    });
-
-    it("calculates artEnabled when false", () => {
-        const emptyStore = new Vuex.Store({
-            modules: {
-                baseline: {
-                    namespaced: true,
-                    state: mockBaselineState({
-                        shape: mockShapeResponse({
-                            data: {features: fakeFeatures} as any
-                        })
-                    })
-                },
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState({selectedDataType: DataType.Output}),
-                    getters: testGetters
-                }
-            }
-        });
-        const wrapper = shallowMount(Choropleth, {store: emptyStore, localVue});
-
-        const vm = wrapper.vm as any;
-        expect(vm.artEnabled).toBe(false);
-    });
-
-    it("calculates prevEnabled when false", () => {
-        const emptyStore = new Vuex.Store({
-            modules: {
-                baseline: {
-                    namespaced: true,
-                    state: mockBaselineState({
-                        shape: mockShapeResponse({
-                            data: {features: fakeFeatures} as any
-                        })
-                    })
-                },
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState({selectedDataType: DataType.Program}),
-                    getters: testGetters
-                }
-            }
-        });
-        const wrapper = shallowMount(Choropleth, {store: emptyStore, localVue});
-
-        const vm = wrapper.vm as any;
-        expect(vm.prevEnabled).toBe(false);
     });
 
     it("calculates featuresByLevel", () => {
@@ -283,7 +241,7 @@ describe("Choropleth component", () => {
         })
     });
 
-    it("updates indicator to prev if necessary when selectedDataType changes", () => {
+    it("updates indicator if necessary when selectedDataType changes", () => {
         //defaults to prev, should get updated to art on data type change if no prev data
         const filteredData = {...initialFilteredDataState};
         const testStore = new Vuex.Store({
@@ -301,12 +259,13 @@ describe("Choropleth component", () => {
                     state: filteredData,
                     getters: testGetters,
                     mutations: mutations
-                }
+                },
+                metadata: testMetadataModule
             }
         });
         const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
         const vm = wrapper.vm as any;
-        vm.indicator = "art";
+        vm.indicator = "nonexistent";
 
         testStore.commit({type: "filteredData/SelectedDataTypeUpdated", payload: DataType.Output});
         expect(vm.indicator).toBe("prev");
@@ -338,7 +297,8 @@ describe("Choropleth component", () => {
                         },
                     },
                     mutations: mutations
-                }
+                },
+                metadata: testMetadataModule
             }
         });
         const wrapper = shallowMount(Choropleth, {store: testStore, localVue});

@@ -160,7 +160,7 @@
             },
             updateBounds: function(){
                 const map = this.$refs.map;
-                if (map.fitBounds) {
+                if (map && map.fitBounds) {
                     map.fitBounds(this.selectedRegionFeatures.map((f: Feature) => new GeoJSON(f).getBounds()));
                 }
             },
