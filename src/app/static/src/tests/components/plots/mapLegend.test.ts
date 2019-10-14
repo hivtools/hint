@@ -5,9 +5,12 @@ describe("Map legend component", () => {
 
     const wrapper = shallowMount(MapLegend, {
         propsData: {
-            max: 2,
-            min: 1,
-            colorFunction: (i: number) => `rgb(0,0,${i * 255})`
+            metadata: {
+                max: 2,
+                min: 1,
+                colour: "interpolateGreys",
+                invert_scale: false
+            }
         }
     });
 
@@ -29,11 +32,33 @@ describe("Map legend component", () => {
     it("renders icons with colors", () => {
         const icons = wrapper.findAll("i");
         expect(icons.at(0).element.style
+            .getPropertyValue("background")).toBe("rgb(255, 255, 255)");
+        expect(icons.at(4).element.style
+            .getPropertyValue("background")).toBe("rgb(64, 64, 64)");
+        expect(icons.at(5).element.style
+            .getPropertyValue("background")).toBe("rgb(0, 0, 0)");
+
+    });
+
+    it("renders icons with colors, with scale inverted", () => {
+        const invertedWrapper = shallowMount(MapLegend, {
+            propsData: {
+                metadata: {
+                    max: 2,
+                    min: 1,
+                    colour: "interpolateGreys",
+                    invert_scale: true
+                }
+            }
+        });
+
+        const icons = invertedWrapper.findAll("i");
+        expect(icons.at(0).element.style
             .getPropertyValue("background")).toBe("rgb(0, 0, 0)");
         expect(icons.at(4).element.style
-            .getPropertyValue("background")).toBe("rgb(0, 0, 204)");
+            .getPropertyValue("background")).toBe("rgb(226, 226, 226)");
         expect(icons.at(5).element.style
-            .getPropertyValue("background")).toBe("rgb(0, 0, 255)");
+            .getPropertyValue("background")).toBe("rgb(255, 255, 255)");
 
     });
 
