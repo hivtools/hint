@@ -1,14 +1,14 @@
-import {ActionContext, ActionTree} from "vuex";
+import {ActionContext, ActionTree, Dictionary} from "vuex";
 import {ModelRunState} from "./modelRun";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
-import {ModelResultResponse, ModelStatusResponse, ModelSubmitParameters, ModelSubmitResponse} from "../../generated";
+import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 
 export type ModelRunActionTypes = "ModelRunStarted" | "RunStatusUpdated" | "PollingForStatusStarted" | "RunResultFetched"
 export type ModelRunErrorTypes = "ModelRunError" | "RunStatusError" | "RunResultError"
 
 export interface ModelRunActions {
-    run: (store: ActionContext<ModelRunState, RootState>, modelRunParams: ModelSubmitParameters) => void
+    run: (store: ActionContext<ModelRunState, RootState>, modelRunParams: Dictionary<any>) => void
     poll: (store: ActionContext<ModelRunState, RootState>, runId: number) => void
     getResult: (store: ActionContext<ModelRunState, RootState>) => void
 }

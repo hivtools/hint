@@ -5,7 +5,7 @@
             <p class="text-muted">{{section.description}}</p>
             <control-group v-for="group in section.controlGroups" :group="group"></control-group>
         </div>
-        <button class="btn btn-red" v-on:click="submit">{{submitText}}</button>
+        <button v-if="includeSubmitButton" class="btn btn-red" v-on:click="submit">{{submitText}}</button>
     </b-form>
 </template>
 
@@ -27,6 +27,10 @@
             submitText: {
                 type: String,
                 default: "Submit"
+            },
+            includeSubmitButton: {
+                type: Boolean,
+                default: true
             }
         },
         data() {
@@ -40,15 +44,16 @@
         },
         methods: {
             submit(e: Event) {
-                e.preventDefault();
+                if (e) {
+                    e.preventDefault();
+                }
                 const form = this.$refs[this.id] as HTMLFormElement;
                 const formData = new FormData(form);
                 const data: Dictionary<any> = {};
                 formData.forEach(function (value, key) {
                     data[key] = value;
                 });
-                const json = JSON.stringify(data);
-                this.$emit("submit", json);
+                this.$emit("submit", data);
             }
         }
     })

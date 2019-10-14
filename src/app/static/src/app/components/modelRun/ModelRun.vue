@@ -1,8 +1,11 @@
 <template>
     <div>
-        <custom-form id="model-run-options"></custom-form>
+        <custom-form id="model-run-options"
+                     ref="modelRunForm"
+                     @submit="runModelWithParams"
+                     :include-submit-button="false"></custom-form>
         <button class="btn btn-red btn-lg"
-                v-on:click="runModelWithParams"
+                v-on:click="submitForm"
                 :disabled="running">Run model
         </button>
         <h4 v-if="success" class="mt-3" id="model-run-complete">Model run complete
@@ -16,8 +19,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActions, mapState} from "vuex";
-    import {ModelSubmitParameters} from "../../generated";
+    import {Dictionary, mapActions, mapState} from "vuex";
     import {ModelRunState, ModelRunStatus} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
@@ -37,16 +39,10 @@
                 run: 'modelRun/run',
                 poll: 'modelRun/poll'
             }),
-            runModelWithParams: function () {
-                const params: ModelSubmitParameters = {
-                    max_iterations: 1,
-                    no_of_simulations: 2,
-                    options: {
-                        programme: false,
-                        anc: true
-                    }
-                };
-
+            submitForm: function () {
+                this.$refs.modelRunForm.submit();
+            },
+            runModelWithParams: function (params: Dictionary<any>) {
                 this.run(params);
             }
         },
