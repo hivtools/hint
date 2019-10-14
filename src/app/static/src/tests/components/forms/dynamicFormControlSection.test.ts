@@ -3,7 +3,7 @@ import DynamicFormControlSection from "../../../app/components/forms/DynamicForm
 import {DynamicControlSection} from "../../../app/components/forms/fakeFormMeta";
 import DynamicFormControlGroup from "../../../app/components/forms/DynamicFormControlGroup.vue";
 
-describe('Dynamic form component', function () {
+describe('Dynamic form control section component', function () {
 
     const fakeFormSection: DynamicControlSection = {
         label: "Test 1",

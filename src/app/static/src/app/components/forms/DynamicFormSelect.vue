@@ -2,7 +2,11 @@
     <b-form-select :options="formControl.options"
                    :plain="true"
                    :name="formControl.name"
-                   :value="formControl.default || formControl.options[0]"></b-form-select>
+                   :value="formControl.default">
+        <template v-if="!formControl.default" v-slot:first>
+            <option :value="null" disabled>Select...</option>
+        </template>
+    </b-form-select>
 </template>
 
 <script lang="ts">
@@ -15,7 +19,7 @@
     }
 
     export default Vue.extend<{}, {}, {}, Props>({
-        name: "FormSelect",
+        name: "DynamicFormSelect",
         props: {
             formControl: Object
         },

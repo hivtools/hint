@@ -8,11 +8,11 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {BCol, BFormInput} from "bootstrap-vue";
+    import {BCol} from "bootstrap-vue";
     import DynamicFormMultiSelect from "./DynamicFormMultiSelect.vue";
     import DynamicFormSelect from "./DynamicFormSelect.vue";
-    import DynamicFormInput from "./DynamicFormInput.vue";
     import {DynamicControl} from "./fakeFormMeta";
+    import DynamicFormNumberInput from "./DynamicFormNumberInput.vue";
 
     export default Vue.extend<{}, {}, {}, { control: DynamicControl, colWidth: string }>({
         name: "DynamicFormControl",
@@ -28,14 +28,13 @@
                     case "multiselect":
                         return "dynamic-form-multi-select";
                     case "number":
-                        return "dynamic-form-input";
+                        return "dynamic-form-number-input";
                 }
             }
         },
         components: {
             BCol,
-            BFormInput,
-            DynamicFormInput,
+            DynamicFormNumberInput,
             DynamicFormSelect,
             DynamicFormMultiSelect
         },

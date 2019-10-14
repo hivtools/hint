@@ -4,7 +4,7 @@ import DynamicFormControlGroup from "../../../app/components/forms/DynamicFormCo
 import DynamicFormControl from "../../../app/components/forms/DynamicFormControl.vue";
 import {DynamicControlGroup, NumberControl, SelectControl} from "../../../app/components/forms/fakeFormMeta";
 
-describe('Dynamic form component', function () {
+describe('Dynamic form control group component', function () {
 
     const fakeFormGroup: DynamicControlGroup = {
         label: "Test 1",

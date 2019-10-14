@@ -1,8 +1,10 @@
 <template>
     <div>
         <tree-select :multiple="true"
+                     :clearable="!formControl.required"
                      :options="options"
-                     @input="updateValue"></tree-select>
+                     @input="updateValue"
+                     :value="formControl.default"></tree-select>
         <input type="hidden" v-model="value" :name="formControl.name"/>
     </div>
 </template>
@@ -17,8 +19,8 @@
         formControl: SelectControl
     }
 
-    export default Vue.extend<{value: string}, {updateValue: (val: string) => void}, {}, Props>({
-        name: "FormMultiSelect",
+    export default Vue.extend<{ value: string }, { updateValue: (val: string) => void }, {}, Props>({
+        name: "DynamicFormMultiSelect",
         props: {
             formControl: Object
         },
@@ -29,7 +31,6 @@
         },
         computed: {
             options() {
-                console.log(this.formControl.options);
                 return this.formControl.options!!.map(o => ({id: o, label: o}));
             }
         },
@@ -37,6 +38,9 @@
             updateValue(val: string) {
                 this.value = val;
             }
+        },
+        created() {
+            this.value = this.formControl.default;
         },
         components: {
             TreeSelect,
