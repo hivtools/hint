@@ -2,19 +2,21 @@
     <header class="mb-5">
         <nav class="navbar navbar-dark bg-secondary">
             <div class="container-fluid">
-                <div class="navbar-header text-light">
+                <div class="navbar-header">
                     {{title}}
                 </div>
                 <div class="dropdown">
                     <a href="#"
                        class="dropdown-toggle"
-                       v-on:click="toggle">
+                       v-on:click="toggle"
+                       v-on:blur="close">
                         File
                     </a>
                     <div class="dropdown-menu" :class="show && 'show'">
-                        <a class="dropdown-item" ref="save" v-on:click="save">Save
+                        <a class="dropdown-item" v-on:mousedown="save">Save
                             <download-icon size="20" class="icon"></download-icon>
                         </a>
+                        <a style="display:none" ref="save"></a>
                         <a class="dropdown-item" ref="load" href="#">Load
                             <upload-icon size="20" class="icon"></upload-icon>
                         </a>
@@ -40,7 +42,8 @@
 
     interface Methods {
         toggle: () => void;
-        save: () => void;
+        save: (e: Event) => void;
+        close: () => void;
     }
 
     export default Vue.extend<Data, Methods, any, "title" | "user">({
@@ -70,7 +73,11 @@
             toggle() {
                 this.show = !this.show;
             },
-            save() {
+            close() {
+                this.show = false;
+            },
+            save(e: Event) {
+                e.preventDefault();
                 const state = serialiseState(this.$store.state);
                 const hashes = {
                     ...this.baselineHashes,
@@ -82,6 +89,7 @@
                 const a = (this.$refs.save as any);
                 a.href = URL.createObjectURL(file);
                 a.download = `${this.title}-${new Date().toISOString()}.json`.toLowerCase();
+                a.click();
             }
         },
         components: {

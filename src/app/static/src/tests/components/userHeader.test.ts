@@ -46,18 +46,20 @@ describe("user header", () => {
         });
     };
 
-    it("opens dropdown", () => {
+    it("toggles dropdown on click", () => {
         const wrapper = shallowMount(UserHeader);
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        wrapper.find(".dropdown-toggle").trigger("click");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
     });
 
-    it("closes dropdown", () => {
+    it("closes dropdown on blur", () => {
         const wrapper = shallowMount(UserHeader);
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        wrapper.find(".dropdown-toggle").trigger("click");
+        wrapper.find(".dropdown-toggle").trigger("blur");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
     });
 
@@ -76,7 +78,7 @@ describe("user header", () => {
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         let link = wrapper.findAll(".dropdown-item").at(0);
-        link.trigger("click");
+        link.trigger("mousedown");
 
         link = wrapper.findAll(".dropdown-item").at(0);
 
@@ -92,10 +94,11 @@ describe("user header", () => {
         })], {type: "application/json"});
         expect((window.URL.createObjectURL as jest.Mock).mock.calls[0][0]).toStrictEqual(expectedBlob);
 
-        expect(link.attributes("href")).toBe('test.url');
+        const hiddenLink = wrapper.find({ref: "save"});
+        expect(hiddenLink.attributes("href")).toBe('test.url');
 
         const re = new RegExp("naomi-(.*)\.json");
-        expect((link.attributes("download") as string).match(re)).toBeDefined();
+        expect((hiddenLink.attributes("download") as string).match(re)).toBeDefined();
     });
 
 });
