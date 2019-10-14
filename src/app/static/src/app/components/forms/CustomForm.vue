@@ -5,7 +5,7 @@
             <p class="text-muted">{{section.description}}</p>
             <control-group v-for="group in section.controlGroups" :group="group"></control-group>
         </div>
-        <button class="btn btn-red" v-on:click="submit">Submit</button>
+        <button class="btn btn-red" v-on:click="submit">{{submitText}}</button>
     </b-form>
 </template>
 
@@ -19,7 +19,16 @@
 
     export default Vue.extend({
         name: "CustomForm",
-        props: ["id"],
+        props: {
+            id: {
+                type: String,
+                default: Math.random().toString(36).slice(-5)
+            },
+            submitText: {
+                type: String,
+                default: "Submit"
+            }
+        },
         data() {
             return {
                 form: formMeta
