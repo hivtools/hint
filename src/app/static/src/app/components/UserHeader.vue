@@ -13,7 +13,7 @@
                         File
                     </a>
                     <div class="dropdown-menu" :class="show && 'show'">
-                        <a class="dropdown-item" ref="save" tabindex="0" v-on:click="save">Save
+                        <a class="dropdown-item" ref="save" v-on:mousedown="save">Save
                             <download-icon size="20" class="icon"></download-icon>
                         </a>
                         <a class="dropdown-item" ref="load" href="#">Load
@@ -41,8 +41,8 @@
 
     interface Methods {
         toggle: () => void;
-        save: () => void;
-        close: (e: FocusEvent) => void;
+        save: (e: Event) => void;
+        close: () => void;
     }
 
     export default Vue.extend<Data, Methods, any, "title" | "user">({
@@ -72,14 +72,11 @@
             toggle() {
                 this.show = !this.show;
             },
-            close(e: FocusEvent) {
-                if (e.relatedTarget && (e.relatedTarget as HTMLElement).className == "dropdown-item") {
-                    return;
-                }
-
+            close() {
                 this.show = false;
             },
-            save() {
+            save(e: Event) {
+                e.preventDefault();
                 const state = serialiseState(this.$store.state);
                 const hashes = {
                     ...this.baselineHashes,
@@ -91,6 +88,7 @@
                 const a = (this.$refs.save as any);
                 a.href = URL.createObjectURL(file);
                 a.download = `${this.title}-${new Date().toISOString()}.json`.toLowerCase();
+                a.click();
             }
         },
         components: {
