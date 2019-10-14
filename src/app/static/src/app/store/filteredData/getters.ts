@@ -105,12 +105,16 @@ export const getters = {
 
         //TODO: ...and here's a workaround for a small bug in the current Survey metadata - 'art' for
         //indicator value, should be 'artcov'
-        /*if (state.selectedDataType == DataType.Survey) {
-            indicatorsMeta = {
-                ...indicatorsMeta
-            };
-            indicatorsMeta.art_coverage.indicator_value = "artcov";
-        }*/
+        if (state.selectedDataType == DataType.Survey) {
+            //indicatorsMeta = {
+            //    ...indicatorsMeta
+            //};
+            const art_coverage = indicatorsMeta.filter((i: IndicatorMetadata) => i.indicator == "art_coverage");
+            if (art_coverage.length > 0){
+                art_coverage[0].indicator_value = "artcov";
+            }
+
+        }
 
         for(const d of data) {
             const row = d as any;
@@ -227,19 +231,19 @@ const includeRowForSelectedChoroplethFilters = (row: any,
                                                 selectedFilters: SelectedChoroplethFilters,
                                                 flattenedRegionFilters: object) => {
 
-    if (dataType != DataType.ANC && row.sex != selectedFilters.sex!.id) {
+    if (dataType != DataType.ANC && selectedFilters.sex && row.sex != selectedFilters.sex.id) {
         return false;
     }
 
-    if (dataType != DataType.ANC && row.age_group_id != selectedFilters.age!.id) {
+    if (dataType != DataType.ANC && selectedFilters.age && row.age_group_id != selectedFilters.age.id) {
         return false;
     }
 
-    if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey!.id) {
+    if (dataType == DataType.Survey && selectedFilters.survey && row.survey_id != selectedFilters.survey.id) {
         return false;
     }
 
-    if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter!.id) {
+    if (dataType in [DataType.Program, DataType.ANC] && selectedFilters.quarter && row.quarter_id != selectedFilters.quarter.id) {
         return false;
     }
 

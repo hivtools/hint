@@ -86,7 +86,7 @@
                 return this.featuresByLevel[this.detail]
             },
             indicatorMetadata: function() {
-                return this.choroplethIndicatorsMetadata[this.indicator];
+                return this.choroplethIndicatorsMetadata.filter((i: IndicatorMetadata) => i.indicator == this.indicator)[0];
             },
             options: function() {
                 const regionIndicators = this.regionIndicators;
