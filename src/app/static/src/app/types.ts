@@ -32,3 +32,11 @@ export interface IndicatorsMap {
     artRange: IndicatorRange,
     prevRange: IndicatorRange
 }
+
+export interface LevelLabel {
+    id: number;
+    area_level_label: string;
+    display: boolean;
+}
+
+export type Dict<V> = { [k: string]: V }

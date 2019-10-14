@@ -16,16 +16,16 @@
 </template>
 <script lang="ts">
     import Vue from "vue";
-    import {mapGetters, mapState} from "vuex";
     import {LGeoJson, LMap} from 'vue2-leaflet';
     import {Feature} from "geojson";
-    import {Layer, GeoJSON} from "leaflet";
+    import {GeoJSON, Layer} from "leaflet";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
-    import {Indicator} from "../../types";
-    import {BaselineState} from "../../store/baseline/baseline";
+    import {Dict, Indicator, IndicatorRange, Indicators, LevelLabel} from "../../types";
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
     import {NestedFilterOption} from "../../generated";
+    import {mapGettersByNames, mapStateProps} from "../../utils";
+    import {BaselineState} from "../../store/baseline/baseline";
 
     interface Data {
         style: any,
@@ -33,7 +33,45 @@
         detail: number
     }
 
-    export default Vue.extend<Data, any, any, any>({
+    interface BaselineComputed {
+        features: Feature[]
+        countryRegion: unknown
+        featureLevels: LevelLabel[]
+    }
+
+    interface FilteredDataComputed {
+        selectedDataType: DataType | null
+        selectedRegions: NestedFilterOption[]
+    }
+
+    interface FilteredDataGetters {
+        regionIndicators: Dict<Indicators>
+        colorFunctions: Dict<(t: number) => string>
+        choroplethRanges: Dict<IndicatorRange>
+    }
+
+    interface Computed extends BaselineComputed, FilteredDataComputed, FilteredDataGetters {
+        countryFeature: Feature
+        maxLevel: number
+        featuresByLevel: Dict<Feature[]>
+        currentFeatures: Feature[]
+        selectedColorFunction: (t: number) => string
+        range: IndicatorRange
+        options: L.GeoJSONOptions
+        artEnabled: boolean
+        prevEnabled: boolean
+        selectedRegionFeatures: Feature[]
+    }
+
+    interface Methods {
+        onIndicatorChange: (newVal: Indicator) => void
+        onDetailChange: (newVal: number) => void
+        getColorForRegion: (region: string) => void
+        getFeatureFromAreaId: (areaId: string) => Feature | null
+        updateBounds: () => void
+    }
+
+    export default Vue.extend<Data, Methods, Computed, {}>({
         name: 'Choropleth',
         components: {
             LMap,
@@ -42,30 +80,32 @@
             MapControl
         },
         computed: {
-            ...mapState<BaselineState>("baseline", {
-                features: state => state.shape && state.shape.data.features,
-                countryFeature: function(state) {
-                    if (state.shape && state.shape.filters && state.shape.filters.regions) {
-                        const countryRegion = state.shape && state.shape.filters && state.shape.filters.regions as any;
-                        return this.getFeatureFromAreaId(countryRegion.id);
-                    }
-                    return null;
-                },
-                featureLevels: state => state.shape && state.shape.filters && state.shape.filters.level_labels ?
-                                            state.shape.filters.level_labels : []
-
-            }),
-            ...mapState<FilteredDataState>("filteredData", {
-                selectedDataType: state => state.selectedDataType,
-                selectedRegions: state => state.selectedChoroplethFilters.regions
-            }),
-            ...mapGetters('filteredData', ["regionIndicators", "colorFunctions", "choroplethRanges"]),
-            maxLevel: function() {
-                const levelNums: number[] =  Object.keys(this.featuresByLevel).map(k => parseInt(k));
+            ...mapStateProps<BaselineState, keyof BaselineComputed>("baseline", {
+                    features: state => state.shape!!.data.features as Feature[],
+                    countryRegion: state => state.shape!!.filters.regions,
+                    featureLevels: state => state.shape!!.filters.level_labels || []
+                }
+            ),
+            ...mapStateProps<FilteredDataState, keyof FilteredDataComputed>("filteredData", {
+                    selectedDataType: state => state.selectedDataType,
+                    selectedRegions: state => state.selectedChoroplethFilters.regions || []
+                }
+            ),
+            ...mapGettersByNames<keyof FilteredDataGetters>("filteredData", [
+                    "regionIndicators",
+                    "colorFunctions",
+                    "choroplethRanges"
+                ]
+            ),
+            countryFeature(): Feature {
+                return this.getFeatureFromAreaId((this.countryRegion as NestedFilterOption).id)!!;
+            },
+            maxLevel() {
+                const levelNums: number[] = Object.keys(this.featuresByLevel).map(k => parseInt(k));
                 return Math.max(...levelNums);
             },
-            featuresByLevel: function() {
-                const result   = {} as any;
+            featuresByLevel() {
+                const result = {} as any;
                 this.featureLevels.forEach((l: any) => {
                     if (l.display) {
                         result[l.id] = [];
@@ -82,22 +122,22 @@
 
                 return result;
             },
-            currentFeatures: function () {
+            currentFeatures() {
                 return this.featuresByLevel[this.detail]
             },
-            selectedColorFunction: function () {
+            selectedColorFunction() {
                 return this.colorFunctions[this.indicator];
             },
-            range: function() {
+            range() {
                 return this.choroplethRanges[this.indicator];
             },
-            prevEnabled: function() {
+            prevEnabled() {
                 return this.selectedDataType != DataType.Program;
             },
-            artEnabled: function() {
-                return this.selectedDataType in [DataType.Survey, DataType.Program, DataType.ANC];
+            artEnabled() {
+                return !!this.selectedDataType && (this.selectedDataType in [DataType.Survey, DataType.Program, DataType.ANC]);
             },
-            options: function() {
+            options() {
                 const regionIndicators = this.regionIndicators;
                 const indicator = this.indicator;
                 return {
@@ -106,20 +146,18 @@
                         const area_name = feature.properties && feature.properties["area_name"];
 
                         const values = regionIndicators[area_id];
-                        let value = values && values[indicator] && values[indicator].value;
-                        if (value == null || value == undefined) {
-                            value = "";
-                        }
+                        let value = values && values[indicator] && values[indicator]!!.value;
+
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
-                                <br/>${value}
+                                <br/>${value || ""}
                             </div>`);
                     }
                 }
             },
-            selectedRegionFeatures: function() {
+            selectedRegionFeatures(): Feature[] {
                 if (this.selectedRegions && this.selectedRegions.length > 0) {
-                    return (this.selectedRegions as NestedFilterOption[]).map(r => this.getFeatureFromAreaId(r.id));
+                    return this.selectedRegions.map((r: NestedFilterOption) => this.getFeatureFromAreaId(r.id)!!);
                 } else if (this.countryFeature) {
                     return [this.countryFeature];
                 }
@@ -144,32 +182,32 @@
             this.updateBounds();
         },
         methods: {
-            onIndicatorChange: function (newVal: string) {
+            onIndicatorChange: function (newVal: Indicator) {
                 this.indicator = newVal;
             },
             onDetailChange: function (newVal: number) {
                 this.detail = newVal
             },
             getColorForRegion: function (region: string) {
-                let data = this.regionIndicators[region];
-                data = data && data[this.indicator];
-                data = data && data.color;
+                const regionIndicators = this.regionIndicators[region];
+                const indicator = regionIndicators && regionIndicators[this.indicator];
+                let color = indicator && indicator.color;
 
-                if (data == null || data == undefined) {
+                if (!color) {
                     //show a lighter grey than the outlines if no data
                     //so unselected regions are still distinguishable
-                    data = "rgb(200,200,200)";
+                    color = "rgb(200,200,200)";
                 }
 
-                return data;
+                return color;
             },
-            getFeatureFromAreaId(areaId: string){
-                return (this.features as any[]).filter(f => f.properties.area_id == areaId)[0];
+            getFeatureFromAreaId(areaId: string): Feature {
+                return this.features.find((f: Feature) => f.properties!!.area_id == areaId)!!;
             },
-            updateBounds: function(){
-                const map = this.$refs.map;
+            updateBounds: function () {
+                const map = this.$refs.map as LMap;
                 if (map.fitBounds) {
-                    map.fitBounds(this.selectedRegionFeatures.map((f: Feature) => new GeoJSON(f).getBounds()));
+                    map.fitBounds(this.selectedRegionFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                 }
             }
         },

@@ -1,4 +1,3 @@
-
 import {getters} from "../../app/store/filteredData/getters"
 import {Module} from "vuex";
 import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
@@ -15,7 +14,7 @@ import {testGetters} from "./getters.test";
 
 describe("FilteredData regionIndicator getter", () => {
 
-    const testRootGetters  = (testIndicatorsMetadata: any) => {
+    const testRootGetters = (testIndicatorsMetadata: any) => {
         return {
             "metadata/choroplethIndicatorsMetadata": testIndicatorsMetadata
         }
@@ -23,13 +22,13 @@ describe("FilteredData regionIndicator getter", () => {
     const testAncIndicatorsMetadata = {
         art_coverage: {
             value_column: "art_coverage",
-                indicator_column: "",
-                indicator_value: ""
+            indicator_column: "",
+            indicator_value: ""
         },
         prevalence: {
             value_column: "prevalence",
-                indicator_column: "",
-                indicator_value: ""
+            indicator_column: "",
+            indicator_value: ""
         }
     };
 
@@ -55,7 +54,7 @@ describe("FilteredData regionIndicator getter", () => {
     };
 
     it("gets regionIndicators for survey", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
@@ -110,13 +109,17 @@ describe("FilteredData regionIndicator getter", () => {
         ];
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
-                {survey: mockSurveyResponse(
+                {
+                    survey: mockSurveyResponse(
                         {data: testData}
-                    )}),
-            filteredData: testState});
+                    )
+                }),
+            filteredData: testState
+        });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
-                                    testRootGetters(testSurveyIndicatorsMetadata));
+        const mockGetters = testGetters(testState);
+        const regionIndicators = getters.regionIndicators(testState, mockGetters, testRootState,
+            testRootGetters(testSurveyIndicatorsMetadata));
 
         const expected = {
 
@@ -139,7 +142,7 @@ describe("FilteredData regionIndicator getter", () => {
     });
 
     it("filters regionIndicators for survey", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
@@ -195,14 +198,16 @@ describe("FilteredData regionIndicator getter", () => {
         ];
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
-                {survey: mockSurveyResponse(
+                {
+                    survey: mockSurveyResponse(
                         {data: testData}
-                    )}),
+                    )
+                }),
             filteredData: testState
         });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
-                                    testRootGetters(testSurveyIndicatorsMetadata));
+        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState,
+            testRootGetters(testSurveyIndicatorsMetadata));
 
         const expected = {
             "area1":
@@ -216,7 +221,7 @@ describe("FilteredData regionIndicator getter", () => {
 
 
     it("gets regionIndicators for programme", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Program,
@@ -251,13 +256,16 @@ describe("FilteredData regionIndicator getter", () => {
         ];
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
-                {program: mockProgramResponse(
+                {
+                    program: mockProgramResponse(
                         {data: testData}
-                    )}),
-            filteredData: testState});
+                    )
+                }),
+            filteredData: testState
+        });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
-                                    testRootGetters(testProgrammeIndicatorsMetadata));
+        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState,
+            testRootGetters(testProgrammeIndicatorsMetadata));
 
         const expected = {
             "area1": {
@@ -272,7 +280,7 @@ describe("FilteredData regionIndicator getter", () => {
     });
 
     it("filters regionIndicators for programme", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Program,
@@ -280,7 +288,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: {id: "1", name: "0-99"},
                     survey: {id: "s1", name: "Survey 1"}, //Should be ignored for this data type
                     sex: {id: "both", name: "both"},
-                    quarter:  {id: "1", name: "Jan - Mar  2019"},
+                    quarter: {id: "1", name: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -326,13 +334,16 @@ describe("FilteredData regionIndicator getter", () => {
         ];
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
-                {program: mockProgramResponse(
+                {
+                    program: mockProgramResponse(
                         {data: testData}
-                    )}),
-            filteredData: testState});
+                    )
+                }),
+            filteredData: testState
+        });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
-                                    testRootGetters(testProgrammeIndicatorsMetadata));
+        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState,
+            testRootGetters(testProgrammeIndicatorsMetadata));
 
         const expected = {
             "area1": {
@@ -344,7 +355,7 @@ describe("FilteredData regionIndicator getter", () => {
     });
 
     it("gets regionIndicators for ANC", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.ANC,
@@ -365,7 +376,6 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area1",
                 art_coverage: 0,
                 prevalence: 2,
-
                 age_group_id: 1,
                 quarter_id: 1
             },
@@ -380,13 +390,16 @@ describe("FilteredData regionIndicator getter", () => {
         ];
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
-                {anc: mockAncResponse(
+                {
+                    anc: mockAncResponse(
                         {data: testData}
-                    )}),
-            filteredData: testState});
+                    )
+                }),
+            filteredData: testState
+        });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
-                                    testRootGetters(testAncIndicatorsMetadata));
+        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState,
+            testRootGetters(testAncIndicatorsMetadata));
 
         const expected = {
 
@@ -404,7 +417,7 @@ describe("FilteredData regionIndicator getter", () => {
     });
 
     it("filter regionIndicators for ANC", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.ANC,
@@ -454,15 +467,16 @@ describe("FilteredData regionIndicator getter", () => {
         ];
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
-                {anc: mockAncResponse(
+                {
+                    anc: mockAncResponse(
                         {data: testData}
-                    )}),
+                    )
+                }),
             filteredData: testState
         });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState,
-                                    testRootGetters(testAncIndicatorsMetadata));
-
+        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState,
+            testRootGetters(testAncIndicatorsMetadata));
         const expected = {
             "area1": {
                 "art": {value: 0, color: "rgb(0,0,0)"},
@@ -481,7 +495,7 @@ describe("FilteredData regionIndicator getter", () => {
     });
 
     it("gets regionIndicators for Output", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Output,
@@ -516,12 +530,15 @@ describe("FilteredData regionIndicator getter", () => {
         ];
         const testRootState = mockRootState({
             modelRun: mockModelRunState(
-                {result: mockModelResultResponse(
+                {
+                    result: mockModelResultResponse(
                         {data: testData as any}
-                    )}),
-            filteredData: testState});
+                    )
+                }),
+            filteredData: testState
+        });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState, null);
 
         const expected = {
             "area1": {
@@ -536,7 +553,7 @@ describe("FilteredData regionIndicator getter", () => {
     });
 
     it("filters regionIndicators for Output", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Output,
@@ -595,12 +612,15 @@ describe("FilteredData regionIndicator getter", () => {
         ];
         const testRootState = mockRootState({
             modelRun: mockModelRunState(
-                {result: mockModelResultResponse(
+                {
+                    result: mockModelResultResponse(
                         {data: testData as any}
-                    )}),
-            filteredData: testState});
+                    )
+                }),
+            filteredData: testState
+        });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState, null);
 
         const expected = {
             "area1": {
@@ -615,7 +635,7 @@ describe("FilteredData regionIndicator getter", () => {
     });
 
     it("filters regionIndicators by region", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
@@ -685,23 +705,21 @@ describe("FilteredData regionIndicator getter", () => {
         ];
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
-                {survey: mockSurveyResponse(
+                {
+                    survey: mockSurveyResponse(
                         {data: testData}
-                    )}),
-            filteredData: testState});
+                    )
+                }),
+            filteredData: testState
+        });
 
-        const testRegionGetters = {
-            ...testGetters,
-            flattenedSelectedRegionFilters: {
+        const testRegionGetters = testGetters(testState, {
                 "area1": {},
                 "area2": {}
-            }
-
-        };
+            });
 
         const regionIndicators = getters.regionIndicators(testState, testRegionGetters, testRootState,
-                                    testRootGetters(testSurveyIndicatorsMetadata));
-
+            testRootGetters(testSurveyIndicatorsMetadata));
         const expected = {
             "area1":
                 {
@@ -717,7 +735,7 @@ describe("FilteredData regionIndicator getter", () => {
     });
 
     it("gets empty regionIndicators if no data", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
@@ -734,18 +752,21 @@ describe("FilteredData regionIndicator getter", () => {
         const testState = testStore.state as FilteredDataState;
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
-                {survey: mockSurveyResponse(
+                {
+                    survey: mockSurveyResponse(
                         {data: undefined}
-                    )}),
-            filteredData: testState});
+                    )
+                }),
+            filteredData: testState
+        });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState, null);
 
         expect(regionIndicators).toStrictEqual({});
     });
 
     it("gets empty regionIndicators if no selected daa type", () => {
-        const testStore:  Module<FilteredDataState, RootState> = {
+        const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,
                 selectedDataType: null,
@@ -782,12 +803,15 @@ describe("FilteredData regionIndicator getter", () => {
         ];
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
-                {survey: mockSurveyResponse(
+                {
+                    survey: mockSurveyResponse(
                         {data: testData}
-                    )}),
-            filteredData: testState});
+                    )
+                }),
+            filteredData: testState
+        });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters, testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState, null);
 
         expect(regionIndicators).toStrictEqual({});
     });
