@@ -5,12 +5,18 @@
                            :form-control="control"></form-multi-select>
         <form-select v-if="control.type === 'select'"
                      :form-control="control"></form-select>
+        <b-form-input v-if="control.type === 'number'"
+                      :name="control.name"
+                      type="number"
+                      :number="true"
+                      :value="control.default"
+                     :form-control="control"></b-form-input>
     </b-col>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {BCol} from "bootstrap-vue";
+    import {BCol, BFormInput} from "bootstrap-vue";
     import FormMultiSelect from "./FormMultiSelect.vue";
     import FormSelect from "./FormSelect.vue";
     import {FormControl} from "./fakeFormMeta";
@@ -22,6 +28,7 @@
         },
         components: {
             BCol,
+            BFormInput,
             FormMultiSelect,
             FormSelect
         },

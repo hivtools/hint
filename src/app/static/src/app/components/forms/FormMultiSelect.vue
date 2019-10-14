@@ -10,11 +10,11 @@
 <script lang="ts">
     import Vue from "vue";
     import {BFormSelect} from "bootstrap-vue";
-    import {FormControl} from "./fakeFormMeta";
+    import {SelectControl} from "./fakeFormMeta";
     import TreeSelect from '@riophae/vue-treeselect';
 
     interface Props {
-        formControl: FormControl
+        formControl: SelectControl
     }
 
     export default Vue.extend<{value: string}, {updateValue: (val: string) => void}, {}, Props>({

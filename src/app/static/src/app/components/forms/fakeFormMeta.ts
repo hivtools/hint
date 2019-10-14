@@ -1,24 +1,34 @@
 export interface ControlSection {
     label: string
-    description: string
+    description?: string
     controlGroups: ControlGroup[]
 }
 
 export interface ControlGroup {
-    label: string
-    controls: FormControl[]
+    label?: string
+    controls: Control[]
 }
 
-export type ControlType = "multiselect" | "select"
+export type ControlType = "multiselect" | "select" | "number"
+export type Control = SelectControl | NumericalInputControl
 
 export interface FormControl {
     name: string,
     label?: string,
     type: ControlType
     required: boolean
-    options?: string[]
-    default?: string
+    default?: any
     helpText?: string
+}
+
+export interface SelectControl extends FormControl {
+    options: string[]
+}
+
+export interface NumericalInputControl extends FormControl {
+    min?: number
+    max?: number
+    default?: number
 }
 
 export const formMeta: { controlSections: ControlSection[] } = {
@@ -73,6 +83,31 @@ export const formMeta: { controlSections: ControlSection[] } = {
                             required: false
                         }
                     ]
+                }
+            ]
+        },
+        {
+            label: "Advanced options",
+            controlGroups: [
+                {
+                    label: "Maximum Iterations",
+                    controls: [
+                        {
+                            name: "max_it",
+                            type: "number",
+                            required: true,
+                            default: 250
+                        }
+                    ]
+                },
+                {
+                    label: "Number of simulations",
+                    controls: [{
+                        name: "num_sim",
+                        type: "number",
+                        required: true,
+                        default: 3000
+                    }]
                 }
             ]
         }
