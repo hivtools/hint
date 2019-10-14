@@ -12,9 +12,9 @@
     import DynamicFormMultiSelect from "./DynamicFormMultiSelect.vue";
     import DynamicFormSelect from "./DynamicFormSelect.vue";
     import DynamicFormInput from "./DynamicFormInput.vue";
-    import {FormControl} from "./fakeFormMeta";
+    import {DynamicControl} from "./fakeFormMeta";
 
-    export default Vue.extend<{}, {}, {}, { control: FormControl, colWidth: string }>({
+    export default Vue.extend<{}, {}, {}, { control: DynamicControl, colWidth: string }>({
         name: "DynamicFormControl",
         props: {
             control: Object,

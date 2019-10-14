@@ -1,11 +1,7 @@
 <template>
     <div>
-        <dynamic-form id="model-run-options"
-                     ref="modelRunForm"
-                     @submit="runModelWithParams"
-                     :include-submit-button="false"></dynamic-form>
         <button class="btn btn-red btn-lg"
-                v-on:click="submitForm"
+                v-on:click="runModelWithParams"
                 :disabled="running">Run model
         </button>
         <h4 v-if="success" class="mt-3" id="model-run-complete">Model run complete
@@ -39,11 +35,8 @@
                 run: 'modelRun/run',
                 poll: 'modelRun/poll'
             }),
-            submitForm: function () {
-                this.$refs.modelRunForm.submit();
-            },
-            runModelWithParams: function (params: Dictionary<any>) {
-                this.run(params);
+            runModelWithParams () {
+                this.run({});
             }
         },
         watch: {

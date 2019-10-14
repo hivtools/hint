@@ -1,37 +1,41 @@
-export interface ControlSection {
+export interface DynamicControlSection {
     label: string
     description?: string
-    controlGroups: ControlGroup[]
+    controlGroups: DynamicControlGroup[]
 }
 
-export interface ControlGroup {
+export interface DynamicControlGroup {
     label?: string
     controls: Control[]
 }
 
-export type ControlType = "multiselect" | "select" | "number"
+export type DynamicControlType = "multiselect" | "select" | "number"
 export type Control = SelectControl | NumberControl
 
-export interface FormControl {
+export interface DynamicControl {
     name: string,
     label?: string,
-    type: ControlType
+    type: DynamicControlType
     required: boolean
     default?: any
     helpText?: string
 }
 
-export interface SelectControl extends FormControl {
+export interface SelectControl extends DynamicControl {
     options: string[]
 }
 
-export interface NumberControl extends FormControl {
+export interface NumberControl extends DynamicControl {
     min?: number
     max?: number
     default?: number
 }
 
-export const formMeta: { controlSections: ControlSection[] } = {
+export interface DynamicForm {
+    controlSections: DynamicControlSection[]
+}
+
+export const formMeta: DynamicForm = {
     controlSections: [
         {
             label: "General",

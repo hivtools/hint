@@ -1,11 +1,8 @@
 <template>
-    <b-form :ref="id" class="custom-form">
-        <div v-for="section in form.controlSections">
-            <h3>{{section.label}}</h3>
-            <p class="text-muted">{{section.description}}</p>
-            <dynamic-form-control-group v-for="group in section.controlGroups"
-                                        :group="group"></dynamic-form-control-group>
-        </div>
+    <b-form :ref="id" class="dynamic-form">
+        <dynamic-form-control-section v-for="section in formMeta.controlSections"
+                                      :control-section="section">
+        </dynamic-form-control-section>
         <button v-if="includeSubmitButton" class="btn btn-red" v-on:click="submit">{{submitText}}</button>
     </b-form>
 </template>
@@ -14,9 +11,9 @@
 
     import Vue from "vue";
     import {BForm} from "bootstrap-vue";
-    import {formMeta} from "./fakeFormMeta";
     import {Dictionary} from "vuex";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
+    import DynamicFormControlSection from "./DynamicFormControlSection.vue";
 
     export default Vue.extend({
         name: "DynamicForm",
@@ -32,16 +29,15 @@
             includeSubmitButton: {
                 type: Boolean,
                 default: true
-            }
-        },
-        data() {
-            return {
-                form: formMeta
+            },
+            formMeta: {
+                type: Object
             }
         },
         components: {
             BForm,
-            DynamicFormControlGroup
+            DynamicFormControlGroup,
+            DynamicFormControlSection
         },
         methods: {
             submit(e: Event) {
