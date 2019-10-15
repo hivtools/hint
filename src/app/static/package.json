@@ -47,6 +47,7 @@
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3",
     "vue": "^2.6.10",
+    "vue-feather-icons": "^5.0.0",
     "vue-jest": "^3.0.4",
     "vue-loader": "^15.7.0",
     "vue-template-compiler": "^2.6.8",

@@ -52,7 +52,7 @@ describe('Dynamic form control group component', function () {
         });
 
         expect(rendered.findAll(DynamicFormControl).length).toBe(2);
-        expect(rendered.findAll(DynamicFormControl).at(0).props("control")).toStrictEqual({
+        expect(rendered.findAll(DynamicFormControl).at(0).props("formControl")).toStrictEqual({
             name: "id_1",
             type: "number",
             required: true

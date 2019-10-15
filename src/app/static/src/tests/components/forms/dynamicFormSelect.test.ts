@@ -1,6 +1,6 @@
 import {mount} from "@vue/test-utils";
-import DynamicFormControl from "../../../app/components/forms/DynamicFormControl.vue";
 import {SelectControl} from "../../../app/components/forms/fakeFormMeta";
+import DynamicFormSelect from "../../../app/components/forms/DynamicFormSelect.vue";
 
 describe('Dynamic form select component', function () {
 
@@ -13,20 +13,19 @@ describe('Dynamic form select component', function () {
     };
 
     it("renders options", () => {
-        const rendered = mount(DynamicFormControl, {
+        const rendered = mount(DynamicFormSelect, {
             propsData: {
-                control: fakeSelect
+                formControl: fakeSelect
             }
         });
-
-        const options = rendered.find("select").element.innerHTML;
-        expect(options).toBe("<option value=\"opt1\">opt1</option><option value=\"opt2\">opt2</option>");
+        const options = rendered.findAll("option");
+        expect(options.length).toBe(3);
     });
 
     it("default is selected if present", () => {
-        const rendered = mount(DynamicFormControl, {
+        const rendered = mount(DynamicFormSelect, {
             propsData: {
-                control: fakeSelect
+                formControl: fakeSelect
             }
         });
 
@@ -34,16 +33,26 @@ describe('Dynamic form select component', function () {
         expect((select.element as HTMLSelectElement).value).toBe("opt2");
     });
 
-    it("displays 'choose option' message if default is not given", () => {
-        const rendered = mount(DynamicFormControl, {
+    it("is required if formControl.required is true", () => {
+        const rendered = mount(DynamicFormSelect, {
             propsData: {
-                control: {...fakeSelect, default: null}
+                formControl: {...fakeSelect, required: true}
             }
         });
 
         const select = rendered.find("select");
-        expect((select.element as HTMLSelectElement).value).toBe("");
-        expect(select.findAll("option").at(0).text()).toBe("Select...")
+        expect((select.element as HTMLSelectElement).required).toBe(true);
+    });
+
+    it("is not required if formControl.required is false", () => {
+        const rendered = mount(DynamicFormSelect, {
+            propsData: {
+                formControl: {...fakeSelect, required: false}
+            }
+        });
+
+        const select = rendered.find("select");
+        expect((select.element as HTMLSelectElement).required).toBe(false);
     });
 
 });

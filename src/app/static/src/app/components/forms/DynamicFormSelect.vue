@@ -1,12 +1,10 @@
 <template>
-    <b-form-select :options="formControl.options"
-                   :plain="true"
-                   :name="formControl.name"
-                   :value="formControl.default">
-        <template v-if="!formControl.default" v-slot:first>
-            <option :value="null" disabled>Select...</option>
-        </template>
-    </b-form-select>
+    <select class="form-control" :name="formControl.name" :required="formControl.required">
+        <option value>Select...</option>
+        <option v-for="opt in formControl.options" :value="opt" :selected="formControl.default === opt">
+            {{opt}}
+        </option>
+    </select>
 </template>
 
 <script lang="ts">

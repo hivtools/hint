@@ -56,7 +56,7 @@ export const formMeta: DynamicForm = {
                     controls: [
                         {
                             name: "area_level",
-                            type: "select",
+                            type: "multiselect",
                             options: ["Apr - Jun 2015", "Jul - Sep 2015"],
                             required: true
                         }]
@@ -74,9 +74,10 @@ export const formMeta: DynamicForm = {
                             name: "art_t1",
                             label: "Time 1",
                             type: "select",
+                            default: "Jan - Mar 2015",
                             helpText: "Quarter matching midpoint of survey",
                             options: ["Jan - Mar 2015", "Apr - Jun 2015"],
-                            required: false
+                            required: true
                         },
                         {
                             name: "art_t2",

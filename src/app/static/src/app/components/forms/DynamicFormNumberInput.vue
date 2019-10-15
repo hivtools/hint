@@ -4,7 +4,8 @@
                   :number="true"
                   :value="formControl.default"
                   :min="formControl.min"
-                  :max="formControl.max"></b-form-input>
+                  :max="formControl.max"
+                  :required="formControl.required"></b-form-input>
 </template>
 
 <script lang="ts">

@@ -1,4 +1,4 @@
-import {DynamicForm, NumberControl} from "../../../app/components/forms/fakeFormMeta";
+import {DynamicForm, NumberControl, SelectControl} from "../../../app/components/forms/fakeFormMeta";
 import {mount, shallowMount} from "@vue/test-utils";
 import DynamicFormComponent from "../../../app/components/forms/DynamicForm.vue";
 import DynamicFormControlSection from "../../../app/components/forms/DynamicFormControlSection.vue";
@@ -20,6 +20,11 @@ describe('Dynamic form component', function () {
                             name: "id_1",
                             type: "number",
                             required: true
+                        } as NumberControl,
+                        {
+                            name: "id_2",
+                            type: "number",
+                            required: false
                         } as NumberControl
                     ]
                 }]
@@ -65,33 +70,6 @@ describe('Dynamic form component', function () {
             });
     });
 
-    it("emits event with serialised form data on button submit", () => {
-
-        const rendered = mount(DynamicFormComponent, {
-            propsData: {
-                formMeta: fakeFormMeta
-            }
-        });
-
-        rendered.find("input").setValue(10);
-        rendered.find("button").trigger("click");
-        expect(rendered.emitted("submit")[0][0]).toStrictEqual({"id_1": "10"});
-    });
-
-    it("emits event and returns serialised form data on programmatic submit", () => {
-
-        const rendered = mount(DynamicFormComponent, {
-            propsData: {
-                formMeta: fakeFormMeta
-            }
-        });
-
-        rendered.find("input").setValue(10);
-        const result = (rendered.vm as any).submit();
-        expect(rendered.emitted("submit")[0][0]).toStrictEqual({"id_1": "10"});
-        expect(result).toStrictEqual({"id_1": "10"});
-    });
-
     it("does not render button if includeSubmitButton is false", () => {
 
         const rendered = mount(DynamicFormComponent, {
@@ -104,5 +82,82 @@ describe('Dynamic form component', function () {
         expect(rendered.findAll("button").length).toBe(0);
     });
 
+    it("adds was-validated class on submit", () => {
+        const rendered = mount(DynamicFormComponent, {
+            propsData: {
+                formMeta: fakeFormMeta
+            }
+        });
+
+        rendered.find("button").trigger("click");
+        expect(rendered.classes()).toContain("was-validated");
+    });
+
+    describe("valid submission", () => {
+
+        it("emits event with serialised form data on button submit", () => {
+
+            const rendered = mount(DynamicFormComponent, {
+                propsData: {
+                    formMeta: fakeFormMeta
+                }
+            });
+
+            rendered.find("input").setValue(10);
+            rendered.find("button").trigger("click");
+            expect(rendered.emitted("submit")[0][0]).toStrictEqual({"id_1": "10", "id_2": null});
+        });
+
+        it("emits event and returns serialised form data on programmatic submit", () => {
+
+            const rendered = mount(DynamicFormComponent, {
+                propsData: {
+                    formMeta: fakeFormMeta
+                }
+            });
+
+            rendered.find("[name=id_1]").setValue(10);
+            const result = (rendered.vm as any).submit();
+            const expected = {
+                data: {"id_1": "10", "id_2": null},
+                valid: true,
+                missingValues: []
+            };
+            expect(rendered.emitted("submit")[0][0]).toStrictEqual(expected.data);
+            expect(result).toStrictEqual(expected);
+        });
+    });
+
+    describe("invalid submission", () => {
+
+        it("does not emit event on button submit", () => {
+
+            const rendered = mount(DynamicFormComponent, {
+                propsData: {
+                    formMeta: fakeFormMeta
+                }
+            });
+
+            rendered.find("button").trigger("click");
+            expect(rendered.emitted("submit")).toBeUndefined();
+        });
+
+        it("returns validation data and does not emit event on programmatic submit", () => {
+
+            const rendered = mount(DynamicFormComponent, {
+                propsData: {
+                    formMeta: fakeFormMeta
+                }
+            });
+
+            const result = (rendered.vm as any).submit();
+            expect(rendered.emitted("submit")).toBeUndefined();
+            expect(result).toStrictEqual({
+                valid: false,
+                data: {"id_1": null, "id_2": null},
+                missingValues: ["id_1"]
+            });
+        });
+    })
 
 });

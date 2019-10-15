@@ -11,4 +11,46 @@
   input[type=number] {
     max-width: 120px;
   }
+
+  .vue-treeselect__control {
+    @extend .form-control;
+
+    .vue-treeselect__placeholder {
+      color: inherit;
+      line-height: 26px;
+    }
+  }
+
+  .vue-treeselect--focused.vue-treeselect--open, .vue-treeselect--focused:not(.vue-treeselect--open) {
+    .vue-treeselect__control {
+      @extend .form-control:focus
+    }
+  }
+
+  .vue-treeselect__multi-value-item-container {
+    padding-top: 0;
+  }
+
+  .vue-treeselect__control-arrow-container {
+    padding-top: 8px;
+    vertical-align: top;
+  }
+
+  &.was-validated {
+    .is-valid {
+      .vue-treeselect__control {
+        @extend .form-control.is-valid
+      }
+    }
+
+    .is-invalid {
+      .vue-treeselect__control {
+        @extend .form-control.is-invalid
+      }
+
+      + .invalid-feedback {
+        display: block;
+      }
+    }
+  }
 }

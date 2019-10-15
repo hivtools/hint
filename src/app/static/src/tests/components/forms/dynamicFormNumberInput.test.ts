@@ -25,6 +25,29 @@ describe('Dynamic form number input component', function () {
         expect(inputElement.max).toBe("");
     });
 
+    it("is required if formControl.required is true", () => {
+        const rendered = mount(DynamicFormNumberInput, {
+            propsData: {
+                formControl: {...fakeNumber, required: true}
+            }
+        });
+
+        const inputElement = rendered.find("input").element as HTMLInputElement;
+        expect(inputElement.required).toBe(true);
+    });
+
+
+    it("is not required if formControl.required is false", () => {
+        const rendered = mount(DynamicFormNumberInput, {
+            propsData: {
+                formControl: {...fakeNumber, required: false}
+            }
+        });
+
+        const inputElement = rendered.find("input").element as HTMLInputElement;
+        expect(inputElement.required).toBe(false);
+    });
+
     it("renders number input with min and max", () => {
         const rendered = mount(DynamicFormNumberInput, {
             propsData: {

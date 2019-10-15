@@ -1,8 +1,9 @@
 <template>
     <b-col :md="colWidth">
-        <label v-if="control.label">{{control.label}}</label>
+        <label v-if="formControl.label">{{formControl.label}}</label>
         <component :is="dynamicComponent"
-                   :form-control="control"></component>
+                   :form-control="formControl"></component>
+        <div class="invalid-feedback">This field is required</div>
     </b-col>
 </template>
 
@@ -14,15 +15,15 @@
     import {DynamicControl} from "./fakeFormMeta";
     import DynamicFormNumberInput from "./DynamicFormNumberInput.vue";
 
-    export default Vue.extend<{}, {}, {}, { control: DynamicControl, colWidth: string }>({
+    export default Vue.extend<{}, {}, {}, { formControl: DynamicControl, colWidth: string }>({
         name: "DynamicFormControl",
         props: {
-            control: Object,
+            formControl: Object,
             colWidth: String
         },
         computed: {
-            dynamicComponent: function() {
-                switch(this.control.type) {
+            dynamicComponent() {
+                switch(this.formControl.type) {
                     case "select":
                         return "dynamic-form-select";
                     case "multiselect":

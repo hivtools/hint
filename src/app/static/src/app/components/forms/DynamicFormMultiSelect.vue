@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <div :class="cssClass">
         <tree-select :multiple="true"
                      :clearable="!formControl.required"
                      :options="options"
                      @input="updateValue"
-                     :value="formControl.default"></tree-select>
+                     :value="value"></tree-select>
         <input type="hidden" v-model="value" :name="formControl.name"/>
     </div>
 </template>
@@ -32,6 +32,10 @@
         computed: {
             options() {
                 return this.formControl.options!!.map(o => ({id: o, label: o}));
+            },
+            cssClass() {
+                const valid = !this.formControl.required || !!this.value;
+                return valid ? "is-valid" : "is-invalid";
             }
         },
         methods: {

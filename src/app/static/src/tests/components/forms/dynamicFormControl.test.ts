@@ -31,7 +31,7 @@ describe('Dynamic form control component', function () {
     it("renders label if it exists", () => {
         const rendered = shallowMount(DynamicFormControl, {
             propsData: {
-                control: fakeNumber
+                formControl: fakeNumber
             }
         });
         expect(rendered.find("label").text()).toBe("Number label");
@@ -40,7 +40,7 @@ describe('Dynamic form control component', function () {
     it("does not renders label if it does not exist", () => {
         const rendered = shallowMount(DynamicFormControl, {
             propsData: {
-                control: fakeSelect
+                formControl: fakeSelect
             }
         });
         expect(rendered.findAll("label").length).toBe(0);
@@ -49,8 +49,8 @@ describe('Dynamic form control component', function () {
     it("col has given width", () => {
         const rendered = mount(DynamicFormControl, {
             propsData: {
-                control: fakeNumber,
-                colWidth: 3
+                formControl: fakeNumber,
+                colWidth: "3"
             }
         });
         expect(rendered.element.classList).toContain("col-md-3");
@@ -59,7 +59,7 @@ describe('Dynamic form control component', function () {
     it("renders number input when formControl type is number", () => {
         const rendered = shallowMount(DynamicFormControl, {
             propsData: {
-                control: fakeNumber
+                formControl: fakeNumber
             }
         });
 
@@ -70,7 +70,7 @@ describe('Dynamic form control component', function () {
     it("renders select when formControl type is select", () => {
         const rendered = shallowMount(DynamicFormControl, {
             propsData: {
-                control: fakeSelect
+                formControl: fakeSelect
             }
         });
 
@@ -81,7 +81,7 @@ describe('Dynamic form control component', function () {
     it("renders multi-select when formControl type is multiselect", () => {
         const rendered = shallowMount(DynamicFormControl, {
             propsData: {
-                control: fakeMultiSelect
+                formControl: fakeMultiSelect
             }
         });
 

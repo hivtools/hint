@@ -37,19 +37,38 @@
     import Vue from "vue";
     import TreeSelect from '@riophae/vue-treeselect'
     import {LControl} from 'vue2-leaflet';
-    import {Indicator} from "../../types";
-    import {mapGetters, mapState} from "vuex";
-    import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
+    import {DataType} from "../../store/filteredData/filteredData";
+    import {PrevalenceAndArtCoverageIndicators} from "../../generated";
     import {BaselineState} from "../../store/baseline/baseline";
+    import {mapGetterByName, mapStatePropByName, mapStateProp} from "../../utils";
 
     interface Data {
         detail: any;
         optionsLoaded: boolean;
     }
 
-    const namespace = "metadata";
+    interface Props {
+        indicator: string,
+        initialDetail: number
+    }
 
-    export default Vue.extend<Data, any, any, any>({
+    interface Option {
+        id: any;
+        label: string;
+    }
+
+    interface Computed {
+        selectedDataType: DataType
+        detailOptions: Option[]
+        indicatorOptions: Option[]
+        choroplethIndicatorsMetadata: PrevalenceAndArtCoverageIndicators
+    }
+
+    interface Methods {
+        indicatorChanged: (newVal: string) => void;
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: 'MapControl',
         components: {
             TreeSelect,
@@ -66,21 +85,18 @@
             }
         },
         computed: {
-            ...mapState<FilteredDataState>("filteredData", {
-                selectedDataType: state => state.selectedDataType
-            }),
-            ...mapState<BaselineState>("baseline", {
-                detailOptions: state => {
-                    const levels = state.shape && state.shape.filters && state.shape.filters.level_labels ?
-                                    state.shape.filters.level_labels : [];
+            selectedDataType: mapStatePropByName<DataType>("filteredData", "selectedDataType"),
+            detailOptions: mapStateProp<BaselineState, Option[]>("baseline", state => {
+                const levels = state.shape && state.shape.filters && state.shape.filters.level_labels ?
+                    state.shape.filters.level_labels : [];
 
-                    return levels.filter(l => l.display).map(l => {
-                        return {id: l.id, label: l.area_level_label}
-                    });
-                }
+                return levels.filter(l => l.display).map(l => {
+                    return {id: l.id, label: l.area_level_label}
+                });
             }),
-            ...mapGetters(namespace, ["choroplethIndicatorsMetadata"]),
-            indicatorOptions: function() {
+            choroplethIndicatorsMetadata:
+                mapGetterByName<PrevalenceAndArtCoverageIndicators>("metadata", "choroplethIndicatorsMetadata"),
+            indicatorOptions: function () {
 
                 const result = [];
 

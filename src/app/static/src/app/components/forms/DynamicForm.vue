@@ -1,5 +1,5 @@
 <template>
-    <b-form :ref="id" class="dynamic-form">
+    <b-form :ref="id" class="dynamic-form" :validated="validated" novalidate>
         <dynamic-form-control-section v-for="section in formMeta.controlSections"
                                       :control-section="section">
         </dynamic-form-control-section>
@@ -14,9 +14,29 @@
     import {Dictionary} from "vuex";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import DynamicFormControlSection from "./DynamicFormControlSection.vue";
+    import {DynamicForm} from "./fakeFormMeta";
+    import {Dict} from "../../types";
 
-    export default Vue.extend({
+    interface Props {
+        formMeta: DynamicForm,
+        includeSubmitButton: boolean
+        submitText: string
+        id: string
+    }
+
+    interface SubmissionResult {
+        data: any
+        valid: boolean
+        missingValues: string[]
+    }
+
+    export default Vue.extend<{ validated: boolean }, { submit: (e: Event) => SubmissionResult }, { required: Dict<boolean> }, Props>({
         name: "DynamicForm",
+        data() {
+            return {
+                validated: false
+            }
+        },
         props: {
             id: {
                 type: String,
@@ -39,6 +59,20 @@
             DynamicFormControlGroup,
             DynamicFormControlSection
         },
+        computed: {
+            required() {
+                const requiredDict = {} as Dict<boolean>;
+                this.formMeta.controlSections.map(s => {
+                    s.controlGroups.map(g => {
+                        g.controls.map(c => {
+                            requiredDict[c.name] = c.required
+                        })
+                    })
+                });
+
+                return requiredDict;
+            }
+        },
         methods: {
             submit(e: Event) {
                 if (e) {
@@ -46,12 +80,21 @@
                 }
                 const form = this.$refs[this.id] as HTMLFormElement;
                 const formData = new FormData(form);
-                const data: Dictionary<any> = {};
-                formData.forEach(function (value, key) {
-                    data[key] = value;
+                const data: Dict<any> = {};
+                let valid = true;
+                const missingValues = [] as string[];
+                formData.forEach((value, key) => {
+                    if (!value && this.required[key]) {
+                        valid = false;
+                        missingValues.push(key);
+                    }
+                    data[key] = value || null;
                 });
-                this.$emit("submit", data);
-                return data;
+                if (valid) {
+                    this.$emit("submit", data);
+                }
+                this.validated = true;
+                return {valid, data, missingValues}
             }
         }
     })
