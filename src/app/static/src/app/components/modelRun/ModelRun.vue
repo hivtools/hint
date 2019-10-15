@@ -15,11 +15,11 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {Dictionary, mapActions, mapState} from "vuex";
+    import {mapActions, mapState} from "vuex";
     import {ModelRunState, ModelRunStatus} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
-    import DynamicForm from "../forms/DynamicForm.vue";
+    import {ModelSubmitParameters} from "../../generated";
 
     const namespace: string = 'modelRun';
 
@@ -35,8 +35,17 @@
                 run: 'modelRun/run',
                 poll: 'modelRun/poll'
             }),
-            runModelWithParams () {
-                this.run({});
+            runModelWithParams() {
+                const params: ModelSubmitParameters = {
+                    max_iterations: 1,
+                    no_of_simulations: 2,
+                    options: {
+                        programme: false,
+                        anc: true
+                    }
+                };
+
+                this.run(params);
             }
         },
         watch: {
@@ -53,8 +62,7 @@
         },
         components: {
             Modal,
-            Tick,
-            DynamicForm
+            Tick
         }
     });
 </script>
