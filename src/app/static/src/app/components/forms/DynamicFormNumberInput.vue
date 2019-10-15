@@ -11,7 +11,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {BFormInput} from "bootstrap-vue";
-    import {NumberControl} from "./fakeFormMeta";
+    import {NumberControl} from "./types";
 
     interface Props {
         formControl: NumberControl

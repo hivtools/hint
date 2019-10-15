@@ -1,7 +1,4 @@
 .dynamic-form {
-  select.form-control {
-    height: calc(1.5em + 0.75rem + 2px) !important;
-  }
 
   .group-label {
     position: absolute;
@@ -36,14 +33,39 @@
     vertical-align: top;
   }
 
+  .vue-treeselect__control-arrow {
+    color: inherit;
+  }
+
   &.was-validated {
+
+    .vue-treeselect__value-container {
+      display: block;
+    }
+
+    .vue-treeselect__control-arrow-container {
+      display: none;
+    }
+
     .is-valid {
+      .vue-treeselect--focused.vue-treeselect--open, .vue-treeselect--focused:not(.vue-treeselect--open) {
+        .vue-treeselect__control {
+          @extend .form-control.is-valid:focus
+        }
+      }
+
       .vue-treeselect__control {
         @extend .form-control.is-valid
       }
     }
 
     .is-invalid {
+      .vue-treeselect--focused.vue-treeselect--open, .vue-treeselect--focused:not(.vue-treeselect--open) {
+        .vue-treeselect__control {
+          @extend .form-control.is-invalid:focus
+        }
+      }
+
       .vue-treeselect__control {
         @extend .form-control.is-invalid
       }
@@ -52,5 +74,15 @@
         display: block;
       }
     }
+  }
+
+  select {
+    background-image: linear-gradient(45deg, transparent 50%, $body-color 60%), linear-gradient(135deg, $body-color 40%, transparent 50%);
+    background-position: calc(100% - 15px) 15px, calc(100% - 9px) 15px, 100% 0;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
   }
 }

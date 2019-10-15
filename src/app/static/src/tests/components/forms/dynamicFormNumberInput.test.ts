@@ -1,5 +1,5 @@
 import {mount} from "@vue/test-utils";
-import {NumberControl} from "../../../app/components/forms/fakeFormMeta";
+import {NumberControl} from "../../../app/components/forms/types";
 import DynamicFormNumberInput from "../../../app/components/forms/DynamicFormNumberInput.vue";
 
 describe('Dynamic form number input component', function () {

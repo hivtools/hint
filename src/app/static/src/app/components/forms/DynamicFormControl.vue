@@ -12,7 +12,7 @@
     import {BCol} from "bootstrap-vue";
     import DynamicFormMultiSelect from "./DynamicFormMultiSelect.vue";
     import DynamicFormSelect from "./DynamicFormSelect.vue";
-    import {DynamicControl} from "./fakeFormMeta";
+    import {DynamicControl} from "./types";
     import DynamicFormNumberInput from "./DynamicFormNumberInput.vue";
 
     export default Vue.extend<{}, {}, {}, { formControl: DynamicControl, colWidth: string }>({

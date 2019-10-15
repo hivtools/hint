@@ -2,7 +2,7 @@ import {shallowMount} from "@vue/test-utils";
 import {BCol} from "bootstrap-vue";
 import DynamicFormControlGroup from "../../../app/components/forms/DynamicFormControlGroup.vue";
 import DynamicFormControl from "../../../app/components/forms/DynamicFormControl.vue";
-import {DynamicControlGroup, NumberControl, SelectControl} from "../../../app/components/forms/fakeFormMeta";
+import {DynamicControlGroup, NumberControl, SelectControl} from "../../../app/components/forms/types";
 
 describe('Dynamic form control group component', function () {
 

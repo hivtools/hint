@@ -11,10 +11,9 @@
 
     import Vue from "vue";
     import {BForm} from "bootstrap-vue";
-    import {Dictionary} from "vuex";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import DynamicFormControlSection from "./DynamicFormControlSection.vue";
-    import {DynamicForm} from "./fakeFormMeta";
+    import {DynamicForm} from "./types";
     import {Dict} from "../../types";
 
     interface Props {
@@ -93,6 +92,7 @@
                 if (valid) {
                     this.$emit("submit", data);
                 }
+                console.log(data);
                 this.validated = true;
                 return {valid, data, missingValues}
             }

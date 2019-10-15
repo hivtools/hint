@@ -1,5 +1,5 @@
 import {mount} from "@vue/test-utils";
-import {SelectControl} from "../../../app/components/forms/fakeFormMeta";
+import {SelectControl} from "../../../app/components/forms/types";
 import DynamicFormSelect from "../../../app/components/forms/DynamicFormSelect.vue";
 
 describe('Dynamic form select component', function () {

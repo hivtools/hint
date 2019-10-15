@@ -1,4 +1,4 @@
-import {DynamicForm, NumberControl, SelectControl} from "../../../app/components/forms/fakeFormMeta";
+import {DynamicForm, NumberControl} from "../../../app/components/forms/types";
 import {mount, shallowMount} from "@vue/test-utils";
 import DynamicFormComponent from "../../../app/components/forms/DynamicForm.vue";
 import DynamicFormControlSection from "../../../app/components/forms/DynamicFormControlSection.vue";

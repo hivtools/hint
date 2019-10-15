@@ -1,6 +1,6 @@
 import {mount, shallowMount} from "@vue/test-utils";
 import DynamicFormControlSection from "../../../app/components/forms/DynamicFormControlSection.vue";
-import {DynamicControlSection} from "../../../app/components/forms/fakeFormMeta";
+import {DynamicControlSection} from "../../../app/components/forms/types";
 import DynamicFormControlGroup from "../../../app/components/forms/DynamicFormControlGroup.vue";
 
 describe('Dynamic form control section component', function () {

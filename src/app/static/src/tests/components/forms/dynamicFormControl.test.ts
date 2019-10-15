@@ -1,6 +1,6 @@
 import {mount, shallowMount} from "@vue/test-utils";
 import DynamicFormControl from "../../../app/components/forms/DynamicFormControl.vue";
-import {NumberControl, SelectControl} from "../../../app/components/forms/fakeFormMeta";
+import {NumberControl, SelectControl} from "../../../app/components/forms/types";
 import DynamicFormNumberInput from "../../../app/components/forms/DynamicFormNumberInput.vue";
 import DynamicFormSelect from "../../../app/components/forms/DynamicFormSelect.vue";
 import DynamicFormMultiSelect from "../../../app/components/forms/DynamicFormMultiSelect.vue";

@@ -2,49 +2,58 @@
     <div :class="cssClass">
         <tree-select :multiple="true"
                      :clearable="!formControl.required"
-                     :options="options"
+                     :options="formControl.options"
                      @input="updateValue"
-                     :value="value"></tree-select>
-        <input type="hidden" v-model="value" :name="formControl.name"/>
+                     :normalizer="normalizer"
+                     :value="initialValue"></tree-select>
+        <input type="hidden" v-model="valueAsString" :name="formControl.name"/>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
     import {BFormSelect} from "bootstrap-vue";
-    import {SelectControl} from "./fakeFormMeta";
+    import {SelectControl} from "./types";
     import TreeSelect from '@riophae/vue-treeselect';
 
     interface Props {
         formControl: SelectControl
     }
 
-    export default Vue.extend<{ value: string }, { updateValue: (val: string) => void }, {}, Props>({
+    interface TreeSelectNode {
+        id: string,
+        label: string
+    }
+
+    interface Methods {
+        normalizer: (node: string) => TreeSelectNode,
+        updateValue: (val: string) => void
+    }
+
+    export default Vue.extend<{ valueAsString: string, initialValue: string[] }, Methods, {}, Props>({
         name: "DynamicFormMultiSelect",
         props: {
             formControl: Object
         },
         data() {
             return {
-                value: ""
+                initialValue: this.$props.formControl.default ? [this.$props.formControl.default] : [],
+                valueAsString: this.$props.formControl.default || ""
             }
         },
         computed: {
-            options() {
-                return this.formControl.options!!.map(o => ({id: o, label: o}));
-            },
             cssClass() {
-                const valid = !this.formControl.required || !!this.value;
+                const valid = !this.formControl.required || this.valueAsString.length > 0;
                 return valid ? "is-valid" : "is-invalid";
             }
         },
         methods: {
             updateValue(val: string) {
-                this.value = val;
+                this.valueAsString = val;
+            },
+            normalizer(node: string) {
+                return {id: node, label: node};
             }
-        },
-        created() {
-            this.value = this.formControl.default;
         },
         components: {
             TreeSelect,

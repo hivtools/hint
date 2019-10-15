@@ -11,7 +11,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {BCol, BRow} from "bootstrap-vue";
-    import {DynamicControlGroup} from "./fakeFormMeta";
+    import {DynamicControlGroup} from "./types";
     import DynamicFormControl from "./DynamicFormControl.vue";
 
     export default Vue.extend<{}, {}, { colWidth: string }, { controlGroup: DynamicControlGroup }>({

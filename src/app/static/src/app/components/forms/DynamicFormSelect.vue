@@ -10,7 +10,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {BFormSelect} from "bootstrap-vue";
-    import {SelectControl} from "./fakeFormMeta";
+    import {SelectControl} from "./types";
 
     interface Props {
         formControl: SelectControl
