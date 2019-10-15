@@ -150,10 +150,11 @@
 
                         const values = regionIndicators[area_id];
                         let value = values && values[indicator] && values[indicator]!!.value;
+                        const stringVal =  (value || value === 0) ? value.toString() : "";
 
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
-                                <br/>${value || ""}
+                                <br/>${stringVal}
                             </div>`);
                     }
                 }

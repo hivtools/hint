@@ -311,7 +311,7 @@ describe("Choropleth component", () => {
         expect(options).toStrictEqual({});
     });
 
-    it("options onEachFeature returns function which generates correct tooltip", () => {
+    it("options onEachFeature returns function which generates correct tooltips", () => {
 
         const filteredData = {...initialFilteredDataState};
         const testStore = new Vuex.Store({
@@ -332,7 +332,7 @@ describe("Choropleth component", () => {
                         regionIndicators: () => {
                             return {
                                 area_1: {prev: {value: 1}},
-                                area_2: {prev: {value: 2}}
+                                area_2: {prev: {value: 0}}
                             }
                         },
                     },
@@ -361,6 +361,19 @@ describe("Choropleth component", () => {
         expect(mockLayer.bindPopup.mock.calls[0][0]).toEqual(`<div>
                             <strong>Area 1</strong>
                             <br/>1
+                        </div>`);
+
+        const mockZeroValueFeature = {
+            properties: {
+                area_id: "area_2",
+                area_name: "Area 2"
+            }
+        };
+
+        onEachFeatureFunction(mockZeroValueFeature, mockLayer);
+        expect(mockLayer.bindPopup.mock.calls[1][0]).toEqual(`<div>
+                            <strong>Area 2</strong>
+                            <br/>0
                         </div>`);
 
     });
