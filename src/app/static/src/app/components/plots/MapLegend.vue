@@ -13,7 +13,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
-    import {colorFunctionFromName} from "../../store/filteredData/utils";
+    import {colorFunctionFromName, roundToContext} from "../../store/filteredData/utils";
 
     export default Vue.extend({
         name: "MapLegend",
@@ -31,17 +31,15 @@
                     const colorFunction = colorFunctionFromName(this.metadata.colour);
                     const step = (max - min) / 5;
 
-                    //Allow levels to have 1 more decimal place than max value
-                    const maxFraction = max.toString().split(".");
-                    const maxDecPl = maxFraction.length > 1 ? maxFraction[1].length : 0;
-                    const roundingNum = Math.pow(10, maxDecPl + 1);
-
                     return [0, 1, 2, 3, 4, 5].map((i) => {
-                        const val = Math.round((min + (i * step)) * roundingNum) / roundingNum;
+                        let val = min + (i * step);
+                        val = roundToContext(val, max);
+
                         let valAsProportion = (val - min) / (max - min);
                         if (this.metadata.invert_scale) {
                             valAsProportion = 1 - valAsProportion;
                         }
+
                         return {
                             val, style: {background: colorFunction(valAsProportion)}
                         }
