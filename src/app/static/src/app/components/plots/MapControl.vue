@@ -37,11 +37,9 @@
     import Vue from "vue";
     import TreeSelect from '@riophae/vue-treeselect'
     import {LControl} from 'vue2-leaflet';
-    import {mapGetters, mapState} from "vuex";
-    import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
     import {BaselineState} from "../../store/baseline/baseline";
     import {IndicatorMetadata} from "../../generated";
-    import {mapGetterByName, mapStatePropByName, mapStateProp} from "../../utils";
+    import {mapGetterByName, mapStateProp} from "../../utils";
 
     interface Data {
         detail: any;
