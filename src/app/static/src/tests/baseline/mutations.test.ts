@@ -1,10 +1,8 @@
 import {mutations} from "../../app/store/baseline/mutations";
-import {mockModelRunState, mockPJNZResponse, mockPopulationResponse, mockRootState, mockShapeResponse} from "../mocks";
+import {mockPJNZResponse, mockPopulationResponse, mockRootState, mockShapeResponse} from "../mocks";
 import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
-import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
-import {initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 
 describe("Baseline mutations", () => {
 
@@ -15,7 +13,7 @@ describe("Baseline mutations", () => {
             payload: mockPJNZResponse({data: {country: "Malawi"}, filename: "file.pjnz"})
         });
         expect(testState.country).toBe("Malawi");
-        expect(testState.pjnzFilename).toBe("file.pjnz");
+        expect(testState.pjnz!!.filename).toBe("file.pjnz");
         expect(testState.pjnzError).toBe("");
     });
 
@@ -60,20 +58,20 @@ describe("Baseline mutations", () => {
 
     it("sets country and filename and clears error if present on PJNZUpdated", () => {
 
-        const testState = {...initialBaselineState, pjnzError : "test"};
+        const testState = {...initialBaselineState, pjnzError: "test"};
         mutations.PJNZUpdated(testState, {
             payload: mockPJNZResponse({filename: "file.pjnz", data: {country: "Malawi"}})
         });
-        expect(testState.pjnzFilename).toBe("file.pjnz");
+        expect(testState.pjnz!!.filename).toBe("file.pjnz");
         expect(testState.country).toBe("Malawi");
         expect(testState.pjnzError).toBe("");
     });
 
     it("clears country and filename on PJNZUpdated if no data present", () => {
 
-        const testState = {...initialBaselineState, pjnzError: "", country: "test", pjnzFilename: "test"};
+        const testState = {...initialBaselineState, pjnzError: "", country: "test", pjnz: "TEST" as any};
         mutations.PJNZUpdated(testState, {payload: null});
-        expect(testState.pjnzFilename).toBe("");
+        expect(testState.pjnz).toBe(null);
         expect(testState.country).toBe("");
         expect(testState.pjnzError).toBe("");
     });

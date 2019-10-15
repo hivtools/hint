@@ -45,21 +45,7 @@ export const metadataGetters = {
                 break;
         }
 
-        const result =  metadataForType && metadataForType.choropleth ? metadataForType.choropleth.indicators : null;
-        //TODO: take this out when hintr is returning expected array
-        /*if (result && ((result as any).prevalence || (result as any).art_coverage || (result as any).current_art)) {
-            const arrayResult = [] as IndicatorMetadata[];
-            const indicators = Object.keys((result as any));
-            for (const indicator of indicators) {
-                const meta = (result as any)[indicator];
-                meta.indicator = indicator;
-                arrayResult.push(meta);
-            }
-            return arrayResult;
-        } else {
-            return result;
-        }*/
-        return result;
+        return  metadataForType && metadataForType.choropleth ? metadataForType.choropleth.indicators : null;
     },
     choroplethIndicators:(state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
         const metadata = getters.choroplethIndicatorsMetadata;

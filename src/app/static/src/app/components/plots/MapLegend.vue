@@ -13,7 +13,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
-    import {colorFunctionFromName} from "../../store/filteredData/getters";
+    import {colorFunctionFromName} from "../../store/filteredData/utils";
 
     export default Vue.extend({
         name: "MapLegend",

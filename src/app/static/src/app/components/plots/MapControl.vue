@@ -41,15 +41,35 @@
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
     import {BaselineState} from "../../store/baseline/baseline";
     import {IndicatorMetadata} from "../../generated";
+    import {mapGetterByName, mapStatePropByName, mapStateProp} from "../../utils";
 
     interface Data {
         detail: any;
         optionsLoaded: boolean;
     }
 
-    const namespace = "metadata";
+    interface Props {
+        indicator: string,
+        initialDetail: number
+    }
 
-    export default Vue.extend<Data, any, any, any>({
+    interface Option {
+        id: any;
+        label: string;
+    }
+
+    interface Computed {
+        detailOptions: Option[]
+        indicatorOptions: Option[]
+        choroplethIndicatorsMetadata: IndicatorMetadata[],
+        choroplethIndicators: string[]
+    }
+
+    interface Methods {
+        indicatorChanged: (newVal: string) => void;
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: 'MapControl',
         components: {
             TreeSelect,
@@ -66,17 +86,18 @@
             }
         },
         computed: {
-            ...mapState<BaselineState>("baseline", {
-                detailOptions: state => {
+            choroplethIndicatorsMetadata:
+                mapGetterByName<IndicatorMetadata[]>("metadata", "choroplethIndicatorsMetadata"),
+            choroplethIndicators:
+                mapGetterByName<string[]>("metadata", "choroplethIndicators"),
+            detailOptions: mapStateProp<BaselineState, Option[]>("baseline", state => {
                     const levels = state.shape && state.shape.filters && state.shape.filters.level_labels ?
                                     state.shape.filters.level_labels : [];
 
                     return levels.filter(l => l.display).map(l => {
                         return {id: l.id, label: l.area_level_label}
-                    });
-                }
+                });
             }),
-            ...mapGetters(namespace, ["choroplethIndicators", "choroplethIndicatorsMetadata"]),
             indicatorOptions: function() {
                 const indicators = this.choroplethIndicatorsMetadata ? this.choroplethIndicatorsMetadata : [];
                 return indicators.map((i: IndicatorMetadata) => { return {id: i.indicator, label: i.name}; });

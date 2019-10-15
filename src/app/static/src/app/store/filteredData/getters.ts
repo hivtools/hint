@@ -1,31 +1,20 @@
 import {RootState} from "../../root";
 import {DataType, FilteredDataState, SelectedChoroplethFilters, SelectedFilters} from "./filteredData";
 
-import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {IndicatorMetadata, NestedFilterOption} from "../../generated";
-import {IndicatorValues} from "../../types";
-
-const sexFilterOptions = [
-    {id: "both", name: "both"},
-    {id: "female", name: "female"},
-    {id: "male", name: "male"}
-];
-
-export const colorFunctionFromName = function(name: string) {
-    let result =  (d3ScaleChromatic as any)[name];
-    if (!result){
-        //This is trying to be defensive against typos in metadata...
-        console.log(`Unknown color function: ${name}`);
-        result = d3ScaleChromatic.interpolateWarm;
-    }
-    return result;
-};
+import {IndicatorValues, IndicatorValuesDict} from "../../types";
+import {Dict} from "../../types";
+import {FilterOption} from "../../generated";
+import {flattenOptions} from "./utils";
+import {getColor, getUnfilteredData, sexFilterOptions} from "./utils";
+import * as d3ScaleChromatic from "d3-scale-chromatic";
+import {Indicators} from "../../../tests/mocks";
 
 export const getters = {
-    selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
+    selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState): Dict<FilterOption[] | undefined> | null => {
         const sapState = rootState.surveyAndProgram;
         const regions = getters.regionOptions;
-        switch(state.selectedDataType){
+        switch (state.selectedDataType) {
             case (DataType.ANC):
                 return sapState.anc ?
                     {
@@ -57,83 +46,39 @@ export const getters = {
                         regions,
                         sex: sexFilterOptions,
                         surveys: undefined
-                    }: null;
+                    } : null;
 
             default:
                 return null;
         }
     },
-    regionOptions: (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) => {
-        const shape = rootState.baseline && rootState.baseline.shape ? rootState.baseline.shape : null;
+    regionOptions: (state: FilteredDataState, getters: any, rootState: RootState): NestedFilterOption[] => {
+        const shape = rootState.baseline && rootState.baseline.shape;
+        if (!shape || !shape.filters.regions || !shape.filters.regions.options)
+            return [];
+
         //We're skipping the top level, country region as it doesn't really contribute to the filtering
-        return shape && shape.filters &&
-                        shape.filters.regions &&
-                        (shape.filters.regions as any).options ? (shape.filters.regions as any).options : null;
+        return shape.filters.regions.options as NestedFilterOption[];
     },
-    regionIndicators: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+    regionIndicators: function (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any): Dict<IndicatorValuesDict> {
+
         const data = getUnfilteredData(state, rootState);
         if (!data || (state.selectedDataType == null)) {
             return {};
         }
 
-        const result = {} as { [r: string]: {[i: string]: IndicatorValues} };
-
         const flattenedRegions = getters.flattenedSelectedRegionFilters;
+        const result = {} as Dict<IndicatorValuesDict>;
 
-        //TODO: output data doesn't currently conform to plotting metadata, so for now we fake the metadata
-        //Use the real metadata for all other data types
-       /* let indicatorsMeta = state.selectedDataType == DataType.Output ?
-            [
-                {
-                    indicator: "art_coverage",
-                    value_column: "mean",
-                    indicator_column: "indicator_id",
-                    indicator_value: "4",
-                    name: "ART coverage",
-                    min: 0,
-                    max: 1,
-                    colour: "interpolateViridis",
-                    invert_scale: false
-                },
-                {
-                    indicator: "prevalence",
-                    value_column: "mean",
-                    indicator_column: "indicator_id",
-                    indicator_value: "2",
-                    name: "Prevalence",
-                    min: 0,
-                    max: 0.5,
-                    colour: "interpolateMagma",
-                    invert_scale: true
-                }
-            ]:
-            rootGetters['metadata/choroplethIndicatorsMetadata'];
-
-        //TODO: ...and here's a workaround for a small bug in the current Survey metadata - 'art' for
-        //indicator value, should be 'artcov'
-        if (state.selectedDataType == DataType.Survey) {
-            //indicatorsMeta = {
-            //    ...indicatorsMeta
-            //};
-            const art_coverage = indicatorsMeta.filter((i: IndicatorMetadata) => i.indicator == "art_coverage");
-            if (art_coverage.length > 0){
-                art_coverage[0].indicator_value = "artcov";
-            }
-
-        }*/
         const indicatorsMeta = rootGetters['metadata/choroplethIndicatorsMetadata'];
 
-        for(const d of data) {
-            const row = d as any;
+        for (const row of data) {
 
-            if (!includeRowForSelectedChoroplethFilters(row,
-                state.selectedDataType,
-                state.selectedChoroplethFilters,
-                flattenedRegions)) {
+            if (getters.excludeRow(row)) {
                 continue;
             }
 
-            const areaId = row.area_id;
+            const areaId: string = row.area_id;
 
             for (const metadata of indicatorsMeta) {
 
@@ -152,7 +97,7 @@ export const getters = {
                 const value = row[metadata.value_column];
 
                 if (!result[areaId]) {
-                    result[areaId] = {};
+                    result[areaId] = {} as IndicatorValuesDict;
                 }
 
                 const regionValues = result[areaId];
@@ -166,101 +111,47 @@ export const getters = {
 
         return result;
     },
-    flattenedRegionOptions: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
-        const options = getters.regionOptions ? getters.regionOptions : [];
-        return flattenOptions(options);
+    excludeRow: function (state: FilteredDataState, getters: any): (row: any) => boolean {
+        const dataType = state.selectedDataType;
+        const selectedFilters = state.selectedChoroplethFilters;
+        const selectedRegionFilters = getters.flattenedSelectedRegionFilters;
+
+        return (row: any) => {
+
+            if (dataType == null) {
+                return true;
+            }
+
+            if (dataType != DataType.ANC && row.sex != selectedFilters.sex!.id) {
+                return true;
+            }
+
+            if (dataType != DataType.ANC && row.age_group_id != selectedFilters.age!.id) {
+                return true;
+            }
+
+            if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey!.id) {
+                return true;
+            }
+
+            if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter!.id) {
+                return true;
+            }
+
+            const flattenedRegionIds = Object.keys(selectedRegionFilters);
+            if (flattenedRegionIds.length && flattenedRegionIds.indexOf(row.area_id) < 0) {
+                return true
+            }
+
+            return false;
+        }
     },
-    flattenedSelectedRegionFilters: function(state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any) {
+    flattenedRegionOptions: function (state: FilteredDataState, getters: any): Dict<NestedFilterOption> {
+        return flattenOptions(getters.regionOptions);
+    },
+    flattenedSelectedRegionFilters: function (state: FilteredDataState): Dict<NestedFilterOption> {
         const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
         return flattenOptions(selectedRegions);
     },
 };
 
-const flattenOptions = (filterOptions: NestedFilterOption[]) => {
-    let result = {};
-    filterOptions.forEach(r =>
-        result = {
-            ...result,
-            ...flattenOption(r)
-        });
-    return result;
-};
-
-const flattenOption = (filterOption: NestedFilterOption) => {
-    let result = {} as any;
-    result[filterOption.id] = filterOption;
-    if (filterOption.options) {
-        filterOption.options.forEach(o =>
-            result = {
-                ...result,
-                ...flattenOption(o as NestedFilterOption)
-            });
-
-    }
-    return result;
-};
-
-const getColor = (value: number, metadata: IndicatorMetadata) => {
-    //throw (JSON.stringify(metadata));
-    const max = metadata.max;
-    const min = metadata.min;
-    const colorFunction = colorFunctionFromName(metadata.colour);
-
-    let rangeNum = (max  && (max != min)) ? //Avoid dividing by zero if only one value...
-        max - (min || 0) :
-        1;
-
-    let colorValue = (value - min) / rangeNum;
-
-    if (metadata.invert_scale) {
-        colorValue = 1 - colorValue;
-    }
-
-    //throw("color value: " + colorValue);
-    return colorFunction(colorValue);
-};
-
-export const getUnfilteredData = (state: FilteredDataState, rootState: RootState) => {
-    const sapState = rootState.surveyAndProgram;
-    switch(state.selectedDataType){
-        case (DataType.ANC):
-            return sapState.anc ? sapState.anc.data : null;
-        case (DataType.Program):
-            return sapState.program ? sapState.program.data : null;
-        case (DataType.Survey):
-            return sapState.survey ? sapState.survey.data : null;
-        case (DataType.Output):
-            return rootState.modelRun.result ? rootState.modelRun.result.data : null;
-        default:
-            return null;
-    }
-};
-
-const includeRowForSelectedChoroplethFilters = (row: any,
-                                                dataType: DataType,
-                                                selectedFilters: SelectedChoroplethFilters,
-                                                flattenedRegionFilters: object) => {
-
-    if (dataType != DataType.ANC && selectedFilters.sex && row.sex != selectedFilters.sex.id) {
-        return false;
-    }
-
-    if (dataType != DataType.ANC && selectedFilters.age && row.age_group_id != selectedFilters.age.id) {
-        return false;
-    }
-
-    if (dataType == DataType.Survey && selectedFilters.survey && row.survey_id != selectedFilters.survey.id) {
-        return false;
-    }
-
-    if (dataType in [DataType.Program, DataType.ANC] && selectedFilters.quarter && row.quarter_id != selectedFilters.quarter.id) {
-        return false;
-    }
-
-    const flattenedRegionIds = Object.keys(flattenedRegionFilters);
-    if (flattenedRegionIds.length && flattenedRegionIds.indexOf(row.area_id) < 0) {
-        return false
-    }
-
-    return true;
-};

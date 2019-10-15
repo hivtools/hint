@@ -14,3 +14,12 @@ export interface IndicatorValues {
     color: string
 }
 
+export interface LevelLabel {
+    id: number;
+    area_level_label: string;
+    display: boolean;
+}
+
+export type Dict<V> = { [k: string]: V }
+
+export type IndicatorValuesDict= Dict<IndicatorValues>;

@@ -1,0 +1,51 @@
+.navbar-header {
+  margin-top: -8px;
+  margin-bottom: -8px;
+  padding: 10px;
+  margin-left: -30px;
+  background-color: darken($theme-red, 10%);
+  color: white;
+}
+
+header {
+  a {
+    color: #f8f9fa;
+
+    &:hover {
+      text-decoration: underline;
+      color: #f8f9fa;
+    }
+  }
+
+  .icon {
+    vertical-align: top;
+  }
+
+  .dropdown {
+    margin-left: 10px;
+    flex: auto;
+  }
+
+  .dropdown-toggle {
+    color: white !important;
+    text-decoration: none !important;
+  }
+
+  .dropdown-menu {
+    top: 31px;
+    left: -10px;
+
+    .dropdown-item {
+      color: $theme-red !important;
+      cursor: pointer;
+
+      &:focus {
+        outline: none !important;
+      }
+
+      &:hover, &.active, :active {
+        background-color: $gray-200;
+      }
+    }
+  }
+}

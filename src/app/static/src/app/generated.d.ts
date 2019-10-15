@@ -208,6 +208,7 @@ export interface ProgrammeFilters {
     id: string;
   }[];
 }
+
 export type ProgrammeResponseData = {
   area_id: string;
   current_art: number;
