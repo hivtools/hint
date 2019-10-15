@@ -21,6 +21,7 @@ docker pull $DB_MIGRATE_IMAGE
 docker run --rm -d \
   --network=$NETWORK \
   --name $DB \
+  --network-alias db \
   -p 5432:5432 \
   $DB_IMAGE
 
