@@ -1,5 +1,6 @@
 import {mockAxios, mockFailure, mockModelRunState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/modelRun/actions";
+import {ModelStatusResponse} from "../../app/generated";
 
 describe("Model run actions", () => {
 
@@ -30,18 +31,16 @@ describe("Model run actions", () => {
         mockAxios.onGet(`/model/status/1234`)
             .reply(200, mockSuccess({}));
 
-        const state = mockModelRunState({success: true});
+        const state = mockModelRunState({status: {success: true} as ModelStatusResponse});
         const commit = jest.fn();
         const dispatch = jest.fn();
 
-        actions.poll({commit, state, dispatch} as any,1234);
+        actions.poll({commit, state, dispatch} as any, 1234);
         setInterval(() => {
             expect(dispatch.mock.calls[0][0]).toStrictEqual("getResult");
             expect(dispatch.mock.calls[0][1]).toStrictEqual(1234);
             done();
         }, 2100);
-
-
     });
 
     it("does not fetch model run result when poll gets no success status", (done) => {
@@ -49,11 +48,11 @@ describe("Model run actions", () => {
         mockAxios.onGet(`/model/status/1234`)
             .reply(200, mockSuccess({}));
 
-        const state = mockModelRunState({success: false});
+        const state = mockModelRunState({status: {success: false} as ModelStatusResponse});
         const commit = jest.fn();
         const dispatch = jest.fn();
 
-        actions.poll({commit, state, dispatch} as any,1234);
+        actions.poll({commit, state, dispatch} as any, 1234);
         setInterval(() => {
             expect(dispatch.mock.calls.length).toEqual(0);
             done();
@@ -67,7 +66,7 @@ describe("Model run actions", () => {
             .reply(200, mockSuccess("TEST DATA"));
 
         const commit = jest.fn();
-        const state = mockModelRunState({success: true, modelRunId: "1234"});
+        const state = mockModelRunState({status: {success: true, id: "1234"} as ModelStatusResponse});
 
         await actions.getResult({commit, state} as any);
 
@@ -82,7 +81,7 @@ describe("Model run actions", () => {
             .reply(500, mockFailure("Test Error"));
 
         const commit = jest.fn();
-        const state = mockModelRunState({success: true, modelRunId: "1234"});
+        const state = mockModelRunState({status: {success: true, id: "1234"} as ModelStatusResponse});
 
         await actions.getResult({commit, state} as any);
 

@@ -5,11 +5,12 @@ import {mockAxios, mockModelResultResponse, mockModelRunState, mockModelStatusRe
 import ModelRun from "../../../app/components/modelRun/ModelRun.vue";
 import {actions} from "../../../app/store/modelRun/actions";
 import {mutations} from "../../../app/store/modelRun/mutations";
-import {ModelRunState} from "../../../app/store/modelRun/modelRun";
+import {modelRunGetters, ModelRunState} from "../../../app/store/modelRun/modelRun";
 import {ModelRunStatus} from "../../../app/store/modelRun/modelRun";
 import {RootState} from "../../../app/root";
 import Modal from "../../../app/components/Modal.vue";
 import Tick from "../../../app/components/Tick.vue";
+import {ModelStatusResponse} from "../../../app/generated";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -23,7 +24,8 @@ describe("Model run component", () => {
                     namespaced: true,
                     state: mockModelRunState(state),
                     actions,
-                    mutations
+                    mutations,
+                    getters: modelRunGetters
                 }
             }
         });
@@ -80,7 +82,7 @@ describe("Model run component", () => {
     it("button is disabled and modal shown if status is started", () => {
 
         const store = createStore({
-            status: ModelRunStatus.Started
+            status: {id: "1234", done: false} as ModelStatusResponse
         });
 
         const wrapper = shallowMount(ModelRun, {store, localVue});
@@ -89,15 +91,26 @@ describe("Model run component", () => {
         expect(wrapper.find(Modal).find("h4").text()).toBe("Running model");
     });
 
+    it("button is enabled once status is done", () => {
+
+        const store = createStore({
+            status: {id: "1234", done: true} as ModelStatusResponse
+        });
+
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        expect(wrapper.find("button").attributes().disabled).toBeUndefined();
+        expect(wrapper.find(Modal).props().open).toBe(false);
+    });
+
     it("displays message and tick if run is successful", () => {
-        const store = createStore({success: true});
+        const store = createStore({status: {success: true} as ModelStatusResponse});
         const wrapper = shallowMount(ModelRun, {store, localVue});
         expect(wrapper.find("#model-run-complete").text()).toBe("Model run complete");
         expect(wrapper.findAll(Tick).length).toBe(1);
     });
 
     it("does not display message or tick if run is not successful", () => {
-        const store = createStore({success: false});
+        const store = createStore({status: {success: false} as ModelStatusResponse});
         const wrapper = shallowMount(ModelRun, {store, localVue});
         expect(wrapper.findAll("#model-run-complete").length).toBe(0);
         expect(wrapper.findAll(Tick).length).toBe(0);
