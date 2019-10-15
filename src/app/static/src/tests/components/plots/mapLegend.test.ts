@@ -62,4 +62,14 @@ describe("Map legend component", () => {
 
     });
 
+    it("returns no levels if no metadata", () => {
+        const emptyWrapper = shallowMount(MapLegend, {
+            propsData: {
+                metadata: null
+            }
+        });
+        expect(emptyWrapper.findAll("i").length).toBe(0);
+        expect(emptyWrapper.findAll(".level").length).toBe(0);
+    })
+
 });

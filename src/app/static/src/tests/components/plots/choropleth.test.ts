@@ -2,17 +2,25 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Choropleth from "../../../app/components/plots/Choropleth.vue";
 import Vue from "vue";
 import Vuex from "vuex";
-import {mockBaselineState, mockFilteredDataState, mockPlottingMetadataResponse, mockShapeResponse} from "../../mocks";
+import {
+    mockBaselineState,
+    mockFilteredDataState,
+    mockMetadataState,
+    mockPlottingMetadataResponse,
+    mockShapeResponse
+} from "../../mocks";
 import {LGeoJson} from 'vue2-leaflet';
 import MapControl from "../../../app/components/plots/MapControl.vue";
 import {mutations} from "../../../app/store/filteredData/mutations";
 import {
-    DataType,
+    DataType, filteredData,
     FilteredDataState,
     FilterType,
     initialFilteredDataState
 } from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
+import {testGetters} from "../../filteredData/getters.test";
+import {store} from "../../../app/main";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -269,6 +277,38 @@ describe("Choropleth component", () => {
 
         testStore.commit({type: "filteredData/SelectedDataTypeUpdated", payload: DataType.Output});
         expect(vm.indicator).toBe("prev");
+    });
+
+    it("options are empty if no indicators", () => {
+        const testStore = new Vuex.Store({
+            modules: {
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState({
+                        shape: mockShapeResponse()
+                    })
+                },
+                filteredData: {
+                    namespaced: true,
+                    state: mockFilteredDataState(),
+                    getters: {
+                        ...testGetters,
+                    }
+                },
+                metadata: {
+                    namespaced: true,
+                    state: mockMetadataState(),
+                    getters:  {
+                        choroplethIndicatorsMetadata: () => [],
+                        choroplethIndicators: () => []
+                    }
+                }
+        }});
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+        const vm = wrapper.vm as any;
+        const options = vm.options;
+
+        expect(options).toStrictEqual({});
     });
 
     it("options onEachFeature returns function which generates correct tooltip", () => {

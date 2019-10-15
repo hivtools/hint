@@ -98,7 +98,11 @@
                     "colorFunctions"
                 ]
             ),
-            ...mapGettersByNames<keyof MetadataGetters>("metadata", ["choroplethIndicators", "choroplethIndicatorsMetadata"]),
+            ...mapGettersByNames<keyof MetadataGetters>("metadata", [
+                    "choroplethIndicators",
+                    "choroplethIndicatorsMetadata"
+                ]
+            ),
             countryFeature(): Feature {
                 return this.getFeatureFromAreaId((this.countryRegion as NestedFilterOption).id)!!;
             },
