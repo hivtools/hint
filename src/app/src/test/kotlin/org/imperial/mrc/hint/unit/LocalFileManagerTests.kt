@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.unit
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileType
@@ -102,6 +103,18 @@ class LocalFileManagerTests {
 
         assertThat(result["survey"]).isEqualTo("$tmpUploadDirectory/hash.csv")
         assertThat(result.count()).isEqualTo(1)
+    }
+
+    @Test
+    fun `sets files for session`() {
+
+        val stateRepo = mock<SessionRepository>()
+
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
+        val files = mapOf("pjnz" to SessionFile("hash1", "file1"))
+        sut.setAllFiles(files)
+
+        verify(stateRepo).setFilesForSession("fake-id", files)
     }
 
 }

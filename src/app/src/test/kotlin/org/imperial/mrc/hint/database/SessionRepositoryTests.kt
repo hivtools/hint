@@ -6,6 +6,7 @@ import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.db.Tables.SESSION_FILE
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.tables.UserSession.USER_SESSION
+import org.imperial.mrc.hint.models.SessionFile
 import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -108,10 +109,78 @@ class SessionRepositoryTests {
         assertThat(result.filename).isEqualTo("original.pjnz")
     }
 
-    private fun setUpSessionAndHash() {
+    @Test
+    fun `can set files for session`() {
+        setUpSessionAndHash()
+        sut.saveNewHash("pjnz_hash")
+        sut.saveNewHash("shape_hash")
+
+        sut.setFilesForSession("sid", mapOf(
+                "pjnz" to SessionFile("pjnz_hash", "pjnz_file"),
+                "shape" to SessionFile("shape_hash", "shape_file")));
+
+        val records = dsl.selectFrom(SESSION_FILE)
+                .orderBy(SESSION_FILE.TYPE)
+                .fetch();
+
+        assertThat(records.count()).isEqualTo(2);
+
+        assertThat(records[0][SESSION_FILE.FILENAME]).isEqualTo("pjnz_file")
+        assertThat(records[0][SESSION_FILE.HASH]).isEqualTo("pjnz_hash")
+        assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo("sid")
+        assertThat(records[0][SESSION_FILE.TYPE]).isEqualTo("pjnz")
+
+        assertThat(records[1][SESSION_FILE.FILENAME]).isEqualTo("shape_file")
+        assertThat(records[1][SESSION_FILE.HASH]).isEqualTo("shape_hash")
+        assertThat(records[1][SESSION_FILE.SESSION]).isEqualTo("sid")
+        assertThat(records[1][SESSION_FILE.TYPE]).isEqualTo("shape")
+    }
+
+    @Test
+    fun `setFilesForSession deletes existing files for this session only`() {
+        val uid = setUpSessionAndHash()
+        sut.saveSession("sid2", uid);
+
+        sut.saveNewHash("shape_hash")
+        setUpHashAndSessionFile("old_pjnz_hash", "old_pjnz", "sid", "pjnz")
+        setUpHashAndSessionFile("other_shape_hash", "other_shape_file", "sid2", "shape")
+
+        sut.setFilesForSession("sid", mapOf(
+                "shape" to SessionFile("shape_hash", "shape_file")))
+
+        val records = dsl.selectFrom(SESSION_FILE)
+                .orderBy(SESSION_FILE.SESSION)
+                .fetch();
+
+        assertThat(records.count()).isEqualTo(2);
+
+        assertThat(records[0][SESSION_FILE.FILENAME]).isEqualTo("shape_file")
+        assertThat(records[0][SESSION_FILE.HASH]).isEqualTo("shape_hash")
+        assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo("sid")
+        assertThat(records[0][SESSION_FILE.TYPE]).isEqualTo("shape")
+
+        assertThat(records[1][SESSION_FILE.FILENAME]).isEqualTo("other_shape_file")
+        assertThat(records[1][SESSION_FILE.HASH]).isEqualTo("other_shape_hash")
+        assertThat(records[1][SESSION_FILE.SESSION]).isEqualTo("sid2")
+        assertThat(records[1][SESSION_FILE.TYPE]).isEqualTo("shape")
+    }
+
+    private fun setUpSessionAndHash(): String {
         sut.saveNewHash("newhash")
         userRepo.addUser("email", "pw")
         val uid = userRepo.getUser("email")!!.id
         sut.saveSession("sid", uid)
+
+        return uid;
+    }
+
+    private fun setUpHashAndSessionFile(hash: String, filename: String, sessionId: String, type: String) {
+        sut.saveNewHash(hash)
+        dsl.insertInto(SESSION_FILE)
+                .set(SESSION_FILE.FILENAME, filename)
+                .set(SESSION_FILE.HASH, hash)
+                .set(SESSION_FILE.SESSION, sessionId)
+                .set(SESSION_FILE.TYPE, type)
+                .execute()
     }
 }

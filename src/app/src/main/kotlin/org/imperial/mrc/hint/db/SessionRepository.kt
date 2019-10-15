@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.db
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.Tables.*
 import org.imperial.mrc.hint.models.SessionFile
-import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.springframework.stereotype.Component
@@ -16,6 +15,7 @@ interface SessionRepository {
     fun saveSessionFile(sessionId: String, type: FileType, hash: String, fileName: String)
     fun getSessionFile(sessionId: String, type: FileType): SessionFile?
     fun getHashesForSession(sessionId: String): Map<String, String>
+    fun setFilesForSession(sessionId: String, files: Map<String, SessionFile>)
 }
 
 @Component
@@ -80,6 +80,21 @@ class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
                 .from(SESSION_FILE)
                 .where(SESSION_FILE.SESSION.eq(sessionId))
                 .associate { it[SESSION_FILE.TYPE] to it[SESSION_FILE.HASH] }
+    }
+
+    override fun setFilesForSession(sessionId: String, files: Map<String, SessionFile>) {
+        dsl.deleteFrom(SESSION_FILE)
+                .where(SESSION_FILE.SESSION.eq(sessionId))
+                .execute()
+
+        files.forEach{ (fileType, sessionFile) ->
+            dsl.insertInto(SESSION_FILE)
+                    .set(SESSION_FILE.HASH, sessionFile.hash)
+                    .set(SESSION_FILE.TYPE, fileType)
+                    .set(SESSION_FILE.SESSION, sessionId)
+                    .set(SESSION_FILE.FILENAME, sessionFile.filename)
+                    .execute()
+        }
     }
 
     private fun getSessionFileRecord(sessionId: String, type: FileType): Record? {
