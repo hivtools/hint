@@ -58,13 +58,13 @@ describe("Metadata regionIndicator getter", () => {
         testGetsChoroplethIndicatorsMetadataForDataType(DataType.Output);
     });
 
-    it ("gets null choropleth indicators when there is no metadata", () => {
+    it ("gets empty choropleth indicators when there is no metadata", () => {
         const metadataState =  mockMetadataState(
             {plottingMetadata: null});
 
         const result = metadataGetters.choroplethIndicatorsMetadata(metadataState, null, mockRootState(), null);
 
-        expect(result).toBeNull();
+        expect(result).toEqual([]);
     });
 
     it("gets choropleth indicators", () => {

@@ -40,6 +40,7 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {IndicatorMetadata} from "../../generated";
     import {mapGetterByName, mapStateProp} from "../../utils";
+    import {LevelLabel} from "../../types";
 
     interface Data {
         detail: any;
@@ -89,15 +90,17 @@
             choroplethIndicators:
                 mapGetterByName<string[]>("metadata", "choroplethIndicators"),
             detailOptions: mapStateProp<BaselineState, Option[]>("baseline", state => {
-                    const levels = state.shape && state.shape.filters && state.shape.filters.level_labels ?
-                                    state.shape.filters.level_labels : [];
+                let levels: LevelLabel[] = [];
+                if (state.shape && state.shape.filters && state.shape.filters.level_labels) {
+                    levels = state.shape.filters.level_labels;
+                }
 
-                    return levels.filter(l => l.display).map(l => {
-                        return {id: l.id, label: l.area_level_label}
+                return levels.filter(l => l.display).map(l => {
+                    return {id: l.id, label: l.area_level_label}
                 });
             }),
             indicatorOptions: function() {
-                const indicators = this.choroplethIndicatorsMetadata ? this.choroplethIndicatorsMetadata : [];
+                const indicators = this.choroplethIndicatorsMetadata;
                 return indicators.map((i: IndicatorMetadata) => { return {id: i.indicator, label: i.name}; });
             }
         },

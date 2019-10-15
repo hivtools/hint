@@ -24,7 +24,7 @@ export const metadataGetters = {
         const plottingMetadata = state.plottingMetadata;
 
         if (!plottingMetadata) {
-            return null;
+            return [];
         }
 
         const selectedDataType = rootState.filteredData.selectedDataType;
@@ -45,11 +45,11 @@ export const metadataGetters = {
                 break;
         }
 
-        return  metadataForType && metadataForType.choropleth ? metadataForType.choropleth.indicators : null;
+        return  (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
     },
     choroplethIndicators:(state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
         const metadata = getters.choroplethIndicatorsMetadata;
-        return  metadata ? metadata.map((i: IndicatorMetadata) => i.indicator) : [];
+        return  metadata.map((i: IndicatorMetadata) => i.indicator);
     }
 };
 

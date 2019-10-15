@@ -14,8 +14,22 @@
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
     import {colorFunctionFromName, roundToContext} from "../../store/filteredData/utils";
+    import {IndicatorMetadata} from "../../generated";
 
-    export default Vue.extend({
+    interface Props {
+        metadata: IndicatorMetadata
+    }
+
+    interface Level {
+        val: number,
+        style: Object
+    }
+
+    interface Computed {
+        levels: Level[]
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
         name: "MapLegend",
         props: {
             "metadata": Object

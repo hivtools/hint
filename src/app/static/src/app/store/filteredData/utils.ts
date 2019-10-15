@@ -22,7 +22,7 @@ export const colorFunctionFromName = function(name: string) {
     let result =  (d3ScaleChromatic as any)[name];
     if (!result){
         //This is trying to be defensive against typos in metadata...
-        console.log(`Unknown color function: ${name}`);
+        console.warn(`Unknown color function: ${name}`);
         result = d3ScaleChromatic.interpolateWarm;
     }
     return result;
