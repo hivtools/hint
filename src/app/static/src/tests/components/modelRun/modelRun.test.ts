@@ -51,7 +51,7 @@ describe("Model run component", () => {
 
         setTimeout(() => {
             expect(wrapper.find("button").attributes().disabled).toBe("disabled");
-            expect(store.state.modelRun.status).toStrictEqual({id: "1234"});
+            expect(store.state.modelRun.status).toStrictEqual({id: "1234", progress: "0.1"});
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).not.toBe(-1);
             expect(wrapper.find(Modal).props().open).toBe(true);
