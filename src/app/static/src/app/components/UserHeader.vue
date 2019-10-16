@@ -31,10 +31,12 @@
 
     import Vue from "vue";
     import {serialiseState} from "../localStorageManager";
-    import {mapState} from "vuex";
     import {BaselineState} from "../store/baseline/baseline";
     import {surveyAndProgram, SurveyAndProgramDataState} from "../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
+    import {LocalSessionFile} from "../types";
+    import {mapStateProp} from "../utils";
+    import {ValidateInputResponse} from "../generated";
 
     interface Data {
         show: boolean
@@ -46,27 +48,56 @@
         close: () => void;
     }
 
-    export default Vue.extend<Data, Methods, any, "title" | "user">({
-        data() {
+    interface Computed {
+        baselineFiles: BaselineFiles
+        surveyAndProgramFiles: SurveyAndProgramFiles
+    }
+
+    interface Props {
+        title: string,
+        user: string
+    }
+
+    interface BaselineFiles {
+        pjnz: LocalSessionFile | null,
+        population: LocalSessionFile | null,
+        shape: LocalSessionFile | null
+    }
+
+    interface SurveyAndProgramFiles {
+        survey: LocalSessionFile | null,
+        program: LocalSessionFile | null,
+        anc: LocalSessionFile | null
+    }
+
+    const localSessionFile = function(file: ValidateInputResponse | null) {
+        return file ? {hash: file.hash, filename: file.filename} : null
+    };
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
+        data(): Data {
             return {
                 show: false
             }
         },
-        props: ["title", "user"],
+        props: {
+            title: String,
+            user: String
+        },
         computed: {
-            ...mapState<BaselineState>("baseline", {
-                baselineHashes: state => ({
-                    population: state.population && state.population.hash,
-                    pjnz: state.pjnz && state.pjnz.hash,
-                    shape: state.shape && state.shape.hash
-                })
+            baselineFiles: mapStateProp<BaselineState, BaselineFiles>("baseline", state => {
+                return {
+                    pjnz: localSessionFile(state.pjnz),
+                    population: localSessionFile(state.population),
+                    shape: localSessionFile(state.shape)
+                }
             }),
-            ...mapState<SurveyAndProgramDataState>("surveyAndProgram", {
-                surveyAndProgramHashes: state => ({
-                    survey: state.survey && state.survey.hash,
-                    program: state.program && state.program.hash,
-                    anc: state.anc && state.anc.hash
-                })
+            surveyAndProgramFiles: mapStateProp<SurveyAndProgramDataState, SurveyAndProgramFiles>("surveyAndProgram", state => {
+                return {
+                    survey: localSessionFile(state.survey),
+                    program: localSessionFile(state.program),
+                    anc: localSessionFile(state.anc)
+                }
             })
         },
         methods: {
@@ -79,12 +110,12 @@
             save(e: Event) {
                 e.preventDefault();
                 const state = serialiseState(this.$store.state);
-                const hashes = {
-                    ...this.baselineHashes,
-                    ...this.surveyAndProgramHashes
+                const files = {
+                    ...this.baselineFiles,
+                    ...this.surveyAndProgramFiles
                 };
                 const file = new Blob([JSON.stringify({
-                    state, hashes
+                    state, files
                 })], {type: "application/json"});
                 const a = (this.$refs.save as any);
                 a.href = URL.createObjectURL(file);
