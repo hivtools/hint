@@ -36,6 +36,7 @@
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import {LocalSessionFile} from "../types";
     import {mapStateProp} from "../utils";
+    import {ValidateInputResponse} from "../generated";
 
     interface Data {
         show: boolean
@@ -69,7 +70,7 @@
         anc: LocalSessionFile | null
     }
 
-    const localSessionFile = function(file: LocalSessionFile | null) {
+    const localSessionFile = function(file: ValidateInputResponse | null) {
         return file ? {hash: file.hash, filename: file.filename} : null
     };
 
