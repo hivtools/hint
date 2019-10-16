@@ -1,10 +1,8 @@
 import {Mutation, MutationTree} from "vuex";
-import {localStorageKey, ModelRunState, ModelRunStatus} from "./modelRun";
+import {localStorageKey, ModelRunState} from "./modelRun";
 import {PayloadWithType} from "../../types";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
-import {localStorageManager} from "../../localStorageManager";
 import {readyStateMutations} from "../shared/readyStateMutations";
-import {FilteredDataState} from "../filteredData/filteredData";
 
 type ModelRunMutation = Mutation<ModelRunState>
 

@@ -13,12 +13,6 @@ export interface ModelRunState extends ReadyState {
     result: ModelResultResponse | null
 }
 
-export enum ModelRunStatus {
-    "NotStarted",
-    "Started",
-    "Complete"
-}
-
 export const localStorageKey = "modelRun";
 
 export const initialModelRunState: ModelRunState = {
