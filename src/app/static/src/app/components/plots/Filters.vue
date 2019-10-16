@@ -40,9 +40,9 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
-    import {DataType, FilteredDataState, FilterType} from "../store/filteredData/filteredData";
+    import {DataType, FilteredDataState, FilterType} from "../../store/filteredData/filteredData";
     import Treeselect from '@riophae/vue-treeselect';
-    import {FilterOption, NestedFilterOption} from "../generated";
+    import {FilterOption, NestedFilterOption} from "../../generated";
 
     const namespace: string = 'filteredData';
 

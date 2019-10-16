@@ -3,7 +3,7 @@ import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {
-    mockBaselineState, mockMetadataState,
+    mockBaselineState, mockMetadataState, mockModelOptionsState,
     mockModelRunState, mockPlottingMetadataResponse,
     mockPopulationResponse,
     mockShapeResponse, mockStepperState,
@@ -26,6 +26,7 @@ import {StepperState} from "../../app/store/stepper/stepper";
 import {actions as rootActions} from "../../app/store/root/actions"
 import {mutations as rootMutations} from "../../app/store/root/mutations"
 import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
+import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -58,6 +59,11 @@ describe("Stepper component", () => {
                     state: mockModelRunState(modelRunState),
                     mutations: modelRunMutations,
                     getters: modelRunGetters
+                },
+                modelOptions: {
+                    namespaced: true,
+                    state: mockModelOptionsState(),
+                    getters: modelOptionsGetters
                 },
                 stepper: {
                     namespaced: true,
@@ -112,7 +118,7 @@ describe("Stepper component", () => {
         expect(steps.at(1).props().number).toBe(2);
         expect(steps.at(1).props().complete).toBe(false);
 
-        expect(steps.at(2).props().text).toBe("Review uploads");
+        expect(steps.at(2).props().text).toBe("Choose options");
         expect(steps.at(2).props().active).toBe(false);
         expect(steps.at(2).props().number).toBe(3);
         expect(steps.at(2).props().complete).toBe(false);

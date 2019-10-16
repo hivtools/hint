@@ -1,7 +1,7 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import FilterSelect from "../../app/components/FilterSelect.vue";
+import FilterSelect from "../../app/components/plots/FilterSelect.vue";
 import TreeSelect from '@riophae/vue-treeselect';
 
 const localVue = createLocalVue();
