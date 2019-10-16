@@ -17,9 +17,10 @@
                             <download-icon size="20" class="icon"></download-icon>
                         </a>
                         <a style="display:none" ref="save"></a>
-                        <a class="dropdown-item" ref="load" href="#">Load
+                        <a class="dropdown-item" ref="load" href="#" v-on:mousedown="$refs.loadFile.click()">Load
                             <upload-icon size="20" class="icon"></upload-icon>
                         </a>
+                        <input type="file" style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
                     </div>
                 </div>
                 <a href="/logout">Logout</a>
@@ -35,7 +36,7 @@
     import {surveyAndProgram, SurveyAndProgramDataState} from "../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import {LocalSessionFile} from "../types";
-    import {mapStateProp} from "../utils";
+    import {mapActionByName, mapStateProp} from "../utils";
 
     interface Data {
         show: boolean
@@ -44,7 +45,10 @@
     interface Methods {
         toggle: () => void;
         save: (e: Event) => void;
+        load: () => void;
+        loadAction: (file: File) => void;
         close: () => void;
+
     }
 
     interface Computed {
@@ -100,6 +104,8 @@
             })
         },
         methods: {
+            loadAction:
+                    mapActionByName<File>("load", "load"),
             toggle() {
                 this.show = !this.show;
             },
@@ -120,6 +126,13 @@
                 a.href = URL.createObjectURL(file);
                 a.download = `${this.title}-${new Date().toISOString()}.json`.toLowerCase();
                 a.click();
+            },
+            load(){
+                const input = this.$refs.loadFile as HTMLInputElement;
+                if (input.files && input.files.length > 0) {
+                    const file = input.files[0];
+                    this.loadAction(file);
+                }
             }
         },
         components: {
