@@ -9,7 +9,7 @@
         </h4>
         <modal :open="running">
             <h4>Running model</h4>
-            <b-progress :value="progress" :max="100" show-progress animated></b-progress>
+            <b-progress :value="progress" :max="1" show-progress animated></b-progress>
         </modal>
     </div>
 </template>
@@ -48,7 +48,7 @@
             ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
                 runId: state => state.modelRunId,
                 success: state => state.status.success,
-                progress: state => state.status.progress
+                progress: state => parseFloat(state.status.progress)
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running"])
         },

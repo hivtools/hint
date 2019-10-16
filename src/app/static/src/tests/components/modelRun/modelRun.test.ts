@@ -6,11 +6,11 @@ import ModelRun from "../../../app/components/modelRun/ModelRun.vue";
 import {actions} from "../../../app/store/modelRun/actions";
 import {mutations} from "../../../app/store/modelRun/mutations";
 import {modelRunGetters, ModelRunState} from "../../../app/store/modelRun/modelRun";
-import {ModelRunStatus} from "../../../app/store/modelRun/modelRun";
 import {RootState} from "../../../app/root";
 import Modal from "../../../app/components/Modal.vue";
 import Tick from "../../../app/components/Tick.vue";
 import {ModelStatusResponse} from "../../../app/generated";
+import {BProgress} from "bootstrap-vue";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -65,6 +65,14 @@ describe("Model run component", () => {
                 done();
             }, 2500);
         });
+    });
+
+    it("renders progress bar while running", () => {
+        const store = createStore({status: {id: "1234", progress: "0.2"} as ModelStatusResponse});
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+
+        expect(wrapper.find(Modal).props().open).toBe(true);
+        expect(wrapper.find(BProgress).props().value).toBe(0.2);
     });
 
     it("polls for status if runId already exists", (done) => {
