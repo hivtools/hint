@@ -1,11 +1,13 @@
 package org.imperial.mrc.hint.database
 
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.db.Tables.SESSION_FILE
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.tables.UserSession.USER_SESSION
+import org.imperial.mrc.hint.exceptions.SessionException
 import org.imperial.mrc.hint.models.SessionFile
 import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
@@ -111,7 +113,7 @@ class SessionRepositoryTests {
 
     @Test
     fun `can set files for session`() {
-        setUpSessionAndHash()
+        setUpSession()
         sut.saveNewHash("pjnz_hash")
         sut.saveNewHash("shape_hash")
 
@@ -138,7 +140,7 @@ class SessionRepositoryTests {
 
     @Test
     fun `setFilesForSession deletes existing files for this session only`() {
-        val uid = setUpSessionAndHash()
+        val uid = setUpSession()
         sut.saveSession("sid2", uid);
 
         sut.saveNewHash("shape_hash")
@@ -165,8 +167,35 @@ class SessionRepositoryTests {
         assertThat(records[1][SESSION_FILE.TYPE]).isEqualTo("shape")
     }
 
+    @Test
+    fun `setFilesForSession rolls back transaction on error, leaving existing session files unchanged`() {
+        setUpSession()
+        setUpHashAndSessionFile("pjnz_hash", "pjnz_file", "sid", "pjnz")
+
+        assertThatThrownBy{ sut.setFilesForSession("sid", mapOf(
+                "shape" to SessionFile("bad_hash", "bad_file"))) }
+                .isInstanceOf(SessionException::class.java)
+                .hasMessage("Unable to load files for session. Specified files do not exist on the server.")
+
+        val records = dsl.selectFrom(SESSION_FILE)
+                .orderBy(SESSION_FILE.SESSION)
+                .fetch();
+
+        assertThat(records.count()).isEqualTo(1);
+
+        assertThat(records[0][SESSION_FILE.FILENAME]).isEqualTo("pjnz_file")
+        assertThat(records[0][SESSION_FILE.HASH]).isEqualTo("pjnz_hash")
+        assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo("sid")
+        assertThat(records[0][SESSION_FILE.TYPE]).isEqualTo("pjnz")
+
+    }
+
     private fun setUpSessionAndHash(): String {
         sut.saveNewHash("newhash")
+        return setUpSession();
+    }
+
+    private fun setUpSession(): String {
         userRepo.addUser("email", "pw")
         val uid = userRepo.getUser("email")!!.id
         sut.saveSession("sid", uid)

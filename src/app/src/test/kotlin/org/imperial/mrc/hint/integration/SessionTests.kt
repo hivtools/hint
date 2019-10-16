@@ -40,7 +40,7 @@ class SessionTests : SecureIntegrationTests() {
         val postEntity = getJsonEntity("badhash")
 
         val responseEntity = testRestTemplate.postForEntity<String>("/session/files/", postEntity)
-        assertSecureWithError(isAuthorized, responseEntity, HttpStatus.INTERNAL_SERVER_ERROR, "OTHER_ERROR")
+        assertSecureWithError(isAuthorized, responseEntity, HttpStatus.BAD_REQUEST, "OTHER_ERROR")
     }
 
     private fun getJsonEntity(hash: String): HttpEntity<String> {
