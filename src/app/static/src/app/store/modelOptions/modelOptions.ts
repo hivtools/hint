@@ -9,8 +9,6 @@ export interface ModelOptionsState {
     valid: boolean
 }
 
-export const localStorageKey = "modelRun";
-
 export const initialModelOptionsState: ModelOptionsState = {
     options: {controlSections: []},
     valid: false
