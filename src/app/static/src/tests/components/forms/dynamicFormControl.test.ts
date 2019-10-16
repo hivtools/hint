@@ -18,14 +18,14 @@ describe('Dynamic form control component', function () {
         name: "id_2",
         type: "select",
         required: true,
-        options: ["opt1", "opt2"]
+        options: [{id: "opt1", label: "option 1"}, {id: "opt2", label: "option2"}]
     };
 
     const fakeMultiSelect: SelectControl = {
         name: "id_3",
         type: "multiselect",
         required: true,
-        options: ["opt1", "opt2"]
+        options: [{id: "opt1", label: "option 1"}, {id: "opt2", label: "option2"}]
     };
 
     it("renders label if it exists", () => {
