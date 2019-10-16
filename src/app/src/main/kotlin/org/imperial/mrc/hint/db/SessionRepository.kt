@@ -6,7 +6,6 @@ import org.imperial.mrc.hint.exceptions.SessionException
 import org.imperial.mrc.hint.models.SessionFile
 import org.jooq.DSLContext
 import org.jooq.Record
-import org.jooq.exception.DataAccessException
 import org.jooq.impl.DSL
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Component

@@ -1,12 +1,9 @@
 package org.imperial.mrc.hint.controllers
 
 import org.imperial.mrc.hint.FileManager
-import org.imperial.mrc.hint.exceptions.HintException
-import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.SessionFile
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.toJsonString
-import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
