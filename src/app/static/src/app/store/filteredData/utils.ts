@@ -1,7 +1,7 @@
-import {IndicatorRange} from "../../types";
 import {DataType, FilteredDataState} from "./filteredData";
 import {RootState} from "../../root";
-import {NestedFilterOption} from "../../generated";
+import {IndicatorMetadata, NestedFilterOption} from "../../generated";
+import * as d3ScaleChromatic from "d3-scale-chromatic";
 
 export const sexFilterOptions = [
     {id: "both", name: "both"},
@@ -9,12 +9,39 @@ export const sexFilterOptions = [
     {id: "male", name: "male"}
 ];
 
-export const getColor = (value: number, range: IndicatorRange, colorFunction: (t: number) => string) => {
-    let rangeNum = (range.max && (range.max != range.min)) ? //Avoid dividing by zero if only one value...
-        range.max - (range.min || 0) :
+export const roundToContext = function(value: number, context: number) {
+    //Rounds the value to one more decimal place than is present in the 'context'
+    const maxFraction = context.toString().split(".");
+    const maxDecPl = maxFraction.length > 1 ? maxFraction[1].length : 0;
+    const roundingNum = Math.pow(10, maxDecPl + 1);
+
+    return Math.round(value * roundingNum) / roundingNum;
+};
+
+export const colorFunctionFromName = function(name: string) {
+    let result =  (d3ScaleChromatic as any)[name];
+    if (!result){
+        //This is trying to be defensive against typos in metadata...
+        console.warn(`Unknown color function: ${name}`);
+        result = d3ScaleChromatic.interpolateWarm;
+    }
+    return result;
+};
+
+export const getColor = (value: number, metadata: IndicatorMetadata) => {
+    const max = metadata.max;
+    const min = metadata.min;
+    const colorFunction = colorFunctionFromName(metadata.colour);
+
+    let rangeNum = (max  && (max != min)) ? //Avoid dividing by zero if only one value...
+        max - (min || 0) :
         1;
 
-    const colorValue = value / rangeNum;
+    let colorValue = (value - min) / rangeNum;
+
+    if (metadata.invert_scale) {
+        colorValue = 1 - colorValue;
+    }
 
     return colorFunction(colorValue);
 };

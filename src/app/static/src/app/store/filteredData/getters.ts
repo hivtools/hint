@@ -1,10 +1,14 @@
 import {RootState} from "../../root";
-import {DataType, FilteredDataState} from "./filteredData";
-import {Dict, IndicatorRange, Indicators} from "../../types";
-import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
-import {FilterOption, NestedFilterOption} from "../../generated";
+import {DataType, FilteredDataState, SelectedChoroplethFilters, SelectedFilters} from "./filteredData";
+
+import {IndicatorMetadata, NestedFilterOption} from "../../generated";
+import {IndicatorValues, IndicatorValuesDict} from "../../types";
+import {Dict} from "../../types";
+import {FilterOption} from "../../generated";
 import {flattenOptions} from "./utils";
 import {getColor, getUnfilteredData, sexFilterOptions} from "./utils";
+import * as d3ScaleChromatic from "d3-scale-chromatic";
+import {Indicators} from "../../../tests/mocks";
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState): Dict<FilterOption[] | undefined> | null => {
@@ -56,43 +60,17 @@ export const getters = {
         //We're skipping the top level, country region as it doesn't really contribute to the filtering
         return shape.filters.regions.options as NestedFilterOption[];
     },
-    colorFunctions: function (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any):
-        Dict<(t: number) => string> {
-        return {
-            art: interpolateWarm,
-            prev: interpolateCool
-        }
-    },
-    regionIndicators: function (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any): Dict<Indicators> {
+    regionIndicators: function (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any): Dict<IndicatorValuesDict> {
+
         const data = getUnfilteredData(state, rootState);
         if (!data || (state.selectedDataType == null)) {
             return {};
         }
 
-        const result = {} as Dict<Indicators>;
+        const flattenedRegions = getters.flattenedSelectedRegionFilters;
+        const result = {} as Dict<IndicatorValuesDict>;
 
-        //TODO: output data doesn't currently conform to plotting metadata, so for now we fake the metadata
-        //Use the real metadata for all other data types
-        let indicatorsMeta = state.selectedDataType == DataType.Output ?
-            {
-                prevalence: {
-                    value_column: "mean",
-                    indicator_column: "indicator_id",
-                    indicator_value: "2"
-                }
-            } :
-            rootGetters['metadata/choroplethIndicatorsMetadata'];
-
-        //TODO: ...and here's a workaround for a small bug in the current Survey metadata - 'art' for
-        //indicator value, should be 'artcov'
-        if (state.selectedDataType == DataType.Survey) {
-            indicatorsMeta = {
-                ...indicatorsMeta
-            };
-            indicatorsMeta.art_coverage.indicator_value = "artcov";
-        }
-
-        const indicators = Object.keys(indicatorsMeta);
+        const indicatorsMeta = rootGetters['metadata/choroplethIndicatorsMetadata'];
 
         for (const row of data) {
 
@@ -100,11 +78,11 @@ export const getters = {
                 continue;
             }
 
-            const areaId = row.area_id;
+            const areaId: string = row.area_id;
 
-            for (const indicator of indicators) {
+            for (const metadata of indicatorsMeta) {
 
-                const metadata = indicatorsMeta[indicator];
+                const indicator = metadata.indicator;
 
                 if (metadata.indicator_column && metadata.indicator_value != row[metadata.indicator_column]) {
                     //This data is in long format, and the indicator column's value does not match that for this indicator
@@ -119,26 +97,13 @@ export const getters = {
                 const value = row[metadata.value_column];
 
                 if (!result[areaId]) {
-                    result[areaId] = {};
+                    result[areaId] = {} as IndicatorValuesDict;
                 }
 
-                //TODO: Rather than hardcoded 'prev' and 'art', emit data with the indicator names (keys) from the metadata
-                //and make the plotting components agnostic about art/prev/anything else
                 const regionValues = result[areaId];
-                switch (indicator) {
-                    case("prevalence"):
-                        regionValues.prev = {
-                            value: value,
-                            color: getColor(value, getters.choroplethRanges.prev, getters.colorFunctions.prev)
-                        };
-                        break;
-                    case("art_coverage"):
-                    case("current_art"):
-                        regionValues.art = {
-                            value: value,
-                            color: getColor(value, getters.choroplethRanges.art, getters.colorFunctions.art)
-                        };
-                        break;
+                regionValues[indicator] = {
+                    value: value,
+                    color: getColor(value, metadata)
                 }
 
             }
@@ -188,52 +153,5 @@ export const getters = {
         const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
         return flattenOptions(selectedRegions);
     },
-    choroplethRanges: function (state: FilteredDataState, getters: any, rootState: RootState): Dict<IndicatorRange> {
-        //TODO: do not hardcode to art and prev, but take indicators from metadata too
-        const metadata = rootState.metadata.plottingMetadata!!;
-        switch (state.selectedDataType) {
-            case (DataType.ANC):
-                const ancIndicators = metadata.anc.choropleth!!.indicators!;
-                return {
-                    prev: {
-                        min: ancIndicators.prevalence!!.min,
-                        max: ancIndicators.prevalence!!.max,
-                    },
-                    art: {
-                        min: ancIndicators.art_coverage!!.min,
-                        max: ancIndicators.art_coverage!!.max
-                    }
-                };
-            case (DataType.Program):
-                const progRange = metadata.programme.choropleth!!.indicators!!.current_art!!;
-                return {
-                    art: {
-                        min: progRange.min,
-                        max: progRange.max,
-                    }
-                };
-            case (DataType.Survey):
-                const survIndicators = metadata.survey.choropleth!!.indicators!!;
-                return {
-                    prev: {
-                        min: survIndicators.prevalence!!.min,
-                        max: survIndicators.prevalence!!.max
-                    },
-                    art: {
-                        min: survIndicators.art_coverage!!.min,
-                        max: survIndicators.art_coverage!!.max
-                    }
-                };
-            case (DataType.Output):
-                const outputRange = metadata.output.choropleth!!.indicators!!.prevalence!!;
-                return {
-                    prev: {
-                        min: outputRange.min,
-                        max: outputRange.max
-                    }
-                };
-            default:
-                return {};
-        }
-    }
 };
+

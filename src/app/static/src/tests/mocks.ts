@@ -232,22 +232,22 @@ export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResp
     return {
         anc: {
             choropleth: {
-                indicators: {}
+                indicators: []
             }
         },
         output: {
             choropleth: {
-                indicators: {}
+                indicators: []
             }
         },
         programme: {
             choropleth: {
-                indicators: {}
+                indicators: []
             }
         },
         survey: {
             choropleth: {
-                indicators: {}
+                indicators: []
             }
         },
         ...props

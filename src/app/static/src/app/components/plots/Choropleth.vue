@@ -11,7 +11,7 @@
                      @indicator-changed="onIndicatorChange"
                      @detail-changed="onDetailChange"
                      :indicator="indicator"></map-control>
-        <map-legend :colorFunction="selectedColorFunction" :max="range.max" :min="range.min"></map-legend>
+        <map-legend :metadata="indicatorMetadata"></map-legend>
     </l-map>
 </template>
 <script lang="ts">
@@ -21,15 +21,15 @@
     import {GeoJSON, Layer} from "leaflet";
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
-    import {Dict, Indicator, IndicatorRange, Indicators, LevelLabel} from "../../types";
-    import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
-    import {NestedFilterOption} from "../../generated";
-    import {mapGettersByNames, mapStateProps} from "../../utils";
     import {BaselineState} from "../../store/baseline/baseline";
+    import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
+    import {IndicatorMetadata, NestedFilterOption} from "../../generated";
+    import {Dict, LevelLabel, IndicatorValuesDict} from "../../types";
+    import {mapGettersByNames, mapStateProps} from "../../utils";
 
     interface Data {
         style: any,
-        indicator: Indicator;
+        indicator: string | null;
         detail: number
     }
 
@@ -45,30 +45,32 @@
     }
 
     interface FilteredDataGetters {
-        regionIndicators: Dict<Indicators>
+        regionIndicators: Dict<IndicatorValuesDict>
         colorFunctions: Dict<(t: number) => string>
-        choroplethRanges: Dict<IndicatorRange>
     }
 
-    interface Computed extends BaselineComputed, FilteredDataComputed, FilteredDataGetters {
+    interface MetadataGetters {
+        choroplethIndicators: string[],
+        choroplethIndicatorsMetadata: IndicatorMetadata[]
+    }
+
+    interface Computed extends BaselineComputed, FilteredDataComputed, FilteredDataGetters, MetadataGetters {
         countryFeature: Feature
         maxLevel: number
         featuresByLevel: Dict<Feature[]>
         currentFeatures: Feature[]
-        selectedColorFunction: (t: number) => string
-        range: IndicatorRange
         options: L.GeoJSONOptions
-        artEnabled: boolean
-        prevEnabled: boolean
-        selectedRegionFeatures: Feature[]
+        selectedRegionFeatures: Feature[],
+        indicatorMetadata: IndicatorMetadata
     }
 
     interface Methods {
-        onIndicatorChange: (newVal: Indicator) => void
+        onIndicatorChange: (newVal: string) => void
         onDetailChange: (newVal: number) => void
         getColorForRegion: (region: string) => void
         getFeatureFromAreaId: (areaId: string) => Feature | null
-        updateBounds: () => void
+        updateBounds: () => void,
+        refreshIndicator: () => void
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -93,8 +95,12 @@
             ),
             ...mapGettersByNames<keyof FilteredDataGetters>("filteredData", [
                     "regionIndicators",
-                    "colorFunctions",
-                    "choroplethRanges"
+                    "colorFunctions"
+                ]
+            ),
+            ...mapGettersByNames<keyof MetadataGetters>("metadata", [
+                    "choroplethIndicators",
+                    "choroplethIndicatorsMetadata"
                 ]
             ),
             countryFeature(): Feature {
@@ -102,6 +108,7 @@
             },
             maxLevel() {
                 const levelNums: number[] = Object.keys(this.featuresByLevel).map(k => parseInt(k));
+
                 return Math.max(...levelNums);
             },
             featuresByLevel() {
@@ -125,21 +132,17 @@
             currentFeatures() {
                 return this.featuresByLevel[this.detail]
             },
-            selectedColorFunction() {
-                return this.colorFunctions[this.indicator];
-            },
-            range() {
-                return this.choroplethRanges[this.indicator];
-            },
-            prevEnabled() {
-                return this.selectedDataType != DataType.Program;
-            },
-            artEnabled() {
-                return !!this.selectedDataType && (this.selectedDataType in [DataType.Survey, DataType.Program, DataType.ANC]);
+            indicatorMetadata: function() {
+                return this.choroplethIndicatorsMetadata.filter((i: IndicatorMetadata) => i.indicator == this.indicator)[0];
             },
             options() {
                 const regionIndicators = this.regionIndicators;
-                const indicator = this.indicator;
+
+                if (!this.indicator){
+                    return {};
+                }
+
+                const indicator = this.indicator!!;
                 return {
                     onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
                         const area_id = feature.properties && feature.properties["area_id"];
@@ -147,10 +150,11 @@
 
                         const values = regionIndicators[area_id];
                         let value = values && values[indicator] && values[indicator]!!.value;
+                        const stringVal =  (value || value === 0) ? value.toString() : "";
 
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
-                                <br/>${value || ""}
+                                <br/>${stringVal}
                             </div>`);
                     }
                 }
@@ -171,24 +175,29 @@
                     fillOpacity: 1.0,
                     color: 'grey'
                 },
-                indicator: "prev",
+                indicator: "",
                 detail: 0
             }
         },
         created() {
-            this.detail = this.maxLevel
+            this.detail = this.maxLevel;
+            this.refreshIndicator();
         },
         mounted() {
             this.updateBounds();
         },
         methods: {
-            onIndicatorChange: function (newVal: Indicator) {
+            onIndicatorChange: function (newVal: string) {
                 this.indicator = newVal;
             },
             onDetailChange: function (newVal: number) {
                 this.detail = newVal
             },
             getColorForRegion: function (region: string) {
+                if (!this.indicator) {
+                    return null;
+                }
+
                 const regionIndicators = this.regionIndicators[region];
                 const indicator = regionIndicators && regionIndicators[this.indicator];
                 let color = indicator && indicator.color;
@@ -206,19 +215,19 @@
             },
             updateBounds: function () {
                 const map = this.$refs.map as LMap;
-                if (map.fitBounds) {
+                if (map && map.fitBounds) {
                     map.fitBounds(this.selectedRegionFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
+                }
+            },
+            refreshIndicator: function() {
+                if (!this.indicator || this.choroplethIndicators.indexOf (this.indicator) < 0) {
+                    this.indicator = this.choroplethIndicators.length > 0 ? this.choroplethIndicators[0] : null;
                 }
             }
         },
         watch: {
             selectedDataType: function (newVal) {
-                //Update indicator to one which is enabled if required
-                if (!this.prevEnabled && this.artEnabled && this.indicator == "prev") {
-                    this.indicator = "art";
-                } else if (!this.artEnabled && this.prevEnabled && this.indicator == "art") {
-                    this.indicator = "prev";
-                }
+                this.refreshIndicator();
             },
             selectedRegionFeatures: function (newVal) {
                 this.updateBounds();

@@ -2,7 +2,7 @@ import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {RootState} from "../../root";
-import {PlottingMetadataResponse} from "../../generated";
+import {IndicatorMetadata, PlottingMetadataResponse} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../filteredData/filteredData";
 
@@ -24,7 +24,7 @@ export const metadataGetters = {
         const plottingMetadata = state.plottingMetadata;
 
         if (!plottingMetadata) {
-            return null;
+            return [];
         }
 
         const selectedDataType = rootState.filteredData.selectedDataType;
@@ -45,7 +45,11 @@ export const metadataGetters = {
                 break;
         }
 
-        return metadataForType && metadataForType.choropleth ? metadataForType.choropleth.indicators : null;
+        return  (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
+    },
+    choroplethIndicators:(state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
+        const metadata = getters.choroplethIndicatorsMetadata;
+        return  metadata.map((i: IndicatorMetadata) => i.indicator);
     }
 };
 

@@ -13,25 +13,53 @@
 <script lang="ts">
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
-    export default Vue.extend({
+    import {colorFunctionFromName, roundToContext} from "../../store/filteredData/utils";
+    import {IndicatorMetadata} from "../../generated";
+
+    interface Props {
+        metadata: IndicatorMetadata
+    }
+
+    interface Level {
+        val: number,
+        style: Object
+    }
+
+    interface Computed {
+        levels: Level[]
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
         name: "MapLegend",
         props: {
-            "colorFunction": Function,
-            "max": Number,
-            "min": Number
+            "metadata": Object
         },
         components: {
             LControl
         },
         computed: {
             levels: function () {
-                const step = (this.max - this.min) / 5;
-                return [0, 1, 2, 3, 4, 5].map((i) => {
-                    const val = Math.round((this.min + (i * step)) * 100)/100;
-                    return {
-                        val, style: {background: this.colorFunction((val - this.min)/(this.max - this.min))}
-                    }
-                });
+                if (this.metadata) {
+                    const max = this.metadata.max;
+                    const min = this.metadata.min;
+                    const colorFunction = colorFunctionFromName(this.metadata.colour);
+                    const step = (max - min) / 5;
+
+                    return [0, 1, 2, 3, 4, 5].map((i) => {
+                        let val = min + (i * step);
+                        val = roundToContext(val, max);
+
+                        let valAsProportion = (val - min) / (max - min);
+                        if (this.metadata.invert_scale) {
+                            valAsProportion = 1 - valAsProportion;
+                        }
+
+                        return {
+                            val, style: {background: colorFunction(valAsProportion)}
+                        }
+                    });
+                }
+                return [];
             }
         }
     });
