@@ -2,6 +2,7 @@ package org.imperial.mrc.hint
 
 import org.apache.tomcat.util.http.fileupload.FileUtils
 import org.imperial.mrc.hint.db.SessionRepository
+import org.imperial.mrc.hint.models.SessionFile
 import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Component
@@ -29,6 +30,7 @@ interface FileManager {
     fun saveFile(file: MultipartFile, type: FileType): SessionFileWithPath
     fun getFile(type: FileType): SessionFileWithPath?
     fun getAllFiles(): Map<String, String>
+    fun setAllFiles(files: Map<String, SessionFile>)
 }
 
 @Component
@@ -65,6 +67,10 @@ class LocalFileManager(
     override fun getAllFiles(): Map<String, String> {
         val hashes = sessionRepository.getHashesForSession(session.getId())
         return hashes.mapValues { "${appProperties.uploadDirectory}/${it.value}" }
+    }
+
+    override fun setAllFiles(files: Map<String, SessionFile>) {
+        sessionRepository.setFilesForSession(session.getId(), files);
     }
 }
 
