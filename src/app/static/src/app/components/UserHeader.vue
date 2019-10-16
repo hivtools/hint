@@ -35,6 +35,7 @@
     import {BaselineState} from "../store/baseline/baseline";
     import {surveyAndProgram, SurveyAndProgramDataState} from "../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
+    import {Dict, LocalSessionFile} from "../types";
 
     interface Data {
         show: boolean
@@ -44,6 +45,11 @@
         toggle: () => void;
         save: (e: Event) => void;
         close: () => void;
+    }
+
+    interface Computed {
+        baselineHashes: Dict<LocalSessionFile>
+        surveyAndProgramHashes: Dict<LocalSessionFile>
     }
 
     export default Vue.extend<Data, Methods, any, "title" | "user">({
