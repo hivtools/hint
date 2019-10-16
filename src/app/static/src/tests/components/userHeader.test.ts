@@ -102,8 +102,6 @@ describe("user header", () => {
         const reader = new FileReader();
         reader.addEventListener('loadend', function() {
             const text = reader.result;
-            console.warn(text);
-            console.warn(expectedJson);
             expect(text).toEqual(expectedJson);
             done();
         });

@@ -31,11 +31,10 @@
 
     import Vue from "vue";
     import {serialiseState} from "../localStorageManager";
-    import {mapState} from "vuex";
     import {BaselineState} from "../store/baseline/baseline";
     import {surveyAndProgram, SurveyAndProgramDataState} from "../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
-    import {Dict, LocalSessionFile} from "../types";
+    import {LocalSessionFile} from "../types";
     import {mapStateProp} from "../utils";
 
     interface Data {
