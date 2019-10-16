@@ -15,7 +15,8 @@ import {
 import Vue from "vue";
 
 Vue.use(Vuex);
-window.URL.createObjectURL = jest.fn(() => "test.url");
+const mockCreateObjectUrl = jest.fn(() => "test.url");
+window.URL.createObjectURL = mockCreateObjectUrl;
 
 describe("user header", () => {
 
@@ -25,17 +26,17 @@ describe("user header", () => {
                 baseline: {
                     namespaced: true,
                     state: mockBaselineState({
-                        population: mockPopulationResponse({hash: "1.csv"}),
-                        pjnz: mockPJNZResponse({hash: "2.csv"}),
-                        shape: mockShapeResponse({hash: "3.csv"})
+                        population: mockPopulationResponse({hash: "1csv", filename: "1.csv"}),
+                        pjnz: mockPJNZResponse({hash: "2csv", filename: "2.csv"}),
+                        shape: mockShapeResponse({hash: "3csv", filename: "3.csv"})
                     })
                 },
                 surveyAndProgram: {
                     namespaced: true,
                     state: mockSurveyAndProgramState({
-                        survey: mockSurveyResponse({hash: "4.csv"}),
-                        program: mockProgramResponse({hash: "5.csv"}),
-                        anc: mockAncResponse({hash: "6.csv"})
+                        survey: mockSurveyResponse({hash: "4csv", filename: "4.csv"}),
+                        program: mockProgramResponse({hash: "5csv", filename: "5.csv"}),
+                        anc: mockAncResponse({hash: "6csv", filename: "6.csv"})
                     })
                 },
                 modelRun: {
@@ -68,7 +69,7 @@ describe("user header", () => {
         expect(wrapper.find("a[href='/logout']")).toBeDefined();
     });
 
-    it("downloads file", () => {
+    it("downloads file", (done) => {
         const wrapper = shallowMount(UserHeader,
             {
                 propsData: {title: "naomi"},
@@ -80,25 +81,33 @@ describe("user header", () => {
         let link = wrapper.findAll(".dropdown-item").at(0);
         link.trigger("mousedown");
 
-        link = wrapper.findAll(".dropdown-item").at(0);
-
-        const expectedBlob = new Blob([JSON.stringify({
-            state: {modelRun: mockModelRunState()}, hashes: {
-                pjnz: "2.csv",
-                population: "1.csv",
-                shape: "3.csv",
-                survey: "4.csv",
-                program: "5.csv",
-                anc: "6.csv"
-            }
-        })], {type: "application/json"});
-        expect((window.URL.createObjectURL as jest.Mock).mock.calls[0][0]).toStrictEqual(expectedBlob);
-
         const hiddenLink = wrapper.find({ref: "save"});
         expect(hiddenLink.attributes("href")).toBe('test.url');
 
         const re = new RegExp("naomi-(.*)\.json");
         expect((hiddenLink.attributes("download") as string).match(re)).toBeDefined();
+
+        const expectedJson = JSON.stringify({
+            state: {modelRun: mockModelRunState()}, files: {
+                pjnz: {hash: "2csv", filename: "2.csv"},
+                population: {hash: "1csv", filename: "1.csv"},
+                shape: {hash: "3csv", filename: "3.csv"},
+                survey: {hash: "4csv", filename: "4.csv"},
+                program: {hash: "5csv", filename: "5.csv"},
+                anc: {hash: "6csv", filename: "6.csv"}
+            }
+        });
+        const actualBlob = (mockCreateObjectUrl as jest.Mock).mock.calls[0][0];
+
+        const reader = new FileReader();
+        reader.addEventListener('loadend', function() {
+            const text = reader.result;
+            console.warn(text);
+            console.warn(expectedJson);
+            expect(text).toEqual(expectedJson);
+            done();
+        });
+        reader.readAsText(actualBlob);
     });
 
 });
