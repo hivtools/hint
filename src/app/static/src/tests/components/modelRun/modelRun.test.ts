@@ -31,11 +31,13 @@ describe("Model run component", () => {
         });
     };
 
+    const mockStatus = mockModelStatusResponse();
+
     mockAxios.onPost(`/model/run/`)
         .reply(200, mockSuccess({id: "1234"}));
 
     mockAxios.onGet(`/model/status/1234`)
-        .reply(200, mockSuccess(mockModelStatusResponse()));
+        .reply(200, mockSuccess(mockStatus));
 
     mockAxios.onGet(`/model/result/1234`)
         .reply(200, mockSuccess(mockModelResultResponse()));
@@ -49,14 +51,14 @@ describe("Model run component", () => {
 
         setTimeout(() => {
             expect(wrapper.find("button").attributes().disabled).toBe("disabled");
-            expect(store.state.modelRun.status).toBe(ModelRunStatus.Started);
+            expect(store.state.modelRun.status).toStrictEqual({id: "1234"});
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).not.toBe(-1);
             expect(wrapper.find(Modal).props().open).toBe(true);
 
             setTimeout(() => {
                 expect(wrapper.find("button").attributes().disabled).toBeUndefined();
-                expect(store.state.modelRun.status).toBe(ModelRunStatus.Complete);
+                expect(store.state.modelRun.status).toStrictEqual(mockStatus);
                 expect(store.state.modelRun.modelRunId).toBe("1234");
                 expect(store.state.modelRun.statusPollId).toBe(-1);
                 expect(wrapper.find(Modal).props().open).toBe(false);
@@ -71,7 +73,7 @@ describe("Model run component", () => {
 
         setTimeout(() => {
             expect(wrapper.find("button").attributes().disabled).toBeUndefined();
-            expect(store.state.modelRun.status).toBe(ModelRunStatus.Complete);
+            expect(store.state.modelRun.status).toStrictEqual(mockStatus);
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).toBe(-1);
             expect(wrapper.find(Modal).props().open).toBe(false);
