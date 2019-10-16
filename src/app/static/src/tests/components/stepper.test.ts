@@ -118,7 +118,7 @@ describe("Stepper component", () => {
         expect(steps.at(1).props().number).toBe(2);
         expect(steps.at(1).props().complete).toBe(false);
 
-        expect(steps.at(2).props().text).toBe("Choose options");
+        expect(steps.at(2).props().text).toBe("Model options");
         expect(steps.at(2).props().active).toBe(false);
         expect(steps.at(2).props().number).toBe(3);
         expect(steps.at(2).props().complete).toBe(false);

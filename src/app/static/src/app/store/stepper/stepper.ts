@@ -28,7 +28,7 @@ export const initialStepperState: StepperState = {
         },
         {
             number: 3,
-            text: "Choose options"
+            text: "Model options"
         },
         {
             number: 4,
