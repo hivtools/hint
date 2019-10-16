@@ -22,7 +22,7 @@ export interface DynamicControl {
 }
 
 export interface SelectControl extends DynamicControl {
-    options: string[]
+    options: { id: string, label: string }[]
 }
 
 export interface NumberControl extends DynamicControl {
@@ -31,11 +31,11 @@ export interface NumberControl extends DynamicControl {
     default?: number
 }
 
-export interface DynamicForm {
+export interface DynamicFormMeta {
     controlSections: DynamicControlSection[]
 }
 
-export const formMeta: DynamicForm = {
+export const formMeta: DynamicFormMeta = {
     controlSections: [
         {
             label: "General",
@@ -46,7 +46,7 @@ export const formMeta: DynamicForm = {
                     {
                         name: "area_scope",
                         type: "multiselect",
-                        options: ["MWI", "MWI.1", "MWI.2"],
+                        options: [{id: "MWI", label: "Malawi"}, {id: "MWI.1", label: "Central"}],
                         default: "MWI",
                         required: true
                     }]
@@ -57,7 +57,7 @@ export const formMeta: DynamicForm = {
                         {
                             name: "area_level",
                             type: "multiselect",
-                            options: ["Apr - Jun 2015", "Jul - Sep 2015"],
+                            options: [{id: "q1", label: "Apr - Jun 2015"}, {id: "q2", label: "Jul - Sep 2015"}],
                             required: true
                         }]
                 }
@@ -76,7 +76,7 @@ export const formMeta: DynamicForm = {
                             type: "select",
                             default: "Jan - Mar 2015",
                             helpText: "Quarter matching midpoint of survey",
-                            options: ["Jan - Mar 2015", "Apr - Jun 2015"],
+                            options: [{id: "q1", label: "Jan - Mar 2015"}, {id: "q2", label: "Apr - Jun 2015"}],
                             required: true
                         },
                         {
@@ -84,7 +84,7 @@ export const formMeta: DynamicForm = {
                             label: "Time 2",
                             type: "select",
                             helpText: "Quarter matching midpoint of survey",
-                            options: ["Jan - Mar 2015", "Apr - Jun 2015"],
+                            options:  [{id: "q1", label: "Jan - Mar 2015"}, {id: "q2", label: "Apr - Jun 2015"}],
                             required: false
                         }
                     ]

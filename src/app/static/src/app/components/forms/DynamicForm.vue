@@ -1,6 +1,7 @@
 <template>
     <b-form :ref="id" class="dynamic-form" :validated="validated" novalidate>
         <dynamic-form-control-section v-for="section in formMeta.controlSections"
+                                      :key="section.label"
                                       :control-section="section">
         </dynamic-form-control-section>
         <button v-if="includeSubmitButton" class="btn btn-red" v-on:click="submit">{{submitText}}</button>
@@ -11,13 +12,12 @@
 
     import Vue from "vue";
     import {BForm} from "bootstrap-vue";
-    import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import DynamicFormControlSection from "./DynamicFormControlSection.vue";
-    import {DynamicForm} from "./types";
+    import {DynamicFormMeta} from "./types";
     import {Dict} from "../../types";
 
     interface Props {
-        formMeta: DynamicForm,
+        formMeta: DynamicFormMeta,
         includeSubmitButton: boolean
         submitText: string
         id: string
@@ -55,7 +55,6 @@
         },
         components: {
             BForm,
-            DynamicFormControlGroup,
             DynamicFormControlSection
         },
         computed: {

@@ -8,7 +8,7 @@ describe('Dynamic form select component', function () {
         name: "id_2",
         type: "select",
         required: true,
-        options: ["opt1", "opt2"],
+        options: [{id: "opt1", label: "option 1"}, {id: "opt2", label: "option2"}],
         default: "opt2"
     };
 
@@ -20,6 +20,8 @@ describe('Dynamic form select component', function () {
         });
         const options = rendered.findAll("option");
         expect(options.length).toBe(3);
+        expect((options.at(1).element as HTMLSelectElement).value).toBe("opt1");
+        expect(options.at(1).text()).toBe("option 1");
     });
 
     it("default is selected if present", () => {

@@ -2,7 +2,8 @@
     <div>
         <h3>{{controlSection.label}}</h3>
         <p v-if="controlSection.description" class="text-muted">{{controlSection.description}}</p>
-        <dynamic-form-control-group v-for="group in controlSection.controlGroups"
+        <dynamic-form-control-group v-for="(group, index) in controlSection.controlGroups"
+                                    :key="index"
                                     :control-group="group"></dynamic-form-control-group>
     </div>
 </template>

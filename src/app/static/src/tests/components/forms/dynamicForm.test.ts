@@ -1,11 +1,11 @@
-import {DynamicForm, NumberControl} from "../../../app/components/forms/types";
+import {DynamicFormMeta, NumberControl} from "../../../app/components/forms/types";
 import {mount, shallowMount} from "@vue/test-utils";
 import DynamicFormComponent from "../../../app/components/forms/DynamicForm.vue";
 import DynamicFormControlSection from "../../../app/components/forms/DynamicFormControlSection.vue";
 
 describe('Dynamic form component', function () {
 
-    const fakeFormMeta: DynamicForm = {
+    const fakeFormMeta: DynamicFormMeta = {
         controlSections: [
             {
                 label: "Test 1",

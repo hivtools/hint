@@ -4,8 +4,9 @@
             <label class="group-label">{{controlGroup.label}}</label>
         </b-col>
         <dynamic-form-control v-for="control in controlGroup.controls"
-                      :form-control="control"
-                      :col-width="colWidth"></dynamic-form-control>
+                              :key="control.name"
+                              :form-control="control"
+                              :col-width="colWidth"></dynamic-form-control>
     </b-row>
 </template>
 <script lang="ts">

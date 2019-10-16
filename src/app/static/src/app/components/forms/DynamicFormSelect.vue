@@ -1,8 +1,11 @@
 <template>
     <select class="form-control" :name="formControl.name" :required="formControl.required">
         <option value>Select...</option>
-        <option v-for="opt in formControl.options" :value="opt" :selected="formControl.default === opt">
-            {{opt}}
+        <option v-for="opt in formControl.options"
+                :key="opt.id"
+                :value="opt.id"
+                :selected="formControl.default === opt.id">
+            {{opt.label}}
         </option>
     </select>
 </template>

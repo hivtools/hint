@@ -9,7 +9,7 @@ describe('Dynamic form multi-select component', function () {
         name: "id_1",
         type: "multiselect",
         required: true,
-        options: ["opt1", "opt2"],
+        options: [{id: "opt1", label: "option 1"}, {id: "opt2", label: "option2"}],
         default: "opt2"
     };
 
@@ -22,30 +22,9 @@ describe('Dynamic form multi-select component', function () {
 
         const treeSelect = rendered.find(TreeSelect);
         expect(treeSelect.props("value")).toStrictEqual(["opt2"]);
-        expect(treeSelect.props("options")).toStrictEqual(["opt1", "opt2"]);
+        expect(treeSelect.props("options")).toStrictEqual(fakeSelect.options);
         expect(treeSelect.props("multiple")).toBe(true);
-    });
-
-    it("treeselect is not clearable if formControl is required", () => {
-        const rendered = shallowMount(DynamicFormMultiSelect, {
-            propsData: {
-                formControl: {...fakeSelect, required: true}
-            }
-        });
-
-        const treeSelect = rendered.find(TreeSelect);
         expect(treeSelect.props("clearable")).toBe(false);
-    });
-
-    it("treeselect is clearable if formControl is not required", () => {
-        const rendered = shallowMount(DynamicFormMultiSelect, {
-            propsData: {
-                formControl: {...fakeSelect, required: false}
-            }
-        });
-
-        const treeSelect = rendered.find(TreeSelect);
-        expect(treeSelect.props("clearable")).toBe(true);
     });
 
     it("initialises hidden input with default value", () => {
@@ -86,7 +65,7 @@ describe('Dynamic form multi-select component', function () {
             }
         });
 
-        rendered.find(TreeSelect).vm.$emit("input", "opt1");
+        rendered.setData({value: "opt1"});
         expect(rendered.classes()).toContain("is-valid");
     });
 
