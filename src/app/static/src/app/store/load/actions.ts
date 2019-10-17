@@ -5,13 +5,14 @@ import {api} from "../../apiService";
 import {PjnzResponse} from "../../generated";
 import {Dict, LocalSessionFile} from "../../types";
 
-export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded"
+export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError"
 export type LoadErrorActionTypes = "LoadFailed"
 
 export interface LoadActions {
     load: (store: ActionContext<LoadState, RootState>, file: File) => void
     setFiles: (store: ActionContext<LoadState, RootState>, savedFileContents: string) => void
     updateState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
+    clearError: (store: ActionContext<LoadState, RootState>) => void
 }
 
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
@@ -42,6 +43,10 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
     async updateState({commit, dispatch, state}, savedState) {
         //TODO: In another PR - hashes have now been set for session in backend, so  update the state from the saved state and get file data from backend
-        alert("updating state: " + JSON.stringify(savedState));
+        //alert("updating state: " + JSON.stringify(savedState));
+    },
+
+    async clearError({commit}) {
+        commit({type: "ClearLoadError", payload: null});
     }
 };

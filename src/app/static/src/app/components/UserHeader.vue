@@ -26,6 +26,11 @@
                 <a href="/logout">Logout</a>
             </div>
         </nav>
+        <modal :open="hasError" :okButton="true" @ok="clearLoadError">
+            <h4>Load Error</h4>
+            <p>Failed to load state.</p>
+            <p>{{loadError}}</p>
+        </modal>
     </header>
 </template>
 <script lang="ts">
@@ -33,11 +38,13 @@
     import Vue from "vue";
     import {serialiseState} from "../localStorageManager";
     import {BaselineState} from "../store/baseline/baseline";
+    import {LoadState, LoadingState} from "../store/load/load";
     import {surveyAndProgram, SurveyAndProgramDataState} from "../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import {LocalSessionFile} from "../types";
-    import {mapActionByName, mapStateProp} from "../utils";
+    import {mapActionByName, mapStateProp, mapStateProps} from "../utils";
     import {ValidateInputResponse} from "../generated";
+    import Modal from "./Modal.vue"
 
     interface Data {
         show: boolean
@@ -49,10 +56,15 @@
         load: () => void;
         loadAction: (file: File) => void;
         close: () => void;
-
+        clearLoadError: () => void
     }
 
-    interface Computed {
+    interface LoadComputed {
+        loadError: string
+        hasError: boolean
+    }
+
+    interface Computed extends LoadComputed{
         baselineFiles: BaselineFiles
         surveyAndProgramFiles: SurveyAndProgramFiles
     }
@@ -89,6 +101,10 @@
             user: String
         },
         computed: {
+            ...mapStateProps<LoadState, keyof LoadComputed>("load", {
+                hasError: state => state.loadingState==LoadingState.LoadFailed,
+                loadError: state => state.loadError
+            }),
             baselineFiles: mapStateProp<BaselineState, BaselineFiles>("baseline", state => {
                 return {
                     pjnz: localSessionFile(state.pjnz),
@@ -107,6 +123,8 @@
         methods: {
             loadAction:
                     mapActionByName<File>("load", "load"),
+            clearLoadError:
+                    mapActionByName("load", "clearError"),
             toggle() {
                 this.show = !this.show;
             },
@@ -138,7 +156,8 @@
         },
         components: {
             UploadIcon,
-            DownloadIcon
+            DownloadIcon,
+            Modal
         }
     })
 </script>

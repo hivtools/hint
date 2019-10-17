@@ -25,5 +25,9 @@ export const mutations: MutationTree<LoadState> & BaselineMutations = {
     LoadFailed(state: LoadState, action: PayloadWithType<string>) {
         state.loadingState = LoadingState.LoadFailed;
         state.loadError = action.payload;
+    },
+    ClearLoadError(state: LoadState) {
+        state.loadingState = LoadingState.NotLoading;
+        state.loadError = "";
     }
 }
