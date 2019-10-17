@@ -43,7 +43,6 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
     async updateStoreState({commit, dispatch, state}, savedState) {
         //TODO: In another PR - hashes have now been set for session in backend, so  update the state from the saved state and get file data from backend
-        //alert("updating state: " + JSON.stringify(savedState));
     },
 
     async clearLoadState({commit}) {
