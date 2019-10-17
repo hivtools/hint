@@ -24,7 +24,7 @@
             <div class="pt-4">
                 <baseline v-if="isActive(1)"></baseline>
                 <survey-and-program v-if="isActive(2)"></survey-and-program>
-                <p v-if="isActive(3)">Functionality coming soon.</p>
+                <model-options v-if="isActive(3)"></model-options>
                 <model-run v-if="isActive(4)"></model-run>
                 <model-output v-if="isActive(5)"></model-output>
             </div>
@@ -51,27 +51,32 @@
     import ModelRun from "./modelRun/ModelRun.vue";
     import ModelOutput from "./modelOutput/ModelOutput.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
+    import ModelOptions from "./modelOptions/ModelOptions.vue";
+    import {mapGetterByName, mapGettersByNames, mapStateProps} from "../utils";
 
     type CompleteStatus = {
         [key: number]: boolean
     }
 
-    interface Computed {
+    interface ComputedState {
         activeStep: number,
         steps: StepDescription[],
+    }
+
+    interface ComputedGetters {
         ready: boolean,
         complete: boolean
     }
 
     const namespace: string = 'stepper';
 
-    export default Vue.extend<{}, any, any, any>({
+    export default Vue.extend<{}, any, ComputedState & ComputedGetters, any>({
         computed: {
-            ...mapState<StepperState>(namespace, {
+            ...mapStateProps<StepperState, keyof ComputedState>(namespace, {
                 activeStep: state => state.activeStep,
                 steps: state => state.steps
             }),
-            ...mapGetters(namespace, ["ready", "complete"])
+            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"])
         },
         methods: {
             ...mapActions(namespace, ["jump", "next"]),
@@ -94,7 +99,8 @@
             SurveyAndProgram,
             LoadingSpinner,
             ModelRun,
-            ModelOutput
+            ModelOutput,
+            ModelOptions
         },
         watch: {
             ready: function (newVal) {

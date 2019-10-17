@@ -15,7 +15,7 @@
 <script lang="ts">
     import Vue from "vue";
     import Treeselect from '@riophae/vue-treeselect';
-    import {NestedFilterOption} from "../generated";
+    import {NestedFilterOption} from "../../generated";
 
     interface Methods {
         treeselectNormalizer: (anyNode: any) => void;

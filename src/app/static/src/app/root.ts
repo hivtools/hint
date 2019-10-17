@@ -11,6 +11,7 @@ import {initialStepperState, stepper, StepperState} from "./store/stepper/steppe
 import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations} from "./store/root/mutations";
+import {initialModelOptionsState, modelOptions, ModelOptionsState} from "./store/modelOptions/modelOptions";
 
 export interface RootState {
     version: string;
@@ -19,6 +20,7 @@ export interface RootState {
     surveyAndProgram: SurveyAndProgramDataState,
     filteredData: FilteredDataState,
     modelRun: ModelRunState,
+    modelOptions: ModelOptionsState,
     stepper: StepperState
 }
 
@@ -40,6 +42,7 @@ export const emptyState = {
     surveyAndProgram: initialSurveyAndProgramDataState,
     filteredData: initialFilteredDataState,
     modelRun: initialModelRunState,
+    modelOptions: initialModelOptionsState,
     stepper: initialStepperState
 };
 
@@ -50,6 +53,7 @@ export const storeOptions: StoreOptions<RootState> = {
         surveyAndProgram,
         filteredData,
         modelRun,
+        modelOptions,
         stepper
     },
     actions: actions,

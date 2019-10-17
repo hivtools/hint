@@ -3,11 +3,17 @@ import {makeDownloadableContent, verifyDownloadableContent} from "../app/utils";
 describe("utils", () => {
 
     it("can make and verify downloadable content", () => {
-        const test = "test";
-        const content = makeDownloadableContent(test);
+        const test = {
+            something: 120,
+            another: {
+                prop: "test"
+            }
+        };
+
+        const content = makeDownloadableContent(JSON.stringify(test));
 
         const resultData = JSON.parse(content);
-        expect(resultData[1]).toBe(test);
+        expect(JSON.parse(resultData[1])).toStrictEqual(test);
 
         const valid = verifyDownloadableContent(content);
         expect(valid).toBe(true);
