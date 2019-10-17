@@ -124,7 +124,7 @@
             loadAction:
                     mapActionByName<File>("load", "load"),
             clearLoadError:
-                    mapActionByName("load", "clearError"),
+                    mapActionByName("load", "clearLoadState"),
             toggle() {
                 this.show = !this.show;
             },
