@@ -101,8 +101,9 @@ describe("user header", () => {
 
         const reader = new FileReader();
         reader.addEventListener('loadend', function() {
-            const text = reader.result;
-            expect(text).toEqual(expectedJson);
+            const text = reader.result as string;
+            const result = JSON.parse(text)[0];
+            expect(result).toEqual(expectedJson);
             done();
         });
         reader.readAsText(actualBlob);
