@@ -19,8 +19,6 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
     ModelRunStarted(state: ModelRunState, action: PayloadWithType<ModelSubmitResponse>) {
         state.modelRunId = action.payload.id;
         state.status = {id: action.payload.id} as ModelStatusResponse;
-        // TODO remove after https://vimc.myjetbrains.com/youtrack/issue/mrc-578
-        state.status.progress = "0.1";
     },
 
     RunStatusUpdated(state: ModelRunState, action: PayloadWithType<ModelStatusResponse>) {

@@ -12,7 +12,7 @@ describe("Model run mutations", () => {
         const testState = {...initialModelRunState};
         mutations.ModelRunStarted(testState, {payload: {id: "1234"}});
         expect(testState.modelRunId).toBe("1234");
-        expect(testState.status).toStrictEqual({id: "1234", progress: "0.1"});
+        expect(testState.status).toStrictEqual({id: "1234"});
     });
 
     it("sets run status, success and poll id when done", () => {
