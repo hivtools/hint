@@ -2,4 +2,5 @@
 app/static/coverage/**
 **/*/coverage
 .gradle
-app/static/public/**
+app/static/public/js/**
+app/static/public/css/**

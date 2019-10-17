@@ -12,6 +12,7 @@ import {initialLoadState, load, LoadState} from "./store/load/load";
 import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations} from "./store/root/mutations";
+import {initialModelOptionsState, modelOptions, ModelOptionsState} from "./store/modelOptions/modelOptions";
 
 export interface RootState {
     version: string;
@@ -19,6 +20,7 @@ export interface RootState {
     metadata: MetadataState,
     surveyAndProgram: SurveyAndProgramDataState,
     filteredData: FilteredDataState,
+    modelOptions: ModelOptionsState
     modelRun: ModelRunState,
     stepper: StepperState,
     load: LoadState
@@ -41,9 +43,10 @@ export const emptyState = {
     metadata: initialMetadataState,
     surveyAndProgram: initialSurveyAndProgramDataState,
     filteredData: initialFilteredDataState,
+    modelOptions: initialModelOptionsState,
     modelRun: initialModelRunState,
     stepper: initialStepperState,
-    load: initialLoadState
+    load: initialLoadState,
 };
 
 export const storeOptions: StoreOptions<RootState> = {
@@ -52,6 +55,7 @@ export const storeOptions: StoreOptions<RootState> = {
         metadata,
         surveyAndProgram,
         filteredData,
+        modelOptions,
         modelRun,
         stepper,
         load

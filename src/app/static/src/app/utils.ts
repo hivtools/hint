@@ -1,5 +1,4 @@
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapState} from "vuex";
-import {NestedFilterOption} from "./generated";
 import {Dict} from "./types";
 
 export type ComputedWithType<T> = () => T;
@@ -29,4 +28,10 @@ export const mapGettersByNames = <K extends string>(namespace: string, names: st
 
 export const mapActionByName = <T>(namespace: string, name: string): ActionMethod => {
     return mapActions(namespace, [name])[name]
+};
+
+export const mapActionsByNames = <K extends string>(namespace: string, names: string[]) => {
+    type R = { [key in K]: any }
+    return mapActions(namespace, names) as R
+
 };
