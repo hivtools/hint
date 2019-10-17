@@ -23,3 +23,8 @@ export interface LevelLabel {
 export type Dict<V> = { [k: string]: V }
 
 export type IndicatorValuesDict= Dict<IndicatorValues>;
+
+export interface LocalSessionFile {
+    hash: string
+    filename: string
+}
