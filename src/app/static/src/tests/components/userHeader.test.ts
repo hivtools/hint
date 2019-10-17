@@ -4,8 +4,8 @@ import Vuex from "vuex";
 import {
     mockAncResponse,
     mockBaselineState,
-    mockModelRunState,
     mockLoadState,
+    mockModelRunState,
     mockPJNZResponse,
     mockPopulationResponse,
     mockProgramResponse,
@@ -14,6 +14,8 @@ import {
     mockSurveyResponse
 } from "../mocks";
 import Vue from "vue";
+import Modal from "../../app/components/Modal.vue";
+import {LoadingState} from "../../app/store/load/load";
 
 Vue.use(Vuex);
 const mockCreateObjectUrl = jest.fn(() => "test.url");
@@ -121,5 +123,109 @@ describe("user header", () => {
         });
         reader.readAsText(actualBlob);
     });
+
+    it ("opens file dialog on click load", (done) => {
+        const wrapper = shallowMount(UserHeader,
+            {
+                store: createStore()
+            });
+
+        wrapper.find(".dropdown-toggle").trigger("click");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        const link = wrapper.findAll(".dropdown-item").at(1);
+
+        const input = wrapper.find("input").element as HTMLInputElement;
+        input.addEventListener("click", function(){
+            //file dialog was opened
+            done();
+        });
+
+        link.trigger("mousedown");
+    });
+
+    it("invokes load action when file selected from dialog", () => {
+        const mockLoadAction = jest.fn();
+        const wrapper = shallowMount(UserHeader,
+            {
+                store: new Vuex.Store({
+                    modules: {
+                        baseline: {
+                            namespaced: true,
+                            state: mockBaselineState()
+                        },
+                        surveyAndProgram: {
+                            namespaced: true,
+                            state: mockSurveyAndProgramState()
+                        },
+                        modelRun: {
+                            namespaced: true,
+                            state: mockModelRunState()
+                        },
+                        load: {
+                            namespaced: true,
+                            state: mockLoadState(),
+                            actions: {
+                                load: mockLoadAction
+                            }
+                        }
+                    }
+                })
+            });
+
+        const input = wrapper.find("input");
+
+        const vm = wrapper.vm;
+        const testFile = new File(["test file contents"], "filename");
+        //Can't programmatically construct a FileList to give to the read rendered input element, so we need to trick
+        //the component with a mocked ref
+        (vm.$refs as any).loadFile = {
+            files: [testFile]
+        };
+
+        input.trigger("change");
+        expect(mockLoadAction.mock.calls.length).toEqual(1);
+        expect(mockLoadAction.mock.calls[0][1]).toBe(testFile)
+    });
+
+    it("does not open modal if no load error", () => {
+        const wrapper = shallowMount(UserHeader,
+            {
+                store: createStore()
+            });
+
+        expect(wrapper.find(Modal).attributes("open")).toBeFalsy();
+    });
+
+    it("opens modal if load error", () => {
+        const wrapper = shallowMount(UserHeader,
+            {
+                store: new Vuex.Store({
+                    modules: {
+                        baseline: {
+                            namespaced: true,
+                            state: mockBaselineState()
+                        },
+                        surveyAndProgram: {
+                            namespaced: true,
+                            state: mockSurveyAndProgramState()
+                        },
+                        modelRun: {
+                            namespaced: true,
+                            state: mockModelRunState()
+                        },
+                        load: {
+                            namespaced: true,
+                            state: mockLoadState({
+                                loadingState: LoadingState.LoadFailed,
+                                loadError: "test error"
+                            }),
+                        }
+                    }
+                })
+            });
+        const modal = wrapper.find(Modal);
+        expect(modal.attributes("open")).toEqual("true");
+        expect(modal.text()).toContain("test error");
+    })
 
 });
