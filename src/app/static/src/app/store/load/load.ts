@@ -3,11 +3,15 @@ import {mutations} from "./mutations";
 import {Module} from "vuex";
 import {RootState} from "../../root";
 
+export enum LoadingState { NotLoading, SettingFiles, UpdatingState, LoadFailed }
+
 export interface LoadState {
+    loadingState: LoadingState,
     loadError: string
 }
 
 export const initialLoadState: LoadState = {
+    loadingState: LoadingState.NotLoading,
     loadError: ""
 };
 

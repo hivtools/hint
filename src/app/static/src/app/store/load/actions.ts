@@ -1,19 +1,47 @@
 import {ActionContext, ActionTree} from "vuex";
-import {LoadState} from "../load/load";
+import {LoadingState, LoadState} from "../load/load";
 import {RootState} from "../../root";
+import {api} from "../../apiService";
+import {PjnzResponse} from "../../generated";
+import {Dict, LocalSessionFile} from "../../types";
+
+export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded"
+export type LoadErrorActionTypes = "LoadFailed"
 
 export interface LoadActions {
     load: (store: ActionContext<LoadState, RootState>, file: File) => void
+    setFiles: (store: ActionContext<LoadState, RootState>, savedFileContents: string) => void
+    updateState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
 }
 
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
-    async load({commit, dispatch, state}, file) {
+    async load({dispatch}, file) {
         const reader = new FileReader();
         reader.addEventListener('loadend', function() {
-            const fileContents = JSON.parse(reader.result as string);
-            const files = fileContents.files;
-            //alert("loading files: " + JSON.stringify(files));
+            dispatch("setFiles", reader.result as string)
         });
         reader.readAsText(file);
+    },
+
+    async setFiles({commit, dispatch, state}, savedFileContents) {
+        commit({type: "SettingFiles", payload: null});
+        const objectContents = JSON.parse(savedFileContents);
+        const files = objectContents.files;
+        const savedState = objectContents.state;
+
+        await api<LoadActionTypes, LoadErrorActionTypes>(commit)
+            .withSuccess("UpdatingState")
+            .withError("LoadFailed")
+            .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
+            .then(() => {
+                if (state.loadingState == LoadingState.UpdatingState) {
+                    dispatch("updateState", savedState);
+                }
+            });
+    },
+
+    async updateState({commit, dispatch, state}, savedState) {
+        //TODO: In another PR - hashes have now been set for session in backend, so  update the state from the saved state and get file data from backend
+        alert("updating state: " + JSON.stringify(savedState));
     }
 };
