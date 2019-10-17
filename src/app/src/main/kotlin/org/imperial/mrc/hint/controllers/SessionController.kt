@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 class SessionController(private val fileManager: FileManager) {
     @PostMapping("/files/")
     @ResponseBody
-    fun postFiles(@RequestBody files: Map<String, SessionFile>): String {
+    fun postFiles(@RequestBody files: Map<String, SessionFile?>): String {
         fileManager.setAllFiles(files);
         return SuccessResponse(files).toJsonString()
     }
