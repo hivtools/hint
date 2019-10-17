@@ -1,15 +1,14 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import Filters from "../../app/components/Filters.vue";
+import Filters from "../../../app/components/plots/Filters.vue";
 import {
     DataType,
     FilteredDataState,
     FilterType,
     initialSelectedFilters
-} from "../../app/store/filteredData/filteredData";
-import {mockFilteredDataState} from "../mocks";
-import {RootState} from "../../app/root";
+} from "../../../app/store/filteredData/filteredData";
+import {mockFilteredDataState} from "../../mocks";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);

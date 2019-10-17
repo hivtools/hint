@@ -1,5 +1,4 @@
 import {CustomVue, mapActions, mapGetters, mapState} from "vuex";
-import {NestedFilterOption} from "./generated";
 import {Dict} from "./types";
 
 export type ComputedWithType<T> = () => T;

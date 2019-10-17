@@ -31,7 +31,8 @@
         running: boolean
     }
 
-    interface Computed extends ComputedGetters, ComputedState {}
+    interface Computed extends ComputedGetters, ComputedState {
+    }
 
     interface Methods {
         run: (params: ModelSubmitParameters) => void;
@@ -52,7 +53,7 @@
         },
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll"]),
-            runModelWithParams: function () {
+            runModelWithParams() {
                 const params: ModelSubmitParameters = {
                     max_iterations: 1,
                     no_of_simulations: 2,

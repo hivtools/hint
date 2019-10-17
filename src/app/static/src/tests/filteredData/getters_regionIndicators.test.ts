@@ -11,6 +11,7 @@ import {
     mockModelRunState, mockModelResultResponse
 } from "../mocks";
 import {testGetters} from "./getters.test";
+import {interpolateGreys} from "d3-scale-chromatic";
 
 describe("FilteredData regionIndicator getter", () => {
 
@@ -19,39 +20,37 @@ describe("FilteredData regionIndicator getter", () => {
             "metadata/choroplethIndicatorsMetadata": testIndicatorsMetadata
         }
     };
-    const testAncIndicatorsMetadata = {
-        art_coverage: {
-            value_column: "art_coverage",
-            indicator_column: "",
-            indicator_value: ""
-        },
-        prevalence: {
-            value_column: "prevalence",
-            indicator_column: "",
-            indicator_value: ""
-        }
-    };
 
-    const testSurveyIndicatorsMetadata = {
-        art_coverage: {
-            value_column: "est",
-            indicator_column: "indicator",
-            indicator_value: "art"
-        },
-        prevalence: {
-            value_column: "est",
-            indicator_column: "indicator",
-            indicator_value: "prev"
-        }
-    };
+    function testIndicatorMetadata(indicator: string, value_column: string, indicator_column: string, indicator_value: string){
+        return {
+            indicator: indicator,
+            value_column: value_column,
+            indicator_column: indicator_column,
+            indicator_value: indicator_value,
+            colour: "interpolateGreys",
+            invert_scale: false,
+            min: 0,
+            max: 1
+        };
+    }
 
-    const testProgrammeIndicatorsMetadata = {
-        current_art: {
-            value_column: "current_art",
-            indicator_column: "",
-            indicator_value: ""
-        }
-    };
+    const testAncIndicatorsMetadata = [
+        testIndicatorMetadata("art_coverage", "art_coverage", "", ""),
+        testIndicatorMetadata("prevalence", "prevalence", "", "")
+    ];
+
+    const testSurveyIndicatorsMetadata = [
+        testIndicatorMetadata("art_coverage", "est", "indicator", "artcov"),
+        testIndicatorMetadata("prevalence", "est", "indicator", "prev")
+    ];
+
+    const testProgrammeIndicatorsMetadata = [
+        testIndicatorMetadata("current_art", "current_art", "", "")
+    ];
+
+    const testOutputIndicatorsMetadata = [
+        testIndicatorMetadata("prevalence", "mean", "indicator_id", "2")
+    ];
 
     it("gets regionIndicators for survey", () => {
         const testStore: Module<FilteredDataState, RootState> = {
@@ -75,7 +74,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area1",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 2,
+                est: 0.2,
                 age_group_id: "1",
                 sex: "both"
             },
@@ -84,7 +83,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area2",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 3,
+                est: 0.3,
                 age_group_id: "1",
                 sex: "both"
             },
@@ -93,7 +92,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area3",
                 survey_id: "s1",
                 indicator: "artcov",
-                est: 4,
+                est: 0.4,
                 age_group_id: "1",
                 sex: "both"
             },
@@ -102,7 +101,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area2",
                 survey_id: "s1",
                 indicator: "artcov",
-                est: 5,
+                est: 0.5,
                 age_group_id: "1",
                 sex: "both"
             }
@@ -125,15 +124,15 @@ describe("FilteredData regionIndicator getter", () => {
 
             "area1":
                 {
-                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                    "prevalence": {value: 0.2, color: interpolateGreys(0.2)}
                 },
             "area2":
                 {
-                    "prev": {value: 3, color: "rgb(0,3,0)"},
-                    "art": {value: 5, color: "rgb(5,0,0)"}
+                    "prevalence": {value: 0.3, color: interpolateGreys(0.3)},
+                    "art_coverage": {value: 0.5, color: interpolateGreys(0.5)}
                 },
             "area3": {
-                "art": {value: 4, color: "rgb(4,0,0)"}
+                "art_coverage": {value: 0.4, color: interpolateGreys(0.4)}
 
             }
         };
@@ -163,7 +162,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area1",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 2,
+                est: 0.2,
                 age_group_id: "1",
                 sex: "both"
             },
@@ -172,7 +171,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area2",
                 survey_id: "s2",
                 indicator: "prev",
-                est: 3,
+                est: 0.3,
                 age_group_id: "1",
                 sex: "both"
             },
@@ -181,7 +180,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area3",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 4,
+                est: 0.4,
                 age_group_id: "2",
                 sex: "both"
             },
@@ -190,7 +189,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area4",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 5,
+                est: 0.5,
                 age_group_id: "1",
                 sex: "female"
             },
@@ -212,7 +211,7 @@ describe("FilteredData regionIndicator getter", () => {
         const expected = {
             "area1":
                 {
-                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                    "prevalence": {value: 0.2, color: interpolateGreys(0.2)}
                 }
         };
 
@@ -240,7 +239,7 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-                current_art: 2,
+                current_art: 0.2,
                 age_group_id: "1",
                 quarter_id: 1,
                 sex: "both"
@@ -248,7 +247,7 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area2",
-                current_art: 3,
+                current_art: 0.3,
                 age_group_id: "1",
                 quarter_id: 1,
                 sex: "both"
@@ -269,10 +268,10 @@ describe("FilteredData regionIndicator getter", () => {
 
         const expected = {
             "area1": {
-                "art": {value: 2, color: "rgb(2,0,0)"}
+                "current_art": {value: 0.2, color: interpolateGreys(0.2)}
             },
             "area2": {
-                "art": {value: 3, color: "rgb(3,0,0)"}
+                "current_art": {value: 0.3, color: interpolateGreys(0.3)}
             }
         };
 
@@ -299,7 +298,7 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-                current_art: 2,
+                current_art: 0.2,
                 age_group_id: "1",
                 quarter_id: 1,
                 sex: "both"
@@ -307,26 +306,26 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area2",
-                current_art: 3,
+                current_art: 0.3,
                 age_group_id: "2",
                 sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
-                current_art: 4,
+                current_art: 0.4,
                 age_group_id: "1",
                 sex: "male"
             },
             {
                 iso3: "MWI",
                 area_id: "area4",
-                current_art: 5,
+                current_art: 0.5,
             },
             {
                 iso3: "MWI",
                 area_id: "area5",
-                current_art: 6,
+                current_art: 0.6,
                 age_group_id: "1",
                 quarter_id: 2,
                 sex: "both"
@@ -347,7 +346,7 @@ describe("FilteredData regionIndicator getter", () => {
 
         const expected = {
             "area1": {
-                "art": {value: 2, color: "rgb(2,0,0)"}
+                "current_art": {value: 0.2, color: interpolateGreys(0.2)}
             }
         };
 
@@ -375,15 +374,16 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area1",
                 art_coverage: 0,
-                prevalence: 2,
+                prevalence: 0.2,
+
                 age_group_id: 1,
                 quarter_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
-                art_coverage: 4,
-                prevalence: 3,
+                art_coverage: 0.4,
+                prevalence: 0.3,
                 age_group_id: 1,
                 quarter_id: 1
             }
@@ -404,12 +404,12 @@ describe("FilteredData regionIndicator getter", () => {
         const expected = {
 
             "area1": {
-                "art": {value: 0, color: "rgb(0,0,0)"},
-                "prev": {value: 2, color: "rgb(0,2,0)"}
+                "art_coverage": {value: 0, color: interpolateGreys(0)},
+                "prevalence": {value: 0.2, color: interpolateGreys(0.2)}
             },
             "area2": {
-                "art": {value: 4, color: "rgb(4,0,0)"},
-                "prev": {value: 3, color: "rgb(0,3,0)"}
+                "art_coverage": {value: 0.4, color: interpolateGreys(0.4)},
+                "prevalence": {value: 0.3, color: interpolateGreys(0.3)}
             }
         };
 
@@ -436,7 +436,7 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-                prevalence: 2,
+                prevalence: 0.2,
                 art_coverage: 0,
                 age_group_id: 1,
                 quarter_id: 1
@@ -444,23 +444,23 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area2",
-                prevalence: 3,
-                art_coverage: 4,
+                prevalence: 0.3,
+                art_coverage: 0.4,
                 age_group_id: 1,
                 quarter_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
-                prevalence: 4,
+                prevalence: 0.4,
                 age_group_id: 2,
                 quarter_id: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area4",
-                prevalence: 4,
-                art_coverage: 6,
+                prevalence: 0.4,
+                art_coverage: 0.6,
                 age_group_id: 1,
                 quarter_id: 2
             }
@@ -479,15 +479,15 @@ describe("FilteredData regionIndicator getter", () => {
             testRootGetters(testAncIndicatorsMetadata));
         const expected = {
             "area1": {
-                "art": {value: 0, color: "rgb(0,0,0)"},
-                "prev": {value: 2, color: "rgb(0,2,0)"}
+                "art_coverage": {value: 0, color: interpolateGreys(0)},
+                "prevalence": {value: 0.2, color: interpolateGreys(0.2)}
             },
             "area2": {
-                "art": {value: 4, color: "rgb(4,0,0)"},
-                "prev": {value: 3, color: "rgb(0,3,0)"}
+                "art_coverage": {value: 0.4, color: interpolateGreys(0.4)},
+                "prevalence": {value: 0.3, color: interpolateGreys(0.3)}
             },
             "area3": {
-                "prev": {value: 4, color: "rgb(0,4,0)"} //No art value in this row
+                "prevalence": {value: 0.4, color: interpolateGreys(0.4)} //No art value in this row
             }
         };
 
@@ -514,7 +514,7 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-                mean: 2,
+                mean: 0.2,
                 age_group_id: 1,
                 indicator_id: 2,
                 sex: "both"
@@ -522,7 +522,7 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area2",
-                mean: 3,
+                mean: 0.3,
                 age_group_id: 1,
                 indicator_id: 2,
                 sex: "both"
@@ -538,14 +538,15 @@ describe("FilteredData regionIndicator getter", () => {
             filteredData: testState
         });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState,
+            testRootGetters(testOutputIndicatorsMetadata));
 
         const expected = {
             "area1": {
-                "prev": {value: 2, color: "rgb(0,2,0)"}
+                "prevalence": {value: 0.2, color: interpolateGreys(0.2)}
             },
             "area2": {
-                "prev": {value: 3, color: "rgb(0,3,0)"}
+                "prevalence": {value: 0.3, color: interpolateGreys(0.3)}
             }
         };
 
@@ -572,41 +573,41 @@ describe("FilteredData regionIndicator getter", () => {
             {
                 iso3: "MWI",
                 area_id: "area1",
-                mean: 2,
+                mean: 0.2,
                 age_group_id: 1,
-                indicator_id: 2,
+                indicator_id: "2",
                 sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
-                mean: 3,
+                mean: 0.3,
                 age_group_id: 1,
-                indicator_id: 2,
+                indicator_id: "2",
                 sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
-                mean: 4,
+                mean: 0.4,
                 age_group_id: 1,
-                indicator_id: 2,
+                indicator_id: "2",
                 sex: "male"
             },
             {
                 iso3: "MWI",
                 area_id: "area4",
-                mean: 5,
+                mean: 0.5,
                 age_group_id: 2,
-                indicator_id: 2,
+                indicator_id: "2",
                 sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area5",
-                mean: 6,
+                mean: 0.6,
                 age_group_id: 1,
-                indicator_id: 3,
+                indicator_id: "3",
                 sex: "both"
             }
         ];
@@ -620,14 +621,15 @@ describe("FilteredData regionIndicator getter", () => {
             filteredData: testState
         });
 
-        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState, null);
+        const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState,
+                                    testRootGetters(testOutputIndicatorsMetadata));
 
         const expected = {
             "area1": {
-                "prev": {value: 2, color: "rgb(0,2,0)"}
+                "prevalence": {value: 0.2, color: interpolateGreys(0.2)}
             },
             "area2": {
-                "prev": {value: 3, color: "rgb(0,3,0)"}
+                "prevalence": {value: 0.3, color: interpolateGreys(0.3)}
             }
         };
 
@@ -661,7 +663,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area1",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 2,
+                est: 0.2,
                 age_group_id: "1",
                 sex: "both"
             },
@@ -670,7 +672,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area2",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 3,
+                est: 0.3,
                 age_group_id: "1",
                 sex: "both"
             },
@@ -679,7 +681,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area3",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 4,
+                est: 0.4,
                 age_group_id: "1",
                 sex: "both"
             },
@@ -688,7 +690,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area4",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 5,
+                est: 0.5,
                 age_group_id: "1",
                 sex: "both"
             },
@@ -697,7 +699,7 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area1",
                 survey_id: "s1",
                 indicator: "prev",
-                est: 6,
+                est: 0.6,
                 age_group_id: "1",
                 sex: "male"
             }
@@ -723,11 +725,11 @@ describe("FilteredData regionIndicator getter", () => {
         const expected = {
             "area1":
                 {
-                    "prev": {value: 2, color: "rgb(0,2,0)"}
+                    "prevalence": {value: 0.2, color: interpolateGreys(0.2)}
                 },
             "area2":
                 {
-                    "prev": {value: 3, color: "rgb(0,3,0)"}
+                    "prevalence": {value: 0.3, color: interpolateGreys(0.3)}
                 }
         };
 

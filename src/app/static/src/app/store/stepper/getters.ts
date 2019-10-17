@@ -15,7 +15,7 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
         return {
             1: rootGetters['baseline/complete'] && rootGetters['metadata/complete'],
             2: rootGetters['surveyAndProgram/complete'],
-            3: rootGetters['surveyAndProgram/complete'], // for now just mark as complete as soon as it's ready
+            3: rootGetters['modelOptions/complete'],
             4: rootGetters['modelRun/complete'],
             5: false
         }

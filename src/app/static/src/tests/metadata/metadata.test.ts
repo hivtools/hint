@@ -2,18 +2,18 @@ import {metadataGetters} from "../../app/store/metadata/metadata"
 import {DataType} from "../../app/store/filteredData/filteredData";
 import {mockFilteredDataState, mockMetadataState, mockPlottingMetadataResponse, mockRootState} from "../mocks";
 
+const testIndicators = [
+    {indicator: "art_coverage", name: "ART Coverage"},
+    {indicator:"prevalence", name: "Prevalence"}
+];
+
+const testChoroMetadata = {
+    choropleth: {
+        indicators: testIndicators
+    }
+} as any;
+
 function testGetsChoroplethIndicatorsMetadataForDataType(dataType: DataType) {
-    const testIndicators = {
-        art_coverage: {name: "ART Coverage"},
-        prevalence: {name: "Prevalence"}
-    };
-
-    const testChoroMetadata = {
-        choropleth: {
-            indicators: testIndicators
-        }
-    } as any;
-
     let metadataProps = null as any;
     switch(dataType) {
         case(DataType.ANC):
@@ -58,12 +58,24 @@ describe("Metadata regionIndicator getter", () => {
         testGetsChoroplethIndicatorsMetadataForDataType(DataType.Output);
     });
 
-    it ("gets null choropleth indicators when there is no metadata", () => {
+    it ("gets empty choropleth indicators when there is no metadata", () => {
         const metadataState =  mockMetadataState(
             {plottingMetadata: null});
 
         const result = metadataGetters.choroplethIndicatorsMetadata(metadataState, null, mockRootState(), null);
 
-        expect(result).toBeNull();
+        expect(result).toEqual([]);
+    });
+
+    it("gets choropleth indicators", () => {
+        const testGetters = {
+            choroplethIndicatorsMetadata: testIndicators
+        };
+
+        const rootState = mockRootState({filteredData: mockFilteredDataState({selectedDataType: DataType.ANC})});
+
+        const result = metadataGetters.choroplethIndicators(mockMetadataState(), testGetters, rootState, null);
+
+        expect(result).toStrictEqual(["art_coverage", "prevalence"]);
     });
 });

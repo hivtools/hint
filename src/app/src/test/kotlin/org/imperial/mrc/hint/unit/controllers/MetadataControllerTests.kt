@@ -19,6 +19,5 @@ class MetadataControllerTests {
         val sut = MetadataController(mockAPIClient)
         val result = sut.plotting("Malawi")
         assertThat(result).isSameAs(mockResponse)
-
     }
 }

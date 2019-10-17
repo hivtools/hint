@@ -37,10 +37,10 @@
     import Vue from "vue";
     import TreeSelect from '@riophae/vue-treeselect'
     import {LControl} from 'vue2-leaflet';
-    import {DataType} from "../../store/filteredData/filteredData";
-    import {PrevalenceAndArtCoverageIndicators} from "../../generated";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {mapGetterByName, mapStatePropByName, mapStateProp} from "../../utils";
+    import {IndicatorMetadata} from "../../generated";
+    import {mapGetterByName, mapStateProp} from "../../utils";
+    import {LevelLabel} from "../../types";
 
     interface Data {
         detail: any;
@@ -58,10 +58,10 @@
     }
 
     interface Computed {
-        selectedDataType: DataType
         detailOptions: Option[]
         indicatorOptions: Option[]
-        choroplethIndicatorsMetadata: PrevalenceAndArtCoverageIndicators
+        choroplethIndicatorsMetadata: IndicatorMetadata[],
+        choroplethIndicators: string[]
     }
 
     interface Methods {
@@ -85,37 +85,23 @@
             }
         },
         computed: {
-            selectedDataType: mapStatePropByName<DataType>("filteredData", "selectedDataType"),
+            choroplethIndicatorsMetadata:
+                mapGetterByName<IndicatorMetadata[]>("metadata", "choroplethIndicatorsMetadata"),
+            choroplethIndicators:
+                mapGetterByName<string[]>("metadata", "choroplethIndicators"),
             detailOptions: mapStateProp<BaselineState, Option[]>("baseline", state => {
-                const levels = state.shape && state.shape.filters && state.shape.filters.level_labels ?
-                    state.shape.filters.level_labels : [];
+                let levels: LevelLabel[] = [];
+                if (state.shape && state.shape.filters && state.shape.filters.level_labels) {
+                    levels = state.shape.filters.level_labels;
+                }
 
                 return levels.filter(l => l.display).map(l => {
                     return {id: l.id, label: l.area_level_label}
                 });
             }),
-            choroplethIndicatorsMetadata:
-                mapGetterByName<PrevalenceAndArtCoverageIndicators>("metadata", "choroplethIndicatorsMetadata"),
-            indicatorOptions: function () {
-
-                const result = [];
-
-                if (this.choroplethIndicatorsMetadata) {
-                    //TODO: Remove harcoded knowledge of which indicators should exist, and just accept all indicators
-                    if (this.choroplethIndicatorsMetadata.prevalence) {
-                        result.push({id: "prev", label: this.choroplethIndicatorsMetadata.prevalence.name});
-                    }
-
-                    if (this.selectedDataType != DataType.Output) { //TODO: only accepting prevalence for output for now
-                        if (this.choroplethIndicatorsMetadata.art_coverage) {
-                            result.push({id: "art", label: this.choroplethIndicatorsMetadata.art_coverage.name});
-                        } else if (this.choroplethIndicatorsMetadata.current_art) {
-                            result.push({id: "art", label: this.choroplethIndicatorsMetadata.current_art.name});
-                        }
-                    }
-                }
-
-                return result;
+            indicatorOptions: function() {
+                const indicators = this.choroplethIndicatorsMetadata;
+                return indicators.map((i: IndicatorMetadata) => { return {id: i.indicator, label: i.name}; });
             }
         },
         methods: {

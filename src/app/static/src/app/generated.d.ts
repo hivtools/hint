@@ -39,6 +39,7 @@ export interface FilterOption {
   id: string;
 }
 export interface IndicatorMetadata {
+  indicator: string;
   value_column: string;
   indicator_column?: string;
   indicator_value?: string;
@@ -171,59 +172,28 @@ export interface NestedFilterOption {
 export interface PjnzResponseData {
   country: string;
 }
+export type ChoroplethMetadata = {
+  indicator: string;
+  value_column: string;
+  indicator_column?: string;
+  indicator_value?: string;
+  name: string;
+  min: number;
+  max: number;
+  colour: string;
+  invert_scale: boolean;
+}[];
+
 export interface PlottingMetadataResponse {
-  survey: PrevalenceAndArtCoverageChoropleth;
-  anc: PrevalenceAndArtCoverageChoropleth;
-  programme: CurrentArtChoropleth;
-  output: PrevalenceAndArtCoverageChoropleth;
+  survey: Metadata;
+  anc: Metadata;
+  programme: Metadata;
+  output: Metadata;
 }
-export interface PrevalenceAndArtCoverageChoropleth {
+export interface Metadata {
   choropleth?: {
-    indicators?: PrevalenceAndArtCoverageIndicators;
+    indicators?: ChoroplethMetadata;
     [k: string]: any;
-  };
-  [k: string]: any;
-}
-export interface PrevalenceAndArtCoverageIndicators {
-  prevalence?: {
-    value_column: string;
-    indicator_column?: string;
-    indicator_value?: string;
-    name: string;
-    min: number;
-    max: number;
-    colour: string;
-    invert_scale: boolean;
-  };
-  art_coverage?: {
-    value_column: string;
-    indicator_column?: string;
-    indicator_value?: string;
-    name: string;
-    min: number;
-    max: number;
-    colour: string;
-    invert_scale: boolean;
-  };
-  [k: string]: any;
-}
-export interface CurrentArtChoropleth {
-  choropleth?: {
-    indicators?: CurrentArtIndicator;
-    [k: string]: any;
-  };
-  [k: string]: any;
-}
-export interface CurrentArtIndicator {
-  current_art?: {
-    value_column: string;
-    indicator_column?: string;
-    indicator_value?: string;
-    name: string;
-    min: number;
-    max: number;
-    colour: string;
-    invert_scale: boolean;
   };
   [k: string]: any;
 }
@@ -238,6 +208,7 @@ export interface ProgrammeFilters {
     id: string;
   }[];
 }
+
 export type ProgrammeResponseData = {
   area_id: string;
   current_art: number;

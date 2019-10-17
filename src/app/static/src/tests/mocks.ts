@@ -25,6 +25,7 @@ import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRu
 import {RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
+import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
 
 
 export const mockAxios = new MockAdapter(axios);
@@ -57,6 +58,14 @@ export const mockModelRunState = (props?: Partial<ModelRunState>) => {
     }
 };
 
+
+export const mockModelOptionsState = (props?: Partial<ModelOptionsState>) => {
+    return {
+        ...initialModelOptionsState,
+        ...props
+    }
+};
+
 export const mockStepperState = (props?: Partial<StepperState>) => {
     return {
         ...initialStepperState,
@@ -84,6 +93,7 @@ export const mockRootState = (props?: Partial<RootState>): RootState => {
         baseline: mockBaselineState(),
         surveyAndProgram: mockSurveyAndProgramState(),
         modelRun: mockModelRunState(),
+        modelOptions: mockModelOptionsState(),
         stepper: mockStepperState(),
         metadata: mockMetadataState(),
         ...props
@@ -232,22 +242,22 @@ export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResp
     return {
         anc: {
             choropleth: {
-                indicators: {}
+                indicators: []
             }
         },
         output: {
             choropleth: {
-                indicators: {}
+                indicators: []
             }
         },
         programme: {
             choropleth: {
-                indicators: {}
+                indicators: []
             }
         },
         survey: {
             choropleth: {
-                indicators: {}
+                indicators: []
             }
         },
         ...props
