@@ -3,8 +3,6 @@ package org.imperial.mrc.hint.integration
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.assertj.core.api.Assertions
-import org.imperial.mrc.hint.models.ModelRunParameters
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
@@ -16,10 +14,10 @@ import org.springframework.http.MediaType
 class ModelRunTests : SecureIntegrationTests() {
 
     private fun getJsonEntity(): HttpEntity<String> {
-        val params = ModelRunParameters(1,1,1,mapOf())
+        val options = mapOf("sleep" to 1)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
-        val jsonString = ObjectMapper().writeValueAsString(params)
+        val jsonString = ObjectMapper().writeValueAsString(options)
         return HttpEntity(jsonString, headers)
     }
 
@@ -35,7 +33,7 @@ class ModelRunTests : SecureIntegrationTests() {
     @EnumSource(IsAuthorized::class)
     fun `can get model run status`(isAuthorized: IsAuthorized) {
 
-        val id = when(isAuthorized){
+        val id = when (isAuthorized) {
             IsAuthorized.TRUE -> {
                 val entity = getJsonEntity()
                 val runResult = testRestTemplate.postForEntity<String>("/model/run/", entity)
@@ -52,7 +50,7 @@ class ModelRunTests : SecureIntegrationTests() {
     @EnumSource(IsAuthorized::class)
     fun `can get model run result`(isAuthorized: IsAuthorized) {
 
-        val id = when(isAuthorized){
+        val id = when (isAuthorized) {
             IsAuthorized.TRUE -> {
                 val entity = getJsonEntity()
                 val runResult = testRestTemplate.postForEntity<String>("/model/run/", entity)

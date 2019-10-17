@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 interface APIClient {
     fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateSurveyAndProgramme(file: SessionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
-    fun submit(data: Map<String, String>, parameters: ModelRunParameters): ResponseEntity<String>
+    fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(country: String): ResponseEntity<String>
@@ -55,10 +55,10 @@ class HintrAPIClient(
                 .asResponseEntity()
     }
 
-    override fun submit(data: Map<String, String>, parameters: ModelRunParameters): ResponseEntity<String> {
+    override fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
-                mapOf("parameters" to parameters,
+                mapOf("options" to options,
                         "data" to data))
 
         return "$baseUrl/model/submit"

@@ -35,7 +35,7 @@ class HintrApiClientTests {
     @Test
     fun `can submit model run`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.submit(mapOf(), ModelRunParameters(1, 1, 1, mapOf()))
+        val result = sut.submit(mapOf(), mapOf())
         assertThat(result.statusCodeValue).isEqualTo(200)
         JSONValidator().validateSuccess(result.body!!, "ModelSubmitResponse")
     }
@@ -43,7 +43,7 @@ class HintrApiClientTests {
     @Test
     fun `can get model run status`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val submitResult = sut.submit(mapOf(), ModelRunParameters(1, 1, 1, mapOf()))
+        val submitResult = sut.submit(mapOf(), mapOf())
 
         val id = ObjectMapper().readValue<JsonNode>(submitResult.body!!)["data"]["id"].textValue()
 
@@ -54,7 +54,7 @@ class HintrApiClientTests {
     @Test
     fun `can get model run result`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val submitResult = sut.submit(mapOf(), ModelRunParameters(1, 1, 1, mapOf()))
+        val submitResult = sut.submit(mapOf(), mapOf())
 
         val id = ObjectMapper().readValue<JsonNode>(submitResult.body!!)["data"]["id"].textValue()
 

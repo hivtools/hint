@@ -12,9 +12,9 @@ class ModelRunController(val fileManager: FileManager, val apiClient: APIClient)
 
     @PostMapping("/run/")
     @ResponseBody
-    fun run(@RequestBody params: ModelRunParameters): ResponseEntity<String> {
+    fun run(@RequestBody options: Map<String, Any>): ResponseEntity<String> {
         val allFiles = fileManager.getAllFiles()
-        return apiClient.submit(allFiles, params)
+        return apiClient.submit(allFiles, options)
     }
 
     @GetMapping("/status/{id}")
