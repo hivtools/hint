@@ -33,12 +33,12 @@ export const mapActionsByNames = <K extends string>(namespace: string, names: st
 
 };
 
-export const makeDownloadableContent = (data: string): string => {
+export const addCheckSum = (data: string): string => {
     const hash = CryptoJS.MD5(data);
     return JSON.stringify([hash.toString(CryptoJS.enc.Base64), data]);
 };
 
-export const verifyDownloadableContent = (content: string): false | any => {
+export const verifyCheckSum = (content: string): false | any => {
     const result = JSON.parse(content);
     const hash = result[0];
     const data = result[1];

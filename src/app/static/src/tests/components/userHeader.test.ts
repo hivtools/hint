@@ -83,7 +83,7 @@ describe("user header", () => {
         link.trigger("mousedown");
 
         const hiddenLink = wrapper.find({ref: "save"});
-        expect(hiddenLink.attributes("href")).toBe('http://localhost#1234"');
+        expect(hiddenLink.attributes("href")).toBe("http://localhost#1234");
 
         const re = new RegExp("naomi-(.*)\.json");
         expect((hiddenLink.attributes("download") as string).match(re)).toBeDefined();

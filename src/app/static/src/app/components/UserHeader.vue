@@ -35,7 +35,7 @@
     import {surveyAndProgram, SurveyAndProgramDataState} from "../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import {LocalSessionFile} from "../types";
-    import {makeDownloadableContent, mapStateProp} from "../utils";
+    import {addCheckSum, mapStateProp} from "../utils";
     import {ValidateInputResponse} from "../generated";
 
     interface Data {
@@ -115,7 +115,7 @@
                     ...this.surveyAndProgramFiles
                 };
                 const data = JSON.stringify({state, files});
-                const content = makeDownloadableContent(data);
+                const content = addCheckSum(data);
 
                 const file = new Blob([content], {type: "text/json"});
                 const a = (this.$refs.save as any);
