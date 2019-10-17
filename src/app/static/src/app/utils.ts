@@ -38,9 +38,11 @@ export const makeDownloadableContent = (data: string): string => {
     return JSON.stringify([hash.toString(CryptoJS.enc.Base64), data]);
 };
 
-export const verifyDownloadableContent = (content: string): boolean => {
+export const verifyDownloadableContent = (content: string): false | any => {
     const result = JSON.parse(content);
     const hash = result[0];
     const data = result[1];
-    return CryptoJS.MD5(data).toString(CryptoJS.enc.Base64) === hash;
+    const valid = CryptoJS.MD5(data).toString(CryptoJS.enc.Base64) === hash;
+
+    return valid && JSON.parse(data);
 };

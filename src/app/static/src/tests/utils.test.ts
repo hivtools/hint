@@ -15,8 +15,8 @@ describe("utils", () => {
         const resultData = JSON.parse(content);
         expect(JSON.parse(resultData[1])).toStrictEqual(test);
 
-        const valid = verifyDownloadableContent(content);
-        expect(valid).toBe(true);
+        const result = verifyDownloadableContent(content);
+        expect(result).toStrictEqual(test);
     });
 
     it("does not verify corrupted downloadable content", () => {
@@ -25,8 +25,8 @@ describe("utils", () => {
         const resultData = JSON.parse(content);
         const corruptedContent = JSON.stringify([resultData[0], "corrupted"]);
 
-        const valid = verifyDownloadableContent(corruptedContent);
-        expect(valid).toBe(false);
+        const result = verifyDownloadableContent(corruptedContent);
+        expect(result).toBe(false);
     });
 
 });
