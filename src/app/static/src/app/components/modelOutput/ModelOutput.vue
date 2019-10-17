@@ -12,10 +12,9 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {mapActions, mapState} from "vuex";
+    import {mapActions} from "vuex";
     import Choropleth from "../plots/Choropleth.vue";
-    import ChoroplethFilters from "../ChoroplethFilters.vue";
-    import {RootState} from "../../root";
+    import ChoroplethFilters from "../plots/ChoroplethFilters.vue";
     import {DataType} from "../../store/filteredData/filteredData";
 
     const namespace: string = 'filteredData';

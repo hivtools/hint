@@ -54,9 +54,9 @@
         DataType,
         FilteredDataState,
         FilterType
-    } from "../store/filteredData/filteredData";
+    } from "../../store/filteredData/filteredData";
     import FilterSelect from "./FilterSelect.vue";
-    import {FilterOption, NestedFilterOption} from "../generated";
+    import {FilterOption, NestedFilterOption} from "../../generated";
 
     const namespace: string = 'filteredData';
 

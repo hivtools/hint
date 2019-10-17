@@ -24,13 +24,26 @@
         id: string
     }
 
-    interface SubmissionResult {
+    interface ValidationResult {
         data: any
         valid: boolean
         missingValues: string[]
     }
 
-    export default Vue.extend<{ validated: boolean }, { submit: (e: Event) => SubmissionResult }, { required: Dict<boolean> }, Props>({
+    interface Data {
+        validated: boolean
+    }
+
+    interface Methods {
+        validate: (formData: FormData) => ValidationResult
+        submit: (e: Event) => ValidationResult
+    }
+
+    interface Computed {
+        required: Dict<boolean>
+    }
+
+    export default Vue.extend <Data, Methods, Computed, Props>({
         name: "DynamicForm",
         data() {
             return {
@@ -74,12 +87,7 @@
             }
         },
         methods: {
-            submit(e: Event) {
-                if (e) {
-                    e.preventDefault();
-                }
-                const form = this.$refs[this.id] as HTMLFormElement;
-                const formData = new FormData(form);
+            validate(formData: FormData) {
                 const data: Dict<any> = {};
                 let valid = true;
                 const missingValues = [] as string[];
@@ -90,12 +98,21 @@
                     }
                     data[key] = value || null;
                 });
-                if (valid) {
-                    this.$emit("submit", data);
-                }
-                console.log(data);
+
                 this.validated = true;
                 return {valid, data, missingValues}
+            },
+            submit(e: Event) {
+                if (e) {
+                    e.preventDefault();
+                }
+                const form = this.$refs[this.id] as HTMLFormElement;
+                const formData = new FormData(form);
+                const result = this.validate(formData);
+                if (result.valid) {
+                    this.$emit("submit", result.data);
+                }
+                return result;
             }
         }
     })

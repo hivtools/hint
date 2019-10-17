@@ -1,5 +1,4 @@
-import {CustomVue, mapGetters, mapState} from "vuex";
-import {NestedFilterOption} from "./generated";
+import {CustomVue, mapActions, mapGetters, mapState} from "vuex";
 import {Dict} from "./types";
 
 export type ComputedWithType<T> = () => T;
@@ -25,4 +24,9 @@ export const mapGetterByName = <T>(namespace: string, name: string): ComputedWit
 export const mapGettersByNames = <K extends string>(namespace: string, names: string[]) => {
     type R = { [key in K]: any }
     return mapGetters(namespace, names) as R
+};
+
+export const mapActionsByNames = <K extends string>(namespace: string, names: string[]) => {
+    type R = { [key in K]: any }
+    return mapActions(namespace, names) as R
 };

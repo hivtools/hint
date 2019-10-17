@@ -58,7 +58,7 @@
     import {mapActions, mapState} from "vuex";
     import FileUpload from "../FileUpload.vue";
     import Choropleth from "../plots/Choropleth.vue";
-    import ChoroplethFilters from "../ChoroplethFilters.vue";
+    import ChoroplethFilters from "../plots/ChoroplethFilters.vue";
     import {PartialFileUploadProps} from "../../types";
     import {RootState} from "../../root";
     import {DataType} from "../../store/filteredData/filteredData";

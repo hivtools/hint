@@ -2,15 +2,8 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
-import {
-    mockAncResponse,
-    mockFilteredDataState,
-    mockProgramResponse,
-    mockSurveyAndProgramState,
-    mockSurveyResponse
-} from "../../mocks";
-import {SurveyAndProgramDataState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import {DataType, FilteredDataState} from "../../../app/store/filteredData/filteredData";
+import {mockFilteredDataState,} from "../../mocks";
+import {DataType} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
 import {mutations} from "../../../app/store/filteredData/mutations";
 
