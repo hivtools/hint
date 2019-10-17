@@ -5,6 +5,7 @@ import {
     mockAncResponse,
     mockBaselineState,
     mockModelRunState,
+    mockLoadState,
     mockPJNZResponse,
     mockPopulationResponse,
     mockProgramResponse,
@@ -42,13 +43,20 @@ describe("user header", () => {
                 modelRun: {
                     namespaced: true,
                     state: mockModelRunState()
+                },
+                load: {
+                    namespaced: true,
+                    state: mockLoadState()
                 }
             }
         });
     };
 
     it("toggles dropdown on click", () => {
-        const wrapper = shallowMount(UserHeader);
+        const wrapper = shallowMount(UserHeader,
+            {
+                store: createStore()
+            });
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
@@ -57,7 +65,10 @@ describe("user header", () => {
     });
 
     it("closes dropdown on blur", () => {
-        const wrapper = shallowMount(UserHeader);
+        const wrapper = shallowMount(UserHeader,
+            {
+                store: createStore()
+            });
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         wrapper.find(".dropdown-toggle").trigger("blur");
@@ -65,7 +76,10 @@ describe("user header", () => {
     });
 
     it("contains logout link", () => {
-        const wrapper = shallowMount(UserHeader);
+        const wrapper = shallowMount(UserHeader,
+            {
+                store: createStore()
+            });
         expect(wrapper.find("a[href='/logout']")).toBeDefined();
     });
 

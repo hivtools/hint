@@ -36,7 +36,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
             .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
             .then(() => {
                 if (state.loadingState == LoadingState.UpdatingState) {
-                    dispatch("updateState", savedState);
+                    dispatch("updateStoreState", savedState);
                 }
             });
     },
