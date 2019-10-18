@@ -4,7 +4,8 @@
         <p v-if="controlSection.description" class="text-muted">{{controlSection.description}}</p>
         <dynamic-form-control-group v-for="(group, index) in controlSection.controlGroups"
                                     :key="index"
-                                    :control-group="group"></dynamic-form-control-group>
+                                    :control-group="group"
+                                    @change="change"></dynamic-form-control-group>
     </div>
 </template>
 
@@ -16,6 +17,11 @@
     export default Vue.extend({
         name: "DynamicFormControlSection",
         props: ["controlSection"],
+        methods: {
+            change(input: { name: string, value: string | string[] }) {
+                this.$emit("change", input);
+            }
+        },
         components: {
             DynamicFormControlGroup
         }

@@ -6,7 +6,8 @@
         <dynamic-form-control v-for="control in controlGroup.controls"
                               :key="control.name"
                               :form-control="control"
-                              :col-width="colWidth"></dynamic-form-control>
+                              :col-width="colWidth"
+                              @change="change(control.name)"></dynamic-form-control>
     </b-row>
 </template>
 <script lang="ts">
@@ -24,6 +25,11 @@
             BRow,
             BCol,
             DynamicFormControl
+        },
+        methods: {
+            change(input: { name: string, value: string | string[] }) {
+                this.$emit('change', input);
+            }
         },
         computed: {
             colWidth() {

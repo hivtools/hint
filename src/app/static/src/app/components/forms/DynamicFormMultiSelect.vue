@@ -3,7 +3,8 @@
         <tree-select :multiple="true"
                      :clearable="false"
                      v-model="value"
-                     :options="formControl.options"></tree-select>
+                     :options="formControl.options"
+                     @input="change"></tree-select>
         <input type="hidden" :value="value" :name="formControl.name"/>
     </div>
 </template>
@@ -25,6 +26,11 @@
         data() {
             return {
                 value: this.formControl.default ? [this.formControl.default] : []
+            }
+        },
+        methods: {
+            change() {
+                this.$emit("change", this.value)
             }
         },
         computed: {

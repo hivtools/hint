@@ -16,11 +16,13 @@ export interface ModelRunActions {
 
 export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
-    async run({commit}, modelRunParams) {
+    async run({commit, rootState}) {
+        const options = rootState.modelOptions.options;
+        options.sleep = "1";
         await api<ModelRunActionTypes, ModelRunErrorTypes>(commit)
             .withSuccess("ModelRunStarted")
             .withError("ModelRunError")
-            .postAndReturn<ModelSubmitResponse>("/model/run/", modelRunParams)
+            .postAndReturn<ModelSubmitResponse>("/model/run/", rootState.modelOptions.options)
     },
 
     poll({commit, state, dispatch}, runId) {

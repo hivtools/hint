@@ -1,5 +1,5 @@
 <template>
-    <select class="form-control" :name="formControl.name" :required="formControl.required">
+    <select @change="change" class="form-control" :name="formControl.name" :required="formControl.required">
         <option value>Select...</option>
         <option v-for="opt in formControl.options"
                 :key="opt.id"
@@ -23,6 +23,11 @@
         name: "DynamicFormSelect",
         props: {
             formControl: Object
+        },
+        methods: {
+            change(value: string) {
+                this.$emit("change", value);
+            }
         },
         components: {
             BFormSelect

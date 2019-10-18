@@ -1,16 +1,18 @@
 import {Module} from "vuex";
 import {RootState} from "../../root";
-import {DynamicFormMeta} from "../../components/forms/types";
+import {DynamicFormMeta, DynamicFormData} from "../../components/forms/types";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
 
 export interface ModelOptionsState {
-    options: DynamicFormMeta
+    optionsMeta: DynamicFormMeta
+    options: DynamicFormData
     valid: boolean
 }
 
 export const initialModelOptionsState: ModelOptionsState = {
-    options: {controlSections: []},
+    optionsMeta: {controlSections: []},
+    options: {},
     valid: false
 };
 

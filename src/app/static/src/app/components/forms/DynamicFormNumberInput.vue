@@ -5,7 +5,8 @@
                   :value="formControl.default"
                   :min="formControl.min"
                   :max="formControl.max"
-                  :required="formControl.required"></b-form-input>
+                  :required="formControl.required"
+                  @change="change"></b-form-input>
 </template>
 
 <script lang="ts">
@@ -21,6 +22,11 @@
         name: "DynamicFormNumberInput",
         props: {
             formControl: Object
+        },
+        methods: {
+            change(value: string) {
+                this.$emit("change", value);
+            }
         },
         components: {
             BFormInput

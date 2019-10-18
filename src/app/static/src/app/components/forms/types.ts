@@ -1,3 +1,5 @@
+import {Dict} from "../../types";
+
 export interface DynamicControlSection {
     label: string
     description?: string
@@ -34,6 +36,14 @@ export interface NumberControl extends DynamicControl {
 export interface DynamicFormMeta {
     controlSections: DynamicControlSection[]
 }
+
+export interface ValidationResult {
+    valid: boolean,
+    data: Dict<string | string[]>
+    missingValues: string[]
+}
+
+export type DynamicFormData = Dict<string | string[]>
 
 export const formMeta: DynamicFormMeta = {
     controlSections: [
@@ -74,7 +84,7 @@ export const formMeta: DynamicFormMeta = {
                             name: "art_t1",
                             label: "Time 1",
                             type: "select",
-                            default: "Jan - Mar 2015",
+                            default: "q1",
                             helpText: "Quarter matching midpoint of survey",
                             options: [{id: "q1", label: "Jan - Mar 2015"}, {id: "q2", label: "Apr - Jun 2015"}],
                             required: true

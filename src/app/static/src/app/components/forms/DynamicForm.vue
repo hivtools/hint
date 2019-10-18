@@ -1,8 +1,9 @@
 <template>
-    <b-form :ref="id" class="dynamic-form" :validated="validated" novalidate>
+    <b-form :ref="id" class="dynamic-form" :validated="validated || wasValidated" novalidate>
         <dynamic-form-control-section v-for="(section, index) in formMeta.controlSections"
                                       :key="index"
-                                      :control-section="section">
+                                      :control-section="section"
+                                      @change="change">
         </dynamic-form-control-section>
         <button v-if="includeSubmitButton" class="btn btn-red" v-on:click="submit">{{submitText}}</button>
     </b-form>
@@ -22,6 +23,7 @@
         includeSubmitButton: boolean
         submitText: string
         id: string
+        wasValidated: boolean
     }
 
     interface ValidationResult {
@@ -35,8 +37,9 @@
     }
 
     interface Methods {
-        validate: (formData: FormData) => ValidationResult
+        buildValidationResult: () => ValidationResult
         submit: (e: Event) => ValidationResult
+        change: () => void
     }
 
     interface Computed {
@@ -65,6 +68,10 @@
             },
             formMeta: {
                 type: Object
+            },
+            wasValidated: {
+                type: Boolean,
+                default: false
             }
         },
         components: {
@@ -87,7 +94,14 @@
             }
         },
         methods: {
-            validate(formData: FormData) {
+            change() {
+                Vue.nextTick().then(() => {
+                    this.$emit("change", this.buildValidationResult())
+                });
+            },
+            buildValidationResult() {
+                const form = this.$refs[this.id] as HTMLFormElement;
+                const formData = new FormData(form);
                 const data: Dict<any> = {};
                 let valid = true;
                 const missingValues = [] as string[];
@@ -105,19 +119,15 @@
                     }
                 });
 
-                this.validated = true;
                 return {valid, data, missingValues}
             },
             submit(e: Event) {
                 if (e) {
                     e.preventDefault();
                 }
-                const form = this.$refs[this.id] as HTMLFormElement;
-                const formData = new FormData(form);
-                const result = this.validate(formData);
-                if (result.valid) {
-                    this.$emit("submit", result.data);
-                }
+                const result = this.buildValidationResult();
+                this.$emit("submit", result);
+                this.validated = true;
                 return result;
             }
         }

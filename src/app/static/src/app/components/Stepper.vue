@@ -24,7 +24,9 @@
             <div class="pt-4">
                 <baseline v-if="isActive(1)"></baseline>
                 <survey-and-program v-if="isActive(2)"></survey-and-program>
-                <model-options v-if="isActive(3)"></model-options>
+                <keep-alive>
+                    <model-options v-if="isActive(3)"></model-options>
+                </keep-alive>
                 <model-run v-if="isActive(4)"></model-run>
                 <model-output v-if="isActive(5)"></model-output>
             </div>
@@ -43,7 +45,7 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {mapActions, mapGetters, mapState} from "vuex";
+    import {mapActions} from "vuex";
     import Step from "./Step.vue";
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
@@ -52,7 +54,7 @@
     import ModelOutput from "./modelOutput/ModelOutput.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
-    import {mapGetterByName, mapGettersByNames, mapStateProps} from "../utils";
+    import {mapGettersByNames, mapStateProps} from "../utils";
 
     type CompleteStatus = {
         [key: number]: boolean
