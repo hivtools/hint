@@ -36,16 +36,7 @@
                 poll: 'modelRun/poll'
             }),
             runModelWithParams() {
-                const params: ModelSubmitParameters = {
-                    max_iterations: 1,
-                    no_of_simulations: 2,
-                    options: {
-                        programme: false,
-                        anc: true
-                    }
-                };
-
-                this.run(params);
+                this.run({"sleep": "2"});
             }
         },
         watch: {
