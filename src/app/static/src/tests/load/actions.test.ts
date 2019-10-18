@@ -1,6 +1,7 @@
 import {mockAxios, mockLoadState, mockSuccess, mockFailure} from "../mocks";
 import {actions} from "../../app/store/load/actions";
 import {LoadingState} from "../../app/store/load/load";
+import {addCheckSum} from "../../app/utils";
 
 const FormData = require("form-data");
 
@@ -41,7 +42,8 @@ describe("Load actions", () => {
         const commit = jest.fn();
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
         const dispatch = jest.fn();
-        await actions.setFiles({commit, state, dispatch} as any, '{"files": "TEST FILES", "state": "TEST STATE"}');
+        const fileContents = addCheckSum('{"files": "TEST FILES", "state": "TEST STATE"}');
+        await actions.setFiles({commit, state, dispatch} as any, fileContents);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "UpdatingState", payload: {}});
@@ -49,6 +51,24 @@ describe("Load actions", () => {
         //should also hand on to updateState action
         expect(dispatch.mock.calls[0][0]).toEqual("updateStoreState");
         expect(dispatch.mock.calls[0][1]).toStrictEqual("TEST STATE");
+    });
+
+    it("calls loadFailed mutation with invalid checksum", async () => {
+
+        mockAxios.onPost(`/session/files/`)
+            .reply(400, mockFailure("Test error"));
+
+        const commit = jest.fn();
+        const state = mockLoadState({loadingState: LoadingState.NotLoading});
+        const dispatch = jest.fn();
+        const fileContents = '["badchecksum", {"files": "TEST FILES", "state": "TEST STATE"}]';
+        await actions.setFiles({commit, state, dispatch} as any, fileContents);
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
+        expect(commit.mock.calls[1][0]).toStrictEqual({type: "LoadFailed", payload: "The file contents are corrupted."});
+
+        //should not hand on to updateState action
+        expect(dispatch.mock.calls.length).toEqual(0);
     });
 
     it("calls loadFailed mutation after unsuccessful setFiles post", async () => {
@@ -59,12 +79,13 @@ describe("Load actions", () => {
         const commit = jest.fn();
         const state = mockLoadState({loadingState: LoadingState.NotLoading});
         const dispatch = jest.fn();
-        await actions.setFiles({commit, state, dispatch} as any, '{"files": "TEST FILES", "state": "TEST STATE"}');
+        const fileContents = addCheckSum('{"files": "TEST FILES", "state": "TEST STATE"}');
+        await actions.setFiles({commit, state, dispatch} as any, fileContents);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "LoadFailed", payload: "Test error"});
 
-        //should also hand on to updateState action
+        //should not hand on to updateState action
         expect(dispatch.mock.calls.length).toEqual(0);
     });
 });

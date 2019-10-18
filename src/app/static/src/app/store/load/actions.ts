@@ -2,7 +2,7 @@ import {ActionContext, ActionTree} from "vuex";
 import {LoadingState, LoadState} from "../load/load";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
-import {PjnzResponse} from "../../generated";
+import {verifyCheckSum} from "../../utils";
 import {Dict, LocalSessionFile} from "../../types";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError"
@@ -19,14 +19,21 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     async load({dispatch}, file) {
         const reader = new FileReader();
         reader.addEventListener('loadend', function() {
-            dispatch("setFiles", reader.result as string)
+            dispatch("setFiles", reader.result as string);
         });
         reader.readAsText(file);
     },
 
     async setFiles({commit, dispatch, state}, savedFileContents) {
         commit({type: "SettingFiles", payload: null});
-        const objectContents = JSON.parse(savedFileContents);
+
+        const objectContents = verifyCheckSum(savedFileContents);
+
+        if (!objectContents) {
+            commit({type: "LoadFailed", payload: "The file contents are corrupted."});
+            return;
+        }
+
         const files = objectContents.files;
         const savedState = objectContents.state;
 

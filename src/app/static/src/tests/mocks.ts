@@ -226,7 +226,7 @@ export const mockModelStatusResponse = (props: Partial<ModelStatusResponse> = {}
         timeRemaining: "",
         done: true,
         success: true,
-        progress: "100%",
+        progress: "0.2",
         queue: 1,
         id: "1234",
         status: "finished",

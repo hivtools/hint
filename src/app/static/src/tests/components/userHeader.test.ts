@@ -18,7 +18,8 @@ import Modal from "../../app/components/Modal.vue";
 import {LoadingState} from "../../app/store/load/load";
 
 Vue.use(Vuex);
-const mockCreateObjectUrl = jest.fn(() => "test.url");
+// jsdom has only implemented navigate up to hashes, hence appending a hash here to the base url
+const mockCreateObjectUrl = jest.fn(() => "http://localhost#1234");
 window.URL.createObjectURL = mockCreateObjectUrl;
 
 describe("user header", () => {
@@ -103,7 +104,7 @@ describe("user header", () => {
         link.trigger("mousedown");
 
         const hiddenLink = wrapper.find({ref: "save"});
-        expect(hiddenLink.attributes("href")).toBe('test.url');
+        expect(hiddenLink.attributes("href")).toBe("http://localhost#1234");
 
         const re = new RegExp("naomi-(.*)\.json");
         expect((hiddenLink.attributes("download") as string).match(re)).toBeDefined();
@@ -118,12 +119,14 @@ describe("user header", () => {
                 anc: {hash: "6csv", filename: "6.csv"}
             }
         });
+
         const actualBlob = (mockCreateObjectUrl as jest.Mock).mock.calls[0][0];
 
         const reader = new FileReader();
         reader.addEventListener('loadend', function() {
-            const text = reader.result;
-            expect(text).toEqual(expectedJson);
+            const text = reader.result as string;
+            const result = JSON.parse(text)[1];
+            expect(result).toEqual(expectedJson);
             done();
         });
         reader.readAsText(actualBlob);

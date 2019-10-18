@@ -3,30 +3,22 @@ import {ReadyState, RootState} from "../../root";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
-import {ModelResultResponse} from "../../generated";
+import {ModelResultResponse, ModelStatusResponse} from "../../generated";
 
 export interface ModelRunState extends ReadyState {
     modelRunId: string
-    status: ModelRunStatus,
     statusPollId: number,
-    success: boolean,
+    status: ModelStatusResponse
     errors: any[],
     result: ModelResultResponse | null
-}
-
-export enum ModelRunStatus {
-    "NotStarted",
-    "Started",
-    "Complete"
 }
 
 export const localStorageKey = "modelRun";
 
 export const initialModelRunState: ModelRunState = {
     modelRunId: "",
-    success: false,
     errors: [],
-    status: ModelRunStatus.NotStarted,
+    status: {} as ModelStatusResponse,
     statusPollId: -1,
     result: null,
     ready: false
@@ -34,7 +26,10 @@ export const initialModelRunState: ModelRunState = {
 
 export const modelRunGetters = {
     complete: (state: ModelRunState) => {
-        return state.success && state.errors.length == 0
+        return !!state.status.success && state.errors.length == 0
+    },
+    running: (state: ModelRunState) => {
+        return !!state.status.id && !state.status.done
     }
 };
 
