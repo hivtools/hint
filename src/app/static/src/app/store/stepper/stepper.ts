@@ -37,6 +37,10 @@ export const initialStepperState: StepperState = {
         {
             number: 5,
             text: "Review output"
+        },
+        {
+            number: 6,
+            text: "Download results"
         }]
 };
 
