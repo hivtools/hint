@@ -18,7 +18,7 @@ interface SessionRepository {
     fun saveSessionFile(sessionId: String, type: FileType, hash: String, fileName: String)
     fun getSessionFile(sessionId: String, type: FileType): SessionFile?
     fun getHashesForSession(sessionId: String): Map<String, String>
-    fun setFilesForSession(sessionId: String, files: Map<String, SessionFile>)
+    fun setFilesForSession(sessionId: String, files: Map<String, SessionFile?>)
 }
 
 @Component
@@ -85,7 +85,7 @@ class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
                 .associate { it[SESSION_FILE.TYPE] to it[SESSION_FILE.HASH] }
     }
 
-    override fun setFilesForSession(sessionId: String, files: Map<String, SessionFile>) {
+    override fun setFilesForSession(sessionId: String, files: Map<String, SessionFile?>) {
         try {
             dsl.transaction { config ->
                 val transaction = DSL.using(config)
@@ -95,12 +95,14 @@ class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
                         .execute()
 
                 files.forEach { (fileType, sessionFile) ->
-                    transaction.insertInto(SESSION_FILE)
-                            .set(SESSION_FILE.HASH, sessionFile.hash)
-                            .set(SESSION_FILE.TYPE, fileType)
-                            .set(SESSION_FILE.SESSION, sessionId)
-                            .set(SESSION_FILE.FILENAME, sessionFile.filename)
-                            .execute()
+                    if (sessionFile != null) {
+                        transaction.insertInto(SESSION_FILE)
+                                .set(SESSION_FILE.HASH, sessionFile.hash)
+                                .set(SESSION_FILE.TYPE, fileType)
+                                .set(SESSION_FILE.SESSION, sessionId)
+                                .set(SESSION_FILE.FILENAME, sessionFile.filename)
+                                .execute()
+                    }
                 }
 
             }

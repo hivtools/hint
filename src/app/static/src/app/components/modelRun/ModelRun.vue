@@ -7,7 +7,7 @@
         <h4 v-if="success" class="mt-3" id="model-run-complete">Model run complete
             <tick color="#e31837" width="20px"></tick>
         </h4>
-        <modal :open="running">
+        <modal :open="running" :okButton="false">
             <h4>Running model</h4>
         </modal>
     </div>
