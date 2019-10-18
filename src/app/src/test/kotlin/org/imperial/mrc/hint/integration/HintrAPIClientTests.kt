@@ -8,7 +8,6 @@ import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.HintrAPIClient
 import org.imperial.mrc.hint.helpers.JSONValidator
-import org.imperial.mrc.hint.models.ModelRunParameters
 import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.junit.jupiter.api.Test
 
