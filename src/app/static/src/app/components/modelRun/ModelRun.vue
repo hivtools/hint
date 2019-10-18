@@ -15,26 +15,44 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActions, mapState} from "vuex";
-    import {ModelRunState, ModelRunStatus} from "../../store/modelRun/modelRun";
+    import {ModelSubmitParameters} from "../../generated";
+    import {ModelRunState} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
-    import {ModelSubmitParameters} from "../../generated";
+    import {mapActionsByNames, mapGettersByNames, mapStateProps} from "../../utils";
+    import {BProgress} from "bootstrap-vue";
+
+    interface ComputedState {
+        runId: string
+        success: boolean
+    }
+
+    interface ComputedGetters {
+        running: boolean
+    }
+
+    interface Computed extends ComputedGetters, ComputedState {
+    }
+
+    interface Methods {
+        run: (params: ModelSubmitParameters) => void;
+        poll: (runId: string) => void;
+        runModelWithParams: () => void;
+    }
 
     const namespace: string = 'modelRun';
 
-    export default Vue.extend<any, any, any, any>({
+    export default Vue.extend<{}, Methods, Computed, {}>({
         name: "ModelRun",
-        computed: mapState<ModelRunState>(namespace, {
-            runId: state => state.modelRunId,
-            running: state => state.status == ModelRunStatus.Started,
-            success: state => state.success
-        }),
-        methods: {
-            ...mapActions({
-                run: 'modelRun/run',
-                poll: 'modelRun/poll'
+        computed: {
+            ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
+                runId: state => state.modelRunId,
+                success: state => state.status.success
             }),
+            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running"])
+        },
+        methods: {
+            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll"]),
             runModelWithParams() {
                 const params: ModelSubmitParameters = {
                     max_iterations: 1,
@@ -62,7 +80,8 @@
         },
         components: {
             Modal,
-            Tick
+            Tick,
+            BProgress
         }
     });
 </script>
