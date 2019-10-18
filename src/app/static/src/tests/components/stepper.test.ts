@@ -14,9 +14,7 @@ import {mutations} from '../../app/store/baseline/mutations';
 import {mutations as surveyAndProgramMutations} from '../../app/store/surveyAndProgram/mutations';
 import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations';
 import {mutations as stepperMutations} from '../../app/store/stepper/mutations';
-
 import {modelRunGetters, ModelRunState} from "../../app/store/modelRun/modelRun";
-
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
@@ -26,6 +24,7 @@ import {StepperState} from "../../app/store/stepper/stepper";
 import {actions as rootActions} from "../../app/store/root/actions"
 import {mutations as rootMutations} from "../../app/store/root/mutations"
 import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
+import {ModelStatusResponse} from "../../app/generated";
 import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
 
 const localVue = createLocalVue();
@@ -318,22 +317,29 @@ describe("Stepper component", () => {
     }
 
     it("model run step is not complete without success", () => {
-        const store = createSut({ready: true}, {ready: true}, {}, {ready: true, success: false});
+        const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(false);
     });
 
     it("model run step is not complete with errors", () => {
-        const store = createSut({ready: true}, {ready: true}, {},
-            {ready: true, success: true, errors: ["TEST" as any]});
+        const modelRunState = {
+            ready: true, status: {success: true} as ModelStatusResponse,
+            errors: ["TEST" as any]
+        };
+        const store = createSut({ready: true}, {ready: true}, {}, modelRunState);
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(false);
     });
 
     it("model run step is complete on success", () => {
-        const store = createSut({ready: true}, {ready: true}, {}, {ready: true, success: true});
+        const modelRunState = {
+            ready: true,
+            status: {success: true} as ModelStatusResponse
+        };
+        const store = createSut({ready: true}, {ready: true}, {}, modelRunState);
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(true);
