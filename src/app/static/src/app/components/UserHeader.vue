@@ -35,7 +35,7 @@
     import {surveyAndProgram, SurveyAndProgramDataState} from "../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import {LocalSessionFile} from "../types";
-    import {mapStateProp} from "../utils";
+    import {addCheckSum, mapStateProp} from "../utils";
     import {ValidateInputResponse} from "../generated";
 
     interface Data {
@@ -70,7 +70,7 @@
         anc: LocalSessionFile | null
     }
 
-    const localSessionFile = function(file: ValidateInputResponse | null) {
+    const localSessionFile = function (file: ValidateInputResponse | null) {
         return file ? {hash: file.hash, filename: file.filename} : null
     };
 
@@ -114,9 +114,10 @@
                     ...this.baselineFiles,
                     ...this.surveyAndProgramFiles
                 };
-                const file = new Blob([JSON.stringify({
-                    state, files
-                })], {type: "application/json"});
+                const data = JSON.stringify({state, files});
+                const content = addCheckSum(data);
+
+                const file = new Blob([content], {type: "text/json"});
                 const a = (this.$refs.save as any);
                 a.href = URL.createObjectURL(file);
                 a.download = `${this.title}-${new Date().toISOString()}.json`.toLowerCase();
