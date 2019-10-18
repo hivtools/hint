@@ -1,4 +1,5 @@
-import {CustomVue, mapActions, mapGetters, mapState} from "vuex";
+import * as CryptoJS from 'crypto-js';
+import {ActionMethod, CustomVue, mapActions, mapGetters, mapState} from "vuex";
 import {Dict} from "./types";
 
 export type ComputedWithType<T> = () => T;
@@ -12,7 +13,7 @@ export const mapStatePropByName = <T>(namespace: string, name: string): Computed
 };
 
 export const mapStateProps = <S, K extends string>(namespace: string,
-                                                  map: Dict<(this: CustomVue, state: S) => any>) => {
+                                                   map: Dict<(this: CustomVue, state: S) => any>) => {
     type R = { [key in K]: any }
     return mapState<S>(namespace, map) as R
 };
@@ -26,7 +27,25 @@ export const mapGettersByNames = <K extends string>(namespace: string, names: st
     return mapGetters(namespace, names) as R
 };
 
+export const mapActionByName = <T>(namespace: string, name: string): ActionMethod => {
+    return mapActions(namespace, [name])[name]
+};
+
 export const mapActionsByNames = <K extends string>(namespace: string, names: string[]) => {
     type R = { [key in K]: any }
     return mapActions(namespace, names) as R
+};
+
+export const addCheckSum = (data: string): string => {
+    const hash = CryptoJS.MD5(data);
+    return JSON.stringify([hash.toString(CryptoJS.enc.Base64), data]);
+};
+
+export const verifyCheckSum = (content: string): false | any => {
+    const result = JSON.parse(content);
+    const hash = result[0];
+    const data = result[1];
+    const valid = CryptoJS.MD5(data).toString(CryptoJS.enc.Base64) === hash;
+
+    return valid && JSON.parse(data);
 };

@@ -4,13 +4,14 @@ import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {Dict} from "../../types";
+import {DynamicFormData} from "../../components/forms/types";
 
 export type ModelRunActionTypes = "ModelRunStarted" | "RunStatusUpdated" | "PollingForStatusStarted" | "RunResultFetched"
 export type ModelRunErrorTypes = "ModelRunError" | "RunStatusError" | "RunResultError"
 
 export interface ModelRunActions {
-    run: (store: ActionContext<ModelRunState, RootState>, options: Dict<string | string[]>) => void
-    poll: (store: ActionContext<ModelRunState, RootState>, runId: number) => void
+    run: (store: ActionContext<ModelRunState, RootState>, options: DynamicFormData) => void
+    poll: (store: ActionContext<ModelRunState, RootState>, runId: string) => void
     getResult: (store: ActionContext<ModelRunState, RootState>) => void
 }
 
@@ -32,7 +33,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
                 .withError("RunStatusError")
                 .get<ModelStatusResponse>(`/model/status/${runId}`)
                 .then(() => {
-                    if (state.success) {
+                    if (state.status.done) {
                         dispatch("getResult", runId);
                     }
                 });
@@ -42,7 +43,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
     },
 
     async getResult({commit, state}) {
-        if (state.modelRunId && state.success) {
+        if (state.status.done) {
             await api<ModelRunActionTypes, ModelRunErrorTypes>(commit)
                 .withSuccess("RunResultFetched")
                 .withError("RunResultError")

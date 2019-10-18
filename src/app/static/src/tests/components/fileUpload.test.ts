@@ -4,7 +4,7 @@ import Vue from 'vue';
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import Tick from "../../app/components/Tick.vue";
 import FileUpload from "../../app/components/FileUpload.vue";
-import {mockFileList} from "../mocks";
+import {mockFile} from "../mocks";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 
 describe("File upload component", () => {
@@ -93,22 +93,24 @@ describe("File upload component", () => {
         expect(slot.element!!.nextElementSibling!!.classList[0]).toBe("custom-file");
     });
 
-    // TODO this is a massive pain - you can't programatically create a FileList
-    // not sure of the best solution
-    // https://github.com/jsdom/jsdom/issues/1272
-    xit("calls upload when file is selected", (done) => {
+    it("calls upload when file is selected", (done) => {
 
         const uploader = jest.fn();
         const wrapper = createSut({
             upload: uploader
         });
 
-        (wrapper.find("input").element as HTMLInputElement).files = mockFileList("TEST");
+        const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
+        const vm = wrapper.vm;
+        (vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
 
         wrapper.find("input").trigger("change");
 
         setTimeout(() => {
-            expect(uploader.mock.calls[0][1]).toBe("TEST");
+            const formData = uploader.mock.calls[0][0] as FormData;
+            expect(formData.get('file')).toBe(testFile);
             done();
         });
 

@@ -19,7 +19,6 @@
 
     const namespace: string = 'filteredData';
 
-
     export default Vue.extend({
         name: "ModelOutput",
         created() {

@@ -29,6 +29,7 @@
                 </keep-alive>
                 <model-run v-if="isActive(4)"></model-run>
                 <model-output v-if="isActive(5)"></model-output>
+                <div v-if="isActive(6)"><h4>Coming soon</h4></div>
             </div>
             <div class="row mt-2">
                 <div class="col">

@@ -30,7 +30,7 @@ interface FileManager {
     fun saveFile(file: MultipartFile, type: FileType): SessionFileWithPath
     fun getFile(type: FileType): SessionFileWithPath?
     fun getAllFiles(): Map<String, String>
-    fun setAllFiles(files: Map<String, SessionFile>)
+    fun setAllFiles(files: Map<String, SessionFile?>)
 }
 
 @Component
@@ -69,7 +69,7 @@ class LocalFileManager(
         return hashes.mapValues { "${appProperties.uploadDirectory}/${it.value}" }
     }
 
-    override fun setAllFiles(files: Map<String, SessionFile>) {
+    override fun setAllFiles(files: Map<String, SessionFile?>) {
         sessionRepository.setFilesForSession(session.getId(), files);
     }
 }

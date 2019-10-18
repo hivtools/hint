@@ -119,7 +119,9 @@ class SessionRepositoryTests {
 
         sut.setFilesForSession("sid", mapOf(
                 "pjnz" to SessionFile("pjnz_hash", "pjnz_file"),
-                "shape" to SessionFile("shape_hash", "shape_file")));
+                "shape" to SessionFile("shape_hash", "shape_file"),
+                "population" to null //should not attempt to save a null file
+        ));
 
         val records = dsl.selectFrom(SESSION_FILE)
                 .orderBy(SESSION_FILE.TYPE)
