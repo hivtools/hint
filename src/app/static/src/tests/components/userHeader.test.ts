@@ -3,7 +3,7 @@ import UserHeader from "../../app/components/UserHeader.vue";
 import Vuex from "vuex";
 import {
     mockAncResponse,
-    mockBaselineState,
+    mockBaselineState, mockFile,
     mockLoadState,
     mockModelRunState,
     mockPJNZResponse,
@@ -175,8 +175,8 @@ describe("user header", () => {
         const input = wrapper.find("input");
 
         const vm = wrapper.vm;
-        const testFile = new File(["test file contents"], "filename");
-        //Can't programmatically construct a FileList to give to the read rendered input element, so we need to trick
+        const testFile = mockFile("test filename", "test file contents");
+        //Can't programmatically construct a FileList to give to the real rendered input element, so we need to trick
         //the component with a mocked ref
         (vm.$refs as any).loadFile = {
             files: [testFile]

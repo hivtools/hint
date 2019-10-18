@@ -109,18 +109,11 @@ export const mockRootState = (props?: Partial<RootState>): RootState => {
     }
 };
 
-export const mockFile = (filename: string, type: string = "text/csv"): File => {
-    return new File([new ArrayBuffer(10)], filename, {
+export const mockFile = (filename: string, fileContents: string,  type: string = "text/csv"): File => {
+    return new File([fileContents], filename, {
         type: type,
         lastModified: 1
     });
-};
-
-export const mockFileList = (filename: string, type: string = "text/csv"): FileList => {
-    const file = mockFile(filename, type);
-    const fileList = new FileList();
-    fileList[0] = file;
-    return fileList;
 };
 
 export const mockSuccess = (data: any): Response => {
