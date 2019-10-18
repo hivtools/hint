@@ -14,7 +14,7 @@
     import {BForm} from "bootstrap-vue";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import DynamicFormControlSection from "./DynamicFormControlSection.vue";
-    import {DynamicFormMeta} from "./types";
+    import {Control, DynamicFormMeta} from "./types";
     import {Dict} from "../../types";
 
     interface Props {
@@ -40,7 +40,7 @@
     }
 
     interface Computed {
-        required: Dict<boolean>
+        formControlLookup: Dict<Control>
     }
 
     export default Vue.extend <Data, Methods, Computed, Props>({
@@ -73,17 +73,17 @@
             DynamicFormControlSection
         },
         computed: {
-            required() {
-                const requiredDict = {} as Dict<boolean>;
+            formControlLookup() {
+                const dict = {} as Dict<Control>;
                 this.formMeta.controlSections.map(s => {
                     s.controlGroups.map(g => {
                         g.controls.map(c => {
-                            requiredDict[c.name] = c.required
+                            dict[c.name] = c
                         })
                     })
                 });
 
-                return requiredDict;
+                return dict;
             }
         },
         methods: {
@@ -92,11 +92,19 @@
                 let valid = true;
                 const missingValues = [] as string[];
                 formData.forEach((value, key) => {
-                    if (!value && this.required[key]) {
+                    value = value as string;
+                    const control = this.formControlLookup[key];
+                    if (!value && control.required) {
                         valid = false;
                         missingValues.push(key);
                     }
-                    data[key] = value || null;
+                    if (control.type == "multiselect") {
+                        data[key] = value ? value.split(",") : []
+                    } else if (!value) {
+                        data[key] = null
+                    } else {
+                        data[key] = value;
+                    }
                 });
 
                 this.validated = true;

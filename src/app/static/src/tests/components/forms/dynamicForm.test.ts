@@ -1,4 +1,6 @@
-import {DynamicFormMeta, NumberControl} from "../../../app/components/forms/types";
+import Vue from "vue";
+
+import {DynamicFormMeta, NumberControl, SelectControl} from "../../../app/components/forms/types";
 import {mount, shallowMount} from "@vue/test-utils";
 import DynamicFormComponent from "../../../app/components/forms/DynamicForm.vue";
 import DynamicFormControlSection from "../../../app/components/forms/DynamicFormControlSection.vue";
@@ -32,12 +34,30 @@ describe('Dynamic form component', function () {
         ]
     };
 
+    const formMetaWithAllControlTypes = {
+        ...fakeFormMeta
+    };
+
+    formMetaWithAllControlTypes.controlSections[1].controlGroups[0].controls.push({
+            name: "id_3",
+            type: "multiselect",
+            options: [{id: "opt1", label: "option 1"}],
+            required: false
+        } as SelectControl,
+        {
+            name: "id_4",
+            type: "select",
+            options: [{id: "opt2", label: "option 2"}],
+            required: false
+        } as SelectControl);
+
     it("renders form with id", () => {
         const rendered = mount(DynamicFormComponent, {
             propsData: {
                 formMeta: fakeFormMeta,
                 id: "test-id"
-            }
+            },
+            sync: false
         });
 
         const form = rendered.find("form");
@@ -49,7 +69,8 @@ describe('Dynamic form component', function () {
         const rendered = shallowMount(DynamicFormComponent, {
             propsData: {
                 formMeta: fakeFormMeta
-            }
+            },
+            sync: false
         });
 
         expect(rendered.vm.$props.id).toBeDefined();
@@ -59,7 +80,8 @@ describe('Dynamic form component', function () {
         const rendered = shallowMount(DynamicFormComponent, {
             propsData: {
                 formMeta: fakeFormMeta
-            }
+            },
+            sync: false
         });
 
         expect(rendered.findAll(DynamicFormControlSection).length).toBe(2);
@@ -72,24 +94,27 @@ describe('Dynamic form component', function () {
 
     it("does not render button if includeSubmitButton is false", () => {
 
-        const rendered = mount(DynamicFormComponent, {
+        const rendered = shallowMount(DynamicFormComponent, {
             propsData: {
                 formMeta: fakeFormMeta,
                 includeSubmitButton: false
-            }
+            },
+            sync: false
         });
 
         expect(rendered.findAll("button").length).toBe(0);
     });
 
-    it("adds was-validated class on submit", () => {
+    it("adds was-validated class on submit", async () => {
         const rendered = mount(DynamicFormComponent, {
             propsData: {
                 formMeta: fakeFormMeta
-            }
+            },
+            sync: false
         });
 
         rendered.find("button").trigger("click");
+        await Vue.nextTick();
         expect(rendered.classes()).toContain("was-validated");
     });
 
@@ -99,27 +124,40 @@ describe('Dynamic form component', function () {
 
             const rendered = mount(DynamicFormComponent, {
                 propsData: {
-                    formMeta: fakeFormMeta
-                }
+                    formMeta: formMetaWithAllControlTypes
+                },
+                sync: false
             });
 
-            rendered.find("input").setValue(10);
+            rendered.find("[name=id_1]").setValue(10);
+            rendered.find("[name=id_3]").setValue("opt1,opt2");
             rendered.find("button").trigger("click");
-            expect(rendered.emitted("submit")[0][0]).toStrictEqual({"id_1": "10", "id_2": null});
+            expect(rendered.emitted("submit")[0][0]).toStrictEqual({
+                "id_1": "10",
+                "id_2": null,
+                "id_3": ["opt1", "opt2"],
+                "id_4": null
+            });
         });
 
         it("emits event and returns serialised form data on programmatic submit", () => {
 
             const rendered = mount(DynamicFormComponent, {
                 propsData: {
-                    formMeta: fakeFormMeta
-                }
+                    formMeta: formMetaWithAllControlTypes
+                },
+                sync: false
             });
 
             rendered.find("[name=id_1]").setValue(10);
             const result = (rendered.vm as any).submit();
             const expected = {
-                data: {"id_1": "10", "id_2": null},
+                data: {
+                    "id_1": "10",
+                    "id_2": null,
+                    "id_3": [],
+                    "id_4": null
+                },
                 valid: true,
                 missingValues: []
             };
@@ -134,8 +172,9 @@ describe('Dynamic form component', function () {
 
             const rendered = mount(DynamicFormComponent, {
                 propsData: {
-                    formMeta: fakeFormMeta
-                }
+                    formMeta: formMetaWithAllControlTypes
+                },
+                sync: false
             });
 
             rendered.find("button").trigger("click");
@@ -146,15 +185,16 @@ describe('Dynamic form component', function () {
 
             const rendered = mount(DynamicFormComponent, {
                 propsData: {
-                    formMeta: fakeFormMeta
-                }
+                    formMeta: formMetaWithAllControlTypes
+                },
+                sync: false
             });
 
             const result = (rendered.vm as any).submit();
             expect(rendered.emitted("submit")).toBeUndefined();
             expect(result).toStrictEqual({
                 valid: false,
-                data: {"id_1": null, "id_2": null},
+                data: {"id_1": null, "id_2": null, "id_3": [], "id_4": null},
                 missingValues: ["id_1"]
             });
         });

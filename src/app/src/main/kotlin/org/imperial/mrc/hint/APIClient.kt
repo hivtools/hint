@@ -3,7 +3,6 @@ package org.imperial.mrc.hint
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
-import org.imperial.mrc.hint.models.ModelRunParameters
 import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
