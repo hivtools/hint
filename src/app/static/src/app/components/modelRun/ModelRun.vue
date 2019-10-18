@@ -7,7 +7,7 @@
         <h4 v-if="success" class="mt-3" id="model-run-complete">Model run complete
             <tick color="#e31837" width="20px"></tick>
         </h4>
-        <modal :open="running">
+        <modal :open="running" :okButton="false">
             <h4>Running model</h4>
         </modal>
     </div>
@@ -15,25 +15,43 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActions, mapState} from "vuex";
-    import {ModelRunState, ModelRunStatus} from "../../store/modelRun/modelRun";
+    import {ModelRunState} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
+    import {mapActionsByNames, mapGettersByNames, mapStateProps} from "../../utils";
+    import {BProgress} from "bootstrap-vue";
+
+    interface ComputedState {
+        runId: string
+        success: boolean
+    }
+
+    interface ComputedGetters {
+        running: boolean
+    }
+
+    interface Computed extends ComputedGetters, ComputedState {
+    }
+
+    interface Methods {
+        run: (options: any) => void;
+        poll: (runId: string) => void;
+        runModelWithParams: () => void;
+    }
 
     const namespace: string = 'modelRun';
 
-    export default Vue.extend<any, any, any, any>({
+    export default Vue.extend<{}, Methods, Computed, {}>({
         name: "ModelRun",
-        computed: mapState<ModelRunState>(namespace, {
-            runId: state => state.modelRunId,
-            running: state => state.status == ModelRunStatus.Started,
-            success: state => state.success
-        }),
-        methods: {
-            ...mapActions({
-                run: 'modelRun/run',
-                poll: 'modelRun/poll'
+        computed: {
+            ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
+                runId: state => state.modelRunId,
+                success: state => state.status.success
             }),
+            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running"])
+        },
+        methods: {
+            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll"]),
             runModelWithParams() {
                 this.run({"sleep": "2"});
             }
@@ -52,7 +70,8 @@
         },
         components: {
             Modal,
-            Tick
+            Tick,
+            BProgress
         }
     });
 </script>

@@ -17,7 +17,8 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
             2: rootGetters['surveyAndProgram/complete'],
             3: rootGetters['modelOptions/complete'],
             4: rootGetters['modelRun/complete'],
-            5: false
+            5: rootGetters['modelRun/complete'],
+            6: false
         }
     }
 };

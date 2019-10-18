@@ -7,6 +7,11 @@
                     <div class="modal-body">
                         <slot></slot>
                     </div>
+                    <div v-if="okButton" class="modal-footer">
+                        <button type="button" class="btn btn-red" data-dismiss="modal" aria-label="Close" @click="$emit('ok')">
+                            OK
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -17,7 +22,7 @@
 
     export default Vue.extend({
         name: "Modal",
-        props: ["open"],
+        props: ["open", "okButton"],
         computed: {
             style: function () {
                 return {display: this.open ? "block" : "none"}

@@ -25,8 +25,8 @@ import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRu
 import {RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
+import {initialLoadState, LoadState} from "../app/store/load/load";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
-
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -86,6 +86,14 @@ export const mockMetadataState = (props?: Partial<MetadataState>) => {
         ...props
     }
 };
+
+export const mockLoadState = (props?: Partial<LoadState>) => {
+    return {
+        ...initialLoadState,
+        ...props
+    }
+};
+
 export const mockRootState = (props?: Partial<RootState>): RootState => {
     return {
         version: "",
@@ -96,22 +104,16 @@ export const mockRootState = (props?: Partial<RootState>): RootState => {
         modelOptions: mockModelOptionsState(),
         stepper: mockStepperState(),
         metadata: mockMetadataState(),
+        load: mockLoadState(),
         ...props
     }
 };
 
-export const mockFile = (filename: string, type: string = "text/csv"): File => {
-    return new File([new ArrayBuffer(10)], filename, {
+export const mockFile = (filename: string, fileContents: string,  type: string = "text/csv"): File => {
+    return new File([fileContents], filename, {
         type: type,
         lastModified: 1
     });
-};
-
-export const mockFileList = (filename: string, type: string = "text/csv"): FileList => {
-    const file = mockFile(filename, type);
-    const fileList = new FileList();
-    fileList[0] = file;
-    return fileList;
 };
 
 export const mockSuccess = (data: any): Response => {
@@ -227,7 +229,7 @@ export const mockModelStatusResponse = (props: Partial<ModelStatusResponse> = {}
         timeRemaining: "",
         done: true,
         success: true,
-        progress: "100%",
+        progress: "0.2",
         queue: 1,
         id: "1234",
         status: "finished",
