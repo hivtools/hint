@@ -18,7 +18,7 @@ import {mutations} from "../../../app/store/filteredData/mutations";
 const localVue = createLocalVue();
 Vue.use(Vuex);
 
-describe("Survey and program component", () => {
+describe("Survey and programme component", () => {
 
     testUploadComponent("surveys", 0);
     testUploadComponent("program", 1);
@@ -102,7 +102,7 @@ describe("Survey and program component", () => {
         expectTabEnabled({survey: mockSurveyResponse()}, "Survey", 0);
     });
 
-    it("programme (ART) tab is enabled when program data is present", () => {
+    it("programme (ART) tab is enabled when programme data is present", () => {
         expectTabEnabled({program: mockProgramResponse()}, "ART", 1);
     });
 

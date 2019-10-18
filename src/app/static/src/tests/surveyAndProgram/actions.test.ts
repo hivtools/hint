@@ -5,7 +5,7 @@ import {DataType} from "../../app/store/filteredData/filteredData";
 
 const FormData = require("form-data");
 
-describe("Survey and program actions", () => {
+describe("Survey and programme actions", () => {
 
     it("sets data after surveys file upload", async () => {
 
@@ -51,7 +51,7 @@ describe("Survey and program actions", () => {
         expect(commit.mock.calls.length).toEqual(2);
     });
 
-    it("sets data after program file upload", async () => {
+    it("sets data after programme file upload", async () => {
 
         mockAxios.onPost(`/disease/programme/`)
             .reply(200, mockSuccess("TEST"));
@@ -74,7 +74,7 @@ describe("Survey and program actions", () => {
         expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
     });
 
-    it("sets error message after failed program upload", async () => {
+    it("sets error message after failed programme upload", async () => {
 
         mockAxios.onPost(`/disease/programme/`)
             .reply(500, mockFailure("error message"));

@@ -4,6 +4,7 @@ import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {verifyCheckSum} from "../../utils";
 import {Dict, LocalSessionFile} from "../../types";
+import {localStorageManager} from "../../localStorageManager";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError"
 export type LoadErrorActionTypes = "LoadFailed"
@@ -49,7 +50,11 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     },
 
     async updateStoreState({commit, dispatch, state}, savedState) {
-        //TODO: In another PR - hashes have now been set for session in backend, so  update the state from the saved state and get file data from backend
+        //File hashes have now been set for session in backend so we save the state from the file we're loading into local
+        //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
+        //NB load state is not included in the saved state so we will default back to NotLoading on page reload.
+        localStorageManager.savePartialState(savedState);
+        location.reload();
     },
 
     async clearLoadState({commit}) {
