@@ -82,7 +82,7 @@
 
     interface SurveyAndProgramFiles {
         survey: LocalSessionFile | null,
-        program: LocalSessionFile | null,
+        programme: LocalSessionFile | null,
         anc: LocalSessionFile | null
     }
 
@@ -115,7 +115,7 @@
             surveyAndProgramFiles: mapStateProp<SurveyAndProgramDataState, SurveyAndProgramFiles>("surveyAndProgram", state => {
                 return {
                     survey: localSessionFile(state.survey),
-                    program: localSessionFile(state.program),
+                    programme: localSessionFile(state.program),
                     anc: localSessionFile(state.anc)
                 }
             })
