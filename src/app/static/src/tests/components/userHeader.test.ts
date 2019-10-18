@@ -115,7 +115,7 @@ describe("user header", () => {
                 population: {hash: "1csv", filename: "1.csv"},
                 shape: {hash: "3csv", filename: "3.csv"},
                 survey: {hash: "4csv", filename: "4.csv"},
-                program: {hash: "5csv", filename: "5.csv"},
+                programme: {hash: "5csv", filename: "5.csv"},
                 anc: {hash: "6csv", filename: "6.csv"}
             }
         });
