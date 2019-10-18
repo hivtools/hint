@@ -3,7 +3,7 @@ import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {
-    mockBaselineState, mockMetadataState, mockModelOptionsState,
+    mockBaselineState, mockLoadState, mockMetadataState, mockModelOptionsState,
     mockModelRunState, mockPlottingMetadataResponse,
     mockPopulationResponse,
     mockShapeResponse, mockStepperState,
@@ -26,6 +26,7 @@ import {mutations as rootMutations} from "../../app/store/root/mutations"
 import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
 import {ModelStatusResponse} from "../../app/generated";
 import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
+import {LoadingState, LoadState} from "../../app/store/load/load";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -35,7 +36,8 @@ describe("Stepper component", () => {
                        surveyAndProgramState?: Partial<SurveyAndProgramDataState>,
                        metadataState?: Partial<MetadataState>,
                        modelRunState?: Partial<ModelRunState>,
-                       stepperState?: Partial<StepperState>) => {
+                       stepperState?: Partial<StepperState>,
+                       loadState?: Partial<LoadState>) => {
 
         return new Vuex.Store({
             actions: rootActions,
@@ -75,6 +77,10 @@ describe("Stepper component", () => {
                     namespaced: true,
                     state: mockMetadataState(metadataState),
                     getters: metadataGetters
+                },
+                load: {
+                    namespaced: true,
+                    state: mockLoadState(loadState)
                 }
             }
         })
@@ -88,6 +94,22 @@ describe("Stepper component", () => {
 
         const store = createSut();
         const wrapper = shallowMount(Stepper, {store, localVue});
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAll(".content").length).toBe(0);
+        expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
+    });
+
+    it("renders loading spinner while ready but loadingFromFile", () => {
+
+        const store = createSut(
+            {ready: true},
+            {ready: true},
+            {},
+            {ready: true},
+            {},
+            {loadingState: LoadingState.SettingFiles});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
         expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
