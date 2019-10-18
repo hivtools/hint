@@ -100,10 +100,8 @@
                     }
                     if (control.type == "multiselect") {
                         data[key] = value ? value.split(",") : []
-                    } else if (!value) {
-                        data[key] = null
                     } else {
-                        data[key] = value;
+                        data[key] = value || null;
                     }
                 });
 

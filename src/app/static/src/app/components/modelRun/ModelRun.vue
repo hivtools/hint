@@ -19,7 +19,6 @@
     import {ModelRunState, ModelRunStatus} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
-    import {ModelSubmitParameters} from "../../generated";
 
     const namespace: string = 'modelRun';
 
