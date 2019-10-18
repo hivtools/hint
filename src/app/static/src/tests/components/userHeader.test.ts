@@ -23,33 +23,38 @@ window.URL.createObjectURL = mockCreateObjectUrl;
 
 describe("user header", () => {
 
-    const createStore = () => {
+    const storeModules = {
+        baseline: {
+            namespaced: true,
+            state: mockBaselineState({
+                population: mockPopulationResponse({hash: "1csv", filename: "1.csv"}),
+                pjnz: mockPJNZResponse({hash: "2csv", filename: "2.csv"}),
+                shape: mockShapeResponse({hash: "3csv", filename: "3.csv"})
+            })
+        },
+        surveyAndProgram: {
+            namespaced: true,
+            state: mockSurveyAndProgramState({
+                survey: mockSurveyResponse({hash: "4csv", filename: "4.csv"}),
+                program: mockProgramResponse({hash: "5csv", filename: "5.csv"}),
+                anc: mockAncResponse({hash: "6csv", filename: "6.csv"})
+            })
+        },
+        modelRun: {
+            namespaced: true,
+            state: mockModelRunState()
+        },
+        load: {
+            namespaced: true,
+            state: mockLoadState()
+        }
+    };
+
+    const createStore = (customModules = {}) => {
         return new Vuex.Store({
             modules: {
-                baseline: {
-                    namespaced: true,
-                    state: mockBaselineState({
-                        population: mockPopulationResponse({hash: "1csv", filename: "1.csv"}),
-                        pjnz: mockPJNZResponse({hash: "2csv", filename: "2.csv"}),
-                        shape: mockShapeResponse({hash: "3csv", filename: "3.csv"})
-                    })
-                },
-                surveyAndProgram: {
-                    namespaced: true,
-                    state: mockSurveyAndProgramState({
-                        survey: mockSurveyResponse({hash: "4csv", filename: "4.csv"}),
-                        program: mockProgramResponse({hash: "5csv", filename: "5.csv"}),
-                        anc: mockAncResponse({hash: "6csv", filename: "6.csv"})
-                    })
-                },
-                modelRun: {
-                    namespaced: true,
-                    state: mockModelRunState()
-                },
-                load: {
-                    namespaced: true,
-                    state: mockLoadState()
-                }
+                ...storeModules,
+                ...customModules
             }
         });
     };
@@ -145,28 +150,15 @@ describe("user header", () => {
 
     it("invokes load action when file selected from dialog", () => {
         const mockLoadAction = jest.fn();
+
         const wrapper = shallowMount(UserHeader,
             {
-                store: new Vuex.Store({
-                    modules: {
-                        baseline: {
-                            namespaced: true,
-                            state: mockBaselineState()
-                        },
-                        surveyAndProgram: {
-                            namespaced: true,
-                            state: mockSurveyAndProgramState()
-                        },
-                        modelRun: {
-                            namespaced: true,
-                            state: mockModelRunState()
-                        },
-                        load: {
-                            namespaced: true,
-                            state: mockLoadState(),
-                            actions: {
-                                load: mockLoadAction
-                            }
+                store: createStore({
+                    load: {
+                        namespaced: true,
+                        state: mockLoadState(),
+                        actions: {
+                            load: mockLoadAction
                         }
                     }
                 })
@@ -199,30 +191,17 @@ describe("user header", () => {
     it("opens modal if load error", () => {
         const wrapper = shallowMount(UserHeader,
             {
-                store: new Vuex.Store({
-                    modules: {
-                        baseline: {
-                            namespaced: true,
-                            state: mockBaselineState()
-                        },
-                        surveyAndProgram: {
-                            namespaced: true,
-                            state: mockSurveyAndProgramState()
-                        },
-                        modelRun: {
-                            namespaced: true,
-                            state: mockModelRunState()
-                        },
-                        load: {
-                            namespaced: true,
-                            state: mockLoadState({
-                                loadingState: LoadingState.LoadFailed,
-                                loadError: "test error"
-                            }),
-                        }
+                store: createStore({
+                    load: {
+                        namespaced: true,
+                        state: mockLoadState({
+                            loadingState: LoadingState.LoadFailed,
+                            loadError: "test error"
+                        }),
                     }
                 })
             });
+
         const modal = wrapper.find(Modal);
         expect(modal.attributes("open")).toEqual("true");
         expect(modal.text()).toContain("test error");
