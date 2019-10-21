@@ -2,10 +2,11 @@
     <b-form-input :name="formControl.name"
                   type="number"
                   :number="true"
-                  :value="formControl.default"
+                  v-model="formControl.value"
                   :min="formControl.min"
                   :max="formControl.max"
-                  :required="formControl.required"></b-form-input>
+                  :required="formControl.required"
+                  @change="change"></b-form-input>
 </template>
 
 <script lang="ts">
@@ -19,8 +20,19 @@
 
     export default Vue.extend<{}, {}, {}, Props>({
         name: "DynamicFormNumberInput",
+        model: {
+            prop: "formControl",
+            event: "change"
+        },
         props: {
-            formControl: Object
+            formControl: {
+                type: Object
+            }
+        },
+        methods: {
+            change() {
+                this.$emit("change", this.formControl);
+            }
         },
         components: {
             BFormInput

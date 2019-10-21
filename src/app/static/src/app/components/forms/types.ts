@@ -1,3 +1,5 @@
+import {Dict} from "../../types";
+
 export interface DynamicControlSection {
     label: string
     description?: string
@@ -17,7 +19,7 @@ export interface DynamicControl {
     label?: string,
     type: DynamicControlType
     required: boolean
-    default?: any
+    value?: string | string[] | number
     helpText?: string
 }
 
@@ -28,12 +30,13 @@ export interface SelectControl extends DynamicControl {
 export interface NumberControl extends DynamicControl {
     min?: number
     max?: number
-    default?: number
 }
 
 export interface DynamicFormMeta {
     controlSections: DynamicControlSection[]
 }
+
+export type DynamicFormData = Dict<string | string[] | number | null>
 
 export const formMeta: DynamicFormMeta = {
     controlSections: [
@@ -47,7 +50,7 @@ export const formMeta: DynamicFormMeta = {
                         name: "area_scope",
                         type: "multiselect",
                         options: [{id: "MWI", label: "Malawi"}, {id: "MWI.1", label: "Central"}],
-                        default: "MWI",
+                        value: ["MWI"],
                         required: true
                     }]
             },
@@ -74,7 +77,7 @@ export const formMeta: DynamicFormMeta = {
                             name: "art_t1",
                             label: "Time 1",
                             type: "select",
-                            default: "Jan - Mar 2015",
+                            value: "q1",
                             helpText: "Quarter matching midpoint of survey",
                             options: [{id: "q1", label: "Jan - Mar 2015"}, {id: "q2", label: "Apr - Jun 2015"}],
                             required: true
@@ -101,7 +104,7 @@ export const formMeta: DynamicFormMeta = {
                             name: "max_it",
                             type: "number",
                             required: true,
-                            default: 250
+                            value: 250
                         }
                     ]
                 },
@@ -110,8 +113,7 @@ export const formMeta: DynamicFormMeta = {
                     controls: [{
                         name: "num_sim",
                         type: "number",
-                        required: true,
-                        default: 3000
+                        required: true
                     }]
                 }
             ]

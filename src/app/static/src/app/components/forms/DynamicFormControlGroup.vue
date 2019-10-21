@@ -1,29 +1,41 @@
 <template>
     <b-row class="my-2">
         <b-col md="3" v-if="controlGroup.label">
-            <label class="group-label">{{controlGroup.label}}</label>
+            <label class="group-label">{{controlGroup.label}}
+                <span v-if="required">*</span>
+            </label>
         </b-col>
-        <dynamic-form-control v-for="control in controlGroup.controls"
+        <dynamic-form-control v-for="(control, index) in controlGroup.controls"
                               :key="control.name"
-                              :form-control="control"
+                              v-model="controlGroup.controls[index]"
+                              @change="change"
                               :col-width="colWidth"></dynamic-form-control>
     </b-row>
 </template>
 <script lang="ts">
     import Vue from "vue";
     import {BCol, BRow} from "bootstrap-vue";
-    import {DynamicControlGroup} from "./types";
+    import {DynamicControl, DynamicControlGroup} from "./types";
     import DynamicFormControl from "./DynamicFormControl.vue";
 
-    export default Vue.extend<{}, {}, { colWidth: string }, { controlGroup: DynamicControlGroup }>({
+    export default Vue.extend<{}, {}, { colWidth: string, required: boolean }, { controlGroup: DynamicControlGroup }>({
         name: "DynamicFormControlGroup",
         props: {
             controlGroup: Object
+        },
+        model: {
+            prop: "controlGroup",
+            event: "change"
         },
         components: {
             BRow,
             BCol,
             DynamicFormControl
+        },
+        methods: {
+            change() {
+                this.$emit("change", this.controlGroup);
+            }
         },
         computed: {
             colWidth() {
@@ -33,6 +45,10 @@
                 } else {
                     return "3"
                 }
+            },
+            required() {
+                return this.controlGroup.controls.length == 1
+                    && this.controlGroup.controls[0].required
             }
         }
     });
