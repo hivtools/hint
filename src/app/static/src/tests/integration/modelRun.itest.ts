@@ -11,12 +11,9 @@ describe("Model run actions", () => {
         const commit = jest.fn();
 
         await actions.run({commit} as any, {
-            max_iterations: 1,
-            no_of_simulations: 1,
-            options: {
-                programme: false,
-                anc: false
-            }
+            max_iterations: "1",
+            no_of_simulations: "1",
+            quarters: ["q1", "q2"]
         });
 
         expect(commit.mock.calls[0][0]["type"]).toBe("ModelRunStarted");

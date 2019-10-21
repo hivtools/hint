@@ -15,12 +15,9 @@ describe("Model run actions", () => {
 
         const commit = jest.fn();
         await actions.run({commit} as any, {
-            max_iterations: 1,
-            no_of_simulations: 1,
-            options: {
-                programme: false,
-                anc: false
-            }
+            max_iterations: "1",
+            no_of_simulations: "1",
+            quarters: ["q1", "q2"]
         });
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
@@ -42,6 +39,7 @@ describe("Model run actions", () => {
         const dispatch = jest.fn();
 
         actions.poll({commit, state, dispatch} as any, "1234");
+
         setInterval(() => {
             expect(dispatch.mock.calls[0][0]).toStrictEqual("getResult");
             expect(dispatch.mock.calls[0][1]).toStrictEqual("1234");
@@ -61,6 +59,7 @@ describe("Model run actions", () => {
         const dispatch = jest.fn();
 
         actions.poll({commit, state, dispatch} as any, "1234");
+
         setInterval(() => {
             expect(dispatch.mock.calls.length).toEqual(0);
             done();

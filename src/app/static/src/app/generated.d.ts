@@ -9,6 +9,10 @@ export interface AncFilters {
     name: string;
     id: string;
   }[];
+  indicators: {
+    name: string;
+    id: string;
+  }[];
 }
 export type AncResponseData = {
   area_id: string;
@@ -37,6 +41,12 @@ export type FilePath = string | null;
 export interface FilterOption {
   name: string;
   id: string;
+}
+export interface HintrVersionResponse {
+  [k: string]: string;
+}
+export interface HintrWorkerStatus {
+  [k: string]: "BUSY" | "IDLE" | "PAUSED" | "EXITED" | "LOST";
 }
 export interface IndicatorMetadata {
   indicator: string;
@@ -76,7 +86,7 @@ export interface ModelResultFilters {
     name: string;
     id: string;
   }[];
-  indicator: {
+  indicators: {
     name: string;
     id: string;
   }[];
@@ -103,12 +113,52 @@ export interface ModelResultResponse {
       name: string;
       id: string;
     }[];
-    indicator: {
+    indicators: {
       name: string;
       id: string;
     }[];
   };
   [k: string]: any;
+}
+export interface ModelRunOptions {
+  controlSections: ControlSection[];
+}
+export interface ControlSection {
+  label: string;
+  description?: string;
+  controlGroups: ControlGroup;
+}
+export interface ControlGroup {
+  label?: string;
+  controls:
+    | {
+        [k: string]: any;
+      }
+    | {
+        [k: string]: any;
+      };
+}
+export interface ModelRunOptionsRequest {
+  shape: {
+    path: string | null;
+    hash: string;
+    filename: string;
+  };
+  survey: {
+    path: string | null;
+    hash: string;
+    filename: string;
+  };
+  programme?: {
+    path: string | null;
+    hash: string;
+    filename: string;
+  };
+  anc?: {
+    path: string | null;
+    hash: string;
+    filename: string;
+  };
 }
 export interface ModelStatusResponse {
   id: string;
@@ -131,15 +181,6 @@ export interface ModelSubmitInputOptions {
   programme: boolean;
   anc: boolean;
 }
-export interface ModelSubmitParameters {
-  max_iterations: number;
-  no_of_simulations: number;
-  options: {
-    programme: boolean;
-    anc: boolean;
-  };
-  [k: string]: any;
-}
 export interface ModelSubmitRequest {
   data: {
     pjnz: string | null;
@@ -149,13 +190,7 @@ export interface ModelSubmitRequest {
     programme: string | null;
     anc: string | null;
   };
-  parameters: {
-    max_iterations: number;
-    no_of_simulations: number;
-    options: {
-      programme: boolean;
-      anc: boolean;
-    };
+  options: {
     [k: string]: any;
   };
 }
@@ -207,8 +242,11 @@ export interface ProgrammeFilters {
     name: string;
     id: string;
   }[];
+  indicators: {
+    name: string;
+    id: string;
+  }[];
 }
-
 export type ProgrammeResponseData = {
   area_id: string;
   current_art: number;
@@ -249,6 +287,10 @@ export interface SurveyFilters {
     id: string;
   }[];
   surveys: {
+    name: string;
+    id: string;
+  }[];
+  indicators: {
     name: string;
     id: string;
   }[];
@@ -356,6 +398,10 @@ export interface ProgrammeResponse {
       name: string;
       id: string;
     }[];
+    indicators: {
+      name: string;
+      id: string;
+    }[];
   };
 }
 export interface AncResponse {
@@ -381,6 +427,10 @@ export interface AncResponse {
       name: string;
       id: string;
     }[];
+    indicators: {
+      name: string;
+      id: string;
+    }[];
   };
 }
 export interface SurveyResponse {
@@ -399,6 +449,10 @@ export interface SurveyResponse {
       id: string;
     }[];
     surveys: {
+      name: string;
+      id: string;
+    }[];
+    indicators: {
       name: string;
       id: string;
     }[];

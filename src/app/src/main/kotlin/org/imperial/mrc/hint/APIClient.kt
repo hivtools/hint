@@ -3,7 +3,6 @@ package org.imperial.mrc.hint
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
-import org.imperial.mrc.hint.models.ModelRunParameters
 import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Component
 interface APIClient {
     fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateSurveyAndProgramme(file: SessionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
-    fun submit(data: Map<String, String>, parameters: ModelRunParameters): ResponseEntity<String>
+    fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(country: String): ResponseEntity<String>
@@ -55,10 +54,10 @@ class HintrAPIClient(
                 .asResponseEntity()
     }
 
-    override fun submit(data: Map<String, String>, parameters: ModelRunParameters): ResponseEntity<String> {
+    override fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
-                mapOf("parameters" to parameters,
+                mapOf("options" to options,
                         "data" to data))
 
         return "$baseUrl/model/submit"
