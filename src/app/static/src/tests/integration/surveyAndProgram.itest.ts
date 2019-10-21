@@ -5,7 +5,7 @@ import {login} from "./integrationTest";
 const fs = require("fs");
 const FormData = require("form-data");
 
-describe("Survey and program actions", () => {
+describe("Survey and programme actions", () => {
 
     beforeAll(async () => {
         await login();
@@ -33,7 +33,7 @@ describe("Survey and program actions", () => {
             .toBe("survey.csv")
     });
 
-    it("can upload program", async () => {
+    it("can upload programme", async () => {
 
         const commit = jest.fn();
 

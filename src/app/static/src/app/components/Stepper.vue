@@ -16,11 +16,11 @@
             </template>
         </div>
         <hr/>
-        <div v-if="!ready" class="text-center">
+        <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message">Loading your data</h2>
         </div>
-        <div v-if="ready" class="content">
+        <div v-if="!loading" class="content">
             <div class="pt-4">
                 <baseline v-if="isActive(1)"></baseline>
                 <survey-and-program v-if="isActive(2)"></survey-and-program>
@@ -54,6 +54,7 @@
     import ModelRun from "./modelRun/ModelRun.vue";
     import ModelOutput from "./modelOutput/ModelOutput.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
+    import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import {mapGettersByNames, mapStateProps} from "../utils";
 
@@ -68,7 +69,9 @@
 
     interface ComputedGetters {
         ready: boolean,
-        complete: boolean
+        complete: boolean,
+        loadingFromFile: boolean
+        loading: boolean
     }
 
     const namespace: string = 'stepper';
@@ -79,21 +82,27 @@
                 activeStep: state => state.activeStep,
                 steps: state => state.steps
             }),
-            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"])
+            ...mapStateProps<LoadState, keyof ComputedState>("load", {
+                loadingFromFile: state => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
+            }),
+            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
+            loading: function() {
+                return this.loadingFromFile || !this.ready;
+            }
         },
         methods: {
             ...mapActions(namespace, ["jump", "next"]),
             ...mapActions(["validate"]),
             isActive(num: number) {
-                return this.ready && this.activeStep == num;
+                return !this.loading && this.activeStep == num;
             },
             isEnabled(num: number) {
-                return this.ready && this.steps.slice(0, num)
+                return !this.loading && this.steps.slice(0, num)
                     .filter((s: { number: number }) => this.complete[s.number])
                     .length >= num - 1
             },
             isComplete(num: number) {
-                return this.ready && this.complete[num];
+                return !this.loading && this.complete[num];
             }
         },
         components: {
@@ -112,6 +121,6 @@
                 }
             }
         }
-    })
+    });
 
 </script>

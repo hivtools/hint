@@ -7,7 +7,7 @@ import {mockModelRunState, mockRootState, mockSurveyResponse} from "../mocks";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
 
-describe("Survey and program mutations", () => {
+describe("Survey and programme mutations", () => {
 
     const testData = [{
         iso3: "MWI",
@@ -36,7 +36,7 @@ describe("Survey and program mutations", () => {
         expect(testState.surveyError).toBe("Some error");
     });
 
-    it("sets program data and filename and clears error on ProgramUpdated", () => {
+    it("sets programme data and filename and clears error on ProgramUpdated", () => {
         const testState = {...initialSurveyAndProgramDataState, programError: "test"};
         mutations.ProgramUpdated(testState, testPayload);
         expect(testState.program!!.data).toStrictEqual(testData);

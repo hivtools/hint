@@ -1,7 +1,8 @@
-import {mockAxios, mockLoadState, mockSuccess, mockFailure} from "../mocks";
+import {mockAxios, mockLoadState, mockSuccess, mockFailure, mockRootState} from "../mocks";
 import {actions} from "../../app/store/load/actions";
 import {LoadingState} from "../../app/store/load/load";
 import {addCheckSum} from "../../app/utils";
+import {localStorageManager} from "../../app/localStorageManager";
 
 const FormData = require("form-data");
 
@@ -87,5 +88,20 @@ describe("Load actions", () => {
 
         //should not hand on to updateState action
         expect(dispatch.mock.calls.length).toEqual(0);
+    });
+
+    it("updateStoreState saves file state to local storage and reloads page", async () => {
+        const mockSaveToLocalStorage = jest.fn();
+        localStorageManager.savePartialState = mockSaveToLocalStorage;
+
+        const mockLocationReload = jest.fn();
+        delete window.location;
+        window.location = { reload: mockLocationReload } as any;
+
+        const testState = mockRootState();
+        await actions.updateStoreState({} as any, testState);
+
+        expect(mockSaveToLocalStorage.mock.calls[0][0]).toBe(testState);
+        expect(mockLocationReload.mock.calls.length).toBe(1);
     });
 });
