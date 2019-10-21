@@ -1,10 +1,13 @@
 <template>
-    <select @change="change" class="form-control" :name="formControl.name" :required="formControl.required">
+    <select @change="change" class="form-control"
+            v-model="formControl.value"
+            :name="formControl.name"
+            :required="formControl.required">
         <option value>Select...</option>
         <option v-for="opt in formControl.options"
                 :key="opt.id"
                 :value="opt.id"
-                :selected="formControl.default === opt.id">
+                :selected="(formControl.value || '') === opt.id">
             {{opt.label}}
         </option>
     </select>
@@ -22,11 +25,17 @@
     export default Vue.extend<{}, {}, {}, Props>({
         name: "DynamicFormSelect",
         props: {
-            formControl: Object
+            formControl: {
+                type: Object
+            }
+        },
+        model: {
+            prop: "formControl",
+            event: "change"
         },
         methods: {
-            change(value: string) {
-                this.$emit("change", value);
+            change() {
+                this.$emit("change", this.formControl)
             }
         },
         components: {

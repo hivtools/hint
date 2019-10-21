@@ -1,11 +1,16 @@
 <template>
-    <b-form :ref="id" class="dynamic-form" :validated="validated || wasValidated" novalidate>
+    <b-form :ref="id" :id="id" class="dynamic-form" novalidate>
         <dynamic-form-control-section v-for="(section, index) in formMeta.controlSections"
                                       :key="index"
-                                      :control-section="section"
+                                      v-model="formMeta.controlSections[index]"
                                       @change="change">
         </dynamic-form-control-section>
-        <button v-if="includeSubmitButton" class="btn btn-red" v-on:click="submit">{{submitText}}</button>
+        <button v-if="includeSubmitButton"
+                class="btn btn-red"
+                :disabled="disabled"
+                v-on:click="submit">{{submitText}}
+        </button>
+        <p>* Required field</p>
     </b-form>
 </template>
 
@@ -15,64 +20,49 @@
     import {BForm} from "bootstrap-vue";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import DynamicFormControlSection from "./DynamicFormControlSection.vue";
-    import {Control, DynamicFormMeta} from "./types";
-    import {Dict} from "../../types";
+    import {Control, DynamicFormData, DynamicFormMeta} from "./types";
 
     interface Props {
         formMeta: DynamicFormMeta,
         includeSubmitButton: boolean
         submitText: string
         id: string
-        wasValidated: boolean
-    }
-
-    interface ValidationResult {
-        data: any
-        valid: boolean
-        missingValues: string[]
-    }
-
-    interface Data {
-        validated: boolean
     }
 
     interface Methods {
-        buildValidationResult: () => ValidationResult
-        submit: (e: Event) => ValidationResult
+        submit: (e: Event) => DynamicFormData
         change: () => void
     }
 
     interface Computed {
-        formControlLookup: Dict<Control>
+        controls: Control[]
+        disabled: boolean
     }
 
-    export default Vue.extend <Data, Methods, Computed, Props>({
-        name: "DynamicForm",
-        data() {
-            return {
-                validated: false
-            }
+    const props = {
+        id: {
+            type: String,
+            default: "d-form"
         },
-        props: {
-            id: {
-                type: String,
-                default: "d-form"
-            },
-            submitText: {
-                type: String,
-                default: "Submit"
-            },
-            includeSubmitButton: {
-                type: Boolean,
-                default: true
-            },
-            formMeta: {
-                type: Object
-            },
-            wasValidated: {
-                type: Boolean,
-                default: false
-            }
+        submitText: {
+            type: String,
+            default: "Submit"
+        },
+        includeSubmitButton: {
+            type: Boolean,
+            default: true
+        },
+        formMeta: {
+            type: Object
+        }
+    };
+
+    export default Vue.extend <{}, Methods, Computed, Props>({
+        name: "DynamicForm",
+        props: props,
+        model: {
+            prop: "formMeta",
+            event: "change"
         },
         components: {
             BForm,
@@ -80,54 +70,37 @@
             DynamicFormControlSection
         },
         computed: {
-            formControlLookup() {
-                const dict = {} as Dict<Control>;
+            controls() {
+                const controls: Control[] = [];
                 this.formMeta.controlSections.map(s => {
                     s.controlGroups.map(g => {
                         g.controls.map(c => {
-                            dict[c.name] = c
+                            controls.push(c);
                         })
                     })
                 });
-
-                return dict;
+                return controls;
+            },
+            disabled() {
+                return this.controls
+                    .filter(c => c.required && (c.value == null || c.value == ""))
+                    .length > 0
             }
         },
         methods: {
             change() {
-                Vue.nextTick().then(() => {
-                    this.$emit("change", this.buildValidationResult())
-                });
-            },
-            buildValidationResult() {
-                const form = this.$refs[this.id] as HTMLFormElement;
-                const formData = new FormData(form);
-                const data: Dict<any> = {};
-                let valid = true;
-                const missingValues = [] as string[];
-                formData.forEach((value, key) => {
-                    value = value as string;
-                    const control = this.formControlLookup[key];
-                    if (!value && control.required) {
-                        valid = false;
-                        missingValues.push(key);
-                    }
-                    if (control.type == "multiselect") {
-                        data[key] = value ? value.split(",") : []
-                    } else {
-                        data[key] = value || null;
-                    }
-                });
-
-                return {valid, data, missingValues}
+                this.$emit("change", this.formMeta)
             },
             submit(e: Event) {
                 if (e) {
                     e.preventDefault();
                 }
-                const result = this.buildValidationResult();
+                const result = this.controls
+                    .reduce((formData, control) => {
+                        formData[control.name] = control.value == undefined ? null : control.value;
+                        return formData
+                    }, {} as DynamicFormData);
                 this.$emit("submit", result);
-                this.validated = true;
                 return result;
             }
         }

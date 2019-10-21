@@ -1,11 +1,11 @@
 <template>
-    <div :class="cssClass">
+    <div>
         <tree-select :multiple="true"
                      :clearable="false"
-                     v-model="value"
+                     :value="value"
                      :options="formControl.options"
                      @input="change"></tree-select>
-        <input type="hidden" :value="value" :name="formControl.name"/>
+        <input type="hidden" :value="formControl.value" :name="formControl.name"/>
     </div>
 </template>
 
@@ -20,23 +20,24 @@
 
     export default Vue.extend<{ value: string[] }, {}, {}, Props>({
         name: "DynamicFormMultiSelect",
+        model: {
+            prop: "formControl",
+            event: "change"
+        },
         props: {
-            formControl: Object
+            formControl: {
+                type: Object
+            }
         },
         data() {
             return {
-                value: this.formControl.default ? [this.formControl.default] : []
+                value: this.formControl.value ? this.formControl.value as string[] : []
             }
         },
         methods: {
-            change() {
-                this.$emit("change", this.value)
-            }
-        },
-        computed: {
-            cssClass() {
-                const valid = !this.formControl.required || this.value.length > 0;
-                return valid ? "is-valid" : "is-invalid";
+            change(newVal: string[]) {
+                this.formControl.value = newVal;
+                this.$emit("change", this.formControl)
             }
         },
         components: {

@@ -24,9 +24,7 @@
             <div class="pt-4">
                 <baseline v-if="isActive(1)"></baseline>
                 <survey-and-program v-if="isActive(2)"></survey-and-program>
-                <keep-alive>
-                    <model-options v-if="isActive(3)"></model-options>
-                </keep-alive>
+                <model-options v-if="isActive(3)"></model-options>
                 <model-run v-if="isActive(4)"></model-run>
                 <model-output v-if="isActive(5)"></model-output>
                 <div v-if="isActive(6)"><h4>Coming soon</h4></div>
@@ -86,7 +84,7 @@
                 loadingFromFile: state => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
-            loading: function() {
+            loading: function () {
                 return this.loadingFromFile || !this.ready;
             }
         },

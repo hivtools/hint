@@ -19,18 +19,19 @@ export interface DynamicControl {
     label?: string,
     type: DynamicControlType
     required: boolean
-    default?: any
     helpText?: string
+    value?: string | string[] | number
 }
 
 export interface SelectControl extends DynamicControl {
     options: { id: string, label: string }[]
+    value?: string | string[]
 }
 
 export interface NumberControl extends DynamicControl {
     min?: number
     max?: number
-    default?: number
+    value?: number
 }
 
 export interface DynamicFormMeta {
@@ -43,7 +44,7 @@ export interface ValidationResult {
     missingValues: string[]
 }
 
-export type DynamicFormData = Dict<string | string[]>
+export type DynamicFormData = Dict<string | string[] | number | null>
 
 export const formMeta: DynamicFormMeta = {
     controlSections: [
@@ -57,7 +58,7 @@ export const formMeta: DynamicFormMeta = {
                         name: "area_scope",
                         type: "multiselect",
                         options: [{id: "MWI", label: "Malawi"}, {id: "MWI.1", label: "Central"}],
-                        default: "MWI",
+                        value: ["MWI"],
                         required: true
                     }]
             },
@@ -84,7 +85,7 @@ export const formMeta: DynamicFormMeta = {
                             name: "art_t1",
                             label: "Time 1",
                             type: "select",
-                            default: "q1",
+                            value: "q1",
                             helpText: "Quarter matching midpoint of survey",
                             options: [{id: "q1", label: "Jan - Mar 2015"}, {id: "q2", label: "Apr - Jun 2015"}],
                             required: true
@@ -94,7 +95,7 @@ export const formMeta: DynamicFormMeta = {
                             label: "Time 2",
                             type: "select",
                             helpText: "Quarter matching midpoint of survey",
-                            options:  [{id: "q1", label: "Jan - Mar 2015"}, {id: "q2", label: "Apr - Jun 2015"}],
+                            options: [{id: "q1", label: "Jan - Mar 2015"}, {id: "q2", label: "Apr - Jun 2015"}],
                             required: false
                         }
                     ]
@@ -111,7 +112,7 @@ export const formMeta: DynamicFormMeta = {
                             name: "max_it",
                             type: "number",
                             required: true,
-                            default: 250
+                            value: 250
                         }
                     ]
                 },
@@ -121,7 +122,7 @@ export const formMeta: DynamicFormMeta = {
                         name: "num_sim",
                         type: "number",
                         required: true,
-                        default: 3000
+                        value: 3000
                     }]
                 }
             ]

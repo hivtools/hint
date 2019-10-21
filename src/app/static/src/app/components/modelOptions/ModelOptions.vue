@@ -1,26 +1,33 @@
 <template>
-    <dynamic-form :form-meta="form"
+    <dynamic-form v-model="modelOptions"
                   submit-text="Validate"
-                  @change="save"
-                  @submit="save"></dynamic-form>
+                  @submit="validate"></dynamic-form>
 </template>
 <script lang="ts">
     import Vue from "vue";
     import DynamicForm from "../forms/DynamicForm.vue";
     import {DynamicFormData, DynamicFormMeta, formMeta} from "../forms/types";
-    import {mapActionsByNames} from "../../utils";
+    import {mapActionsByNames, mapMutationsByNames} from "../../utils";
 
     interface Methods {
-        save: (data: DynamicFormData) => void
+        validate: (data: DynamicFormData) => void
+        update: (data: DynamicFormMeta) => void
     }
 
-    export default Vue.extend<{ form: DynamicFormMeta }, Methods, {}, {}>({
+    export default Vue.extend<{ form: DynamicFormMeta }, Methods, {modelOptions: DynamicFormMeta}, {}>({
         name: "ModelOptions",
-        data() {
-            return {form: formMeta}
+        computed: {
+            modelOptions: {
+                get () {
+                    return this.$store.state.modelOptions.optionsMeta
+                },
+                set (value: DynamicFormMeta) {
+                    this.update(value);
+                }
+            }
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>("modelOptions", ["save"])
+            ...mapMutationsByNames<keyof Methods>("modelOptions", ["validate", "update"])
         },
         components: {
             DynamicForm

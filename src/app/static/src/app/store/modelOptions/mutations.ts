@@ -1,17 +1,22 @@
 import {Mutation, MutationTree} from 'vuex';
 import {ModelOptionsState} from "./modelOptions";
-import {PayloadWithType} from "../../types";
-import {ValidationResult} from "../../components/forms/types";
+import {DynamicFormData, DynamicFormMeta} from "../../components/forms/types";
 
 type ModelOptionsMutation = Mutation<ModelOptionsState>
 
 export interface MetadataMutations {
-    ModelOptionsSaved: ModelOptionsMutation
+    validate: ModelOptionsMutation,
+    update: ModelOptionsMutation
 }
 
 export const mutations: MutationTree<ModelOptionsState> & MetadataMutations = {
-    ModelOptionsSaved(state: ModelOptionsState, action: PayloadWithType<ValidationResult>) {
-        state.options = action.payload.data;
-        state.valid = action.payload.valid;
+    validate(state: ModelOptionsState, payload: DynamicFormData) {
+        state.options = payload;
+        // TODO validate from server
+        state.valid = true;
+    },
+
+    update(state: ModelOptionsState, payload: DynamicFormMeta) {
+        state.optionsMeta = payload;
     }
 };
