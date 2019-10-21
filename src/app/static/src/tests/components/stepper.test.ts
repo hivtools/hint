@@ -3,7 +3,7 @@ import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {
-    mockBaselineState, mockMetadataState, mockModelOptionsState,
+    mockBaselineState, mockLoadState, mockMetadataState, mockModelOptionsState,
     mockModelRunState, mockPlottingMetadataResponse,
     mockPopulationResponse,
     mockShapeResponse, mockStepperState,
@@ -14,6 +14,7 @@ import {mutations} from '../../app/store/baseline/mutations';
 import {mutations as surveyAndProgramMutations} from '../../app/store/surveyAndProgram/mutations';
 import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations';
 import {mutations as stepperMutations} from '../../app/store/stepper/mutations';
+import {mutations as loadMutations} from '../../app/store/load/mutations';
 import {modelRunGetters, ModelRunState} from "../../app/store/modelRun/modelRun";
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
@@ -26,6 +27,7 @@ import {mutations as rootMutations} from "../../app/store/root/mutations"
 import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
 import {ModelStatusResponse} from "../../app/generated";
 import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
+import {LoadingState, LoadState} from "../../app/store/load/load";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -35,7 +37,8 @@ describe("Stepper component", () => {
                        surveyAndProgramState?: Partial<SurveyAndProgramDataState>,
                        metadataState?: Partial<MetadataState>,
                        modelRunState?: Partial<ModelRunState>,
-                       stepperState?: Partial<StepperState>) => {
+                       stepperState?: Partial<StepperState>,
+                       loadState?: Partial<LoadState>) => {
 
         return new Vuex.Store({
             actions: rootActions,
@@ -75,6 +78,11 @@ describe("Stepper component", () => {
                     namespaced: true,
                     state: mockMetadataState(metadataState),
                     getters: metadataGetters
+                },
+                load: {
+                    namespaced: true,
+                    state: mockLoadState(loadState),
+                    mutations: loadMutations
                 }
             }
         })
@@ -88,6 +96,22 @@ describe("Stepper component", () => {
 
         const store = createSut();
         const wrapper = shallowMount(Stepper, {store, localVue});
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAll(".content").length).toBe(0);
+        expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
+    });
+
+    it("renders loading spinner while ready but loadingFromFile", () => {
+
+        const store = createSut(
+            {ready: true},
+            {ready: true},
+            {},
+            {ready: true},
+            {},
+            {loadingState: LoadingState.SettingFiles});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
         expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
@@ -290,7 +314,7 @@ describe("Stepper component", () => {
         expect(steps.at(0).props().complete).toBe(true);
     });
 
-    it("steps only shown as enabled once state becomes ready", async () => {
+    it("steps only shown as enabled once state becomes ready, and not loading", async () => {
 
         const store = createSut({
                 ready: true,
@@ -310,6 +334,27 @@ describe("Stepper component", () => {
         expect(steps.at(1).props().enabled).toBe(true);
     });
 
+    it("steps not shown as enabled if state becomes ready, but is also loading", async () => {
+
+        const store = createSut({
+                ready: true,
+                country: "Malawi",
+                shape: mockShapeResponse(),
+                population: mockPopulationResponse()
+            },
+            {},
+            {plottingMetadata: "TEST DATA" as any},
+            {ready: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        let steps = wrapper.findAll(Step);
+        expect(steps.filter(s => s.props().enabled).length).toBe(0);
+
+        await makeReady(store, wrapper);
+        await makeLoading(store, wrapper);
+        steps = wrapper.findAll(Step);
+        expect(steps.at(1).props().enabled).toBe(false);
+    });
+
     async function makeReady(store: Store<any>, wrapper: Wrapper<any>) {
 
         store.commit("surveyAndProgram/Ready", {
@@ -320,6 +365,18 @@ describe("Stepper component", () => {
         await Vue.nextTick();
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
     }
+
+    async function makeLoading(store: Store<any>, wrapper: Wrapper<any>) {
+
+        store.commit("load/SettingFiles", {
+            "type": "SettingFiles",
+            "payload": null
+        });
+
+        await Vue.nextTick();
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
+    }
+
 
     it("model run step is not complete without success", () => {
         const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
