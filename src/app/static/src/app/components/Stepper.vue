@@ -81,7 +81,7 @@
                 steps: state => state.steps
             }),
             ...mapStateProps<LoadState, keyof ComputedState>("load", {
-                loadingFromFile: state => ![LoadingState.NotLoading, LoadingState.LoadFailed].includes(state.loadingState)
+                loadingFromFile: state => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
             loading: function() {
@@ -92,15 +92,15 @@
             ...mapActions(namespace, ["jump", "next"]),
             ...mapActions(["validate"]),
             isActive(num: number) {
-                return this.ready && this.activeStep == num;
+                return !this.loading && this.activeStep == num;
             },
             isEnabled(num: number) {
-                return this.ready && this.steps.slice(0, num)
+                return !this.loading && this.steps.slice(0, num)
                     .filter((s: { number: number }) => this.complete[s.number])
                     .length >= num - 1
             },
             isComplete(num: number) {
-                return this.ready && this.complete[num];
+                return !this.loading && this.complete[num];
             }
         },
         components: {

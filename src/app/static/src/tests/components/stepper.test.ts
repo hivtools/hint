@@ -14,6 +14,7 @@ import {mutations} from '../../app/store/baseline/mutations';
 import {mutations as surveyAndProgramMutations} from '../../app/store/surveyAndProgram/mutations';
 import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations';
 import {mutations as stepperMutations} from '../../app/store/stepper/mutations';
+import {mutations as loadMutations} from '../../app/store/load/mutations';
 import {modelRunGetters, ModelRunState} from "../../app/store/modelRun/modelRun";
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
@@ -80,7 +81,8 @@ describe("Stepper component", () => {
                 },
                 load: {
                     namespaced: true,
-                    state: mockLoadState(loadState)
+                    state: mockLoadState(loadState),
+                    mutations: loadMutations
                 }
             }
         })
@@ -312,7 +314,7 @@ describe("Stepper component", () => {
         expect(steps.at(0).props().complete).toBe(true);
     });
 
-    it("steps only shown as enabled once state becomes ready", async () => {
+    it("steps only shown as enabled once state becomes ready, and not loading", async () => {
 
         const store = createSut({
                 ready: true,
@@ -332,6 +334,27 @@ describe("Stepper component", () => {
         expect(steps.at(1).props().enabled).toBe(true);
     });
 
+    it("steps not shown as enabled if state becomes ready, but is also loading", async () => {
+
+        const store = createSut({
+                ready: true,
+                country: "Malawi",
+                shape: mockShapeResponse(),
+                population: mockPopulationResponse()
+            },
+            {},
+            {plottingMetadata: "TEST DATA" as any},
+            {ready: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        let steps = wrapper.findAll(Step);
+        expect(steps.filter(s => s.props().enabled).length).toBe(0);
+
+        await makeReady(store, wrapper);
+        await makeLoading(store, wrapper);
+        steps = wrapper.findAll(Step);
+        expect(steps.at(1).props().enabled).toBe(false);
+    });
+
     async function makeReady(store: Store<any>, wrapper: Wrapper<any>) {
 
         store.commit("surveyAndProgram/Ready", {
@@ -342,6 +365,18 @@ describe("Stepper component", () => {
         await Vue.nextTick();
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
     }
+
+    async function makeLoading(store: Store<any>, wrapper: Wrapper<any>) {
+
+        store.commit("load/SettingFiles", {
+            "type": "SettingFiles",
+            "payload": null
+        });
+
+        await Vue.nextTick();
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
+    }
+
 
     it("model run step is not complete without success", () => {
         const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
