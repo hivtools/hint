@@ -15,7 +15,6 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {ModelSubmitParameters} from "../../generated";
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
@@ -35,7 +34,7 @@
     }
 
     interface Methods {
-        run: (params: ModelSubmitParameters) => void;
+        run: (options: any) => void;
         poll: (runId: string) => void;
         runModelWithParams: () => void;
     }
@@ -54,16 +53,7 @@
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll"]),
             runModelWithParams() {
-                const params: ModelSubmitParameters = {
-                    max_iterations: 1,
-                    no_of_simulations: 2,
-                    options: {
-                        programme: false,
-                        anc: true
-                    }
-                };
-
-                this.run(params);
+                this.run({"sleep": "2"});
             }
         },
         watch: {

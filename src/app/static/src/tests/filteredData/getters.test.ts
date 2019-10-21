@@ -10,13 +10,8 @@ import {
     mockSurveyFilters,
     mockSurveyResponse,
     mockRootState,
-    mockMetadataState,
-    mockPlottingMetadataResponse,
-    mockIndicators,
-    mockFilteredDataState,
     mockModelRunState, mockModelResultResponse, mockProgramFilters
 } from "../mocks";
-import {interpolateCool, interpolateWarm} from "d3-scale-chromatic";
 import {flattenOptions, getUnfilteredData} from "../../app/store/filteredData/utils";
 import {NestedFilterOption} from "../../app/generated";
 
@@ -137,7 +132,7 @@ describe("FilteredData getters", () => {
         const testFilters = {
             age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}],
             quarter: [{id: "1", name: "2019 Q1"}],
-            indicator: []
+            indicators: []
         };
         const testRootState = mockRootState({
             modelRun: mockModelRunState(
