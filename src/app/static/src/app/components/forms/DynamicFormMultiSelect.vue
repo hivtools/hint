@@ -2,23 +2,22 @@
     <div>
         <tree-select :multiple="true"
                      :clearable="false"
-                     :value="value"
-                     :options="formControl.options"
-                     @input="change"></tree-select>
+                     v-model="value"
+                     :options="formControl.options"></tree-select>
         <input type="hidden" :value="formControl.value" :name="formControl.name"/>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {SelectControl} from "./types";
+    import {MultiSelectControl} from "./types";
     import TreeSelect from '@riophae/vue-treeselect';
 
     interface Props {
-        formControl: SelectControl
+        formControl: MultiSelectControl
     }
 
-    export default Vue.extend<{ value: string[] }, {}, {}, Props>({
+    export default Vue.extend<{}, {}, { value: string[] }, Props>({
         name: "DynamicFormMultiSelect",
         model: {
             prop: "formControl",
@@ -29,16 +28,15 @@
                 type: Object
             }
         },
-        data() {
-            return {
-                value: this.formControl.value ? this.formControl.value as string[] : []
-            }
-        },
-        methods: {
-            change(newVal: string[]) {
-                this.formControl.value = newVal;
-                this.$emit("change", this.formControl)
-            }
+        computed: {
+            value: {
+                get() {
+                    return this.formControl.value ? this.formControl.value as string[] : []
+                },
+                set(newVal: string[]) {
+                    this.$emit("change", {...this.formControl, value: newVal});
+                }
+            },
         },
         components: {
             TreeSelect

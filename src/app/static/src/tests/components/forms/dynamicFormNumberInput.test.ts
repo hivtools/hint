@@ -7,14 +7,13 @@ describe('Dynamic form number input component', function () {
     const fakeNumber: NumberControl = {
         name: "id_1",
         type: "number",
-        required: true,
-        default: 1
+        required: true
     };
 
-    it("renders number input", () => {
+    it("renders number input with value", () => {
         const rendered = mount(DynamicFormNumberInput, {
             propsData: {
-                formControl: fakeNumber
+                formControl: {...fakeNumber, value: 1}
             }
         });
 
@@ -23,6 +22,18 @@ describe('Dynamic form number input component', function () {
         expect(inputElement.type).toBe("number");
         expect(inputElement.min).toBe("");
         expect(inputElement.max).toBe("");
+        expect(inputElement.value).toBe("1");
+    });
+
+    it("renders number input without value", () => {
+        const rendered = mount(DynamicFormNumberInput, {
+            propsData: {
+                formControl: fakeNumber
+            }
+        });
+
+        const inputElement = rendered.find("input").element as HTMLInputElement;
+        expect(inputElement.value).toBe("");
     });
 
     it("is required if formControl.required is true", () => {
@@ -58,6 +69,18 @@ describe('Dynamic form number input component', function () {
         const inputElement = rendered.find("input").element as HTMLInputElement;
         expect(inputElement.min).toBe("1");
         expect(inputElement.max).toBe("5");
+    });
+
+    it("emits change to formControl when underlying input is updated", () => {
+        const control = {...fakeNumber};
+        const rendered = mount(DynamicFormNumberInput, {
+            propsData: {
+                formControl: control
+            }
+        });
+
+        rendered.find("input").setValue(123);
+        expect(rendered.emitted("change")[0][0]).toStrictEqual({...control, value: 123})
     });
 
 });

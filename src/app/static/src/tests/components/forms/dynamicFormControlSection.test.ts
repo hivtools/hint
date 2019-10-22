@@ -1,7 +1,9 @@
-import {mount, shallowMount} from "@vue/test-utils";
+import Vue from "vue";
+import {mount} from "@vue/test-utils";
 import DynamicFormControlSection from "../../../app/components/forms/DynamicFormControlSection.vue";
 import {DynamicControlSection} from "../../../app/components/forms/types";
 import DynamicFormControlGroup from "../../../app/components/forms/DynamicFormControlGroup.vue";
+import DynamicFormControl from "../../../app/components/forms/DynamicFormControl.vue";
 
 describe('Dynamic form control section component', function () {
 
@@ -10,7 +12,11 @@ describe('Dynamic form control section component', function () {
         description: "Desc 1",
         controlGroups: [{
             label: "Group 1",
-            controls: []
+            controls: [{
+                type: "number",
+                name: "id_1",
+                required: false
+            }]
         }, {
             label: "Group 2",
             controls: []
@@ -38,19 +44,34 @@ describe('Dynamic form control section component', function () {
         expect(rendered.findAll("p").length).toBe(0);
     });
 
-    it("renders control groups", () => {
-        const rendered = shallowMount(DynamicFormControlSection, {
+    it("renders control groups as v-models", async () => {
+        const controlSection = {...fakeFormSection};
+        const rendered = mount(DynamicFormControlSection, {
             propsData: {
-                controlSection: fakeFormSection
+                controlSection: controlSection
             }
         });
 
         expect(rendered.findAll(DynamicFormControlGroup).length).toBe(2);
-        expect(rendered.findAll(DynamicFormControlGroup).at(0).props("controlGroup"))
-            .toStrictEqual({
-                label: "Group 1",
-                controls: []
-            });
+
+        // test that a change in value updates the corresponding
+        // controlGroup in the parent component
+        rendered.findAll(DynamicFormControlGroup).at(0)
+            .find(DynamicFormControl)
+            .find("input").setValue(1234);
+
+        expect(controlSection.controlGroups[0].controls[0].value).toBe(1234);
+    });
+
+    it("emits change event when inner control group does", () => {
+        const rendered = mount(DynamicFormControlSection, {
+            propsData: {
+                controlSection: {...fakeFormSection}
+            }
+        });
+
+        rendered.findAll(DynamicFormControlGroup).at(0).vm.$emit("change", fakeFormSection.controlGroups[0]);
+        expect(rendered.emitted("change")[0][0]).toStrictEqual(fakeFormSection);
     });
 
 });

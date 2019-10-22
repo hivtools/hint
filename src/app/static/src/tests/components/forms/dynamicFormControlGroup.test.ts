@@ -1,4 +1,5 @@
-import {shallowMount} from "@vue/test-utils";
+import Vue from "vue";
+import {mount, shallowMount} from "@vue/test-utils";
 import {BCol} from "bootstrap-vue";
 import DynamicFormControlGroup from "../../../app/components/forms/DynamicFormControlGroup.vue";
 import DynamicFormControl from "../../../app/components/forms/DynamicFormControl.vue";
@@ -44,19 +45,32 @@ describe('Dynamic form control group component', function () {
         expect(rendered.findAll(BCol).length).toBe(0);
     });
 
-    it("renders controls", () => {
-        const rendered = shallowMount(DynamicFormControlGroup, {
+    it("renders controls as v-models", () => {
+        const controlGroup = {...fakeFormGroup};
+        const rendered = mount(DynamicFormControlGroup, {
             propsData: {
-                controlGroup: {...fakeFormGroup}
+                controlGroup: controlGroup
             }
         });
 
         expect(rendered.findAll(DynamicFormControl).length).toBe(2);
-        expect(rendered.findAll(DynamicFormControl).at(0).props("formControl")).toStrictEqual({
-            name: "id_1",
-            type: "number",
-            required: true
+
+        // test that a change event triggers a change to the corresponding
+        // control in the parent component
+        rendered.findAll(DynamicFormControl).at(0).find("input").setValue(123);
+        expect(controlGroup.controls[0].value).toBe(123);
+    });
+
+    it("emits change event when a control does", () => {
+        const controlGroup = {...fakeFormGroup};
+        const rendered = mount(DynamicFormControlGroup, {
+            propsData: {
+                controlGroup: controlGroup
+            }
         });
+
+        rendered.findAll(DynamicFormControl).at(0).vm.$emit("change", controlGroup.controls[0]);
+        expect(rendered.emitted("change")[0][0]).toStrictEqual(controlGroup);
     });
 
     it("double controls are 3 cols", () => {

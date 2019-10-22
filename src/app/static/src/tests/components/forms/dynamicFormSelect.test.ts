@@ -9,7 +9,6 @@ describe('Dynamic form select component', function () {
         type: "select",
         required: true,
         options: [{id: "opt1", label: "option 1"}, {id: "opt2", label: "option2"}],
-        default: "opt2"
     };
 
     it("renders options", () => {
@@ -24,7 +23,29 @@ describe('Dynamic form select component', function () {
         expect(options.at(1).text()).toBe("option 1");
     });
 
-    it("default is selected if present", () => {
+    it("value is selected if present", () => {
+        const rendered = mount(DynamicFormSelect, {
+            propsData: {
+                formControl: {...fakeSelect, value: "opt2"}
+            }
+        });
+
+        const select = rendered.find("select");
+        expect((select.element as HTMLSelectElement).value).toBe("opt2");
+    });
+
+    it("emits change event with updated formControl when underlying select is changed", () => {
+        const rendered = mount(DynamicFormSelect, {
+            propsData: {
+                formControl: {...fakeSelect}
+            }
+        });
+
+        rendered.find("select").trigger("change");
+        expect(rendered.emitted("change")[0][0]).toStrictEqual({...fakeSelect, value: ""});
+    });
+
+    it("default message is selected if no value present", () => {
         const rendered = mount(DynamicFormSelect, {
             propsData: {
                 formControl: fakeSelect
@@ -32,7 +53,7 @@ describe('Dynamic form select component', function () {
         });
 
         const select = rendered.find("select");
-        expect((select.element as HTMLSelectElement).value).toBe("opt2");
+        expect((select.element as HTMLSelectElement).value).toBe("");
     });
 
     it("is required if formControl.required is true", () => {

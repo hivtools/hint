@@ -20,7 +20,8 @@
     import {BForm} from "bootstrap-vue";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import DynamicFormControlSection from "./DynamicFormControlSection.vue";
-    import {Control, DynamicFormData, DynamicFormMeta} from "./types";
+    import {Control, DynamicControl, DynamicFormData, DynamicFormMeta} from "./types";
+    import DynamicFormControl from "./DynamicFormControl.vue";
 
     interface Props {
         formMeta: DynamicFormMeta,
@@ -30,6 +31,7 @@
     }
 
     interface Methods {
+        buildValue: (control: DynamicControl) => string | string[] | number | null
         submit: (e: Event) => DynamicFormData
         change: () => void
     }
@@ -91,13 +93,19 @@
             change() {
                 this.$emit("change", this.formMeta)
             },
+            buildValue(control: DynamicControl) {
+              if (control.type == "multiselect" && !control.value){
+                  return []
+              }
+              else return control.value == undefined ? null : control.value;
+            },
             submit(e: Event) {
                 if (e) {
                     e.preventDefault();
                 }
                 const result = this.controls
                     .reduce((formData, control) => {
-                        formData[control.name] = control.value == undefined ? null : control.value;
+                        formData[control.name] = this.buildValue(control);
                         return formData
                     }, {} as DynamicFormData);
                 this.$emit("submit", result);

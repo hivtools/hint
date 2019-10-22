@@ -4,8 +4,7 @@
             <span v-if="formControl.required">*</span>
         </label>
         <component :is="dynamicComponent"
-                   v-model="formControl"
-                   @change="change"></component>
+                   v-model="formControlLocal"></component>
         <div class="invalid-feedback">This field is required</div>
     </b-col>
 </template>
@@ -18,7 +17,7 @@
     import {DynamicControl} from "./types";
     import DynamicFormNumberInput from "./DynamicFormNumberInput.vue";
 
-    export default Vue.extend<{}, { change: (value: DynamicControl) => void }, {},
+    export default Vue.extend<{}, {}, { dynamicComponent: string, formControlLocal: DynamicControl },
         { formControl: DynamicControl, colWidth: string }>({
         name: "DynamicFormControl",
         model: {
@@ -30,6 +29,14 @@
             colWidth: String
         },
         computed: {
+            formControlLocal: {
+                get() {
+                    return this.formControl
+                },
+                set(newVal: DynamicControl) {
+                    this.$emit("change", newVal);
+                }
+            },
             dynamicComponent() {
                 switch (this.formControl.type) {
                     case "select":
@@ -39,11 +46,6 @@
                     case "number":
                         return "dynamic-form-number-input";
                 }
-            }
-        },
-        methods: {
-            change(newVal: DynamicControl) {
-                this.$emit("change", newVal);
             }
         },
         components: {

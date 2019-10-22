@@ -12,24 +12,31 @@ export interface DynamicControlGroup {
 }
 
 export type DynamicControlType = "multiselect" | "select" | "number"
-export type Control = SelectControl | NumberControl
+export type Control = SelectControl | MultiSelectControl | NumberControl
 
 export interface DynamicControl {
     name: string,
     label?: string,
     type: DynamicControlType
     required: boolean
-    value?: string | string[] | number
     helpText?: string
+    value?: string | string[] | number
 }
 
 export interface SelectControl extends DynamicControl {
     options: { id: string, label: string }[]
+    value?: string
+}
+
+export interface MultiSelectControl extends DynamicControl {
+    options: { id: string, label: string }[]
+    value?: string[]
 }
 
 export interface NumberControl extends DynamicControl {
     min?: number
     max?: number
+    value?: number
 }
 
 export interface DynamicFormMeta {

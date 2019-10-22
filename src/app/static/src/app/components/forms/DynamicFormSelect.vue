@@ -1,6 +1,6 @@
 <template>
-    <select @change="change" class="form-control"
-            :value="formControl.value || ''"
+    <select class="form-control"
+            v-model="value"
             :name="formControl.name"
             :required="formControl.required">
         <option value>Select...</option>
@@ -21,7 +21,7 @@
         formControl: SelectControl
     }
 
-    export default Vue.extend<{}, {}, {}, Props>({
+    export default Vue.extend<{}, {}, { value: string }, Props>({
         name: "DynamicFormSelect",
         props: {
             formControl: {
@@ -32,11 +32,15 @@
             prop: "formControl",
             event: "change"
         },
-        methods: {
-            change(newVal: string) {
-                this.formControl.value = newVal;
-                this.$emit("change", this.formControl)
-            }
+        computed: {
+            value: {
+                get() {
+                    return this.formControl.value || ""
+                },
+                set(newVal: string) {
+                    this.$emit("change", {...this.formControl, value: newVal});
+                }
+            },
         },
         components: {
             BFormSelect
