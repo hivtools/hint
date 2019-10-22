@@ -63,15 +63,4 @@ describe('Dynamic form control section component', function () {
         expect(controlSection.controlGroups[0].controls[0].value).toBe(1234);
     });
 
-    it("emits change event when inner control group does", () => {
-        const rendered = mount(DynamicFormControlSection, {
-            propsData: {
-                controlSection: {...fakeFormSection}
-            }
-        });
-
-        rendered.findAll(DynamicFormControlGroup).at(0).vm.$emit("change", fakeFormSection.controlGroups[0]);
-        expect(rendered.emitted("change")[0][0]).toStrictEqual(fakeFormSection);
-    });
-
 });

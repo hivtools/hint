@@ -8,17 +8,17 @@
         <dynamic-form-control v-for="(control, index) in controlGroup.controls"
                               :key="control.name"
                               v-model="controlGroup.controls[index]"
-                              @change="change"
                               :col-width="colWidth"></dynamic-form-control>
     </b-row>
 </template>
 <script lang="ts">
     import Vue from "vue";
     import {BCol, BRow} from "bootstrap-vue";
-    import {DynamicControl, DynamicControlGroup} from "./types";
+    import {DynamicControlGroup} from "./types";
     import DynamicFormControl from "./DynamicFormControl.vue";
 
-    export default Vue.extend<{}, {}, { colWidth: string, required: boolean }, { controlGroup: DynamicControlGroup }>({
+    export default Vue.extend<{}, {}, { colWidth: string, required: boolean },
+        { controlGroup: DynamicControlGroup }>({
         name: "DynamicFormControlGroup",
         props: {
             controlGroup: Object
@@ -31,11 +31,6 @@
             BRow,
             BCol,
             DynamicFormControl
-        },
-        methods: {
-            change() {
-                this.$emit("change", this.controlGroup);
-            }
         },
         computed: {
             colWidth() {

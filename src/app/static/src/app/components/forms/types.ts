@@ -20,12 +20,12 @@ export interface DynamicControl {
     type: DynamicControlType
     required: boolean
     helpText?: string
-    value?: string | string[] | number
+    value?: string | string[] | number | null
 }
 
 export interface SelectControl extends DynamicControl {
     options: { id: string, label: string }[]
-    value?: string
+    value?: string | null
 }
 
 export interface MultiSelectControl extends DynamicControl {
@@ -36,7 +36,7 @@ export interface MultiSelectControl extends DynamicControl {
 export interface NumberControl extends DynamicControl {
     min?: number
     max?: number
-    value?: number
+    value?: number | null
 }
 
 export interface DynamicFormMeta {

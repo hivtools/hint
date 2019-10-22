@@ -61,18 +61,6 @@ describe('Dynamic form control group component', function () {
         expect(controlGroup.controls[0].value).toBe(123);
     });
 
-    it("emits change event when a control does", () => {
-        const controlGroup = {...fakeFormGroup};
-        const rendered = mount(DynamicFormControlGroup, {
-            propsData: {
-                controlGroup: controlGroup
-            }
-        });
-
-        rendered.findAll(DynamicFormControl).at(0).vm.$emit("change", controlGroup.controls[0]);
-        expect(rendered.emitted("change")[0][0]).toStrictEqual(controlGroup);
-    });
-
     it("double controls are 3 cols", () => {
         const rendered = shallowMount(DynamicFormControlGroup, {
             propsData: {

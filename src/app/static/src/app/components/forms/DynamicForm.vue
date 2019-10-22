@@ -2,8 +2,7 @@
     <b-form :ref="id" :id="id" class="dynamic-form" novalidate>
         <dynamic-form-control-section v-for="(section, index) in formMeta.controlSections"
                                       :key="index"
-                                      v-model="formMeta.controlSections[index]"
-                                      @change="change">
+                                      v-model="formMeta.controlSections[index]">
         </dynamic-form-control-section>
         <button v-if="includeSubmitButton"
                 class="btn btn-red"
@@ -21,7 +20,6 @@
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import DynamicFormControlSection from "./DynamicFormControlSection.vue";
     import {Control, DynamicControl, DynamicFormData, DynamicFormMeta} from "./types";
-    import DynamicFormControl from "./DynamicFormControl.vue";
 
     interface Props {
         formMeta: DynamicFormMeta,
@@ -33,7 +31,6 @@
     interface Methods {
         buildValue: (control: DynamicControl) => string | string[] | number | null
         submit: (e: Event) => DynamicFormData
-        change: () => void
     }
 
     interface Computed {
@@ -90,9 +87,6 @@
             }
         },
         methods: {
-            change() {
-                this.$emit("change", this.formMeta)
-            },
             buildValue(control: DynamicControl) {
               if (control.type == "multiselect" && !control.value){
                   return []
