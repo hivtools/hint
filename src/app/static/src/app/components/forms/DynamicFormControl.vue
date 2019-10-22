@@ -5,7 +5,6 @@
         </label>
         <component :is="dynamicComponent"
                    v-model="formControlLocal"></component>
-        <div class="invalid-feedback">This field is required</div>
     </b-col>
 </template>
 
