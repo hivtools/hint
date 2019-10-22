@@ -8,7 +8,7 @@ const localVue = createLocalVue();
 Vue.use(Vuex);
 
 describe("FilterSelect component", () => {
-    const testOptions = [{id: "1", name: "one"}, {id: "2", name: "two"}];
+    const testOptions = [{id: "1", label: "one"}, {id: "2", label: "two"}];
 
     it ("renders label", () => {
         const wrapper = shallowMount(FilterSelect, {propsData: {label: "testLabel"}});
@@ -67,40 +67,6 @@ describe("FilterSelect component", () => {
         const wrapper = shallowMount(FilterSelect, {propsData: { options: testOptions, disabled: true}});
         wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "2");
         expect(wrapper.emitted("select")).toBeUndefined();
-    });
-
-    it ("transforms FilterOption in treeselectNormalizer", () => {
-        const wrapper = shallowMount(FilterSelect, {localVue});
-        const vm = (wrapper as any).vm;
-        const result = vm.treeselectNormalizer({id: "1", name: "name1"});
-        expect(result).toStrictEqual({id: "1", label: "name1"});
-    });
-
-    it ("transforms NestedFilterOption in treeselectNormalizer", () => {
-        const wrapper = shallowMount(FilterSelect, {localVue});
-        const vm = (wrapper as any).vm;
-        const result = vm.treeselectNormalizer({
-            id: "1",
-            name: "name1",
-            options: [
-                {id: "2", name: "name2"},
-                {id: "3", name: "name3"}
-            ]});
-        expect(result).toStrictEqual({
-            id: "1",
-            label: "name1",
-            children: [
-                {id: "2", label: "name2"},
-                {id: "3", label: "name3"}
-            ]
-        });
-    });
-
-    it ("leaves native options unchanged in treeselectNormalizer", () => {
-        const wrapper = shallowMount(FilterSelect, {localVue});
-        const vm = (wrapper as any).vm;
-        const result = vm.treeselectNormalizer({id: "1", label: "name1"});
-        expect(result).toStrictEqual({id: "1", label: "name1"});
     });
 
 });

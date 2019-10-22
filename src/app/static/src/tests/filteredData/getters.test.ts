@@ -26,7 +26,7 @@ export function testGetters(state: FilteredDataState, regionFilters: any = {}) {
             }
         },
         flattenedSelectedRegionFilters: regionFilters,
-        regionOptions: {id: "MWI", name: "Malawi"},
+        regionOptions: {id: "MWI", label: "Malawi"},
         choroplethRanges: {
             prev: {min: 0, max: 1},
             art: {min: 0, max: 1}
@@ -40,9 +40,9 @@ export function testGetters(state: FilteredDataState, regionFilters: any = {}) {
 describe("FilteredData getters", () => {
 
     const sexOptions = [
-        {id: "both", name: "both"},
-        {id: "female", name: "female"},
-        {id: "male", name: "male"}
+        {id: "both", label: "both"},
+        {id: "female", label: "female"},
+        {id: "male", label: "male"}
     ];
 
     it("gets correct selectedDataFilters when selectedDataType is Program", () => {
@@ -51,7 +51,7 @@ describe("FilteredData getters", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = mockProgramFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
+        const testFilters = mockProgramFilters({age: [{id: "age1", label: "0-4"}, {id: "age2", label: "5-9"}]});
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
                 {
@@ -76,8 +76,8 @@ describe("FilteredData getters", () => {
         };
         const testState = testStore.state as FilteredDataState;
         const testFilters = mockSurveyFilters({
-            age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}],
-            surveys: [{id: "s1", name: "Survey 1"}, {id: "s2", name: "Survey 2"}]
+            age: [{id: "age1", label: "0-4"}, {id: "age2", label: "5-9"}],
+            surveys: [{id: "s1", label: "Survey 1"}, {id: "s2", label: "Survey 2"}]
         });
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
@@ -104,7 +104,7 @@ describe("FilteredData getters", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = mockProgramFilters({age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}]});
+        const testFilters = mockProgramFilters({age: [{id: "age1", label: "0-4"}, {id: "age2", label: "5-9"}]});
         const testRootState = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState(
                 {
@@ -130,8 +130,8 @@ describe("FilteredData getters", () => {
         };
         const testState = testStore.state as FilteredDataState;
         const testFilters = {
-            age: [{id: "age1", name: "0-4"}, {id: "age2", name: "5-9"}],
-            quarter: [{id: "1", name: "2019 Q1"}],
+            age: [{id: "age1", label: "0-4"}, {id: "age2", label: "5-9"}],
+            quarter: [{id: "1", label: "2019 Q1"}],
             indicators: []
         };
         const testRootState = mockRootState({
@@ -172,18 +172,18 @@ describe("FilteredData getters", () => {
         const testState = testStore.state as FilteredDataState;
         const testFilters = {
             id: "MWI",
-            name: "Malawi",
-            options: [
+            label: "Malawi",
+            children: [
                 {
-                    name: "Northern Region", id: "MWI.1", options: [
-                        {name: "Chitipa", id: "MWI.1.1"},
-                        {name: "Karonga", id: "MWI.1.2"}
+                    label: "Northern Region", id: "MWI.1", children: [
+                        {label: "Chitipa", id: "MWI.1.1"},
+                        {label: "Karonga", id: "MWI.1.2"}
                     ]
                 },
                 {
-                    name: "Central Region", id: "MWI.2", options: [
-                        {name: "Dedza", id: "MWI.2.1"},
-                        {name: "Dowa", id: "MWI.2.2"}
+                    label: "Central Region", id: "MWI.2", children: [
+                        {label: "Dedza", id: "MWI.2.1"},
+                        {label: "Dowa", id: "MWI.2.2"}
                     ]
                 }]
         };
@@ -191,7 +191,7 @@ describe("FilteredData getters", () => {
         const testRootState = mockRootState({
             baseline: mockBaselineState({
                 shape: {
-                    filename: "test.shape",
+                    filelabel: "test.shape",
                     type: "shape",
                     data: {
                         type: "FeatureCollection",
@@ -206,7 +206,7 @@ describe("FilteredData getters", () => {
         });
 
         const filters = getters.regionOptions(testState, null, testRootState);
-        expect(filters).toStrictEqual(testFilters.options); //We skip top level and use its options as our region array
+        expect(filters).toStrictEqual(testFilters.children); //We skip top level and use its options as our region array
 
     });
 
@@ -313,34 +313,34 @@ describe("FilteredData getters", () => {
 
         const testData: NestedFilterOption[] = [
             {
-                id: "1", name: "name1", options: [{
-                    id: "2", name: "nested", options: []
+                id: "1", label: "name1", children: [{
+                    id: "2", label: "nested", children: []
                 }]
             }
         ];
 
         const result = flattenOptions(testData);
         expect(result["1"]).toStrictEqual(testData[0]);
-        expect(result["2"]).toStrictEqual({id: "2", name: "nested", options: []});
+        expect(result["2"]).toStrictEqual({id: "2", label: "nested", children: []});
     });
 
     it("gets flattened selected region filter", () => {
 
         const testRegions = [{
             id: "R1",
-            name: "Region 1",
-            options: [
+            label: "Region 1",
+            children: [
                 {
                     id: "R2",
-                    name: "Region 2"
+                    label: "Region 2"
                 },
                 {
                     id: "R3",
-                    name: "Region 3",
-                    options: [
+                    label: "Region 3",
+                    children: [
                         {
                             id: "R4",
-                            name: "Region 4"
+                            label: "Region 4"
                         }
                     ]
                 }
@@ -351,9 +351,9 @@ describe("FilteredData getters", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.ANC,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
+                    age: {id: "1", label: "0-99"},
                     survey: null,
-                    sex: {id: "male", name: "male"},
+                    sex: {id: "male", label: "male"},
                     quarter: null,
                     regions: testRegions
                 }
@@ -367,9 +367,9 @@ describe("FilteredData getters", () => {
 
         const expected = {
             "R1": testRegions[0],
-            "R2": testRegions[0].options[0],
-            "R3": testRegions[0].options[1],
-            "R4": testRegions[0].options[1].options!![0]
+            "R2": testRegions[0].children[0],
+            "R3": testRegions[0].children[1],
+            "R4": testRegions[0].children[1].children!![0]
         };
 
         expect(flattenedRegionFilter).toStrictEqual(expected);
@@ -381,9 +381,9 @@ describe("FilteredData getters", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.ANC,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
+                    age: {id: "1", label: "0-99"},
                     survey: null,
-                    sex: {id: "male", name: "male"},
+                    sex: {id: "male", label: "male"},
                     quarter: null,
                     regions: null
                 }
@@ -403,19 +403,19 @@ describe("FilteredData getters", () => {
 
         const testRegions = [{
             id: "R1",
-            name: "Region 1",
-            options: [
+            label: "Region 1",
+            children: [
                 {
                     id: "R2",
-                    name: "Region 2"
+                    label: "Region 2"
                 },
                 {
                     id: "R3",
-                    name: "Region 3",
-                    options: [
+                    label: "Region 3",
+                    children: [
                         {
                             id: "R4",
-                            name: "Region 4"
+                            label: "Region 4"
                         }
                     ]
                 }
@@ -436,9 +436,9 @@ describe("FilteredData getters", () => {
 
         const expected = {
             "R1": testRegions[0],
-            "R2": testRegions[0].options[0],
-            "R3": testRegions[0].options[1],
-            "R4": testRegions[0].options[1].options!![0]
+            "R2": testRegions[0].children[0],
+            "R3": testRegions[0].children[1],
+            "R4": testRegions[0].children[1].children!![0]
         };
 
         expect(flattenedRegionOptions).toStrictEqual(expected);

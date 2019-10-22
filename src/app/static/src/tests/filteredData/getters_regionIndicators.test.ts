@@ -58,10 +58,10 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
-                    survey: {id: "s1", name: "Survey 1"},
-                    sex: {id: "both", name: "both"},
-                    quarter: {id: "1", name: "Jan - Mar  2019"},
+                    age: {id: "1", label: "0-99"},
+                    survey: {id: "s1", label: "Survey 1"},
+                    sex: {id: "both", label: "both"},
+                    quarter: {id: "1", label: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -146,10 +146,10 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
-                    survey: {id: "s1", name: "Survey 1"},
-                    sex: {id: "both", name: "both"},
-                    quarter: {id: "1", name: "Jan - Mar  2019"}, //should be ignored
+                    age: {id: "1", label: "0-99"},
+                    survey: {id: "s1", label: "Survey 1"},
+                    sex: {id: "both", label: "both"},
+                    quarter: {id: "1", label: "Jan - Mar  2019"}, //should be ignored
                     regions: null
                 }
             },
@@ -225,10 +225,10 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Program,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
+                    age: {id: "1", label: "0-99"},
                     survey: null,
-                    sex: {id: "both", name: "both"},
-                    quarter: {id: "1", name: "Jan - Mar  2019"},
+                    sex: {id: "both", label: "both"},
+                    quarter: {id: "1", label: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -284,10 +284,10 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Program,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
-                    survey: {id: "s1", name: "Survey 1"}, //Should be ignored for this data type
-                    sex: {id: "both", name: "both"},
-                    quarter: {id: "1", name: "Jan - Mar  2019"},
+                    age: {id: "1", label: "0-99"},
+                    survey: {id: "s1", label: "Survey 1"}, //Should be ignored for this data type
+                    sex: {id: "both", label: "both"},
+                    quarter: {id: "1", label: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -359,10 +359,10 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.ANC,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
+                    age: {id: "1", label: "0-99"},
                     survey: null,
                     sex: null,
-                    quarter: {id: "1", name: "Jan - Mar  2019"},
+                    quarter: {id: "1", label: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -422,10 +422,10 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.ANC,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"}, //should be ignored
+                    age: {id: "1", label: "0-99"}, //should be ignored
                     survey: null,
-                    sex: {id: "male", name: "male"}, //should be ignored
-                    quarter: {id: "1", name: "Jan - Mar  2019"},
+                    sex: {id: "male", label: "male"}, //should be ignored
+                    quarter: {id: "1", label: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -500,10 +500,10 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Output,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
+                    age: {id: "1", label: "0-99"},
                     survey: null,
-                    sex: {id: "both", name: "both"},
-                    quarter: {id: "1", name: "Jan - Mar  2019"},
+                    sex: {id: "both", label: "both"},
+                    quarter: {id: "1", label: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -559,10 +559,10 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Output,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
+                    age: {id: "1", label: "0-99"},
                     survey: null,
-                    sex: {id: "both", name: "both"},
-                    quarter: {id: "1", name: "Jan - Mar  2019"},
+                    sex: {id: "both", label: "both"},
+                    quarter: {id: "1", label: "Jan - Mar  2019"},
                     regions: null
                 }
             },
@@ -642,15 +642,15 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
-                    survey: {id: "s1", name: "Survey 1"},
-                    sex: {id: "both", name: "both"},
-                    quarter: {id: "1", name: "Jan - Mar  2019"},
+                    age: {id: "1", label: "0-99"},
+                    survey: {id: "s1", label: "Survey 1"},
+                    sex: {id: "both", label: "both"},
+                    quarter: {id: "1", label: "Jan - Mar  2019"},
                     regions: [{
                         id: "area1",
-                        name: "Area 1",
-                        options: [
-                            {id: "area2", name: "Area 2"}
+                        label: "Area 1",
+                        children: [
+                            {id: "area2", label: "Area 2"}
                         ]
                     }]
                 }
@@ -742,7 +742,7 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
+                    age: {id: "1", label: "0-99"},
                     survey: null,
                     sex: null,
                     quarter: null,
@@ -773,7 +773,7 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: null,
                 selectedChoroplethFilters: {
-                    age: {id: "1", name: "0-99"},
+                    age: {id: "1", label: "0-99"},
                     survey: null,
                     sex: null,
                     quarter: null,

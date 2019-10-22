@@ -54,11 +54,11 @@ export const getters = {
     },
     regionOptions: (state: FilteredDataState, getters: any, rootState: RootState): NestedFilterOption[] => {
         const shape = rootState.baseline && rootState.baseline.shape;
-        if (!shape || !shape.filters.regions || !shape.filters.regions.options)
+        if (!shape || !shape.filters.regions || !shape.filters.regions.children)
             return [];
 
         //We're skipping the top level, country region as it doesn't really contribute to the filtering
-        return shape.filters.regions.options as NestedFilterOption[];
+        return shape.filters.regions.children as NestedFilterOption[];
     },
     regionIndicators: function (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any): Dict<IndicatorValuesDict> {
 
