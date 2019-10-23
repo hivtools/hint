@@ -1,21 +1,24 @@
-import {createLocalVue, shallowMount} from "@vue/test-utils";
+import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
 import ModelOptions from "../../../app/components/modelOptions/ModelOptions.vue";
 import DynamicForm from "../../../app/components/forms/DynamicForm.vue";
 import Vue from "vue";
 import Vuex from "vuex";
 import {mockModelOptionsState} from "../../mocks";
 import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
+import DynamicFormControlSection from "../../../app/components/forms/DynamicFormControlSection.vue";
+import {DynamicControlSection} from "../../../app/components/forms/types";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
 
 describe("Model options component", () => {
 
-    const createStore = (props: Partial<ModelOptionsState>) => new Vuex.Store({
+    const createStore = (props: Partial<ModelOptionsState>, mutations = {}) => new Vuex.Store({
         modules: {
             modelOptions: {
                 namespaced: true,
-                state: mockModelOptionsState(props)
+                state: mockModelOptionsState(props),
+                mutations
             }
         }
     });
@@ -26,19 +29,34 @@ describe("Model options component", () => {
         expect(rendered.findAll(DynamicForm).length).toBe(1);
     });
 
+    it("triggers update mutation when dynamic form changes", async () => {
+        const updateMock = jest.fn();
+        const oldControlSection: DynamicControlSection = {
+            label: "label 1",
+            controlGroups: []
+        };
+        const store = createStore({optionsFormMeta: {controlSections: [oldControlSection]}},
+            {update: updateMock});
+
+        const rendered = mount(ModelOptions, {store});
+
+        const newControlSection: DynamicControlSection = {
+            label: "TEST",
+            controlGroups: []
+        };
+
+        rendered.find(DynamicForm).findAll(DynamicFormControlSection).at(0)
+            .vm.$emit("change", newControlSection);
+
+        await Vue.nextTick();
+        expect(updateMock.mock.calls[0][1]).toStrictEqual({
+            controlSections: [newControlSection]
+        });
+    });
+
     it("commits valid mutation when form submit event is fired", () => {
         const validateMock = jest.fn();
-        const store = new Vuex.Store({
-            modules: {
-                modelOptions: {
-                    namespaced: true,
-                    mutations: {
-                        validate: validateMock
-                    },
-                    state: mockModelOptionsState({optionsFormMeta: {controlSections: []}})
-                }
-            }
-        });
+        const store = createStore({optionsFormMeta: {controlSections: []}}, {validate: validateMock});
         const rendered = shallowMount(ModelOptions, {
             store, localVue
         });

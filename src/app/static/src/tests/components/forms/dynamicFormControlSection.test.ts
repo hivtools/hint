@@ -1,9 +1,7 @@
-import Vue from "vue";
 import {mount} from "@vue/test-utils";
 import DynamicFormControlSection from "../../../app/components/forms/DynamicFormControlSection.vue";
 import {DynamicControlSection} from "../../../app/components/forms/types";
 import DynamicFormControlGroup from "../../../app/components/forms/DynamicFormControlGroup.vue";
-import DynamicFormControl from "../../../app/components/forms/DynamicFormControl.vue";
 
 describe('Dynamic form control section component', function () {
 
@@ -44,7 +42,7 @@ describe('Dynamic form control section component', function () {
         expect(rendered.findAll("p").length).toBe(0);
     });
 
-    it("renders control groups as v-models", async () => {
+    it("renders control groups", async () => {
         const controlSection = {...fakeFormSection};
         const rendered = mount(DynamicFormControlSection, {
             propsData: {
@@ -53,14 +51,25 @@ describe('Dynamic form control section component', function () {
         });
 
         expect(rendered.findAll(DynamicFormControlGroup).length).toBe(2);
+        expect(rendered.findAll(DynamicFormControlGroup).at(0).props("controlGroup"))
+            .toStrictEqual(controlSection.controlGroups[0]);
+    });
 
-        // test that a change in value updates the corresponding
-        // controlGroup in the parent component
+    it("emits change event when child component does", () => {
+        const controlSection = {...fakeFormSection};
+        const rendered = mount(DynamicFormControlSection, {
+            propsData: {
+                controlSection: controlSection
+            }
+        });
+
+        const updatedControlGroup = {...controlSection.controlGroups[0]};
+        updatedControlGroup.controls[0] = "TEST" as any;
         rendered.findAll(DynamicFormControlGroup).at(0)
-            .find(DynamicFormControl)
-            .find("input").setValue(1234);
+            .vm.$emit("change", updatedControlGroup);
 
-        expect(controlSection.controlGroups[0].controls[0].value).toBe(1234);
+        expect((rendered.emitted("change")[0][0] as DynamicControlSection)
+            .controlGroups[0].controls[0]).toBe("TEST");
     });
 
 });

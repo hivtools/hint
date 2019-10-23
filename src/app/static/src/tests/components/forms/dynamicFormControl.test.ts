@@ -43,9 +43,9 @@ describe('Dynamic form control component', function () {
         expect(rendered.find("label").text()).toBe("Number label");
     });
 
-    it("renders label with required * if input is required", () => {
+    it("renders required indicator if input is required", () => {
         const rendered = getWrapper({...fakeNumber, required: true}, shallowMount);
-        expect(rendered.find("label").find("span").text()).toBe("*");
+        expect(rendered.find("label").find("span").text()).toBe("(required)");
     });
 
     it("does not renders label if it does not exist", () => {

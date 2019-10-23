@@ -2,22 +2,24 @@
     <b-row class="my-2">
         <b-col md="3" v-if="controlGroup.label">
             <label class="group-label">{{controlGroup.label}}
-                <span v-if="required">*</span>
+                <span v-if="required" class="small">(required)</span>
             </label>
         </b-col>
         <dynamic-form-control v-for="(control, index) in controlGroup.controls"
                               :key="control.name"
-                              v-model="controlGroup.controls[index]"
+                              :form-control="control"
+                              @change="change($event, index)"
                               :col-width="colWidth"></dynamic-form-control>
     </b-row>
 </template>
 <script lang="ts">
     import Vue from "vue";
     import {BCol, BRow} from "bootstrap-vue";
-    import {DynamicControlGroup} from "./types";
+    import {Control, DynamicControlGroup} from "./types";
     import DynamicFormControl from "./DynamicFormControl.vue";
 
-    export default Vue.extend<{}, {}, { colWidth: string, required: boolean },
+    export default Vue.extend<{}, { change: (newVal: Control, index: number) => void },
+        { colWidth: string, required: boolean },
         { controlGroup: DynamicControlGroup }>({
         name: "DynamicFormControlGroup",
         props: {
@@ -31,6 +33,13 @@
             BRow,
             BCol,
             DynamicFormControl
+        },
+        methods: {
+            change(newVal: Control, index: number) {
+                const controls = [...this.controlGroup.controls];
+                controls[index] = newVal;
+                this.$emit("change", {...this.controlGroup, controls})
+            }
         },
         computed: {
             colWidth() {

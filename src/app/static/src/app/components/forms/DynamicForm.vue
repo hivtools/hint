@@ -2,14 +2,15 @@
     <b-form :ref="id" :id="id" class="dynamic-form" novalidate>
         <dynamic-form-control-section v-for="(section, index) in formMeta.controlSections"
                                       :key="index"
-                                      v-model="formMeta.controlSections[index]">
+                                      :control-section="section"
+                                      @change="change($event, index)">
         </dynamic-form-control-section>
         <button v-if="includeSubmitButton"
-                class="btn btn-red"
+                class="btn"
+                :class="disabled? 'btn-secondary' : 'btn-red'"
                 :disabled="disabled"
                 v-on:click="submit">{{submitText}}
         </button>
-        <p>* Required field</p>
     </b-form>
 </template>
 
@@ -19,7 +20,7 @@
     import {BForm} from "bootstrap-vue";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import DynamicFormControlSection from "./DynamicFormControlSection.vue";
-    import {Control, DynamicControl, DynamicFormData, DynamicFormMeta} from "./types";
+    import {Control, DynamicControl, DynamicControlSection, DynamicFormData, DynamicFormMeta, formMeta} from "./types";
 
     interface Props {
         formMeta: DynamicFormMeta,
@@ -31,6 +32,7 @@
     interface Methods {
         buildValue: (control: DynamicControl) => string | string[] | number | null
         submit: (e: Event) => DynamicFormData
+        change: (newVal: DynamicControlSection, index: number) => void;
     }
 
     interface Computed {
@@ -68,6 +70,15 @@
             DynamicFormControlGroup,
             DynamicFormControlSection
         },
+        created() {
+            this.formMeta.controlSections.map(s => {
+                s.controlGroups.map(g => {
+                    g.controls.map(c => {
+                        c.value = this.buildValue(c)
+                    })
+                })
+            });
+        },
         computed: {
             controls() {
                 const controls: Control[] = [];
@@ -87,11 +98,15 @@
             }
         },
         methods: {
+            change(newVal: DynamicControlSection, index: number) {
+                const controlSections = [...this.formMeta.controlSections];
+                controlSections[index] = newVal;
+                this.$emit("change", {...this.formMeta, controlSections})
+            },
             buildValue(control: DynamicControl) {
-              if (control.type == "multiselect" && !control.value){
-                  return []
-              }
-              else return control.value == undefined ? null : control.value;
+                if (control.type == "multiselect" && !control.value) {
+                    return []
+                } else return control.value == undefined ? null : control.value;
             },
             submit(e: Event) {
                 if (e) {

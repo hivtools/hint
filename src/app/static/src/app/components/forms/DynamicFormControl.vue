@@ -1,7 +1,7 @@
 <template>
     <b-col :md="colWidth">
         <label v-if="formControl.label">{{formControl.label}}
-            <span v-if="formControl.required">*</span>
+            <span v-if="formControl.required" class="small">(required)</span>
         </label>
         <component :is="dynamicComponent"
                    v-model="formControlLocal"></component>
