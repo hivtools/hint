@@ -113,7 +113,7 @@ describe("Choropleth component", () => {
                             filters: {
                                 regions: {
                                     id: "MWI.1.1.1",
-                                    name: "test country"
+                                    label: "test country"
                                 },
                                 level_labels: [
                                     {id: 3, display: true, area_level_label: "Admin Level 3"},
@@ -129,7 +129,7 @@ describe("Choropleth component", () => {
                         {
                             selectedDataType: DataType.Survey,
                             selectedChoroplethFilters: {
-                                regions: [{id: "MWI.1.1.1", name: "Test Region"}],
+                                regions: [{id: "MWI.1.1.1", label: "Test Region"}],
                                 sex: null,
                                 age: null,
                                 survey: null,
@@ -401,7 +401,7 @@ describe("Choropleth component", () => {
         vm.updateBounds = mockUpdateBounds;
 
         testStore.commit({type: "filteredData/ChoroplethFilterUpdated",
-                            payload: [FilterType.Region, [{id: "MWI.1.1.1.2", name: "test area"}]]});
+                            payload: [FilterType.Region, [{id: "MWI.1.1.1.2", label: "test area"}]]});
 
         setTimeout(() => {
             expect(mockUpdateBounds.mock.calls.length).toBe(1);
@@ -412,7 +412,7 @@ describe("Choropleth component", () => {
     it("selectedRegionFeatures gets selected region features", () => {
         const testStore = getTestStore({
             selectedChoroplethFilters: {
-                regions: [{id: "MWI.1.1.1.1", name: "area1"}, {id: "MWI.1.1.1.2", name: "area2"}],
+                regions: [{id: "MWI.1.1.1.1", label: "area1"}, {id: "MWI.1.1.1.2", label: "area2"}],
                 sex: null,
                 age: null,
                 survey: null,

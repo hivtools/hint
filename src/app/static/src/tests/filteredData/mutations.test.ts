@@ -38,18 +38,6 @@ describe("FilteredData mutations", () => {
         }
     };
 
-    const testFilterUpdated = (filterType: FilterType) => {
-        const testState = {...initialFilteredDataState};
-
-        //initial sate
-        expect(getSelectedFiltersByType(testState.selectedFilters, filterType)).toStrictEqual([]);
-
-        mutations.FilterUpdated(testState, {
-            payload: [filterType, ["value1", "value2"]]
-        });
-        expect(getSelectedFiltersByType(testState.selectedFilters, filterType)).toStrictEqual(["value1", "value2"]);
-    };
-
     const testChoroplethFilterUpdated = (filterType: FilterType) => {
         const testState = {...initialFilteredDataState};
 
@@ -69,26 +57,6 @@ describe("FilteredData mutations", () => {
             payload: DataType.Program
         });
         expect(testState.selectedDataType).toBe(DataType.Program);
-    });
-
-    it("adds and removes age filters", () => {
-        testFilterUpdated(FilterType.Age);
-    });
-
-    it("adds and removes region filters", () => {
-        testFilterUpdated(FilterType.Region);
-    });
-
-    it("adds and removes sex filters", () => {
-        testFilterUpdated(FilterType.Sex);
-    });
-
-    it("adds and removes surveys filters", () => {
-        testFilterUpdated(FilterType.Survey);
-    });
-
-    it("adds and removes quarter filters", () => {
-        testFilterUpdated(FilterType.Quarter);
     });
 
     it("updates age choropleth filter", () => {

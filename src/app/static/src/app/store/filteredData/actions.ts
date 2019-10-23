@@ -5,16 +5,11 @@ import {FilterType} from "./filteredData";
 import {FilterOption} from "../../generated"
 
 export interface FilteredDataActions {
-    filterUpdated: (store: ActionContext<FilteredDataState, RootState>, payload: [FilterType, FilterOption[]]) => void,
     choroplethFilterUpdated: (store: ActionContext<FilteredDataState, RootState>, payload: [FilterType, FilterOption]) => void,
     selectDataType: (store: ActionContext<FilteredDataState, RootState>, payload: DataType) => void
 }
 
 export const actions: ActionTree<FilteredDataState, RootState> & FilteredDataActions = {
-
-    filterUpdated(store: ActionContext<FilteredDataState, RootState>, payload: [FilterType, FilterOption[]]) {
-        store.commit({type: "FilterUpdated", payload: payload});
-    },
 
     choroplethFilterUpdated(store: ActionContext<FilteredDataState, RootState>, payload: [FilterType, FilterOption]) {
         store.commit({type: "ChoroplethFilterUpdated", payload: payload});
