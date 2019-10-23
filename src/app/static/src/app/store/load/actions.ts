@@ -17,7 +17,7 @@ export interface LoadActions {
 }
 
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
-    async load({dispatch}, file) {
+    load({dispatch}, file) {
         const reader = new FileReader();
         reader.addEventListener('loadend', function() {
             dispatch("setFiles", reader.result as string);
