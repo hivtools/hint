@@ -111,14 +111,16 @@ describe('Dynamic form component', function () {
         expect(rendered.findAll("button").length).toBe(0);
     });
 
-    it("button is disabled while required values are missing", () => {
+    it("button is disabled and has btn-secondary class while required values are missing", () => {
         const rendered = getWrapper(invalidFormMeta, {}, shallowMount);
         expect(rendered.find("button").attributes("disabled")).toBe("disabled");
+        expect(rendered.find("button").classes()).toStrictEqual(["btn", "btn-secondary"]);
     });
 
-    it("button is enabled when required values are present", () => {
+    it("button is enabled and has btn-red class when required values are present", () => {
         const rendered = getWrapper(validFormMeta, {}, mount);
         expect(rendered.find("button").attributes("disabled")).toBeUndefined();
+        expect(rendered.find("button").classes()).toStrictEqual(["btn", "btn-red"]);
     });
 
     it("emits event with serialised form data on button submit", async () => {
