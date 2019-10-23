@@ -21,7 +21,11 @@
         formControl: SelectControl
     }
 
-    export default Vue.extend<{}, {}, { value: string }, Props>({
+    interface Computed {
+        value: string
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
         name: "DynamicFormSelect",
         props: {
             formControl: {

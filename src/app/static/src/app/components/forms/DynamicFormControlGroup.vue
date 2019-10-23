@@ -18,9 +18,20 @@
     import {Control, DynamicControlGroup} from "./types";
     import DynamicFormControl from "./DynamicFormControl.vue";
 
-    export default Vue.extend<{}, { change: (newVal: Control, index: number) => void },
-        { colWidth: string, required: boolean },
-        { controlGroup: DynamicControlGroup }>({
+    interface Methods {
+        change: (newVal: Control, index: number) => void
+    }
+
+    interface Computed {
+        colWidth: string,
+        required: boolean
+    }
+
+    interface Props {
+        controlGroup: DynamicControlGroup
+    }
+
+    export default Vue.extend<{}, Methods, Computed, Props>({
         name: "DynamicFormControlGroup",
         props: {
             controlGroup: Object

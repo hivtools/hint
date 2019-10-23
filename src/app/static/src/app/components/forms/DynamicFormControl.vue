@@ -16,8 +16,17 @@
     import {DynamicControl} from "./types";
     import DynamicFormNumberInput from "./DynamicFormNumberInput.vue";
 
-    export default Vue.extend<{}, {}, { dynamicComponent: string, formControlLocal: DynamicControl },
-        { formControl: DynamicControl, colWidth: string }>({
+    interface Computed {
+        dynamicComponent: string,
+        formControlLocal: DynamicControl
+    }
+
+    interface Props {
+        formControl: DynamicControl,
+        colWidth: string
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
         name: "DynamicFormControl",
         model: {
             prop: "formControl",

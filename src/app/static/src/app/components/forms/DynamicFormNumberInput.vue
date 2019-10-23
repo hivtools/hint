@@ -17,7 +17,11 @@
         formControl: NumberControl
     }
 
-    export default Vue.extend<{}, {}, { value: any }, Props>({
+    interface Computed {
+        value: number | null | undefined
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
         name: "DynamicFormNumberInput",
         model: {
             prop: "formControl",

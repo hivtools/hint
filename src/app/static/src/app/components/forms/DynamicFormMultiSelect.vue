@@ -17,7 +17,11 @@
         formControl: MultiSelectControl
     }
 
-    export default Vue.extend<{}, {}, { value: string[] }, Props>({
+    interface Computed {
+        value: string[]
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
         name: "DynamicFormMultiSelect",
         model: {
             prop: "formControl",

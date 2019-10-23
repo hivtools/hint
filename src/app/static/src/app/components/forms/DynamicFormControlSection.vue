@@ -15,8 +15,15 @@
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import {DynamicControlGroup, DynamicControlSection} from "./types";
 
-    export default Vue.extend<{}, { change: (newVal: DynamicControlGroup, index: number) => void },
-        {}, { controlSection: DynamicControlSection }>({
+    interface Methods {
+        change: (newVal: DynamicControlGroup, index: number) => void
+    }
+
+    interface Props {
+        controlSection: DynamicControlSection
+    }
+
+    export default Vue.extend<{}, Methods, {}, Props>({
         name: "DynamicFormControlSection",
         props: {
             controlSection: {
