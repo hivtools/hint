@@ -1,11 +1,13 @@
 <template>
     <div>
         <div class="row">
-            <ul class="nav nav-tabs col-md-12">
-                <li v-for="tab in tabs" class="nav-item">
-                    <a class="nav-link" :class="selectedTab === tab ? 'active' :  ''" v-on:click="selectTab(tab)">{{tab}}</a>
-                </li>
-            </ul>
+            <div class="col">
+                <ul class="nav nav-tabs col-md-12">
+                    <li v-for="tab in tabs" class="nav-item">
+                        <a class="nav-link" :class="selectedTab === tab ? 'active' :  ''" v-on:click="selectTab(tab)">{{tab}}</a>
+                    </li>
+                </ul>
+            </div>
         </div>
         <div class="row mt-2">
             <div v-if="selectedTab==='Map'" class="col-md-3">
@@ -15,7 +17,7 @@
                 <choropleth></choropleth>
             </div>
 
-            <div v-if="selectedTab==='Bar'">
+            <div class="col" v-if="selectedTab==='Bar'">
                 Bar chart coming soon!
             </div>
         </div>
