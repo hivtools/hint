@@ -2,7 +2,7 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
-import {mockFilteredDataState,} from "../../mocks";
+import {mockAncResponse, mockFilteredDataState, mockProgramResponse, mockSurveyResponse,} from "../../mocks";
 import {DataType} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
 import {mutations} from "../../../app/store/filteredData/mutations";
@@ -37,5 +37,22 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
         expect(store.state.filteredData.selectedDataType).toBe(DataType.Output);
+    });
+
+    it("can change tabs", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+
+        expect(wrapper.find(".nav-link.active").text()).toBe("Map");
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+
+        wrapper.findAll(".nav-link").at(1).trigger("click");
+
+        expect(wrapper.find(".nav-link.active").text()).toBe("Bar");
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+
+
     });
 });
