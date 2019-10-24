@@ -4,9 +4,9 @@ import {IndicatorMetadata, NestedFilterOption} from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 
 export const sexFilterOptions = [
-    {id: "both", name: "both"},
-    {id: "female", name: "female"},
-    {id: "male", name: "male"}
+    {id: "both", label: "both"},
+    {id: "female", label: "female"},
+    {id: "male", label: "male"}
 ];
 
 export const roundToContext = function(value: number, context: number) {
@@ -75,8 +75,8 @@ export const flattenOptions = (filterOptions: NestedFilterOption[]): { [k: strin
 const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => {
     let result = {} as any;
     result[filterOption.id] = filterOption;
-    if (filterOption.options) {
-        filterOption.options.forEach(o =>
+    if (filterOption.children) {
+        filterOption.children.forEach(o =>
             result = {
                 ...result,
                 ...flattenOption(o as NestedFilterOption)

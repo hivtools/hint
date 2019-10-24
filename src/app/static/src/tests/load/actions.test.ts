@@ -1,4 +1,4 @@
-import {mockAxios, mockLoadState, mockSuccess, mockFailure, mockRootState} from "../mocks";
+import {mockAxios, mockFailure, mockLoadState, mockRootState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/load/actions";
 import {LoadingState} from "../../app/store/load/load";
 import {addCheckSum} from "../../app/utils";
@@ -18,15 +18,18 @@ describe("Load actions", () => {
         (console.log as jest.Mock).mockClear();
     });
 
-    it("load reads blob and dispatches setFiles action", async(done) => {
+    it("load reads blob and dispatches setFiles action", (done) => {
         const dispatch = jest.fn();
-        await actions.load({dispatch} as any, new File(["Test File Contents"], "testFile"));
+        actions.load({dispatch} as any, new File(["Test File Contents"], "testFile"));
 
-        setInterval(() =>{
-            expect(dispatch.mock.calls[0][0]).toEqual("setFiles");
-            expect(dispatch.mock.calls[0][1]).toEqual("Test File Contents");
-            done();
-        }, 200);
+        const interval = setInterval(()=> {
+            if (dispatch.mock.calls.length > 0) {
+                expect(dispatch.mock.calls[0][0]).toEqual("setFiles");
+                expect(dispatch.mock.calls[0][1]).toEqual("Test File Contents");
+                clearInterval(interval);
+                done();
+            }
+        });
     });
 
     it("clears loading state", async () => {
@@ -66,7 +69,10 @@ describe("Load actions", () => {
         await actions.setFiles({commit, state, dispatch} as any, fileContents);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "LoadFailed", payload: "The file contents are corrupted."});
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "LoadFailed",
+            payload: "The file contents are corrupted."
+        });
 
         //should not hand on to updateState action
         expect(dispatch.mock.calls.length).toEqual(0);
@@ -96,7 +102,7 @@ describe("Load actions", () => {
 
         const mockLocationReload = jest.fn();
         delete window.location;
-        window.location = { reload: mockLocationReload } as any;
+        window.location = {reload: mockLocationReload} as any;
 
         const testState = mockRootState();
         await actions.updateStoreState({} as any, testState);

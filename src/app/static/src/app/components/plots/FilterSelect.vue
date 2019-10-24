@@ -7,7 +7,6 @@
                     :value=treeselectValue
                     :disabled=disabled
                     :placeholder=placeholder
-                    :normalizer="treeselectNormalizer"
                     @input="select"></treeselect>
     </div>
 </template>
@@ -18,7 +17,6 @@
     import {NestedFilterOption} from "../../generated";
 
     interface Methods {
-        treeselectNormalizer: (anyNode: any) => void;
         select: (value: string[]) => void
     }
 
@@ -53,20 +51,6 @@
             }
         },
         methods: {
-            treeselectNormalizer(anyNode: any) {
-                //In the nested case, this gets called for the child nodes we add in below - just return these unchanged
-                if (anyNode.label) {
-                    return anyNode;
-                }
-
-                const node = anyNode as NestedFilterOption;
-                const result = {id: node.id, label: node.name};
-                if (node.options && node.options.length > 0) {
-                    (result as any).children = node.options.map(o => this.treeselectNormalizer(o));
-                }
-
-                return result;
-            },
             select(value: string[]) {
                 if (!this.disabled) {
                     this.$emit("select", value);

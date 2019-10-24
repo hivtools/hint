@@ -27,8 +27,8 @@ describe("ChoroplethFilters component", () => {
 
     it("computes sexFilters", () => {
         const stateSexFilterOptions = [
-            {id: "s1", name: "female"},
-            {id: "s2", name: "male"}
+            {id: "s1", label: "female"},
+            {id: "s2", label: "male"}
         ];
         const mockGetters = {
             selectedDataFilterOptions: () => {
@@ -44,12 +44,12 @@ describe("ChoroplethFilters component", () => {
 
     it("computes ageFilters", () => {
         const stateAgeFilterOptions = [
-            {id: "a1", name: "0-4"},
-            {id: "a2", name: "5-9"}
+            {id: "a1", label: "0-4"},
+            {id: "a2", label: "5-9"}
         ];
         const mockSelectedFilters = {
             ...initialSelectedChoroplethFilters,
-            age: {id: "a1", name: "0-4"}
+            age: {id: "a1", label: "0-4"}
         };
 
         const mockGetters = {
@@ -69,7 +69,7 @@ describe("ChoroplethFilters component", () => {
     it("computes selected sexFilters", () => {
         const mockSelectedFilters = {
             ...initialSelectedChoroplethFilters,
-            sex: {id: "both", name: "both"}
+            sex: {id: "both", label: "both"}
         };
 
         const wrapper = getWrapper({selectedChoroplethFilters: mockSelectedFilters});
@@ -80,12 +80,12 @@ describe("ChoroplethFilters component", () => {
 
     it("computes surveyFilters", () => {
         const stateSurveyFilterOptions = [
-            {id: "s1", name: "survey 1"},
-            {id: "s2", name: "survey 2"}
+            {id: "s1", label: "survey 1"},
+            {id: "s2", label: "survey 2"}
         ];
         const mockSelectedFilters = {
             ...initialSelectedChoroplethFilters,
-            survey: {id: "s1", name: "survey 1"}
+            survey: {id: "s1", label: "survey 1"}
         };
 
         const mockState = {selectedChoroplethFilters: mockSelectedFilters};
@@ -106,12 +106,12 @@ describe("ChoroplethFilters component", () => {
 
     it("computes quarterFilters", () => {
         const stateQuarterFilterOptions = [
-            {id: "1", name: "Jan-Mar 2019"},
-            {id: "2", name: "Apr-Jun 2019"}
+            {id: "1", label: "Jan-Mar 2019"},
+            {id: "2", label: "Apr-Jun 2019"}
         ];
         const mockSelectedFilters = {
             ...initialSelectedChoroplethFilters,
-            quarter: {id: "1", name: "Jan-Mar 2019"}
+            quarter: {id: "1", label: "Jan-Mar 2019"}
         };
 
         const mockState = {selectedChoroplethFilters: mockSelectedFilters};
@@ -134,14 +134,14 @@ describe("ChoroplethFilters component", () => {
         const stateRegionFilterOptions = [
             {
                 id: "a1",
-                name: "region",
-                options: [
-                    {id: "a2", name: "sub-region"}
+                label: "region",
+                children: [
+                    {id: "a2", label: "sub-region"}
                 ]
             }];
         const mockSelectedFilters = {
             ...initialSelectedChoroplethFilters,
-            regions: [{id: "a2", name: "sub-region"}]
+            regions: [{id: "a2", label: "sub-region"}]
         };
         const mockGetters = {
             selectedDataFilterOptions: () => {
@@ -166,7 +166,7 @@ describe("ChoroplethFilters component", () => {
         const mockGetters = {
             selectedDataFilterOptions: () => {
                 return {
-                    sex: [{id: "female", name: "female"}, {id: "male", name: "male"}]
+                    sex: [{id: "female", label: "female"}, {id: "male", label: "male"}]
                 };
             }
         };
@@ -181,7 +181,7 @@ describe("ChoroplethFilters component", () => {
 
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Sex, {
             id: "female",
-            name: "female"
+            label: "female"
         }]);
     });
 
@@ -195,8 +195,8 @@ describe("ChoroplethFilters component", () => {
             selectedDataFilterOptions: () => {
                 return {
                     surveys: [
-                        {id: "s1", name: "survey 1"},
-                        {id: "s2", name: "survey 2"}
+                        {id: "s1", label: "survey 1"},
+                        {id: "s2", label: "survey 2"}
                     ]
                 }
             }
@@ -211,7 +211,7 @@ describe("ChoroplethFilters component", () => {
 
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Survey, {
             id: "s1",
-            name: "survey 1"
+            label: "survey 1"
         }]);
     });
 
@@ -224,8 +224,8 @@ describe("ChoroplethFilters component", () => {
             selectedDataFilterOptions: () => {
                 return {
                     age: [
-                        {id: "a1", name: "0-4"},
-                        {id: "a2", name: "5-9"}
+                        {id: "a1", label: "0-4"},
+                        {id: "a2", label: "5-9"}
                     ]
                 }
             }
@@ -238,7 +238,7 @@ describe("ChoroplethFilters component", () => {
         const newFilter = "a2";
         vm.selectAge(newFilter);
 
-        expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Age, {id: "a2", name: "5-9"}]);
+        expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Age, {id: "a2", label: "5-9"}]);
     });
 
     it("invokes store actions when quarter filter is edited", () => {
@@ -250,8 +250,8 @@ describe("ChoroplethFilters component", () => {
             selectedDataFilterOptions: () => {
                 return {
                     quarter: [
-                        {id: "1", name: "Jan-Mar 2019"},
-                        {id: "2", name: "Apr-Jun 2019"}
+                        {id: "1", label: "Jan-Mar 2019"},
+                        {id: "2", label: "Apr-Jun 2019"}
                     ]
                 }
             }
@@ -264,7 +264,8 @@ describe("ChoroplethFilters component", () => {
         const newFilter = "2";
         vm.selectQuarter(newFilter);
 
-        expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Quarter, {id: "2", name: "Apr-Jun 2019"}]);
+        expect(mockFilterUpdated.mock.calls[callCount][1])
+            .toStrictEqual([FilterType.Quarter, {id: "2", label: "Apr-Jun 2019"}]);
     });
 
     it("invokes store actions when region filter is edited", () => {
@@ -290,9 +291,9 @@ describe("ChoroplethFilters component", () => {
                         regionOptions: () => {
                             return [{
                                 id: "a1",
-                                name: "area1",
-                                options: [
-                                    {id: "a2", name: "area1.1"}
+                                label: "area1",
+                                children: [
+                                    {id: "a2", label: "area1.1"}
                                 ]
                             }]
                         }
@@ -308,28 +309,28 @@ describe("ChoroplethFilters component", () => {
 
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Region, [{
             id: "a2",
-            name: "area1.1"
+            label: "area1.1"
         }]]);
     });
 
     it("refreshSelectedChoroplethFilters leaves selected filters unchanged if they are available for new data type", () => {
         const stateAgeFilterOptions = [
-            {id: "a1", name: "0-4"},
-            {id: "a2", name: "5-9"}
+            {id: "a1", label: "0-4"},
+            {id: "a2", label: "5-9"}
         ];
         const stateSurveyFilterOptions = [
-            {id: "s1", name: "Survey 1"},
-            {id: "s2", name: "Survey 2"}
+            {id: "s1", label: "Survey 1"},
+            {id: "s2", label: "Survey 2"}
         ];
         const stateQuarterFilterOptions = [
-            {id: "1", name: "Jan-Mar 2019"},
-            {id: "2", name: "Apr-Jun 2019"}
+            {id: "1", label: "Jan-Mar 2019"},
+            {id: "2", label: "Apr-Jun 2019"}
         ];
         const mockSelectedFilters = {
-            age: {id: "a2", name: "5-9"},
-            survey: {id: "s1", name: "Survey 1"},
-            sex: {id: "female", name: "female"},
-            quarter: {id: "1", name: "Jan-Mar 2019"},
+            age: {id: "a2", label: "5-9"},
+            survey: {id: "s1", label: "Survey 1"},
+            sex: {id: "female", label: "female"},
+            quarter: {id: "1", label: "Jan-Mar 2019"},
             regions: null
         };
         const mockFilterUpdated = jest.fn();
@@ -361,27 +362,27 @@ describe("ChoroplethFilters component", () => {
 
     it("refreshSelectedChoroplethFilters uses first available filter options when existing filters unavailable for new data type", () => {
         const stateAgeFilterOptions = [
-            {id: "a1", name: "0-4"},
-            {id: "a2", name: "5-9"}
+            {id: "a1", label: "0-4"},
+            {id: "a2", label: "5-9"}
         ];
         const stateQuarterFilterOptions = [
-            {id: "1", name: "Jan-Mar 2019"},
-            {id: "2", name: "Apr-Jun 2019"}
+            {id: "1", label: "Jan-Mar 2019"},
+            {id: "2", label: "Apr-Jun 2019"}
         ];
         const stateRegionOptions = [
             {
                 id: "a1",
-                name: "All",
+                label: "All",
                 options: [
-                    {id: "a2", name: "Region"}
+                    {id: "a2", label: "Region"}
                 ]
             }
         ];
         const mockSelectedFilters = {
-            age: {id: "a3", name: "10-15"},
-            survey: {id: "s1", name: "Survey 1"},
-            sex: {id: "male", name: "male"},
-            quarter: {id: "3", name: "Jul-Sep 2019"},
+            age: {id: "a3", label: "10-15"},
+            survey: {id: "s1", label: "Survey 1"},
+            sex: {id: "male", label: "male"},
+            quarter: {id: "3", label: "Jul-Sep 2019"},
             regions: null
         };
 
@@ -410,8 +411,10 @@ describe("ChoroplethFilters component", () => {
         vm.refreshSelectedChoroplethFilters();
         //Sex should be left unchanged as there are no available sex options for ANC
         expect(mockFilterUpdated.mock.calls.length).toBe(callCount + 2);
-        expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Age, {id: "a1", name: "0-4"}]);
-        expect(mockFilterUpdated.mock.calls[callCount+1][1]).toStrictEqual([FilterType.Quarter, {id: "1", name: "Jan-Mar 2019"}]);
+        expect(mockFilterUpdated.mock.calls[callCount][1])
+            .toStrictEqual([FilterType.Age, {id: "a1", label: "0-4"}]);
+        expect(mockFilterUpdated.mock.calls[callCount+1][1])
+            .toStrictEqual([FilterType.Quarter, {id: "1", label: "Jan-Mar 2019"}]);
     });
 
     const getWrapper = (state?: Partial<FilteredDataState>,

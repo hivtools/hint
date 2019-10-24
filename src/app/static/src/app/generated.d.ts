@@ -6,11 +6,11 @@
 */
 export interface AncFilters {
   quarter: {
-    name: string;
+    label: string;
     id: string;
   }[];
   indicators: {
-    name: string;
+    label: string;
     id: string;
   }[];
 }
@@ -39,7 +39,7 @@ export interface Error {
 export type FileName = string;
 export type FilePath = string | null;
 export interface FilterOption {
-  name: string;
+  label: string;
   id: string;
 }
 export interface HintrVersionResponse {
@@ -79,15 +79,15 @@ export type ModelResultData = {
 }[];
 export interface ModelResultFilters {
   age: {
-    name: string;
+    label: string;
     id: string;
   }[];
   quarter: {
-    name: string;
+    label: string;
     id: string;
   }[];
   indicators: {
-    name: string;
+    label: string;
     id: string;
   }[];
 }
@@ -106,15 +106,15 @@ export interface ModelResultResponse {
   }[];
   filters?: {
     age: {
-      name: string;
+      label: string;
       id: string;
     }[];
     quarter: {
-      name: string;
+      label: string;
       id: string;
     }[];
     indicators: {
-      name: string;
+      label: string;
       id: string;
     }[];
   };
@@ -198,9 +198,9 @@ export interface ModelSubmitResponse {
   id: string;
 }
 export interface NestedFilterOption {
-  name: string;
+  label: string;
   id: string;
-  options?: {
+  children?: {
     [k: string]: any;
   }[];
 }
@@ -235,15 +235,15 @@ export interface Metadata {
 export type PopulationResponseData = null;
 export interface ProgrammeFilters {
   age: {
-    name: string;
+    label: string;
     id: string;
   }[];
   quarter: {
-    name: string;
+    label: string;
     id: string;
   }[];
   indicators: {
-    name: string;
+    label: string;
     id: string;
   }[];
 }
@@ -283,15 +283,15 @@ export interface GeoJSONObject {
 }
 export interface SurveyFilters {
   age: {
-    name: string;
+    label: string;
     id: string;
   }[];
   surveys: {
-    name: string;
+    label: string;
     id: string;
   }[];
   indicators: {
-    name: string;
+    label: string;
     id: string;
   }[];
 }
@@ -348,9 +348,9 @@ export interface ShapeResponse {
       display: boolean;
     }[];
     regions?: {
-      name: string;
+      label: string;
       id: string;
-      options?: {
+      children?: {
         [k: string]: any;
       }[];
     };
@@ -391,15 +391,15 @@ export interface ProgrammeResponse {
   }[];
   filters: {
     age: {
-      name: string;
+      label: string;
       id: string;
     }[];
     quarter: {
-      name: string;
+      label: string;
       id: string;
     }[];
     indicators: {
-      name: string;
+      label: string;
       id: string;
     }[];
   };
@@ -424,11 +424,11 @@ export interface AncResponse {
   }[];
   filters: {
     quarter: {
-      name: string;
+      label: string;
       id: string;
     }[];
     indicators: {
-      name: string;
+      label: string;
       id: string;
     }[];
   };
@@ -445,15 +445,15 @@ export interface SurveyResponse {
   }[];
   filters: {
     age: {
-      name: string;
+      label: string;
       id: string;
     }[];
     surveys: {
-      name: string;
+      label: string;
       id: string;
     }[];
     indicators: {
-      name: string;
+      label: string;
       id: string;
     }[];
   };
