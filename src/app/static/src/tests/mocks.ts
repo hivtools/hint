@@ -105,6 +105,7 @@ export const mockRootState = (props?: Partial<RootState>): RootState => {
         stepper: mockStepperState(),
         metadata: mockMetadataState(),
         load: mockLoadState(),
+        modelOutput: {},
         ...props
     }
 };
