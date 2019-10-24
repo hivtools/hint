@@ -45,19 +45,33 @@ describe('Dynamic form control group component', function () {
     });
 
     it("renders controls", () => {
+        const controlGroup = {...fakeFormGroup};
         const rendered = shallowMount(DynamicFormControlGroup, {
             propsData: {
-                controlGroup: {...fakeFormGroup}
+                controlGroup: controlGroup
             }
         });
 
         expect(rendered.findAll(DynamicFormControl).length).toBe(2);
-        expect(rendered.findAll(DynamicFormControl).at(0).props("formControl")).toStrictEqual({
-            name: "id_1",
-            type: "number",
-            required: true
-        });
+        expect(rendered.findAll(DynamicFormControl).at(0).props("formControl"))
+            .toStrictEqual(controlGroup.controls[0]);
     });
+
+    it("emits change event when a control changes", () => {
+        const controlGroup = {...fakeFormGroup};
+        const rendered = shallowMount(DynamicFormControlGroup, {
+            propsData: {
+                controlGroup: controlGroup
+            }
+        });
+
+        rendered.findAll(DynamicFormControl).at(0)
+            .vm.$emit("change", {...controlGroup.controls[0], value: 123});
+
+        expect((rendered.emitted().change[0][0] as DynamicControlGroup)
+            .controls[0].value).toBe(123);
+    });
+
 
     it("double controls are 3 cols", () => {
         const rendered = shallowMount(DynamicFormControlGroup, {

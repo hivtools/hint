@@ -2,7 +2,7 @@
     <b-form-input :name="formControl.name"
                   type="number"
                   :number="true"
-                  :value="formControl.default"
+                  v-model="value"
                   :min="formControl.min"
                   :max="formControl.max"
                   :required="formControl.required"></b-form-input>
@@ -17,10 +17,30 @@
         formControl: NumberControl
     }
 
-    export default Vue.extend<{}, {}, {}, Props>({
+    interface Computed {
+        value: number | null | undefined
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
         name: "DynamicFormNumberInput",
+        model: {
+            prop: "formControl",
+            event: "change"
+        },
         props: {
-            formControl: Object
+            formControl: {
+                type: Object
+            }
+        },
+        computed: {
+            value: {
+                get() {
+                    return this.formControl.value;
+                },
+                set(newVal: number) {
+                    this.$emit("change", {...this.formControl, value: newVal});
+                }
+            },
         },
         components: {
             BFormInput

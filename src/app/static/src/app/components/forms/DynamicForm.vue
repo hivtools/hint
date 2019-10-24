@@ -1,10 +1,16 @@
 <template>
-    <b-form :ref="id" class="dynamic-form" :validated="validated" novalidate>
+    <b-form :ref="id" :id="id" class="dynamic-form" novalidate>
         <dynamic-form-control-section v-for="(section, index) in formMeta.controlSections"
                                       :key="index"
-                                      :control-section="section">
+                                      :control-section="section"
+                                      @change="change($event, index)">
         </dynamic-form-control-section>
-        <button v-if="includeSubmitButton" class="btn btn-red" v-on:click="submit">{{submitText}}</button>
+        <button v-if="includeSubmitButton"
+                class="btn"
+                :class="disabled? 'btn-secondary' : 'btn-red'"
+                :disabled="disabled"
+                v-on:click="submit">{{submitText}}
+        </button>
     </b-form>
 </template>
 
@@ -14,8 +20,7 @@
     import {BForm} from "bootstrap-vue";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import DynamicFormControlSection from "./DynamicFormControlSection.vue";
-    import {Control, DynamicFormMeta} from "./types";
-    import {Dict} from "../../types";
+    import {Control, DynamicControl, DynamicControlSection, DynamicFormData, DynamicFormMeta, formMeta} from "./types";
 
     interface Props {
         formMeta: DynamicFormMeta,
@@ -24,100 +29,95 @@
         id: string
     }
 
-    interface ValidationResult {
-        data: any
-        valid: boolean
-        missingValues: string[]
-    }
-
-    interface Data {
-        validated: boolean
-    }
-
     interface Methods {
-        validate: (formData: FormData) => ValidationResult
-        submit: (e: Event) => ValidationResult
+        buildValue: (control: DynamicControl) => string | string[] | number | null
+        submit: (e: Event) => DynamicFormData
+        change: (newVal: DynamicControlSection, index: number) => void;
     }
 
     interface Computed {
-        formControlLookup: Dict<Control>
+        controls: Control[]
+        disabled: boolean
     }
 
-    export default Vue.extend <Data, Methods, Computed, Props>({
-        name: "DynamicForm",
-        data() {
-            return {
-                validated: false
-            }
+    const props = {
+        id: {
+            type: String,
+            default: "d-form"
         },
-        props: {
-            id: {
-                type: String,
-                default: "d-form"
-            },
-            submitText: {
-                type: String,
-                default: "Submit"
-            },
-            includeSubmitButton: {
-                type: Boolean,
-                default: true
-            },
-            formMeta: {
-                type: Object
-            }
+        submitText: {
+            type: String,
+            default: "Submit"
+        },
+        includeSubmitButton: {
+            type: Boolean,
+            default: true
+        },
+        formMeta: {
+            type: Object
+        }
+    };
+
+    export default Vue.extend <{}, Methods, Computed, Props>({
+        name: "DynamicForm",
+        props: props,
+        model: {
+            prop: "formMeta",
+            event: "change"
         },
         components: {
             BForm,
             DynamicFormControlGroup,
             DynamicFormControlSection
         },
+        created() {
+            this.formMeta.controlSections.map(s => {
+                s.controlGroups.map(g => {
+                    g.controls.map(c => {
+                        c.value = this.buildValue(c)
+                    })
+                })
+            });
+        },
         computed: {
-            formControlLookup() {
-                const dict = {} as Dict<Control>;
+            controls() {
+                const controls: Control[] = [];
                 this.formMeta.controlSections.map(s => {
                     s.controlGroups.map(g => {
                         g.controls.map(c => {
-                            dict[c.name] = c
+                            controls.push(c);
                         })
                     })
                 });
-
-                return dict;
+                return controls;
+            },
+            disabled() {
+                return this.controls
+                    .filter(c => c.required && (c.value == null || c.value == ""))
+                    .length > 0
             }
         },
         methods: {
-            validate(formData: FormData) {
-                const data: Dict<any> = {};
-                let valid = true;
-                const missingValues = [] as string[];
-                formData.forEach((value, key) => {
-                    value = value as string;
-                    const control = this.formControlLookup[key];
-                    if (!value && control.required) {
-                        valid = false;
-                        missingValues.push(key);
-                    }
-                    if (control.type == "multiselect") {
-                        data[key] = value ? value.split(",") : []
-                    } else {
-                        data[key] = value || null;
-                    }
-                });
-
-                this.validated = true;
-                return {valid, data, missingValues}
+            change(newVal: DynamicControlSection, index: number) {
+                const controlSections = [...this.formMeta.controlSections];
+                controlSections[index] = newVal;
+                this.$emit("change", {...this.formMeta, controlSections})
+            },
+            buildValue(control: DynamicControl) {
+                if (control.type == "multiselect" && !control.value) {
+                    return []
+                } else return control.value == undefined ? null : control.value;
             },
             submit(e: Event) {
                 if (e) {
                     e.preventDefault();
                 }
-                const form = this.$refs[this.id] as HTMLFormElement;
-                const formData = new FormData(form);
-                const result = this.validate(formData);
-                if (result.valid) {
-                    this.$emit("submit", result.data);
-                }
+                const result = this.controls
+                    .reduce((formData, control) => {
+                        formData[control.name] = this.buildValue(control);
+                        return formData
+                    }, {} as DynamicFormData);
+                this.$emit("submit", result);
                 return result;
             }
         }

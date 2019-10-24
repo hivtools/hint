@@ -1,9 +1,10 @@
-import {mount, shallowMount} from "@vue/test-utils";
+import {mount, shallowMount, Wrapper} from "@vue/test-utils";
 import DynamicFormControl from "../../../app/components/forms/DynamicFormControl.vue";
 import {NumberControl, SelectControl} from "../../../app/components/forms/types";
 import DynamicFormNumberInput from "../../../app/components/forms/DynamicFormNumberInput.vue";
 import DynamicFormSelect from "../../../app/components/forms/DynamicFormSelect.vue";
 import DynamicFormMultiSelect from "../../../app/components/forms/DynamicFormMultiSelect.vue";
+import TreeSelect from '@riophae/vue-treeselect';
 
 describe('Dynamic form control component', function () {
 
@@ -11,7 +12,7 @@ describe('Dynamic form control component', function () {
         label: "Number label",
         name: "id_1",
         type: "number",
-        required: true
+        required: false
     };
 
     const fakeSelect: SelectControl = {
@@ -28,21 +29,27 @@ describe('Dynamic form control component', function () {
         options: [{id: "opt1", label: "option 1"}, {id: "opt2", label: "option2"}]
     };
 
-    it("renders label if it exists", () => {
-        const rendered = shallowMount(DynamicFormControl, {
+    const getWrapper = (formControl: any, mount: (component: any, options: any) => Wrapper<DynamicFormControl>) => {
+        return mount(DynamicFormControl, {
             propsData: {
-                formControl: fakeNumber
-            }
+                formControl: formControl,
+            },
+            sync: false
         });
+    };
+
+    it("renders label if it exists", () => {
+        const rendered = getWrapper(fakeNumber, shallowMount);
         expect(rendered.find("label").text()).toBe("Number label");
     });
 
+    it("renders required indicator if input is required", () => {
+        const rendered = getWrapper({...fakeNumber, required: true}, shallowMount);
+        expect(rendered.find("label").find("span").text()).toBe("(required)");
+    });
+
     it("does not renders label if it does not exist", () => {
-        const rendered = shallowMount(DynamicFormControl, {
-            propsData: {
-                formControl: fakeSelect
-            }
-        });
+        const rendered = getWrapper(fakeSelect, shallowMount);
         expect(rendered.findAll("label").length).toBe(0);
     });
 
@@ -51,42 +58,33 @@ describe('Dynamic form control component', function () {
             propsData: {
                 formControl: fakeNumber,
                 colWidth: "3"
-            }
+            },
+            sync: false
         });
         expect(rendered.element.classList).toContain("col-md-3");
     });
 
     it("renders number input when formControl type is number", () => {
-        const rendered = shallowMount(DynamicFormControl, {
-            propsData: {
-                formControl: fakeNumber
-            }
-        });
-
-        expect(rendered.find(DynamicFormNumberInput)).toBeDefined();
-        expect(rendered.find(DynamicFormNumberInput).props("formControl")).toStrictEqual(fakeNumber);
+        const control = {...fakeNumber};
+        const rendered = getWrapper(control, mount);
+        expect(rendered.findAll(DynamicFormNumberInput).length).toBe(1);
+        rendered.find("input").setValue(123);
+        expect(rendered.emitted("change")[0][0]).toStrictEqual({...control, value: 123})
     });
 
     it("renders select when formControl type is select", () => {
-        const rendered = shallowMount(DynamicFormControl, {
-            propsData: {
-                formControl: fakeSelect
-            }
-        });
-
-        expect(rendered.find(DynamicFormSelect)).toBeDefined();
-        expect(rendered.find(DynamicFormSelect).props("formControl")).toStrictEqual(fakeSelect);
+        const control = {...fakeSelect};
+        const rendered = getWrapper(control, mount);
+        expect(rendered.findAll(DynamicFormSelect).length).toBe(1);
+        rendered.find("select").trigger("change");
+        expect(rendered.emitted("change")[0][0]).toStrictEqual({...fakeSelect, value: ""});
     });
 
     it("renders multi-select when formControl type is multiselect", () => {
-        const rendered = shallowMount(DynamicFormControl, {
-            propsData: {
-                formControl: fakeMultiSelect
-            }
-        });
-
-        expect(rendered.find(DynamicFormMultiSelect)).toBeDefined();
-        expect(rendered.find(DynamicFormMultiSelect).props("formControl")).toStrictEqual(fakeMultiSelect);
+        const rendered = getWrapper(fakeMultiSelect, mount);
+        expect(rendered.findAll(DynamicFormMultiSelect).length).toBe(1);
+        rendered.find(DynamicFormMultiSelect).find(TreeSelect).vm.$emit("input", "opt1");
+        expect(rendered.emitted("change")[0][0]).toStrictEqual({...fakeMultiSelect, value: "opt1"})
     });
 
 });

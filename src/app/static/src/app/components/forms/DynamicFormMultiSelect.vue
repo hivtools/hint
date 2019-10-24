@@ -1,37 +1,46 @@
 <template>
-    <div :class="cssClass">
+    <div>
         <tree-select :multiple="true"
                      :clearable="false"
                      v-model="value"
                      :options="formControl.options"></tree-select>
-        <input type="hidden" :value="value" :name="formControl.name"/>
+        <input type="hidden" :value="formControl.value" :name="formControl.name"/>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {SelectControl} from "./types";
+    import {MultiSelectControl} from "./types";
     import TreeSelect from '@riophae/vue-treeselect';
 
     interface Props {
-        formControl: SelectControl
+        formControl: MultiSelectControl
     }
 
-    export default Vue.extend<{ value: string[] }, {}, {}, Props>({
+    interface Computed {
+        value: string[]
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
         name: "DynamicFormMultiSelect",
-        props: {
-            formControl: Object
+        model: {
+            prop: "formControl",
+            event: "change"
         },
-        data() {
-            return {
-                value: this.formControl.default ? [this.formControl.default] : []
+        props: {
+            formControl: {
+                type: Object
             }
         },
         computed: {
-            cssClass() {
-                const valid = !this.formControl.required || this.value.length > 0;
-                return valid ? "is-valid" : "is-invalid";
-            }
+            value: {
+                get() {
+                    return this.formControl.value ? this.formControl.value as string[] : []
+                },
+                set(newVal: string[]) {
+                    this.$emit("change", {...this.formControl, value: newVal});
+                }
+            },
         },
         components: {
             TreeSelect

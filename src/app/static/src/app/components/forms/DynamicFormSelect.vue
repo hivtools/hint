@@ -1,10 +1,12 @@
 <template>
-    <select class="form-control" :name="formControl.name" :required="formControl.required">
+    <select class="form-control"
+            v-model="value"
+            :name="formControl.name"
+            :required="formControl.required">
         <option value>Select...</option>
         <option v-for="opt in formControl.options"
                 :key="opt.id"
-                :value="opt.id"
-                :selected="formControl.default === opt.id">
+                :value="opt.id">
             {{opt.label}}
         </option>
     </select>
@@ -19,10 +21,30 @@
         formControl: SelectControl
     }
 
-    export default Vue.extend<{}, {}, {}, Props>({
+    interface Computed {
+        value: string
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
         name: "DynamicFormSelect",
         props: {
-            formControl: Object
+            formControl: {
+                type: Object
+            }
+        },
+        model: {
+            prop: "formControl",
+            event: "change"
+        },
+        computed: {
+            value: {
+                get() {
+                    return this.formControl.value || ""
+                },
+                set(newVal: string) {
+                    this.$emit("change", {...this.formControl, value: newVal});
+                }
+            },
         },
         components: {
             BFormSelect
