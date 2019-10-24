@@ -18,7 +18,7 @@ export interface SurveyAndProgramMutations {
 
 export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgramMutations = {
     SurveyUpdated(state: SurveyAndProgramDataState, action: PayloadWithType<SurveyResponse>) {
-        state.survey = action.payload;
+        state.survey = Object.freeze(action.payload);
         state.surveyError = "";
     },
 
@@ -27,7 +27,7 @@ export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgr
     },
 
     ProgramUpdated(state: SurveyAndProgramDataState, action: PayloadWithType<ProgrammeResponse>) {
-        state.program = action.payload;
+        state.program = Object.freeze(action.payload);
         state.programError = "";
     },
 
@@ -36,7 +36,7 @@ export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgr
     },
 
     ANCUpdated(state: SurveyAndProgramDataState, action: PayloadWithType<AncResponse>) {
-        state.anc = action.payload;
+        state.anc = Object.freeze(action.payload);
         state.ancError = "";
     },
 

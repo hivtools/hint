@@ -26,7 +26,7 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
         const data = action.payload;
         if (data) {
             state.country = data.data.country;
-            state.pjnz = data;
+            state.pjnz = Object.freeze(data);
         } else {
             state.country = "";
             state.pjnz = null;
@@ -35,7 +35,7 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
     },
 
     ShapeUpdated(state: BaselineState, action: PayloadWithType<ShapeResponse>) {
-        state.shape = action.payload;
+        state.shape = Object.freeze(action.payload);
         state.shapeError = "";
     },
 
@@ -44,7 +44,7 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
     },
 
     PopulationUpdated(state: BaselineState, action: PayloadWithType<PopulationResponse>) {
-        state.population = action.payload;
+        state.population = Object.freeze(action.payload);
         state.populationError = "";
     },
 

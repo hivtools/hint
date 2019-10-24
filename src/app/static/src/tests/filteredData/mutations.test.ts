@@ -2,26 +2,11 @@ import {mutations} from "../../app/store/filteredData/mutations";
 import {
     DataType,
     FilterType,
-    initialFilteredDataState, SelectedChoroplethFilters,
-    SelectedFilters
+    initialFilteredDataState,
+    SelectedChoroplethFilters
 } from "../../app/store/filteredData/filteredData";
 
 describe("FilteredData mutations", () => {
-
-    const getSelectedFiltersByType = (selectedFilters: SelectedFilters, filterType: FilterType) => {
-        switch (filterType) {
-            case (FilterType.Age):
-                return selectedFilters.age;
-            case (FilterType.Region):
-                return selectedFilters.region;
-            case (FilterType.Sex):
-                return selectedFilters.sex;
-            case (FilterType.Survey):
-                return selectedFilters.surveys;
-            case (FilterType.Quarter):
-                return selectedFilters.quarter;
-        }
-    };
 
     const getSelectedChoroplethFilterByType = (selectedFilters: SelectedChoroplethFilters, filterType: FilterType) => {
         switch (filterType) {

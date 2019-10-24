@@ -24,12 +24,17 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
     import {IndicatorMetadata, NestedFilterOption} from "../../generated";
-    import {Dict, IndicatorValuesDict, LevelLabel} from "../../types";
+    import {Dict, LevelLabel} from "../../types";
     import {mapGettersByNames, mapStateProps} from "../../utils";
+    import {getRegionIndicators} from "./utils";
 
     interface Data {
         indicator: string | null;
-        detail: number
+        detail: number;
+        dirty: boolean;
+        options: L.GeoJSONOptions;
+        getColorForRegion: (regionId: string) => string;
+        dirtyUnWatch: () => void;
     }
 
     interface BaselineComputed {
@@ -43,21 +48,16 @@
         selectedRegions: string[]
     }
 
-    interface FilteredDataGetters {
-        regionIndicators: Dict<IndicatorValuesDict>
-    }
-
     interface MetadataGetters {
         choroplethIndicators: string[],
         choroplethIndicatorsMetadata: IndicatorMetadata[]
     }
 
-    interface Computed extends BaselineComputed, FilteredDataComputed, FilteredDataGetters, MetadataGetters {
+    interface Computed extends BaselineComputed, FilteredDataComputed, MetadataGetters {
         countryFeature: Feature
         maxLevel: number
         featuresByLevel: Dict<Feature[]>
         currentFeatures: Feature[]
-        options: L.GeoJSONOptions
         selectedRegionFeatures: Feature[],
         indicatorMetadata: IndicatorMetadata
     }
@@ -65,10 +65,10 @@
     interface Methods {
         onIndicatorChange: (newVal: string) => void
         onDetailChange: (newVal: number) => void
-        getColorForRegion: (region: string) => void
         getFeatureFromAreaId: (areaId: string) => Feature | null
         updateBounds: () => void,
         refreshIndicator: () => void
+        dirtyWatch: () => void
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -91,10 +91,6 @@
                     selectedRegions: state => state.selectedChoroplethFilters.regions || []
                 }
             ),
-            ...mapGettersByNames<keyof FilteredDataGetters>("filteredData", [
-                    "regionIndicators"
-                ]
-            ),
             ...mapGettersByNames<keyof MetadataGetters>("metadata", [
                     "choroplethIndicators",
                     "choroplethIndicatorsMetadata"
@@ -105,11 +101,9 @@
             },
             maxLevel() {
                 const levelNums: number[] = Object.keys(this.featuresByLevel).map(k => parseInt(k));
-
                 return Math.max(...levelNums);
             },
             featuresByLevel() {
-                console.time("creating features by level");
                 const result = {} as any;
                 this.featureLevels.forEach((l: any) => {
                     if (l.display) {
@@ -125,7 +119,6 @@
                         result[adminLevel].push({id, feature});
                     }
                 });
-                console.timeEnd("creating features by level");
 
                 return result;
             },
@@ -135,47 +128,23 @@
             indicatorMetadata: function () {
                 return this.choroplethIndicatorsMetadata.filter((i: IndicatorMetadata) => i.indicator == this.indicator)[0];
             },
-            options() {
-                const regionIndicators = this.regionIndicators;
-
-                if (!this.indicator) {
-                    return {};
-                }
-
-                const indicator = this.indicator!!;
-                return {
-                    onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
-                        const area_id = feature.properties && feature.properties["area_id"];
-                        const area_name = feature.properties && feature.properties["area_name"];
-
-                        const values = regionIndicators[area_id];
-                        let value = values && values[indicator] && values[indicator]!!.value;
-                        const stringVal = (value || value === 0) ? value.toString() : "";
-
-                        layer.bindPopup(`<div>
-                                <strong>${area_name}</strong>
-                                <br/>${stringVal}
-                            </div>`);
-                    }
-                }
-            },
             selectedRegionFeatures(): Feature[] {
-                console.time("selecting region features");
                 if (this.selectedRegions && this.selectedRegions.length > 0) {
-                    console.timeEnd("selecting region features");
                     return this.selectedRegions.map((id: string) => this.getFeatureFromAreaId(id)!!);
                 } else if (this.countryFeature) {
-                    console.timeEnd("selecting region features");
                     return [this.countryFeature];
                 }
-                console.timeEnd("selecting region features");
                 return [];
             }
         },
         data(): Data {
             return {
                 indicator: "",
-                detail: 0
+                detail: 0,
+                dirty: false,
+                options: {},
+                getColorForRegion: () => "",
+                dirtyUnWatch: () => {}
             }
         },
         created() {
@@ -184,24 +153,15 @@
         },
         mounted() {
             this.updateBounds();
+            this.dirtyWatch();
         },
         methods: {
             onIndicatorChange: function (newVal: string) {
+                this.dirty = true;
                 this.indicator = newVal;
             },
             onDetailChange: function (newVal: number) {
                 this.detail = newVal
-            },
-            getColorForRegion: function (region: string) {
-                if (!this.indicator) {
-                    return null;
-                }
-                console.time("getting color");
-                const regionIndicators = this.regionIndicators[region];
-                const indicator = regionIndicators && regionIndicators[this.indicator];
-                let color = indicator && indicator.color;
-                console.timeEnd("getting color");
-                return color;
             },
             getFeatureFromAreaId(areaId: string): Feature {
                 return this.features.find((f: Feature) => f.properties!!.area_id == areaId)!!;
@@ -213,18 +173,50 @@
                 }
             },
             refreshIndicator: function () {
-                console.time("refreshing indicator");
+                this.dirty = true;
                 if (!this.indicator || this.choroplethIndicators.indexOf(this.indicator) < 0) {
                     this.indicator = this.choroplethIndicators.length > 0 ? this.choroplethIndicators[0] : null;
                 }
-                console.timeEnd("refreshing indicator");
+            },
+            dirtyWatch() {
+                const regionIndicators = getRegionIndicators(this.$store.state, this.indicatorMetadata);
+                this.options = {
+                    onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
+                        const area_id = feature.properties && feature.properties["area_id"];
+                        const area_name = feature.properties && feature.properties["area_name"];
+
+                        const values = regionIndicators[area_id];
+                        let value = values && values.value;
+                        const stringVal = (value || value === 0) ? value.toString() : "";
+
+                        layer.bindPopup(`<div>
+                                <strong>${area_name}</strong>
+                                <br/>${stringVal}
+                            </div>`);
+                    }
+                };
+
+                this.getColorForRegion = (region: string) => {
+                    const indicator = regionIndicators[region];
+                    if (indicator && indicator.color) {
+                        return indicator.color
+                    }
+                    return "rgb(200,200,200)";
+                };
+
+                this.dirtyUnWatch();
+                this.dirty = false;
+
+                this.dirtyUnWatch = this.$watch("dirty", this.dirtyWatch);
             }
         },
         watch: {
             selectedDataType: function (newVal) {
+                this.dirty = true;
                 this.refreshIndicator();
             },
             selectedRegionFeatures: function (newVal) {
+                this.dirty = true;
                 this.updateBounds();
             }
         },
