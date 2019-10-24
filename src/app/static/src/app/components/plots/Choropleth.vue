@@ -2,9 +2,9 @@
     <l-map ref="map" style="height: 800px; width: 100%">
         <template v-for="feature in currentFeatures">
             <l-geo-json ref=""
-                        :geojson="feature"
-                        :options="options"
-                        :optionsStyle="{...style, fillColor: getColorForRegion(feature.properties['area_id'])}">
+                        :optionsStyle="{fillColor: getColorForRegion(feature.id)}"
+                        :geojson="feature.feature"
+                        :options="options">
             </l-geo-json>
         </template>
         <map-control :initialDetail=detail
@@ -24,11 +24,10 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
     import {IndicatorMetadata, NestedFilterOption} from "../../generated";
-    import {Dict, LevelLabel, IndicatorValuesDict} from "../../types";
+    import {Dict, IndicatorValuesDict, LevelLabel} from "../../types";
     import {mapGettersByNames, mapStateProps} from "../../utils";
 
     interface Data {
-        style: any,
         indicator: string | null;
         detail: number
     }
@@ -41,12 +40,11 @@
 
     interface FilteredDataComputed {
         selectedDataType: DataType | null
-        selectedRegions: NestedFilterOption[]
+        selectedRegions: string[]
     }
 
     interface FilteredDataGetters {
         regionIndicators: Dict<IndicatorValuesDict>
-        colorFunctions: Dict<(t: number) => string>
     }
 
     interface MetadataGetters {
@@ -94,8 +92,7 @@
                 }
             ),
             ...mapGettersByNames<keyof FilteredDataGetters>("filteredData", [
-                    "regionIndicators",
-                    "colorFunctions"
+                    "regionIndicators"
                 ]
             ),
             ...mapGettersByNames<keyof MetadataGetters>("metadata", [
@@ -112,6 +109,7 @@
                 return Math.max(...levelNums);
             },
             featuresByLevel() {
+                console.time("creating features by level");
                 const result = {} as any;
                 this.featureLevels.forEach((l: any) => {
                     if (l.display) {
@@ -120,25 +118,27 @@
                 });
 
                 this.features.forEach((feature: Feature) => {
-                    const areas = feature.properties!!["area_id"].split(".");
+                    const id = feature.properties!!["area_id"];
+                    const areas = id.split(".");
                     const adminLevel = areas.length - 1;  //Country (e.g. "MWI") is level 0
                     if (result[adminLevel]) {
-                        result[adminLevel].push(feature);
+                        result[adminLevel].push({id, feature});
                     }
                 });
+                console.timeEnd("creating features by level");
 
                 return result;
             },
             currentFeatures() {
                 return this.featuresByLevel[this.detail]
             },
-            indicatorMetadata: function() {
+            indicatorMetadata: function () {
                 return this.choroplethIndicatorsMetadata.filter((i: IndicatorMetadata) => i.indicator == this.indicator)[0];
             },
             options() {
                 const regionIndicators = this.regionIndicators;
 
-                if (!this.indicator){
+                if (!this.indicator) {
                     return {};
                 }
 
@@ -150,7 +150,7 @@
 
                         const values = regionIndicators[area_id];
                         let value = values && values[indicator] && values[indicator]!!.value;
-                        const stringVal =  (value || value === 0) ? value.toString() : "";
+                        const stringVal = (value || value === 0) ? value.toString() : "";
 
                         layer.bindPopup(`<div>
                                 <strong>${area_name}</strong>
@@ -160,21 +160,20 @@
                 }
             },
             selectedRegionFeatures(): Feature[] {
+                console.time("selecting region features");
                 if (this.selectedRegions && this.selectedRegions.length > 0) {
-                    return this.selectedRegions.map((r: NestedFilterOption) => this.getFeatureFromAreaId(r.id)!!);
+                    console.timeEnd("selecting region features");
+                    return this.selectedRegions.map((id: string) => this.getFeatureFromAreaId(id)!!);
                 } else if (this.countryFeature) {
+                    console.timeEnd("selecting region features");
                     return [this.countryFeature];
                 }
+                console.timeEnd("selecting region features");
                 return [];
             }
         },
         data(): Data {
             return {
-                style: {
-                    weight: 1,
-                    fillOpacity: 1.0,
-                    color: 'grey'
-                },
                 indicator: "",
                 detail: 0
             }
@@ -197,17 +196,11 @@
                 if (!this.indicator) {
                     return null;
                 }
-
+                console.time("getting color");
                 const regionIndicators = this.regionIndicators[region];
                 const indicator = regionIndicators && regionIndicators[this.indicator];
                 let color = indicator && indicator.color;
-
-                if (!color) {
-                    //show a lighter grey than the outlines if no data
-                    //so unselected regions are still distinguishable
-                    color = "rgb(200,200,200)";
-                }
-
+                console.timeEnd("getting color");
                 return color;
             },
             getFeatureFromAreaId(areaId: string): Feature {
@@ -219,10 +212,12 @@
                     map.fitBounds(this.selectedRegionFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                 }
             },
-            refreshIndicator: function() {
-                if (!this.indicator || this.choroplethIndicators.indexOf (this.indicator) < 0) {
+            refreshIndicator: function () {
+                console.time("refreshing indicator");
+                if (!this.indicator || this.choroplethIndicators.indexOf(this.indicator) < 0) {
                     this.indicator = this.choroplethIndicators.length > 0 ? this.choroplethIndicators[0] : null;
                 }
+                console.timeEnd("refreshing indicator");
             }
         },
         watch: {

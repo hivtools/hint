@@ -3,6 +3,13 @@
   background: white;
 }
 
+path.leaflet-interactive {
+  stroke-width: 1;
+  fill-opacity: 1.0;
+  stroke: $gray-600;
+  fill: rgb(200,200,200);
+}
+
 .legend i {
   width: 18px;
   height: 18px;

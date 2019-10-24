@@ -14,7 +14,6 @@
 <script lang="ts">
     import Vue from "vue";
     import Treeselect from '@riophae/vue-treeselect';
-    import {NestedFilterOption} from "../../generated";
 
     interface Methods {
         select: (value: string[]) => void

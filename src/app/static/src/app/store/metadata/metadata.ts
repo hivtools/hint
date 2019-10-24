@@ -21,9 +21,11 @@ export const metadataGetters = {
         return !!state.plottingMetadata
     },
     choroplethIndicatorsMetadata: (state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
+        console.time("getting metadata");
         const plottingMetadata = state.plottingMetadata;
 
         if (!plottingMetadata) {
+            console.timeEnd("getting metadata");
             return [];
         }
 
@@ -44,12 +46,15 @@ export const metadataGetters = {
                 metadataForType = plottingMetadata.output;
                 break;
         }
-
+        console.timeEnd("getting metadata")
         return  (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
     },
     choroplethIndicators:(state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
+        console.time("getting choro indicators")
         const metadata = getters.choroplethIndicatorsMetadata;
-        return  metadata.map((i: IndicatorMetadata) => i.indicator);
+        const map =  metadata.map((i: IndicatorMetadata) => i.indicator);
+        console.timeEnd("getting choro indicators")
+        return map;
     }
 };
 
