@@ -6,7 +6,7 @@
         extends: Bar,
         name: "ChartjsBar",
         props: {
-            chartData: {
+            chartdata: {
                 type: Object,
                 default: null
             },
@@ -16,7 +16,7 @@
         methods: {
             updateRender: function(){
                 (this as any).addPlugin(ErrorBarsPlugin as any);
-                (this as any).renderChart(this.chartData, {
+                (this as any).renderChart(this.chartdata, {
                     scales: {
                         yAxes: [{
                             scaleLabel: {
@@ -54,7 +54,7 @@
             this.updateRender();
         },
         watch: {
-            chartData: function(newVal) {
+            chartdata: function(newVal) {
                 this.updateRender();
             }
         }

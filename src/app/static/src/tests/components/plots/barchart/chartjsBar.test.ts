@@ -11,7 +11,7 @@ describe("chartjsBar component", () => {
     const propsData = {
         xLabel: "X Axis",
         yLabel: "Y Axis",
-        chartData: {
+        chartdata: {
             labels: ["group1", "group2"],
             datasets:[
                 {
@@ -33,7 +33,7 @@ describe("chartjsBar component", () => {
         console.log(wrapper.html());
     });
 
-    it("updates render when props chartData changes", () => {
+    it("updates render when props chartdata changes", () => {
         const wrapper = shallowMount(ChartjsBar, {propsData, localVue});
 
         const mockUpdate = jest.fn();
@@ -41,12 +41,12 @@ describe("chartjsBar component", () => {
         vm.updateRender = mockUpdate;
 
         const newChartData = {
-            ...propsData.chartData,
+            ...propsData.chartdata,
             labels: ["group1"]
         };
         wrapper.setProps({
             ...propsData,
-            chartData: newChartData
+            chartdata: newChartData
         });
 
         expect(mockUpdate.mock.calls.length).toBe(1);
