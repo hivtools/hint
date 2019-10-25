@@ -56,10 +56,11 @@ export const getters = {
         const result = {} as Dict<IndicatorValuesDict>;
 
         const indicatorsMeta = rootGetters['metadata/choroplethIndicatorsMetadata'];
+        const selectedRegionFilters = flattenedSelectedRegionFilters(state, rootState);
 
         for (const row of data) {
 
-            if (getters.excludeRow(row)) {
+            if (getters.excludeRow(row, selectedRegionFilters)) {
                 continue;
             }
 
@@ -96,12 +97,12 @@ export const getters = {
 
         return result;
     },
-    excludeRow: function (state: FilteredDataState, getters: any, rootState: RootState): (row: any) => boolean {
+    excludeRow: function (state: FilteredDataState, getters: any, rootState: RootState):
+        (row: any, selectedRegions: Set<string>) => boolean {
         const dataType = state.selectedDataType!!;
         const selectedFilters = state.selectedChoroplethFilters;
-        const selectedRegionFilters = flattenedSelectedRegionFilters(state, rootState);
 
-        return (row: any) => {
+        return (row: any, selectedRegions: Set<string>) => {
 
             if (dataType != DataType.ANC && row.sex != selectedFilters.sex) {
                 return true;
@@ -119,7 +120,7 @@ export const getters = {
                 return true;
             }
 
-            if (selectedRegionFilters.size > 0 && !selectedRegionFilters.has(row.area_id)) {
+            if (selectedRegions.size > 0 && !selectedRegions.has(row.area_id)) {
                 return true
             }
 
