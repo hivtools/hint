@@ -22,19 +22,17 @@
     import MapControl from "./MapControl.vue";
     import MapLegend from "./MapLegend.vue";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
+    import {DataType, FilteredDataState, SelectedChoroplethFilters} from "../../store/filteredData/filteredData";
     import {IndicatorMetadata, NestedFilterOption} from "../../generated";
     import {Dict, LevelLabel} from "../../types";
     import {mapGettersByNames, mapStateProps} from "../../utils";
-    import {getRegionIndicators} from "./utils";
+    import {getRegionIndicators} from "./choroplethData";
 
     interface Data {
         indicator: string | null;
         detail: number;
-        dirty: boolean;
         options: L.GeoJSONOptions;
         getColorForRegion: (regionId: string) => string;
-        dirtyUnWatch: () => void;
     }
 
     interface BaselineComputed {
@@ -45,7 +43,7 @@
 
     interface FilteredDataComputed {
         selectedDataType: DataType | null
-        selectedRegions: string[]
+        selectedFilters: SelectedChoroplethFilters
     }
 
     interface MetadataGetters {
@@ -68,7 +66,7 @@
         getFeatureFromAreaId: (areaId: string) => Feature | null
         updateBounds: () => void,
         refreshIndicator: () => void
-        dirtyWatch: () => void
+        updateRegionIndicators: () => void
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -88,7 +86,7 @@
             ),
             ...mapStateProps<FilteredDataState, keyof FilteredDataComputed>("filteredData", {
                     selectedDataType: state => state.selectedDataType,
-                    selectedRegions: state => state.selectedChoroplethFilters.regions || []
+                    selectedFilters: state => state.selectedChoroplethFilters
                 }
             ),
             ...mapGettersByNames<keyof MetadataGetters>("metadata", [
@@ -129,22 +127,18 @@
                 return this.choroplethIndicatorsMetadata.filter((i: IndicatorMetadata) => i.indicator == this.indicator)[0];
             },
             selectedRegionFeatures(): Feature[] {
-                if (this.selectedRegions && this.selectedRegions.length > 0) {
-                    return this.selectedRegions.map((id: string) => this.getFeatureFromAreaId(id)!!);
-                } else if (this.countryFeature) {
-                    return [this.countryFeature];
+                if (this.selectedFilters.regions.length > 0) {
+                    return this.selectedFilters.regions.map((id: string) => this.getFeatureFromAreaId(id)!!);
                 }
-                return [];
+                return [this.countryFeature];
             }
         },
         data(): Data {
             return {
                 indicator: "",
                 detail: 0,
-                dirty: false,
                 options: {},
-                getColorForRegion: () => "",
-                dirtyUnWatch: () => {}
+                getColorForRegion: () => ""
             }
         },
         created() {
@@ -152,16 +146,17 @@
             this.refreshIndicator();
         },
         mounted() {
+            this.updateRegionIndicators();
             this.updateBounds();
-            this.dirtyWatch();
         },
         methods: {
             onIndicatorChange: function (newVal: string) {
-                this.dirty = true;
                 this.indicator = newVal;
+                this.updateRegionIndicators();
             },
             onDetailChange: function (newVal: number) {
-                this.detail = newVal
+                this.detail = newVal;
+                this.updateRegionIndicators();
             },
             getFeatureFromAreaId(areaId: string): Feature {
                 return this.features.find((f: Feature) => f.properties!!.area_id == areaId)!!;
@@ -173,12 +168,11 @@
                 }
             },
             refreshIndicator: function () {
-                this.dirty = true;
                 if (!this.indicator || this.choroplethIndicators.indexOf(this.indicator) < 0) {
                     this.indicator = this.choroplethIndicators.length > 0 ? this.choroplethIndicators[0] : null;
                 }
             },
-            dirtyWatch() {
+            updateRegionIndicators() {
                 const regionIndicators = getRegionIndicators(this.$store.state, this.indicatorMetadata);
                 this.options = {
                     onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
@@ -198,26 +192,24 @@
 
                 this.getColorForRegion = (region: string) => {
                     const indicator = regionIndicators[region];
-                    if (indicator && indicator.color) {
-                        return indicator.color
-                    }
-                    return "rgb(200,200,200)";
+                    return indicator ? indicator.color : "rgb(200,200,200)";
                 };
-
-                this.dirtyUnWatch();
-                this.dirty = false;
-
-                this.dirtyUnWatch = this.$watch("dirty", this.dirtyWatch);
             }
         },
         watch: {
-            selectedDataType: function (newVal) {
-                this.dirty = true;
+            selectedDataType: function () {
                 this.refreshIndicator();
+                this.updateRegionIndicators();
             },
-            selectedRegionFeatures: function (newVal) {
-                this.dirty = true;
+            selectedRegionFeatures: function () {
                 this.updateBounds();
+                this.updateRegionIndicators();
+            },
+            selectedFilters: {
+                handler: function () {
+                    this.updateRegionIndicators();
+                },
+                deep: true
             }
         },
     })

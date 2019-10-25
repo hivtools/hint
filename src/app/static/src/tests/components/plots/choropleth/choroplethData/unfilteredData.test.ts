@@ -1,8 +1,6 @@
-import {NestedFilterOption} from "../../../app/generated";
-import {flattenOptions, getUnfilteredData} from "../../../app/store/filteredData/utils";
 import {Module} from "vuex";
-import {DataType, FilteredDataState, initialFilteredDataState} from "../../../app/store/filteredData/filteredData";
-import {RootState} from "../../../app/root";
+import {DataType, FilteredDataState, initialFilteredDataState} from "../../../../../app/store/filteredData/filteredData";
+import {RootState} from "../../../../../app/root";
 import {
     mockAncResponse,
     mockModelResultResponse,
@@ -11,23 +9,10 @@ import {
     mockRootState,
     mockSurveyAndProgramState,
     mockSurveyResponse
-} from "../../mocks";
+} from "../../../../mocks";
+import {getUnfilteredData} from "../../../../../app/components/plots/choroplethData";
 
 describe("filtered data utils", () => {
-    it("can flatten options", () => {
-
-        const testData: NestedFilterOption[] = [
-            {
-                id: "1", label: "name1", children: [{
-                    id: "2", label: "nested", children: []
-                }]
-            }
-        ];
-
-        const result = flattenOptions(testData);
-        expect(result["1"]).toStrictEqual({id: "1", label: "name1"});
-        expect(result["2"]).toStrictEqual({id: "2", label: "nested"});
-    });
 
     const testRootState =
         mockRootState({
@@ -50,7 +35,6 @@ describe("filtered data utils", () => {
                     )
                 })
         });
-
 
     it("gets unfilteredData when selectedDataType is Survey", () => {
         const testStore: Module<FilteredDataState, RootState> = {
@@ -91,7 +75,6 @@ describe("filtered data utils", () => {
         const unfilteredData = getUnfilteredData(testState, testRootState);
         expect(unfilteredData).toStrictEqual("OUTPUT");
     });
-
 
     it("gets unfilteredData when selectedDataType is unknown", () => {
         const testStore: Module<FilteredDataState, RootState> = {

@@ -9,31 +9,29 @@ export enum DataType { ANC, Program, Survey, Output }
 export enum FilterType { Sex, Age, Region, Survey, Quarter }
 
 export interface SelectedChoroplethFilters {
-    sex: string | null,
-    age: string | null,
-    survey: string | null,
-    quarter: string | null,
-    regions: string[] | null
+    sex: string,
+    age: string,
+    survey: string,
+    quarter: string,
+    regions: string[]
 }
 
 export interface FilteredDataState {
     selectedDataType: DataType | null
     selectedChoroplethFilters: SelectedChoroplethFilters
-    regionIndicators: {[k: string]: any};
 }
 
 export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
-    sex: null,
-    age: null,
-    survey: null,
-    regions: null,
-    quarter: null
+    sex: "",
+    age: "",
+    survey: "",
+    regions: [],
+    quarter: ""
 };
 
 export const initialFilteredDataState: FilteredDataState = {
    selectedDataType: null,
-   selectedChoroplethFilters: initialSelectedChoroplethFilters,
-   regionIndicators: {}
+   selectedChoroplethFilters: initialSelectedChoroplethFilters
 };
 
 const namespaced: boolean = true;

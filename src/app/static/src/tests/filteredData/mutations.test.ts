@@ -27,12 +27,18 @@ describe("FilteredData mutations", () => {
         const testState = {...initialFilteredDataState};
 
         //initial sate
-        expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType)).toBeNull();
+        let initialState = "" as any;
+        if (filterType == FilterType.Region){
+            initialState = [];
+        }
+        expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
+            .toStrictEqual(initialState);
 
         mutations.ChoroplethFilterUpdated(testState, {
             payload: [filterType, {id: "id", name: "name"}]
         });
-        expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType)).toStrictEqual({id: "id", name: "name"});
+        expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
+            .toStrictEqual({id: "id", name: "name"});
     };
 
     it("sets selectedDataType on SelectedDataTypeUpdated", () => {

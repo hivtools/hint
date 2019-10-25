@@ -70,31 +70,31 @@
                 selectedDataType: state => state.selectedDataType,
                 selectedChoroplethFilters: state => state.selectedChoroplethFilters,
 
-                sexFilters: function (state): ChoroplethFiltersForType {
+                sexFilters: function (): ChoroplethFiltersForType {
                     return this.buildViewFiltersForType(this.selectedDataFilterOptions.sex,
                         this.selectedChoroplethFilters.sex)
                 },
 
-                ageFilters: function (state): ChoroplethFiltersForType {
+                ageFilters: function (): ChoroplethFiltersForType {
                     return this.buildViewFiltersForType(this.selectedDataFilterOptions.age,
                         this.selectedChoroplethFilters.age);
                 },
 
-                surveyFilters: function (state): ChoroplethFiltersForType {
+                surveyFilters: function (): ChoroplethFiltersForType {
                     return this.buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
                         this.selectedChoroplethFilters.survey);
                 },
 
-                quarterFilters: function (state): ChoroplethFiltersForType {
+                quarterFilters: function (): ChoroplethFiltersForType {
                     return this.buildViewFiltersForType(this.selectedDataFilterOptions.quarter,
                         this.selectedChoroplethFilters.quarter);
                 },
 
-                regionFilters: function (state): ChoroplethFiltersForType {
+                regionFilters: function (): ChoroplethFiltersForType {
                     return this.buildRegionFilters();
                 },
 
-                hasFilters: function (state) {
+                hasFilters: function () {
                     return this.selectedChoroplethFilters != null && this.selectedDataFilterOptions != null;
                 },
 
@@ -137,7 +137,6 @@
                 this.selectFilterOption(FilterType.Survey, id);
             },
             selectQuarter(id: string) {
-                console.log("selecting quarter", id);
                 this.selectFilterOption(FilterType.Quarter, id);
             },
             selectRegion(ids: string[]) {
@@ -176,7 +175,7 @@
             }
         },
         watch: {
-            selectedDataType: function (newVal: DataType) {
+            selectedDataType: function () {
                 this.refreshSelectedChoroplethFilters();
             }
         },

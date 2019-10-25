@@ -1,12 +1,11 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
-import MapControl from "../../../app/components/plots/MapControl.vue";
+import MapControl from "../../../../app/components/plots/MapControl.vue";
 import TreeSelect from '@riophae/vue-treeselect'
 import Vuex from "vuex";
-import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../../mocks";
-import {DataType} from "../../../app/store/filteredData/filteredData";
-import {actions} from "../../../app/store/filteredData/actions";
+import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../../../mocks";
+import {DataType} from "../../../../app/store/filteredData/filteredData";
 import Vue from "vue";
-import {store} from "../../../app/main";
+import {store} from "../../../../app/main";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);

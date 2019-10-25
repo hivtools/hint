@@ -1,18 +1,18 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex, {ActionTree} from 'vuex';
-import ChoroplethFilters from "../../../app/components/plots/ChoroplethFilters.vue";
+import ChoroplethFilters from "../../../../app/components/plots/ChoroplethFilters.vue";
 import {
     DataType,
     FilteredDataState,
     FilterType,
     initialSelectedChoroplethFilters
-} from "../../../app/store/filteredData/filteredData";
-import {mockFilteredDataState} from "../../mocks";
-import {getters} from "../../../app/store/filteredData/getters";
-import {actions as filterActions} from "../../../app/store/filteredData/actions";
-import {RootState} from "../../../app/root";
-import {mutations} from "../../../app/store/filteredData/mutations";
+} from "../../../../app/store/filteredData/filteredData";
+import {mockFilteredDataState} from "../../../mocks";
+import {getters} from "../../../../app/store/filteredData/getters";
+import {actions as filterActions} from "../../../../app/store/filteredData/actions";
+import {RootState} from "../../../../app/root";
+import {mutations} from "../../../../app/store/filteredData/mutations";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -276,10 +276,10 @@ describe("ChoroplethFilters component", () => {
                         ...getters,
                         selectedDataFilterOptions: () => {
                             return {
-                                sex: null,
-                                age: null,
-                                regions: null,
-                                survey: null
+                                sex: "",
+                                age: "",
+                                regions: [],
+                                survey: ""
                             }
                         },
                         regionOptions: () => {
@@ -322,7 +322,7 @@ describe("ChoroplethFilters component", () => {
             survey: "s1",
             sex: "female",
             quarter: "1",
-            regions: null
+            regions: []
         };
         const mockFilterUpdated = jest.fn();
         const mockState = {
@@ -374,7 +374,7 @@ describe("ChoroplethFilters component", () => {
             survey: "s1",
             sex: "male",
             quarter: "3",
-            regions: null
+            regions: []
         };
 
 

@@ -4,9 +4,14 @@ import {DataType, FilteredDataState,} from "./filteredData";
 import {FilterOption, NestedFilterOption} from "../../generated";
 import {Dict} from "../../types";
 import {sexFilterOptions} from "./utils";
+import {GetterTree} from "vuex";
 
-export const getters = {
-    selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState): Dict<FilterOption[] | undefined> | null => {
+export const getters: GetterTree<FilteredDataState, RootState> = {
+
+    selectedDataFilterOptions: (state: FilteredDataState,
+                                getters: any,
+                                rootState: RootState): Dict<FilterOption[] | undefined> | null => {
+
         const sapState = rootState.surveyAndProgram;
         const shape = rootState.baseline && rootState.baseline.shape;
         let regions: NestedFilterOption[] = [];

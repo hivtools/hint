@@ -2,6 +2,7 @@ import {DataType, FilteredDataState} from "./filteredData";
 import {RootState} from "../../root";
 import {IndicatorMetadata, NestedFilterOption} from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
+import {Dict} from "../../types";
 
 export const sexFilterOptions = [
     {id: "both", label: "both"},
@@ -46,23 +47,7 @@ export const getColor = (value: number, metadata: IndicatorMetadata) => {
     return colorFunction(colorValue);
 };
 
-export const getUnfilteredData = (state: FilteredDataState, rootState: RootState) => {
-    const sapState = rootState.surveyAndProgram;
-    switch (state.selectedDataType) {
-        case (DataType.ANC):
-            return sapState.anc ? sapState.anc.data : null;
-        case (DataType.Program):
-            return sapState.program ? sapState.program.data : null;
-        case (DataType.Survey):
-            return sapState.survey ? sapState.survey.data : null;
-        case (DataType.Output):
-            return rootState.modelRun.result ? rootState.modelRun.result.data : null;
-        default:
-            return null;
-    }
-};
-
-export const flattenOptions = (filterOptions: NestedFilterOption[]): { [k: string]: NestedFilterOption } => {
+export const flattenOptions = (filterOptions: NestedFilterOption[]): Dict<NestedFilterOption> => {
     let result = {};
     filterOptions.forEach(r =>
         result = {
@@ -72,9 +57,9 @@ export const flattenOptions = (filterOptions: NestedFilterOption[]): { [k: strin
     return result;
 };
 
-const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => {
+const flattenOption = (filterOption: NestedFilterOption): Dict<NestedFilterOption> => {
     let result = {} as any;
-    result[filterOption.id] = {id: filterOption.id, label: filterOption.label};
+    result[filterOption.id] = filterOption;
     if (filterOption.children) {
         filterOption.children.forEach(o =>
             result = {
@@ -86,12 +71,32 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
     return result;
 };
 
-export const flattenIds = (ids: string[], lookup: any): { [k: string]: NestedFilterOption } => {
-    let result = {};
+export const flattenIds = (ids: string[], lookup: any): string[] => {
+    let result: string[] = [];
     ids.forEach(r =>
-        result = {
+        result = [
             ...result,
-            ...flattenOption(lookup[r])
-        });
+            ...flattenId(lookup[r])
+        ]);
     return result;
+};
+
+const flattenId = (filterOption: NestedFilterOption): string[] => {
+    let result: string[] = [];
+    result.push(filterOption.id);
+    if (filterOption.children) {
+        filterOption.children.forEach(o =>
+            result = [
+                ...result,
+                ...flattenId(o as NestedFilterOption)
+            ]);
+
+    }
+    return result;
+};
+
+export const flattenedSelectedRegionFilters = (state: RootState): string[] => {
+    const filterState = state.filteredData;
+    const selectedRegions = filterState.selectedChoroplethFilters.regions || [];
+    return flattenIds(selectedRegions, state.baseline.flattenedRegionFilters);
 };

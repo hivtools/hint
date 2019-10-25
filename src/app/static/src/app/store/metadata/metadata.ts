@@ -1,8 +1,8 @@
-import {Module} from 'vuex';
+import {GetterTree, Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {RootState} from "../../root";
-import {IndicatorMetadata, PlottingMetadataResponse} from "../../generated";
+import {ChoroplethMetadata, IndicatorMetadata, PlottingMetadataResponse} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../filteredData/filteredData";
 
@@ -16,16 +16,14 @@ export const initialMetadataState: MetadataState = {
     plottingMetadata: null
 };
 
-export const metadataGetters = {
+export const metadataGetters: GetterTree<MetadataState, RootState> = {
     complete: (state: MetadataState) => {
         return !!state.plottingMetadata
     },
-    choroplethIndicatorsMetadata: (state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
-        console.time("getting metadata");
+    choroplethIndicatorsMetadata: (state: MetadataState,  getters: any, rootState: RootState): ChoroplethMetadata => {
         const plottingMetadata = state.plottingMetadata;
 
         if (!plottingMetadata) {
-            console.timeEnd("getting metadata");
             return [];
         }
 
@@ -46,15 +44,11 @@ export const metadataGetters = {
                 metadataForType = plottingMetadata.output;
                 break;
         }
-        console.timeEnd("getting metadata")
-        return  (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
+        return (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators!! : [];
     },
-    choroplethIndicators:(state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
-        console.time("getting choro indicators")
+    choroplethIndicators:(state: MetadataState,  getters: any): string[] => {
         const metadata = getters.choroplethIndicatorsMetadata;
-        const map =  metadata.map((i: IndicatorMetadata) => i.indicator);
-        console.timeEnd("getting choro indicators")
-        return map;
+        return metadata.map((i: IndicatorMetadata) => i.indicator);
     }
 };
 

@@ -4,11 +4,11 @@ import {
     mockModelResultResponse,
     mockModelRunState,
     mockRootState
-} from "../../mocks";
+} from "../../../../mocks";
 import {interpolateGreys} from "d3-scale-chromatic";
 import {testIndicatorMetadata} from "./regionIndicators.test";
-import {getRegionIndicators} from "../../../app/components/plots/utils";
-import {DataType} from "../../../app/store/filteredData/filteredData";
+import {getRegionIndicators} from "../../../../../app/components/plots/choroplethData";
+import {DataType} from "../../../../../app/store/filteredData/filteredData";
 
 describe("getting region indicators for output data", () => {
 
@@ -30,11 +30,17 @@ describe("getting region indicators for output data", () => {
         })
     });
 
+    it("returns empty object if survey is null", () => {
+        const testRootState = getRootState(null, {age: "1", sex: "both", survey: "s1", quarter: "1"});
+        testRootState.modelRun.result = null;
+        const regionIndicators = getRegionIndicators(testRootState, testMeta);
+        expect(regionIndicators).toStrictEqual({});
+    });
+
     it("gets regionIndicators for Output", () => {
 
         const testData = [
             {
-                iso3: "MWI",
                 area_id: "area1",
                 mean: 0.2,
                 age_group_id: 1,
@@ -42,7 +48,6 @@ describe("getting region indicators for output data", () => {
                 sex: "both"
             },
             {
-                iso3: "MWI",
                 area_id: "area2",
                 mean: 0.3,
                 age_group_id: 1,
@@ -64,46 +69,32 @@ describe("getting region indicators for output data", () => {
 
     it("filters regionIndicators for Output", () => {
 
-        const testData = [
+        const testRow = {
+            area_id: "area1",
+            mean: 0.2,
+            age_group_id: 1,
+            indicator_id: "2",
+            sex: "both"
+        };
+        const testData = [testRow,
             {
-                iso3: "MWI",
-                area_id: "area1",
-                mean: 0.2,
-                age_group_id: 1,
-                indicator_id: "2",
-                sex: "both"
-            },
-            {
-                iso3: "MWI",
+                ...testRow,
                 area_id: "area2",
-                mean: 0.3,
-                age_group_id: 1,
-                indicator_id: "2",
-                sex: "both"
+                mean: 0.3
             },
             {
-                iso3: "MWI",
+                ...testRow,
                 area_id: "area3",
-                mean: 0.4,
-                age_group_id: 1,
-                indicator_id: "2",
-                sex: "male"
+                sex: "male" // wrong sex
             },
             {
-                iso3: "MWI",
+                ...testRow,
                 area_id: "area4",
-                mean: 0.5,
-                age_group_id: 2,
-                indicator_id: "2",
-                sex: "both"
+                age_group_id: 2 // wrong age
             },
             {
-                iso3: "MWI",
                 area_id: "area5",
-                mean: 0.6,
-                age_group_id: 1,
-                indicator_id: "3",
-                sex: "both"
+                indicator_id: "3" // wrong indicator id
             }
         ];
         const testRootState = getRootState(testData, {age: "1", sex: "both"});

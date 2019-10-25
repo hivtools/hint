@@ -52,7 +52,7 @@ describe("Filtered data getters", () => {
             }
         );
 
-        const filters = getters.selectedDataFilterOptions(testState, null, testRootState)!!;
+        const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
         expect(filters.regions).toStrictEqual("TEST");
         expect(filters.sex).toStrictEqual(sexOptions);
@@ -71,7 +71,7 @@ describe("Filtered data getters", () => {
             )
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, null, testRootState)!!;
+        const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
         expect(filters.regions).toStrictEqual("TEST");
         expect(filters.sex).toStrictEqual(sexOptions);
@@ -89,7 +89,7 @@ describe("Filtered data getters", () => {
             )
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, null, testRootState)!!;
+        const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
         expect(filters.regions).toStrictEqual("TEST");
         expect(filters.sex).toBeUndefined();
@@ -110,7 +110,7 @@ describe("Filtered data getters", () => {
             )
         });
 
-        const filters = getters.selectedDataFilterOptions(testState, null, testRootState)!!;
+        const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null)!!;
         expect(filters.age).toStrictEqual(testFilters.age);
         expect(filters.regions).toStrictEqual("TEST");
         expect(filters.sex).toStrictEqual(sexOptions);
@@ -122,7 +122,7 @@ describe("Filtered data getters", () => {
         const testState = mockFilteredDataState({selectedDataType: 99 as any});
         const testRootState = mockRootState();
 
-        const filters = getters.selectedDataFilterOptions(testState, null, testRootState)!;
+        const filters = getters.selectedDataFilterOptions(testState, null, testRootState, null)!;
         expect(filters).toBeNull();
     });
 

@@ -1,5 +1,5 @@
 import {shallowMount} from '@vue/test-utils';
-import MapLegend from "../../../app/components/plots/MapLegend.vue";
+import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 
 describe("Map legend component", () => {
 
