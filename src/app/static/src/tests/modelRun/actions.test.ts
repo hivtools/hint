@@ -4,8 +4,14 @@ import {ModelStatusResponse} from "../../app/generated";
 
 describe("Model run actions", () => {
 
-    afterEach(() => {
+    beforeEach(() => {
+        // stop apiService logging to console
+        console.log = jest.fn();
         mockAxios.reset();
+    });
+
+    afterEach(() => {
+        (console.log as jest.Mock).mockClear();
     });
 
     it("commits run id after triggering a model run ", async () => {
