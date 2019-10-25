@@ -2,7 +2,7 @@ import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {RootState} from "../../root";
-import {IndicatorMetadata, PlottingMetadataResponse} from "../../generated";
+import {ChoroplethMetadata, IndicatorMetadata, PlottingMetadataResponse} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../filteredData/filteredData";
 
@@ -20,7 +20,7 @@ export const metadataGetters = {
     complete: (state: MetadataState) => {
         return !!state.plottingMetadata
     },
-    choroplethIndicatorsMetadata: (state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
+    choroplethIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState): ChoroplethMetadata => {
         const plottingMetadata = state.plottingMetadata;
 
         if (!plottingMetadata) {
@@ -30,7 +30,7 @@ export const metadataGetters = {
         const selectedDataType = rootState.filteredData.selectedDataType;
 
         let metadataForType = null;
-        switch(selectedDataType) {
+        switch (selectedDataType) {
             case (DataType.ANC):
                 metadataForType = plottingMetadata.anc;
                 break;
@@ -45,11 +45,13 @@ export const metadataGetters = {
                 break;
         }
 
-        return  (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
+        return (metadataForType
+            && metadataForType.choropleth
+            && metadataForType.choropleth.indicators) ? metadataForType.choropleth.indicators : [];
     },
-    choroplethIndicators:(state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
+    choroplethIndicators: (state: MetadataState, getters: any): string[] => {
         const metadata = getters.choroplethIndicatorsMetadata;
-        return  metadata.map((i: IndicatorMetadata) => i.indicator);
+        return metadata.map((i: IndicatorMetadata) => i.indicator);
     }
 };
 
