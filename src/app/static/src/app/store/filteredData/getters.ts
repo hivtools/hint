@@ -1,19 +1,13 @@
 import {RootState} from "../../root";
-import {DataType, FilteredDataState, SelectedChoroplethFilters, SelectedFilters} from "./filteredData";
-
-import {IndicatorMetadata, NestedFilterOption} from "../../generated";
-import {IndicatorValues, IndicatorValuesDict} from "../../types";
-import {Dict} from "../../types";
+import {DataType, FilteredDataState} from "./filteredData";
 import {FilterOption} from "../../generated";
-import {flattenOptions} from "./utils";
-import {getColor, getUnfilteredData, sexFilterOptions} from "./utils";
-import * as d3ScaleChromatic from "d3-scale-chromatic";
-import {Indicators} from "../../../tests/mocks";
+import {Dict, IndicatorValuesDict} from "../../types";
+import {flattenIds, getColor, getUnfilteredData, sexFilterOptions} from "./utils";
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState): Dict<FilterOption[] | undefined> | null => {
         const sapState = rootState.surveyAndProgram;
-        const regions = getters.regionOptions;
+        const regions = rootState.baseline.regionFilters;
         switch (state.selectedDataType) {
             case (DataType.ANC):
                 return sapState.anc ?
@@ -52,14 +46,6 @@ export const getters = {
                 return null;
         }
     },
-    regionOptions: (state: FilteredDataState, getters: any, rootState: RootState): NestedFilterOption[] => {
-        const shape = rootState.baseline && rootState.baseline.shape;
-        if (!shape || !shape.filters.regions || !shape.filters.regions.children)
-            return [];
-
-        //We're skipping the top level, country region as it doesn't really contribute to the filtering
-        return shape.filters.regions.children as NestedFilterOption[];
-    },
     regionIndicators: function (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any): Dict<IndicatorValuesDict> {
 
         const data = getUnfilteredData(state, rootState);
@@ -67,7 +53,6 @@ export const getters = {
             return {};
         }
 
-        const flattenedRegions = getters.flattenedSelectedRegionFilters;
         const result = {} as Dict<IndicatorValuesDict>;
 
         const indicatorsMeta = rootGetters['metadata/choroplethIndicatorsMetadata'];
@@ -111,47 +96,39 @@ export const getters = {
 
         return result;
     },
-    excludeRow: function (state: FilteredDataState, getters: any): (row: any) => boolean {
-        const dataType = state.selectedDataType;
+    excludeRow: function (state: FilteredDataState, getters: any, rootState: RootState): (row: any) => boolean {
+        const dataType = state.selectedDataType!!;
         const selectedFilters = state.selectedChoroplethFilters;
-        const selectedRegionFilters = getters.flattenedSelectedRegionFilters;
+        const selectedRegionFilters = flattenedSelectedRegionFilters(state, rootState);
 
         return (row: any) => {
 
-            if (dataType == null) {
+            if (dataType != DataType.ANC && row.sex != selectedFilters.sex) {
                 return true;
             }
 
-            if (dataType != DataType.ANC && row.sex != selectedFilters.sex!.id) {
+            if (dataType != DataType.ANC && row.age_group_id != selectedFilters.age) {
                 return true;
             }
 
-            if (dataType != DataType.ANC && row.age_group_id != selectedFilters.age!.id) {
+            if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey) {
                 return true;
             }
 
-            if (dataType == DataType.Survey && row.survey_id != selectedFilters.survey!.id) {
+            if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter) {
                 return true;
             }
 
-            if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter!.id) {
-                return true;
-            }
-
-            const flattenedRegionIds = Object.keys(selectedRegionFilters);
-            if (flattenedRegionIds.length && flattenedRegionIds.indexOf(row.area_id) < 0) {
+            if (selectedRegionFilters.size > 0 && !selectedRegionFilters.has(row.area_id)) {
                 return true
             }
 
             return false;
         }
-    },
-    flattenedRegionOptions: function (state: FilteredDataState, getters: any): Dict<NestedFilterOption> {
-        return flattenOptions(getters.regionOptions);
-    },
-    flattenedSelectedRegionFilters: function (state: FilteredDataState): Dict<NestedFilterOption> {
-        const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
-        return flattenOptions(selectedRegions);
-    },
+    }
 };
 
+export const flattenedSelectedRegionFilters = (state: FilteredDataState, rootState: RootState): Set<string> => {
+    const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
+    return flattenIds(selectedRegions, rootState.baseline.flattenedRegionFilters);
+};

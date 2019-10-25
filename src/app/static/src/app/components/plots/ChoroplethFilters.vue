@@ -3,19 +3,19 @@
         <h4>Filters</h4>
         <div class="py-2">
             <filter-select label="Sex"
-                    :multiple="false"
-                    :options="sexFilters.available"
-                    :value="sexFilters.selected"
-                    :disabled="sexFilters.disabled"
-                    @select="selectSex"></filter-select>
+                           :multiple="false"
+                           :options="sexFilters.available"
+                           :value="sexFilters.selected"
+                           :disabled="sexFilters.disabled"
+                           @select="selectSex"></filter-select>
         </div>
         <div class="py-2">
             <filter-select label="Age"
-                    :multiple="false"
-                    :options="ageFilters.available"
-                    :value="ageFilters.selected"
-                    :disabled="ageFilters.disabled"
-                    @select="selectAge"></filter-select>
+                           :multiple="false"
+                           :options="ageFilters.available"
+                           :value="ageFilters.selected"
+                           :disabled="ageFilters.disabled"
+                           @select="selectAge"></filter-select>
         </div>
 
         <div class="py-2" v-if="!isOutput">
@@ -38,11 +38,11 @@
 
         <div class="py-2">
             <filter-select label="Region"
-                    :multiple="true"
-                    :options="regionFilters.available"
-                    :value="regionFilters.selected"
-                    :disabled="regionFilters.disabled"
-                    @select="selectRegion"></filter-select>
+                           :multiple="true"
+                           :options="regionFilters.available"
+                           :value="regionFilters.selected"
+                           :disabled="regionFilters.disabled"
+                           @select="selectRegion"></filter-select>
         </div>
     </div>
 </template>
@@ -50,13 +50,9 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapActions, mapGetters, mapState} from "vuex";
-    import {
-        DataType,
-        FilteredDataState,
-        FilterType
-    } from "../../store/filteredData/filteredData";
+    import {DataType, FilteredDataState, FilterType} from "../../store/filteredData/filteredData";
     import FilterSelect from "./FilterSelect.vue";
-    import {FilterOption, NestedFilterOption} from "../../generated";
+    import {FilterOption} from "../../generated";
 
     const namespace: string = 'filteredData';
 
@@ -69,37 +65,35 @@
     export default Vue.extend({
         name: "ChoroplethFilters",
         computed: {
-            ...mapGetters(namespace, ["selectedDataFilterOptions", "flattenedRegionOptions",
-                                        "flattenedSelectedRegionFilters"]),
+            ...mapGetters(namespace, ["selectedDataFilterOptions", "flattenedSelectedRegionFilters"]),
             ...mapState<FilteredDataState>(namespace, {
                 selectedDataType: state => state.selectedDataType,
                 selectedChoroplethFilters: state => state.selectedChoroplethFilters,
-
-                sexFilters: function (state): ChoroplethFiltersForType {
+                sexFilters: function (): ChoroplethFiltersForType {
                     return this.buildViewFiltersForType(this.selectedDataFilterOptions.sex,
                         this.selectedChoroplethFilters.sex)
                 },
 
-                ageFilters: function (state): ChoroplethFiltersForType {
+                ageFilters: function (): ChoroplethFiltersForType {
                     return this.buildViewFiltersForType(this.selectedDataFilterOptions.age,
                         this.selectedChoroplethFilters.age);
                 },
 
-                surveyFilters: function (state): ChoroplethFiltersForType {
+                surveyFilters: function (): ChoroplethFiltersForType {
                     return this.buildViewFiltersForType(this.selectedDataFilterOptions.surveys,
                         this.selectedChoroplethFilters.survey);
                 },
 
-                quarterFilters: function (state): ChoroplethFiltersForType {
+                quarterFilters: function (): ChoroplethFiltersForType {
                     return this.buildViewFiltersForType(this.selectedDataFilterOptions.quarter,
                         this.selectedChoroplethFilters.quarter);
                 },
 
-                regionFilters: function (state): ChoroplethFiltersForType {
+                regionFilters: function (): ChoroplethFiltersForType {
                     return this.buildRegionFilters();
                 },
 
-                hasFilters: function (state) {
+                hasFilters: function () {
                     return this.selectedChoroplethFilters != null && this.selectedDataFilterOptions != null;
                 },
 
@@ -113,51 +107,45 @@
                 filterUpdated: 'filteredData/choroplethFilterUpdated',
             }),
             buildViewFiltersForType(availableFilterOptions: FilterOption[],
-                                    selectedFilterOption?: FilterOption) {
+                                    selectedFilterOption?: string) {
                 return {
                     available: availableFilterOptions ? availableFilterOptions : [],
-                    selected: selectedFilterOption ? selectedFilterOption.id : null,
+                    selected: selectedFilterOption ? selectedFilterOption : null,
                     disabled: availableFilterOptions == undefined
                 }
             },
             buildRegionFilters() {
-                const selectedRegions = (this.selectedChoroplethFilters.regions ?
-                    this.selectedChoroplethFilters.regions : []) as FilterOption[];
+                const selectedRegions = this.selectedChoroplethFilters.regions ?
+                    this.selectedChoroplethFilters.regions : [];
 
                 return {
                     available: this.selectedDataFilterOptions.regions,
-                    selected: selectedRegions.map(r => r.id),
+                    selected: selectedRegions,
                     disabled: false
                 }
             },
-            selectFilterOption(filterType: FilterType, id: string, available: FilterOption[]) {
-                const newFilter = available.filter(o => o.id == id)[0];
-
-                this.filterUpdated([filterType, newFilter]);
+            selectFilterOption(filterType: FilterType, id: string) {
+                this.filterUpdated([filterType, id]);
             },
             selectSex(id: string) {
-                this.selectFilterOption(FilterType.Sex, id, this.sexFilters.available);
+                this.selectFilterOption(FilterType.Sex, id);
             },
             selectAge(id: string) {
-                this.selectFilterOption(FilterType.Age, id, this.ageFilters.available);
+                this.selectFilterOption(FilterType.Age, id);
             },
             selectSurvey(id: string) {
-                this.selectFilterOption(FilterType.Survey, id, this.surveyFilters.available);
+                this.selectFilterOption(FilterType.Survey, id);
             },
             selectQuarter(id: string) {
-                this.selectFilterOption(FilterType.Quarter, id, this.quarterFilters.available);
+                this.selectFilterOption(FilterType.Quarter, id);
             },
             selectRegion(ids: string[]) {
-                const newFilter = ids.map(id => this.flattenedRegionOptions[id]);
-                this.filterUpdated([FilterType.Region, newFilter]);
+                this.filterUpdated([FilterType.Region, ids]);
             },
             getNewSelectedFilterOption(filterName: string, available: FilterOption[]) {
                 //if the selected data type has changed, we should update the choropleth filters if the dataset of that
                 //type does not include any of the selected filters as values. Set the filter to the first available value
-                const selectedChoroplethFilters = this.selectedChoroplethFilters;
-
-                const currentValue = selectedChoroplethFilters[filterName] ?
-                    selectedChoroplethFilters[filterName].id : null;
+                const currentValue = this.selectedChoroplethFilters[filterName] || null;
 
                 if (available && available.length > 0 //leave unchanged if none available - control will be disabled anyway
                     && ((!currentValue) || available.filter(f => f.id == currentValue).length == 0)) {
@@ -165,7 +153,7 @@
                 }
                 return null;
             },
-            refreshSelectedChoroplethFilters(){
+            refreshSelectedChoroplethFilters() {
                 if (this.hasFilters) {
                     const newSexFilter = this.getNewSelectedFilterOption("sex", this.sexFilters.available);
                     if (newSexFilter) {

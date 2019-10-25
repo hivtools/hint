@@ -1,5 +1,6 @@
-import {colorFunctionFromName, getColor, roundToContext} from "../../app/store/filteredData/utils";
+import {colorFunctionFromName, flattenOptions, getColor, roundToContext} from "../../app/store/filteredData/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
+import {NestedFilterOption} from "../../app/generated";
 
 
 describe("FilteredData getters", () => {
@@ -75,5 +76,20 @@ describe("FilteredData getters", () => {
 
     it ("round to context does not round value if both values and context are integers", () => {
         expect(roundToContext(5, 10)).toBe(5);
+    });
+
+    it("can flatten options", () => {
+
+        const testData: NestedFilterOption[] = [
+            {
+                id: "1", label: "name1", children: [{
+                    id: "2", label: "nested", children: []
+                }]
+            }
+        ];
+
+        const result = flattenOptions(testData);
+        expect(result["1"]).toStrictEqual(testData[0]);
+        expect(result["2"]).toStrictEqual({id: "2", label: "nested", children: []});
     });
 });
