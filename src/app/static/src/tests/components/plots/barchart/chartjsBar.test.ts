@@ -1,10 +1,7 @@
 import ChartjsBar from "../../../../app/components/plots/barchart/chartjsBar.vue";
 import {createLocalVue, shallowMount} from "@vue/test-utils";
-import Vue from "vue";
-import Vuex from "vuex";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
 
 describe("chartjsBar component", () => {
 

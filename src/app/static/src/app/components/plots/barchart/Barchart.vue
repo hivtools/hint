@@ -3,7 +3,7 @@
     <div>
         <div class="row">
             <div class="col-md-3">
-                <div class="form-group">
+                <div id="indicator-fg" class="form-group">
                     <label class="font-weight-bold">Indicator</label>
                     <treeselect :multiple=false
                                 :clearable="false"
@@ -11,14 +11,14 @@
                                 v-model=indicatorId
                                 :normalizer="normalizeIndicators"></treeselect>
                 </div>
-                <div class="form-group">
+                <div id="x-axis-fg" class="form-group">
                     <label class="font-weight-bold">X Axis</label>
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="filtersAsOptions"
                                 v-model=xAxisId></treeselect>
                 </div>
-                <div class="form-group">
+                <div id="disagg-fg" class="form-group">
                     <label class="font-weight-bold">Disaggregate by</label>
                     <treeselect :multiple=false
                                 :clearable="false"
@@ -27,7 +27,7 @@
                 </div>
                 <hr/>
                 <h3>Filters</h3>
-                <div v-for="filter in filters" class="form-group">
+                <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
                     <filter-select v-model="selectedFilterOptions[filter.id]"
                                    :is-disaggregate-by="filter.id === disaggregateById"
                                    :is-x-axis="filter.id === xAxisId"
@@ -35,7 +35,7 @@
                                    :options="filter.options"></filter-select>
                 </div>
             </div>
-            <div class="col-md-9">
+            <div id="chart" class="col-md-9">
                 <chartjs-bar :chartdata="processedOutputData" :xLabel="xAxisLabel" :yLabel="indicator.name" style="width: 100%; height: 100%;"></chartjs-bar>
             </div>
         </div>
