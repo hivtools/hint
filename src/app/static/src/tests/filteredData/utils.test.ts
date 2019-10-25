@@ -1,4 +1,10 @@
-import {colorFunctionFromName, flattenOptions, getColor, roundToContext} from "../../app/store/filteredData/utils";
+import {
+    colorFunctionFromName,
+    flattenIds,
+    flattenOptions,
+    getColor,
+    roundToContext
+} from "../../app/store/filteredData/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 import {NestedFilterOption} from "../../app/generated";
 
@@ -91,5 +97,44 @@ describe("FilteredData getters", () => {
         const result = flattenOptions(testData);
         expect(result["1"]).toStrictEqual(testData[0]);
         expect(result["2"]).toStrictEqual({id: "2", label: "nested", children: []});
+    });
+
+    it("flatten ids returns set of selected ids", () => {
+
+        const dict = {
+            "1": {
+                id: "1",
+                label: "l1",
+                children:
+                    [{
+                        id: "2",
+                        label: "l2",
+                        children: [{
+                            id: "3",
+                            label: "l3"
+                        }]
+                    }]
+            },
+            "2": {
+                id: "2",
+                label: "l2",
+                children: [{
+                    id: "3",
+                    label: "l3"
+                }]
+            },
+            "3": {
+                id: "3",
+                label: "l3"
+            },
+            "4": {
+                id: "3",
+                label: "l3"
+            }
+        };
+
+
+        const result = flattenIds(["1"], dict);
+        expect(result).toStrictEqual(new Set(["1", "2", "3"]));
     });
 });
