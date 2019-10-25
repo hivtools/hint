@@ -35,7 +35,7 @@ function testGetsChoroplethIndicatorsMetadataForDataType(dataType: DataType) {
 
     const rootState = mockRootState({filteredData: mockFilteredDataState({selectedDataType: dataType})});
 
-    const result = metadataGetters.choroplethIndicatorsMetadata(metadataState, null, rootState, null);
+    const result = metadataGetters.choroplethIndicatorsMetadata(metadataState, null, rootState);
 
     expect(result).toStrictEqual(testIndicators);
 }
@@ -62,7 +62,7 @@ describe("Metadata regionIndicator getter", () => {
         const metadataState =  mockMetadataState(
             {plottingMetadata: null});
 
-        const result = metadataGetters.choroplethIndicatorsMetadata(metadataState, null, mockRootState(), null);
+        const result = metadataGetters.choroplethIndicatorsMetadata(metadataState, null, mockRootState());
 
         expect(result).toEqual([]);
     });
@@ -72,10 +72,7 @@ describe("Metadata regionIndicator getter", () => {
             choroplethIndicatorsMetadata: testIndicators
         };
 
-        const rootState = mockRootState({filteredData: mockFilteredDataState({selectedDataType: DataType.ANC})});
-
-        const result = metadataGetters.choroplethIndicators(mockMetadataState(), testGetters, rootState, null);
-
+        const result = metadataGetters.choroplethIndicators(mockMetadataState(), testGetters);
         expect(result).toStrictEqual(["art_coverage", "prevalence"]);
     });
 });
