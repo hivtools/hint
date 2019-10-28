@@ -16,18 +16,22 @@ describe("Baseline actions", () => {
         (console.log as jest.Mock).mockClear();
     });
 
-    it("sets country after PJNZ file upload", async () => {
+    it("sets country and iso3 after PJNZ file upload, and fetches plotting metadata", async () => {
 
         mockAxios.onPost(`/baseline/pjnz/`)
-            .reply(200, mockSuccess({data: {country: "Malawi"}}));
+            .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
 
         const commit = jest.fn();
-        const state = mockBaselineState();
+        const state = mockBaselineState({iso3: "MWI"});
         const dispatch = jest.fn();
         await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUpdated", payload: {data: {country: "Malawi"}}});
+        expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUpdated", payload: {data: {country: "Malawi", iso3: "MWI"}}});
+
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getPlottingMetadata");
+        expect(dispatch.mock.calls[0][1]).toBe("MWI");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
     });
 
     testUploadErrorCommitted("/baseline/pjnz/", "PJNZUploadError", "PJNZUpdated", actions.uploadPJNZ);

@@ -206,6 +206,7 @@ export interface NestedFilterOption {
 }
 export interface PjnzResponseData {
   country: string;
+  iso3: string;
 }
 export type ChoroplethMetadata = {
   indicator: string;
@@ -333,6 +334,7 @@ export interface PjnzResponse {
   type: "pjnz";
   data: {
     country: string;
+    iso3: string;
   };
   filters?: null;
 }
