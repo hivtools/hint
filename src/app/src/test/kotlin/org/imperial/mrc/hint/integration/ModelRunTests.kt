@@ -67,4 +67,12 @@ class ModelRunTests : SecureIntegrationTests() {
         val responseEntity = testRestTemplate.getForEntity<String>("/model/result/${id}")
         assertSecureWithSuccess(isAuthorized, responseEntity, "ModelResultResponse")
     }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can get model run options`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/options")
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ModelRunOptions")
+    }
+
 }

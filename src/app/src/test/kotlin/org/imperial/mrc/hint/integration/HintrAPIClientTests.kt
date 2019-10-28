@@ -40,33 +40,9 @@ class HintrApiClientTests {
     }
 
     @Test
-    fun `can get model run status`() {
+    fun `can get arbitrary url`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val submitResult = sut.submit(mapOf(), mapOf())
-
-        val id = ObjectMapper().readValue<JsonNode>(submitResult.body!!)["data"]["id"].textValue()
-
-        val result = sut.getStatus(id)
-        JSONValidator().validateSuccess(result.body!!, "ModelStatusResponse")
-    }
-
-    @Test
-    fun `can get model run result`() {
-        val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val submitResult = sut.submit(mapOf(), mapOf())
-
-        val id = ObjectMapper().readValue<JsonNode>(submitResult.body!!)["data"]["id"].textValue()
-
-        val result = sut.getResult(id)
-        assertThat(result.statusCodeValue).isEqualTo(400)
-        JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
-    }
-
-    @Test
-    fun `can get plotting metadata`() {
-        val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val metadataResult = sut.getPlottingMetadata("Malawi");
-
-        JSONValidator().validateSuccess(metadataResult.body!!, "PlottingMetadataResponse")
+        val metadataResult = sut.get("/model/options")
+        JSONValidator().validateSuccess(metadataResult.body!!, "ModelRunOptions")
     }
 }
