@@ -18,6 +18,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
     async run({commit, rootState}) {
         const options = rootState.modelOptions.options;
+        options.sleep = 1; // TODO remove once no longer needed by hintr
         await api<ModelRunActionTypes, ModelRunErrorTypes>(commit)
             .withSuccess("ModelRunStarted")
             .withError("ModelRunError")
@@ -26,11 +27,13 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
     poll({commit, state, dispatch}, runId) {
         const id = setInterval(() => {
+            console.log("xxxxxxxxxxxxxx")
             api<ModelRunActionTypes, ModelRunErrorTypes>(commit)
                 .withSuccess("RunStatusUpdated")
                 .withError("RunStatusError")
                 .get<ModelStatusResponse>(`/model/status/${runId}`)
                 .then(() => {
+                    console.log("-----------------------")
                     if (state.status.done) {
                         dispatch("getResult", runId);
                     }

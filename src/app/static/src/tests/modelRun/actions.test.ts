@@ -16,11 +16,12 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const rootState = mockRootState({
             modelOptions: mockModelOptionsState({
-                options: "TEST" as any
+                options: {1: "TEST"}
             })
         });
         await actions.run({commit, rootState} as any);
-        expect(mockAxios.history.post[0].data).toBe("TEST")
+        expect(JSON.parse(mockAxios.history.post[0].data))
+            .toStrictEqual({1: "TEST", sleep: 1})
 
     });
 

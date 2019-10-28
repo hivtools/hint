@@ -19,6 +19,7 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
     ModelRunStarted(state: ModelRunState, action: PayloadWithType<ModelSubmitResponse>) {
         state.modelRunId = action.payload.id;
         state.status = {id: action.payload.id} as ModelStatusResponse;
+        state.errors = [];
     },
 
     RunStatusUpdated(state: ModelRunState, action: PayloadWithType<ModelStatusResponse>) {
