@@ -46,13 +46,14 @@ describe("ModelOutput component", () => {
         expect(wrapper.find(".nav-link.active").text()).toBe("Map");
         expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+        expect(wrapper.find("#barchart-container").classes()).toEqual(["d-none"]);
 
         wrapper.findAll(".nav-link").at(1).trigger("click");
 
         expect(wrapper.find(".nav-link.active").text()).toBe("Bar");
         expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
         expect(wrapper.findAll("choropleth-stub").length).toBe(0);
-
-
+        expect(wrapper.find("#barchart-container").classes()).toEqual(["col-md-12"]);
+        expect(wrapper.findAll("barchart-stub").length).toBe(1);
     });
 });

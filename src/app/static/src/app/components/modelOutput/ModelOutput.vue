@@ -17,7 +17,7 @@
                 <choropleth></choropleth>
             </div>
 
-            <div class="col-md-12" :display="selectedTab==='Bar' ? '' : 'none'">
+            <div id="barchart-container" :class="selectedTab==='Bar' ? 'col-md-12' : 'd-none'">
                 <barchart :chartdata="chartdata" :filters="barchartFilters" :indicators="barchartIndicators"></barchart>
             </div>
         </div>
