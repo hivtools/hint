@@ -1,7 +1,14 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
-import {mockAxios, mockModelResultResponse, mockModelRunState, mockModelStatusResponse, mockSuccess} from "../../mocks";
+import {
+    mockAxios,
+    mockModelOptionsState,
+    mockModelResultResponse,
+    mockModelRunState,
+    mockModelStatusResponse,
+    mockSuccess
+} from "../../mocks";
 import {actions} from "../../../app/store/modelRun/actions";
 import {mutations} from "../../../app/store/modelRun/mutations";
 import {modelRunGetters, ModelRunState} from "../../../app/store/modelRun/modelRun";
@@ -24,6 +31,9 @@ describe("Model run component", () => {
                     actions,
                     mutations,
                     getters: modelRunGetters
+                },
+                modelOptions: {
+                    state: mockModelOptionsState()
                 }
             }
         });
@@ -31,15 +41,20 @@ describe("Model run component", () => {
 
     const mockStatus = mockModelStatusResponse();
 
-    mockAxios.onPost(`/model/run/`)
-        .reply(200, mockSuccess({id: "1234"}));
+    beforeEach(() => {
+        mockAxios.onPost(`/model/run/`)
+            .reply(200, mockSuccess({id: "1234"}));
 
-    mockAxios.onGet(`/model/status/1234`)
-        .reply(200, mockSuccess(mockStatus));
+        mockAxios.onGet(`/model/status/1234`)
+            .reply(200, mockSuccess(mockStatus));
 
-    mockAxios.onGet(`/model/result/1234`)
-        .reply(200, mockSuccess(mockModelResultResponse()));
+        mockAxios.onGet(`/model/result/1234`)
+            .reply(200, mockSuccess(mockModelResultResponse()));
+    });
 
+    afterEach(() => {
+       mockAxios.reset();
+    });
 
     it("run models and polls for status", (done) => {
 
@@ -65,7 +80,7 @@ describe("Model run component", () => {
         });
     });
 
-    it("polls for status if runId already exists", (done) => {
+    it("polls for status if runId already exists and pollId does not", (done) => {
         const store = createStore({modelRunId: "1234"});
         const wrapper = shallowMount(ModelRun, {store, localVue});
 
@@ -75,6 +90,16 @@ describe("Model run component", () => {
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).toBe(-1);
             expect(wrapper.find(Modal).props().open).toBe(false);
+            done();
+        }, 2500);
+    });
+
+    it("does not start polling on created if pollId already exists", (done) => {
+        const store = createStore({modelRunId: "1234", statusPollId: 1});
+        shallowMount(ModelRun, {store, localVue});
+
+        setTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(0);
             done();
         }, 2500);
     });

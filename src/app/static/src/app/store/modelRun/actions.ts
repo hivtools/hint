@@ -9,18 +9,19 @@ export type ModelRunActionTypes = "ModelRunStarted" | "RunStatusUpdated" | "Poll
 export type ModelRunErrorTypes = "ModelRunError" | "RunStatusError" | "RunResultError"
 
 export interface ModelRunActions {
-    run: (store: ActionContext<ModelRunState, RootState>, options: Dict<string | string[]>) => void
+    run: (store: ActionContext<ModelRunState, RootState>) => void
     poll: (store: ActionContext<ModelRunState, RootState>, runId: string) => void
     getResult: (store: ActionContext<ModelRunState, RootState>) => void
 }
 
 export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
-    async run({commit}, modelRunParams) {
+    async run({commit, rootState}) {
+        const options = rootState.modelOptions.options;
         await api<ModelRunActionTypes, ModelRunErrorTypes>(commit)
             .withSuccess("ModelRunStarted")
             .withError("ModelRunError")
-            .postAndReturn<ModelSubmitResponse>("/model/run/", modelRunParams)
+            .postAndReturn<ModelSubmitResponse>("/model/run/", options)
     },
 
     poll({commit, state, dispatch}, runId) {
