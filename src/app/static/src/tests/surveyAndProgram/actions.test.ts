@@ -7,6 +7,16 @@ const FormData = require("form-data");
 
 describe("Survey and programme actions", () => {
 
+    beforeEach(() => {
+        // stop apiService logging to console
+        console.log = jest.fn();
+        mockAxios.reset();
+    });
+
+    afterEach(() => {
+        (console.log as jest.Mock).mockClear();
+    });
+
     it("sets data after surveys file upload", async () => {
 
         mockAxios.onPost(`/disease/survey/`)

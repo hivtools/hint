@@ -1,5 +1,12 @@
-import {colorFunctionFromName, getColor, roundToContext} from "../../app/store/filteredData/utils";
+import {
+    colorFunctionFromName,
+    flattenToIdSet,
+    flattenOptions,
+    getColor,
+    roundToContext
+} from "../../app/store/filteredData/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
+import {NestedFilterOption} from "../../app/generated";
 
 
 describe("FilteredData getters", () => {
@@ -75,5 +82,59 @@ describe("FilteredData getters", () => {
 
     it ("round to context does not round value if both values and context are integers", () => {
         expect(roundToContext(5, 10)).toBe(5);
+    });
+
+    it("can flatten options", () => {
+
+        const testData: NestedFilterOption[] = [
+            {
+                id: "1", label: "name1", children: [{
+                    id: "2", label: "nested", children: []
+                }]
+            }
+        ];
+
+        const result = flattenOptions(testData);
+        expect(result["1"]).toStrictEqual(testData[0]);
+        expect(result["2"]).toStrictEqual({id: "2", label: "nested", children: []});
+    });
+
+    it("flatten ids returns set of selected ids", () => {
+
+        const dict = {
+            "1": {
+                id: "1",
+                label: "l1",
+                children:
+                    [{
+                        id: "2",
+                        label: "l2",
+                        children: [{
+                            id: "3",
+                            label: "l3"
+                        }]
+                    }]
+            },
+            "2": {
+                id: "2",
+                label: "l2",
+                children: [{
+                    id: "3",
+                    label: "l3"
+                }]
+            },
+            "3": {
+                id: "3",
+                label: "l3"
+            },
+            "4": {
+                id: "3",
+                label: "l3"
+            }
+        };
+
+
+        const result = flattenToIdSet(["1"], dict);
+        expect(result).toStrictEqual(new Set(["1", "2", "3"]));
     });
 });

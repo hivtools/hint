@@ -8,6 +8,7 @@ import {
     SurveyResponse, AncResponse, ProgrammeResponse, PopulationResponse, ShapeResponse, PjnzResponse
 } from "./generated";
 import {Commit} from "vuex";
+import {freezer} from "./utils";
 
 type ResponseData =
     ValidateInputResponse
@@ -74,7 +75,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     withSuccess = (type: S) => {
         this._onSuccess = (success: Response) => {
-            this._commit({type: type, payload: success.data});
+            this._commit({type: type, payload: freezer.deepFreeze(success.data)});
         };
         return this;
     };
