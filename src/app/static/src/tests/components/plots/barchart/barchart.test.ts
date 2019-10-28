@@ -140,4 +140,11 @@ describe("Barchart component", () => {
             ]
         });
     });
+
+    it("normalizeIndicators returns expected result", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        const result = vm.normalizeIndicators(propsData.indicators[0]);
+        expect(result).toStrictEqual({id: "art_cov", label: "ART coverage"});
+    });
 });
