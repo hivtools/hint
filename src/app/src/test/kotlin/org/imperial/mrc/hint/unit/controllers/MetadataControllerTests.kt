@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.unit.controllers
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.controllers.MetadataController
@@ -12,8 +13,8 @@ class MetadataControllerTests {
     @Test
     fun `gets plotting metadata`() {
         val mockResponse = mock<ResponseEntity<String>>()
-        val mockAPIClient = mock<APIClient>{
-            on {get("meta/plotting/Malawi")} doReturn mockResponse
+        val mockAPIClient = mock<APIClient> {
+            on { getPlottingMetadata("Malawi") } doReturn mockResponse
         }
 
         val sut = MetadataController(mockAPIClient)

@@ -11,6 +11,6 @@ class MetadataController(val apiClient: APIClient) {
     @GetMapping("/plotting/{country}")
     @ResponseBody
     fun plotting(@PathVariable("country") country: String): ResponseEntity<String> {
-        return apiClient.get("meta/plotting/${country}");
+        return apiClient.getPlottingMetadata(country);
     }
 }

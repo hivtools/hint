@@ -19,13 +19,13 @@ class ModelRunController(val fileManager: FileManager, val apiClient: APIClient)
     @GetMapping("/status/{id}")
     @ResponseBody
     fun status(@PathVariable("id")id: String): ResponseEntity<String> {
-        return apiClient.get("model/status/${id}")
+        return apiClient.getStatus(id)
     }
 
     @GetMapping("/result/{id}")
     @ResponseBody
     fun result(@PathVariable("id")id: String): ResponseEntity<String> {
-        return apiClient.get("model/result/${id}")
+        return apiClient.getResult(id)
     }
 
     @GetMapping("/options/")

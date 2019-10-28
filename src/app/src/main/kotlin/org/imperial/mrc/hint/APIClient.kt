@@ -12,7 +12,9 @@ interface APIClient {
     fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateSurveyAndProgramme(file: SessionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
     fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String>
-    fun get(url: String): ResponseEntity<String>
+    fun getStatus(id: String): ResponseEntity<String>
+    fun getResult(id: String): ResponseEntity<String>
+    fun getPlottingMetadata(country: String): ResponseEntity<String>
     fun getModelRunOptions(files: Map<String, String>): ResponseEntity<String>
 }
 
@@ -54,12 +56,24 @@ class HintrAPIClient(
         return postJson("model/submit", json)
     }
 
+    override fun getStatus(id: String): ResponseEntity<String> {
+        return get("/model/status/${id}")
+    }
+
+    override fun getResult(id: String): ResponseEntity<String> {
+        return get("/model/result/${id}")
+    }
+
+    override fun getPlottingMetadata(country: String): ResponseEntity<String> {
+        return get("/meta/plotting/${country}")
+    }
+
     override fun getModelRunOptions(files: Map<String, String>): ResponseEntity<String> {
         val json = objectMapper.writeValueAsString(files)
         return postJson("model/options", json)
     }
 
-    override fun get(url: String): ResponseEntity<String> {
+    fun get(url: String): ResponseEntity<String> {
         return "$baseUrl/$url".httpGet()
                 .response()
                 .second
