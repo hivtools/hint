@@ -1,4 +1,4 @@
-import {addCheckSum, verifyCheckSum} from "../app/utils";
+import {addCheckSum, freezer, verifyCheckSum} from "../app/utils";
 
 describe("utils", () => {
 
@@ -27,6 +27,28 @@ describe("utils", () => {
 
         const result = verifyCheckSum(corruptedContent);
         expect(result).toBe(false);
+    });
+
+    it("deep freezes an object", () => {
+
+        const data = {
+            nothing: null,
+            time: 10,
+            name: "hello",
+            items: [1, null, "three", {label: "l1"}],
+            child: {
+                name: "child",
+                items: [4, null, "five"]
+            }
+        };
+
+        const frozen = freezer.deepFreeze({...data});
+        expect(frozen).toStrictEqual(data);
+        expect(Object.isFrozen(frozen)).toBe(true);
+        expect(Object.isFrozen(frozen.items)).toBe(true);
+        expect(Object.isFrozen(frozen.child)).toBe(true);
+        expect(Object.isFrozen(frozen.child.items)).toBe(true);
+
     });
 
 });

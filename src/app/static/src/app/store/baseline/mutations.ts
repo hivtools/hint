@@ -27,7 +27,7 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
         const data = action.payload;
         if (data) {
             state.country = data.data.country;
-            state.pjnz = Object.freeze(data);
+            state.pjnz = data;
         } else {
             state.country = "";
             state.pjnz = null;
@@ -38,7 +38,7 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
     ShapeUpdated(state: BaselineState, action: PayloadWithType<ShapeResponse>) {
         state.shape = Object.freeze(action.payload);
         if (action.payload && action.payload.filters.regions){
-            state.regionFilters = Object.freeze(action.payload.filters.regions.children) as NestedFilterOption[];
+            state.regionFilters = action.payload.filters.regions.children as NestedFilterOption[];
             state.flattenedRegionFilters = Object.freeze(flattenOptions(state.regionFilters));
         }
         state.shapeError = "";
@@ -54,7 +54,7 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
     },
 
     PopulationUploadError(state: BaselineState, action: PayloadWithType<string>) {
-        state.populationError = Object.freeze(action.payload);
+        state.populationError = action.payload;
     },
 
     ...readyStateMutations

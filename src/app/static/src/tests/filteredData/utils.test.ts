@@ -1,6 +1,6 @@
 import {
     colorFunctionFromName,
-    getIdsAndChildrenIds,
+    flattenToIdSet,
     flattenOptions,
     getColor,
     roundToContext
@@ -134,7 +134,7 @@ describe("FilteredData getters", () => {
         };
 
 
-        const result = getIdsAndChildrenIds(["1"], dict);
+        const result = flattenToIdSet(["1"], dict);
         expect(result).toStrictEqual(new Set(["1", "2", "3"]));
     });
 });

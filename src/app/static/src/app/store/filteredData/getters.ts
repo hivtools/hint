@@ -2,7 +2,7 @@ import {RootState} from "../../root";
 import {DataType, FilteredDataState} from "./filteredData";
 import {FilterOption} from "../../generated";
 import {Dict, IndicatorValuesDict} from "../../types";
-import {getIdsAndChildrenIds, getColor, getUnfilteredData, sexFilterOptions} from "./utils";
+import {flattenToIdSet, getColor, getUnfilteredData, sexFilterOptions} from "./utils";
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState): Dict<FilterOption[] | undefined> | null => {
@@ -131,5 +131,5 @@ export const getters = {
 
 export const flattenedSelectedRegionFilters = (state: FilteredDataState, rootState: RootState): Set<string> => {
     const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
-    return getIdsAndChildrenIds(selectedRegions, rootState.baseline.flattenedRegionFilters);
+    return flattenToIdSet(selectedRegions, rootState.baseline.flattenedRegionFilters);
 };

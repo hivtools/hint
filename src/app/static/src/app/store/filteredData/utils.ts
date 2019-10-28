@@ -87,24 +87,24 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
     return result;
 };
 
-export const getIdsAndChildrenIds = (ids: string[], lookup: Dict<NestedFilterOption>): Set<string> => {
+export const flattenToIdSet = (ids: string[], lookup: Dict<NestedFilterOption>): Set<string> => {
     let result: string[] = [];
     ids.forEach(r =>
         result = [
             ...result,
-            ...getIdAndChildrenIdsAsFlatArray(lookup[r])
+            ...flattenToIdArray(lookup[r])
         ]);
     return new Set(result);
 };
 
-const getIdAndChildrenIdsAsFlatArray = (filterOption: NestedFilterOption): string[] => {
+const flattenToIdArray = (filterOption: NestedFilterOption): string[] => {
     let result: string[] = [];
     result.push(filterOption.id);
     if (filterOption.children) {
         filterOption.children.forEach(o =>
             result = [
                 ...result,
-                ...getIdAndChildrenIdsAsFlatArray(o as NestedFilterOption)
+                ...flattenToIdArray(o as NestedFilterOption)
             ]);
 
     }

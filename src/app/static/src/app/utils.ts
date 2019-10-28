@@ -54,3 +54,21 @@ export const verifyCheckSum = (content: string): false | any => {
 
     return valid && JSON.parse(data);
 };
+
+export const freezer = {
+
+    deepFreeze : (data: any): any => {
+        if (Array.isArray(data)) {
+            return Object.freeze(data)
+        }
+        if (data != null && typeof data === "object") {
+            for (let prop in data) {
+                if (data.hasOwnProperty(prop)) {
+                    data[prop] = freezer.deepFreeze(data[prop])
+                }
+            }
+            return Object.freeze(data);
+        }
+        return data;
+    }
+};
