@@ -4,11 +4,13 @@ import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/s
 import {RootState} from "../../app/root";
 import {
     mockAncResponse,
+    mockBaselineState,
+    mockModelResultResponse,
+    mockModelRunState,
     mockProgramResponse,
-    mockSurveyAndProgramState,
-    mockSurveyResponse,
     mockRootState,
-    mockModelRunState, mockModelResultResponse
+    mockSurveyAndProgramState,
+    mockSurveyResponse
 } from "../mocks";
 import {testGetters} from "./getters.test";
 import {interpolateGreys} from "d3-scale-chromatic";
@@ -21,7 +23,7 @@ describe("FilteredData regionIndicator getter", () => {
         }
     };
 
-    function testIndicatorMetadata(indicator: string, value_column: string, indicator_column: string, indicator_value: string){
+    function testIndicatorMetadata(indicator: string, value_column: string, indicator_column: string, indicator_value: string) {
         return {
             indicator: indicator,
             value_column: value_column,
@@ -58,11 +60,11 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
-                    age: {id: "1", label: "0-99"},
-                    survey: {id: "s1", label: "Survey 1"},
-                    sex: {id: "both", label: "both"},
-                    quarter: {id: "1", label: "Jan - Mar  2019"},
-                    regions: null
+                    age: "1",
+                    survey: "s1",
+                    sex: "both",
+                    quarter: "1",
+                    regions: []
                 }
             },
             getters: getters
@@ -113,6 +115,9 @@ describe("FilteredData regionIndicator getter", () => {
                         {data: testData}
                     )
                 }),
+            baseline: mockBaselineState({
+                flattenedRegionFilters: {}
+            }),
             filteredData: testState
         });
 
@@ -146,11 +151,11 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
-                    age: {id: "1", label: "0-99"},
-                    survey: {id: "s1", label: "Survey 1"},
-                    sex: {id: "both", label: "both"},
-                    quarter: {id: "1", label: "Jan - Mar  2019"}, //should be ignored
-                    regions: null
+                    age: "1",
+                    survey: "s1",
+                    sex: "both",
+                    quarter: "1", //should be ignored
+                    regions: []
                 }
             },
             getters: getters
@@ -202,6 +207,9 @@ describe("FilteredData regionIndicator getter", () => {
                         {data: testData}
                     )
                 }),
+            baseline: mockBaselineState({
+                flattenedRegionFilters: {}
+            }),
             filteredData: testState
         });
 
@@ -225,11 +233,11 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Program,
                 selectedChoroplethFilters: {
-                    age: {id: "1", label: "0-99"},
-                    survey: null,
-                    sex: {id: "both", label: "both"},
-                    quarter: {id: "1", label: "Jan - Mar  2019"},
-                    regions: null
+                    age: "1",
+                    survey: "",
+                    sex: "both",
+                    quarter: "1",
+                    regions: []
                 }
             },
             getters: getters
@@ -260,6 +268,9 @@ describe("FilteredData regionIndicator getter", () => {
                         {data: testData}
                     )
                 }),
+            baseline: mockBaselineState({
+                flattenedRegionFilters: {}
+            }),
             filteredData: testState
         });
 
@@ -284,11 +295,11 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Program,
                 selectedChoroplethFilters: {
-                    age: {id: "1", label: "0-99"},
-                    survey: {id: "s1", label: "Survey 1"}, //Should be ignored for this data type
-                    sex: {id: "both", label: "both"},
-                    quarter: {id: "1", label: "Jan - Mar  2019"},
-                    regions: null
+                    age: "1",
+                    survey: "s1", //Should be ignored for this data type
+                    sex: "both",
+                    quarter: "1",
+                    regions: []
                 }
             },
             getters: getters
@@ -338,6 +349,9 @@ describe("FilteredData regionIndicator getter", () => {
                         {data: testData}
                     )
                 }),
+            baseline: mockBaselineState({
+                flattenedRegionFilters: {}
+            }),
             filteredData: testState
         });
 
@@ -359,11 +373,11 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.ANC,
                 selectedChoroplethFilters: {
-                    age: {id: "1", label: "0-99"},
-                    survey: null,
-                    sex: null,
-                    quarter: {id: "1", label: "Jan - Mar  2019"},
-                    regions: null
+                    age: "1",
+                    survey: "",
+                    sex: "",
+                    quarter: "1",
+                    regions: []
                 }
             },
             getters: getters
@@ -395,6 +409,9 @@ describe("FilteredData regionIndicator getter", () => {
                         {data: testData}
                     )
                 }),
+            baseline: mockBaselineState({
+                flattenedRegionFilters: {}
+            }),
             filteredData: testState
         });
 
@@ -422,11 +439,11 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.ANC,
                 selectedChoroplethFilters: {
-                    age: {id: "1", label: "0-99"}, //should be ignored
-                    survey: null,
-                    sex: {id: "male", label: "male"}, //should be ignored
-                    quarter: {id: "1", label: "Jan - Mar  2019"},
-                    regions: null
+                    age: "1", //should be ignored
+                    survey: "",
+                    sex: "male", //should be ignored
+                    quarter: "1",
+                    regions: []
                 }
             },
             getters: getters
@@ -472,6 +489,9 @@ describe("FilteredData regionIndicator getter", () => {
                         {data: testData}
                     )
                 }),
+            baseline: mockBaselineState({
+                flattenedRegionFilters: {}
+            }),
             filteredData: testState
         });
 
@@ -500,11 +520,11 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Output,
                 selectedChoroplethFilters: {
-                    age: {id: "1", label: "0-99"},
-                    survey: null,
-                    sex: {id: "both", label: "both"},
-                    quarter: {id: "1", label: "Jan - Mar  2019"},
-                    regions: null
+                    age: "1",
+                    survey: "",
+                    sex: "both",
+                    quarter: "1",
+                    regions: []
                 }
             },
             getters: getters
@@ -535,6 +555,9 @@ describe("FilteredData regionIndicator getter", () => {
                         {data: testData as any}
                     )
                 }),
+            baseline: mockBaselineState({
+                flattenedRegionFilters: {}
+            }),
             filteredData: testState
         });
 
@@ -559,11 +582,11 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Output,
                 selectedChoroplethFilters: {
-                    age: {id: "1", label: "0-99"},
-                    survey: null,
-                    sex: {id: "both", label: "both"},
-                    quarter: {id: "1", label: "Jan - Mar  2019"},
-                    regions: null
+                    age: "1",
+                    survey: "",
+                    sex: "both",
+                    quarter: "1",
+                    regions: []
                 }
             },
             getters: getters
@@ -618,11 +641,14 @@ describe("FilteredData regionIndicator getter", () => {
                         {data: testData as any}
                     )
                 }),
+            baseline: mockBaselineState({
+                flattenedRegionFilters: {}
+            }),
             filteredData: testState
         });
 
         const regionIndicators = getters.regionIndicators(testState, testGetters(testState), testRootState,
-                                    testRootGetters(testOutputIndicatorsMetadata));
+            testRootGetters(testOutputIndicatorsMetadata));
 
         const expected = {
             "area1": {
@@ -642,17 +668,11 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
-                    age: {id: "1", label: "0-99"},
-                    survey: {id: "s1", label: "Survey 1"},
-                    sex: {id: "both", label: "both"},
-                    quarter: {id: "1", label: "Jan - Mar  2019"},
-                    regions: [{
-                        id: "area1",
-                        label: "Area 1",
-                        children: [
-                            {id: "area2", label: "Area 2"}
-                        ]
-                    }]
+                    age: "1",
+                    survey: "s1",
+                    sex: "both",
+                    quarter: "1",
+                    regions: ["area1"]
                 }
             }
         };
@@ -712,13 +732,24 @@ describe("FilteredData regionIndicator getter", () => {
                         {data: testData}
                     )
                 }),
+            baseline: mockBaselineState({
+                flattenedRegionFilters: {
+                    "area1": {
+                        id: "area1",
+                        label: "Area 1",
+                        children: [{
+                            id: "area2", label: "Area 2", children: []
+                        }]
+                    },
+                    "area2": {
+                        id: "area2", label: "Area 2", children: []
+                    }
+                }
+            }),
             filteredData: testState
         });
 
-        const testRegionGetters = testGetters(testState, {
-                "area1": {},
-                "area2": {}
-            });
+        const testRegionGetters = testGetters(testState, testRootState);
 
         const regionIndicators = getters.regionIndicators(testState, testRegionGetters, testRootState,
             testRootGetters(testSurveyIndicatorsMetadata));
@@ -742,11 +773,11 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
-                    age: {id: "1", label: "0-99"},
-                    survey: null,
-                    sex: null,
-                    quarter: null,
-                    regions: null
+                    age: "1",
+                    survey: "",
+                    sex: "",
+                    quarter: "",
+                    regions: []
                 }
             },
             getters: getters
@@ -773,11 +804,11 @@ describe("FilteredData regionIndicator getter", () => {
                 ...initialFilteredDataState,
                 selectedDataType: null,
                 selectedChoroplethFilters: {
-                    age: {id: "1", label: "0-99"},
-                    survey: null,
-                    sex: null,
-                    quarter: null,
-                    regions: null
+                    age: "1",
+                    survey: "",
+                    sex: "",
+                    quarter: "",
+                    regions: []
                 }
             },
             getters: getters
@@ -810,6 +841,9 @@ describe("FilteredData regionIndicator getter", () => {
                         {data: testData}
                     )
                 }),
+            baseline: mockBaselineState({
+                flattenedRegionFilters: {}
+            }),
             filteredData: testState
         });
 

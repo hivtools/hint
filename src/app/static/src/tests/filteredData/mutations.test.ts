@@ -2,26 +2,11 @@ import {mutations} from "../../app/store/filteredData/mutations";
 import {
     DataType,
     FilterType,
-    initialFilteredDataState, SelectedChoroplethFilters,
-    SelectedFilters
+    initialFilteredDataState,
+    SelectedChoroplethFilters
 } from "../../app/store/filteredData/filteredData";
 
 describe("FilteredData mutations", () => {
-
-    const getSelectedFiltersByType = (selectedFilters: SelectedFilters, filterType: FilterType) => {
-        switch (filterType) {
-            case (FilterType.Age):
-                return selectedFilters.age;
-            case (FilterType.Region):
-                return selectedFilters.region;
-            case (FilterType.Sex):
-                return selectedFilters.sex;
-            case (FilterType.Survey):
-                return selectedFilters.surveys;
-            case (FilterType.Quarter):
-                return selectedFilters.quarter;
-        }
-    };
 
     const getSelectedChoroplethFilterByType = (selectedFilters: SelectedChoroplethFilters, filterType: FilterType) => {
         switch (filterType) {
@@ -42,12 +27,18 @@ describe("FilteredData mutations", () => {
         const testState = {...initialFilteredDataState};
 
         //initial sate
-        expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType)).toBeNull();
+        let expected = "" as any;
+        if (filterType == FilterType.Region){
+            expected = [];
+        }
+        expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
+            .toStrictEqual(expected);
 
         mutations.ChoroplethFilterUpdated(testState, {
             payload: [filterType, {id: "id", name: "name"}]
         });
-        expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType)).toStrictEqual({id: "id", name: "name"});
+        expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
+            .toStrictEqual({id: "id", name: "name"});
     };
 
     it("sets selectedDataType on SelectedDataTypeUpdated", () => {

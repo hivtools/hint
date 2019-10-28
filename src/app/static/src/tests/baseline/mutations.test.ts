@@ -87,6 +87,33 @@ describe("Baseline mutations", () => {
         expect(testState.shapeError).toBe("");
     });
 
+    it("sets region filters and flattened region filters on ShapeUpdated", () => {
+
+        const mockShape = mockShapeResponse({
+            filters: {
+                regions: {
+                    id: "MWI", label: "Malawi", children: [
+                        {
+                            id: "MWI.1", label: "l1"
+                        }
+                    ]
+                }
+            }
+        });
+        const testState = {...initialBaselineState};
+        mutations.ShapeUpdated(testState, {
+            payload: mockShape
+        });
+        expect(testState.regionFilters).toStrictEqual([{
+            id: "MWI.1", label: "l1"
+        }]);
+        expect(testState.flattenedRegionFilters).toStrictEqual({
+            "MWI.1": {
+                id: "MWI.1", label: "l1"
+            }
+        });
+    });
+
     it("sets error on ShapeUploadError", () => {
 
         const testState = {...initialBaselineState};

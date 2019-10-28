@@ -154,7 +154,7 @@ export const mockShapeResponse = (props: Partial<ShapeResponse> = {}): ShapeResp
         filename: "test.csv",
         filters: {
             level_labels: [{id: 1, area_level_label: "Country", display: true}],
-            regions: {name: "Malawi", id: 1, options : []} as any
+            regions: {label: "Malawi", id: "1", children : []}
         },
         ...props
     }

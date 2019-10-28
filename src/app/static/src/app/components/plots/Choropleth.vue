@@ -41,7 +41,7 @@
 
     interface FilteredDataComputed {
         selectedDataType: DataType | null
-        selectedRegions: NestedFilterOption[]
+        selectedRegions: string[]
     }
 
     interface FilteredDataGetters {
@@ -161,7 +161,7 @@
             },
             selectedRegionFeatures(): Feature[] {
                 if (this.selectedRegions && this.selectedRegions.length > 0) {
-                    return this.selectedRegions.map((r: NestedFilterOption) => this.getFeatureFromAreaId(r.id)!!);
+                    return this.selectedRegions.map((id: string) => this.getFeatureFromAreaId(id)!!);
                 } else if (this.countryFeature) {
                     return [this.countryFeature];
                 }
