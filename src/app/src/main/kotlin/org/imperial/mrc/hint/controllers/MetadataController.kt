@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/meta")
 class MetadataController(val apiClient: APIClient) {
 
-    @GetMapping("/plotting/{country}")
+    @GetMapping("/plotting/{iso3}")
     @ResponseBody
-    fun plotting(@PathVariable("country") country: String): ResponseEntity<String> {
-        return apiClient.getPlottingMetadata(country);
+    fun plotting(@PathVariable("iso3") iso3: String): ResponseEntity<String> {
+        return apiClient.getPlottingMetadata(iso3);
     }
 }
