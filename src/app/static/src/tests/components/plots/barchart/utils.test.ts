@@ -38,8 +38,8 @@ export const filters = [
         column_id: "sex",
         label: "Sex",
         options: [
-            {id: "both", label: "both"},
             {id: "female", label: "female"},
+            {id: "both", label: "both"},
             {id: "male", label: "male"}
         ]
     }

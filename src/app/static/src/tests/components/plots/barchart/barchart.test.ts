@@ -37,7 +37,7 @@ const confirmFormGroup = (wrapper: Wrapper<Barchart>, elementId: string, label: 
     const fg = wrapper.find("#indicator-fg");
     expect(fg.find("label").text()).toBe("Indicator");
     expect(fg.findAll("treeselect-stub").length).toBe(1);
-}
+};
 
 describe("Barchart component", () => {
     it("renders as expected", () => {
@@ -54,11 +54,90 @@ describe("Barchart component", () => {
 
         const age = wrapper.find("#filter-age filter-select-stub");
         expect(age.attributes("label")).toBe("Age group");
-        expect(age.attributes("isxaxis")).toBeUndefined()
+        expect(age.attributes("isxaxis")).toBeUndefined();
         expect(age.attributes("isdisaggregateby")).toBe("true");
 
         const chart = wrapper.find("#chart chartjs-bar-stub");
         expect(chart.attributes("xlabel")).toBe("Region");
         expect(chart.attributes("ylabel")).toBe("ART coverage");
+    });
+
+    it("computes x axis label", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+
+        const result = vm.xAxisLabel;
+        expect(result).toBe("Region");
+
+    });
+
+    it("computes x axis labels", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+
+        const result = vm.xAxisLabels;
+        expect(result).toStrictEqual(["Northern"]);
+    });
+
+    it("computes x axis values", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+
+        const result = vm.xAxisValues;
+        expect(result).toStrictEqual(["1"]);
+    });
+
+    it("computes bar label lookup", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+
+        const result = vm.barLabelLookup;
+        expect(result).toStrictEqual({"0:4": "0-4"});
+    });
+
+    it("computes x axis label lookup", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+
+        const result = vm.xAxisLabelLookup;
+        expect(result).toStrictEqual({"1": "Northern"});
+    });
+
+    it("computes filters as options", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+
+        const result = vm.filtersAsOptions
+        expect(result).toStrictEqual([
+            {id: "region", label: "Region"},
+            {id: "age", label: "Age group"},
+            {id: "sex", label: "Sex"}
+        ]);
+    });
+
+    it("computes indicator", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+
+        const result = vm.indicator;
+        expect(result).toBe(propsData.indicators[0]);
+    });
+
+    it("computed processedData", () =>{
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+
+        const result = vm.processedOutputData;
+        expect(result).toStrictEqual({
+            labels: ["Northern"],
+            datasets: [
+                {
+                    label: "0-4",
+                    backgroundColor: "#e41a1c",
+                    data: [0.40],
+                    errorBars: {"Northern": {plus: 0.43, minus: 0.38}}
+                }
+            ]
+        });
     });
 });
