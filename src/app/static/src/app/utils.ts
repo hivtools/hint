@@ -59,7 +59,7 @@ export const freezer = {
 
     deepFreeze : (data: any): any => {
         if (Array.isArray(data)) {
-            return Object.freeze(data)
+            return Object.freeze(data.map(d => freezer.deepFreeze(d)))
         }
         if (data != null && typeof data === "object") {
             for (let prop in data) {
