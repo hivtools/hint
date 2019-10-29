@@ -135,7 +135,7 @@ export const mockFailure = (errorMessage: string): Response => {
 
 export const mockPJNZResponse = (props: Partial<PjnzResponse> = {}): PjnzResponse => {
     return {
-        data: {country: "Malawi"},
+        data: {country: "Malawi", iso3: "MWI"},
         hash: "1234.csv",
         filename: "test.pjnz",
         type: "pjnz",

@@ -27,9 +27,11 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
         const data = action.payload;
         if (data) {
             state.country = data.data.country;
+            state.iso3 = data.data.iso3;
             state.pjnz = data;
         } else {
             state.country = "";
+            state.iso3 = "";
             state.pjnz = null;
         }
         state.pjnzError = "";

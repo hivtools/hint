@@ -13,7 +13,7 @@ interface APIClient {
     fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
-    fun getPlottingMetadata(country: String): ResponseEntity<String>
+    fun getPlottingMetadata(iso3: String): ResponseEntity<String>
 }
 
 @Component
@@ -85,8 +85,8 @@ class HintrAPIClient(
                 .asResponseEntity()
     }
 
-    override fun getPlottingMetadata(country: String): ResponseEntity<String> {
-        return "$baseUrl/meta/plotting/${country}"
+    override fun getPlottingMetadata(iso3: String): ResponseEntity<String> {
+        return "$baseUrl/meta/plotting/${iso3}"
                 .httpGet()
                 .response()
                 .second
