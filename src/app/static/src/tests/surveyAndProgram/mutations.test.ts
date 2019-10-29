@@ -3,7 +3,7 @@ import {
     SurveyAndProgramDataState, surveyAndProgramGetters
 } from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations} from "../../app/store/surveyAndProgram/mutations";
-import {mockModelRunState, mockRootState, mockSurveyResponse} from "../mocks";
+import {mockRootState, mockSurveyResponse} from "../mocks";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
 
@@ -64,7 +64,7 @@ describe("Survey and programme mutations", () => {
         expect(testState.ancError).toBe("Some error");
     });
 
-    it("finds complete is true after all files are upUpdated", () => {
+    it("is complete once survey file is present", () => {
         const testStore:  Module<SurveyAndProgramDataState, RootState> = {
             state: {...initialSurveyAndProgramDataState},
             getters: surveyAndProgramGetters
@@ -77,12 +77,6 @@ describe("Survey and programme mutations", () => {
         expect(complete(testState, null, testRootState, null)).toBe(false);
 
         mutations.SurveyUpdated(testState, testPayload);
-        expect(complete(testState, null, testRootState, null)).toBe(false);
-
-        mutations.ProgramUpdated(testState, testPayload);
-        expect(complete(testState, null, testRootState, null)).toBe(false);
-
-        mutations.ANCUpdated(testState, testPayload);
         expect(complete(testState, null, testRootState, null)).toBe(true);
     });
 
