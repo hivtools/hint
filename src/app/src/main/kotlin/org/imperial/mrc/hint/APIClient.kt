@@ -57,15 +57,15 @@ class HintrAPIClient(
     }
 
     override fun getStatus(id: String): ResponseEntity<String> {
-        return get("/model/status/${id}")
+        return get("model/status/${id}")
     }
 
     override fun getResult(id: String): ResponseEntity<String> {
-        return get("/model/result/${id}")
+        return get("model/result/${id}")
     }
 
     override fun getPlottingMetadata(iso3: String): ResponseEntity<String> {
-        return get("/meta/plotting/${iso3}")
+        return get("meta/plotting/${iso3}")
     }
 
     override fun getModelRunOptions(files: Map<String, SessionFileWithPath>): ResponseEntity<String> {
