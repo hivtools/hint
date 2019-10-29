@@ -17,7 +17,7 @@ HINTR_IMAGE=$REGISTRY/$API:$HINTR_VERSION
 
 docker network create $NETWORK
 docker pull $DB_IMAGE
-docker pull $HINTR_IMAGE
+#docker pull $HINTR_IMAGE
 docker pull $DB_MIGRATE_IMAGE
 
 docker run --rm -d \
