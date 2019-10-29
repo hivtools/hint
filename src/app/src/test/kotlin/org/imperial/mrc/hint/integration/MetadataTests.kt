@@ -9,7 +9,7 @@ class MetadataTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get metadata`(isAuthorized: IsAuthorized) {
-        val responseEntity = testRestTemplate.getForEntity<String>("/plotting/Malawi/")
+        val responseEntity = testRestTemplate.getForEntity<String>("/plotting/MWI/")
         assertSecureWithSuccess(isAuthorized, responseEntity, "PlottingMetadataResponse")
     }
 }
