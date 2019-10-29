@@ -1,5 +1,5 @@
 import {Mutation, MutationTree} from "vuex";
-import {localStorageKey, ModelRunState} from "./modelRun";
+import {ModelRunState} from "./modelRun";
 import {PayloadWithType} from "../../types";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {readyStateMutations} from "../shared/readyStateMutations";
