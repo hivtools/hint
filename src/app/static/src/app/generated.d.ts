@@ -126,17 +126,36 @@ export interface ModelRunOptions {
 export interface ControlSection {
   label: string;
   description?: string;
-  controlGroups: ControlGroup;
+  controlGroups: ControlGroup[];
 }
 export interface ControlGroup {
   label?: string;
-  controls:
-    | {
-        [k: string]: any;
-      }
-    | {
-        [k: string]: any;
-      };
+  controls: (SelectControl | NumberControl)[];
+}
+export interface SelectControl {
+  name: string;
+  label?: string;
+  type: "select" | "multiselect";
+  required: boolean;
+  value?: string;
+  helpText?: string;
+  options?: {
+    id: string;
+    label: string;
+    children?: {
+      [k: string]: any;
+    }[];
+  }[];
+}
+export interface NumberControl {
+  name: string;
+  label?: string;
+  type: "number";
+  required: boolean;
+  value?: number;
+  helpText?: string;
+  min?: number;
+  max?: number;
 }
 export interface ModelRunOptionsRequest {
   shape: {
@@ -255,7 +274,9 @@ export type ProgrammeResponseData = {
 }[];
 export interface Response {
   status: "success" | "failure";
-  data: any;
+  data: {
+    [k: string]: any;
+  };
   errors: {
     error?: string;
     detail?: string | null;
@@ -274,9 +295,7 @@ export interface GeoJSONObject {
   crs?: {
     [k: string]: any;
   };
-  name?: {
-    [k: string]: any;
-  };
+  name?: string;
   features: {
     [k: string]: any;
   }[];
@@ -367,9 +386,7 @@ export interface GeoJSONObject {
   crs?: {
     [k: string]: any;
   };
-  name?: {
-    [k: string]: any;
-  };
+  name?: string;
   features: {
     [k: string]: any;
   }[];
