@@ -1,5 +1,6 @@
 import {api} from "../app/apiService";
 import {mockAxios, mockFailure, mockSuccess} from "./mocks";
+import {freezer} from '../app/utils';
 
 describe("ApiService", () => {
 
@@ -87,6 +88,30 @@ describe("ApiService", () => {
 
         expect(committedType).toBe("TEST_TYPE");
         expect(committedPayload).toBe(true);
+    });
+
+    it("deep freezes the response object", async () => {
+
+        const fakeData = {name: "d1"};
+        mockAxios.onGet(`/baseline/`)
+            .reply(200, mockSuccess(fakeData));
+
+        const spy = jest.spyOn(freezer, "deepFreeze");
+
+        let committedType: any = false;
+        let committedPayload: any = false;
+        const commit = ({type, payload}: any) => {
+            committedType = type;
+            committedPayload = payload;
+        };
+
+        await api(commit as any)
+            .withSuccess("TEST_TYPE")
+            .get("/baseline/");
+
+        expect(committedType).toBe("TEST_TYPE");
+        expect(Object.isFrozen(committedPayload)).toBe(true);
+        expect(spy.mock.calls[0][0]).toStrictEqual(fakeData);
     });
 
     it("throws error if API response is badly formatted", async () => {

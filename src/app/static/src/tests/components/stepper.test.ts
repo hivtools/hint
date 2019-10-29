@@ -173,6 +173,7 @@ describe("Stepper component", () => {
     it("upload surveys step is enabled when baseline step is complete", () => {
         const store = createSut({
                 country: "testCountry",
+                iso3: "TTT",
                 shape: mockShapeResponse(),
                 population: mockPopulationResponse(),
                 ready: true
@@ -209,6 +210,7 @@ describe("Stepper component", () => {
     it("updates active step when jump event is emitted", () => {
         const store = createSut({
                 country: "testCountry",
+                iso3: "TTT",
                 shape: mockShapeResponse(),
                 population: mockPopulationResponse(),
                 ready: true
@@ -238,6 +240,7 @@ describe("Stepper component", () => {
     it("can continue when the active step is complete", () => {
         const store = createSut({
                 country: "testCountry",
+                iso3: "TTT",
                 shape: mockShapeResponse(),
                 population: mockPopulationResponse(),
                 ready: true
@@ -255,7 +258,7 @@ describe("Stepper component", () => {
     });
 
     it("updates from completed state when active step data is populated", (done) => {
-        const baselineState = {country: "Malawi", population: mockPopulationResponse(), ready: true};
+        const baselineState = {country: "Malawi", iso3: "MWI", population: mockPopulationResponse(), ready: true};
         const store = createSut(baselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
@@ -281,6 +284,7 @@ describe("Stepper component", () => {
         const store = createSut({
             ready: true,
             country: "Malawi",
+            iso3: "MWI",
             shape: mockShapeResponse(),
             population: mockPopulationResponse()
         }, {}, {plottingMetadata: mockPlottingMetadataResponse()}, {ready: true}, {activeStep: 2});
@@ -299,6 +303,7 @@ describe("Stepper component", () => {
         const store = createSut({
                 ready: true,
                 country: "Malawi",
+                iso3: "MWI",
                 shape: mockShapeResponse(),
                 population: mockPopulationResponse()
             }, {}, {
@@ -319,6 +324,7 @@ describe("Stepper component", () => {
         const store = createSut({
                 ready: true,
                 country: "Malawi",
+                iso3: "MWI",
                 shape: mockShapeResponse(),
                 population: mockPopulationResponse()
             },
@@ -339,6 +345,7 @@ describe("Stepper component", () => {
         const store = createSut({
                 ready: true,
                 country: "Malawi",
+                iso3: "MWI",
                 shape: mockShapeResponse(),
                 population: mockPopulationResponse()
             },

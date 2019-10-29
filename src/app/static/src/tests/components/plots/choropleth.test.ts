@@ -2,25 +2,17 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Choropleth from "../../../app/components/plots/Choropleth.vue";
 import Vue from "vue";
 import Vuex from "vuex";
-import {
-    mockBaselineState,
-    mockFilteredDataState,
-    mockMetadataState,
-    mockPlottingMetadataResponse,
-    mockShapeResponse
-} from "../../mocks";
+import {mockBaselineState, mockFilteredDataState, mockMetadataState, mockShapeResponse} from "../../mocks";
 import {LGeoJson} from 'vue2-leaflet';
 import MapControl from "../../../app/components/plots/MapControl.vue";
 import {mutations} from "../../../app/store/filteredData/mutations";
 import {
-    DataType, filteredData,
+    DataType,
     FilteredDataState,
     FilterType,
     initialFilteredDataState
 } from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
-import {testGetters} from "../../filteredData/getters.test";
-import {store} from "../../../app/main";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -57,31 +49,27 @@ describe("Choropleth component", () => {
         "MWI.1.1.1.1": {
             prev: {value: 0.1, color: "rgb(1,1,1)"},
             art: {value: 0.08, color: "rgb(2,2,2)"}
-            },
+        },
         "MWI.1.1.1.2": {
             prev: {value: 0.05, color: "rgb(3,3,3)"},
             art: {value: 0.06, color: "rgb(4,4,4)"}
         },
         "MWI.1.1.1": {
             prev: {value: 0.07, color: "rgb(5,5,5)"},
-            art:{value: 0.2, color: "rgb(6,6,6)" }
+            art: {value: 0.2, color: "rgb(6,6,6)"}
         }
     };
 
     const testGetters = {
         regionIndicators: () => {
             return testRegionIndicators;
-        },
-        colorFunctions: () => {
-            return {
-                prev: jest.fn(),
-                art: jest.fn()
-            }
         }
     };
 
     const testMetadataGetters = {
-        choroplethIndicators: () => {return ["prev", "art"]; },
+        choroplethIndicators: () => {
+            return ["prev", "art"];
+        },
         choroplethIndicatorsMetadata: () => {
             return [
                 {indicator: "prev", name: "Prevalence", min: 0, max: 0.5},
@@ -93,13 +81,6 @@ describe("Choropleth component", () => {
     const testMetadataModule = {
         namespaced: true,
         getters: testMetadataGetters
-    };
-
-    const testColorFunctions = () => {
-        return {
-            prev: jest.fn(),
-            art: jest.fn()
-        }
     };
 
     function getTestStore(filteredDataProps?: Partial<FilteredDataState>) {
@@ -129,11 +110,11 @@ describe("Choropleth component", () => {
                         {
                             selectedDataType: DataType.Survey,
                             selectedChoroplethFilters: {
-                                regions: [{id: "MWI.1.1.1", label: "Test Region"}],
-                                sex: null,
-                                age: null,
-                                survey: null,
-                                quarter: null
+                                regions: ["MWI.1.1.1"],
+                                sex: "",
+                                age: "",
+                                survey: "",
+                                quarter: ""
                             },
                             ...filteredDataProps
                         }),
@@ -298,12 +279,13 @@ describe("Choropleth component", () => {
                 metadata: {
                     namespaced: true,
                     state: mockMetadataState(),
-                    getters:  {
+                    getters: {
                         choroplethIndicatorsMetadata: () => [],
                         choroplethIndicators: () => []
                     }
                 }
-        }});
+            }
+        });
         const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
         const vm = wrapper.vm as any;
         const options = vm.options;
@@ -400,8 +382,10 @@ describe("Choropleth component", () => {
         const mockUpdateBounds = jest.fn();
         vm.updateBounds = mockUpdateBounds;
 
-        testStore.commit({type: "filteredData/ChoroplethFilterUpdated",
-                            payload: [FilterType.Region, [{id: "MWI.1.1.1.2", label: "test area"}]]});
+        testStore.commit({
+            type: "filteredData/ChoroplethFilterUpdated",
+            payload: [FilterType.Region, [{id: "MWI.1.1.1.2", label: "test area"}]]
+        });
 
         setTimeout(() => {
             expect(mockUpdateBounds.mock.calls.length).toBe(1);
@@ -412,11 +396,11 @@ describe("Choropleth component", () => {
     it("selectedRegionFeatures gets selected region features", () => {
         const testStore = getTestStore({
             selectedChoroplethFilters: {
-                regions: [{id: "MWI.1.1.1.1", label: "area1"}, {id: "MWI.1.1.1.2", label: "area2"}],
-                sex: null,
-                age: null,
-                survey: null,
-                quarter: null
+                regions: ["MWI.1.1.1.1", "MWI.1.1.1.2"],
+                sex: "",
+                age: "",
+                survey: "",
+                quarter: ""
             }
         });
 
@@ -431,10 +415,10 @@ describe("Choropleth component", () => {
         const testStore = getTestStore({
             selectedChoroplethFilters: {
                 regions: [],
-                sex: null,
-                age: null,
-                survey: null,
-                quarter: null
+                sex: "",
+                age: "",
+                survey: "",
+                quarter: ""
             }
         });
         const wrapper = shallowMount(Choropleth, {store: testStore, localVue});

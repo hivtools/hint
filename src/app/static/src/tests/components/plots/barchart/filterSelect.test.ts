@@ -39,13 +39,21 @@ describe("FilterSelect component", () => {
         expect(vm.selected).toStrictEqual([{id: "fo2", label: "option 2"}]);
     });
 
-    it("emits input event on select", () => {
+    it("emits input event on select when isXAxisOrDisAgg", () => {
         const wrapper = getWrapper();
         const vm = (wrapper as any).vm;
 
         vm.select({id: "fo1", label: "option 1"});
         expect(wrapper.emitted("input")[0][0]).toStrictEqual([
             {id: "fo2", label: "option 2"}, {id: "fo1", label: "option 1"}]);
+    });
+
+    it("emits input event on select when not isXAxisOrDisAgg", () => {
+        const wrapper = getWrapper({isXAxis: false, isDisaggregateBy: false});
+        const vm = (wrapper as any).vm;
+
+        vm.select({id: "fo1", label: "option 1"});
+        expect(wrapper.emitted("input")[0][0]).toStrictEqual([{id: "fo1", label: "option 1"}]);
     });
 
     it("emits input event on deselect", () => {
@@ -84,10 +92,16 @@ describe("FilterSelect component", () => {
         wrapper = getWrapper({isXAxis: false, isDisaggregateBy: true});
         vm = (wrapper as any).vm;
         expect(vm.badge).toEqual("disaggregate by");
+
+        wrapper = getWrapper({isXAxis: true, isDisaggregateBy: true});
+        vm = (wrapper as any).vm;
+        expect(vm.badge).toEqual("x axis");
     });
 
     it("updates selected when isXAxisOrDisagg changes and multiple selected", () => {
-        const wrapper = getWrapper({value: [{id: "fo2", label: "option 2"}, {id: "fo1", label: "option 1"}]});
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        vm.selected =  [{id: "fo2", label: "option 2"}, {id: "fo1", label: "option 1"}];
 
         wrapper.setProps({isXAxis: false, isDisaggregateBy: false});
         expect(wrapper.emitted("input")[0][0]).toStrictEqual([{id: "fo2", label: "option 2"}]);

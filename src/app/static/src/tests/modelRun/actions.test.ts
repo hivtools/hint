@@ -1,25 +1,42 @@
-import {mockAxios, mockFailure, mockModelRunState, mockSuccess} from "../mocks";
+import {mockAxios, mockFailure, mockModelOptionsState, mockModelRunState, mockRootState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/modelRun/actions";
 import {ModelStatusResponse} from "../../app/generated";
 
 describe("Model run actions", () => {
 
-    afterEach(() => {
+    beforeEach(() => {
+        // stop apiService logging to console
+        console.log = jest.fn();
         mockAxios.reset();
     });
 
-    it("commits run id after triggering a model run ", async () => {
+    afterEach(() => {
+        (console.log as jest.Mock).mockClear();
+    });
+
+    it("passes model options from state", async () => {
 
         mockAxios.onPost(`/model/run/`)
             .reply(200, mockSuccess({id: "12345"}));
 
         const commit = jest.fn();
-        await actions.run({commit} as any, {
-            max_iterations: "1",
-            no_of_simulations: "1",
-            quarters: ["q1", "q2"]
+        const rootState = mockRootState({
+            modelOptions: mockModelOptionsState({
+                options: {1: "TEST"}
+            })
         });
+        await actions.run({commit, rootState} as any);
+        expect(JSON.parse(mockAxios.history.post[0].data))
+            .toStrictEqual({1: "TEST", sleep: 1})
+    });
 
+    it("commits run id after triggering a model run", async () => {
+
+        mockAxios.onPost(`/model/run/`)
+            .reply(200, mockSuccess({id: "12345"}));
+
+        const commit = jest.fn();
+        await actions.run({commit, rootState: mockRootState()} as any);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ModelRunStarted",
             payload: {id: "12345"}

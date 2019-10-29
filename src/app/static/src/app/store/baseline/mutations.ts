@@ -1,8 +1,9 @@
 import {Mutation, MutationTree} from 'vuex';
 import {BaselineState} from "./baseline";
-import {PjnzResponse, PopulationResponse, ShapeResponse} from "../../generated";
+import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse} from "../../generated";
 import {PayloadWithType} from "../../types";
 import {readyStateMutations} from "../shared/readyStateMutations";
+import {flattenOptions} from "../filteredData/utils";
 
 type BaselineMutation = Mutation<BaselineState>
 
@@ -26,16 +27,22 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
         const data = action.payload;
         if (data) {
             state.country = data.data.country;
+            state.iso3 = data.data.iso3;
             state.pjnz = data;
         } else {
             state.country = "";
+            state.iso3 = "";
             state.pjnz = null;
         }
         state.pjnzError = "";
     },
 
     ShapeUpdated(state: BaselineState, action: PayloadWithType<ShapeResponse>) {
-        state.shape = action.payload;
+        state.shape = Object.freeze(action.payload);
+        if (action.payload && action.payload.filters.regions){
+            state.regionFilters = action.payload.filters.regions.children as NestedFilterOption[];
+            state.flattenedRegionFilters = Object.freeze(flattenOptions(state.regionFilters));
+        }
         state.shapeError = "";
     },
 

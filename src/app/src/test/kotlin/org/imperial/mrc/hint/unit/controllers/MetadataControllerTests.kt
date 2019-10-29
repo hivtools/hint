@@ -13,11 +13,11 @@ class MetadataControllerTests {
     fun `gets plotting metadata`() {
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<APIClient>{
-            on {getPlottingMetadata("Malawi")} doReturn mockResponse
+            on {getPlottingMetadata("MWI")} doReturn mockResponse
         }
 
         val sut = MetadataController(mockAPIClient)
-        val result = sut.plotting("Malawi")
+        val result = sut.plotting("MWI")
         assertThat(result).isSameAs(mockResponse)
     }
 }

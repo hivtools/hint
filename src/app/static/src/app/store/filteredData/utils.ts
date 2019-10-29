@@ -2,6 +2,7 @@ import {DataType, FilteredDataState} from "./filteredData";
 import {RootState} from "../../root";
 import {IndicatorMetadata, NestedFilterOption} from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
+import {Dict} from "../../types";
 
 export const sexFilterOptions = [
     {id: "both", label: "both"},
@@ -9,7 +10,7 @@ export const sexFilterOptions = [
     {id: "male", label: "male"}
 ];
 
-export const roundToContext = function(value: number, context: number) {
+export const roundToContext = function (value: number, context: number) {
     //Rounds the value to one more decimal place than is present in the 'context'
     const maxFraction = context.toString().split(".");
     const maxDecPl = maxFraction.length > 1 ? maxFraction[1].length : 0;
@@ -18,9 +19,9 @@ export const roundToContext = function(value: number, context: number) {
     return Math.round(value * roundingNum) / roundingNum;
 };
 
-export const colorFunctionFromName = function(name: string) {
-    let result =  (d3ScaleChromatic as any)[name];
-    if (!result){
+export const colorFunctionFromName = function (name: string) {
+    let result = (d3ScaleChromatic as any)[name];
+    if (!result) {
         //This is trying to be defensive against typos in metadata...
         console.warn(`Unknown color function: ${name}`);
         result = d3ScaleChromatic.interpolateWarm;
@@ -33,7 +34,7 @@ export const getColor = (value: number, metadata: IndicatorMetadata) => {
     const min = metadata.min;
     const colorFunction = colorFunctionFromName(metadata.colour);
 
-    let rangeNum = (max  && (max != min)) ? //Avoid dividing by zero if only one value...
+    let rangeNum = (max && (max != min)) ? //Avoid dividing by zero if only one value...
         max - (min || 0) :
         1;
 
@@ -81,6 +82,30 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
                 ...result,
                 ...flattenOption(o as NestedFilterOption)
             });
+
+    }
+    return result;
+};
+
+export const flattenToIdSet = (ids: string[], lookup: Dict<NestedFilterOption>): Set<string> => {
+    let result: string[] = [];
+    ids.forEach(r =>
+        result = [
+            ...result,
+            ...flattenToIdArray(lookup[r])
+        ]);
+    return new Set(result);
+};
+
+const flattenToIdArray = (filterOption: NestedFilterOption): string[] => {
+    let result: string[] = [];
+    result.push(filterOption.id);
+    if (filterOption.children) {
+        filterOption.children.forEach(o =>
+            result = [
+                ...result,
+                ...flattenToIdArray(o as NestedFilterOption)
+            ]);
 
     }
     return result;

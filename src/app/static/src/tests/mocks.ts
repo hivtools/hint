@@ -135,7 +135,7 @@ export const mockFailure = (errorMessage: string): Response => {
 
 export const mockPJNZResponse = (props: Partial<PjnzResponse> = {}): PjnzResponse => {
     return {
-        data: {country: "Malawi"},
+        data: {country: "Malawi", iso3: "MWI"},
         hash: "1234.csv",
         filename: "test.pjnz",
         type: "pjnz",
@@ -154,7 +154,7 @@ export const mockShapeResponse = (props: Partial<ShapeResponse> = {}): ShapeResp
         filename: "test.csv",
         filters: {
             level_labels: [{id: 1, area_level_label: "Country", display: true}],
-            regions: {name: "Malawi", id: 1, options : []} as any
+            regions: {label: "Malawi", id: "1", children : []}
         },
         ...props
     }
