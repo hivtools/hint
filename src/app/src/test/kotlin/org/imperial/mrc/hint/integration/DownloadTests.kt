@@ -46,4 +46,12 @@ class DownloadTests : SecureIntegrationTests() {
         val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/spectrum/${id}")
         assertSecureWithSuccess(isAuthorized, responseEntity)
     }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can download summary results`(isAuthorized: IsAuthorized) {
+        val id = waitForModelRunResult(isAuthorized)
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/summary/${id}")
+        assertSecureWithSuccess(isAuthorized, responseEntity)
+    }
 }
