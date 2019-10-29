@@ -14,6 +14,8 @@ interface APIClient {
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(country: String): ResponseEntity<String>
+    fun downloadSpectrum(id: String): ResponseEntity<Byte>
+    fun downloadIndicators(id: String): ResponseEntity<Byte>
 }
 
 @Component
@@ -87,6 +89,22 @@ class HintrAPIClient(
 
     override fun getPlottingMetadata(country: String): ResponseEntity<String> {
         return "$baseUrl/meta/plotting/${country}"
+                .httpGet()
+                .response()
+                .second
+                .asResponseEntity()
+    }
+
+    override fun downloadSpectrum(id: String): ResponseEntity<Byte> {
+        return "$baseUrl/download/spectrum/${id}"
+                .httpGet()
+                .response()
+                .second
+                .asResponseEntity()
+    }
+
+    override fun downloadIndicators(id: String): ResponseEntity<Byte> {
+        return "$baseUrl/download/indicators/${id}"
                 .httpGet()
                 .response()
                 .second
