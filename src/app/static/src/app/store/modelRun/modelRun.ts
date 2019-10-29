@@ -13,8 +13,6 @@ export interface ModelRunState extends ReadyState {
     result: ModelResultResponse | null
 }
 
-export const localStorageKey = "modelRun";
-
 export const initialModelRunState: ModelRunState = {
     modelRunId: "",
     errors: [],

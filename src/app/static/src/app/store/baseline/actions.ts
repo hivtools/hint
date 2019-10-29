@@ -23,7 +23,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .withError("PJNZUploadError")
             .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData)
             .then(() => {
-                dispatch('metadata/getPlottingMetadata', state.country, {root: true});
+                dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
             });
     },
 

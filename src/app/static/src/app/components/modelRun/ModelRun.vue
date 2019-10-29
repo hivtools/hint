@@ -1,7 +1,7 @@
 <template>
     <div>
         <button class="btn btn-red btn-lg"
-                v-on:click="runModelWithParams"
+                v-on:click="run"
                 :disabled="running">Run model
         </button>
         <h4 v-if="success" class="mt-3" id="model-run-complete">Model run complete
@@ -24,6 +24,7 @@
     interface ComputedState {
         runId: string
         success: boolean
+        pollId: number
     }
 
     interface ComputedGetters {
@@ -34,7 +35,7 @@
     }
 
     interface Methods {
-        run: (options: any) => void;
+        run: () => void;
         poll: (runId: string) => void;
         runModelWithParams: () => void;
     }
@@ -46,15 +47,13 @@
         computed: {
             ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
                 runId: state => state.modelRunId,
-                success: state => state.status.success
+                success: state => state.status.success,
+                pollId: state => state.statusPollId
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running"])
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll"]),
-            runModelWithParams() {
-                this.run({"sleep": "2"});
-            }
+            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll"])
         },
         watch: {
             runId: function (newVal) {
@@ -64,7 +63,7 @@
             }
         },
         created() {
-            if (this.runId) {
+            if (this.runId && this.pollId == -1) {
                 this.poll(this.runId);
             }
         },

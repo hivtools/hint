@@ -1,5 +1,5 @@
 import {Mutation, MutationTree} from "vuex";
-import {localStorageKey, ModelRunState} from "./modelRun";
+import {ModelRunState} from "./modelRun";
 import {PayloadWithType} from "../../types";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {readyStateMutations} from "../shared/readyStateMutations";
@@ -19,6 +19,7 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
     ModelRunStarted(state: ModelRunState, action: PayloadWithType<ModelSubmitResponse>) {
         state.modelRunId = action.payload.id;
         state.status = {id: action.payload.id} as ModelStatusResponse;
+        state.errors = [];
     },
 
     RunStatusUpdated(state: ModelRunState, action: PayloadWithType<ModelStatusResponse>) {

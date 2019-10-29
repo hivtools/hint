@@ -1,5 +1,5 @@
 module.exports = {
-    "setupFiles": ["./src/tests/setup.ts"],
+    "setupFiles": ["./src/tests/setup.ts", "jest-canvas-mock"],
     "testURL": "http://localhost",
     "globals": {
         "ts-jest": {

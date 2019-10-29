@@ -14,7 +14,7 @@ interface APIClient {
     fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
-    fun getPlottingMetadata(country: String): ResponseEntity<String>
+    fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun getModelRunOptions(files: Map<String, SessionFileWithPath>): ResponseEntity<String>
 }
 
@@ -64,8 +64,8 @@ class HintrAPIClient(
         return get("/model/result/${id}")
     }
 
-    override fun getPlottingMetadata(country: String): ResponseEntity<String> {
-        return get("/meta/plotting/${country}")
+    override fun getPlottingMetadata(iso3: String): ResponseEntity<String> {
+        return get("/meta/plotting/${iso3}")
     }
 
     override fun getModelRunOptions(files: Map<String, SessionFileWithPath>): ResponseEntity<String> {
@@ -88,4 +88,5 @@ class HintrAPIClient(
                 .second
                 .asResponseEntity()
     }
+
 }
