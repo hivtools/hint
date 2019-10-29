@@ -31,11 +31,9 @@
     import ChoroplethFilters from "../plots/ChoroplethFilters.vue";
     import Barchart from "../plots/barchart/Barchart.vue";
     import {DataType} from "../../store/filteredData/filteredData";
-    import {mapActionsByNames, mapGettersByNames, mapStateProp, mapStatePropByName} from "../../utils";
-    import {BarchartIndicator, Filter} from "../../types";
-    import {BaselineState} from "../../store/baseline/baseline";
+    import {mapActionsByNames, mapGettersByNames, mapStateProp} from "../../utils";
     import {ModelRunState} from "../../store/modelRun/modelRun";
-    import {ModelResultResponse} from "../../generated";
+    import {BarchartIndicator, Filter} from "../../generated";
 
     const namespace: string = 'filteredData';
 

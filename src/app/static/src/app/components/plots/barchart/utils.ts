@@ -1,5 +1,5 @@
-import {BarchartIndicator, Dict, Filter} from "../../../types";
-import {FilterOption} from "../../../generated";
+import {Dict} from "../../../types";
+import {BarchartIndicator, Filter, FilterOption} from "../../../generated";
 
 export const toFilterLabelLookup = (array: Filter[]) => array.reduce((obj, current) => {
     obj[current.id] = current.label;
