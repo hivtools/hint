@@ -92,6 +92,10 @@ describe("FilterSelect component", () => {
         wrapper = getWrapper({isXAxis: false, isDisaggregateBy: true});
         vm = (wrapper as any).vm;
         expect(vm.badge).toEqual("disaggregate by");
+
+        wrapper = getWrapper({isXAxis: true, isDisaggregateBy: true});
+        vm = (wrapper as any).vm;
+        expect(vm.badge).toEqual("x axis");
     });
 
     it("updates selected when isXAxisOrDisagg changes and multiple selected", () => {
