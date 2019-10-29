@@ -8,6 +8,7 @@ import {Dict} from "../../types";
 export interface BaselineState extends ReadyState {
     pjnzError: string
     country: string
+    iso3: string
     pjnz: PjnzResponse | null
     shape: ShapeResponse | null
     regionFilters: NestedFilterOption[]
@@ -19,6 +20,7 @@ export interface BaselineState extends ReadyState {
 
 export const initialBaselineState: BaselineState = {
     country: "",
+    iso3: "",
     pjnzError: "",
     pjnz: null,
     shape: null,
@@ -32,7 +34,7 @@ export const initialBaselineState: BaselineState = {
 
 export const baselineGetters = {
   complete: (state: BaselineState) => {
-      return !!state.country && !!state.shape && !!state.population
+      return !!state.country && !!state.iso3 && !!state.shape && !!state.population
   }
 };
 

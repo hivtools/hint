@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import org.imperial.mrc.hint.models.SessionFileWithPath
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
@@ -14,7 +13,7 @@ interface APIClient {
     fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
-    fun getPlottingMetadata(country: String): ResponseEntity<String>
+    fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun downloadSpectrum(id: String): ResponseEntity<ByteArray>
     fun downloadSummary(id: String): ResponseEntity<ByteArray>
 }
@@ -88,8 +87,8 @@ class HintrAPIClient(
                 .asResponseEntity()
     }
 
-    override fun getPlottingMetadata(country: String): ResponseEntity<String> {
-        return "$baseUrl/meta/plotting/${country}"
+    override fun getPlottingMetadata(iso3: String): ResponseEntity<String> {
+        return "$baseUrl/meta/plotting/${iso3}"
                 .httpGet()
                 .response()
                 .second
