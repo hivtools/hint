@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import org.imperial.mrc.hint.models.SessionFileWithPath
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
@@ -14,8 +15,8 @@ interface APIClient {
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(country: String): ResponseEntity<String>
-    fun downloadSpectrum(id: String): ResponseEntity<Byte>
-    fun downloadIndicators(id: String): ResponseEntity<Byte>
+    fun downloadSpectrum(id: String): ResponseEntity<ByteArray>
+    fun downloadSummary(id: String): ResponseEntity<ByteArray>
 }
 
 @Component
@@ -95,19 +96,19 @@ class HintrAPIClient(
                 .asResponseEntity()
     }
 
-    override fun downloadSpectrum(id: String): ResponseEntity<Byte> {
+    override fun downloadSpectrum(id: String): ResponseEntity<ByteArray> {
         return "$baseUrl/download/spectrum/${id}"
                 .httpGet()
                 .response()
                 .second
-                .asResponseEntity()
+                .asByteArrayResponseEntity()
     }
 
-    override fun downloadIndicators(id: String): ResponseEntity<Byte> {
-        return "$baseUrl/download/indicators/${id}"
+    override fun downloadSummary(id: String): ResponseEntity<ByteArray> {
+        return "$baseUrl/download/summary/${id}"
                 .httpGet()
                 .response()
                 .second
-                .asResponseEntity()
+                .asByteArrayResponseEntity()
     }
 }

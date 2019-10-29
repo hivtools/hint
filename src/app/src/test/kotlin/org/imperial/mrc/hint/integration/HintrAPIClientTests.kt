@@ -69,4 +69,20 @@ class HintrApiClientTests {
 
         JSONValidator().validateSuccess(metadataResult.body!!, "PlottingMetadataResponse")
     }
+
+    @Test
+    fun `can download spectrum data`() {
+        val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.downloadSpectrum("ef5b621dfd9beb8851fcd7de2d6c1e08");
+
+        assertThat(result.statusCodeValue).isEqualTo(400)
+    }
+
+    @Test
+    fun `can download summary data`() {
+        val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.downloadSummary("ef5b621dfd9beb8851fcd7de2d6c1e08");
+
+        assertThat(result.statusCodeValue).isEqualTo(400)
+    }
 }
