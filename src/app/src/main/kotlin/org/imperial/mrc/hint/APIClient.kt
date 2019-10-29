@@ -15,7 +15,7 @@ interface APIClient {
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(country: String): ResponseEntity<String>
-    fun getModelRunOptions(files: Map<String, String>): ResponseEntity<String>
+    fun getModelRunOptions(files: Map<String, SessionFileWithPath>): ResponseEntity<String>
 }
 
 @Component
@@ -68,7 +68,7 @@ class HintrAPIClient(
         return get("/meta/plotting/${country}")
     }
 
-    override fun getModelRunOptions(files: Map<String, String>): ResponseEntity<String> {
+    override fun getModelRunOptions(files: Map<String, SessionFileWithPath>): ResponseEntity<String> {
         val json = objectMapper.writeValueAsString(files)
         return postJson("model/options", json)
     }
