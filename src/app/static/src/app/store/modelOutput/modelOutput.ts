@@ -79,17 +79,25 @@ export const modelOutputGetters = {
         //TODO: Get these from ModelResultResponse
         const filterOptions = rootState.modelRun.result!!.filters!!;
 
-        const ageOptions = filterOptions.age || [];
-
         const regions: FilterOption[] = rootState.baseline.shape!!.filters!!.regions ?
                                         [rootState.baseline.shape!!.filters!!.regions] : [];
 
         return [
             {
                 "id": "age",
-                "column_id": "age_group",
+                "column_id": "age_group_id",
                 "label": "Age group",
-                "options": ageOptions
+                "options": filterOptions.age || []
+            },
+            {
+                "id": "sex",
+                "column_id": "sex",
+                "label": "Sex",
+                "options": [
+                    {"id": "female", "label": "female"},
+                    {"id": "male", "label": "male"},
+                    {"id": "both", "label": "both"}
+                ]
             },
             {
                 "id": "region",
@@ -98,13 +106,10 @@ export const modelOutputGetters = {
                 "options": regions
             },
             {
-                "id": "sex",
-                "column_id": "sex",
-                "label": "Sex",
-                "options": [
-                    {"id": "female", "label": "female"},
-                    {"id": "male", "label": "male"}
-                 ]
+                "id": "quarter",
+                "column_id": "quarter_id",
+                "label": "Quarter",
+                "options": filterOptions.quarter || []
             }
         ];
     }
@@ -112,5 +117,6 @@ export const modelOutputGetters = {
 
 export const modelOutput: Module<ModelOutputState, RootState> = {
     namespaced,
+    state: {},
     getters: modelOutputGetters
 };

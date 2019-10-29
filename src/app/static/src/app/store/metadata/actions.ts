@@ -12,10 +12,10 @@ export interface MetadataActions {
 
 export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
 
-    async getPlottingMetadata({commit}, country) {
+    async getPlottingMetadata({commit}, iso3) {
         await api<MetadataActionTypes, MetadataErrorActionTypes>(commit)
             .withSuccess("PlottingMetadataFetched")
             .withError("PlottingMetadataError")
-            .get(`/meta/plotting/${country}`);
+            .get(`/meta/plotting/${iso3}`);
     }
 };
