@@ -95,7 +95,9 @@ describe("FilterSelect component", () => {
     });
 
     it("updates selected when isXAxisOrDisagg changes and multiple selected", () => {
-        const wrapper = getWrapper({value: [{id: "fo2", label: "option 2"}, {id: "fo1", label: "option 1"}]});
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        vm.selected =  [{id: "fo2", label: "option 2"}, {id: "fo1", label: "option 1"}];
 
         wrapper.setProps({isXAxis: false, isDisaggregateBy: false});
         expect(wrapper.emitted("input")[0][0]).toStrictEqual([{id: "fo2", label: "option 2"}]);
