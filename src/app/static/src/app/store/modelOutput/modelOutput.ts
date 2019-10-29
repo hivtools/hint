@@ -1,6 +1,6 @@
 import {Module} from "vuex";
 import {RootState} from "../../root";
-import {BarchartIndicator, Filter} from "../../types";
+import {BarchartIndicator, Filter} from "../../generated";
 import {FilterOption} from "../../generated";
 
 const namespaced: boolean = true;

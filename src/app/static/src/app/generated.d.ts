@@ -28,6 +28,39 @@ export type AncResponseData = {
   art_coverage?: number;
   [k: string]: any;
 }[];
+export interface BarchartIndicator {
+  indicator: string;
+  value_column: string;
+  indicator_column: string;
+  indicator_value: string;
+  name: string;
+  error_low_column: string;
+  error_high_column: string;
+  [k: string]: any;
+}
+export interface BarchartMetadata {
+  indicators: {
+    indicator: string;
+    value_column: string;
+    indicator_column: string;
+    indicator_value: string;
+    name: string;
+    error_low_column: string;
+    error_high_column: string;
+    [k: string]: any;
+  }[];
+  filters: {
+    id: string;
+    column_id: string;
+    label: string;
+    options: {
+      label: string;
+      id: string;
+    }[];
+    [k: string]: any;
+  }[];
+  [k: string]: any;
+}
 export interface Data {
   placeholder?: boolean;
 }
@@ -38,6 +71,16 @@ export interface Error {
 }
 export type FileName = string;
 export type FilePath = string | null;
+export interface Filter {
+  id: string;
+  column_id: string;
+  label: string;
+  options: {
+    label: string;
+    id: string;
+  }[];
+  [k: string]: any;
+}
 export interface FilterOption {
   label: string;
   id: string;
@@ -206,6 +249,7 @@ export interface NestedFilterOption {
 }
 export interface PjnzResponseData {
   country: string;
+  iso3: string;
 }
 export type ChoroplethMetadata = {
   indicator: string;
@@ -333,6 +377,7 @@ export interface PjnzResponse {
   type: "pjnz";
   data: {
     country: string;
+    iso3: string;
   };
   filters?: null;
 }
