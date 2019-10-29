@@ -29,7 +29,7 @@ describe("modelOutput module", () => {
                 result: mockModelResultResponse({
                     filters: {
                         age: [ {id: "1", label: "0-4"}],
-                        quarter: [],
+                        quarter: [{id: "11", label: "Jan-Mar 2016"}],
                         indicators: []
                     }
                 })
@@ -37,16 +37,26 @@ describe("modelOutput module", () => {
         });
 
         const result = modelOutputGetters.barchartFilters({}, null, rootState);
-        expect(result.length).toEqual(3);
+        expect(result.length).toEqual(4);
         expect (result[0]).toStrictEqual({
             id: "age",
-            column_id: "age_group",
+            column_id: "age_group_id",
             label: "Age group",
             options: [
                 {id: "1", label: "0-4"}
             ]
         });
         expect (result[1]).toStrictEqual({
+            id: "sex",
+            column_id: "sex",
+            label: "Sex",
+            options: [
+                {id: "female", label: "female"},
+                {id: "male", label: "male"},
+                {id: "both", label: "both"}
+            ]
+        });
+        expect (result[2]).toStrictEqual({
             id: "region",
             column_id: "area_id",
             label: "Region",
@@ -54,13 +64,12 @@ describe("modelOutput module", () => {
                 {id: "id1", label: "label 1", children: []}
             ]
         });
-        expect (result[2]).toStrictEqual({
-            id: "sex",
-            column_id: "sex",
-            label: "Sex",
+        expect (result[3]).toStrictEqual({
+            id: "quarter",
+            column_id: "quarter_id",
+            label: "Quarter",
             options: [
-                {id: "female", label: "female"},
-                {id: "male", label: "male"}
+                {id: "11", label: "Jan-Mar 2016"}
             ]
         });
     });
