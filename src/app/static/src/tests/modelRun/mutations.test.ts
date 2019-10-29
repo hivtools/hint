@@ -8,11 +8,12 @@ describe("Model run mutations", () => {
         localStorage.clear();
     });
 
-    it("sets status", () => {
-        const testState = {...initialModelRunState};
+    it("sets status and clears errors when started", () => {
+        const testState = {...initialModelRunState, errors: [1, 2, 3]};
         mutations.ModelRunStarted(testState, {payload: {id: "1234"}});
         expect(testState.modelRunId).toBe("1234");
         expect(testState.status).toStrictEqual({id: "1234"});
+        expect(testState.errors).toStrictEqual([]);
     });
 
     it("sets run status, success and poll id when done", () => {
