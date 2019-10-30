@@ -36,7 +36,7 @@ export interface SelectControl extends DynamicControl {
 
 export interface MultiSelectControl extends DynamicControl {
     options: Option[]
-    value?: string[]
+    value?: string[] | string
 }
 
 export interface NumberControl extends DynamicControl {
