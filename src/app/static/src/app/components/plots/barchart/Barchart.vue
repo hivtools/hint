@@ -47,8 +47,8 @@
     import Treeselect from '@riophae/vue-treeselect';
     import ChartjsBar from "./chartjsBar.vue";
     import FilterSelect from "./FilterSelect.vue";
-    import {BarchartIndicator, Dict, Filter} from "../../../types";
-    import {FilterOption} from "../../../generated";
+    import {Dict} from "../../../types";
+    import {BarchartIndicator, Filter, FilterOption} from "../../../generated";
     import {getProcessedOutputData, toFilterLabelLookup} from "./utils";
 
     interface Props {
