@@ -30,7 +30,7 @@ interface FileManager {
     fun saveFile(file: MultipartFile, type: FileType): SessionFileWithPath
     fun getFile(type: FileType): SessionFileWithPath?
     fun getAllHashes(): Map<String, String>
-    fun getAllFiles(vararg include: FileType): Map<String, SessionFileWithPath>
+    fun getFiles(vararg include: FileType): Map<String, SessionFileWithPath>
     fun setAllFiles(files: Map<String, SessionFile?>)
 }
 
@@ -72,7 +72,7 @@ class LocalFileManager(
         return hashes.mapValues { "$uploadPath/${it.value}" }
     }
 
-    override fun getAllFiles(vararg include: FileType): Map<String, SessionFileWithPath> {
+    override fun getFiles(vararg include: FileType): Map<String, SessionFileWithPath> {
         val files = sessionRepository.getSessionFiles(session.getId())
         val includeKeys = include.map { it.toString() }
         return files.filterKeys { includeKeys.count() == 0 || includeKeys.contains(it) }
