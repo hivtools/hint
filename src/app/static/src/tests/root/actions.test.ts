@@ -3,6 +3,9 @@ import {mockStepperState} from "../mocks";
 
 describe("root actions", () => {
 
+    //NB in these tests 'valid' means complete with no preceding incomplete steps, or incomplete with no subsequent
+    //complete steps
+
     it("does not reset state if all steps are valid", () => {
 
         const mockContext = {
@@ -46,7 +49,7 @@ describe("root actions", () => {
         expect(mockContext.commit).toHaveBeenCalled();
     });
 
-    it("resets state if a state following current step is not valid", () => {
+    it("resets state if a step following current step is not valid", () => {
 
 
         const mockContext = {
