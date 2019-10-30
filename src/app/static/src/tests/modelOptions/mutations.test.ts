@@ -11,9 +11,8 @@ describe("Model run options mutations", () => {
         expect(state.options).toStrictEqual({"test": 123});
     });
 
-    it("updates form", () => {
-        const state = mockModelOptionsState();
-        const mockForm: DynamicFormMeta = {
+    it("appends new sections to form", () => {
+        const startingForm = {
             controlSections: [
                 {
                     label: "l1",
@@ -21,11 +20,20 @@ describe("Model run options mutations", () => {
                 }
             ]
         };
+        const state = mockModelOptionsState({optionsFormMeta: startingForm});
+        const mockForm: DynamicFormMeta = {
+            controlSections: [
+                {
+                    label: "l2",
+                    controlGroups: []
+                }
+            ]
+        };
         mutations.update(state, mockForm);
-        expect(state.optionsFormMeta).toStrictEqual(mockForm);
+        expect(state.optionsFormMeta).toStrictEqual({...startingForm, ...mockForm});
     });
 
-    it("does not overwrite existing form values", () => {
+    it("does not overwrite existing form sections", () => {
 
         const mockControl: NumberControl = {
             name: "i1",
@@ -55,35 +63,36 @@ describe("Model run options mutations", () => {
                         label: "g1",
                         controls: [{...mockControl}]
                     }]
-                },
+                }
+            ]
+        };
+        mutations.update(state, newForm);
+        expect(state.optionsFormMeta).toStrictEqual(startingForm);
+    });
+
+    it("removes form sections", () => {
+
+        const startingForm: DynamicFormMeta = {
+            controlSections: [
                 {
-                    label: "ANC",
+                    label: "ART",
+                    controlGroups: []
+                }
+            ]
+        };
+
+        const state = mockModelOptionsState({optionsFormMeta: startingForm});
+
+        const newForm: DynamicFormMeta = {
+            controlSections: [
+                {
+                    label: "general",
                     controlGroups: []
                 }
             ]
         };
         mutations.update(state, newForm);
-        const expected = {
-            controlSections: [
-                {
-                    label: "general",
-                    controlGroups: [{
-                        label: "g1",
-                        controls: [{
-                            name: "i1",
-                            value: 10, // this value should not be overwritten
-                            type: "number",
-                            required: true
-                        }]
-                    }]
-                },
-                {
-                    label: "ANC",
-                    controlGroups: []
-                }
-            ]
-        };
-        expect(state.optionsFormMeta).toStrictEqual(expected);
+        expect(state.optionsFormMeta).toStrictEqual(newForm);
     });
 
 });

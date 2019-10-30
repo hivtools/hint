@@ -1,4 +1,5 @@
 import {isDynamicFormMeta} from "./dynamicFormChecker";
+import {DynamicFormMeta} from "../../../app/components/forms/types";
 
 describe("dynamic form type checker", () => {
 
@@ -21,6 +22,28 @@ describe("dynamic form type checker", () => {
         })).toBe(false);
     });
 
+    it("should recognise invalid control group label", () => {
+        expect(isDynamicFormMeta({
+            controlSections: [{
+                label: "l1",
+                controlGroups: [
+                    {label: {}, controls: []}
+                ]
+            }]
+        })).toBe(false);
+    });
+
+    it("should recognise control group label as optional", () => {
+        expect(isDynamicFormMeta({
+            controlSections: [{
+                label: "l1",
+                controlGroups: [
+                    {controls: []}
+                ]
+            }]
+        })).toBe(true);
+    });
+
     it("should recognise missing controls as invalid", () => {
         expect(isDynamicFormMeta({
             controlSections: [{
@@ -37,6 +60,26 @@ describe("dynamic form type checker", () => {
                 }]
             }]
         })).toBe(false);
+    });
+
+    it("should recognise invalid helpText", () => {
+        expect(isDynamicFormMeta({
+            controlSections: [{
+                label: "l1", controlGroups: [{
+                    controls: [{name: "i1", helpText: false, required: false, type: "number"}]
+                }]
+            }]
+        })).toBe(false);
+    });
+
+    it("should recognise valid helpText", () => {
+        expect(isDynamicFormMeta({
+            controlSections: [{
+                label: "l1", controlGroups: [{
+                    controls: [{name: "i1", helpText: "Some help text", required: false, type: "number"}]
+                }]
+            }]
+        })).toBe(true);
     });
 
     it("should recognise wrong control type as invalid", () => {

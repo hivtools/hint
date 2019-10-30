@@ -70,6 +70,27 @@ describe("ApiService", () => {
         expect(committedPayload).toBe("some error message");
     });
 
+    it("commits the error type if the error detail is missing", async () => {
+
+        mockAxios.onGet(`/baseline/`)
+            .reply(500, mockFailure(null as any));
+
+        let committedType: any = false;
+        let committedPayload: any = false;
+
+        const commit = ({type, payload}: any) => {
+            committedType = type;
+            committedPayload = payload;
+        };
+
+        await api(commit as any)
+            .withError("TEST_TYPE")
+            .get("/baseline/");
+
+        expect(committedType).toBe("TEST_TYPE");
+        expect(committedPayload).toBe("OTHER_ERROR");
+    });
+
     it("commits the success response with the specified type", async () => {
 
         mockAxios.onGet(`/baseline/`)
@@ -88,6 +109,19 @@ describe("ApiService", () => {
 
         expect(committedType).toBe("TEST_TYPE");
         expect(committedPayload).toBe(true);
+    });
+
+    it("returns the success response data", async () => {
+
+        mockAxios.onGet(`/baseline/`)
+            .reply(200, mockSuccess("TEST"));
+
+        const commit = jest.fn();
+        const response = await api(commit as any)
+            .withSuccess("TEST_TYPE")
+            .get("/baseline/");
+
+        expect(response).toBe("TEST");
     });
 
     it("deep freezes the response object", async () => {

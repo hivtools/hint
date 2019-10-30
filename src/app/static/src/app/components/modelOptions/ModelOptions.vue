@@ -7,19 +7,21 @@
     import Vue from "vue";
     import DynamicForm from "../forms/DynamicForm.vue";
     import {DynamicFormData, DynamicFormMeta} from "../forms/types";
-    import {mapActionByName, mapMutationsByNames} from "../../utils";
+    import {mapMutationsByNames} from "../../utils";
+
     interface Methods {
         validate: (data: DynamicFormData) => void
         update: (data: DynamicFormMeta) => void
     }
-    export default Vue.extend<{ form: DynamicFormMeta }, Methods, {modelOptions: DynamicFormMeta}, {}>({
+
+    export default Vue.extend<{ form: DynamicFormMeta }, Methods, { modelOptions: DynamicFormMeta }, {}>({
         name: "ModelOptions",
         computed: {
             modelOptions: {
-                get () {
+                get() {
                     return this.$store.state.modelOptions.optionsFormMeta
                 },
-                set (value: DynamicFormMeta) {
+                set(value: DynamicFormMeta) {
                     this.update(value);
                 }
             }

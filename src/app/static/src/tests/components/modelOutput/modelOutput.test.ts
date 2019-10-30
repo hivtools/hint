@@ -2,13 +2,7 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
-import {
-    mockAncResponse,
-    mockFilteredDataState, mockModelResultResponse,
-    mockModelRunState,
-    mockProgramResponse,
-    mockSurveyResponse,
-} from "../../mocks";
+import {mockFilteredDataState, mockModelResultResponse, mockModelRunState,} from "../../mocks";
 import {DataType} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
 import {mutations} from "../../../app/store/filteredData/mutations";
@@ -30,6 +24,13 @@ function getStore() {
                 state: mockModelRunState({
                     result: mockModelResultResponse({data: ["TEST DATA"] as any})
                 })
+            },
+            modelOutput: {
+                namespaced: true,
+                getters: {
+                    barchartFilters: () => [],
+                    barchartIndicators: () => []
+                }
             }
         }
     });
