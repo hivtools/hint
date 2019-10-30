@@ -10,7 +10,6 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.LocalFileManager
 import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.models.SessionFile
-import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -27,6 +26,10 @@ class LocalFileManagerTests {
 
     private val mockSession = mock<Session> {
         on { getId() } doReturn "fake-id"
+    }
+
+    private val allFilesMap = FileType.values().associate {
+        it.toString() to SessionFile("${it}hash", "${it}filename")
     }
 
     @AfterEach
@@ -92,17 +95,50 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `gets all files`() {
+    fun `gets all file paths`() {
 
         val stateRepo = mock<SessionRepository> {
             on { getHashesForSession("fake-id") } doReturn mapOf("survey" to "hash.csv")
         }
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
-        val result = sut.getAllFiles()
+        val result = sut.getAllHashes()
 
         assertThat(result["survey"]).isEqualTo("$tmpUploadDirectory/hash.csv")
         assertThat(result.count()).isEqualTo(1)
+    }
+
+    @Test
+    fun `gets all files`() {
+
+        val stateRepo = mock<SessionRepository> {
+            on { getSessionFiles("fake-id") } doReturn allFilesMap
+        }
+
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
+        val result = sut.getFiles()
+
+        assertThat(result["survey"]!!.path).isEqualTo("$tmpUploadDirectory/surveyhash")
+        assertThat(result["survey"]!!.filename).isEqualTo("surveyfilename")
+        assertThat(result["survey"]!!.hash).isEqualTo("surveyhash")
+        assertThat(result["pjnz"]!!.path).isEqualTo("$tmpUploadDirectory/pjnzhash")
+        assertThat(result["pjnz"]!!.filename).isEqualTo("pjnzfilename")
+        assertThat(result["pjnz"]!!.hash).isEqualTo("pjnzhash")
+        assertThat(result.count()).isEqualTo(6)
+    }
+
+    @Test
+    fun `only gets files that match the given includes`() {
+
+        val stateRepo = mock<SessionRepository> {
+            on { getSessionFiles("fake-id") } doReturn allFilesMap
+        }
+
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
+        val result = sut.getFiles(FileType.ANC, FileType.Programme)
+
+        assertThat(result.count()).isEqualTo(2)
+        assertThat(result.keys).containsExactlyInAnyOrder("programme", "anc")
     }
 
     @Test

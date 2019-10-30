@@ -45,11 +45,9 @@ class HintrApiClientTests {
         val submitResult = sut.submit(mapOf(), mapOf())
 
         val id = ObjectMapper().readValue<JsonNode>(submitResult.body!!)["data"]["id"].textValue()
-
         val result = sut.getStatus(id)
         JSONValidator().validateSuccess(result.body!!, "ModelStatusResponse")
     }
-
     @Test
     fun `can get model run result`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())

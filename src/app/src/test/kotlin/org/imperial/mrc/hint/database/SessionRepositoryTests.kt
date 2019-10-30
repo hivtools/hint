@@ -112,6 +112,32 @@ class SessionRepositoryTests {
     }
 
     @Test
+    fun `can get all session file hashes`() {
+        setUpSessionAndHash()
+        sut.saveNewHash("pjnzhash")
+        sut.saveNewHash("surveyhash")
+        sut.saveSessionFile("sid", FileType.PJNZ, "pjnzhash", "original.pjnz")
+        sut.saveSessionFile("sid", FileType.Survey, "surveyhash", "original.csv")
+        val result = sut.getHashesForSession("sid")
+        assertThat(result["survey"]).isEqualTo("surveyhash")
+        assertThat(result["pjnz"]).isEqualTo("pjnzhash")
+    }
+
+    @Test
+    fun `can get all session files`() {
+        setUpSessionAndHash()
+        sut.saveNewHash("pjnzhash")
+        sut.saveNewHash("surveyhash")
+        sut.saveSessionFile("sid", FileType.PJNZ, "pjnzhash", "original.pjnz")
+        sut.saveSessionFile("sid", FileType.Survey, "surveyhash", "original.csv")
+        val result = sut.getSessionFiles("sid")
+        assertThat(result["survey"]!!.filename).isEqualTo("original.csv")
+        assertThat(result["survey"]!!.hash).isEqualTo("surveyhash")
+        assertThat(result["pjnz"]!!.filename).isEqualTo("original.pjnz")
+        assertThat(result["pjnz"]!!.hash).isEqualTo("pjnzhash")
+    }
+
+    @Test
     fun `can set files for session`() {
         setUpSession()
         sut.saveNewHash("pjnz_hash")
@@ -125,7 +151,7 @@ class SessionRepositoryTests {
 
         val records = dsl.selectFrom(SESSION_FILE)
                 .orderBy(SESSION_FILE.TYPE)
-                .fetch();
+                .fetch()
 
         assertThat(records.count()).isEqualTo(2);
 
@@ -154,9 +180,9 @@ class SessionRepositoryTests {
 
         val records = dsl.selectFrom(SESSION_FILE)
                 .orderBy(SESSION_FILE.SESSION)
-                .fetch();
+                .fetch()
 
-        assertThat(records.count()).isEqualTo(2);
+        assertThat(records.count()).isEqualTo(2)
 
         assertThat(records[0][SESSION_FILE.FILENAME]).isEqualTo("shape_file")
         assertThat(records[0][SESSION_FILE.HASH]).isEqualTo("shape_hash")
@@ -194,7 +220,7 @@ class SessionRepositoryTests {
 
     private fun setUpSessionAndHash(): String {
         sut.saveNewHash("newhash")
-        return setUpSession();
+        return setUpSession()
     }
 
     private fun setUpSession(): String {
@@ -202,7 +228,7 @@ class SessionRepositoryTests {
         val uid = userRepo.getUser("email")!!.id
         sut.saveSession("sid", uid)
 
-        return uid;
+        return uid
     }
 
     private fun setUpHashAndSessionFile(hash: String, filename: String, sessionId: String, type: String) {
