@@ -116,7 +116,7 @@ class LocalFileManagerTests {
         }
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
-        val result = sut.getAllFiles()
+        val result = sut.getFiles()
 
         assertThat(result["survey"]!!.path).isEqualTo("$tmpUploadDirectory/surveyhash")
         assertThat(result["survey"]!!.filename).isEqualTo("surveyfilename")
@@ -135,7 +135,7 @@ class LocalFileManagerTests {
         }
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
-        val result = sut.getAllFiles(FileType.ANC, FileType.Programme)
+        val result = sut.getFiles(FileType.ANC, FileType.Programme)
 
         assertThat(result.count()).isEqualTo(2)
         assertThat(result.keys).containsExactlyInAnyOrder("programme", "anc")
