@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/download")
 class DownloadController(val apiClient: APIClient){
-    @GetMapping("/spectrum/{id}/")
+    @GetMapping("/spectrum/{id}")
     @ResponseBody
     fun getSpectrum(@PathVariable("id")id: String): ResponseEntity<ByteArray> {
         return apiClient.downloadSpectrum(id);
     }
 
-    @GetMapping("/summary/{id}/")
+    @GetMapping("/summary/{id}")
     @ResponseBody
     fun getSummary(@PathVariable("id")id: String): ResponseEntity<ByteArray> {
         return apiClient.downloadSummary(id);
