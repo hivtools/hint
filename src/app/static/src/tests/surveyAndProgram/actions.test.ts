@@ -1,5 +1,13 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
-import {mockAncResponse, mockAxios, mockFailure, mockProgramResponse, mockSuccess, mockSurveyResponse} from "../mocks";
+import {
+    mockAncResponse,
+    mockAxios,
+    mockFailure,
+    mockProgramResponse, mockRootState,
+    mockSuccess,
+    mockSurveyAndProgramState,
+    mockSurveyResponse
+} from "../mocks";
 
 import {DataType} from "../../app/store/filteredData/filteredData";
 
@@ -17,10 +25,13 @@ describe("Survey and programme actions", () => {
         (console.log as jest.Mock).mockClear();
     });
 
-    it("sets data after surveys file upload", async () => {
+    it("sets data and gets model options after survey file upload", async () => {
 
         mockAxios.onPost(`/disease/survey/`)
             .reply(200, mockSuccess({data: "SOME DATA"}));
+
+        mockAxios.onGet("/model/options/")
+            .reply(200, mockSuccess("TESTOPTIONS"));
 
         const commit = jest.fn();
         await actions.uploadSurvey({commit} as any, new FormData());
@@ -38,6 +49,10 @@ describe("Survey and programme actions", () => {
         //Should also have set selectedDataType
         expect(commit.mock.calls[2][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
         expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
+
+        expect(commit.mock.calls[3][0]).toBe("modelOptions/update");
+        expect(commit.mock.calls[3][1]).toBe("TESTOPTIONS");
+        expect(commit.mock.calls[3][2]).toStrictEqual({root: true});
     });
 
     it("sets error message after failed surveys upload", async () => {
@@ -57,7 +72,7 @@ describe("Survey and programme actions", () => {
             payload: "error message"
         });
 
-        //Should not have set selectedDataType
+        //Should not have set selectedDataType or fetched options
         expect(commit.mock.calls.length).toEqual(2);
     });
 
@@ -67,7 +82,8 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
-        await actions.uploadProgram({commit} as any, new FormData());
+        const state = mockSurveyAndProgramState();
+        await actions.uploadProgram({commit, state} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ProgramUpdated",
@@ -82,7 +98,32 @@ describe("Survey and programme actions", () => {
         //Should also have set selectedDataType
         expect(commit.mock.calls[2][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
         expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
+
+        // Should not have fetched model options
+        expect(commit.mock.calls.length).toBe(3);
     });
+
+
+    it("gets model options after uploading programme if survey is already present", async () => {
+
+        mockAxios.onPost(`/disease/programme/`)
+            .reply(200, mockSuccess("TEST"));
+
+        mockAxios.onGet("/model/options/")
+            .reply(200, mockSuccess("TESTOPTIONS"));
+
+        const commit = jest.fn();
+        const state = mockSurveyAndProgramState({
+            survey: mockSurveyResponse()
+        });
+        await actions.uploadProgram({commit, state} as any, new FormData());
+
+        expect(commit.mock.calls.length).toBe(4);
+        expect(commit.mock.calls[3][0]).toBe("modelOptions/update");
+        expect(commit.mock.calls[3][1]).toBe("TESTOPTIONS");
+        expect(commit.mock.calls[3][2]).toStrictEqual({root: true});
+    });
+
 
     it("sets error message after failed programme upload", async () => {
 
@@ -90,7 +131,8 @@ describe("Survey and programme actions", () => {
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
-        await actions.uploadProgram({commit} as any, new FormData());
+        const state = mockSurveyAndProgramState();
+        await actions.uploadProgram({commit, state} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ProgramUpdated",
@@ -112,7 +154,8 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
-        await actions.uploadANC({commit} as any, new FormData());
+        const state = mockSurveyAndProgramState();
+        await actions.uploadANC({commit, state} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ANCUpdated",
@@ -127,6 +170,30 @@ describe("Survey and programme actions", () => {
         //Should also have set selectedDataType
         expect(commit.mock.calls[2][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
         expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.ANC});
+
+        // Should not have fetched model options
+        expect(commit.mock.calls.length).toBe(3);
+    });
+
+
+    it("gets model options after uploading anc if survey is already present", async () => {
+
+        mockAxios.onPost(`/disease/anc/`)
+            .reply(200, mockSuccess("TEST"));
+
+        mockAxios.onGet("/model/options/")
+            .reply(200, mockSuccess("TESTOPTIONS"));
+
+        const commit = jest.fn();
+        const state = mockSurveyAndProgramState({
+            survey: mockSurveyResponse()
+        });
+        await actions.uploadANC({commit, state} as any, new FormData());
+
+        expect(commit.mock.calls.length).toBe(4);
+        expect(commit.mock.calls[3][0]).toBe("modelOptions/update");
+        expect(commit.mock.calls[3][1]).toBe("TESTOPTIONS");
+        expect(commit.mock.calls[3][2]).toStrictEqual({root: true});
     });
 
     it("sets error message after failed anc upload", async () => {
@@ -135,7 +202,8 @@ describe("Survey and programme actions", () => {
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
-        await actions.uploadANC({commit} as any, new FormData());
+        const state = mockSurveyAndProgramState();
+        await actions.uploadANC({commit, state} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ANCUpdated",
@@ -151,7 +219,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls.length).toEqual(2);
     });
 
-    it("gets data, commits it and marks state ready", async () => {
+    it("gets data and model options, commits it and marks state ready", async () => {
 
         mockAxios.onGet(`/disease/survey/`)
             .reply(200, mockSuccess(mockSurveyResponse()));
@@ -162,6 +230,9 @@ describe("Survey and programme actions", () => {
         mockAxios.onGet(`/disease/anc/`)
             .reply(200, mockSuccess(mockAncResponse()));
 
+        mockAxios.onGet("/model/options/")
+            .reply(200, mockSuccess("TEST" as any));
+
         const commit = jest.fn();
         await actions.getSurveyAndProgramData({commit} as any);
 
@@ -171,6 +242,7 @@ describe("Survey and programme actions", () => {
         expect(calls).toContain("ANCUpdated");
         expect(calls).toContain("Ready");
 
+        expect(commit.mock.calls[3][0]).toBe("modelOptions/update");
     });
 
     it("fails silently and marks state ready if getting data fails", async () => {
@@ -184,11 +256,16 @@ describe("Survey and programme actions", () => {
         mockAxios.onGet(`/disease/programme/`)
             .reply(500);
 
+        mockAxios.onGet("/model/options/")
+            .reply(200, mockSuccess("TEST" as any));
+
         const commit = jest.fn();
         await actions.getSurveyAndProgramData({commit} as any);
 
-        expect(commit).toBeCalledTimes(1);
-        expect(commit.mock.calls[0][0]["type"]).toContain("Ready");
+        expect(commit).toBeCalledTimes(2);
+        expect(commit.mock.calls[0][0]).toBe("modelOptions/update");
+        expect(commit.mock.calls[1][0]["type"]).toContain("Ready");
+        expect(mockAxios.history.get.length).toBe(4);
     });
 
 });

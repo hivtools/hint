@@ -31,8 +31,8 @@ export interface API<S, E> {
     withSuccess: (type: S) => API<S, E>
     ignoreErrors: () => API<S, E>
 
-    postAndReturn<T extends ResponseData>(url: string, data: any): Promise<void | T>
-    get<T extends ResponseData>(url: string): Promise<void | T>
+    postAndReturn<T extends ResponseData>(url: string, data: any): Promise<T>
+    get<T extends ResponseData>(url: string): Promise<T>
 }
 
 export class APIService<S extends string, E extends string> implements API<S, E> {
@@ -74,8 +74,8 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     };
 
     withSuccess = (type: S) => {
-        this._onSuccess = (success: Response) => {
-            this._commit({type: type, payload: freezer.deepFreeze(success.data)});
+        this._onSuccess = (data: any) => {
+            this._commit({type: type, payload: freezer.deepFreeze(data)});
         };
         return this;
     };
@@ -83,10 +83,11 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     private _handleAxiosResponse(promise: Promise<AxiosResponse>) {
         return promise.then((response: AxiosResponse) => {
             const success = response && response.data;
+            const data = success.data;
             if (this._onSuccess) {
-                this._onSuccess(success);
+                this._onSuccess(data);
             }
-            return success;
+            return data;
         }).catch((e: AxiosError) => {
             return this._handleError(e)
         });
@@ -118,13 +119,13 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
     }
 
-    async get<T extends ResponseData>(url: string): Promise<void | T> {
+    async get<T extends ResponseData>(url: string): Promise<T> {
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
         return this._handleAxiosResponse(axios.get(fullUrl));
     }
 
-    async postAndReturn<T extends ResponseData>(url: string, data: any): Promise<void | T> {
+    async postAndReturn<T extends ResponseData>(url: string, data: any): Promise<T> {
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
 

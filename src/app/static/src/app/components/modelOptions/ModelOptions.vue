@@ -11,7 +11,6 @@
     interface Methods {
         validate: (data: DynamicFormData) => void
         update: (data: DynamicFormMeta) => void
-        getOptions: () => void
     }
     export default Vue.extend<{ form: DynamicFormMeta }, Methods, {modelOptions: DynamicFormMeta}, {}>({
         name: "ModelOptions",
@@ -26,11 +25,7 @@
             }
         },
         methods: {
-            ...mapMutationsByNames<keyof Methods>("modelOptions", ["validate", "update"]),
-            getOptions: mapActionByName("modelOptions", "getOptions")
-        },
-        created() {
-            this.getOptions()
+            ...mapMutationsByNames<keyof Methods>("modelOptions", ["validate", "update"])
         },
         components: {
             DynamicForm

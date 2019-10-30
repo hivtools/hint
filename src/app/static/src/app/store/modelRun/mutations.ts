@@ -38,7 +38,7 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
         state.result = action.payload;
     },
 
-    RunResultError(state: ModelRunState, action: PayloadWithType<string>) {
+        RunResultError(state: ModelRunState, action: PayloadWithType<string>) {
         state.errors.push(action.payload);
     },
 
