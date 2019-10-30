@@ -32,7 +32,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: APIClient)
     @GetMapping("/options/")
     @ResponseBody
     fun options(): ResponseEntity<String> {
-        val allFiles = fileManager.getAllFiles(FileType.Shape, FileType.Survey, FileType.Programme, FileType.ANC)
+        val allFiles = fileManager.getFiles(FileType.Shape, FileType.Survey, FileType.Programme, FileType.ANC)
         return apiClient.getModelRunOptions(allFiles)
     }
 }
