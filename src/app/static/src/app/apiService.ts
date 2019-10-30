@@ -31,8 +31,8 @@ export interface API<S, E> {
     withSuccess: (type: S) => API<S, E>
     ignoreErrors: () => API<S, E>
 
-    postAndReturn<T extends ResponseData>(url: string, data: any): Promise<T>
-    get<T extends ResponseData>(url: string): Promise<T>
+    postAndReturn<T extends ResponseData>(url: string, data: any): Promise<void | T>
+    get<T extends ResponseData>(url: string): Promise<void | T>
 }
 
 export class APIService<S extends string, E extends string> implements API<S, E> {
@@ -119,13 +119,13 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
     }
 
-    async get<T extends ResponseData>(url: string): Promise<T> {
+    async get<T extends ResponseData>(url: string): Promise<void | T> {
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
         return this._handleAxiosResponse(axios.get(fullUrl));
     }
 
-    async postAndReturn<T extends ResponseData>(url: string, data: any): Promise<T> {
+    async postAndReturn<T extends ResponseData>(url: string, data: any): Promise<void | T> {
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
 

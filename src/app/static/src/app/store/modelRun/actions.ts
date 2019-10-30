@@ -21,6 +21,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
         options.sleep = 1; // TODO remove once no longer needed by hintr
         await api<ModelRunActionTypes, ModelRunErrorTypes>(commit)
             .withSuccess("ModelRunStarted")
+            .withError("ModelRunError")
             .postAndReturn<ModelSubmitResponse>("/model/run/", options)
     },
 

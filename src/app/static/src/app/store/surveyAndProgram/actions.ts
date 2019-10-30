@@ -31,7 +31,9 @@ async function fetchModelOptions(commit: Commit) {
         .ignoreErrors()
         .get<DynamicFormMeta>("/model/options/");
 
-    commitModelOptionsUpdated(commit, response);
+    if (response) {
+        commitModelOptionsUpdated(commit, response);
+    }
 }
 
 export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
