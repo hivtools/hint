@@ -1,7 +1,7 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
 import {actions as baselineActions} from "../../app/store/baseline/actions"
 import {login} from "./integrationTest";
-import {isDynamicFormMeta} from "./dynamicFormChecker";
+import {isDynamicFormMeta} from "../components/forms/dynamicFormChecker";
 
 const fs = require("fs");
 const FormData = require("form-data");
