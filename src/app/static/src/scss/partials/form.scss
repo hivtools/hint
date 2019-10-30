@@ -8,13 +8,21 @@
   input[type=number] {
     max-width: 120px;
   }
+}
 
-  .vue-treeselect__control {
-    @extend .form-control;
+.content {
 
-    .vue-treeselect__placeholder {
-      color: inherit;
-      line-height: 26px;
+  .vue-treeselect {
+
+    .vue-treeselect__control {
+      @extend .form-control;
+      font-size: inherit;
+    }
+
+    &:not(.vue-treeselect--disabled) {
+      .vue-treeselect__placeholder {
+        color: inherit;
+      }
     }
   }
 
@@ -28,6 +36,16 @@
     padding-top: 0;
   }
 
+  .vue-treeselect__single-value, .vue-treeselect__placeholder {
+    padding-left: 0;
+    line-height: inherit;
+    font-size: inherit;
+  }
+
+  .vue-treeselect--focused.vue-treeselect--searchable .vue-treeselect__single-value {
+    color: inherit;
+  }
+
   .vue-treeselect__control-arrow-container {
     padding-top: 8px;
     vertical-align: top;
@@ -37,7 +55,7 @@
     color: inherit;
   }
 
-  &.was-validated {
+  form.was-validated {
 
     .vue-treeselect__value-container {
       display: block;
