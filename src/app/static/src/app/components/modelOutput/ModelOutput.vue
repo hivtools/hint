@@ -17,8 +17,8 @@
                 <choropleth></choropleth>
             </div>
 
-            <div class="col" v-if="selectedTab==='Bar'">
-                Bar chart coming soon!
+            <div id="barchart-container" :class="selectedTab==='Bar' ? 'col-md-12' : 'd-none'">
+                <barchart :chartdata="chartdata" :filters="barchartFilters" :indicators="barchartIndicators"></barchart>
             </div>
         </div>
     </div>
@@ -27,11 +27,15 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {mapActions} from "vuex";
     import Choropleth from "../plots/Choropleth.vue";
     import ChoroplethFilters from "../plots/ChoroplethFilters.vue";
+    import Barchart from "../plots/barchart/Barchart.vue";
     import {DataType} from "../../store/filteredData/filteredData";
-    import {mapActionsByNames} from "../../utils";
+    import {mapActionsByNames, mapGettersByNames, mapStateProp, mapStatePropByName} from "../../utils";
+    import {BarchartIndicator, Filter} from "../../types";
+    import {BaselineState} from "../../store/baseline/baseline";
+    import {ModelRunState} from "../../store/modelRun/modelRun";
+    import {ModelResultResponse} from "../../generated";
 
     const namespace: string = 'filteredData';
 
@@ -47,7 +51,13 @@
         selectTab: (tab: string) => void
     }
 
-    export default Vue.extend<Data, Methods, {}, {}>({
+    interface Computed {
+        barchartFilters: Filter[],
+        barchartIndicators: BarchartIndicator[],
+        chartdata: any
+    }
+
+    export default Vue.extend<Data, Methods, Computed, {}>({
         name: "ModelOutput",
         created() {
             this.selectDataType(DataType.Output)
@@ -58,6 +68,12 @@
                 selectedTab: tabs[0]
             }
         },
+        computed: {
+            ...mapGettersByNames("modelOutput", ["barchartFilters", "barchartIndicators"]),
+            chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
+                return state.result ? state.result.data : [];
+            })
+        },
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["selectDataType"]),
             selectTab: function(tab: string){
@@ -66,7 +82,8 @@
         },
         components: {
             Choropleth,
-            ChoroplethFilters
+            ChoroplethFilters,
+            Barchart
         }
     })
 </script>
