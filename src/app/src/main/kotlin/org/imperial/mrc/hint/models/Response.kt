@@ -1,16 +1,19 @@
 package org.imperial.mrc.hint.models
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 
-data class SuccessResponse(val data: Any?){
+data class SuccessResponse(val data: Any?) {
     val errors = arrayOf<Any>()
     val status = "success"
 }
 
 fun SuccessResponse.toJsonString() = ObjectMapper().writeValueAsString(this)
-fun SuccessResponse.asResponseEntity() = ResponseEntity(this.toJsonString(), HttpStatus.OK)
+fun SuccessResponse.asResponseEntity() = ResponseEntity
+        .ok()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(this.toJsonString())
 
 val EmptySuccessResponse = SuccessResponse(true)
 
