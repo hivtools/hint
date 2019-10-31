@@ -40,8 +40,8 @@ describe("Model run actions", () => {
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("RunStatusUpdated");
             done();
-        }, 4000)
-    });
+        }, 5000)
+    }, 6000);
 
     it("can get model run result", async () => {
         const commit = jest.fn();

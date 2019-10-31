@@ -35,8 +35,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[3][0]).toBe("modelOptions/update");
         expect(isDynamicFormMeta(commit.mock.calls[3][1])).toBe(true);
-
-    }, 7000);
+    }, 10000);
 
     it("can upload programme", async () => {
 
@@ -51,7 +50,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("ProgramUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("programme.csv")
-    }, 7000);
+    });
 
     it("can upload anc", async () => {
 
@@ -66,6 +65,6 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("ANCUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("anc.csv")
-    }, 7000);
+    });
 
 });

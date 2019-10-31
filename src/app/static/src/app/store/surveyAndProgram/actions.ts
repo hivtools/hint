@@ -28,7 +28,6 @@ function commitModelOptionsUpdated(commit: Commit, payload: DynamicFormMeta) {
 
 async function fetchModelOptions(commit: Commit) {
     const response = await api(commit)
-        .ignoreErrors()
         .get<DynamicFormMeta>("/model/options/");
 
     if (response) {
