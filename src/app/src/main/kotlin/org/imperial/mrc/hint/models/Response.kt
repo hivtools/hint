@@ -21,3 +21,4 @@ data class ErrorResponse(val errors: List<ErrorDetail>) {
     val data = mapOf<Any, Any>()
     val status = "failure"
 }
+fun ErrorResponse.toJsonString() = ObjectMapper().writeValueAsString(this)
