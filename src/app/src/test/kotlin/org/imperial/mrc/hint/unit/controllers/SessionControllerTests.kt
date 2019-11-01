@@ -19,7 +19,7 @@ class SessionControllerTests {
         val files = mapOf("pjnz" to SessionFile("hash1", "file1"))
         val result = sut.postFiles(files)
 
-        verify(mockFileManager).setAllFiles(files);
-        assertThat(result).isEqualTo(SuccessResponse(files).toJsonString())
+        verify(mockFileManager).setAllFiles(files)
+        assertThat(result.body).isEqualTo(SuccessResponse(files).toJsonString())
     }
 }
