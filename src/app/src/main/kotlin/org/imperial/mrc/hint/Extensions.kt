@@ -26,18 +26,20 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
                 .toResponseEntity() as ResponseEntity<String>
     }
 
-    try {
+    return try {
         val body = this.body().asString("application/json")
         val json = ObjectMapper().readTree(body)
         if (!json.has("status")) {
-            return ErrorDetail(httpStatus, "Could not parse response.")
-                    .toResponseEntity() as ResponseEntity<String>
+            throw IOException()
         }
-        return ResponseEntity.status(httpStatus)
+
+        ResponseEntity.status(httpStatus)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(body)
+
     } catch (e: IOException) {
-        return ErrorDetail(httpStatus, "Could not parse response.")
+        ErrorDetail(httpStatus, "Could not parse response.")
                 .toResponseEntity() as ResponseEntity<String>
     }
+
 }
