@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
-import javax.servlet.http.HttpServletResponse
 import java.io.OutputStream
 
 
@@ -58,5 +57,5 @@ fun Response.asStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> 
         }
     }
 
-   return ResponseEntity(responseBody, headers, httpStatus)
+    return ResponseEntity(responseBody, headers, httpStatus)
 }

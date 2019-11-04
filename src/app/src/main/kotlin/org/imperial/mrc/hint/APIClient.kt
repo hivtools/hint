@@ -7,7 +7,6 @@ import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
-import javax.servlet.http.HttpServletResponse
 
 interface APIClient {
     fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String>

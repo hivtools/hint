@@ -36,7 +36,7 @@ class DownloadTests : SecureIntegrationTests() {
             val statusResponse = testRestTemplate.getForEntity<String>("/model/status/${id}")
         } while (statusResponse.body!!.contains("\"status\":\"RUNNING\""))
 
-        return id;
+        return id
     }
 
     @ParameterizedTest
