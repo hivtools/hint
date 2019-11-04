@@ -3,12 +3,14 @@ package org.imperial.mrc.hint.integration
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 
 class ModelRunTests : SecureIntegrationTests() {
@@ -67,4 +69,19 @@ class ModelRunTests : SecureIntegrationTests() {
         val responseEntity = testRestTemplate.getForEntity<String>("/model/result/${id}")
         assertSecureWithSuccess(isAuthorized, responseEntity, "ModelResultResponse")
     }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can get model run options`(isAuthorized: IsAuthorized) {
+
+        testRestTemplate.postForEntity<String>("/baseline/shape/",
+                getTestEntity("malawi.geojson"))
+
+        testRestTemplate.postForEntity<String>("/disease/survey/",
+                getTestEntity("survey.csv"))
+
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/options/")
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ModelRunOptions")
+    }
+
 }

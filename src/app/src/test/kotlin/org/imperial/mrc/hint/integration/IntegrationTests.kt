@@ -51,6 +51,7 @@ abstract class SecureIntegrationTests: CleanDatabaseTests() {
 
         when (isAuthorized) {
             IsAuthorized.TRUE -> {
+                Assertions.assertThat(responseEntity.headers.contentType!!.toString()).isEqualTo("application/json")
                 Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
 
             }
@@ -95,6 +96,7 @@ abstract class SecureIntegrationTests: CleanDatabaseTests() {
 
         when (isAuthorized) {
             IsAuthorized.TRUE -> {
+                Assertions.assertThat(responseEntity.headers.contentType!!.toString()).isEqualTo("application/json")
                 Assertions.assertThat(responseEntity.statusCode).isEqualTo(httpStatus)
                 JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail)
             }

@@ -29,7 +29,8 @@ enum class FileType {
 interface FileManager {
     fun saveFile(file: MultipartFile, type: FileType): SessionFileWithPath
     fun getFile(type: FileType): SessionFileWithPath?
-    fun getAllFiles(): Map<String, String>
+    fun getAllHashes(): Map<String, String>
+    fun getFiles(vararg include: FileType): Map<String, SessionFileWithPath>
     fun setAllFiles(files: Map<String, SessionFile?>)
 }
 
@@ -38,6 +39,8 @@ class LocalFileManager(
         private val session: Session,
         private val sessionRepository: SessionRepository,
         private val appProperties: AppProperties) : FileManager {
+
+    private val uploadPath = appProperties.uploadDirectory
 
     override fun saveFile(file: MultipartFile, type: FileType): SessionFileWithPath {
         val md = MessageDigest.getInstance("MD5")
@@ -61,12 +64,19 @@ class LocalFileManager(
 
     override fun getFile(type: FileType): SessionFileWithPath? {
         return sessionRepository.getSessionFile(session.getId(), type)
-                ?.toSessionFileWithPath(appProperties.uploadDirectory)
+                ?.toSessionFileWithPath(uploadPath)
     }
 
-    override fun getAllFiles(): Map<String, String> {
+    override fun getAllHashes(): Map<String, String> {
         val hashes = sessionRepository.getHashesForSession(session.getId())
-        return hashes.mapValues { "${appProperties.uploadDirectory}/${it.value}" }
+        return hashes.mapValues { "$uploadPath/${it.value}" }
+    }
+
+    override fun getFiles(vararg include: FileType): Map<String, SessionFileWithPath> {
+        val files = sessionRepository.getSessionFiles(session.getId())
+        val includeKeys = include.map { it.toString() }
+        return files.filterKeys { includeKeys.count() == 0 || includeKeys.contains(it) }
+                .mapValues { it.value.toSessionFileWithPath(uploadPath) }
     }
 
     override fun setAllFiles(files: Map<String, SessionFile?>) {
