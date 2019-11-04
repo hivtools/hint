@@ -28,6 +28,15 @@ a {
   @include button-variant($theme-red, darken($theme-red, 10%))
 }
 
+.btn-white {
+  @include button-variant(#ffffff, $theme-red, rgba(198, 26, 53, 0.1));
+  color: $theme-red !important;
+
+  &:active {
+    background: rgba(198, 26, 53, 0.1);
+  }
+}
+
 .tick {
   margin-left: 5px;
   margin-bottom: 5px;
