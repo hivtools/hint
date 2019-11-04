@@ -7,11 +7,12 @@ import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.controllers.DownloadController
 import org.junit.jupiter.api.Test
 import org.springframework.http.ResponseEntity
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
 class DownloadControllerTests {
     @Test
     fun `downloads spectrum data`() {
-        val mockResponse = mock<ResponseEntity<ByteArray>>()
+        val mockResponse = mock<ResponseEntity<StreamingResponseBody>>()
         val mockAPIClient = mock<APIClient>{
             on {downloadSpectrum("id1")} doReturn mockResponse
         }
@@ -23,7 +24,7 @@ class DownloadControllerTests {
 
     @Test
     fun `downloads summary data`() {
-        val mockResponse = mock<ResponseEntity<ByteArray>>()
+        val mockResponse = mock<ResponseEntity<StreamingResponseBody>>()
         val mockAPIClient = mock<APIClient>{
             on {downloadSummary("id1")} doReturn mockResponse
         }

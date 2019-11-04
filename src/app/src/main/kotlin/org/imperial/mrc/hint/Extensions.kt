@@ -7,6 +7,10 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
+import javax.servlet.http.HttpServletResponse
+import java.io.OutputStream
+
 
 fun httpStatusFromCode(code: Int): HttpStatus {
     return when (code) {
@@ -37,9 +41,22 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
             .body(body)
 }
 
-fun Response.asByteArrayResponseEntity(): ResponseEntity<ByteArray> {
+fun Response.asStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> {
     val httpStatus = httpStatusFromCode(this.statusCode)
-    val body = this.body().toByteArray();
-    val headers = headersToMultiMap(this.headers);
-    return ResponseEntity(body, headers, httpStatus);
+    val headers = headersToMultiMap(this.headers)
+
+    val inputStream = this.body().toStream()
+    val responseBody = StreamingResponseBody { outputStream: OutputStream ->
+        try
+        {
+            inputStream.copyTo(outputStream)
+
+        }
+        finally
+        {
+            inputStream.close()
+        }
+    }
+
+   return ResponseEntity(responseBody, headers, httpStatus)
 }
