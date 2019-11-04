@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.unit
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.core.Response
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.imperial.mrc.hint.asResponseEntity
@@ -33,8 +34,32 @@ class ExtensionTests {
         res = Response(URL("http://whatever"), 500)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
 
-        res = Response(URL("http://whatever"), -1)
+    }
+
+    @Test
+    fun `message is returned when status code is missing`() {
+        val res = Response(URL("http://whatever"), -1)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        assertThat(res.asResponseEntity().body).isEqualTo("No response returned. The request may have timed out.")
+        val body = ObjectMapper().readTree(res.asResponseEntity().body)
+        val errorDetail = body["errors"].first()["detail"].textValue()
+        assertThat(errorDetail).isEqualTo("No response returned. The request may have timed out.")
+    }
+
+    @Test
+    fun `error is returned when response is not valid json`() {
+        val res = Response(URL("http://whatever"), 500, "Bad response")
+        assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        val body = ObjectMapper().readTree(res.asResponseEntity().body)
+        val errorDetail = body["errors"].first()["detail"].textValue()
+        assertThat(errorDetail).isEqualTo("Could not parse response.")
+    }
+
+    @Test
+    fun `error is returned when response json does not conform to schema`() {
+        val res = Response(URL("http://whatever"), 500, "{\"wrong\": \"schema\"}")
+        assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        val body = ObjectMapper().readTree(res.asResponseEntity().body)
+        val errorDetail = body["errors"].first()["detail"].textValue()
+        assertThat(errorDetail).isEqualTo("Could not parse response.")
     }
 }
