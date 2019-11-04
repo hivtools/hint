@@ -32,5 +32,9 @@ class ExtensionTests {
 
         res = Response(URL("http://whatever"), 500)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+
+        res = Response(URL("http://whatever"), -1)
+        assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(res.asResponseEntity().body).isEqualTo("No response returned. The request may have timed out.")
     }
 }

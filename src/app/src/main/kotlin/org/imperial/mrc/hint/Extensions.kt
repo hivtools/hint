@@ -17,7 +17,10 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
         else -> HttpStatus.INTERNAL_SERVER_ERROR
     }
 
-    val body = this.body().asString("application/json")
+    var body = this.body().asString("application/json")
+    if (this.statusCode == -1) {
+        body = "No response returned. The request may have timed out."
+    }
     return ResponseEntity.status(httpStatus)
             .contentType(MediaType.APPLICATION_JSON)
             .body(body)
