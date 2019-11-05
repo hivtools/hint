@@ -1,7 +1,11 @@
 package org.imperial.mrc.hint.unit
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.core.Body
 import com.github.kittinunf.fuel.core.Response
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.imperial.mrc.hint.asResponseEntity
 import org.junit.jupiter.api.Test
@@ -47,7 +51,10 @@ class ExtensionTests {
 
     @Test
     fun `error is returned when response is not valid json`() {
-        val res = Response(URL("http://whatever"), 500, "Bad response")
+        val mockBody = mock<Body> {
+            on {it.asString(any())} doReturn "Bad response"
+        }
+        val res = Response(URL("http://whatever"), 500, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         val body = ObjectMapper().readTree(res.asResponseEntity().body)
         val errorDetail = body["errors"].first()["detail"].textValue()
@@ -56,7 +63,10 @@ class ExtensionTests {
 
     @Test
     fun `error is returned when response json does not conform to schema`() {
-        val res = Response(URL("http://whatever"), 500, "{\"wrong\": \"schema\"}")
+        val mockBody = mock<Body> {
+            on {it.asString(any())} doReturn "{\"wrong\": \"schema\"}"
+        }
+        val res = Response(URL("http://whatever"), 500, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         val body = ObjectMapper().readTree(res.asResponseEntity().body)
         val errorDetail = body["errors"].first()["detail"].textValue()
