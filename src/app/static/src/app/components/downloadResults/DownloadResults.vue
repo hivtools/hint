@@ -4,6 +4,10 @@
            <h4>Download model outputs for Spectrum</h4>
            <a class="btn btn-red btn-lg" :href=spectrumUrl>Download</a>
        </div>
+       <div class="col-sm-12">
+           <h4>Download summary</h4>
+           <a class="btn btn-red btn-lg" :href=summaryUrl>Download</a>
+       </div>
    </div>
 </template>
 
@@ -14,7 +18,8 @@
 
     interface Computed {
         modelRunId: string,
-        spectrumUrl: string
+        spectrumUrl: string,
+        summaryUrl: string
     }
 
     export default Vue.extend<{}, {}, Computed>({
@@ -25,6 +30,9 @@
             }),
             spectrumUrl: function() {
                     return `/download/spectrum/${this.modelRunId}`
+            },
+            summaryUrl: function() {
+                return `/download/summary/${this.modelRunId}`
             }
         }
     });
