@@ -51,14 +51,19 @@ describe("Model run actions", () => {
     it("can get model run result", async () => {
         const commit = jest.fn();
         const mockState = {
-            modelRunId: runId,
+            modelRunId: "1234",
             status: {
                 done: true,
                 id: runId
             }
         } as ModelRunState;
         await actions.getResult({commit, state: mockState} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("RunResultFetched");
+
+        // passing an invalid run id so this will return an error
+        // but the expected error message confirms
+        // that we're hitting the correct endpoint
+        expect(commit.mock.calls[0][0]["type"]).toBe("RunResultError");
+        expect(commit.mock.calls[0][0]["payload"]).toBe("Missing some results");
     });
 
 });
