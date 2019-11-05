@@ -2,6 +2,7 @@ package org.imperial.mrc.hint
 
 import com.github.kittinunf.fuel.core.Response
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 
 fun Response.asResponseEntity(): ResponseEntity<String> {
@@ -17,5 +18,7 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
     }
 
     val body = this.body().asString("application/json")
-    return ResponseEntity(body, httpStatus)
+    return ResponseEntity.status(httpStatus)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(body)
 }

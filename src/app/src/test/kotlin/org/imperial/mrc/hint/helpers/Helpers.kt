@@ -9,11 +9,14 @@ import java.io.File
 
 const val tmpUploadDirectory = "tmp"
 
-fun getTestEntity(fileName: String): HttpEntity<LinkedMultiValueMap<String, Any>> {
+fun getTestEntity(fileName: String, acceptGzip: Boolean = false): HttpEntity<LinkedMultiValueMap<String, Any>> {
     val testFile = File("testdata/$fileName")
     val body = LinkedMultiValueMap<String, Any>()
     body.add("file", FileSystemResource(testFile))
     val headers = HttpHeaders()
     headers.contentType = MediaType.MULTIPART_FORM_DATA
+    if (acceptGzip) {
+        headers.set("Accept-Encoding", "gzip")
+    }
     return HttpEntity(body, headers)
 }
