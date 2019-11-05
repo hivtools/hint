@@ -42,7 +42,9 @@ class ExtensionTests {
 
     @Test
     fun `asStreamingResponseEntity copies response to output stream`() {
-        val mockInputStream = mock<InputStream>()
+        val mockInputStream = mock<InputStream>{
+            on {read(any())} doReturn listOf(1,-1)
+        }
         val mockBody = mock<Body>{
             on { toStream() } doReturn mockInputStream
         }
@@ -61,7 +63,7 @@ class ExtensionTests {
         val streamingBody = result.body
         //calling writeTo should invoke the copy from the input stream
         streamingBody?.writeTo(mockOutputStream)
-        verify(mockInputStream).copyTo(mockOutputStream)
+        verify(mockOutputStream).write(any(), eq(0), eq(1))
         verify(mockInputStream).close()
     }
 }

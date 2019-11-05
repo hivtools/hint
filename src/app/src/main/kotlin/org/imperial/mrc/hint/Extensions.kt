@@ -46,14 +46,8 @@ fun Response.asStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> 
 
     val inputStream = this.body().toStream()
     val responseBody = StreamingResponseBody { outputStream: OutputStream ->
-        try
-        {
+        inputStream.use { inputStream ->
             inputStream.copyTo(outputStream)
-
-        }
-        finally
-        {
-            inputStream.close()
         }
     }
 
