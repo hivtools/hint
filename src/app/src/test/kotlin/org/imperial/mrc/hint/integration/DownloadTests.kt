@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
 class DownloadTests : SecureIntegrationTests() {
 
@@ -43,7 +44,7 @@ class DownloadTests : SecureIntegrationTests() {
     @EnumSource(IsAuthorized::class)
     fun `can download Spectrum results`(isAuthorized: IsAuthorized) {
         val id = waitForModelRunResult(isAuthorized)
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/spectrum/${id}")
+        val responseEntity = testRestTemplate.getForEntity<StreamingResponseBody>("/download/spectrum/${id}")
         assertSecureWithSuccess(isAuthorized, responseEntity)
     }
 
@@ -51,7 +52,7 @@ class DownloadTests : SecureIntegrationTests() {
     @EnumSource(IsAuthorized::class)
     fun `can download summary results`(isAuthorized: IsAuthorized) {
         val id = waitForModelRunResult(isAuthorized)
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/summary/${id}")
+        val responseEntity = testRestTemplate.getForEntity<StreamingResponseBody>("/download/summary/${id}")
         assertSecureWithSuccess(isAuthorized, responseEntity)
     }
 }
