@@ -73,7 +73,7 @@ abstract class SecureIntegrationTests: CleanDatabaseTests() {
     }
 
     fun assertSecureWithSuccess(isAuthorized: IsAuthorized,
-                                responseEntity: ResponseEntity<StreamingResponseBody>) {
+                                responseEntity: ResponseEntity<ByteArray>) {
 
         when (isAuthorized) {
             IsAuthorized.TRUE -> {
