@@ -2,9 +2,9 @@
    <div class="row">
        <div class="col-sm-12">
            <h4>Download model outputs for Spectrum</h4>
-           <a class="btn btn-red btn-lg" :href=spectrumUrl>Download</a>
+           <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>Download</a>
            <h4 class="mt-4">Download summary</h4>
-           <a class="btn btn-red btn-lg" :href=summaryUrl>Download</a>
+           <a class="btn btn-red btn-lg my-3" :href=summaryUrl>Download</a>
        </div>
    </div>
 </template>
