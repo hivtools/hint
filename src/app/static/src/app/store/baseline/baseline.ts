@@ -41,7 +41,7 @@ export const initialBaselineState: BaselineState = {
 export const baselineGetters = {
   complete: (state: BaselineState) => {
       return state.validatedComplete && state.validatedConsistent &&
-                state.country!! && state.iso3!! && state.shape!! && state.population!!
+                !!state.country && !!state.iso3 && !!state.shape && !!state.population
   }
 };
 

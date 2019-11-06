@@ -1,5 +1,11 @@
 import {mutations} from "../../app/store/baseline/mutations";
-import {mockPJNZResponse, mockPopulationResponse, mockRootState, mockShapeResponse} from "../mocks";
+import {
+    mockPJNZResponse,
+    mockPopulationResponse,
+    mockRootState,
+    mockShapeResponse,
+    mockValidateBaselineResponse
+} from "../mocks";
 import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
@@ -18,7 +24,7 @@ describe("Baseline mutations", () => {
         expect(testState.pjnzError).toBe("");
     });
 
-    it("state becomes complete once all files are Updated", () => {
+    it("state becomes complete once all files are Updated and validatedComplete and validatedConsistent are true", () => {
         const testStore: Module<BaselineState, RootState> = {
             state: {...initialBaselineState},
             getters: baselineGetters
@@ -46,8 +52,14 @@ describe("Baseline mutations", () => {
                 mockPopulationResponse(), type: "PopulationUpdated"
         });
 
-        expect(complete(testState, null, testRootState, null)).toBe(true);
+        expect(complete(testState, null, testRootState, null)).toBe(false);
 
+        mutations.Validated(testState, {
+            payload:
+                mockValidateBaselineResponse(), type: "Validated"
+        });
+
+        expect(complete(testState, null, testRootState, null)).toBe(true);
     });
 
     it("sets error on PJNZUploadError", () => {

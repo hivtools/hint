@@ -88,6 +88,16 @@ describe("Stepper component", () => {
         })
     };
 
+    const completedBaselineState = {
+        country: "testCountry",
+        iso3: "TTT",
+        shape: mockShapeResponse(),
+        population: mockPopulationResponse(),
+        ready: true,
+        validatedConsistent: true,
+        validatedComplete: true
+    };
+
     afterEach(() => {
         localStorage.clear();
     });
@@ -171,13 +181,7 @@ describe("Stepper component", () => {
     });
 
     it("upload surveys step is enabled when baseline step is complete", () => {
-        const store = createSut({
-                country: "testCountry",
-                iso3: "TTT",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse(),
-                ready: true
-            },
+        const store = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
@@ -190,12 +194,7 @@ describe("Stepper component", () => {
     });
 
     it("upload surveys step is not enabled if metadata state is not complete", () => {
-        const store = createSut({
-                country: "testCountry",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse(),
-                ready: true
-            },
+        const store = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: null},
             {ready: true});
@@ -208,13 +207,7 @@ describe("Stepper component", () => {
     });
 
     it("updates active step when jump event is emitted", () => {
-        const store = createSut({
-                country: "testCountry",
-                iso3: "TTT",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse(),
-                ready: true
-            },
+        const store = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
