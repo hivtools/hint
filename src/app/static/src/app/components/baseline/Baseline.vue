@@ -29,6 +29,7 @@
                                  name="population">
                     </file-upload>
                 </form>
+                <error-alert v-if="hasBaselineError" :message="baselineError"></error-alert>
             </div>
         </div>
     </div>
@@ -43,6 +44,7 @@
     import FileUpload from "../FileUpload.vue";
     import {PartialFileUploadProps} from "../../types";
     import {MetadataState} from "../../store/metadata/metadata";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     const namespace: string = 'baseline';
 
@@ -66,6 +68,8 @@
                     error: state.populationError,
                     existingFileName: state.population && state.population.filename
                 } as PartialFileUploadProps),
+                hasBaselineError: state => state.baselineError.length > 0,
+                baselineError: state => state.baselineError
             }),
             ...mapState<MetadataState>("metadata", {
                 plottingMetadataError: state => state.plottingMetadataError
@@ -79,7 +83,8 @@
             })
         },
         components: {
-            FileUpload
+            FileUpload,
+            ErrorAlert
         }
     })
 </script>
