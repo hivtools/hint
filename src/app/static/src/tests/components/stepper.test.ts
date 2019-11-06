@@ -7,7 +7,7 @@ import {
     mockModelRunState, mockPlottingMetadataResponse,
     mockPopulationResponse,
     mockShapeResponse, mockStepperState,
-    mockSurveyAndProgramState
+    mockSurveyAndProgramState, mockValidateBaselineResponse
 } from "../mocks";
 import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations} from '../../app/store/baseline/mutations';
@@ -231,13 +231,7 @@ describe("Stepper component", () => {
 
 
     it("can continue when the active step is complete", () => {
-        const store = createSut({
-                country: "testCountry",
-                iso3: "TTT",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse(),
-                ready: true
-            },
+        const store = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
@@ -251,7 +245,13 @@ describe("Stepper component", () => {
     });
 
     it("updates from completed state when active step data is populated", (done) => {
-        const baselineState = {country: "Malawi", iso3: "MWI", population: mockPopulationResponse(), ready: true};
+        const baselineState = {
+            country: "Malawi",
+            iso3: "MWI",
+            population: mockPopulationResponse(),
+            shape: mockShapeResponse(),
+            ready: true
+        };
         const store = createSut(baselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
@@ -261,9 +261,9 @@ describe("Stepper component", () => {
         expect(continueLink.classes()).toContain("disabled");
 
         //invoke the mutation
-        store.commit("baseline/ShapeUpdated", {
-            "type": "ShapeUpdated",
-            "payload": mockShapeResponse()
+        store.commit("baseline/Validated", {
+            "type": "Validated",
+            "payload": mockValidateBaselineResponse()
         });
 
         Vue.nextTick().then(() => {
@@ -274,13 +274,11 @@ describe("Stepper component", () => {
 
     it("active step only becomes active once state becomes ready", async () => {
 
-        const store = createSut({
-            ready: true,
-            country: "Malawi",
-            iso3: "MWI",
-            shape: mockShapeResponse(),
-            population: mockPopulationResponse()
-        }, {}, {plottingMetadata: mockPlottingMetadataResponse()}, {ready: true}, {activeStep: 2});
+        const store = createSut(completedBaselineState,
+            {},
+            {plottingMetadata: mockPlottingMetadataResponse()},
+            {ready: true},
+            {activeStep: 2});
 
         const wrapper = shallowMount(Stepper, {store, localVue});
         let steps = wrapper.findAll(Step);
@@ -293,13 +291,10 @@ describe("Stepper component", () => {
 
     it("complete steps only shown as complete once state becomes ready", async () => {
 
-        const store = createSut({
-                ready: true,
-                country: "Malawi",
-                iso3: "MWI",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse()
-            }, {}, {
+        const store = createSut(
+            completedBaselineState,
+            {},
+            {
                 plottingMetadata: "TEST DATA" as any
             },
             {ready: true});
@@ -314,13 +309,7 @@ describe("Stepper component", () => {
 
     it("steps only shown as enabled once state becomes ready, and not loading", async () => {
 
-        const store = createSut({
-                ready: true,
-                country: "Malawi",
-                iso3: "MWI",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse()
-            },
+        const store = createSut(completedBaselineState,
             {},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
@@ -335,13 +324,7 @@ describe("Stepper component", () => {
 
     it("steps not shown as enabled if state becomes ready, but is also loading", async () => {
 
-        const store = createSut({
-                ready: true,
-                country: "Malawi",
-                iso3: "MWI",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse()
-            },
+        const store = createSut(completedBaselineState,
             {},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});

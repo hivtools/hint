@@ -43,7 +43,8 @@ describe("Baseline actions", () => {
             .reply(200, mockSuccess(mockShape));
 
         const commit = jest.fn();
-        await actions.uploadShape({commit} as any, new FormData());
+        const dispatch = jest.fn();
+        await actions.uploadShape({commit, dispatch} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ShapeUpdated",
@@ -62,7 +63,8 @@ describe("Baseline actions", () => {
             .reply(200, mockSuccess(mockPop));
 
         const commit = jest.fn();
-        await actions.uploadPopulation({commit} as any, new FormData());
+        const dispatch = jest.fn();
+        await actions.uploadPopulation({commit, dispatch} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "PopulationUpdated",
@@ -90,7 +92,8 @@ describe("Baseline actions", () => {
             .reply(200, mockSuccess(mockPopulation));
 
         const commit = jest.fn();
-        await actions.getBaselineData({commit} as any);
+        const dispatch = jest.fn();
+        await actions.getBaselineData({commit, dispatch} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
         expect(calls).toContain("PJNZUpdated");
@@ -111,7 +114,8 @@ describe("Baseline actions", () => {
             .reply(500);
 
         const commit = jest.fn();
-        await actions.getBaselineData({commit} as any);
+        const dispatch = jest.fn();
+        await actions.getBaselineData({commit, dispatch} as any);
 
         expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toContain("Ready");
