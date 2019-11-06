@@ -1,4 +1,11 @@
-import {mockAxios, mockBaselineState, mockPopulationResponse, mockShapeResponse, mockSuccess} from "../mocks";
+import {
+    mockAxios,
+    mockBaselineState, mockFailure,
+    mockPopulationResponse,
+    mockShapeResponse,
+    mockSuccess,
+    mockValidateBaselineResponse
+} from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
 import {testUploadErrorCommitted} from "../actionTestHelpers";
 
@@ -16,7 +23,7 @@ describe("Baseline actions", () => {
         (console.log as jest.Mock).mockClear();
     });
 
-    it("sets country and iso3 after PJNZ file upload, and fetches plotting metadata", async () => {
+    it("sets country and iso3 after PJNZ file upload, and fetches plotting metadata, and validates", async () => {
 
         mockAxios.onPost(`/baseline/pjnz/`)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
@@ -29,14 +36,19 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUpdated", payload: {data: {country: "Malawi", iso3: "MWI"}}});
 
+        expect(dispatch.mock.calls.length).toBe(2);
+
         expect(dispatch.mock.calls[0][0]).toBe("metadata/getPlottingMetadata");
         expect(dispatch.mock.calls[0][1]).toBe("MWI");
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+
+        expect(dispatch.mock.calls[1].length).toBe(1);
+        expect(dispatch.mock.calls[1][0]).toBe("validate");
     });
 
     testUploadErrorCommitted("/baseline/pjnz/", "PJNZUploadError", "PJNZUpdated", actions.uploadPJNZ);
 
-    it("commits response after shape file upload", async () => {
+    it("commits response and validates after shape file upload", async () => {
 
         const mockShape = mockShapeResponse();
         mockAxios.onPost(`/baseline/shape/`)
@@ -54,9 +66,12 @@ describe("Baseline actions", () => {
             type: "ShapeUpdated",
             payload: mockShape
         });
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("validate");
     });
 
-    it("commits response after population file upload", async () => {
+    it("commits response and validates after population file upload", async () => {
 
         const mockPop = mockPopulationResponse();
         mockAxios.onPost(`/baseline/population/`)
@@ -74,6 +89,9 @@ describe("Baseline actions", () => {
             type: "PopulationUpdated",
             payload: mockPop
         });
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("validate");
     });
 
     testUploadErrorCommitted("/baseline/shape/", "ShapeUploadError", "ShapeUpdated", actions.uploadShape);
@@ -100,6 +118,47 @@ describe("Baseline actions", () => {
         expect(calls).toContain("ShapeUpdated");
         expect(calls).toContain("PopulationUpdated");
         expect(calls).toContain("Ready");
+    });
+
+    it("commits response on validate", async ()=> {
+        const mockValidateResponse = mockValidateBaselineResponse();
+        mockAxios.onGet(`/baseline/validate/`)
+            .reply(200, mockSuccess(mockValidateResponse));
+
+        const commit = jest.fn();
+        await actions.validate({commit} as any);
+
+        //resets the validate state first
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "Validated",
+            payload: null
+        });
+
+        //then commits response from api
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "Validated",
+            payload: mockValidateResponse
+        });
+    });
+
+    it("commits response on validate error", async ()=> {
+       mockAxios.onGet(`/baseline/validate/`)
+            .reply(400, mockFailure("Baseline is inconsistent"));
+
+        const commit = jest.fn();
+        await actions.validate({commit} as any);
+
+        //resets the validate state first
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "Validated",
+            payload: null
+        });
+
+        //then commits response from api
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "BaselineError",
+            payload: "Baseline is inconsistent"
+        });
     });
 
     it("fails silently and marks state ready if getting baseline data fails", async () => {

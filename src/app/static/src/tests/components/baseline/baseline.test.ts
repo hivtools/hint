@@ -8,6 +8,7 @@ import Baseline from "../../../app/components/baseline/Baseline.vue";
 import FileUpload from "../../../app/components/FileUpload.vue";
 import {BaselineMutations} from "../../../app/store/baseline/mutations";
 import {MetadataState} from "../../../app/store/metadata/metadata";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -23,7 +24,8 @@ describe("Baseline upload component", () => {
             uploadPJNZ: jest.fn(),
             getBaselineData: jest.fn(),
             uploadShape: jest.fn(),
-            uploadPopulation: jest.fn()
+            uploadPopulation: jest.fn(),
+            validate: jest.fn()
         };
 
         return new Vuex.Store({
@@ -78,6 +80,12 @@ describe("Baseline upload component", () => {
                                 {plottingMetadataError: "Metadata went wrong"});
         const wrapper = shallowMount(Baseline, {store, localVue});
         expect(wrapper.findAll(FileUpload).at(0).props().error).toBe("File upload went wrong");
+    });
+
+    it("shows baseline error if present", () => {
+        const store = createSut({baselineError: "Baseline is inconsistent"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.find(ErrorAlert).props().message).toEqual("Baseline is inconsistent")
     });
 
     it("shape is not valid if shape is not present", () => {
