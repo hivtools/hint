@@ -15,7 +15,7 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         const state = {country: "Malawi"} as any;
 
-        const file = fs.createReadStream("../testdata/Malawi2019.PJNZ");
+        const file = fs.createReadStream("../testdata/Botswana2018.PJNZ");
         const formData = new FormData();
         formData.append('file', file);
 
@@ -23,7 +23,7 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("Malawi2019.PJNZ");
+            .toBe("Botswana2018.PJNZ");
 
     });
 
@@ -73,9 +73,8 @@ describe("Baseline actions", () => {
 
         await actions.validate({commit, dispatch} as any);
         console.log(JSON.stringify(commit.mock.calls[1][0]));
-        expect(commit.mock.calls[1][0]["type"]).toBe("Validated");
-        expect(commit.mock.calls[1][0]["payload"])
-            .toStrictEqual({complete: true, consistent: true});
+        expect(commit.mock.calls[1][0]["type"]).toBe("BaselineError");
+        expect(commit.mock.calls[1][0]["payload"]).toContain("Countries aren't consistent");
     });
 
 });
