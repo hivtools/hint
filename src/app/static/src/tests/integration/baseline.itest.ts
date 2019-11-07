@@ -1,6 +1,5 @@
 import {actions} from "../../app/store/baseline/actions";
 import {login} from "./integrationTest";
-import {mockBaselineState} from "../mocks";
 
 const fs = require("fs");
 const FormData = require("form-data");
@@ -16,7 +15,7 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         const state = {country: "Malawi"} as any;
 
-        const file = fs.createReadStream("../testdata/Botswana2018.PJNZ");
+        const file = fs.createReadStream("../testdata/Malawi2019.PJNZ");
         const formData = new FormData();
         formData.append('file', file);
 
@@ -24,7 +23,7 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("Botswana2018.PJNZ");
+            .toBe("Malawi2019.PJNZ");
 
     });
 
@@ -66,6 +65,17 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("population.csv");
+    });
+
+    it ("can validate baseline data", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        await actions.validate({commit, dispatch} as any);
+        console.log(JSON.stringify(commit.mock.calls[1][0]));
+        expect(commit.mock.calls[1][0]["type"]).toBe("Validated");
+        expect(commit.mock.calls[1][0]["payload"])
+            .toStrictEqual({complete: true, consistent: true});
     });
 
 });
