@@ -28,12 +28,13 @@
 
   .vue-treeselect--focused.vue-treeselect--open, .vue-treeselect--focused:not(.vue-treeselect--open) {
     .vue-treeselect__control {
-      @extend .form-control:focus
+      @extend .form-control:focus;
     }
   }
 
   .vue-treeselect__multi-value-item-container {
     padding-top: 0;
+    padding-bottom: 2px;
   }
 
   .vue-treeselect__single-value, .vue-treeselect__placeholder {
@@ -53,6 +54,10 @@
 
   .vue-treeselect__control-arrow {
     color: inherit;
+  }
+
+  .vue-treeselect__control {
+    display: table!important;
   }
 
   form.was-validated {
