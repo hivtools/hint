@@ -17,6 +17,7 @@
     .vue-treeselect__control {
       @extend .form-control;
       font-size: inherit;
+      display: table;
     }
 
     &:not(.vue-treeselect--disabled) {
@@ -29,6 +30,7 @@
   .vue-treeselect--focused.vue-treeselect--open, .vue-treeselect--focused:not(.vue-treeselect--open) {
     .vue-treeselect__control {
       @extend .form-control:focus;
+      display: table;
     }
   }
 
@@ -54,10 +56,6 @@
 
   .vue-treeselect__control-arrow {
     color: inherit;
-  }
-
-  .vue-treeselect__control {
-    display: table!important;
   }
 
   form.was-validated {
