@@ -156,6 +156,35 @@ describe("Baseline mutations", () => {
         const testState = {...initialBaselineState};
         mutations.Ready(testState);
         expect(testState.ready).toBe(true);
-    })
+    });
+    it("Validated sets validation values", () => {
+        const testState = {...initialBaselineState, baselineError: "test error"};
+        mutations.Validated(testState, {payload: {consistent: true, complete: true}});
+        expect(testState.baselineError).toBe("");
+        expect(testState.validatedConsistent).toBe(true);
+        expect(testState.validatedComplete).toBe(true);
+    });
+
+    it("Validated resets validation values when payload is null", () => {
+        const testState = {...initialBaselineState,
+            validatedComplete: true,
+            validatedConsistent: true
+        };
+        mutations.Validated(testState, {payload: null});
+        expect(testState.baselineError).toBe("");
+        expect(testState.validatedConsistent).toBe(false);
+        expect(testState.validatedComplete).toBe(false);
+    });
+
+    it("BaselineError sets baseline error and validation values", () => {
+        const testState = {...initialBaselineState,
+            validatedComplete: true,
+            validatedConsistent: true
+        };
+        mutations.BaselineError(testState, {payload: "test error"});
+        expect(testState.baselineError).toBe("test error");
+        expect(testState.validatedConsistent).toBe(false);
+        expect(testState.validatedComplete).toBe(false);
+    });
 
 });

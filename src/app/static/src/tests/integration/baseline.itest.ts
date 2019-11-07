@@ -30,7 +30,8 @@ describe("Baseline actions", () => {
 
     it("can get baseline data", async () => {
         const commit = jest.fn();
-        await actions.getBaselineData({commit} as any);
+        const dispatch = jest.fn();
+        await actions.getBaselineData({commit, dispatch} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
         expect(calls).toContain("PJNZUpdated");
@@ -40,11 +41,12 @@ describe("Baseline actions", () => {
 
     it("can upload shape file", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const file = fs.createReadStream("../testdata/malawi.geojson");
         const formData = new FormData();
         formData.append('file', file);
 
-        await actions.uploadShape({commit} as any, formData);
+        await actions.uploadShape({commit, dispatch} as any, formData);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("ShapeUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
@@ -54,11 +56,12 @@ describe("Baseline actions", () => {
 
     it("can upload population file", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const file = fs.createReadStream("../testdata/population.csv");
         const formData = new FormData();
         formData.append('file', file);
 
-        await actions.uploadPopulation({commit} as any, formData);
+        await actions.uploadPopulation({commit, dispatch} as any, formData);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
