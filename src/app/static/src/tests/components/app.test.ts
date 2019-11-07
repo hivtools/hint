@@ -14,7 +14,7 @@ mockAxios.onGet(`/baseline/shape/`)
 mockAxios.onGet(`/baseline/population/`)
     .reply(200, mockSuccess(null));
 mockAxios.onGet(`/baseline/validate/`)
-    .reply(200, mockSuccess(null));
+    .reply(200, mockSuccess({complete: true, consistent: true}));
 mockAxios.onGet(`/disease/survey/`)
     .reply(200, mockSuccess(null));
 mockAxios.onGet(`/disease/programme/`)

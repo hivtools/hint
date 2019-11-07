@@ -21,6 +21,7 @@ export interface BaselineMutations {
     PopulationUpdated: BaselineMutation
     PopulationUploadError: BaselineMutation
     Ready: BaselineMutation,
+    Validating: BaselineMutation,
     Validated: BaselineMutation,
     BaselineError: BaselineMutation
 }
@@ -67,18 +68,23 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
         state.populationError = action.payload;
     },
 
+    Validating(state: BaselineState){
+        state.validating = true;
+        state.validatedComplete = false;
+        state.validatedConsistent = false;
+        state.baselineError = "";
+    },
+
     Validated(state: BaselineState, action: PayloadWithType<ValidateBaselineResponse>) {
-        if (action.payload) {
-            state.validatedComplete = action.payload.complete;
-            state.validatedConsistent = action.payload.consistent
-        } else {
-            state.validatedComplete = false;
-            state.validatedConsistent = false;
-        }
+        state.validating = false;
+
+        state.validatedComplete = action.payload.complete;
+        state.validatedConsistent = action.payload.consistent;
         state.baselineError = "";
     },
 
     BaselineError(state: BaselineState, action: PayloadWithType<string>) {
+        state.validating = false;
         state.validatedComplete = false;
         state.validatedConsistent = false;
         state.baselineError = action.payload;

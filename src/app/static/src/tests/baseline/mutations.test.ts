@@ -165,12 +165,13 @@ describe("Baseline mutations", () => {
         expect(testState.validatedComplete).toBe(true);
     });
 
-    it("Validated resets validation values when payload is null", () => {
+    it("Validating resets validation values", () => {
         const testState = {...initialBaselineState,
             validatedComplete: true,
-            validatedConsistent: true
+            validatedConsistent: true,
+            baselineError: "test error"
         };
-        mutations.Validated(testState, {payload: null});
+        mutations.Validating(testState);
         expect(testState.baselineError).toBe("");
         expect(testState.validatedConsistent).toBe(false);
         expect(testState.validatedComplete).toBe(false);

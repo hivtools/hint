@@ -16,6 +16,7 @@ export interface BaselineState extends ReadyState {
     shapeError: string
     population: PopulationResponse | null,
     populationError: string,
+    validating: boolean,
     validatedComplete: boolean,
     validatedConsistent: boolean,
     baselineError: string
@@ -33,6 +34,7 @@ export const initialBaselineState: BaselineState = {
     population: null,
     populationError: "",
     ready: false,
+    validating: false,
     validatedComplete: false,
     validatedConsistent: false,
     baselineError: ""

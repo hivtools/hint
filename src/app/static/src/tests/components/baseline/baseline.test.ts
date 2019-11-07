@@ -9,6 +9,7 @@ import FileUpload from "../../../app/components/FileUpload.vue";
 import {BaselineMutations} from "../../../app/store/baseline/mutations";
 import {MetadataState} from "../../../app/store/metadata/metadata";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -86,6 +87,14 @@ describe("Baseline upload component", () => {
         const store = createSut({baselineError: "Baseline is inconsistent"});
         const wrapper = shallowMount(Baseline, {store, localVue});
         expect(wrapper.find(ErrorAlert).props().message).toEqual("Baseline is inconsistent")
+    });
+
+    it("shows baseline validating indicator", () => {
+        const store = createSut({validating: true});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        const validating = wrapper.find("#baseline-validating");
+        expect(validating.text()).toEqual("Validating...")
+        expect(validating.findAll(LoadingSpinner).length).toEqual(1)
     });
 
     it("shape is not valid if shape is not present", () => {

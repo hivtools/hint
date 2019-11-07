@@ -73,7 +73,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async validate({commit}) {
-        commit({type: "Validated", payload: null});
+        commit({type: "Validating", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("Validated")
             .withError("BaselineError")

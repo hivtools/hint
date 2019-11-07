@@ -29,6 +29,10 @@
                                  name="population">
                     </file-upload>
                 </form>
+                <div v-if="validating" id="baseline-validating">
+                    <loading-spinner size="xs"></loading-spinner>
+                    Validating...
+                </div>
                 <error-alert v-if="hasBaselineError" :message="baselineError"></error-alert>
             </div>
         </div>
@@ -45,6 +49,7 @@
     import {PartialFileUploadProps} from "../../types";
     import {MetadataState} from "../../store/metadata/metadata";
     import ErrorAlert from "../ErrorAlert.vue";
+    import LoadingSpinner from "../LoadingSpinner.vue";
 
     const namespace: string = 'baseline';
 
@@ -69,7 +74,8 @@
                     existingFileName: state.population && state.population.filename
                 } as PartialFileUploadProps),
                 hasBaselineError: state => state.baselineError.length > 0,
-                baselineError: state => state.baselineError
+                baselineError: state => state.baselineError,
+                validating: state => state.validating
             }),
             ...mapState<MetadataState>("metadata", {
                 plottingMetadataError: state => state.plottingMetadataError
@@ -84,7 +90,8 @@
         },
         components: {
             FileUpload,
-            ErrorAlert
+            ErrorAlert,
+            LoadingSpinner
         }
     })
 </script>

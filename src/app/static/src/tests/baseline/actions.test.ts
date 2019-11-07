@@ -128,9 +128,9 @@ describe("Baseline actions", () => {
         const commit = jest.fn();
         await actions.validate({commit} as any);
 
-        //resets the validate state first
+        //commits to Validating first
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "Validated",
+            type: "Validating",
             payload: null
         });
 
@@ -148,9 +148,9 @@ describe("Baseline actions", () => {
         const commit = jest.fn();
         await actions.validate({commit} as any);
 
-        //resets the validate state first
+        //commits to Validating first
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "Validated",
+            type: "Validating",
             payload: null
         });
 
