@@ -1,6 +1,11 @@
 package org.imperial.mrc.hint.unit
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.core.Body
 import com.github.kittinunf.fuel.core.Response
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.imperial.mrc.hint.asResponseEntity
 import org.junit.jupiter.api.Test
@@ -32,5 +37,39 @@ class ExtensionTests {
 
         res = Response(URL("http://whatever"), 500)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+
+    }
+
+    @Test
+    fun `message is returned when status code is missing`() {
+        val res = Response(URL("http://whatever"), -1)
+        assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        val body = ObjectMapper().readTree(res.asResponseEntity().body)
+        val errorDetail = body["errors"].first()["detail"].textValue()
+        assertThat(errorDetail).isEqualTo("No response returned. The request may have timed out.")
+    }
+
+    @Test
+    fun `error is returned when response is not valid json`() {
+        val mockBody = mock<Body> {
+            on {it.asString(any())} doReturn "Bad response"
+        }
+        val res = Response(URL("http://whatever"), 500, body = mockBody)
+        assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        val body = ObjectMapper().readTree(res.asResponseEntity().body)
+        val errorDetail = body["errors"].first()["detail"].textValue()
+        assertThat(errorDetail).isEqualTo("Could not parse response.")
+    }
+
+    @Test
+    fun `error is returned when response json does not conform to schema`() {
+        val mockBody = mock<Body> {
+            on {it.asString(any())} doReturn "{\"wrong\": \"schema\"}"
+        }
+        val res = Response(URL("http://whatever"), 500, body = mockBody)
+        assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        val body = ObjectMapper().readTree(res.asResponseEntity().body)
+        val errorDetail = body["errors"].first()["detail"].textValue()
+        assertThat(errorDetail).isEqualTo("Could not parse response.")
     }
 }
