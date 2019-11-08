@@ -18,7 +18,7 @@ export function isControl(object: any): Boolean {
 
 export function isNumberControl(object: any): object is NumberControl {
     return isControl(object)
-        && (object.value == undefined || typeof object.value == "number")
+        && (object.value == undefined || !isNaN(object.value))
         && object.type == "number"
 }
 

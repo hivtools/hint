@@ -142,7 +142,7 @@ describe("dynamic form type checker", () => {
         })).toBe(true);
     });
 
-    it("should recognise invalid number input", () => {
+    it("should recognise valid number input with string value", () => {
         expect(isDynamicFormMeta({
             controlSections: [{
                 label: "l1",
@@ -152,6 +152,22 @@ describe("dynamic form type checker", () => {
                         required: true,
                         type: "number",
                         value: "10"
+                    }]
+                }]
+            }]
+        })).toBe(true);
+    });
+
+    it("should recognise invalid number input", () => {
+        expect(isDynamicFormMeta({
+            controlSections: [{
+                label: "l1",
+                controlGroups: [{
+                    controls: [{
+                        name: "i1",
+                        required: true,
+                        type: "number",
+                        value: "wrong"
                     }]
                 }]
             }]
