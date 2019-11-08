@@ -12,9 +12,12 @@ describe("Model run options mutations", () => {
     });
 
     it("updates options", () => {
-        const state = mockModelOptionsState();
+        const state = mockModelOptionsState({
+            valid: true
+        });
         mutations.update(state, "TEST" as any);
-        expect(state.optionsFormMeta).toBe("TEST")
+        expect(state.optionsFormMeta).toBe("TEST");
+        expect(state.valid).toBe(false);
     });
 
     it("appends new sections to form", () => {

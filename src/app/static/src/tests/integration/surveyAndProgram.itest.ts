@@ -33,8 +33,8 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("survey.csv");
 
-        expect(commit.mock.calls[3][0]).toBe("modelOptions/update");
-        expect(isDynamicFormMeta(commit.mock.calls[3][1])).toBe(true);
+        expect(commit.mock.calls[3][0]).toBe("modelOptions/FormMetaUpdated");
+        expect(isDynamicFormMeta(commit.mock.calls[3][1].payload)).toBe(true);
     });
 
     it("can upload programme", async () => {

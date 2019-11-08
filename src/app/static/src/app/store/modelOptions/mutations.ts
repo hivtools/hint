@@ -20,6 +20,7 @@ export const mutations: MutationTree<ModelOptionsState> & MetadataMutations = {
 
     update(state: ModelOptionsState, payload: DynamicFormMeta) {
         state.optionsFormMeta = payload;
+        state.valid = false; // if options have changed, need to re-validate from server
     },
 
     FormMetaUpdated(state: ModelOptionsState, action: PayloadWithType<DynamicFormMeta>) {

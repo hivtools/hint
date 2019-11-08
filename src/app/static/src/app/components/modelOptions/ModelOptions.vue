@@ -20,7 +20,6 @@
                     return this.$store.state.modelOptions.optionsFormMeta
                 },
                 set (value: DynamicFormMeta) {
-                    console.log(value);
                     this.update(value);
                 }
             }
