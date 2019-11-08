@@ -2,12 +2,16 @@ package org.imperial.mrc.hint
 
 import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.core.Response
+import com.github.kittinunf.fuel.core.Request
+import com.github.kittinunf.fuel.core.requests.DownloadRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.io.OutputStream
 
 
@@ -40,8 +44,8 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
             .body(body)
 }
 
-fun Response.asStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> {
-    val httpStatus = httpStatusFromCode(this.statusCode)
+fun DownloadRequest.asStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> {
+    /*val httpStatus = httpStatusFromCode(this.statusCode)
     val headers = headersToMultiMap(this.headers)
 
     val inputStream = this.body().toStream()
@@ -49,7 +53,16 @@ fun Response.asStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> 
         inputStream.use { inputStream ->
             inputStream.copyTo(outputStream)
         }
+    }*/
+
+
+    val responseBody = StreamingResponseBody { outputStream: OutputStream ->
+        val returnEmptyInputStream: () -> InputStream = { ByteArrayInputStream(ByteArray(0)) } //return an empty input stream to the body - don't need to re-use it
+
+        this.streamDestination{ response, request -> Pair(outputStream, returnEmptyInputStream) }
+                .response()
     }
 
-    return ResponseEntity(responseBody, headers, httpStatus)
+    //return ResponseEntity(responseBody, headers, httpStatus)
+    return ResponseEntity(responseBody, httpStatusFromCode(200)) //TODO: how to get the status and headers from the hint response
 }

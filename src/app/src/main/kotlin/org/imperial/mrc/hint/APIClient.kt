@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.httpDownload
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import org.imperial.mrc.hint.models.SessionFileWithPath
@@ -93,17 +94,17 @@ class HintrAPIClient(
 
     override fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody> {
         return "$baseUrl/download/spectrum/${id}"
-                .httpGet()
-                .response()
-                .second
+                .httpDownload()
+                /*.response()
+                .second*/
                 .asStreamingResponseEntity()
     }
 
     override fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody> {
         return "$baseUrl/download/summary/${id}"
-                .httpGet()
-                .response()
-                .second
+                .httpDownload()
+                /*.response()
+                .second*/
                 .asStreamingResponseEntity()
     }
 
