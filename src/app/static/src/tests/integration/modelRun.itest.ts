@@ -54,7 +54,7 @@ describe("Model run actions", () => {
             modelRunId: "1234",
             status: {
                 done: true,
-                id: runId
+                id: "1234"
             }
         } as ModelRunState;
         await actions.getResult({commit, state: mockState} as any);
