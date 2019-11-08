@@ -3,7 +3,7 @@ import {
     mockAncResponse,
     mockAxios,
     mockFailure,
-    mockProgramResponse, mockRootState,
+    mockProgramResponse,
     mockSuccess,
     mockSurveyAndProgramState,
     mockSurveyResponse
@@ -50,8 +50,8 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[2][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
         expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
 
-        expect(commit.mock.calls[3][0]).toBe("modelOptions/update");
-        expect(commit.mock.calls[3][1]).toBe("TESTOPTIONS");
+        expect(commit.mock.calls[3][0]).toBe("modelOptions/FormMetaUpdated");
+        expect(commit.mock.calls[3][1]).toStrictEqual({payload: "TESTOPTIONS", type: "FormMetaUpdated"});
         expect(commit.mock.calls[3][2]).toStrictEqual({root: true});
     });
 
@@ -119,8 +119,8 @@ describe("Survey and programme actions", () => {
         await actions.uploadProgram({commit, state} as any, new FormData());
 
         expect(commit.mock.calls.length).toBe(4);
-        expect(commit.mock.calls[3][0]).toBe("modelOptions/update");
-        expect(commit.mock.calls[3][1]).toBe("TESTOPTIONS");
+        expect(commit.mock.calls[3][0]).toBe("modelOptions/FormMetaUpdated");
+        expect(commit.mock.calls[3][1]).toStrictEqual({payload: "TESTOPTIONS", type: "FormMetaUpdated"});
         expect(commit.mock.calls[3][2]).toStrictEqual({root: true});
     });
 
@@ -191,8 +191,8 @@ describe("Survey and programme actions", () => {
         await actions.uploadANC({commit, state} as any, new FormData());
 
         expect(commit.mock.calls.length).toBe(4);
-        expect(commit.mock.calls[3][0]).toBe("modelOptions/update");
-        expect(commit.mock.calls[3][1]).toBe("TESTOPTIONS");
+        expect(commit.mock.calls[3][0]).toBe("modelOptions/FormMetaUpdated");
+        expect(commit.mock.calls[3][1]).toStrictEqual({payload: "TESTOPTIONS", type: "FormMetaUpdated"});
         expect(commit.mock.calls[3][2]).toStrictEqual({root: true});
     });
 
@@ -242,7 +242,7 @@ describe("Survey and programme actions", () => {
         expect(calls).toContain("ANCUpdated");
         expect(calls).toContain("Ready");
 
-        expect(commit.mock.calls[3][0]).toBe("modelOptions/update");
+        expect(commit.mock.calls[3][0]).toBe("modelOptions/FormMetaUpdated");
     });
 
     it("fails silently and marks state ready if getting data fails", async () => {
@@ -263,7 +263,7 @@ describe("Survey and programme actions", () => {
         await actions.getSurveyAndProgramData({commit} as any);
 
         expect(commit).toBeCalledTimes(2);
-        expect(commit.mock.calls[0][0]).toBe("modelOptions/update");
+        expect(commit.mock.calls[0][0]).toBe("modelOptions/FormMetaUpdated");
         expect(commit.mock.calls[1][0]["type"]).toContain("Ready");
         expect(mockAxios.history.get.length).toBe(4);
     });

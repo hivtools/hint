@@ -23,11 +23,16 @@ function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
 }
 
 function commitModelOptionsUpdated(commit: Commit, payload: DynamicFormMeta) {
-    commit("modelOptions/update", payload, {root: true})
+    commit("modelOptions/FormMetaUpdated", {type: "FormMetaUpdated", payload}, {root: true})
 }
 
-async function fetchModelOptions(commit: Commit) {
-    const response = await api(commit)
+async function fetchModelOptions(commit: Commit, ignoreErrors: boolean = false) {
+
+    let apiService = api(commit);
+    if (ignoreErrors){
+        apiService = apiService.ignoreErrors()
+    }
+    const response = await apiService
         .get<DynamicFormMeta>("/model/options/");
 
     if (response) {
@@ -96,7 +101,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
                     .withSuccess("ANCUpdated")
                     .get<AncResponse>("/disease/anc/")]);
 
-        await fetchModelOptions(commit);
+        await fetchModelOptions(commit, true);
 
         commit({type: "Ready", payload: true, root: true});
     }

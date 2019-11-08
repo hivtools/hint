@@ -67,4 +67,9 @@ describe("Survey and programme actions", () => {
             .toBe("anc.csv")
     });
 
+    it("can get all data", async () => {
+        const commit = jest.fn();
+        await actions.getSurveyAndProgramData({commit} as any);
+    })
+
 });

@@ -11,6 +11,12 @@ describe("Model run options mutations", () => {
         expect(state.options).toStrictEqual({"test": 123});
     });
 
+    it("updates options", () => {
+        const state = mockModelOptionsState();
+        mutations.update(state, "TEST" as any);
+        expect(state.optionsFormMeta).toBe("TEST")
+    });
+
     it("appends new sections to form", () => {
         const startingForm = {
             controlSections: [
@@ -29,7 +35,7 @@ describe("Model run options mutations", () => {
                 }
             ]
         };
-        mutations.update(state, mockForm);
+        mutations.FormMetaUpdated(state, {payload: mockForm});
         expect(state.optionsFormMeta).toStrictEqual({...startingForm, ...mockForm});
     });
 
@@ -66,7 +72,7 @@ describe("Model run options mutations", () => {
                 }
             ]
         };
-        mutations.update(state, newForm);
+        mutations.FormMetaUpdated(state, {payload: newForm});
         expect(state.optionsFormMeta).toStrictEqual(startingForm);
     });
 
@@ -91,7 +97,7 @@ describe("Model run options mutations", () => {
                 }
             ]
         };
-        mutations.update(state, newForm);
+        mutations.FormMetaUpdated(state, {payload: newForm});
         expect(state.optionsFormMeta).toStrictEqual(newForm);
     });
 
