@@ -47,9 +47,10 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
 fun DownloadRequest.asStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> {
 
     val responseBody = StreamingResponseBody { outputStream: OutputStream ->
-        val returnEmptyInputStream: () -> InputStream = { ByteArrayInputStream(ByteArray(0)) } //return an empty input stream to the body - don't need to re-use it
-
-        this.streamDestination{ response, request -> Pair(outputStream, returnEmptyInputStream) }
+        //return an empty input stream to the body - don't need to re-use it
+        val returnEmptyInputStream: () -> InputStream = { ByteArrayInputStream(ByteArray(0)) }
+        this.streamDestination{ _, _ -> Pair(outputStream, returnEmptyInputStream) }
+                .response()
     }
 
     val response = this.response()
@@ -57,13 +58,6 @@ fun DownloadRequest.asStreamingResponseEntity(): ResponseEntity<StreamingRespons
 
     val httpStatus = httpStatusFromCode(response.statusCode)
     val headers = headersToMultiMap(this.headers)
-
-    /*val inputStream = this.body().toStream()
-    val responseBody = StreamingResponseBody { outputStream: OutputStream ->
-        inputStream.use { inputStream ->
-            inputStream.copyTo(outputStream)
-        }
-    }*/
 
     return ResponseEntity(responseBody, headers, httpStatus)
 }
