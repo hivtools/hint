@@ -18,6 +18,7 @@
       @extend .form-control;
       font-size: inherit;
       display: table;
+      padding-bottom: 0;
     }
 
     &:not(.vue-treeselect--disabled) {
@@ -31,6 +32,7 @@
     .vue-treeselect__control {
       @extend .form-control:focus;
       display: table;
+      padding-bottom: 0;
     }
   }
 
