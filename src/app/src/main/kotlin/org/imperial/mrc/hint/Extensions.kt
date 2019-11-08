@@ -2,12 +2,16 @@ package org.imperial.mrc.hint
 
 import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.core.Response
+import com.github.kittinunf.fuel.core.Request
+import com.github.kittinunf.fuel.core.requests.DownloadRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.io.OutputStream
 
 
@@ -40,16 +44,26 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
             .body(body)
 }
 
-fun Response.asStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> {
-    val httpStatus = httpStatusFromCode(this.statusCode)
+fun DownloadRequest.asStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> {
+
+    val responseBody = StreamingResponseBody { outputStream: OutputStream ->
+        val returnEmptyInputStream: () -> InputStream = { ByteArrayInputStream(ByteArray(0)) } //return an empty input stream to the body - don't need to re-use it
+
+        this.streamDestination{ response, request -> Pair(outputStream, returnEmptyInputStream) }
+    }
+
+    val response = this.response()
+            .second
+
+    val httpStatus = httpStatusFromCode(response.statusCode)
     val headers = headersToMultiMap(this.headers)
 
-    val inputStream = this.body().toStream()
+    /*val inputStream = this.body().toStream()
     val responseBody = StreamingResponseBody { outputStream: OutputStream ->
         inputStream.use { inputStream ->
             inputStream.copyTo(outputStream)
         }
-    }
+    }*/
 
     return ResponseEntity(responseBody, headers, httpStatus)
 }
