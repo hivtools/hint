@@ -36,23 +36,34 @@ describe("Model run actions", () => {
 
         actions.poll({commit, state: mockState, dispatch: jest.fn()} as any, runId);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingForStatusStarted");
+        const pollingInterval = (commit.mock.calls[0][0]["payload"]);
 
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("RunStatusUpdated");
-            done();
-        }, 4000)
+        const testInterval = setInterval(() => {
+            if (commit.mock.calls.length == 2) {
+                expect(commit.mock.calls[1][0]["type"]).toBe("RunStatusUpdated");
+                clearInterval(pollingInterval);
+                clearInterval(testInterval);
+                done();
+            }
+        })
     });
 
     it("can get model run result", async () => {
         const commit = jest.fn();
         const mockState = {
-            modelRunId: runId,
+            modelRunId: "1234",
             status: {
                 done: true,
-                id: runId
+                id: "1234"
             }
         } as ModelRunState;
         await actions.getResult({commit, state: mockState} as any);
+
+        // passing an invalid run id so this will return an error
+        // but the expected error message confirms
+        // that we're hitting the correct endpoint
+        expect(commit.mock.calls[0][0]["type"]).toBe("RunResultError");
+        expect(commit.mock.calls[0][0]["payload"]).toBe("Missing some results");
     });
 
 });
