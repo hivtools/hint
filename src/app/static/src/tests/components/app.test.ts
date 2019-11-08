@@ -19,6 +19,8 @@ mockAxios.onGet(`/disease/programme/`)
     .reply(200, mockSuccess(null));
 mockAxios.onGet(`/disease/anc/`)
     .reply(200, mockSuccess(null));
+mockAxios.onGet(`/model/options/`)
+    .reply(200, mockSuccess({controlSections: []}));
 
 import {app} from "../../app"
 import {mutations} from "../../app/store/root/mutations";

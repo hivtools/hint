@@ -17,6 +17,11 @@ export const mutations: MutationTree<ModelOptionsState> & MetadataMutations = {
     },
 
     update(state: ModelOptionsState, payload: DynamicFormMeta) {
-        state.optionsFormMeta = payload;
+        const allControlSectionLabels = payload.controlSections.map(c => c.label);
+        const existingControlSectionLabels = state.optionsFormMeta.controlSections.map(c => c.label);
+        const newSectionLabels = allControlSectionLabels.filter(l => existingControlSectionLabels.indexOf(l) == -1);
+        const newSections = payload.controlSections.filter(c => newSectionLabels.indexOf(c.label) > -1);
+        state.optionsFormMeta.controlSections = state.optionsFormMeta.controlSections.concat(newSections)
+            .filter(c => allControlSectionLabels.indexOf(c.label) > -1)
     }
 };

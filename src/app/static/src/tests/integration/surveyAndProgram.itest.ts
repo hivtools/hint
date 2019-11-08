@@ -1,6 +1,7 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
 import {actions as baselineActions} from "../../app/store/baseline/actions"
 import {login} from "./integrationTest";
+import {isDynamicFormMeta} from "../../app/components/forms/dynamicFormChecker";
 
 const fs = require("fs");
 const FormData = require("form-data");
@@ -30,7 +31,10 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]["type"]).toBe("SurveyUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("survey.csv")
+            .toBe("survey.csv");
+
+        expect(commit.mock.calls[3][0]).toBe("modelOptions/update");
+        expect(isDynamicFormMeta(commit.mock.calls[3][1])).toBe(true);
     });
 
     it("can upload programme", async () => {
@@ -41,7 +45,7 @@ describe("Survey and programme actions", () => {
         const formData = new FormData();
         formData.append('file', file);
 
-        await actions.uploadProgram({commit} as any, formData);
+        await actions.uploadProgram({commit, state: {}} as any, formData);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("ProgramUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
@@ -56,7 +60,7 @@ describe("Survey and programme actions", () => {
         const formData = new FormData();
         formData.append('file', file);
 
-        await actions.uploadANC({commit} as any, formData);
+        await actions.uploadANC({commit, state: {}} as any, formData);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("ANCUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])

@@ -5,7 +5,6 @@ import {
     mockRootState, mockShapeResponse
 } from "../mocks";
 
-
 describe("modelOutput module", () => {
     it("gets barchart indicators", async () => {
         const result = modelOutputGetters.barchartIndicators({}, null, mockRootState());
@@ -25,6 +24,13 @@ describe("modelOutput module", () => {
                     }
                 })
             }),
+            modelOutput: {
+                namespaced: true,
+                getters: {
+                    barchartFilters: () => [],
+                    barchartIndicators: () => []
+                }
+            },
             modelRun: mockModelRunState({
                 result: mockModelResultResponse({
                     filters: {
