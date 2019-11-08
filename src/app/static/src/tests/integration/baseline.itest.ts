@@ -1,6 +1,5 @@
 import {actions} from "../../app/store/baseline/actions";
 import {login} from "./integrationTest";
-import {mockBaselineState} from "../mocks";
 
 const fs = require("fs");
 const FormData = require("form-data");
