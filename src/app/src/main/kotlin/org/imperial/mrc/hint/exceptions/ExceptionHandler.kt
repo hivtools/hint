@@ -36,7 +36,7 @@ class HintExceptionHandler : ResponseEntityExceptionHandler() {
     }
 
     @ExceptionHandler(ConstraintViolationException::class)
-    protected fun handleConstraintViolationException(e: ConstraintViolationException, request: HttpServletRequest): ResponseEntity<*> {
+    protected fun handleConstraintViolationException(e: ConstraintViolationException, request: HttpServletRequest): ResponseEntity<Any> {
         logger.error(e.message)
         return ErrorDetail(HttpStatus.BAD_REQUEST, e.message!!).toResponseEntity()
     }

@@ -17,6 +17,8 @@
     .vue-treeselect__control {
       @extend .form-control;
       font-size: inherit;
+      display: table;
+      padding-bottom: 0;
     }
 
     &:not(.vue-treeselect--disabled) {
@@ -28,12 +30,15 @@
 
   .vue-treeselect--focused.vue-treeselect--open, .vue-treeselect--focused:not(.vue-treeselect--open) {
     .vue-treeselect__control {
-      @extend .form-control:focus
+      @extend .form-control:focus;
+      display: table;
+      padding-bottom: 0;
     }
   }
 
   .vue-treeselect__multi-value-item-container {
     padding-top: 0;
+    padding-bottom: 2px;
   }
 
   .vue-treeselect__single-value, .vue-treeselect__placeholder {
