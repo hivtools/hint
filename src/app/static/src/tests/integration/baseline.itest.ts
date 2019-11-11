@@ -21,8 +21,8 @@ describe("Baseline actions", () => {
 
         await actions.uploadPJNZ({commit, state, dispatch} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[2][0]["type"]).toBe("PJNZUpdated");
+        expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("Botswana2018.PJNZ");
 
     });
@@ -47,8 +47,8 @@ describe("Baseline actions", () => {
 
         await actions.uploadShape({commit, dispatch} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe("ShapeUpdated");
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[2][0]["type"]).toBe("ShapeUpdated");
+        expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("malawi.geojson");
 
     }, 10000);
@@ -62,8 +62,8 @@ describe("Baseline actions", () => {
 
         await actions.uploadPopulation({commit, dispatch} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUpdated");
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[2][0]["type"]).toBe("PopulationUpdated");
+        expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("population.csv");
     });
 
