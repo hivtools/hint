@@ -19,6 +19,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async uploadPJNZ({commit, dispatch, state}, formData) {
         commit({type: "PJNZUpdated", payload: null});
+        commit("ResetInputs", null, {root: true});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("PJNZUpdated")
             .withError("PJNZUploadError")
@@ -31,6 +32,8 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async uploadShape({commit, dispatch}, formData) {
         commit({type: "ShapeUpdated", payload: null});
+        console.log("reset")
+        commit("ResetInputs", null, {root: true});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("ShapeUpdated")
             .withError("ShapeUploadError")
@@ -74,9 +77,14 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async validate({commit}) {
         commit({type: "Validating", payload: null});
-        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+        let response = await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("Validated")
             .withError("BaselineError")
             .get<ValidateBaselineResponse>("/baseline/validate/");
+
+        response = response as ValidateBaselineResponse;
+        if (!response.complete || !response.consistent) {
+            commit("ResetInputs", null, {root: true})
+        }
     }
 };
