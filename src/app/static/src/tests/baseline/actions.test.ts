@@ -33,8 +33,9 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUpdated", payload: {data: {country: "Malawi", iso3: "MWI"}}});
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "ResetInputs", payload: null});
+        expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
+        expect(commit.mock.calls[2][0]).toStrictEqual({type: "PJNZUpdated", payload: {data: {country: "Malawi", iso3: "MWI"}}});
 
         expect(dispatch.mock.calls.length).toBe(2);
 
@@ -58,11 +59,13 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.uploadShape({commit, dispatch} as any, new FormData());
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "ResetInputs", payload: null});
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "ShapeUpdated",
             payload: null
         });
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "ShapeUpdated",
             payload: mockShape
         });
@@ -81,11 +84,13 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.uploadPopulation({commit, dispatch} as any, new FormData());
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "ResetInputs", payload: null});
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "PopulationUpdated",
             payload: null
         });
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "PopulationUpdated",
             payload: mockPop
         });

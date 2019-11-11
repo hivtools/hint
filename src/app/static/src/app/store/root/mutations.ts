@@ -3,6 +3,7 @@ import {emptyState, RootState} from "../../root";
 
 export interface RootMutations {
     Reset: Mutation<RootState>
+    ResetInputs: Mutation<RootState>
 }
 
 export const mutations: MutationTree<RootState> & RootMutations = {

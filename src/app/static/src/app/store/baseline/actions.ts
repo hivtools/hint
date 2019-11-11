@@ -5,7 +5,11 @@ import {api} from "../../apiService";
 import {PjnzResponse, ValidateBaselineResponse} from "../../generated";
 
 export type BaselineActionTypes = "PJNZUpdated" | "ShapeUpdated" | "PopulationUpdated" | "Validated"
-export type BaselineErrorActionTypes = "PJNZUploadError" | "ShapeUploadError" | "PopulationUploadError" | "BaselineError"
+export type BaselineErrorActionTypes =
+    "PJNZUploadError"
+    | "ShapeUploadError"
+    | "PopulationUploadError"
+    | "BaselineError"
 
 export interface BaselineActions {
     uploadPJNZ: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void
@@ -18,8 +22,8 @@ export interface BaselineActions {
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async uploadPJNZ({commit, dispatch, state}, formData) {
+        commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: "PJNZUpdated", payload: null});
-        commit("ResetInputs", null, {root: true});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("PJNZUpdated")
             .withError("PJNZUploadError")
@@ -31,9 +35,8 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadShape({commit, dispatch}, formData) {
+        commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: "ShapeUpdated", payload: null});
-        console.log("reset")
-        commit("ResetInputs", null, {root: true});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("ShapeUpdated")
             .withError("ShapeUploadError")
@@ -44,6 +47,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadPopulation({commit, dispatch}, formData) {
+        commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: "PopulationUpdated", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("PopulationUpdated")
@@ -77,14 +81,9 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async validate({commit}) {
         commit({type: "Validating", payload: null});
-        let response = await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("Validated")
             .withError("BaselineError")
             .get<ValidateBaselineResponse>("/baseline/validate/");
-
-        response = response as ValidateBaselineResponse;
-        if (!response.complete || !response.consistent) {
-            commit("ResetInputs", null, {root: true})
-        }
     }
 };
