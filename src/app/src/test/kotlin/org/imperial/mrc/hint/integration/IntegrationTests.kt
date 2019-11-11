@@ -98,7 +98,7 @@ abstract class SecureIntegrationTests: CleanDatabaseTests() {
         testRestTemplate.restTemplate.interceptors.clear()
     }
 
-    private fun authorize() {
+    protected fun authorize() {
         testRestTemplate.restTemplate.interceptors.add(AuthInterceptor(testRestTemplate))
     }
 

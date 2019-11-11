@@ -15,7 +15,11 @@ export interface BaselineState extends ReadyState {
     flattenedRegionFilters: Dict<NestedFilterOption>
     shapeError: string
     population: PopulationResponse | null,
-    populationError: string
+    populationError: string,
+    validating: boolean,
+    validatedComplete: boolean,
+    validatedConsistent: boolean,
+    baselineError: string
 }
 
 export const initialBaselineState: BaselineState = {
@@ -29,12 +33,17 @@ export const initialBaselineState: BaselineState = {
     shapeError: "",
     population: null,
     populationError: "",
-    ready: false
+    ready: false,
+    validating: false,
+    validatedComplete: false,
+    validatedConsistent: false,
+    baselineError: ""
 };
 
 export const baselineGetters = {
   complete: (state: BaselineState) => {
-      return !!state.country && !!state.iso3 && !!state.shape && !!state.population
+      return state.validatedComplete && state.validatedConsistent &&
+                !!state.country && !!state.iso3 && !!state.shape && !!state.population
   }
 };
 

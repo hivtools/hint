@@ -1,6 +1,12 @@
 import {Mutation, MutationTree} from 'vuex';
 import {BaselineState} from "./baseline";
-import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse} from "../../generated";
+import {
+    NestedFilterOption,
+    PjnzResponse,
+    PopulationResponse,
+    ShapeResponse,
+    ValidateBaselineResponse
+} from "../../generated";
 import {PayloadWithType} from "../../types";
 import {readyStateMutations} from "../shared/readyStateMutations";
 import {flattenOptions} from "../filteredData/utils";
@@ -14,7 +20,10 @@ export interface BaselineMutations {
     ShapeUploadError: BaselineMutation
     PopulationUpdated: BaselineMutation
     PopulationUploadError: BaselineMutation
-    Ready: BaselineMutation
+    Ready: BaselineMutation,
+    Validating: BaselineMutation,
+    Validated: BaselineMutation,
+    BaselineError: BaselineMutation
 }
 
 export const mutations: MutationTree<BaselineState> & BaselineMutations = {
@@ -57,6 +66,28 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
 
     PopulationUploadError(state: BaselineState, action: PayloadWithType<string>) {
         state.populationError = action.payload;
+    },
+
+    Validating(state: BaselineState){
+        state.validating = true;
+        state.validatedComplete = false;
+        state.validatedConsistent = false;
+        state.baselineError = "";
+    },
+
+    Validated(state: BaselineState, action: PayloadWithType<ValidateBaselineResponse>) {
+        state.validating = false;
+
+        state.validatedComplete = action.payload.complete;
+        state.validatedConsistent = action.payload.consistent;
+        state.baselineError = "";
+    },
+
+    BaselineError(state: BaselineState, action: PayloadWithType<string>) {
+        state.validating = false;
+        state.validatedComplete = false;
+        state.validatedConsistent = false;
+        state.baselineError = action.payload;
     },
 
     ...readyStateMutations
