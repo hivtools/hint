@@ -23,6 +23,7 @@ jacocoTestReport {
         xml.enabled = true
         csv.enabled = false
     }
+}
 
 dependencies {
     implementation project(":app")
