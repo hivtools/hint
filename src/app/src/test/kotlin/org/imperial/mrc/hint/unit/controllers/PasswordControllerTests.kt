@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.unit.controllers
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.controllers.PasswordController
 import org.imperial.mrc.hint.controllers.TokenException
 import org.imperial.mrc.hint.db.UserRepository
@@ -17,15 +16,11 @@ import org.springframework.ui.ConcurrentModel
 class PasswordControllerTests {
 
     val mockUser = mock<CommonProfile> {
+        on { username } doReturn "test.user"
     }
 
     val mockUserRepo = mock<UserRepository> {
         on { getUser("test.user@test.com") } doReturn mockUser
-    }
-
-    val mockAppProperties = mock<AppProperties> {
-        on { applicationTitle } doReturn "testAppTitle"
-        on { applicationUrl } doReturn "https://test/"
     }
 
     val mockEmailManager = mock<EmailManager>()
@@ -40,7 +35,7 @@ class PasswordControllerTests {
     }
 
     @Test
-    fun `requestResetLink gets user and generates Token`() {
+    fun `requestResetLink gets user and sends password reset email`() {
         val mockTokenMan = mock<OneTimeTokenManager> {
             on { generateOnetimeSetPasswordToken(mockUser.username) } doReturn "testToken"
         }
@@ -50,18 +45,7 @@ class PasswordControllerTests {
         val result = sut.requestResetLink("test.user@test.com")
 
         assertThat(result).isEqualTo(expectedSuccessResponse)
-
-        verify(mockTokenMan).generateOnetimeSetPasswordToken(mockUser.username)
-
-        argumentCaptor<PasswordResetEmail>().apply {
-            verify(mockEmailManager).sendEmail(capture(), eq("test.user@test.com"))
-            val emailObj = firstValue
-            assertThat(emailObj).isInstanceOf(PasswordResetEmail::class.java)
-            assertThat(emailObj.values["appTitle"]).isEqualTo("testAppTitle")
-            assertThat(emailObj.values["appUrl"]).isEqualTo("https://test/")
-            assertThat(emailObj.values["token"]).isEqualTo("testToken")
-            assertThat(emailObj.values["email"]).isEqualTo("test.user@test.com")
-        }
+        verify(mockEmailManager).sendPasswordResetEmail("test.user@test.com", "test.user")
     }
 
     @Test

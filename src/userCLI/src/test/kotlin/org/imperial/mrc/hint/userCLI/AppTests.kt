@@ -34,6 +34,16 @@ class AppTests
         Assertions.assertThat(sut.userExists(mapOf("<email>" to TEST_EMAIL))).isEqualTo("true")
     }
 
+
+    @Test
+    fun `can add user without password`()
+    {
+        val sut = UserCLI(context)
+        sut.addUser(mapOf("<email>" to TEST_EMAIL))
+
+        Assertions.assertThat(sut.userExists(mapOf("<email>" to TEST_EMAIL))).isEqualTo("true")
+    }
+
     @Test
     fun `can remove user`()
     {
