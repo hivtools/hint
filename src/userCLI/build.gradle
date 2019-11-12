@@ -13,18 +13,6 @@ apply plugin: 'application'
 apply plugin: 'docker'
 mainClassName = "org.imperial.mrc.hint.userCLI.AppKt"
 
-jacoco {
-    toolVersion = "0.8.3"
-    reportsDir = file("$projectDir/coverage")
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled = true
-        csv.enabled = false
-    }
-}
-
 dependencies {
     implementation project(":app")
     implementation "com.offbytwo:docopt:0.6.0.20150202"
