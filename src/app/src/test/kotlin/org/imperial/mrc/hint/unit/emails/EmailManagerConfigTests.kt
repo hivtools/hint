@@ -21,7 +21,7 @@ class EmailManagerConfigTests
             on { emailMode } doReturn "disk"
         }
 
-        val result = sut.getEmailManager(mockAppProperties)
+        val result = sut.getEmailManager(mockAppProperties, mock())
         assertThat(result).isInstanceOf(WriteToDiskEmailManager::class.java)
     }
 
@@ -37,7 +37,7 @@ class EmailManagerConfigTests
             on { emailPassword } doReturn "testpassword"
         }
 
-        val result = sut.getEmailManager(mockAppProperties)
+        val result = sut.getEmailManager(mockAppProperties, mock())
         assertThat(result).isInstanceOf(RealEmailManager::class.java)
     }
 
@@ -47,6 +47,6 @@ class EmailManagerConfigTests
             on { emailMode } doReturn "unsupported"
         }
 
-        assertThatThrownBy { sut.getEmailManager(mockAppProperties) }.hasMessage("Unknown email mode 'unsupported'")
+        assertThatThrownBy { sut.getEmailManager(mockAppProperties, mock()) }.hasMessage("Unknown email mode 'unsupported'")
     }
 }

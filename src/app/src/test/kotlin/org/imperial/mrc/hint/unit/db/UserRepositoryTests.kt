@@ -23,7 +23,7 @@ class UserRepositoryTests
     {
 
         val mockProfileService = mock<DbProfileService>()
-        val sut = DbProfileServiceUserRepository(mockProfileService)
+        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
 
         sut.addUser(TEST_EMAIL, "testpassword")
 
@@ -41,7 +41,7 @@ class UserRepositoryTests
             on { findById(TEST_EMAIL) } doReturn mock<DbProfile>()
         }
 
-        val sut = DbProfileServiceUserRepository(mockProfileService)
+        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
 
         assertThatThrownBy { sut.addUser(TEST_EMAIL, "testpassword")  }
                 .isInstanceOf(UserException::class.java)
@@ -56,7 +56,7 @@ class UserRepositoryTests
             on { findById(TEST_EMAIL) } doReturn mock<DbProfile>()
         }
 
-        val sut = DbProfileServiceUserRepository(mockProfileService)
+        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
         sut.removeUser(TEST_EMAIL)
 
         verify(mockProfileService).removeById(TEST_EMAIL)
@@ -68,7 +68,7 @@ class UserRepositoryTests
 
         val mockProfileService = mock<DbProfileService>()
 
-        val sut = DbProfileServiceUserRepository(mockProfileService)
+        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
 
         assertThatThrownBy { sut.removeUser(TEST_EMAIL)  }
                 .isInstanceOf(UserException::class.java)
@@ -83,7 +83,7 @@ class UserRepositoryTests
             on { findById(TEST_EMAIL) } doReturn mockProfile
         }
 
-        val sut = DbProfileServiceUserRepository(mockProfileService)
+        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
         val result = sut.getUser(TEST_EMAIL)
         assertThat(result).isSameAs(mockProfile)
     }
@@ -101,7 +101,7 @@ class UserRepositoryTests
             on { findById(TEST_EMAIL) } doReturn mockDbProfile
         }
 
-        val sut = DbProfileServiceUserRepository(mockProfileService)
+        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
         sut.updateUserPassword(mockCommonProfile, "testPassword")
 
         verify(mockProfileService).update(mockDbProfile, "testPassword")

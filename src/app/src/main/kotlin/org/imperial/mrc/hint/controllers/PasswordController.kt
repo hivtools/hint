@@ -23,7 +23,6 @@ class TokenException(message: String) : HintException(message, HttpStatus.BAD_RE
 @RequestMapping("/password")
 class PasswordController(private val userRepository: UserRepository,
                          private val oneTimeTokenManager: OneTimeTokenManager,
-                         private val appProperties: AppProperties,
                          private val emailManager: EmailManager) {
 
     @GetMapping("/forgot-password")
@@ -37,14 +36,7 @@ class PasswordController(private val userRepository: UserRepository,
         val user = userRepository.getUser(email)
 
         if (user != null) {
-            val token = oneTimeTokenManager.generateOnetimeSetPasswordToken(user)
-
-            val emailMessage = PasswordResetEmail(appProperties.applicationTitle,
-                    appProperties.applicationUrl,
-                    token,
-                    email)
-
-            emailManager.sendEmail(emailMessage, email)
+            emailManager.sendPasswordResetEmail(email, user.username)
         }
 
         return EmptySuccessResponse.toJsonString()

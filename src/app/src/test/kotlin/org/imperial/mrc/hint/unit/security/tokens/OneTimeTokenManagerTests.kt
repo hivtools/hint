@@ -23,9 +23,7 @@ class OneTimeTokenManagerTests {
         on { tokenIssuer } doReturn "test issuer"
     }
 
-    private val mockUser = mock<CommonProfile> {
-        on { username } doReturn "test user"
-    }
+    private val mockUser = "test user"
 
     private val mockTokenRepository = mock<TokenRepository>()
 

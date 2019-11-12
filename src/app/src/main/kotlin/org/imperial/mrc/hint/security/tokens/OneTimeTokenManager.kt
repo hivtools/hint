@@ -23,11 +23,11 @@ class OneTimeTokenManager(
     private val issuer = appProperties.tokenIssuer
     private val random = SecureRandom()
 
-    fun generateOnetimeSetPasswordToken(user: CommonProfile): String
+    fun generateOnetimeSetPasswordToken(username: String): String
     {
         val token= generator.generate(mapOf(
                 "iss" to issuer,
-                "sub" to user.username,
+                "sub" to username,
                 "exp" to Date.from(Instant.now().plus(Duration.ofDays(1))),
                 "nonce" to getNonce()
         ))

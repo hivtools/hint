@@ -1,11 +1,14 @@
 package org.imperial.mrc.hint.emails
 
+import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.Instant
 
-class WriteToDiskEmailManager : EmailManager
+class WriteToDiskEmailManager(appProperties: AppProperties,
+                              oneTimeTokenManager: OneTimeTokenManager) : BaseEmailManager(appProperties, oneTimeTokenManager)
 {
     override fun sendEmail(data: EmailData, emailAddress: String)
     {
