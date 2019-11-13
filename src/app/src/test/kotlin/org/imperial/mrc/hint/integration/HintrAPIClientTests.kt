@@ -25,10 +25,11 @@ class HintrApiClientTests {
     @Test
     fun `can validate baseline combined`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.validateBaselineCombined(
-                SessionFileWithPath("fakePjnz", "pjnzHash", "pjnzFile"),
-                SessionFileWithPath("fakeShape", "shapeHash", "shapeFile"),
-                SessionFileWithPath("fakePop", "popHash", "popFile")
+        val result = sut.validateBaselineCombined( mapOf(
+                "pjnz" to SessionFileWithPath("fakePjnz", "pjnzHash", "pjnzFile"),
+                "shape" to SessionFileWithPath("fakeShape", "shapeHash", "shapeFile"),
+                "population" to SessionFileWithPath("fakePop", "popHash", "popFile")
+            )
         )
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_BASELINE")

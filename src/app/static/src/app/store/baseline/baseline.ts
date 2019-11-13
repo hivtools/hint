@@ -17,7 +17,6 @@ export interface BaselineState extends ReadyState {
     population: PopulationResponse | null,
     populationError: string,
     validating: boolean,
-    validatedComplete: boolean,
     validatedConsistent: boolean,
     baselineError: string
 }
@@ -35,14 +34,13 @@ export const initialBaselineState: BaselineState = {
     populationError: "",
     ready: false,
     validating: false,
-    validatedComplete: false,
     validatedConsistent: false,
     baselineError: ""
 };
 
 export const baselineGetters = {
   complete: (state: BaselineState) => {
-      return state.validatedComplete && state.validatedConsistent &&
+      return state.validatedConsistent &&
                 !!state.country && !!state.iso3 && !!state.shape && !!state.population
   }
 };
