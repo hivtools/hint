@@ -13,6 +13,9 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.io.OutputStream
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.imperial.mrc.hint.models.ErrorDetail
+import java.io.IOException
 
 
 fun httpStatusFromCode(code: Int): HttpStatus {
@@ -35,13 +38,31 @@ fun headersToMultiMap(headers: Headers): MultiValueMap<String, String> {
     return result;
 }
 
+@Suppress("UNCHECKED_CAST")
 fun Response.asResponseEntity(): ResponseEntity<String> {
     val httpStatus = httpStatusFromCode(this.statusCode)
 
-    val body = this.body().asString("application/json")
-    return ResponseEntity.status(httpStatus)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(body)
+    if (this.statusCode == -1) {
+        return ErrorDetail(httpStatus, "No response returned. The request may have timed out.")
+                .toResponseEntity() as ResponseEntity<String>
+    }
+
+    return try {
+        val body = this.body().asString("application/json")
+        val json = ObjectMapper().readTree(body)
+        if (!json.has("status")) {
+            throw IOException()
+        }
+
+        ResponseEntity.status(httpStatus)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body)
+
+    } catch (e: IOException) {
+        ErrorDetail(httpStatus, "Could not parse response.")
+                .toResponseEntity() as ResponseEntity<String>
+    }
+
 }
 
 fun Request.getStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> {

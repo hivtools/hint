@@ -1,20 +1,26 @@
 import {Dict} from "../../types";
 
-export interface DynamicControlSection {
+export type DynamicControlSection = {
     label: string
     description?: string
     controlGroups: DynamicControlGroup[]
 }
 
-export interface DynamicControlGroup {
+export type DynamicControlGroup = {
     label?: string
     controls: Control[]
+}
+
+export type Option = {
+    id: string,
+    label: string,
+    children?: Option[]
 }
 
 export type DynamicControlType = "multiselect" | "select" | "number"
 export type Control = SelectControl | MultiSelectControl | NumberControl
 
-export interface DynamicControl {
+export type DynamicControl = {
     name: string,
     label?: string,
     type: DynamicControlType
@@ -23,23 +29,23 @@ export interface DynamicControl {
     value?: string | string[] | number | null
 }
 
-export interface SelectControl extends DynamicControl {
-    options: { id: string, label: string }[]
+export type SelectControl = DynamicControl & {
+    options: Option[]
     value?: string | null
 }
 
-export interface MultiSelectControl extends DynamicControl {
-    options: { id: string, label: string }[]
+export type MultiSelectControl = DynamicControl & {
+    options: Option[]
     value?: string[]
 }
 
-export interface NumberControl extends DynamicControl {
+export type NumberControl = DynamicControl & {
     min?: number
     max?: number
     value?: number | null
 }
 
-export interface DynamicFormMeta {
+export type DynamicFormMeta = {
     controlSections: DynamicControlSection[]
 }
 

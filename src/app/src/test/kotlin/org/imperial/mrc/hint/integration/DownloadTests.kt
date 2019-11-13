@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.integration
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
@@ -10,6 +11,7 @@ import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 
 class DownloadTests : SecureIntegrationTests() {
 
@@ -45,6 +47,9 @@ class DownloadTests : SecureIntegrationTests() {
         val id = waitForModelRunResult(isAuthorized)
         val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/spectrum/$id")
         assertSecureWithSuccess(isAuthorized, responseEntity)
+        if (isAuthorized == IsAuthorized.TRUE) {
+            assertResponseHasExpectedDownloadHeaders(responseEntity)
+        }
     }
 
     @ParameterizedTest
@@ -53,5 +58,16 @@ class DownloadTests : SecureIntegrationTests() {
         val id = waitForModelRunResult(isAuthorized)
         val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/summary/$id")
         assertSecureWithSuccess(isAuthorized, responseEntity)
+        if (isAuthorized == IsAuthorized.TRUE) {
+            assertResponseHasExpectedDownloadHeaders(responseEntity)
+        }
+    }
+
+    fun assertResponseHasExpectedDownloadHeaders(response: ResponseEntity<ByteArray>) {
+        val headers = response.headers
+        assertThat(headers["Content-Type"]?.first()).isEqualTo("application/octet-stream")
+        val contentLength = headers["Content-Length"]?.first()!!
+        assertThat(contentLength.toInt()).isGreaterThan(0)
+        assertThat(headers["Connection"]?.first()).isEqualTo("close")
     }
 }

@@ -78,6 +78,8 @@ class HintrAPIClient(
 
     fun get(url: String): ResponseEntity<String> {
         return "$baseUrl/$url".httpGet()
+                .timeout(60000)
+                .timeoutRead(60000)
                 .response()
                 .second
                 .asResponseEntity()
@@ -85,6 +87,8 @@ class HintrAPIClient(
 
     private fun postJson(url: String, json: String): ResponseEntity<String> {
         return "$baseUrl/$url".httpPost()
+                .timeout(60000)
+                .timeoutRead(60000)
                 .header("Content-Type" to "application/json")
                 .body(json)
                 .response()
