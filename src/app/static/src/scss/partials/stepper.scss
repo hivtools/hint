@@ -15,13 +15,19 @@
     height: 50px;
     width: 50px;
 
-    &:not(.btn-red) {
+    &:not(.btn-red):not(.btn-white) {
       background: $gray-500;
     }
   }
 
   &.active {
     color: inherit;
+  }
+
+  &.active {
+    .btn {
+      box-shadow: 0 0 0 0.5rem rgba(192, 55, 76, 0.5) !important;
+    }
   }
 
   &:first-child {
@@ -44,4 +50,10 @@
 .step-connector {
   max-width: 100px;
   padding: 0 !important;
+
+  &.enabled {
+    hr {
+      border-color: $theme-red;
+    }
+  }
 }
