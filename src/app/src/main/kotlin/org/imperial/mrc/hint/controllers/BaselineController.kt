@@ -52,9 +52,8 @@ class BaselineController(fileManager: FileManager,
     @ResponseBody
     fun validate(): ResponseEntity<String> {
         return apiClient.validateBaselineCombined(
-                fileManager.getFile(FileType.PJNZ),
-                fileManager.getFile(FileType.Shape),
-                fileManager.getFile(FileType.Population)
+                listOf(FileType.PJNZ, FileType.Shape, FileType.Population)
+                        .map{ it.toString() to fileManager.getFile(it)}.toMap()
         )
     }
 

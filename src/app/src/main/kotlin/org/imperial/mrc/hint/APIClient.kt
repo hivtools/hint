@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component
 
 interface APIClient {
     fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String>
-    fun validateBaselineCombined(pjnz: SessionFileWithPath?, shape: SessionFileWithPath?,
-                         population: SessionFileWithPath?): ResponseEntity<String>
+    fun validateBaselineCombined(files: Map<String, SessionFileWithPath?>): ResponseEntity<String>
     fun validateSurveyAndProgramme(file: SessionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
     fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
@@ -75,12 +74,9 @@ class HintrAPIClient(
         return postJson("model/options", json)
     }
 
-    override fun validateBaselineCombined(pjnz: SessionFileWithPath?, shape: SessionFileWithPath?,
-        population: SessionFileWithPath?): ResponseEntity<String> {
+    override fun validateBaselineCombined(files: Map<String, SessionFileWithPath?>): ResponseEntity<String> {
         val json = objectMapper.writeValueAsString(
-            mapOf("pjnz" to pjnz?.path,
-                    "shape" to shape?.path,
-                    "population" to population?.path)
+           files.mapValues{ it.value?.path }
         )
         return postJson("validate/baseline-combined", json)
     }

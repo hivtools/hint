@@ -72,7 +72,6 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
 
         await actions.validate({commit, dispatch} as any);
-        console.log(JSON.stringify(commit.mock.calls[1][0]));
         expect(commit.mock.calls[1][0]["type"]).toBe("BaselineError");
         expect(commit.mock.calls[1][0]["payload"]).toContain("Countries aren't consistent");
     });

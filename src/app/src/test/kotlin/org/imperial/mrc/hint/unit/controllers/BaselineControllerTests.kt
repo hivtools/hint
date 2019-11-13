@@ -73,8 +73,13 @@ class BaselineControllerTests : HintrControllerTests() {
         }
 
         val mockResponse = mock<ResponseEntity<String>>()
+        val files = mapOf(
+                "pjnz" to mockPjnz,
+                "shape" to mockShape,
+                "population" to mockPop
+        )
         val mockAPIClient = mock<APIClient>{
-            on { validateBaselineCombined(mockPjnz, mockShape, mockPop) } doReturn mockResponse
+            on { validateBaselineCombined(files) } doReturn mockResponse
         }
 
         val sut = BaselineController(mockFileManager, mockAPIClient)
