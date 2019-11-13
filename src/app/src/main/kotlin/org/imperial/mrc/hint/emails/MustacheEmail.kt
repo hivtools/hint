@@ -13,15 +13,15 @@ abstract class MustacheEmail {
     abstract val htmlTemplate: String
     abstract val subject: String // can be a template like "Welcome to {{appName}}"
 
-    private fun text(values: Map<String, String>) = realize(textTemplate, values)
-    private fun html(values: Map<String, String>) = realize(htmlTemplate, values)
+    private fun text(values: Map<String, String>) = realizeFileTemplate(textTemplate, values)
+    private fun html(values: Map<String, String>) = realizeFileTemplate(htmlTemplate, values)
 
     fun emailData(values: Map<String, String>): EmailData {
-        val realizedSubject = realizeSimpleString(subject, values)
+        val realizedSubject = realizeStringTemplate(subject, values)
         return EmailData(realizedSubject, text(values), html(values))
     }
 
-    private fun realizeSimpleString(template: String, values: Map<String, String>): String {
+    private fun realizeStringTemplate(template: String, values: Map<String, String>): String {
         return StringWriter().use { output ->
             template.byteInputStream().bufferedReader().use { input ->
                 DefaultMustacheFactory()
@@ -32,7 +32,7 @@ abstract class MustacheEmail {
         }
     }
 
-    private fun realize(templateFileName: String, values: Map<String, String>): String {
+    private fun realizeFileTemplate(templateFileName: String, values: Map<String, String>): String {
         return StringWriter().use { output ->
             val templateURI = getResource("email_templates/$templateFileName")
             templateURI.openStream().bufferedReader().use { input ->
