@@ -70,7 +70,6 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
 
     Validating(state: BaselineState){
         state.validating = true;
-        state.validatedComplete = false;
         state.validatedConsistent = false;
         state.baselineError = "";
     },
@@ -78,14 +77,12 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
     Validated(state: BaselineState, action: PayloadWithType<ValidateBaselineResponse>) {
         state.validating = false;
 
-        state.validatedComplete = action.payload.complete;
         state.validatedConsistent = action.payload.consistent;
         state.baselineError = "";
     },
 
     BaselineError(state: BaselineState, action: PayloadWithType<string>) {
         state.validating = false;
-        state.validatedComplete = false;
         state.validatedConsistent = false;
         state.baselineError = action.payload;
     },

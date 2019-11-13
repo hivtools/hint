@@ -98,8 +98,7 @@ describe("Stepper component", () => {
         shape: mockShapeResponse(),
         population: mockPopulationResponse(),
         ready: true,
-        validatedConsistent: true,
-        validatedComplete: true
+        validatedConsistent: true
     };
 
     afterEach(() => {

@@ -24,7 +24,7 @@ describe("Baseline mutations", () => {
         expect(testState.pjnzError).toBe("");
     });
 
-    it("state becomes complete once all files are Updated and validatedComplete and validatedConsistent are true", () => {
+    it("state becomes complete once all files are Updated and validatedConsistent are true", () => {
         const testStore: Module<BaselineState, RootState> = {
             state: {...initialBaselineState},
             getters: baselineGetters
@@ -162,30 +162,25 @@ describe("Baseline mutations", () => {
         mutations.Validated(testState, {payload: {consistent: true, complete: true}});
         expect(testState.baselineError).toBe("");
         expect(testState.validatedConsistent).toBe(true);
-        expect(testState.validatedComplete).toBe(true);
     });
 
     it("Validating resets validation values", () => {
         const testState = {...initialBaselineState,
-            validatedComplete: true,
             validatedConsistent: true,
             baselineError: "test error"
         };
         mutations.Validating(testState);
         expect(testState.baselineError).toBe("");
         expect(testState.validatedConsistent).toBe(false);
-        expect(testState.validatedComplete).toBe(false);
     });
 
     it("BaselineError sets baseline error and validation values", () => {
         const testState = {...initialBaselineState,
-            validatedComplete: true,
             validatedConsistent: true
         };
         mutations.BaselineError(testState, {payload: "test error"});
         expect(testState.baselineError).toBe("test error");
         expect(testState.validatedConsistent).toBe(false);
-        expect(testState.validatedComplete).toBe(false);
     });
 
 });
