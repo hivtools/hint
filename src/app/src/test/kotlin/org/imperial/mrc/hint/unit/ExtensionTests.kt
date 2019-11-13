@@ -45,7 +45,7 @@ class ExtensionTests {
     }
 
     @Test
-    fun `asStreamingResponseEntity sets status, headers and streaming response`() {
+    fun `getStreamingResponseEntity sets status, headers and streaming response`() {
         val headers = Headers()
         headers.append("test-header", "test-value")
         headers.append("test-header2", "test-value2")
