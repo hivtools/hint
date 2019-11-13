@@ -18,13 +18,4 @@ class DbConfig {
         dataSourceBuilder.password(appProperties.dbPassword)
         return dataSourceBuilder.build()
     }
-
-    fun dataSource(url: String, user: String, password: String): DataSource {
-        val dataSourceBuilder = DataSourceBuilder.create()
-        dataSourceBuilder.driverClassName("org.postgresql.Driver")
-        dataSourceBuilder.url(url)
-        dataSourceBuilder.username(user)
-        dataSourceBuilder.password(password)
-        return dataSourceBuilder.build()
-    }
 }
