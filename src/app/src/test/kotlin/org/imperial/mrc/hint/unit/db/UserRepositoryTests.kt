@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
+import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.exceptions.UserException
 import org.mockito.ArgumentCaptor
 import org.pac4j.core.profile.CommonProfile
@@ -31,6 +32,27 @@ class UserRepositoryTests
         verify(mockProfileService).create(argumentCaptor.capture(), eq("testpassword"))
         assertThat(argumentCaptor.value.id).isEqualTo(TEST_EMAIL)
         assertThat(argumentCaptor.value.username).isEqualTo(TEST_EMAIL)
+    }
+
+
+    @Test
+    fun `adding user without password sends email`()
+    {
+        val mockEmailManager = mock<EmailManager>()
+        val sut = DbProfileServiceUserRepository(mock(), mockEmailManager)
+
+        sut.addUser(TEST_EMAIL, null)
+        verify(mockEmailManager).sendPasswordResetEmail(TEST_EMAIL, TEST_EMAIL, true)
+    }
+
+    @Test
+    fun `adding user with password does not send email`()
+    {
+        val mockEmailManager = mock<EmailManager>()
+        val sut = DbProfileServiceUserRepository(mock(), mockEmailManager)
+
+        sut.addUser(TEST_EMAIL, "test_pw")
+        verifyZeroInteractions(mockEmailManager)
     }
 
     @Test

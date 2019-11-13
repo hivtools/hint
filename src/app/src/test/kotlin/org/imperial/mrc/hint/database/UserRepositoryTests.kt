@@ -33,6 +33,14 @@ class UserRepositoryTests {
     }
 
     @Test
+    fun `can add user without password`()
+    {
+        sut.addUser(TEST_EMAIL, null)
+
+        Assertions.assertThat(sut.getUser(TEST_EMAIL)).isNotNull
+    }
+
+    @Test
     fun `can remove user`()
     {
         sut.addUser(TEST_EMAIL, "testpassword")
