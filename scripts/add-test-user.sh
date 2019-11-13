@@ -3,4 +3,4 @@ NETWORK=hint_nw
 
 image=mrcide/hint-user-cli:master
 docker pull $image
-docker run --network=hint_nw $image add-user test.user@example.com password
+docker run -e db_url="jdbc:postgresql://db/hint" --network=hint_nw $image add-user test.user@example.com password
