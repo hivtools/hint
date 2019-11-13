@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.isNull
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
+import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.db.DbConfig
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
@@ -18,8 +19,7 @@ class AppTests {
     companion object {
         const val TEST_EMAIL = "test@test.com"
 
-        val props = DatabaseProperties()
-        val dataSource = DbConfig().dataSource(props.url, props.user, props.password)
+        val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
         val userRepository = getUserRepository(dataSource)
         val sut = UserCLI(userRepository)
 

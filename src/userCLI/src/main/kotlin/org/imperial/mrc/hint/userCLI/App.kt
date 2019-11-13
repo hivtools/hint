@@ -57,7 +57,7 @@ class UserCLI(private val userRepository: UserRepository) {
     fun addUser(options: Map<String, Any>): String {
 
         val email = options["<email>"].getStringValue()
-        val password = options["<password>"].getStringValue()
+        val password = options["<password>"]?.getStringValue()
         println("Adding user $email")
 
         userRepository.addUser(email, password)
