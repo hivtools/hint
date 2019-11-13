@@ -95,17 +95,13 @@ class HintrAPIClient(
     override fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody> {
         return "$baseUrl/download/spectrum/${id}"
                 .httpDownload()
-                /*.response()
-                .second*/
-                .asStreamingResponseEntity()
+                .getStreamingResponseEntity()
     }
 
     override fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody> {
         return "$baseUrl/download/summary/${id}"
                 .httpDownload()
-                /*.response()
-                .second*/
-                .asStreamingResponseEntity()
+                .getStreamingResponseEntity()
     }
 
 }
