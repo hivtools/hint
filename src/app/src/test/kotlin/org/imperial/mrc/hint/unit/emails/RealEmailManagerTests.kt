@@ -7,8 +7,9 @@ import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.emails.EmailData
-import org.imperial.mrc.hint.emails.PasswordResetEmail
+import org.imperial.mrc.hint.emails.MustacheEmail
 import org.imperial.mrc.hint.emails.RealEmailManager
+import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
 import org.simplejavamail.email.Email
 import org.simplejavamail.mailer.Mailer
@@ -17,6 +18,7 @@ import org.slf4j.Logger
 class RealEmailManagerTests {
     private val mockAppProps = mock<AppProperties> {
         on { applicationTitle } doReturn "testApp"
+        on { applicationUrl } doReturn "http://testurl.com"
         on { emailPassword } doReturn "testPassword"
         on { emailPort } doReturn 100
         on { emailSender } doReturn "test@sender.com"
@@ -74,19 +76,59 @@ class RealEmailManagerTests {
     @Test
     fun `send password reset email`() {
 
-        val sut = RealEmailManager(mockAppProps, mock(), mockLogger, mockMailer)
-        sut.sendPasswordResetEmail("test.user@example.com", "test.user")
+        val mockTokenManager = mock<OneTimeTokenManager> {
+            on { generateOnetimeSetPasswordToken("test.user") } doReturn "TOKEN"
+        }
+        val sut = RealEmailManager(mockAppProps, mockTokenManager, mockLogger, mockMailer)
+        sut.sendPasswordResetEmail("test.user@example.com", "test.user", false)
         argumentCaptor<Email>().apply {
             verify(mockMailer).sendMail(capture())
 
             val emailObj = firstValue
             assertThat(emailObj.subject).isEqualTo("Password change for testApp")
-            assertThat(emailObj.text).isEqualTo("password-reset.txt")
-            assertThat(emailObj.textHTML).isEqualTo("password-reset.html")
-            assertThat(emailObj.fromRecipient.address).isEqualTo("test@sender.com")
-            assertThat(emailObj.fromRecipient.name).isEqualTo("testApp notifications")
-            assertThat(emailObj.recipients.count()).isEqualTo(1)
-            assertThat(emailObj.recipients[0].address).isEqualTo("test.user@example.com")
+            assertThat(emailObj.text).isEqualTo("""Hello,
+
+This is an automated email from testApp. We have received a request to reset the password for the account with
+this email address (test.user@example.com).
+
+To change your password on testApp please browse to:
+
+http://testurl.com/password/reset-password/?token=TOKEN
+
+This link will expire in 24 hours. If you don't get a chance to use it within that time, you can request a new one.
+
+If you did not request a password change, or you no longer want to change your password, please ignore this email.
+
+Have a great day!""")
+        }
+    }
+
+    @Test
+    fun `send password set email`() {
+
+        val mockTokenManager = mock<OneTimeTokenManager> {
+            on { generateOnetimeSetPasswordToken("test.user") } doReturn "TOKEN"
+        }
+        val sut = RealEmailManager(mockAppProps, mockTokenManager, mockLogger, mockMailer)
+        sut.sendPasswordResetEmail("test.user@example.com", "test.user", true)
+        argumentCaptor<Email>().apply {
+            verify(mockMailer).sendMail(capture())
+
+            val emailObj = firstValue
+            assertThat(emailObj.subject).isEqualTo("Password change for testApp")
+            assertThat(emailObj.text).isEqualTo("""Hello,
+
+This is an automated email from testApp. We have received a request to create an account for
+this email address (test.user@example.com).
+
+To set your password on testApp please browse to:
+
+http://testurl.com/password/reset-password/?token=TOKEN
+
+This link will expire in 24 hours. If you don't get a chance to use it within that time, you can request a new one by
+visiting http://testurl.com/password/forgot-password/
+
+Have a great day!""")
         }
     }
 }

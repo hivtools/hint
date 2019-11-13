@@ -45,7 +45,7 @@ class PasswordControllerTests {
         val result = sut.requestResetLink("test.user@test.com")
 
         assertThat(result).isEqualTo(expectedSuccessResponse)
-        verify(mockEmailManager).sendPasswordResetEmail("test.user@test.com", "test.user")
+        verify(mockEmailManager).sendPasswordResetEmail("test.user@test.com", "test.user", false)
     }
 
     @Test
