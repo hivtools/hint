@@ -56,7 +56,7 @@ To set your password on testApp please browse to:
 http://testAppUrl/password/reset-password/?token=testToken
 
 This link will expire in 24 hours. If you don't get a chance to use it within that time, you can request a new one by
-visiting http://testAppUrl/password/forgotten-password/
+visiting http://testAppUrl/password/forgot-password/
 
 Have a great day!""")
     }
