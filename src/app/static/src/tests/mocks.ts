@@ -18,7 +18,7 @@ import {
     Response,
     ShapeResponse,
     SurveyFilters,
-    SurveyResponse
+    SurveyResponse, ValidateBaselineResponse
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
@@ -222,6 +222,13 @@ export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}):
         hash: "1234.csv",
         filename: "test.csv",
         ...props
+    }
+};
+
+export const mockValidateBaselineResponse = (props: Partial<ValidateBaselineResponse> = {}): ValidateBaselineResponse => {
+    return {
+        complete: true,
+        consistent: true
     }
 };
 
