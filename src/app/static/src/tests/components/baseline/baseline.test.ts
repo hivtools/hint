@@ -42,6 +42,12 @@ describe("Baseline upload component", () => {
         })
     };
 
+    it("pjnz upload accepts pjnz or zip files", () => {
+        const store = createSut();
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(0).props().accept).toBe("PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP");
+    });
+
     it("pjnz is not valid if country is not present", () => {
         const store = createSut();
         const wrapper = shallowMount(Baseline, {store, localVue});
@@ -98,6 +104,12 @@ describe("Baseline upload component", () => {
         expect(wrapper.findAll(FileUpload).at(1).props().error).toBe("File upload went wrong");
     });
 
+    it("shape upload accepts geojson", () => {
+        const store = createSut();
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(1).props().accept).toBe("geojson,.geojson,GEOJSON,.GEOJSON");
+    });
+
     it("population is not valid if population is not present", () => {
         const store = createSut();
         const wrapper = shallowMount(Baseline, {store, localVue});
@@ -114,6 +126,12 @@ describe("Baseline upload component", () => {
         const store = createSut({populationError: "File upload went wrong"});
         const wrapper = shallowMount(Baseline, {store, localVue});
         expect(wrapper.findAll(FileUpload).at(2).props().error).toBe("File upload went wrong");
+    });
+
+    it("population upload accepts csv", () => {
+        const store = createSut();
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(2).props().accept).toBe("csv,.csv");
     });
 
     it("upload pjnz dispatches baseline/uploadPJNZ", (done) => {

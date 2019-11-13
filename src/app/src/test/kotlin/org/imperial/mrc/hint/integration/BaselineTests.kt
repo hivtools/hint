@@ -52,6 +52,20 @@ class BaselineTests : SecureIntegrationTests() {
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can upload zip file as pjnz`(isAuthorized: IsAuthorized) {
+        val postEntity = getTestEntity("Botswana2018.zip")
+        val responseEntity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
+
+        if (isAuthorized == IsAuthorized.TRUE) {
+            val data = getResponseData(responseEntity)
+            assertThat(data["type"].asText()).isEqualTo("pjnz")
+            assertThat(data["filename"].asText()).isEqualTo("Botswana2018.zip")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can upload shape file`(isAuthorized: IsAuthorized) {
         val postEntity = getTestEntity("malawi.geojson")
         val entity = testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
