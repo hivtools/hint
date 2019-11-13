@@ -3,8 +3,8 @@ package org.imperial.mrc.hint.userCLI
 import org.docopt.Docopt
 import org.imperial.mrc.hint.db.DbConfig
 import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
+import org.imperial.mrc.hint.security.HintDbProfileService
 import org.imperial.mrc.hint.security.SecurePasswordEncoder
-import org.pac4j.sql.profile.service.DbProfileService
 import javax.sql.DataSource
 import kotlin.system.exitProcess
 
@@ -45,7 +45,7 @@ fun main(args: Array<String>) {
 
 class UserCLI(dataSource: DataSource) {
 
-    private val profileService = DbProfileService(dataSource, SecurePasswordEncoder())
+    private val profileService = HintDbProfileService(dataSource, SecurePasswordEncoder())
     private val userRepository = DbProfileServiceUserRepository(profileService)
 
     fun addUser(options: Map<String, Any>): String {
