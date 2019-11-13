@@ -3,10 +3,15 @@ import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {
-    mockBaselineState, mockLoadState, mockMetadataState, mockModelOptionsState,
-    mockModelRunState, mockPlottingMetadataResponse,
+    mockBaselineState,
+    mockLoadState,
+    mockMetadataState,
+    mockModelOptionsState,
+    mockModelRunState,
+    mockPlottingMetadataResponse,
     mockPopulationResponse,
-    mockShapeResponse, mockStepperState,
+    mockShapeResponse,
+    mockStepperState,
     mockSurveyAndProgramState
 } from "../mocks";
 import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
@@ -135,31 +140,59 @@ describe("Stepper component", () => {
         expect(steps.at(0).props().active).toBe(true);
         expect(steps.at(0).props().number).toBe(1);
         expect(steps.at(0).props().complete).toBe(false);
+        expect(steps.at(0).props().enabled).toBe(true);
 
         expect(steps.at(1).props().text).toBe("Upload survey and programme data");
         expect(steps.at(1).props().active).toBe(false);
         expect(steps.at(1).props().number).toBe(2);
         expect(steps.at(1).props().complete).toBe(false);
+        expect(steps.at(1).props().enabled).toBe(false);
 
         expect(steps.at(2).props().text).toBe("Model options");
         expect(steps.at(2).props().active).toBe(false);
         expect(steps.at(2).props().number).toBe(3);
         expect(steps.at(2).props().complete).toBe(false);
+        expect(steps.at(2).props().enabled).toBe(false);
 
         expect(steps.at(3).props().text).toBe("Run model");
         expect(steps.at(3).props().active).toBe(false);
         expect(steps.at(3).props().number).toBe(4);
         expect(steps.at(3).props().complete).toBe(false);
+        expect(steps.at(3).props().enabled).toBe(false);
 
         expect(steps.at(4).props().text).toBe("Review output");
         expect(steps.at(4).props().active).toBe(false);
         expect(steps.at(4).props().number).toBe(5);
         expect(steps.at(4).props().complete).toBe(false);
+        expect(steps.at(4).props().enabled).toBe(false);
 
         expect(steps.at(5).props().text).toBe("Download results");
         expect(steps.at(5).props().active).toBe(false);
         expect(steps.at(5).props().number).toBe(6);
         expect(steps.at(5).props().complete).toBe(false);
+        expect(steps.at(5).props().enabled).toBe(false);
+    });
+
+    it("renders step connectors", () => {
+        const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const connectors = wrapper.findAll(".step-connector");
+
+        expect(connectors.length).toBe(5);
+        // all should not be enabled at first
+        expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(0);
+    });
+
+    it("step connector is enabled if next step is", () => {
+        const store = createSut({ready: true},
+            {ready: true, survey: true, program: true, shape: true} as any,
+            {},
+            {ready: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const connectors = wrapper.findAll(".step-connector");
+
+        expect(connectors.at(0).classes()).toContain("enabled");
+        expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(1);
     });
 
     it("all steps except baseline are disabled initially", () => {
@@ -255,6 +288,35 @@ describe("Stepper component", () => {
         continueLink.trigger("click");
         const steps = wrapper.findAll(Step);
         expect(steps.at(1).props().active).toBe(true);
+    });
+
+
+    it("cannot go back from the first step", () => {
+        const store = createSut({country: "", ready: true}, {ready: true}, {}, {ready: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const backLink = wrapper.find("#back");
+        expect(backLink.classes()).toContain("disabled");
+    });
+
+    it("can go back from later steps", () => {
+        const store = createSut({
+                country: "testCountry",
+                iso3: "TTT",
+                shape: mockShapeResponse(),
+                population: mockPopulationResponse(),
+                ready: true
+            },
+            {ready: true},
+            {plottingMetadata: "TEST DATA" as any},
+            {ready: true},
+            {activeStep: 2});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const backLink = wrapper.find("#back");
+        expect(backLink.classes()).not.toContain("disabled");
+
+        backLink.trigger("click");
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(0).props().active).toBe(true);
     });
 
     it("updates from completed state when active step data is populated", (done) => {
