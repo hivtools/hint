@@ -19,16 +19,28 @@ describe("Step component", () => {
         expect(wrapper.find("div").text()).toBe("Test text");
     });
 
+    it("renders enabled step", () => {
+        const wrapper = shallowMount(Step, {
+            localVue,
+            propsData: {
+                enabled: true
+            }
+        });
+
+        expect(wrapper.classes()).toStrictEqual(["col", "step", "enabled"]);
+    });
+
     it("renders active step", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
-                active: true
+                active: true,
+                enabled: true
             }
         });
 
-        expect(wrapper.classes()).toStrictEqual(["col", "step", "active"]);
-        expect(wrapper.find("button").classes()).toStrictEqual(["btn", "btn-red"]);
+        expect(wrapper.classes()).toStrictEqual(["col", "step", "active", "enabled"]);
+        expect(wrapper.find("button").classes()).toStrictEqual(["btn", "btn-white"]);
     });
 
     it("renders inactive step", () => {
@@ -51,11 +63,27 @@ describe("Step component", () => {
                 number: 2
             }
         });
+
+        expect(wrapper.classes()).toStrictEqual(["col", "step", "enabled"]);
+        expect(wrapper.find("button").classes()).toStrictEqual(["btn", "btn-white"]);
         expect(wrapper.find("button").attributes().disabled).toBeUndefined();
         wrapper.find("button").trigger("click");
         Vue.nextTick();
 
         expect(wrapper.emitted().jump[0][0]).toBe(2);
+    });
+
+    it("renders complete step", () => {
+        const wrapper = shallowMount(Step, {
+            localVue,
+            propsData: {
+                enabled: true,
+                complete: true
+            }
+        });
+
+        expect(wrapper.classes()).toStrictEqual(["col", "step", "complete", "enabled"]);
+        expect(wrapper.find("button").classes()).toStrictEqual(["btn", "btn-red"]);
     });
 
     it("renders disabled step", () => {
