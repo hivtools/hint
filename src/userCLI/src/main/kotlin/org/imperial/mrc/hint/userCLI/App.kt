@@ -1,10 +1,20 @@
 package org.imperial.mrc.hint.userCLI
 
 import org.docopt.Docopt
+import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.db.DbConfig
 import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
+import org.imperial.mrc.hint.db.JooqTokenRepository
+import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.emails.EmailConfig
 import org.imperial.mrc.hint.security.HintDbProfileService
 import org.imperial.mrc.hint.security.SecurePasswordEncoder
+import org.imperial.mrc.hint.security.tokens.KeyHelper
+import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
+import org.jooq.SQLDialect
+import org.jooq.impl.DSL
+import org.pac4j.jwt.config.signature.RSASignatureConfiguration
+import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 import javax.sql.DataSource
 import kotlin.system.exitProcess
 
@@ -25,7 +35,7 @@ fun main(args: Array<String>) {
     val dataSource = DbConfig().dataSource(props.url, props.user, props.password)
 
     try {
-        val userCLI = UserCLI(dataSource)
+        val userCLI = UserCLI(getUserRepository(dataSource))
         val result = when {
             addUser -> userCLI.addUser(options)
             removeUser -> userCLI.removeUser(options)
@@ -37,16 +47,12 @@ fun main(args: Array<String>) {
     } catch (e: Exception) {
         System.err.println(e.message)
         exitProcess(1)
-    }
-    finally {
+    } finally {
         dataSource.connection.close()
     }
 }
 
-class UserCLI(dataSource: DataSource) {
-
-    private val profileService = HintDbProfileService(dataSource, SecurePasswordEncoder())
-    private val userRepository = DbProfileServiceUserRepository(profileService)
+class UserCLI(val userRepository: UserRepository) {
 
     fun addUser(options: Map<String, Any>): String {
 
@@ -78,4 +84,22 @@ class UserCLI(dataSource: DataSource) {
     private fun Any?.getStringValue(): String {
         return this.toString().replace("[", "").replace("]", "")
     }
+}
+
+fun getUserRepository(dataSource: DataSource): UserRepository {
+    val profileService = HintDbProfileService(dataSource, SecurePasswordEncoder())
+    val dslContext = DSL.using(dataSource.connection, SQLDialect.POSTGRES)
+    val appProperties = ConfiguredAppProperties()
+
+    val tokenRepository = JooqTokenRepository(dslContext)
+    val signatureConfig = RSASignatureConfiguration(KeyHelper.keyPair)
+
+    val oneTimeTokenManager = OneTimeTokenManager(appProperties,
+            tokenRepository,
+            signatureConfig,
+            JwtAuthenticator(signatureConfig))
+
+    return DbProfileServiceUserRepository(profileService, EmailConfig()
+            .getEmailManager(ConfiguredAppProperties(), oneTimeTokenManager))
+
 }

@@ -1,11 +1,15 @@
 package org.imperial.mrc.hint.security.tokens
 
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.db.TokenRepository
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import org.pac4j.jwt.profile.JwtGenerator
 import org.springframework.stereotype.Component
 import org.pac4j.jwt.config.signature.SignatureConfiguration
+import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
+import sun.security.krb5.Config
 import java.time.Duration
 import java.security.SecureRandom
 import java.time.Instant
@@ -16,7 +20,7 @@ class OneTimeTokenManager(
         appProperties: AppProperties,
         private val tokenRepository: TokenRepository,
         signatureConfiguration: SignatureConfiguration,
-        private val authenticator: OneTimeTokenAuthenticator
+        private val authenticator: JwtAuthenticator
 )
 {
     private val generator = JwtGenerator<CommonProfile>(signatureConfiguration)

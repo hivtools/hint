@@ -1,6 +1,8 @@
 package org.imperial.mrc.hint.db
 
 import org.imperial.mrc.hint.AppProperties
+import org.jooq.SQLDialect
+import org.jooq.impl.DSL
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
