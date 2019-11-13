@@ -6,8 +6,9 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.emails.AccountCreationEmail
 import org.imperial.mrc.hint.emails.EmailData
-import org.imperial.mrc.hint.emails.MustacheEmail
+import org.imperial.mrc.hint.emails.PasswordResetEmail
 import org.imperial.mrc.hint.emails.RealEmailManager
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
@@ -47,14 +48,8 @@ class RealEmailManagerTests {
 
     @Test
     fun `sends email`() {
-        val mockEmailData = mock<EmailData> {
-            on { subject } doReturn "testSubject"
-            on { text() } doReturn "testText"
-            on { html() } doReturn "testHtml"
-        }
-
+        val mockEmailData = EmailData("testSubject", "testText", "testHtml")
         val sut = RealEmailManager(mockAppProps, mock(), mockLogger, mockMailer)
-
         sut.sendEmail(mockEmailData, "test@email.com")
 
         argumentCaptor<Email>().apply {
@@ -80,7 +75,7 @@ class RealEmailManagerTests {
             on { generateOnetimeSetPasswordToken("test.user") } doReturn "TOKEN"
         }
         val sut = RealEmailManager(mockAppProps, mockTokenManager, mockLogger, mockMailer)
-        sut.sendPasswordResetEmail("test.user@example.com", "test.user", false)
+        sut.sendPasswordEmail("test.user@example.com", "test.user", PasswordResetEmail())
         argumentCaptor<Email>().apply {
             verify(mockMailer).sendMail(capture())
 
@@ -104,18 +99,19 @@ Have a great day!""")
     }
 
     @Test
-    fun `send password set email`() {
+    fun `send account creation email`() {
 
         val mockTokenManager = mock<OneTimeTokenManager> {
             on { generateOnetimeSetPasswordToken("test.user") } doReturn "TOKEN"
         }
         val sut = RealEmailManager(mockAppProps, mockTokenManager, mockLogger, mockMailer)
-        sut.sendPasswordResetEmail("test.user@example.com", "test.user", true)
+        sut.sendPasswordEmail("test.user@example.com", "test.user", AccountCreationEmail())
+
         argumentCaptor<Email>().apply {
             verify(mockMailer).sendMail(capture())
 
             val emailObj = firstValue
-            assertThat(emailObj.subject).isEqualTo("Password change for testApp")
+            assertThat(emailObj.subject).isEqualTo("Account creation for testApp")
             assertThat(emailObj.text).isEqualTo("""Hello,
 
 This is an automated email from testApp. We have received a request to create an account for

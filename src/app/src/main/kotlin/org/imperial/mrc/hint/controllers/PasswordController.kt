@@ -36,7 +36,7 @@ class PasswordController(private val userRepository: UserRepository,
         val user = userRepository.getUser(email)
 
         if (user != null) {
-            emailManager.sendPasswordResetEmail(email, user.username, false)
+            emailManager.sendPasswordEmail(email, user.username, PasswordResetEmail())
         }
 
         return EmptySuccessResponse.toJsonString()

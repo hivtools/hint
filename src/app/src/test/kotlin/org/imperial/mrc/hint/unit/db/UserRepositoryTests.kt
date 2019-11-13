@@ -3,25 +3,24 @@ package org.imperial.mrc.hint.unit.db
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.Test
 import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
+import org.imperial.mrc.hint.emails.AccountCreationEmail
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.exceptions.UserException
+import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
 
-class UserRepositoryTests
-{
+class UserRepositoryTests {
 
     companion object {
         const val TEST_EMAIL = "test@test.com"
     }
 
     @Test
-    fun `add user calls create on profile service`()
-    {
+    fun `add user calls create on profile service`() {
 
         val mockProfileService = mock<DbProfileService>()
         val sut = DbProfileServiceUserRepository(mockProfileService, mock())
@@ -36,18 +35,18 @@ class UserRepositoryTests
 
 
     @Test
-    fun `adding user without password sends email`()
-    {
+    fun `adding user without password sends email`() {
         val mockEmailManager = mock<EmailManager>()
         val sut = DbProfileServiceUserRepository(mock(), mockEmailManager)
 
         sut.addUser(TEST_EMAIL, null)
-        verify(mockEmailManager).sendPasswordResetEmail(TEST_EMAIL, TEST_EMAIL, true)
+        verify(mockEmailManager).sendPasswordEmail(eq(TEST_EMAIL),
+                eq(TEST_EMAIL),
+                argWhere { it is AccountCreationEmail })
     }
 
     @Test
-    fun `adding user with password does not send email`()
-    {
+    fun `adding user with password does not send email`() {
         val mockEmailManager = mock<EmailManager>()
         val sut = DbProfileServiceUserRepository(mock(), mockEmailManager)
 
@@ -56,8 +55,7 @@ class UserRepositoryTests
     }
 
     @Test
-    fun `add user throws exception if finds existing user with email`()
-    {
+    fun `add user throws exception if finds existing user with email`() {
 
         val mockProfileService = mock<DbProfileService> {
             on { findById(TEST_EMAIL) } doReturn mock<DbProfile>()
@@ -65,14 +63,13 @@ class UserRepositoryTests
 
         val sut = DbProfileServiceUserRepository(mockProfileService, mock())
 
-        assertThatThrownBy { sut.addUser(TEST_EMAIL, "testpassword")  }
+        assertThatThrownBy { sut.addUser(TEST_EMAIL, "testpassword") }
                 .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("User already exists")
     }
 
     @Test
-    fun `remove user calls removeById on profile service`()
-    {
+    fun `remove user calls removeById on profile service`() {
 
         val mockProfileService = mock<DbProfileService> {
             on { findById(TEST_EMAIL) } doReturn mock<DbProfile>()
@@ -85,21 +82,19 @@ class UserRepositoryTests
     }
 
     @Test
-    fun `remove user throws exception if does not find existing user`()
-    {
+    fun `remove user throws exception if does not find existing user`() {
 
         val mockProfileService = mock<DbProfileService>()
 
         val sut = DbProfileServiceUserRepository(mockProfileService, mock())
 
-        assertThatThrownBy { sut.removeUser(TEST_EMAIL)  }
+        assertThatThrownBy { sut.removeUser(TEST_EMAIL) }
                 .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("User does not exist")
     }
 
     @Test
-    fun `getUser calls findById on profile service`()
-    {
+    fun `getUser calls findById on profile service`() {
         val mockProfile = mock<DbProfile>()
         val mockProfileService = mock<DbProfileService> {
             on { findById(TEST_EMAIL) } doReturn mockProfile
@@ -111,9 +106,8 @@ class UserRepositoryTests
     }
 
     @Test
-    fun `updateUserPassword updates profile`()
-    {
-        val mockCommonProfile = mock<CommonProfile>{
+    fun `updateUserPassword updates profile`() {
+        val mockCommonProfile = mock<CommonProfile> {
             on { id } doReturn TEST_EMAIL
         }
 

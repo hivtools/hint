@@ -26,13 +26,13 @@ class RealEmailManager(appProperties: AppProperties,
     {
         val email = Email().apply {
             addToRecipients(emailAddress)
-            setFromAddress("${appTitle} notifications", sender)
+            setFromAddress("$appTitle notifications", sender)
             subject = data.subject
-            text = data.text()
-            textHTML = data.html()
+            text = data.text
+            textHTML = data.html
         }
         mailer.sendMail(email)
-        logger.info("mail sent to: ${emailAddress}")
+        logger.info("mail sent to: $emailAddress")
 
     }
 }

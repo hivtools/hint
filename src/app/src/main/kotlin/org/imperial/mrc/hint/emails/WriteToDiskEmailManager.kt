@@ -11,7 +11,7 @@ class WriteToDiskEmailManager(appProperties: AppProperties,
                               oneTimeTokenManager: OneTimeTokenManager)
     : BaseEmailManager(appProperties, oneTimeTokenManager) {
     override fun sendEmail(data: EmailData, emailAddress: String) {
-        val text = data.text()
+        val text = data.text
         outputDirectory.mkdirs()
         val file = File(outputDirectory, Instant.now().toString())
         file.writeText(text)

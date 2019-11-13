@@ -5,21 +5,23 @@ import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 
 interface EmailManager {
     fun sendEmail(data: EmailData, emailAddress: String)
-    fun sendPasswordResetEmail(email: String, username: String, firstTime: Boolean)
+    fun sendPasswordEmail(emailAddress: String, username: String, email: PasswordEmail)
 }
 
 abstract class BaseEmailManager(private val appProperties: AppProperties,
                                 private val oneTimeTokenManager: OneTimeTokenManager) : EmailManager {
 
-    override fun sendPasswordResetEmail(email: String, username: String, firstTime: Boolean) {
+    override fun sendPasswordEmail(emailAddress: String, username: String, email: PasswordEmail) {
         val token = oneTimeTokenManager.generateOnetimeSetPasswordToken(username)
 
-        val emailMessage = PasswordResetEmail(appProperties.applicationTitle,
-                appProperties.applicationUrl,
-                token,
-                email,
-                firstTime)
+        val values = mapOf(
+                "appTitle" to appProperties.applicationTitle,
+                "appUrl" to appProperties.applicationUrl,
+                "token" to token,
+                "email" to emailAddress
+        )
 
-        this.sendEmail(emailMessage, email)
+        val data = email.emailData(values)
+        this.sendEmail(data, emailAddress)
     }
 }
