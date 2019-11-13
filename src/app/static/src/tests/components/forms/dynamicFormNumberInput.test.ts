@@ -25,6 +25,20 @@ describe('Dynamic form number input component', function () {
         expect(inputElement.value).toBe("1");
     });
 
+
+    it("renders number input with string value", () => {
+        const rendered = mount(DynamicFormNumberInput, {
+            propsData: {
+                formControl: {...fakeNumber, value: "1"}
+            }
+        });
+
+        const inputElement = rendered.find("input").element as HTMLInputElement;
+        expect(inputElement.name).toBe("id_1");
+        expect(inputElement.type).toBe("number");
+        expect(inputElement.value).toBe("1");
+    });
+
     it("renders number input without value", () => {
         const rendered = mount(DynamicFormNumberInput, {
             propsData: {

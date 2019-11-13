@@ -10,10 +10,23 @@
                       :complete="isComplete(step.number)"
                       @jump="jump">
                 </step>
-                <div class="col step-connector" v-if="step.number < steps.length">
+                <div class="col step-connector" v-if="step.number < steps.length"
+                     :class="[{'enabled': isEnabled(step.number + 1)}]">
                     <hr/>
                 </div>
             </template>
+        </div>
+        <div class="row mt-2">
+            <div class="col">
+                <a href="#" id="back"
+                   v-on:click="back"
+                   class="text-uppercase font-weight-bold"
+                   :class="{'disabled': activeStep === 1}">back&nbsp;</a>/
+                <a href="#" id="continue"
+                   v-on:click="next"
+                   class="text-uppercase font-weight-bold"
+                   :class="{'disabled': !isComplete(activeStep)}">continue</a>
+            </div>
         </div>
         <hr/>
         <div v-if="loading" class="text-center">
@@ -29,14 +42,6 @@
                 <model-output v-if="isActive(5)"></model-output>
                 <div v-if="isActive(6)"><h4>Coming soon</h4></div>
             </div>
-            <div class="row mt-2">
-                <div class="col">
-                    <a href="#" id="continue"
-                       v-on:click="next"
-                       class="text-uppercase font-weight-bold float-right"
-                       :class="{'disabled': !isComplete(activeStep)}">continue</a>
-                </div>
-            </div>
         </div>
     </div>
 </template>
@@ -44,7 +49,7 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {mapActions, mapGetters, mapState} from "vuex";
+    import {mapActions} from "vuex";
     import Step from "./Step.vue";
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
@@ -54,11 +59,7 @@
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
-    import {mapGetterByName, mapGettersByNames, mapStateProps} from "../utils";
-
-    type CompleteStatus = {
-        [key: number]: boolean
-    }
+    import {mapGettersByNames, mapStateProps} from "../utils";
 
     interface ComputedState {
         activeStep: number,
@@ -74,7 +75,7 @@
 
     const namespace: string = 'stepper';
 
-    export default Vue.extend<{}, any, ComputedState & ComputedGetters, any>({
+    export default Vue.extend<{}, any, ComputedState & ComputedGetters, {}>({
         computed: {
             ...mapStateProps<StepperState, keyof ComputedState>(namespace, {
                 activeStep: state => state.activeStep,
@@ -84,13 +85,16 @@
                 loadingFromFile: state => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
-            loading: function() {
+            loading: function () {
                 return this.loadingFromFile || !this.ready;
             }
         },
         methods: {
             ...mapActions(namespace, ["jump", "next"]),
             ...mapActions(["validate"]),
+            back() {
+                this.jump(this.activeStep -1);
+            },
             isActive(num: number) {
                 return !this.loading && this.activeStep == num;
             },
