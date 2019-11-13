@@ -2,13 +2,17 @@ package org.imperial.mrc.hint.unit
 
 import com.github.kittinunf.fuel.core.Body
 import com.github.kittinunf.fuel.core.Headers
+import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
+import com.github.kittinunf.fuel.core.requests.DownloadRequest
+import com.github.kittinunf.fuel.httpDownload
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.imperial.mrc.hint.asResponseEntity
-import org.imperial.mrc.hint.asStreamingResponseEntity
+import org.imperial.mrc.hint.getStreamingResponseEntity
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.URL
@@ -41,29 +45,21 @@ class ExtensionTests {
     }
 
     @Test
-    fun `asStreamingResponseEntity copies response to output stream`() {
-        val mockInputStream = mock<InputStream>{
-            on {read(any())} doReturn listOf(1,-1)
-        }
-        val mockBody = mock<Body>{
-            on { toStream() } doReturn mockInputStream
-        }
+    fun `asStreamingResponseEntity sets status, headers and streaming response`() {
         val headers = Headers()
         headers.append("test-header", "test-value")
         headers.append("test-header2", "test-value2")
 
-        val response = Response(url=URL("http://test"), statusCode=200, headers=headers, body=mockBody)
-        val result = response.asStreamingResponseEntity()
+        val response = Response(URL("http://test"), 200, "test msg", headers)
 
+        val downloadRequest = mock<Request>{
+            on {response()} doReturn Triple(mock(), response, mock())
+        }
+
+        val result = downloadRequest.getStreamingResponseEntity()
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.headers["test-header"]?.first()).isEqualTo("test-value")
         assertThat(result.headers["test-header2"]?.first()).isEqualTo("test-value2")
-
-        val mockOutputStream = mock<OutputStream>()
-        val streamingBody = result.body
-        //calling writeTo should invoke the copy from the input stream
-        streamingBody?.writeTo(mockOutputStream)
-        verify(mockOutputStream).write(any(), eq(0), eq(1))
-        verify(mockInputStream).close()
+        assertThat(result.body).isInstanceOf(StreamingResponseBody::class.java)
     }
 }
