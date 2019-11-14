@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.io.OutputStream
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.httpHead
 import org.imperial.mrc.hint.models.ErrorDetail
 import java.io.IOException
 
@@ -74,7 +75,8 @@ fun Request.getStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> 
                 .response()
     }
 
-    val response = this.response()
+    val headRequest = this.url.toString().httpHead()
+    val response = headRequest.response()
             .second
 
     val httpStatus = httpStatusFromCode(response.statusCode)
@@ -82,3 +84,4 @@ fun Request.getStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> 
 
     return ResponseEntity(responseBody, headers, httpStatus)
 }
+
