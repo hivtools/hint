@@ -7,7 +7,7 @@ import org.imperial.mrc.hint.controllers.PasswordController
 import org.imperial.mrc.hint.controllers.TokenException
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
-import org.imperial.mrc.hint.emails.PasswordResetEmailTemplate
+import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
@@ -48,7 +48,7 @@ class PasswordControllerTests {
         verify(mockEmailManager).sendPasswordEmail(
                 eq("test.user@test.com"),
                 eq("test.user"),
-                argWhere { it is PasswordResetEmailTemplate })
+                argWhere { it is PasswordEmailTemplate.ResetPassword })
     }
 
     @Test

@@ -1,8 +1,7 @@
 package org.imperial.mrc.hint.unit.emails
 
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.emails.AccountCreationEmailTemplate
-import org.imperial.mrc.hint.emails.PasswordResetEmailTemplate
+import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.junit.jupiter.api.Test
 
 class PasswordEmailTemplateTests {
@@ -11,9 +10,9 @@ class PasswordEmailTemplateTests {
             "token" to "testToken",
             "email" to "test.user@test.com")
 
-    private val accountCreationEmail = AccountCreationEmailTemplate()
+    private val accountCreationEmail = PasswordEmailTemplate.CreateAccount()
     private val accountCreationEmailData = accountCreationEmail.emailData(values)
-    private val passwordResetEmail = PasswordResetEmailTemplate()
+    private val passwordResetEmail = PasswordEmailTemplate.ResetPassword()
     private val passwordResetEmailData = passwordResetEmail.emailData(values)
 
     @Test

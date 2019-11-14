@@ -1,7 +1,7 @@
 package org.imperial.mrc.hint.db
 
-import org.imperial.mrc.hint.emails.AccountCreationEmailTemplate
 import org.imperial.mrc.hint.emails.EmailManager
+import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.UserException
 import org.mindrot.jbcrypt.BCrypt
 import org.pac4j.core.profile.CommonProfile
@@ -30,7 +30,7 @@ class DbProfileServiceUserRepository(private val profileService: DbProfileServic
 
         val pw = if (password.isNullOrEmpty()) {
             val pw = BCrypt.gensalt()
-            emailManager.sendPasswordEmail(email, email, AccountCreationEmailTemplate())
+            emailManager.sendPasswordEmail(email, email, PasswordEmailTemplate.CreateAccount())
             pw
         } else {
             password
