@@ -34,9 +34,11 @@ fun main(args: Array<String>) {
 
     val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
 
-    try {
+    try
+    {
         val userCLI = UserCLI(getUserRepository(dataSource))
-        val result = when {
+        val result = when
+        {
             addUser -> userCLI.addUser(options)
             removeUser -> userCLI.removeUser(options)
             userExists -> userCLI.userExists(options)
@@ -47,15 +49,16 @@ fun main(args: Array<String>) {
     } catch (e: Exception) {
         System.err.println(e.message)
         exitProcess(1)
-    } finally {
+    }
+    finally {
         dataSource.connection.close()
     }
 }
 
-class UserCLI(private val userRepository: UserRepository) {
-
-    fun addUser(options: Map<String, Any>): String {
-
+class UserCLI(private val userRepository: UserRepository)
+{
+    fun addUser(options: Map<String, Any>): String
+    {
         val email = options["<email>"].getStringValue()
         val password = options["<password>"]?.getStringValue()
         println("Adding user $email")
@@ -64,7 +67,8 @@ class UserCLI(private val userRepository: UserRepository) {
         return "OK"
     }
 
-    fun removeUser(options: Map<String, Any>): String {
+    fun removeUser(options: Map<String, Any>): String
+    {
         val email = options["<email>"].getStringValue()
         println("Removing user $email")
 
@@ -73,7 +77,9 @@ class UserCLI(private val userRepository: UserRepository) {
         return "OK"
     }
 
-    fun userExists(options: Map<String, Any>): String {
+    fun userExists(options: Map<String, Any>): String
+    {
+
         val email = options["<email>"].getStringValue()
         println("Checking if user exists: $email")
 
@@ -81,14 +87,16 @@ class UserCLI(private val userRepository: UserRepository) {
         return exists.toString()
     }
 
-    private fun Any?.getStringValue(): String {
-        return this.toString().replace("[", "").replace("]", "")
+    private fun Any?.getStringValue(): String
+    {
+        return this.toString().replace("[", "").replace("]","")
     }
 }
 
 fun getUserRepository(dataSource: DataSource): UserRepository {
 
     val profileService = HintDbProfileService(dataSource, SecurePasswordEncoder())
+
     val dslContext = DSL.using(dataSource.connection, SQLDialect.POSTGRES)
     val appProperties = ConfiguredAppProperties()
 
@@ -102,5 +110,4 @@ fun getUserRepository(dataSource: DataSource): UserRepository {
 
     return DbProfileServiceUserRepository(profileService,
             EmailConfig().getEmailManager(appProperties, oneTimeTokenManager))
-
 }
