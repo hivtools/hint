@@ -1,4 +1,3 @@
-
 import {Dict} from "../../types";
 
 export type DynamicControlSection = {
