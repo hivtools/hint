@@ -30,8 +30,8 @@ describe("model options actions integration", () => {
     it("can get valid model options", async () => {
         const commit = jest.fn();
         await actions.fetchModelRunOptions({commit} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ModelRunStarted");
-        const payload = commit.mock.calls[0][0]["payload"];
+        expect(commit.mock.calls[1][0]["type"]).toBe("ModelOptionsFetched");
+        const payload = commit.mock.calls[1][0]["payload"];
         expect(isDynamicFormMeta(payload)).toBe(true);
     })
 });
