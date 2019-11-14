@@ -9,7 +9,7 @@
                                 :clearable="false"
                                 :options="indicators"
                                 :value=selections.indicatorId
-                                input="changeIndicatorId"
+                                @input="changeIndicatorId"
                                 :normalizer="normalizeIndicators"></treeselect>
                 </div>
                 <div id="x-axis-fg" class="form-group">
@@ -18,7 +18,7 @@
                                 :clearable="false"
                                 :options="filtersAsOptions"
                                 :value=selections.xAxisId
-                                input="changeXAxisId"></treeselect>
+                                @input="changeXAxisId"></treeselect>
                 </div>
                 <div id="disagg-fg" class="form-group">
                     <label class="font-weight-bold">Disaggregate by</label>
@@ -26,11 +26,12 @@
                                 :clearable="false"
                                 :options="filtersAsOptions"
                                 :value=selections.disaggregateById
-                                input="changeDisaggById"></treeselect>
+                                @input="changeDisaggById"></treeselect>
                 </div>
                 <hr/>
                 <h3>Filters</h3>
                 <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
+                    <!-- TODO! -->
                     <!--<filter-select v-model="selections.selectedFilterOptions[filter.id]"
                                    :is-disaggregate-by="filter.id === selections.disaggregateById"
                                    :is-x-axis="filter.id === selections.xAxisId"
