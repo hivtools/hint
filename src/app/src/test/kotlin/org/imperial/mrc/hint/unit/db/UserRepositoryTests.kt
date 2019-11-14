@@ -12,6 +12,7 @@ import org.mockito.ArgumentCaptor
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
+import java.util.*
 
 class UserRepositoryTests {
 
@@ -35,14 +36,20 @@ class UserRepositoryTests {
 
 
     @Test
-    fun `adding user without password sends email`() {
+    fun `adding user without password creates random pw and sends account creation email`() {
         val mockEmailManager = mock<EmailManager>()
-        val sut = DbProfileServiceUserRepository(mock(), mockEmailManager)
+        val mockProfileService = mock<DbProfileService>()
+        val sut = DbProfileServiceUserRepository(mockProfileService, mockEmailManager)
 
         sut.addUser(TEST_EMAIL, null)
         verify(mockEmailManager).sendPasswordEmail(eq(TEST_EMAIL),
                 eq(TEST_EMAIL),
                 argWhere { it is PasswordEmailTemplate.CreateAccount })
+        verify(mockProfileService).create(any(),
+                argWhere {
+                    Base64.getDecoder()
+                            .decode(it).size == DbProfileServiceUserRepository.PASSWORD_LENGTH
+                })
     }
 
     @Test
