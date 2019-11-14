@@ -94,18 +94,17 @@ class BaselineTests : SecureIntegrationTests() {
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `can get incomplete and consistent validate result when no files are uploaded`(isAuthorized: IsAuthorized) {
+    fun `can get consistent validate result when no files are uploaded`(isAuthorized: IsAuthorized) {
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/validate/")
         assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateBaselineResponse")
         if (isAuthorized == IsAuthorized.TRUE) {
             val data = getResponseData(responseEntity)
-            assertThat(data["complete"].asBoolean()).isEqualTo(false)
             assertThat(data["consistent"].asBoolean()).isEqualTo(true)
         }
     }
 
     @Test
-    fun `can get complete and consistent validate result when all files are uploaded`() {
+    fun `can get consistent validate result when all files are uploaded`() {
         authorize()
         testRestTemplate.getForEntity<String>("/")
 
@@ -122,7 +121,6 @@ class BaselineTests : SecureIntegrationTests() {
         assertSecureWithSuccess(IsAuthorized.TRUE, responseEntity, "ValidateBaselineResponse")
 
         val data = getResponseData(responseEntity)
-        assertThat(data["complete"].asBoolean()).isEqualTo(true)
         assertThat(data["consistent"].asBoolean()).isEqualTo(true)
     }
 
