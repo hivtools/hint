@@ -8,7 +8,8 @@
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="indicators"
-                                v-model=indicatorId
+                                :value=selections.indicatorId
+                                input="changeIndicatorId"
                                 :normalizer="normalizeIndicators"></treeselect>
                 </div>
                 <div id="x-axis-fg" class="form-group">
@@ -16,27 +17,29 @@
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="filtersAsOptions"
-                                v-model=xAxisId></treeselect>
+                                :value=selections.xAxisId
+                                input="changeXAxisId"></treeselect>
                 </div>
                 <div id="disagg-fg" class="form-group">
                     <label class="font-weight-bold">Disaggregate by</label>
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="filtersAsOptions"
-                                v-model=disaggregateById></treeselect>
+                                :value=selections.disaggregateById
+                                input="changeDisaggById"></treeselect>
                 </div>
                 <hr/>
                 <h3>Filters</h3>
                 <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
-                    <filter-select v-model="selectedFilterOptions[filter.id]"
-                                   :is-disaggregate-by="filter.id === disaggregateById"
-                                   :is-x-axis="filter.id === xAxisId"
+                    <!--<filter-select v-model="selections.selectedFilterOptions[filter.id]"
+                                   :is-disaggregate-by="filter.id === selections.disaggregateById"
+                                   :is-x-axis="filter.id === selections.xAxisId"
                                    :label="filter.label"
-                                   :options="filter.options"></filter-select>
+                                   :options="filter.options"></filter-select>-->
                 </div>
             </div>
-            <div id="chart" class="col-md-9">
-                <chartjs-bar :chartdata="processedOutputData" :xLabel="xAxisLabel" :yLabel="indicator.name" style="width: 100%; height: 100%;"></chartjs-bar>
+            <div v-if="!!xAxisLabel" id="chart" class="col-md-9">
+                <chartjs-bar :chartdata="processedOutputData" :xLabel="xAxisLabel" :yLabel="indicatorLabel" style="width: 100%; height: 100%;"></chartjs-bar>
             </div>
         </div>
     </div>
@@ -50,22 +53,31 @@
     import {BarchartIndicator, Dict, Filter} from "../../../types";
     import {FilterOption} from "../../../generated";
     import {getProcessedOutputData, toFilterLabelLookup} from "./utils";
+    import {BarchartSelections} from "../../../store/plottingSelections/plottingSelections";
 
     interface Props {
         chartdata: any[],
         filters: Filter[],
-        indicators: BarchartIndicator[]
+        indicators: BarchartIndicator[],
+        selections: BarchartSelections
     }
 
     interface Data {
-        indicatorId: string,
+        /*indicatorId: string,
         xAxisId: string,
         disaggregateById: string,
-        selectedFilterOptions:  { [key: string]: FilterOption[] }
+        selectedFilterOptions:  { [key: string]: FilterOption[] }*/
+    }
+
+    interface Methods {
+        changeIndicatorId: (newVal: string) => void;
+        changeXAxisId: (newVal: string) => void;
+        changeDisaggById: (newVal: string) => void;
     }
 
     interface Computed {
         xAxisLabel: string,
+        indicatorLabel: string,
         filtersAsOptions: FilterOption[]
         indicator: BarchartIndicator
         processedOutputData: any
@@ -84,43 +96,36 @@
         },
         indicators: {
             type: Array
+        },
+        selections: {
+            type: Object
         }
     };
 
     export default Vue.extend<Data, any, Computed, Props>({
         name: "Barchart",
         props: props,
-        data: function() {
-            const xAxisId = this.filters[0].id;
-            const disaggregateById = this.filters[1].id;
-
-            const selectedFilterOptions = this.filters.reduce((obj, current) => {
-                    obj[current.id] = [current.options[0]];
-                    return obj;
-                }, {} as Dict<FilterOption[]>);
-
-            return {
-                indicatorId: this.indicators[0].indicator,
-                xAxisId,
-                disaggregateById,
-                selectedFilterOptions
-            }
-        },
         computed: {
             xAxisLabel() {
-                return this.filtersAsOptions.find((f: FilterOption) => f.id == this.xAxisId).label;
+                const filter = this.filtersAsOptions.find((f: FilterOption) => f.id == this.selections.xAxisId);
+                return filter ? filter.label : "";
+            },
+            indicatorLabel() {
+              return this.indicator ? this.indicator.name : "";
             },
             xAxisLabels() {
-                return this.selectedFilterOptions[this.xAxisId].map((o: FilterOption) => o.label);
+                const options = this.selections.selectedFilterOptions[this.selections.xAxisId];
+                return options ? options.map((o: FilterOption) => o.label) : [];
             },
             xAxisValues() {
-                return this.selectedFilterOptions[this.xAxisId].map((o: FilterOption) => o.id);
+                const options = this.selections.selectedFilterOptions[this.selections.xAxisId];
+                return options ? options.map((o: FilterOption) => o.id) : [];
             },
             barLabelLookup() {
-                return toFilterLabelLookup(this.selectedFilterOptions[this.disaggregateById]);
+                return toFilterLabelLookup(this.selections.selectedFilterOptions[this.selections.disaggregateById]);
             },
             xAxisLabelLookup() {
-                return toFilterLabelLookup(this.selectedFilterOptions[this.xAxisId]);
+                return toFilterLabelLookup(this.selections.selectedFilterOptions[this.selections.xAxisId]);
             },
             filtersAsOptions() {
                 return this.filters.map((f: Filter) => ({id: f.id, label: f.label}))
@@ -128,23 +133,70 @@
             processedOutputData() {
                 return getProcessedOutputData(
                     this.chartdata,
-                    this.xAxisId,
-                    this.disaggregateById,
+                    this.selections.xAxisId,
+                    this.selections.disaggregateById,
                     this.indicator,
                     this.filters,
-                    this.selectedFilterOptions,
+                    this.selections.selectedFilterOptions,
                     this.barLabelLookup,
                     this.xAxisLabelLookup,
                     this.xAxisLabels,
                     this.xAxisValues)
             },
             indicator() {
-                return this.indicators.find((i: BarchartIndicator) => i.indicator == this.indicatorId)
+                return this.indicators.find((i: BarchartIndicator) => i.indicator == this.selections.indicatorId)
             }
         },
         methods: {
             normalizeIndicators(node: BarchartIndicator) {
                 return {id: node.indicator, label: node.name};
+            },
+            changeSelections(newSelections: BarchartSelections) {
+                this.$emit("change-selections", newSelections)
+            },
+            changeIndicatorId(newVal: string) {
+                this.changeSelections({...this.selections, indicatorId: newVal});
+            },
+            changeXAxisId(newVal: string) {
+                this.changeSelections({...this.selections, xAxisId: newVal});
+            },
+            changeDisaggById(newVal: string) {
+                this.changeSelections({...this.selections, disaggregateById: newVal});
+            }
+        },
+        created() {
+            //If selections have not been initialised OR if they are inconsistent with available filters,
+            //refresh them, and emit changed event
+            //TODO: this is initialisation, still need to implement inconsistency check
+            let modified = false;
+            const newSelections: BarchartSelections = {...this.selections};
+
+            if (!this.selections.indicatorId) {
+                newSelections.indicatorId = this.indicators[0].indicator;
+                modified = true;
+            }
+
+            if (!this.selections.xAxisId) {
+                newSelections.xAxisId = this.filters[0].id;
+                modified = true;
+            }
+
+            if (!this.selections.disaggregateById ) {
+                newSelections.disaggregateById = this.filters[1].id;
+                modified = true;
+            }
+
+            if (Object.keys(this.selections.selectedFilterOptions).length < 1) {
+                const selectedFilterOptions = this.filters.reduce((obj: any, current: Filter) => {
+                    obj[current.id] = [current.options[0]];
+                    return obj;
+                }, {} as Dict<FilterOption[]>);
+                newSelections.selectedFilterOptions = selectedFilterOptions;
+                modified = true;
+            }
+
+            if (modified) {
+                this.changeSelections(newSelections);
             }
         },
         components: {
