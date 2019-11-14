@@ -8,7 +8,7 @@ data class EmailData(val subject: String,
                      val text: String,
                      val html: String)
 
-abstract class MustacheEmail {
+abstract class MustacheEmailTemplate {
     abstract val textTemplate: String
     abstract val htmlTemplate: String
     abstract val subject: String // can be a template like "Welcome to {{appName}}"

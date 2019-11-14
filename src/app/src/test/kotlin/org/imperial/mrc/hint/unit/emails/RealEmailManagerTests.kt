@@ -6,9 +6,9 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
-import org.imperial.mrc.hint.emails.AccountCreationEmail
+import org.imperial.mrc.hint.emails.AccountCreationEmailTemplate
 import org.imperial.mrc.hint.emails.EmailData
-import org.imperial.mrc.hint.emails.PasswordResetEmail
+import org.imperial.mrc.hint.emails.PasswordResetEmailTemplate
 import org.imperial.mrc.hint.emails.RealEmailManager
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
@@ -75,7 +75,7 @@ class RealEmailManagerTests {
             on { generateOnetimeSetPasswordToken("test.user") } doReturn "TOKEN"
         }
         val sut = RealEmailManager(mockAppProps, mockTokenManager, mockLogger, mockMailer)
-        sut.sendPasswordEmail("test.user@example.com", "test.user", PasswordResetEmail())
+        sut.sendPasswordEmail("test.user@example.com", "test.user", PasswordResetEmailTemplate())
         argumentCaptor<Email>().apply {
             verify(mockMailer).sendMail(capture())
 
@@ -105,7 +105,7 @@ Have a great day!""")
             on { generateOnetimeSetPasswordToken("test.user") } doReturn "TOKEN"
         }
         val sut = RealEmailManager(mockAppProps, mockTokenManager, mockLogger, mockMailer)
-        sut.sendPasswordEmail("test.user@example.com", "test.user", AccountCreationEmail())
+        sut.sendPasswordEmail("test.user@example.com", "test.user", AccountCreationEmailTemplate())
 
         argumentCaptor<Email>().apply {
             verify(mockMailer).sendMail(capture())

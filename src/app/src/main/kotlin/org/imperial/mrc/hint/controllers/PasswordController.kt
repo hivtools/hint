@@ -1,9 +1,8 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
-import org.imperial.mrc.hint.emails.PasswordResetEmail
+import org.imperial.mrc.hint.emails.PasswordResetEmailTemplate
 import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.toJsonString
@@ -36,7 +35,7 @@ class PasswordController(private val userRepository: UserRepository,
         val user = userRepository.getUser(email)
 
         if (user != null) {
-            emailManager.sendPasswordEmail(email, user.username, PasswordResetEmail())
+            emailManager.sendPasswordEmail(email, user.username, PasswordResetEmailTemplate())
         }
 
         return EmptySuccessResponse.toJsonString()

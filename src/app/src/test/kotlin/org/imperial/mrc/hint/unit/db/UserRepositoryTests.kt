@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
-import org.imperial.mrc.hint.emails.AccountCreationEmail
+import org.imperial.mrc.hint.emails.AccountCreationEmailTemplate
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.exceptions.UserException
 import org.junit.jupiter.api.Test
@@ -42,7 +42,7 @@ class UserRepositoryTests {
         sut.addUser(TEST_EMAIL, null)
         verify(mockEmailManager).sendPasswordEmail(eq(TEST_EMAIL),
                 eq(TEST_EMAIL),
-                argWhere { it is AccountCreationEmail })
+                argWhere { it is AccountCreationEmailTemplate })
     }
 
     @Test

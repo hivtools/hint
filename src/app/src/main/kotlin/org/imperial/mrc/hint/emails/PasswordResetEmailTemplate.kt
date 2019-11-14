@@ -1,9 +1,9 @@
 package org.imperial.mrc.hint.emails
 
-sealed class PasswordEmail : MustacheEmail()
+sealed class PasswordEmailTemplate : MustacheEmailTemplate()
 
-class PasswordResetEmail
-    : PasswordEmail() {
+class PasswordResetEmailTemplate
+    : PasswordEmailTemplate() {
 
     override val subject = "Password change for {{appTitle}}"
     override val textTemplate = "password-reset.txt"
@@ -11,7 +11,7 @@ class PasswordResetEmail
 }
 
 
-class AccountCreationEmail : PasswordEmail() {
+class AccountCreationEmailTemplate : PasswordEmailTemplate() {
 
     override val subject = "Account creation for {{appTitle}}"
     override val textTemplate = "account-creation.txt"

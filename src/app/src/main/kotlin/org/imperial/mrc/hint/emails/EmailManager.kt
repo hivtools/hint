@@ -5,13 +5,13 @@ import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 
 interface EmailManager {
     fun sendEmail(data: EmailData, emailAddress: String)
-    fun sendPasswordEmail(emailAddress: String, username: String, email: PasswordEmail)
+    fun sendPasswordEmail(emailAddress: String, username: String, emailTemplate: PasswordEmailTemplate)
 }
 
 abstract class BaseEmailManager(private val appProperties: AppProperties,
                                 private val oneTimeTokenManager: OneTimeTokenManager) : EmailManager {
 
-    override fun sendPasswordEmail(emailAddress: String, username: String, email: PasswordEmail) {
+    override fun sendPasswordEmail(emailAddress: String, username: String, emailTemplate: PasswordEmailTemplate) {
         val token = oneTimeTokenManager.generateOnetimeSetPasswordToken(username)
 
         val values = mapOf(
@@ -21,7 +21,7 @@ abstract class BaseEmailManager(private val appProperties: AppProperties,
                 "email" to emailAddress
         )
 
-        val data = email.emailData(values)
+        val data = emailTemplate.emailData(values)
         this.sendEmail(data, emailAddress)
     }
 }
