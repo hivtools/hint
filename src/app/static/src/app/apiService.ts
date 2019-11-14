@@ -1,11 +1,16 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {
-    Response,
+    AncResponse,
     ModelResultResponse,
-    ModelSubmitResponse,
     ModelStatusResponse,
-    ValidateInputResponse,
-    SurveyResponse, AncResponse, ProgrammeResponse, PopulationResponse, ShapeResponse, PjnzResponse
+    ModelSubmitResponse,
+    PjnzResponse,
+    PopulationResponse,
+    ProgrammeResponse,
+    Response,
+    ShapeResponse,
+    SurveyResponse,
+    ValidateInputResponse
 } from "./generated";
 import {Commit} from "vuex";
 import {freezer} from "./utils";
@@ -32,6 +37,7 @@ export interface API<S, E> {
     ignoreErrors: () => API<S, E>
 
     postAndReturn<T extends ResponseData>(url: string, data: any): Promise<void | T>
+
     get<T extends ResponseData>(url: string): Promise<void | T>
 }
 
@@ -51,6 +57,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     };
 
     private _ignoreErrors: Boolean = false;
+    private _freezeResponse: Boolean = false;
 
     static getFirstErrorFromFailure = (failure: Response) => {
         const firstError = failure.errors[0];
@@ -60,6 +67,11 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     private _onError: ((failure: Response) => void) | null = null;
 
     private _onSuccess: ((success: Response) => void) | null = null;
+
+    freezeResponse = () => {
+        this._freezeResponse = true;
+        return this;
+    };
 
     withError = (type: E) => {
         this._onError = (failure: Response) => {
@@ -75,7 +87,8 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     withSuccess = (type: S) => {
         this._onSuccess = (data: any) => {
-            this._commit({type: type, payload: freezer.deepFreeze(data)});
+            const finalData = this._freezeResponse ? freezer.deepFreeze(data) : data;
+            this._commit({type: type, payload: finalData});
         };
         return this;
     };
@@ -104,14 +117,13 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
         if (this._onError) {
             this._onError(failure);
-        }
-        else {
+        } else {
             throw new Error(APIService.getFirstErrorFromFailure(failure));
         }
     };
 
     private _verifyHandlers(url: string) {
-        if (this._onError == null && !this._ignoreErrors){
+        if (this._onError == null && !this._ignoreErrors) {
             console.warn(`No error handler registered for request ${url}.`)
         }
         if (this._onSuccess == null) {
