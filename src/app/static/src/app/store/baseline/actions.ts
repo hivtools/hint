@@ -5,7 +5,11 @@ import {api} from "../../apiService";
 import {PjnzResponse, ValidateBaselineResponse} from "../../generated";
 
 export type BaselineActionTypes = "PJNZUpdated" | "ShapeUpdated" | "PopulationUpdated" | "Validated"
-export type BaselineErrorActionTypes = "PJNZUploadError" | "ShapeUploadError" | "PopulationUploadError" | "BaselineError"
+export type BaselineErrorActionTypes =
+    "PJNZUploadError"
+    | "ShapeUploadError"
+    | "PopulationUploadError"
+    | "BaselineError"
 
 export interface BaselineActions {
     uploadPJNZ: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void
@@ -18,6 +22,7 @@ export interface BaselineActions {
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async uploadPJNZ({commit, dispatch, state}, formData) {
+        commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: "PJNZUpdated", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("PJNZUpdated")
@@ -30,6 +35,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadShape({commit, dispatch}, formData) {
+        commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: "ShapeUpdated", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("ShapeUpdated")
@@ -41,6 +47,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadPopulation({commit, dispatch}, formData) {
+        commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: "PopulationUpdated", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("PopulationUpdated")
