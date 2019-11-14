@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.db
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.UserException
-import org.mindrot.jbcrypt.BCrypt
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
