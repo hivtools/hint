@@ -33,7 +33,8 @@ describe("modelOutput module", () => {
                         indicators: []
                     }
                 })
-            })
+            }),
+            modelOutput: {}
         });
 
         const result = modelOutputGetters.barchartFilters({}, null, rootState);

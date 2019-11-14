@@ -30,6 +30,10 @@ function getStore() {
                 state: mockModelRunState({
                     result: mockModelResultResponse({data: ["TEST DATA"] as any})
                 })
+            },
+            modelOutput: {
+                namespaced: true,
+                state: {}
             }
         }
     });

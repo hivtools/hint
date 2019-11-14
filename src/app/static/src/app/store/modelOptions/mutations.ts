@@ -6,12 +6,14 @@ import {updateForm} from "./utils";
 
 type ModelOptionsMutation = Mutation<ModelOptionsState>
 
-export interface MetadataMutations {
+export interface ModelOptionsMutations {
     validate: ModelOptionsMutation,
     update: ModelOptionsMutation
+    ModelOptionsFetched: ModelOptionsMutation
+    FetchingModelOptions: ModelOptionsMutation
 }
 
-export const mutations: MutationTree<ModelOptionsState> & MetadataMutations = {
+export const mutations: MutationTree<ModelOptionsState> & ModelOptionsMutations = {
     validate(state: ModelOptionsState, payload: DynamicFormData) {
         state.options = payload;
         // TODO validate from server

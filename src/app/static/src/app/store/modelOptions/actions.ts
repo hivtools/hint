@@ -4,7 +4,7 @@ import {DynamicFormMeta} from "../../components/forms/types";
 import {api} from "../../apiService";
 import {RootState} from "../../root";
 
-interface ModelOptionsActions {
+export interface ModelOptionsActions {
     fetchModelRunOptions: (store: ActionContext<ModelOptionsState, RootState>) => void
 }
 
