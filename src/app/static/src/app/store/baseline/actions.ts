@@ -41,6 +41,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("ShapeUpdated")
             .withError("ShapeUploadError")
+            .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/shape/", formData)
             .then(() => {
                 dispatch('validate');

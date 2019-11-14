@@ -24,7 +24,8 @@ describe("Model options component", () => {
     const mockMutations = {
         update: jest.fn(),
         validate: jest.fn(),
-        ModelOptionsFetched: jest.fn()
+        ModelOptionsFetched: jest.fn(),
+        FetchingModelOptions: jest.fn()
     };
 
     const createStore = (props: Partial<ModelOptionsState>,
