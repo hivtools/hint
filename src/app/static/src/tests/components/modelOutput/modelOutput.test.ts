@@ -33,7 +33,11 @@ function getStore() {
             },
             modelOutput: {
                 namespaced: true,
-                state: {}
+                state: {},
+                getters: {
+                    barchartIndicators: jest.fn(),
+                    barchartFilters: jest.fn()
+                }
             }
         }
     });
