@@ -16,8 +16,7 @@ describe("load actions", () => {
         const file = fs.createReadStream("../testdata/malawi.geojson");
         const formData = new FormData();
         formData.append('file', file);
-
-        await baselineActions.uploadShape({commit} as any, formData);
+        await baselineActions.uploadShape({commit, dispatch: jest.fn()} as any, formData);
         shape = (commit.mock.calls[2][0]["payload"] as ShapeResponse);
     });
 
