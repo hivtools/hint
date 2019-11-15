@@ -75,8 +75,8 @@ fun Request.getStreamingResponseEntity(headRequest: (url: String, parameters: Pa
                 .response()
     }
 
-    val headRequest = headRequest(this.url.toString(), null)
-    val response = headRequest.response()
+    val headReq = headRequest(this.url.toString(), null)
+    val response = headReq.response()
             .second
 
     val httpStatus = httpStatusFromCode(response.statusCode)
