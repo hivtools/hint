@@ -85,7 +85,10 @@
             ...mapActions({
                 uploadPJNZ: 'baseline/uploadPJNZ',
                 uploadShape: 'baseline/uploadShape',
-                uploadPopulation: 'baseline/uploadPopulation'
+                uploadPopulation: 'baseline/uploadPopulation',
+                deletePJNZ: 'baseline/deletePJNZ',
+                deleteShape: 'baseline/deleteShape',
+                deletePopulation: 'baseline/deletePopulation'
             })
         },
         components: {

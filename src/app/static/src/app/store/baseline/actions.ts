@@ -17,6 +17,9 @@ export interface BaselineActions {
     uploadShape: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void,
     uploadPopulation: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void,
     validate: (store: ActionContext<BaselineState, RootState>) => void
+    deletePJNZ: (store: ActionContext<BaselineState, RootState>) => void
+    deleteShape: (store: ActionContext<BaselineState, RootState>) => void
+    deletePopulation: (store: ActionContext<BaselineState, RootState>) => void
 }
 
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
@@ -81,30 +84,34 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async deletePJNZ({commit, state}) {
         commit({type: "ResetInputs", payload: null}, {root: true});
-        commit({type: "PJNZUpdated", payload: null});
         if (state.pjnz) {
             await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
                 .delete(`/baseline/pjnz/${state.pjnz.hash}`)
+                .then(() => {
+                    commit({type: "PJNZUpdated", payload: null});
+                })
         }
     },
-
 
     async deleteShape({commit, state}) {
         commit({type: "ResetInputs", payload: null}, {root: true});
-        commit({type: "PJNZUpdated", payload: null});
-        if (state.pjnz) {
+        if (state.shape) {
             await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-                .delete(`/baseline/shape/${state.pjnz.hash}`)
+                .delete(`/baseline/shape/${state.shape.hash}`)
+                .then(() => {
+                    commit({type: "ShapeUpdated", payload: null});
+                })
         }
     },
 
-
     async deletePopulation({commit, state}) {
         commit({type: "ResetInputs", payload: null}, {root: true});
-        commit({type: "PJNZUpdated", payload: null});
-        if (state.pjnz) {
+        if (state.population) {
             await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-                .delete(`/baseline/population/${state.pjnz.hash}`)
+                .delete(`/baseline/population/${state.population.hash}`)
+                .then(() => {
+                    commit({type: "PopulationUpdated", payload: null});
+                })
         }
     },
 
