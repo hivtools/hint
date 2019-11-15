@@ -1,16 +1,18 @@
 package org.imperial.mrc.hint.integration
 
-import org.assertj.core.api.Assertions
+import com.nhaarman.mockito_kotlin.isA
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
-class BaselineTests : SecureIntegrationTests() {
+class BaselineTests : SessionFileTests() {
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
@@ -90,6 +92,37 @@ class BaselineTests : SecureIntegrationTests() {
             val data = getResponseData(entity)
             assertThat(data["type"].asText()).isEqualTo("population")
         }
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can delete pjnz data`(isAuthorized: IsAuthorized) {
+        val hash = setUpSessionFileAndGetHash(isAuthorized, "Botswana2018.PJNZ", "/baseline/pjnz/")
+        assertSessionFileExists(isAuthorized, hash)
+        val responseEntity = testRestTemplate.exchange<String>("/baseline/pjnz/$hash/", HttpMethod.DELETE)
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+        assertSessionFileDoesNotExist(hash)
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can delete shape data`(isAuthorized: IsAuthorized) {
+        val hash = setUpSessionFileAndGetHash(isAuthorized, "malawi.geojson", "/baseline/shape/")
+        assertSessionFileExists(isAuthorized, hash)
+        val responseEntity = testRestTemplate.exchange<String>("/baseline/shape/$hash/", HttpMethod.DELETE)
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+        assertSessionFileDoesNotExist(hash)
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can delete population data`(isAuthorized: IsAuthorized) {
+        val hash = setUpSessionFileAndGetHash(isAuthorized, "population.csv", "/baseline/population/")
+        assertSessionFileExists(isAuthorized, hash)
+        val responseEntity = testRestTemplate.exchange<String>("/baseline/population/$hash/", HttpMethod.DELETE)
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+        assertSessionFileDoesNotExist(hash)
     }
 
     @ParameterizedTest

@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.integration
 
+import com.nhaarman.mockito_kotlin.isA
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.api.BeforeAll
@@ -7,10 +8,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.http.HttpMethod
 
-class DiseaseTests : SecureIntegrationTests() {
+class DiseaseTests : SessionFileTests() {
 
     @BeforeEach
     fun `upload shape file`() {
@@ -81,5 +84,26 @@ class DiseaseTests : SecureIntegrationTests() {
         testRestTemplate.postForEntity<String>("/disease/anc/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/disease/anc/")
         assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can delete survey data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.exchange<String>("/disease/survey/hash/", HttpMethod.DELETE)
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can delete programme data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.exchange<String>("/disease/programme/hash/", HttpMethod.DELETE)
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can delete ANC data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.exchange<String>("/disease/anc/hash/", HttpMethod.DELETE)
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
     }
 }

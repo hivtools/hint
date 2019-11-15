@@ -6,8 +6,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
+import org.imperial.mrc.hint.controllers.BaselineController
 import org.imperial.mrc.hint.controllers.HintrController
+import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.models.SessionFileWithPath
+import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,6 +20,8 @@ import java.io.File
 abstract class HintrControllerTests {
 
     protected val tmpUploadDirectory = "tmp"
+    protected val sessionId = "sid"
+    protected val fakeHash = "hash"
 
     @AfterEach
     fun tearDown() {
@@ -52,14 +57,15 @@ abstract class HintrControllerTests {
         }
     }
 
-    abstract fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient): HintrController
+    abstract fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient,
+                        mockSession: Session, mockSessionRepository: SessionRepository): HintrController
 
     protected fun assertValidates(fileType: FileType,
                                   uploadAction: (sut: HintrController) -> ResponseEntity<String>) {
 
         val mockFileManager = getMockFileManager(fileType)
         val mockApiClient = getMockAPIClient(fileType)
-        val sut = getSut(mockFileManager, mockApiClient)
+        val sut = getSut(mockFileManager, mockApiClient, mock(), mock())
         val result = uploadAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
@@ -81,7 +87,7 @@ abstract class HintrControllerTests {
         val mockApiClient = getMockAPIClient(fileType)
 
         // should return the validation result when the file is returned from the file manager
-        var sut = getSut(mockFileManager, mockApiClient)
+        var sut = getSut(mockFileManager, mockApiClient, mock(), mock())
         var result = getAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
@@ -89,12 +95,24 @@ abstract class HintrControllerTests {
                 .validateBaselineIndividual(SessionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
 
         // should return a null result when null is returned from the file manager
-        sut = getSut(mock(), mockApiClient)
+        sut = getSut(mock(), mockApiClient, mock(), mock())
         result = getAction(sut)
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         val data = ObjectMapper().readTree(result.body)["data"].toString()
         assertThat(data).isEqualTo("null")
         verifyNoMoreInteractions(mockApiClient)
+    }
+
+    protected fun assertDeletes(fileType: FileType,
+                                getAction: (sut: HintrController) -> ResponseEntity<String>) {
+        val mockSession = mock<Session> {
+            on { getId() } doReturn "sid"
+        }
+        val mockSessionRepository = mock<SessionRepository>()
+        val sut = getSut(mock(), mock(), mockSession, mockSessionRepository)
+        val result = getAction(sut)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        verify(mockSessionRepository).removeSessionFile(sessionId, fileType,fakeHash)
     }
 }

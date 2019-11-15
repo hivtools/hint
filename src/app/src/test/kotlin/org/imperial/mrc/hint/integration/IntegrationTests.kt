@@ -5,28 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.helpers.AuthInterceptor
 import org.imperial.mrc.hint.helpers.JSONValidator
-import org.imperial.mrc.hint.helpers.tmpUploadDirectory
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.test.context.ActiveProfiles
-import java.io.File
-
-@ActiveProfiles(profiles = ["test"])
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-abstract class IntegrationTests {
-
-    @AfterEach
-    fun tearDown() {
-        File(tmpUploadDirectory).deleteRecursively()
-    }
-}
 
 abstract class SecureIntegrationTests : CleanDatabaseTests() {
 
@@ -86,7 +71,6 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                 JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail)
             }
             IsAuthorized.FALSE -> {
-                Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.FOUND)
                 Assertions.assertThat(responseEntity.headers.location!!.toString()).isEqualTo("/login")
             }
         }
