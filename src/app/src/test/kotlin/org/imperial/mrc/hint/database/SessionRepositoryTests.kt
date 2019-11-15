@@ -30,31 +30,33 @@ class SessionRepositoryTests {
     @Autowired
     private lateinit var dsl: DSLContext
 
+    private val sessionId = "sid"
+
     @Test
     fun `can save session`() {
         userRepo.addUser("email", "pw")
         val uid = userRepo.getUser("email")!!.id
-        sut.saveSession("sid", uid)
+        sut.saveSession(sessionId, uid)
 
         val session = dsl.selectFrom(USER_SESSION)
                 .fetchOne()
 
         assertThat(session[USER_SESSION.USER_ID]).isEqualTo(uid)
-        assertThat(session[USER_SESSION.SESSION]).isEqualTo("sid")
+        assertThat(session[USER_SESSION.SESSION]).isEqualTo(sessionId)
     }
 
     @Test
     fun `saveSession is idempotent`() {
         userRepo.addUser("email", "pw")
         val uid = userRepo.getUser("email")!!.id
-        sut.saveSession("sid", uid)
-        sut.saveSession("sid", uid)
+        sut.saveSession(sessionId, uid)
+        sut.saveSession(sessionId, uid)
 
         val session = dsl.selectFrom(USER_SESSION)
                 .fetchOne()
 
         assertThat(session[USER_SESSION.USER_ID]).isEqualTo(uid)
-        assertThat(session[USER_SESSION.SESSION]).isEqualTo("sid")
+        assertThat(session[USER_SESSION.SESSION]).isEqualTo(sessionId)
     }
 
     @Test
@@ -73,24 +75,51 @@ class SessionRepositoryTests {
     @Test
     fun `saves new session file`() {
         setUpSessionAndHash()
-        sut.saveSessionFile("sid", FileType.PJNZ, "newhash", "original.pjnz")
+        sut.saveSessionFile(sessionId, FileType.PJNZ, "newhash", "original.pjnz")
 
         val record = dsl.selectFrom(SESSION_FILE)
                 .fetchOne()
 
         assertThat(record[SESSION_FILE.FILENAME]).isEqualTo("original.pjnz")
         assertThat(record[SESSION_FILE.HASH]).isEqualTo("newhash")
-        assertThat(record[SESSION_FILE.SESSION]).isEqualTo("sid")
+        assertThat(record[SESSION_FILE.SESSION]).isEqualTo(sessionId)
         assertThat(record[SESSION_FILE.TYPE]).isEqualTo("pjnz")
+    }
+
+    @Test
+    fun `correct session file is removed`() {
+        setUpSessionAndHash()
+        val hash = "newhash"
+        sut.saveSessionFile(sessionId, FileType.PJNZ, hash, "original.pjnz")
+        assertSessionFileExists(hash)
+
+        // different file type
+        sut.removeSessionFile(sessionId, FileType.Survey, hash)
+        assertSessionFileExists(hash)
+
+        // different hash
+        sut.removeSessionFile(sessionId, FileType.PJNZ, "wronghash")
+        assertSessionFileExists(hash)
+
+        // different session
+        sut.removeSessionFile("wrongid", FileType.PJNZ, hash)
+        assertSessionFileExists(hash)
+
+        // correct details
+        sut.removeSessionFile(sessionId, FileType.PJNZ, hash)
+        val records = dsl.selectFrom(SESSION_FILE)
+                .where(SESSION_FILE.HASH.eq(hash))
+
+        assertThat(records.count()).isEqualTo(0)
     }
 
     @Test
     fun `updates session file if an entry for the given type already exists`() {
         setUpSessionAndHash()
-        sut.saveSessionFile("sid", FileType.PJNZ, "newhash", "original.pjnz")
+        sut.saveSessionFile(sessionId, FileType.PJNZ, "newhash", "original.pjnz")
 
         sut.saveNewHash("anotherhash")
-        sut.saveSessionFile("sid", FileType.PJNZ, "anotherhash", "anotherfilename.pjnz")
+        sut.saveSessionFile(sessionId, FileType.PJNZ, "anotherhash", "anotherfilename.pjnz")
 
         val records = dsl.selectFrom(SESSION_FILE)
                 .fetch()
@@ -98,15 +127,15 @@ class SessionRepositoryTests {
         assertThat(records.count()).isEqualTo(1)
         assertThat(records[0][SESSION_FILE.FILENAME]).isEqualTo("anotherfilename.pjnz")
         assertThat(records[0][SESSION_FILE.HASH]).isEqualTo("anotherhash")
-        assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo("sid")
+        assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo(sessionId)
         assertThat(records[0][SESSION_FILE.TYPE]).isEqualTo("pjnz")
     }
 
     @Test
     fun `can get session file hash`() {
         setUpSessionAndHash()
-        sut.saveSessionFile("sid", FileType.PJNZ, "newhash", "original.pjnz")
-        val result = sut.getSessionFile("sid", FileType.PJNZ)!!
+        sut.saveSessionFile(sessionId, FileType.PJNZ, "newhash", "original.pjnz")
+        val result = sut.getSessionFile(sessionId, FileType.PJNZ)!!
         assertThat(result.hash).isEqualTo("newhash")
         assertThat(result.filename).isEqualTo("original.pjnz")
     }
@@ -116,9 +145,9 @@ class SessionRepositoryTests {
         setUpSessionAndHash()
         sut.saveNewHash("pjnzhash")
         sut.saveNewHash("surveyhash")
-        sut.saveSessionFile("sid", FileType.PJNZ, "pjnzhash", "original.pjnz")
-        sut.saveSessionFile("sid", FileType.Survey, "surveyhash", "original.csv")
-        val result = sut.getHashesForSession("sid")
+        sut.saveSessionFile(sessionId, FileType.PJNZ, "pjnzhash", "original.pjnz")
+        sut.saveSessionFile(sessionId, FileType.Survey, "surveyhash", "original.csv")
+        val result = sut.getHashesForSession(sessionId)
         assertThat(result["survey"]).isEqualTo("surveyhash")
         assertThat(result["pjnz"]).isEqualTo("pjnzhash")
     }
@@ -128,9 +157,9 @@ class SessionRepositoryTests {
         setUpSessionAndHash()
         sut.saveNewHash("pjnzhash")
         sut.saveNewHash("surveyhash")
-        sut.saveSessionFile("sid", FileType.PJNZ, "pjnzhash", "original.pjnz")
-        sut.saveSessionFile("sid", FileType.Survey, "surveyhash", "original.csv")
-        val result = sut.getSessionFiles("sid")
+        sut.saveSessionFile(sessionId, FileType.PJNZ, "pjnzhash", "original.pjnz")
+        sut.saveSessionFile(sessionId, FileType.Survey, "surveyhash", "original.csv")
+        val result = sut.getSessionFiles(sessionId)
         assertThat(result["survey"]!!.filename).isEqualTo("original.csv")
         assertThat(result["survey"]!!.hash).isEqualTo("surveyhash")
         assertThat(result["pjnz"]!!.filename).isEqualTo("original.pjnz")
@@ -143,7 +172,7 @@ class SessionRepositoryTests {
         sut.saveNewHash("pjnz_hash")
         sut.saveNewHash("shape_hash")
 
-        sut.setFilesForSession("sid", mapOf(
+        sut.setFilesForSession(sessionId, mapOf(
                 "pjnz" to SessionFile("pjnz_hash", "pjnz_file"),
                 "shape" to SessionFile("shape_hash", "shape_file"),
                 "population" to null //should not attempt to save a null file
@@ -157,12 +186,12 @@ class SessionRepositoryTests {
 
         assertThat(records[0][SESSION_FILE.FILENAME]).isEqualTo("pjnz_file")
         assertThat(records[0][SESSION_FILE.HASH]).isEqualTo("pjnz_hash")
-        assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo("sid")
+        assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo(sessionId)
         assertThat(records[0][SESSION_FILE.TYPE]).isEqualTo("pjnz")
 
         assertThat(records[1][SESSION_FILE.FILENAME]).isEqualTo("shape_file")
         assertThat(records[1][SESSION_FILE.HASH]).isEqualTo("shape_hash")
-        assertThat(records[1][SESSION_FILE.SESSION]).isEqualTo("sid")
+        assertThat(records[1][SESSION_FILE.SESSION]).isEqualTo(sessionId)
         assertThat(records[1][SESSION_FILE.TYPE]).isEqualTo("shape")
     }
 
@@ -172,10 +201,10 @@ class SessionRepositoryTests {
         sut.saveSession("sid2", uid);
 
         sut.saveNewHash("shape_hash")
-        setUpHashAndSessionFile("old_pjnz_hash", "old_pjnz", "sid", "pjnz")
+        setUpHashAndSessionFile("old_pjnz_hash", "old_pjnz", sessionId, "pjnz")
         setUpHashAndSessionFile("other_shape_hash", "other_shape_file", "sid2", "shape")
 
-        sut.setFilesForSession("sid", mapOf(
+        sut.setFilesForSession(sessionId, mapOf(
                 "shape" to SessionFile("shape_hash", "shape_file")))
 
         val records = dsl.selectFrom(SESSION_FILE)
@@ -186,7 +215,7 @@ class SessionRepositoryTests {
 
         assertThat(records[0][SESSION_FILE.FILENAME]).isEqualTo("shape_file")
         assertThat(records[0][SESSION_FILE.HASH]).isEqualTo("shape_hash")
-        assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo("sid")
+        assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo(sessionId)
         assertThat(records[0][SESSION_FILE.TYPE]).isEqualTo("shape")
 
         assertThat(records[1][SESSION_FILE.FILENAME]).isEqualTo("other_shape_file")
@@ -198,10 +227,12 @@ class SessionRepositoryTests {
     @Test
     fun `setFilesForSession rolls back transaction on error, leaving existing session files unchanged`() {
         setUpSession()
-        setUpHashAndSessionFile("pjnz_hash", "pjnz_file", "sid", "pjnz")
+        setUpHashAndSessionFile("pjnz_hash", "pjnz_file", sessionId, "pjnz")
 
-        assertThatThrownBy{ sut.setFilesForSession("sid", mapOf(
-                "shape" to SessionFile("bad_hash", "bad_file"))) }
+        assertThatThrownBy {
+            sut.setFilesForSession(sessionId, mapOf(
+                    "shape" to SessionFile("bad_hash", "bad_file")))
+        }
                 .isInstanceOf(SessionException::class.java)
                 .hasMessage("Unable to load files for session. Specified files do not exist on the server.")
 
@@ -213,9 +244,16 @@ class SessionRepositoryTests {
 
         assertThat(records[0][SESSION_FILE.FILENAME]).isEqualTo("pjnz_file")
         assertThat(records[0][SESSION_FILE.HASH]).isEqualTo("pjnz_hash")
-        assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo("sid")
+        assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo(sessionId)
         assertThat(records[0][SESSION_FILE.TYPE]).isEqualTo("pjnz")
 
+    }
+
+    private fun assertSessionFileExists(hash: String) {
+        val records = dsl.selectFrom(SESSION_FILE)
+                .where(SESSION_FILE.HASH.eq(hash))
+
+        assertThat(records.count()).isEqualTo(1)
     }
 
     private fun setUpSessionAndHash(): String {
@@ -226,7 +264,7 @@ class SessionRepositoryTests {
     private fun setUpSession(): String {
         userRepo.addUser("email", "pw")
         val uid = userRepo.getUser("email")!!.id
-        sut.saveSession("sid", uid)
+        sut.saveSession(sessionId, uid)
 
         return uid
     }

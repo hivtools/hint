@@ -10,12 +10,15 @@ import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.db.SessionRepository
+import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
 
 class BaselineControllerTests : HintrControllerTests() {
 
-    override fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient): HintrController {
-        return BaselineController(mockFileManager, mockAPIClient)
+    override fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient,
+                        mockSession: Session, mockSessionRepository: SessionRepository): HintrController {
+        return BaselineController(mockFileManager, mockAPIClient, mockSession, mockSessionRepository)
     }
 
     @Test
@@ -82,7 +85,7 @@ class BaselineControllerTests : HintrControllerTests() {
             on { validateBaselineCombined(files) } doReturn mockResponse
         }
 
-        val sut = BaselineController(mockFileManager, mockAPIClient)
+        val sut = BaselineController(mockFileManager, mockAPIClient, mock(), mock())
         val result = sut.validate()
 
         assertThat(result).isSameAs(mockResponse)

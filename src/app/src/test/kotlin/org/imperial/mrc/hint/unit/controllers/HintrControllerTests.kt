@@ -7,7 +7,9 @@ import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.HintrController
+import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.models.SessionFileWithPath
+import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -52,14 +54,15 @@ abstract class HintrControllerTests {
         }
     }
 
-    abstract fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient): HintrController
+    abstract fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient,
+                        mockSession: Session, mockSessionRepository: SessionRepository): HintrController
 
     protected fun assertValidates(fileType: FileType,
                                   uploadAction: (sut: HintrController) -> ResponseEntity<String>) {
 
         val mockFileManager = getMockFileManager(fileType)
         val mockApiClient = getMockAPIClient(fileType)
-        val sut = getSut(mockFileManager, mockApiClient)
+        val sut = getSut(mockFileManager, mockApiClient, mock(), mock())
         val result = uploadAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
@@ -81,7 +84,7 @@ abstract class HintrControllerTests {
         val mockApiClient = getMockAPIClient(fileType)
 
         // should return the validation result when the file is returned from the file manager
-        var sut = getSut(mockFileManager, mockApiClient)
+        var sut = getSut(mockFileManager, mockApiClient, mock(), mock())
         var result = getAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
@@ -89,7 +92,7 @@ abstract class HintrControllerTests {
                 .validateBaselineIndividual(SessionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
 
         // should return a null result when null is returned from the file manager
-        sut = getSut(mock(), mockApiClient)
+        sut = getSut(mock(), mockApiClient, mock(), mock())
         result = getAction(sut)
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
