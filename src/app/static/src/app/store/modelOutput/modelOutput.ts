@@ -12,10 +12,11 @@ export const modelOutputGetters = {
         return rootState.modelRun.result!!.plottingMetadata.barchart.indicators;
     },
     barchartFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
+
         const regions: FilterOption[] = rootState.baseline.shape!!.filters!!.regions ?
                                         [rootState.baseline.shape!!.filters!!.regions] : [];
 
-        return [
+        return  [
             ...rootState.modelRun.result!!.plottingMetadata.barchart.filters,
             {
                 "id": "region",
