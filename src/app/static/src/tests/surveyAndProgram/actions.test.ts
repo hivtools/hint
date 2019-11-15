@@ -1,5 +1,13 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
-import {mockAncResponse, mockAxios, mockFailure, mockProgramResponse, mockSuccess, mockSurveyResponse} from "../mocks";
+import {
+    mockAncResponse,
+    mockAxios,
+    mockFailure,
+    mockProgramResponse,
+    mockSuccess,
+    mockSurveyAndProgramState,
+    mockSurveyResponse
+} from "../mocks";
 
 import {DataType} from "../../app/store/filteredData/filteredData";
 
@@ -189,6 +197,48 @@ describe("Survey and programme actions", () => {
 
         expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toContain("Ready");
+    });
+
+    it("deletes survey and resets filtered data", async () => {
+        mockAxios.onDelete("/disease/survey/hash/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const state = mockSurveyAndProgramState({
+            survey: mockSurveyResponse({hash: "hash"})
+        });
+        await actions.deleteSurvey({commit, state} as any);
+        expect(commit).toBeCalledTimes(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SurveyUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
+    });
+
+    it("deletes program and resets filtered data", async () => {
+        mockAxios.onDelete("/disease/programme/hash/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const state = mockSurveyAndProgramState({
+            program: mockProgramResponse({hash: "hash"})
+        });
+        await actions.deleteProgram({commit, state} as any);
+        expect(commit).toBeCalledTimes(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ProgramUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
+    });
+
+    it("deletes ANC and resets filtered data", async () => {
+        mockAxios.onDelete("/disease/anc/hash/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const state = mockSurveyAndProgramState({
+            anc: mockAncResponse({hash: "hash"})
+        });
+        await actions.deleteANC({commit, state} as any);
+        expect(commit).toBeCalledTimes(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ANCUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
     });
 
 });

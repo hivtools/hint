@@ -5,6 +5,7 @@ import {
     initialFilteredDataState,
     SelectedChoroplethFilters
 } from "../../app/store/filteredData/filteredData";
+import {mockFilteredDataState} from "../mocks";
 
 describe("FilteredData mutations", () => {
 
@@ -65,4 +66,14 @@ describe("FilteredData mutations", () => {
     it("updates quarter choropleth filter", () => {
         testChoroplethFilterUpdated(FilterType.Quarter);
     });
+
+    it("resets whole state", () => {
+        const testState = mockFilteredDataState({
+            selectedDataType: DataType.ANC,
+            regionIndicators: "TEST" as any
+        });
+        mutations.Reset(testState);
+        expect(testState.selectedDataType).toBe(null);
+        expect(testState.regionIndicators).toStrictEqual({});
+    })
 });

@@ -33,6 +33,7 @@ export interface API<S, E> {
 
     postAndReturn<T extends ResponseData>(url: string, data: any): Promise<void | T>
     get<T extends ResponseData>(url: string): Promise<void | T>
+    delete(url: string): Promise<void | true>
 }
 
 export class APIService<S extends string, E extends string> implements API<S, E> {
@@ -136,6 +137,11 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         } : {};
 
         return this._handleAxiosResponse(axios.post(fullUrl, data, config));
+    }
+
+    async delete(url: string) {
+        const fullUrl = this._buildFullUrl(url);
+        return this._handleAxiosResponse(axios.delete(fullUrl));
     }
 
 }
