@@ -1,10 +1,7 @@
 package org.imperial.mrc.hint.unit
 
-import com.github.kittinunf.fuel.core.Body
-import com.github.kittinunf.fuel.core.Headers
-import com.github.kittinunf.fuel.core.Request
-import com.github.kittinunf.fuel.core.Response
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.core.*
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -86,10 +83,15 @@ class ExtensionTests {
         val response = Response(URL("http://test"), 200, "test msg", headers)
 
         val downloadRequest = mock<Request>{
+            on {url} doReturn URL("http://test")
+        }
+
+        val mockHeadRequest = mock<Request>{
             on {response()} doReturn Triple(mock(), response, mock())
         }
 
-        val result = downloadRequest.getStreamingResponseEntity()
+        val result = downloadRequest.getStreamingResponseEntity({_,_ -> mockHeadRequest})
+
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.headers["test-header"]?.first()).isEqualTo("test-value")
         assertThat(result.headers["test-header2"]?.first()).isEqualTo("test-value2")

@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.io.OutputStream
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.core.Parameters
 import com.github.kittinunf.fuel.httpHead
 import org.imperial.mrc.hint.models.ErrorDetail
 import java.io.IOException
@@ -66,7 +67,7 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
 
 }
 
-fun Request.getStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> {
+fun Request.getStreamingResponseEntity(headRequest: (url: String, parameters: Parameters?) -> Request): ResponseEntity<StreamingResponseBody> {
 
     val responseBody = StreamingResponseBody { outputStream: OutputStream ->
         //return an empty input stream to the body - don't need to re-use it
@@ -75,7 +76,7 @@ fun Request.getStreamingResponseEntity(): ResponseEntity<StreamingResponseBody> 
                 .response()
     }
 
-    val headRequest = this.url.toString().httpHead()
+    val headRequest = headRequest(this.url.toString(), null)
     val response = headRequest.response()
             .second
 
