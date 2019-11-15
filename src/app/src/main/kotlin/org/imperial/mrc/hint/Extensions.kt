@@ -15,7 +15,6 @@ import java.io.InputStream
 import java.io.OutputStream
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.core.Parameters
-import com.github.kittinunf.fuel.httpHead
 import org.imperial.mrc.hint.models.ErrorDetail
 import java.io.IOException
 
@@ -76,8 +75,8 @@ fun Request.getStreamingResponseEntity(headRequest: (url: String, parameters: Pa
                 .response()
     }
 
-    val headRequest = headRequest(this.url.toString(), null)
-    val response = headRequest.response()
+    val headReq = headRequest(this.url.toString(), null)
+    val response = headReq.response()
             .second
 
     val httpStatus = httpStatusFromCode(response.statusCode)
