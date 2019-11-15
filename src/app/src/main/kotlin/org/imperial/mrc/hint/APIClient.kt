@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.Fuel.head
 import com.github.kittinunf.fuel.httpDownload
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 interface APIClient {
     fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String>
+    fun validateBaselineCombined(files: Map<String, SessionFileWithPath?>): ResponseEntity<String>
     fun validateSurveyAndProgramme(file: SessionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
     fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
@@ -76,6 +78,13 @@ class HintrAPIClient(
         return postJson("model/options", json)
     }
 
+    override fun validateBaselineCombined(files: Map<String, SessionFileWithPath?>): ResponseEntity<String> {
+        val json = objectMapper.writeValueAsString(
+           files.mapValues{ it.value?.path }
+        )
+        return postJson("validate/baseline-combined", json)
+    }
+
     fun get(url: String): ResponseEntity<String> {
         return "$baseUrl/$url".httpGet()
                 .timeout(60000)
@@ -99,13 +108,13 @@ class HintrAPIClient(
     override fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody> {
         return "$baseUrl/download/spectrum/${id}"
                 .httpDownload()
-                .getStreamingResponseEntity()
+                .getStreamingResponseEntity(::head)
     }
 
     override fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody> {
         return "$baseUrl/download/summary/${id}"
                 .httpDownload()
-                .getStreamingResponseEntity()
+                .getStreamingResponseEntity(::head)
     }
 
 }

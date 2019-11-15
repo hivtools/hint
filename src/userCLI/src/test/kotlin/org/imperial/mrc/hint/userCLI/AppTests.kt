@@ -1,49 +1,43 @@
 package org.imperial.mrc.hint.userCLI
 
-import org.assertj.core.api.Assertions
-import org.imperial.mrc.hint.db.DbConfig
 import org.imperial.mrc.hint.exceptions.UserException
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeEach
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContext
 
 //The hint db container must be running to run these tests
-class AppTests {
-
+@ActiveProfiles(profiles=["test"])
+@SpringBootTest
+@ExtendWith(SpringExtension::class)
+@Transactional
+class AppTests
+{
     companion object {
         const val TEST_EMAIL = "test@test.com"
-
-        val props = DatabaseProperties()
-        val dataSource = DbConfig().dataSource(props.url, props.user, props.password)
-        val sut = UserCLI(dataSource)
-
-        @AfterAll
-        @JvmStatic
-        fun cleanup() {
-            dataSource.connection.close()
-        }
     }
 
-    @BeforeEach
-    fun `remove user if exists`() {
-        try {
-            sut.removeUser(mapOf("<email>" to TEST_EMAIL))
-        }
-        catch (e: Exception) {
-
-        }
-    }
+    @Autowired
+    private lateinit var context: ApplicationContext
 
     @Test
-    fun `can add user`() {
+    fun `can add user`()
+    {
+        val sut = UserCLI(context)
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
         Assertions.assertThat(sut.userExists(mapOf("<email>" to TEST_EMAIL))).isEqualTo("true")
     }
 
     @Test
-    fun `can remove user`() {
-        val sut = UserCLI(dataSource)
+    fun `can remove user`()
+    {
+        val sut = UserCLI(context)
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
         sut.removeUser(mapOf("<email>" to TEST_EMAIL))
@@ -51,8 +45,9 @@ class AppTests {
     }
 
     @Test
-    fun `cannot add same user twice`() {
-        val sut = UserCLI(dataSource)
+    fun `cannot add same user twice`()
+    {
+        val sut = UserCLI(context)
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
         Assertions.assertThatThrownBy { sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword")) }
@@ -62,8 +57,10 @@ class AppTests {
     }
 
     @Test
-    fun `cannot remove nonexistent user`() {
-        Assertions.assertThatThrownBy { sut.removeUser(mapOf("<email>" to "notaperson.@email.com")) }
+    fun `cannot remove nonexistent user`()
+    {
+        val sut = UserCLI(context)
+        Assertions.assertThatThrownBy{ sut.removeUser(mapOf("<email>" to "notaperson.@email.com")) }
                 .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("User does not exist")
 

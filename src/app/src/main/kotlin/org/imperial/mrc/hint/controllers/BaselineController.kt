@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/baseline")
-class BaselineController(private val fileManager: FileManager,
+class BaselineController(fileManager: FileManager,
                          apiClient: APIClient) : HintrController(fileManager, apiClient) {
 
     @PostMapping("/pjnz/")
@@ -46,6 +46,15 @@ class BaselineController(private val fileManager: FileManager,
     @ResponseBody
     fun getPopulation(): ResponseEntity<String> {
         return getAndValidate(FileType.Population)
+    }
+
+    @GetMapping("/validate/")
+    @ResponseBody
+    fun validate(): ResponseEntity<String> {
+        return apiClient.validateBaselineCombined(
+                listOf(FileType.PJNZ, FileType.Shape, FileType.Population)
+                        .map{ it.toString() to fileManager.getFile(it)}.toMap()
+        )
     }
 
 }

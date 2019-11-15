@@ -64,6 +64,7 @@ class ModelRunTests : SecureIntegrationTests() {
         do {
             Thread.sleep(500)
             val statusResponse = testRestTemplate.getForEntity<String>("/model/status/${id}")
+            print(statusResponse.body)
         } while (statusResponse.body!!.contains("\"status\":\"RUNNING\""))
 
         val responseEntity = testRestTemplate.getForEntity<String>("/model/result/${id}")
