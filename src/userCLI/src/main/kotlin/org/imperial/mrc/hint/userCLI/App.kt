@@ -1,11 +1,14 @@
 package org.imperial.mrc.hint.userCLI
 
 import org.docopt.Docopt
-import kotlin.system.exitProcess
+import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.db.DbConfig
+import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
 import org.imperial.mrc.hint.db.UserRepository
-import org.imperial.mrc.hint.HintApplication
-import org.springframework.boot.SpringApplication
-import org.springframework.context.ApplicationContext
+import org.imperial.mrc.hint.security.HintDbProfileService
+import org.imperial.mrc.hint.security.SecurePasswordEncoder
+import javax.sql.DataSource
+import kotlin.system.exitProcess
 
 const val doc = """
 Hint User CLI
@@ -22,12 +25,11 @@ fun main(args: Array<String>)
     val removeUser = options["remove-user"] as Boolean
     val userExists = options["user-exists"] as Boolean
 
-    //Start a background HintApplication so we can get an ApplicationContext in order to get Autowired user repo
-    val applicationContext = SpringApplication.run(HintApplication::class.java)
+    val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
 
     try
     {
-        val userCLI = UserCLI(applicationContext)
+        val userCLI = UserCLI(getUserRepository(dataSource))
         val result = when
         {
             addUser -> userCLI.addUser(options)
@@ -44,13 +46,13 @@ fun main(args: Array<String>)
         exitProcess(1)
     }
     finally {
-        applicationContext.close()
+        dataSource.connection.close()
     }
 }
 
-class UserCLI(private val appContext: ApplicationContext)
+class UserCLI(private val userRepository: UserRepository)
 {
-    fun addUser(options: Map<String, Any>, userRepository: UserRepository=userRepository()): String
+    fun addUser(options: Map<String, Any>): String
     {
         val email = options["<email>"].getStringValue()
         val password = options["<password>"].getStringValue()
@@ -61,7 +63,7 @@ class UserCLI(private val appContext: ApplicationContext)
         return "OK"
     }
 
-    fun removeUser(options: Map<String, Any>, userRepository: UserRepository=userRepository()): String
+    fun removeUser(options: Map<String, Any>): String
     {
         val email = options["<email>"].getStringValue()
         println("Removing user $email")
@@ -71,7 +73,7 @@ class UserCLI(private val appContext: ApplicationContext)
         return "OK"
     }
 
-    fun userExists(options: Map<String, Any>, userRepository: UserRepository=userRepository()): String
+    fun userExists(options: Map<String, Any>): String
     {
         val email = options["<email>"].getStringValue()
         println("Checking if user exists: $email")
@@ -80,15 +82,14 @@ class UserCLI(private val appContext: ApplicationContext)
         return exists.toString()
     }
 
-    private fun userRepository(): UserRepository
-    {
-        val context = appContext
-        return context.getBean("dbProfileServiceUserRepository") as UserRepository
-    }
-
     private fun Any?.getStringValue(): String
     {
         return this.toString().replace("[", "").replace("]","")
     }
 }
 
+fun getUserRepository(dataSource: DataSource): UserRepository {
+
+    val profileService = HintDbProfileService(dataSource, SecurePasswordEncoder())
+    return DbProfileServiceUserRepository(profileService)
+}
