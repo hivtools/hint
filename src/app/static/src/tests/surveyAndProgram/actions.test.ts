@@ -200,64 +200,50 @@ describe("Survey and programme actions", () => {
     });
 
     it("deletes survey and resets filtered data", async () => {
-        mockAxios.onDelete("/disease/survey/hash/")
+        mockAxios.onDelete("/disease/survey/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        const state = mockSurveyAndProgramState({
-            survey: mockSurveyResponse({hash: "hash"})
-        });
-        await actions.deleteSurvey({commit, state} as any);
+        await actions.deleteSurvey({commit} as any);
         expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("SurveyUpdated");
         expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
     });
 
     it("deletes program and resets filtered data", async () => {
-        mockAxios.onDelete("/disease/programme/hash/")
+        mockAxios.onDelete("/disease/programme/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        const state = mockSurveyAndProgramState({
-            program: mockProgramResponse({hash: "hash"})
-        });
-        await actions.deleteProgram({commit, state} as any);
+        await actions.deleteProgram({commit} as any);
         expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("ProgramUpdated");
         expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
     });
 
     it("deletes ANC and resets filtered data", async () => {
-        mockAxios.onDelete("/disease/anc/hash/")
+        mockAxios.onDelete("/disease/anc/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        const state = mockSurveyAndProgramState({
-            anc: mockAncResponse({hash: "hash"})
-        });
-        await actions.deleteANC({commit, state} as any);
+        await actions.deleteANC({commit} as any);
         expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("ANCUpdated");
         expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
     });
 
     it("deletes all", async () => {
-        mockAxios.onDelete("/disease/anc/hash/")
+        mockAxios.onDelete("/disease/anc/")
             .reply(200, mockSuccess(true));
 
-        mockAxios.onDelete("/disease/survey/hash/")
+        mockAxios.onDelete("/disease/survey/")
             .reply(200, mockSuccess(true));
 
-        mockAxios.onDelete("/disease/programme/hash/")
+        mockAxios.onDelete("/disease/programme/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        const state = mockSurveyAndProgramState({
-            anc: mockAncResponse({hash: "hash"}),
-            survey: mockSurveyResponse({hash: "hash"}),
-            program: mockProgramResponse({hash: "hash"})
-        });
-        await actions.deleteAll({commit, state} as any);
+        await actions.deleteAll({commit} as any);
         expect(mockAxios.history["delete"].length).toBe(3);
         expect(commit).toBeCalledTimes(6);
         expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([
