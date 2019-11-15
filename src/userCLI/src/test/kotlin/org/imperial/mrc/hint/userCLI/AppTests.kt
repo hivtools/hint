@@ -1,43 +1,69 @@
 package org.imperial.mrc.hint.userCLI
 
-import org.imperial.mrc.hint.exceptions.UserException
+import com.nhaarman.mockito_kotlin.eq
+import com.nhaarman.mockito_kotlin.isNull
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
+import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.db.DbConfig
+import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.exceptions.UserException
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.ApplicationContext
 
 //The hint db container must be running to run these tests
-@ActiveProfiles(profiles=["test"])
-@SpringBootTest
-@ExtendWith(SpringExtension::class)
-@Transactional
-class AppTests
-{
+class AppTests {
+
     companion object {
         const val TEST_EMAIL = "test@test.com"
+
+        val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
+        val userRepository = getUserRepository(dataSource)
+        val sut = UserCLI(userRepository)
+
+        @AfterAll
+        @JvmStatic
+        fun cleanup() {
+            dataSource.connection.close()
+        }
     }
 
-    @Autowired
-    private lateinit var context: ApplicationContext
+    @BeforeEach
+    fun `remove user if exists`() {
+        try {
+            sut.removeUser(mapOf("<email>" to TEST_EMAIL))
+        }
+        catch (e: Exception) {
+
+        }
+    }
 
     @Test
-    fun `can add user`()
-    {
-        val sut = UserCLI(context)
+    fun `can add user`() {
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
         Assertions.assertThat(sut.userExists(mapOf("<email>" to TEST_EMAIL))).isEqualTo("true")
     }
 
+
     @Test
-    fun `can remove user`()
+    fun `can add user without password`()
     {
-        val sut = UserCLI(context)
+        sut.addUser(mapOf("<email>" to TEST_EMAIL))
+        Assertions.assertThat(sut.userExists(mapOf("<email>" to TEST_EMAIL))).isEqualTo("true")
+    }
+
+    @Test
+    fun `null password gets passed to user repo`() {
+        val mockUserRepo = mock<UserRepository>()
+        UserCLI(mockUserRepo).addUser(mapOf("<email>" to TEST_EMAIL))
+        verify(mockUserRepo).addUser(eq(TEST_EMAIL), isNull())
+    }
+
+    @Test
+    fun `can remove user`() {
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
         sut.removeUser(mapOf("<email>" to TEST_EMAIL))
@@ -45,9 +71,7 @@ class AppTests
     }
 
     @Test
-    fun `cannot add same user twice`()
-    {
-        val sut = UserCLI(context)
+    fun `cannot add same user twice`() {
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
         Assertions.assertThatThrownBy { sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword")) }
@@ -57,10 +81,8 @@ class AppTests
     }
 
     @Test
-    fun `cannot remove nonexistent user`()
-    {
-        val sut = UserCLI(context)
-        Assertions.assertThatThrownBy{ sut.removeUser(mapOf("<email>" to "notaperson.@email.com")) }
+    fun `cannot remove nonexistent user`() {
+        Assertions.assertThatThrownBy { sut.removeUser(mapOf("<email>" to "notaperson.@email.com")) }
                 .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("User does not exist")
 
