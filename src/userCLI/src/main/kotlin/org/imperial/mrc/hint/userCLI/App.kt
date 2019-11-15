@@ -1,11 +1,22 @@
 package org.imperial.mrc.hint.userCLI
 
 import org.docopt.Docopt
-import kotlin.system.exitProcess
+import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.db.DbConfig
+import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
+import org.imperial.mrc.hint.db.JooqTokenRepository
 import org.imperial.mrc.hint.db.UserRepository
-import org.imperial.mrc.hint.HintApplication
-import org.springframework.boot.SpringApplication
-import org.springframework.context.ApplicationContext
+import org.imperial.mrc.hint.emails.EmailConfig
+import org.imperial.mrc.hint.security.HintDbProfileService
+import org.imperial.mrc.hint.security.SecurePasswordEncoder
+import org.imperial.mrc.hint.security.tokens.KeyHelper
+import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
+import org.jooq.SQLDialect
+import org.jooq.impl.DSL
+import org.pac4j.jwt.config.signature.RSASignatureConfiguration
+import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
+import javax.sql.DataSource
+import kotlin.system.exitProcess
 
 const val doc = """
 Hint User CLI
@@ -15,19 +26,17 @@ Usage:
     app user-exists <email>
 """
 
-fun main(args: Array<String>)
-{
+fun main(args: Array<String>) {
     val options = Docopt(doc).parse(args.toList())
     val addUser = options["add-user"] as Boolean
     val removeUser = options["remove-user"] as Boolean
     val userExists = options["user-exists"] as Boolean
 
-    //Start a background HintApplication so we can get an ApplicationContext in order to get Autowired user repo
-    val applicationContext = SpringApplication.run(HintApplication::class.java)
+    val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
 
     try
     {
-        val userCLI = UserCLI(applicationContext)
+        val userCLI = UserCLI(getUserRepository(dataSource))
         val result = when
         {
             addUser -> userCLI.addUser(options)
@@ -37,31 +46,28 @@ fun main(args: Array<String>)
         }
 
         println(result)
-    }
-    catch(e: Exception)
-    {
+    } catch (e: Exception) {
         System.err.println(e.message)
         exitProcess(1)
     }
     finally {
-        applicationContext.close()
+        dataSource.connection.close()
     }
 }
 
-class UserCLI(private val appContext: ApplicationContext)
+class UserCLI(private val userRepository: UserRepository)
 {
-    fun addUser(options: Map<String, Any>, userRepository: UserRepository=userRepository()): String
+    fun addUser(options: Map<String, Any>): String
     {
         val email = options["<email>"].getStringValue()
-        val password = options["<password>"].getStringValue()
+        val password = options["<password>"]?.getStringValue()
         println("Adding user $email")
 
         userRepository.addUser(email, password)
-
         return "OK"
     }
 
-    fun removeUser(options: Map<String, Any>, userRepository: UserRepository=userRepository()): String
+    fun removeUser(options: Map<String, Any>): String
     {
         val email = options["<email>"].getStringValue()
         println("Removing user $email")
@@ -71,19 +77,14 @@ class UserCLI(private val appContext: ApplicationContext)
         return "OK"
     }
 
-    fun userExists(options: Map<String, Any>, userRepository: UserRepository=userRepository()): String
+    fun userExists(options: Map<String, Any>): String
     {
+
         val email = options["<email>"].getStringValue()
         println("Checking if user exists: $email")
 
         val exists = userRepository.getUser(email) != null
         return exists.toString()
-    }
-
-    private fun userRepository(): UserRepository
-    {
-        val context = appContext
-        return context.getBean("dbProfileServiceUserRepository") as UserRepository
     }
 
     private fun Any?.getStringValue(): String
@@ -92,3 +93,21 @@ class UserCLI(private val appContext: ApplicationContext)
     }
 }
 
+fun getUserRepository(dataSource: DataSource): UserRepository {
+
+    val profileService = HintDbProfileService(dataSource, SecurePasswordEncoder())
+
+    val dslContext = DSL.using(dataSource.connection, SQLDialect.POSTGRES)
+    val appProperties = ConfiguredAppProperties()
+
+    val tokenRepository = JooqTokenRepository(dslContext)
+    val signatureConfig = RSASignatureConfiguration(KeyHelper.keyPair)
+
+    val oneTimeTokenManager = OneTimeTokenManager(appProperties,
+            tokenRepository,
+            signatureConfig,
+            JwtAuthenticator(signatureConfig))
+
+    return DbProfileServiceUserRepository(profileService,
+            EmailConfig().getEmailManager(appProperties, oneTimeTokenManager))
+}

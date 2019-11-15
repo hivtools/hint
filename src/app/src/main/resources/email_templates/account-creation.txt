@@ -1,0 +1,13 @@
+Hello,
+
+This is an automated email from {{appTitle}}. We have received a request to create an account for
+this email address ({{email}}).
+
+To set your password on {{appTitle}} please browse to:
+
+{{appUrl}}/password/reset-password/?token={{token}}
+
+This link will expire in 24 hours. If you don't get a chance to use it within that time, you can request a new one by
+visiting {{appUrl}}/password/forgot-password/
+
+Have a great day!
