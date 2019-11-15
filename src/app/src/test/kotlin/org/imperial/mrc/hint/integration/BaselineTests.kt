@@ -6,8 +6,10 @@ import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
 class BaselineTests : SecureIntegrationTests() {
@@ -90,6 +92,30 @@ class BaselineTests : SecureIntegrationTests() {
             val data = getResponseData(entity)
             assertThat(data["type"].asText()).isEqualTo("population")
         }
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can delete pjnz data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.exchange<String>("/baseline/pjnz/hash/", HttpMethod.DELETE)
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can delete shape data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.exchange<String>("/baseline/shape/hash/", HttpMethod.DELETE)
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can delete population data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.exchange<String>("/baseline/population/hash/", HttpMethod.DELETE)
+        assertSecureWithSuccess(isAuthorized, responseEntity, null)
     }
 
     @ParameterizedTest

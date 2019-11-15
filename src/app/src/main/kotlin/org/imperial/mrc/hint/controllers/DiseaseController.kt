@@ -55,21 +55,21 @@ class DiseaseController(fileManager: FileManager,
         return getAndValidate(FileType.ANC)
     }
 
-    @DeleteMapping("/survey/")
+    @DeleteMapping("/survey/{hash}/")
     @ResponseBody
     fun removeSurvey(@PathVariable hash: String): ResponseEntity<String> {
         sessionRepository.removeSessionFile(session.getId(), FileType.Survey, hash)
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @DeleteMapping("/programme/")
+    @DeleteMapping("/programme/{hash}/")
     @ResponseBody
     fun removeProgramme(@PathVariable hash: String): ResponseEntity<String> {
         sessionRepository.removeSessionFile(session.getId(), FileType.Programme, hash)
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @DeleteMapping("/anc/")
+    @DeleteMapping("/anc/{hash}/")
     @ResponseBody
     fun removeANC(@PathVariable hash: String): ResponseEntity<String> {
         sessionRepository.removeSessionFile(session.getId(), FileType.ANC, hash)
