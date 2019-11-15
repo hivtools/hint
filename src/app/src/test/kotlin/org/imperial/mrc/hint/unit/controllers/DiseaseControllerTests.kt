@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
+import org.imperial.mrc.hint.controllers.BaselineController
 import org.imperial.mrc.hint.controllers.DiseaseController
 import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.SessionRepository
@@ -39,6 +40,27 @@ class DiseaseControllerTests: HintrControllerTests() {
     fun `validates anc file`() {
         assertValidates(FileType.ANC) {
             sut ->  (sut as DiseaseController).uploadANC(mockFile)
+        }
+    }
+
+    @Test
+    fun `deletes survey file`() {
+        assertDeletes(FileType.Survey) { sut ->
+            (sut as DiseaseController).removeSurvey(fakeHash)
+        }
+    }
+
+    @Test
+    fun `deletes programme file`() {
+        assertDeletes(FileType.Programme) { sut ->
+            (sut as DiseaseController).removeProgramme(fakeHash)
+        }
+    }
+
+    @Test
+    fun `deletes anc file`() {
+        assertDeletes(FileType.ANC) { sut ->
+            (sut as DiseaseController).removeANC(fakeHash)
         }
     }
 

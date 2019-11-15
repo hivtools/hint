@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
+import org.imperial.mrc.hint.controllers.BaselineController
 import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.models.SessionFileWithPath
@@ -19,6 +20,8 @@ import java.io.File
 abstract class HintrControllerTests {
 
     protected val tmpUploadDirectory = "tmp"
+    protected val sessionId = "sid"
+    protected val fakeHash = "hash"
 
     @AfterEach
     fun tearDown() {
@@ -99,5 +102,17 @@ abstract class HintrControllerTests {
         val data = ObjectMapper().readTree(result.body)["data"].toString()
         assertThat(data).isEqualTo("null")
         verifyNoMoreInteractions(mockApiClient)
+    }
+
+    protected fun assertDeletes(fileType: FileType,
+                                getAction: (sut: HintrController) -> ResponseEntity<String>) {
+        val mockSession = mock<Session> {
+            on { getId() } doReturn "sid"
+        }
+        val mockSessionRepository = mock<SessionRepository>()
+        val sut = getSut(mock(), mock(), mockSession, mockSessionRepository)
+        val result = getAction(sut)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        verify(mockSessionRepository).removeSessionFile(sessionId, fileType,fakeHash)
     }
 }
