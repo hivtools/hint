@@ -15,7 +15,8 @@ export function testUploadComponent(name: string, position: number) {
 
     let actions: jest.Mocked<SurveyAndProgramActions>;
     let mutations: jest.Mocked<SurveyAndProgramMutations>;
-    let expectedAction: any;
+    let expectedUploadAction: any;
+    let expectedDeleteAction: any;
 
     const createSut = (state?: Partial<SurveyAndProgramDataState>) => {
 
@@ -23,18 +24,25 @@ export function testUploadComponent(name: string, position: number) {
             uploadSurvey: jest.fn(),
             uploadProgram: jest.fn(),
             uploadANC: jest.fn(),
+            deleteSurvey: jest.fn(),
+            deleteProgram: jest.fn(),
+            deleteANC: jest.fn(),
+            deleteAll: jest.fn(),
             getSurveyAndProgramData: jest.fn()
         };
 
         switch (name) {
             case "surveys":
-                expectedAction = actions.uploadSurvey;
+                expectedUploadAction = actions.uploadSurvey;
+                expectedDeleteAction = actions.deleteSurvey;
                 break;
             case "program":
-                expectedAction = actions.uploadProgram;
+                expectedUploadAction = actions.uploadProgram;
+                expectedDeleteAction = actions.deleteProgram;
                 break;
             case "anc":
-                expectedAction = actions.uploadANC;
+                expectedUploadAction = actions.uploadANC;
+                expectedDeleteAction = actions.deleteANC;
                 break;
         }
 
@@ -118,7 +126,19 @@ export function testUploadComponent(name: string, position: number) {
 
         wrapper.findAll(FileUpload).at(position).props().upload({name: "TEST"});
         setTimeout(() => {
-            expect(expectedAction.mock.calls[0][1]).toStrictEqual({name: "TEST"});
+            expect(expectedUploadAction.mock.calls[0][1]).toStrictEqual({name: "TEST"});
+            done();
+        });
+    });
+
+
+    it(`delete ${name} dispatches surveyAndProgram/delete${name}`, (done) => {
+        const store = createSut();
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+
+        wrapper.findAll(FileUpload).at(position).props().deleteFile();
+        setTimeout(() => {
+            expect(expectedDeleteAction.mock.calls.length).toBe(1);
             done();
         });
     });
