@@ -71,7 +71,6 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                 JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail)
             }
             IsAuthorized.FALSE -> {
-                Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.FOUND)
                 Assertions.assertThat(responseEntity.headers.location!!.toString()).isEqualTo("/login")
             }
         }
