@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.integration
 
+import com.nhaarman.mockito_kotlin.isA
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.api.BeforeAll
@@ -12,7 +13,7 @@ import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpMethod
 
-class DiseaseTests : SecureIntegrationTests() {
+class DiseaseTests : SessionFileTests() {
 
     @BeforeEach
     fun `upload shape file`() {
@@ -94,15 +95,15 @@ class DiseaseTests : SecureIntegrationTests() {
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `can delete ANC data`(isAuthorized: IsAuthorized) {
-        val responseEntity = testRestTemplate.exchange<String>("/disease/anc/hash/", HttpMethod.DELETE)
+    fun `can delete programme data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.exchange<String>("/disease/programme/hash/", HttpMethod.DELETE)
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `can delete programme data`(isAuthorized: IsAuthorized) {
-        val responseEntity = testRestTemplate.exchange<String>("/disease/programme/hash/", HttpMethod.DELETE)
+    fun `can delete ANC data`(isAuthorized: IsAuthorized) {
+        val responseEntity = testRestTemplate.exchange<String>("/disease/anc/hash/", HttpMethod.DELETE)
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
     }
 }
