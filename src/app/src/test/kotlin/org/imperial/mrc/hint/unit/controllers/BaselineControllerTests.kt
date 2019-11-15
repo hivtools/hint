@@ -67,21 +67,21 @@ class BaselineControllerTests : HintrControllerTests() {
     @Test
     fun `deletes pjnz file`() {
         assertDeletes(FileType.PJNZ) { sut ->
-            (sut as BaselineController).removePJNZ(fakeHash)
+            (sut as BaselineController).removePJNZ()
         }
     }
 
     @Test
     fun `deletes shape file`() {
         assertDeletes(FileType.Shape) { sut ->
-            (sut as BaselineController).removeShape(fakeHash)
+            (sut as BaselineController).removeShape()
         }
     }
 
     @Test
     fun `deletes population file`() {
         assertDeletes(FileType.Population) { sut ->
-            (sut as BaselineController).removePopulation(fakeHash)
+            (sut as BaselineController).removePopulation()
         }
     }
 

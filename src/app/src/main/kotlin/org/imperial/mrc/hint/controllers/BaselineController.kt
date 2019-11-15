@@ -31,10 +31,10 @@ class BaselineController(fileManager: FileManager,
         return getAndValidate(FileType.PJNZ)
     }
 
-    @DeleteMapping("/pjnz/{hash}/")
+    @DeleteMapping("/pjnz/")
     @ResponseBody
-    fun removePJNZ(@PathVariable hash: String): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getId(), FileType.PJNZ, hash)
+    fun removePJNZ(): ResponseEntity<String> {
+        sessionRepository.removeSessionFile(session.getId(), FileType.PJNZ)
         return EmptySuccessResponse.asResponseEntity()
     }
 
@@ -50,10 +50,10 @@ class BaselineController(fileManager: FileManager,
         return getAndValidate(FileType.Shape)
     }
 
-    @DeleteMapping("/shape/{hash}/")
+    @DeleteMapping("/shape/")
     @ResponseBody
-    fun removeShape(@PathVariable hash: String): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getId(), FileType.Shape, hash)
+    fun removeShape(): ResponseEntity<String> {
+        sessionRepository.removeSessionFile(session.getId(), FileType.Shape)
         return EmptySuccessResponse.asResponseEntity()
     }
 
@@ -69,10 +69,10 @@ class BaselineController(fileManager: FileManager,
         return getAndValidate(FileType.Population)
     }
 
-    @DeleteMapping("/population/{hash}/")
+    @DeleteMapping("/population/")
     @ResponseBody
-    fun removePopulation(@PathVariable hash: String): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getId(), FileType.Population, hash)
+    fun removePopulation(): ResponseEntity<String> {
+        sessionRepository.removeSessionFile(session.getId(), FileType.Population)
         return EmptySuccessResponse.asResponseEntity()
     }
 

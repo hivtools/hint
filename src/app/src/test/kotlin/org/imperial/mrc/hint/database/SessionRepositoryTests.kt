@@ -94,19 +94,15 @@ class SessionRepositoryTests {
         assertSessionFileExists(hash)
 
         // different file type
-        sut.removeSessionFile(sessionId, FileType.Survey, hash)
-        assertSessionFileExists(hash)
-
-        // different hash
-        sut.removeSessionFile(sessionId, FileType.PJNZ, "wronghash")
+        sut.removeSessionFile(sessionId, FileType.Survey)
         assertSessionFileExists(hash)
 
         // different session
-        sut.removeSessionFile("wrongid", FileType.PJNZ, hash)
+        sut.removeSessionFile("wrongid", FileType.PJNZ)
         assertSessionFileExists(hash)
 
         // correct details
-        sut.removeSessionFile(sessionId, FileType.PJNZ, hash)
+        sut.removeSessionFile(sessionId, FileType.PJNZ)
         val records = dsl.selectFrom(SESSION_FILE)
                 .where(SESSION_FILE.HASH.eq(hash))
 

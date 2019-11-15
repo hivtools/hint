@@ -21,7 +21,6 @@ abstract class HintrControllerTests {
 
     protected val tmpUploadDirectory = "tmp"
     protected val sessionId = "sid"
-    protected val fakeHash = "hash"
 
     @AfterEach
     fun tearDown() {
@@ -113,6 +112,6 @@ abstract class HintrControllerTests {
         val sut = getSut(mock(), mock(), mockSession, mockSessionRepository)
         val result = getAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-        verify(mockSessionRepository).removeSessionFile(sessionId, fileType,fakeHash)
+        verify(mockSessionRepository).removeSessionFile(sessionId, fileType)
     }
 }

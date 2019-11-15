@@ -46,21 +46,21 @@ class DiseaseControllerTests: HintrControllerTests() {
     @Test
     fun `deletes survey file`() {
         assertDeletes(FileType.Survey) { sut ->
-            (sut as DiseaseController).removeSurvey(fakeHash)
+            (sut as DiseaseController).removeSurvey()
         }
     }
 
     @Test
     fun `deletes programme file`() {
         assertDeletes(FileType.Programme) { sut ->
-            (sut as DiseaseController).removeProgramme(fakeHash)
+            (sut as DiseaseController).removeProgramme()
         }
     }
 
     @Test
     fun `deletes anc file`() {
         assertDeletes(FileType.ANC) { sut ->
-            (sut as DiseaseController).removeANC(fakeHash)
+            (sut as DiseaseController).removeANC()
         }
     }
 

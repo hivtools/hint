@@ -89,21 +89,21 @@ class DiseaseTests : SessionFileTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can delete survey data`(isAuthorized: IsAuthorized) {
-        val responseEntity = testRestTemplate.exchange<String>("/disease/survey/hash/", HttpMethod.DELETE)
+        val responseEntity = testRestTemplate.exchange<String>("/disease/survey/", HttpMethod.DELETE)
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can delete programme data`(isAuthorized: IsAuthorized) {
-        val responseEntity = testRestTemplate.exchange<String>("/disease/programme/hash/", HttpMethod.DELETE)
+        val responseEntity = testRestTemplate.exchange<String>("/disease/programme/", HttpMethod.DELETE)
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can delete ANC data`(isAuthorized: IsAuthorized) {
-        val responseEntity = testRestTemplate.exchange<String>("/disease/anc/hash/", HttpMethod.DELETE)
+        val responseEntity = testRestTemplate.exchange<String>("/disease/anc/", HttpMethod.DELETE)
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
     }
 }

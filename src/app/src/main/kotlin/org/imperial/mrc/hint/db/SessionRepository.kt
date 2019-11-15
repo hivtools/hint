@@ -16,7 +16,7 @@ interface SessionRepository {
     fun saveNewHash(hash: String): Boolean
 
     fun saveSessionFile(sessionId: String, type: FileType, hash: String, fileName: String)
-    fun removeSessionFile(sessionId: String, type: FileType, hash: String)
+    fun removeSessionFile(sessionId: String, type: FileType)
     fun getSessionFile(sessionId: String, type: FileType): SessionFile?
     fun getHashesForSession(sessionId: String): Map<String, String>
     fun getSessionFiles(sessionId: String): Map<String, SessionFile>
@@ -76,10 +76,9 @@ class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
 
     }
 
-    override fun removeSessionFile(sessionId: String, type: FileType, hash: String) {
+    override fun removeSessionFile(sessionId: String, type: FileType) {
         dsl.deleteFrom(SESSION_FILE)
                 .where(SESSION_FILE.SESSION.eq(sessionId))
-                .and(SESSION_FILE.HASH.eq(hash))
                 .and(SESSION_FILE.TYPE.eq(type.toString()))
                 .execute()
     }
