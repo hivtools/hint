@@ -11,22 +11,24 @@ describe("Survey and programme actions", () => {
         await login();
 
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const file = fs.createReadStream("../testdata/malawi.geojson");
         const formData = new FormData();
         formData.append('file', file);
 
-        await baselineActions.uploadShape({commit} as any, formData);
+        await baselineActions.uploadShape({commit, dispatch} as any, formData);
     });
 
     it("can upload survey", async () => {
 
         const commit = jest.fn();
+        const dispatch = jest.fn()
 
         const file = fs.createReadStream("../testdata/survey.csv");
         const formData = new FormData();
         formData.append('file', file);
 
-        await actions.uploadSurvey({commit} as any, formData);
+        await actions.uploadSurvey({commit, dispatch} as any, formData);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("SurveyUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
@@ -36,12 +38,13 @@ describe("Survey and programme actions", () => {
     it("can upload programme", async () => {
 
         const commit = jest.fn();
+        const dispatch = jest.fn();
 
         const file = fs.createReadStream("../testdata/programme.csv");
         const formData = new FormData();
         formData.append('file', file);
 
-        await actions.uploadProgram({commit} as any, formData);
+        await actions.uploadProgram({commit, dispatch} as any, formData);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("ProgramUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
@@ -60,7 +63,8 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]["type"]).toBe("ANCUpdated");
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("anc.csv")
+            .toBe("anc.csv");
+
     });
 
 });

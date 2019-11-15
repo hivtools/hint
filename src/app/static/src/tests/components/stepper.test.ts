@@ -3,11 +3,15 @@ import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {
-    mockBaselineState, mockLoadState, mockMetadataState, mockModelOptionsState,
-    mockModelRunState, mockPlottingMetadataResponse,
+    mockBaselineState,
+    mockLoadState,
+    mockMetadataState,
+    mockModelOptionsState,
+    mockModelRunState,
+    mockPlottingMetadataResponse,
     mockPopulationResponse,
     mockShapeResponse, mockStepperState,
-    mockSurveyAndProgramState
+    mockSurveyAndProgramState, mockValidateBaselineResponse
 } from "../mocks";
 import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations} from '../../app/store/baseline/mutations';
@@ -88,6 +92,15 @@ describe("Stepper component", () => {
         })
     };
 
+    const completedBaselineState = {
+        country: "testCountry",
+        iso3: "TTT",
+        shape: mockShapeResponse(),
+        population: mockPopulationResponse(),
+        ready: true,
+        validatedConsistent: true
+    };
+
     afterEach(() => {
         localStorage.clear();
     });
@@ -135,31 +148,59 @@ describe("Stepper component", () => {
         expect(steps.at(0).props().active).toBe(true);
         expect(steps.at(0).props().number).toBe(1);
         expect(steps.at(0).props().complete).toBe(false);
+        expect(steps.at(0).props().enabled).toBe(true);
 
         expect(steps.at(1).props().text).toBe("Upload survey and programme data");
         expect(steps.at(1).props().active).toBe(false);
         expect(steps.at(1).props().number).toBe(2);
         expect(steps.at(1).props().complete).toBe(false);
+        expect(steps.at(1).props().enabled).toBe(false);
 
         expect(steps.at(2).props().text).toBe("Model options");
         expect(steps.at(2).props().active).toBe(false);
         expect(steps.at(2).props().number).toBe(3);
         expect(steps.at(2).props().complete).toBe(false);
+        expect(steps.at(2).props().enabled).toBe(false);
 
         expect(steps.at(3).props().text).toBe("Run model");
         expect(steps.at(3).props().active).toBe(false);
         expect(steps.at(3).props().number).toBe(4);
         expect(steps.at(3).props().complete).toBe(false);
+        expect(steps.at(3).props().enabled).toBe(false);
 
         expect(steps.at(4).props().text).toBe("Review output");
         expect(steps.at(4).props().active).toBe(false);
         expect(steps.at(4).props().number).toBe(5);
         expect(steps.at(4).props().complete).toBe(false);
+        expect(steps.at(4).props().enabled).toBe(false);
 
         expect(steps.at(5).props().text).toBe("Download results");
         expect(steps.at(5).props().active).toBe(false);
         expect(steps.at(5).props().number).toBe(6);
         expect(steps.at(5).props().complete).toBe(false);
+        expect(steps.at(5).props().enabled).toBe(false);
+    });
+
+    it("renders step connectors", () => {
+        const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const connectors = wrapper.findAll(".step-connector");
+
+        expect(connectors.length).toBe(5);
+        // all should not be enabled at first
+        expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(0);
+    });
+
+    it("step connector is enabled if next step is", () => {
+        const store = createSut({ready: true},
+            {ready: true, survey: true, program: true, shape: true} as any,
+            {},
+            {ready: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const connectors = wrapper.findAll(".step-connector");
+
+        expect(connectors.at(0).classes()).toContain("enabled");
+        expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(1);
     });
 
     it("all steps except baseline are disabled initially", () => {
@@ -171,13 +212,7 @@ describe("Stepper component", () => {
     });
 
     it("upload surveys step is enabled when baseline step is complete", () => {
-        const store = createSut({
-                country: "testCountry",
-                iso3: "TTT",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse(),
-                ready: true
-            },
+        const store = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
@@ -190,12 +225,7 @@ describe("Stepper component", () => {
     });
 
     it("upload surveys step is not enabled if metadata state is not complete", () => {
-        const store = createSut({
-                country: "testCountry",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse(),
-                ready: true
-            },
+        const store = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: null},
             {ready: true});
@@ -208,13 +238,7 @@ describe("Stepper component", () => {
     });
 
     it("updates active step when jump event is emitted", () => {
-        const store = createSut({
-                country: "testCountry",
-                iso3: "TTT",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse(),
-                ready: true
-            },
+        const store = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
@@ -238,13 +262,7 @@ describe("Stepper component", () => {
 
 
     it("can continue when the active step is complete", () => {
-        const store = createSut({
-                country: "testCountry",
-                iso3: "TTT",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse(),
-                ready: true
-            },
+        const store = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
@@ -257,8 +275,43 @@ describe("Stepper component", () => {
         expect(steps.at(1).props().active).toBe(true);
     });
 
+
+    it("cannot go back from the first step", () => {
+        const store = createSut({country: "", ready: true}, {ready: true}, {}, {ready: true});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const backLink = wrapper.find("#back");
+        expect(backLink.classes()).toContain("disabled");
+    });
+
+    it("can go back from later steps", () => {
+        const store = createSut({
+                country: "testCountry",
+                iso3: "TTT",
+                shape: mockShapeResponse(),
+                population: mockPopulationResponse(),
+                ready: true
+            },
+            {ready: true},
+            {plottingMetadata: "TEST DATA" as any},
+            {ready: true},
+            {activeStep: 2});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const backLink = wrapper.find("#back");
+        expect(backLink.classes()).not.toContain("disabled");
+
+        backLink.trigger("click");
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(0).props().active).toBe(true);
+    });
+
     it("updates from completed state when active step data is populated", (done) => {
-        const baselineState = {country: "Malawi", iso3: "MWI", population: mockPopulationResponse(), ready: true};
+        const baselineState = {
+            country: "Malawi",
+            iso3: "MWI",
+            population: mockPopulationResponse(),
+            shape: mockShapeResponse(),
+            ready: true
+        };
         const store = createSut(baselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
@@ -268,9 +321,9 @@ describe("Stepper component", () => {
         expect(continueLink.classes()).toContain("disabled");
 
         //invoke the mutation
-        store.commit("baseline/ShapeUpdated", {
-            "type": "ShapeUpdated",
-            "payload": mockShapeResponse()
+        store.commit("baseline/Validated", {
+            "type": "Validated",
+            "payload": mockValidateBaselineResponse()
         });
 
         Vue.nextTick().then(() => {
@@ -281,13 +334,11 @@ describe("Stepper component", () => {
 
     it("active step only becomes active once state becomes ready", async () => {
 
-        const store = createSut({
-            ready: true,
-            country: "Malawi",
-            iso3: "MWI",
-            shape: mockShapeResponse(),
-            population: mockPopulationResponse()
-        }, {}, {plottingMetadata: mockPlottingMetadataResponse()}, {ready: true}, {activeStep: 2});
+        const store = createSut(completedBaselineState,
+            {},
+            {plottingMetadata: mockPlottingMetadataResponse()},
+            {ready: true},
+            {activeStep: 2});
 
         const wrapper = shallowMount(Stepper, {store, localVue});
         let steps = wrapper.findAll(Step);
@@ -300,13 +351,10 @@ describe("Stepper component", () => {
 
     it("complete steps only shown as complete once state becomes ready", async () => {
 
-        const store = createSut({
-                ready: true,
-                country: "Malawi",
-                iso3: "MWI",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse()
-            }, {}, {
+        const store = createSut(
+            completedBaselineState,
+            {},
+            {
                 plottingMetadata: "TEST DATA" as any
             },
             {ready: true});
@@ -321,13 +369,7 @@ describe("Stepper component", () => {
 
     it("steps only shown as enabled once state becomes ready, and not loading", async () => {
 
-        const store = createSut({
-                ready: true,
-                country: "Malawi",
-                iso3: "MWI",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse()
-            },
+        const store = createSut(completedBaselineState,
             {},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
@@ -342,13 +384,7 @@ describe("Stepper component", () => {
 
     it("steps not shown as enabled if state becomes ready, but is also loading", async () => {
 
-        const store = createSut({
-                ready: true,
-                country: "Malawi",
-                iso3: "MWI",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse()
-            },
+        const store = createSut(completedBaselineState,
             {},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});

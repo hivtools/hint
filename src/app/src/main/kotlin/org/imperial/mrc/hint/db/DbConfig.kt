@@ -11,9 +11,10 @@ import javax.sql.DataSource
 class DbConfig {
 
     @Bean
-    @ConfigurationProperties("spring.datasource")
     fun dataSource(appProperties: AppProperties): DataSource {
         val dataSourceBuilder = DataSourceBuilder.create()
+        dataSourceBuilder.driverClassName("org.postgresql.Driver")
+        dataSourceBuilder.url(appProperties.dbUrl)
         dataSourceBuilder.username(appProperties.dbUser)
         dataSourceBuilder.password(appProperties.dbPassword)
         return dataSourceBuilder.build()

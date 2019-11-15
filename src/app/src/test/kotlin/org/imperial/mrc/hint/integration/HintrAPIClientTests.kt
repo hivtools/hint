@@ -14,12 +14,25 @@ import org.junit.jupiter.api.Test
 class HintrApiClientTests {
 
     @Test
-    fun `can validate baseline`() {
+    fun `can validate baseline individual`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val file = SessionFileWithPath("fakepath", "hash", "filename")
         val result = sut.validateBaselineIndividual(file, FileType.PJNZ)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")
+    }
+
+    @Test
+    fun `can validate baseline combined`() {
+        val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.validateBaselineCombined( mapOf(
+                "pjnz" to SessionFileWithPath("fakePjnz", "pjnzHash", "pjnzFile"),
+                "shape" to SessionFileWithPath("fakeShape", "shapeHash", "shapeFile"),
+                "population" to SessionFileWithPath("fakePop", "popHash", "popFile")
+            )
+        )
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "INVALID_BASELINE")
     }
 
     @Test

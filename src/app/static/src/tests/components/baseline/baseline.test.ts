@@ -8,6 +8,8 @@ import Baseline from "../../../app/components/baseline/Baseline.vue";
 import FileUpload from "../../../app/components/FileUpload.vue";
 import {BaselineMutations} from "../../../app/store/baseline/mutations";
 import {MetadataState} from "../../../app/store/metadata/metadata";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -23,7 +25,8 @@ describe("Baseline upload component", () => {
             uploadPJNZ: jest.fn(),
             getBaselineData: jest.fn(),
             uploadShape: jest.fn(),
-            uploadPopulation: jest.fn()
+            uploadPopulation: jest.fn(),
+            validate: jest.fn()
         };
 
         return new Vuex.Store({
@@ -41,6 +44,12 @@ describe("Baseline upload component", () => {
             }
         })
     };
+
+    it("pjnz upload accepts pjnz or zip files", () => {
+        const store = createSut();
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(0).props().accept).toBe("PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP");
+    });
 
     it("pjnz is not valid if country is not present", () => {
         const store = createSut();
@@ -80,6 +89,20 @@ describe("Baseline upload component", () => {
         expect(wrapper.findAll(FileUpload).at(0).props().error).toBe("File upload went wrong");
     });
 
+    it("shows baseline error if present", () => {
+        const store = createSut({baselineError: "Baseline is inconsistent"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.find(ErrorAlert).props().message).toEqual("Baseline is inconsistent")
+    });
+
+    it("shows baseline validating indicator", () => {
+        const store = createSut({validating: true});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        const validating = wrapper.find("#baseline-validating");
+        expect(validating.text()).toEqual("Validating...")
+        expect(validating.findAll(LoadingSpinner).length).toEqual(1)
+    });
+
     it("shape is not valid if shape is not present", () => {
         const store = createSut();
         const wrapper = shallowMount(Baseline, {store, localVue});
@@ -98,6 +121,12 @@ describe("Baseline upload component", () => {
         expect(wrapper.findAll(FileUpload).at(1).props().error).toBe("File upload went wrong");
     });
 
+    it("shape upload accepts geojson", () => {
+        const store = createSut();
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(1).props().accept).toBe("geojson,.geojson,GEOJSON,.GEOJSON");
+    });
+
     it("population is not valid if population is not present", () => {
         const store = createSut();
         const wrapper = shallowMount(Baseline, {store, localVue});
@@ -114,6 +143,12 @@ describe("Baseline upload component", () => {
         const store = createSut({populationError: "File upload went wrong"});
         const wrapper = shallowMount(Baseline, {store, localVue});
         expect(wrapper.findAll(FileUpload).at(2).props().error).toBe("File upload went wrong");
+    });
+
+    it("population upload accepts csv", () => {
+        const store = createSut();
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(2).props().accept).toBe("csv,.csv");
     });
 
     it("upload pjnz dispatches baseline/uploadPJNZ", (done) => {

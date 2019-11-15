@@ -1,11 +1,16 @@
 package org.imperial.mrc.hint.unit.controllers
 
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.BaselineController
 import org.imperial.mrc.hint.controllers.HintrController
+import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.junit.jupiter.api.Test
+import org.assertj.core.api.Assertions.assertThat
+import org.springframework.http.ResponseEntity
 
 class BaselineControllerTests : HintrControllerTests() {
 
@@ -53,5 +58,33 @@ class BaselineControllerTests : HintrControllerTests() {
         assertGetsIfExists(FileType.PJNZ) {
             sut ->  (sut as BaselineController).getPJNZ()
         }
+    }
+
+    @Test
+    fun `validates combined files`() {
+        val mockPjnz = SessionFileWithPath("pjnzPath", "pjnzHash", "pjnzFile")
+        val mockShape =SessionFileWithPath("shapePath", "shapeHash", "shapeFile")
+        val mockPop = SessionFileWithPath("popPath", "pjnzHash", "popFile")
+
+        val mockFileManager = mock<FileManager> {
+            on { getFile(FileType.PJNZ) } doReturn mockPjnz
+            on { getFile(FileType.Shape) } doReturn mockShape
+            on { getFile(FileType.Population) } doReturn mockPop
+        }
+
+        val mockResponse = mock<ResponseEntity<String>>()
+        val files = mapOf(
+                "pjnz" to mockPjnz,
+                "shape" to mockShape,
+                "population" to mockPop
+        )
+        val mockAPIClient = mock<APIClient>{
+            on { validateBaselineCombined(files) } doReturn mockResponse
+        }
+
+        val sut = BaselineController(mockFileManager, mockAPIClient)
+        val result = sut.validate()
+
+        assertThat(result).isSameAs(mockResponse)
     }
 }

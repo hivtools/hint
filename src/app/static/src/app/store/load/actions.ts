@@ -1,5 +1,5 @@
 import {ActionContext, ActionTree} from "vuex";
-import {LoadingState, LoadState} from "../load/load";
+import {LoadingState, LoadState} from "./load";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {verifyCheckSum} from "../../utils";
