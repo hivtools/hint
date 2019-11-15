@@ -51,24 +51,11 @@ class ModelRunTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get model run result`(isAuthorized: IsAuthorized) {
-
-        val id = when (isAuthorized) {
-            IsAuthorized.TRUE -> {
-                val entity = getJsonEntity()
-                val runResult = testRestTemplate.postForEntity<String>("/model/run/", entity)
-                ObjectMapper().readValue<JsonNode>(runResult.body!!)["data"]["id"].textValue()
-            }
-            IsAuthorized.FALSE -> "nonsense"
-        }
-
-        do {
-            Thread.sleep(500)
-            val statusResponse = testRestTemplate.getForEntity<String>("/model/status/${id}")
-            print(statusResponse.body)
-        } while (statusResponse.body!!.contains("\"status\":\"RUNNING\""))
-
-        val responseEntity = testRestTemplate.getForEntity<String>("/model/result/${id}")
-        assertSecureWithSuccess(isAuthorized, responseEntity, "ModelResultResponse")
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/result/nonsense")
+        assertSecureWithError(isAuthorized,
+                responseEntity,
+                HttpStatus.BAD_REQUEST,
+                "FAILED_TO_RETRIEVE_RESULT", "Missing some results")
     }
 
     @ParameterizedTest
