@@ -1,9 +1,8 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
-import org.imperial.mrc.hint.emails.PasswordResetEmail
+import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.toJsonString
@@ -23,7 +22,6 @@ class TokenException(message: String) : HintException(message, HttpStatus.BAD_RE
 @RequestMapping("/password")
 class PasswordController(private val userRepository: UserRepository,
                          private val oneTimeTokenManager: OneTimeTokenManager,
-                         private val appProperties: AppProperties,
                          private val emailManager: EmailManager) {
 
     @GetMapping("/forgot-password")
@@ -37,14 +35,7 @@ class PasswordController(private val userRepository: UserRepository,
         val user = userRepository.getUser(email)
 
         if (user != null) {
-            val token = oneTimeTokenManager.generateOnetimeSetPasswordToken(user)
-
-            val emailMessage = PasswordResetEmail(appProperties.applicationTitle,
-                    appProperties.applicationUrl,
-                    token,
-                    email)
-
-            emailManager.sendEmail(emailMessage, email)
+            emailManager.sendPasswordEmail(email, user.username, PasswordEmailTemplate.ResetPassword())
         }
 
         return EmptySuccessResponse.toJsonString()
