@@ -2,16 +2,7 @@ import {actions} from "../../app/store/surveyAndProgram/actions";
 import {actions as baselineActions} from "../../app/store/baseline/actions"
 import {login} from "./integrationTest";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../app/generated";
-
-const fs = require("fs");
-const FormData = require("form-data");
-
-export function getFormData(fileName: string): FormData {
-    const file = fs.createReadStream(`../testdata/${fileName}`);
-    const formData = new FormData();
-    formData.append('file', file);
-    return formData
-}
+import {getFormData} from "./helpers";
 
 describe("Survey and programme actions", () => {
 
@@ -20,9 +11,7 @@ describe("Survey and programme actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        const file = fs.createReadStream("../testdata/malawi.geojson");
-        const formData = new FormData();
-        formData.append('file', file);
+        const formData = getFormData("malawi.geojson");
 
         await baselineActions.uploadShape({commit, dispatch} as any, formData);
     });
@@ -87,7 +76,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getSurveyAndProgramData({commit, state} as any);
+        await actions.getSurveyAndProgramData({commit} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == "SurveyUpdated")[0]["payload"]).toBe(null);
     });
 
@@ -110,7 +99,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getSurveyAndProgramData({commit, state} as any);
+        await actions.getSurveyAndProgramData({commit} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == "ProgramUpdated")[0]["payload"]).toBe(null);
     });
 
@@ -133,7 +122,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getSurveyAndProgramData({commit, state} as any);
+        await actions.getSurveyAndProgramData({commit} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == "ANCUpdated")[0]["payload"]).toBe(null);
     });
 

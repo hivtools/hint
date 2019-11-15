@@ -259,7 +259,7 @@ describe("Survey and programme actions", () => {
         });
         await actions.deleteAll({commit, state} as any);
         expect(commit).toBeCalledTimes(6);
-        expect(commit.mock.calls.map(c => c[0]["type"])).toStrictEqual([
+        expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([
             "SurveyUpdated",
             "filteredData/Reset",
             "ProgramUpdated",
