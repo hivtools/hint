@@ -258,6 +258,7 @@ describe("Survey and programme actions", () => {
             program: mockProgramResponse({hash: "hash"})
         });
         await actions.deleteAll({commit, state} as any);
+        expect(mockAxios.history["delete"].length).toBe(3);
         expect(commit).toBeCalledTimes(6);
         expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([
             "SurveyUpdated",

@@ -62,35 +62,35 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             });
     },
 
-    async deletePJNZ({commit, state}) {
+    async deletePJNZ({commit, dispatch, state}) {
         if (state.pjnz) {
             await api(commit)
                 .delete(`/baseline/pjnz/${state.pjnz.hash}/`)
                 .then(() => {
                     commit({type: "PJNZUpdated", payload: null});
-                    commit({type: "ResetInputs", payload: null}, {root: true});
+                    dispatch("surveyAndProgram/deleteAll", {}, {root: true});
                 })
         }
     },
 
-    async deleteShape({commit, state}) {
+    async deleteShape({commit, dispatch, state}) {
         if (state.shape) {
             await api(commit)
                 .delete(`/baseline/shape/${state.shape.hash}/`)
                 .then(() => {
                     commit({type: "ShapeUpdated", payload: null});
-                    commit({type: "ResetInputs", payload: null}, {root: true});
+                    dispatch("surveyAndProgram/deleteAll", {}, {root: true});
                 })
         }
     },
 
-    async deletePopulation({commit, state}) {
+    async deletePopulation({commit, dispatch, state}) {
         if (state.population) {
             await api(commit)
                 .delete(`/baseline/population/${state.population.hash}/`)
                 .then(() => {
                     commit({type: "PopulationUpdated", payload: null});
-                    commit({type: "ResetInputs", payload: null}, {root: true});
+                    dispatch("surveyAndProgram/deleteAll", {}, {root: true});
                 })
         }
     },
