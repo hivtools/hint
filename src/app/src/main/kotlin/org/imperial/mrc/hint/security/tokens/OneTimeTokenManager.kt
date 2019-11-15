@@ -6,6 +6,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.jwt.profile.JwtGenerator
 import org.springframework.stereotype.Component
 import org.pac4j.jwt.config.signature.SignatureConfiguration
+import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 import java.time.Duration
 import java.security.SecureRandom
 import java.time.Instant
@@ -16,7 +17,7 @@ class OneTimeTokenManager(
         appProperties: AppProperties,
         private val tokenRepository: TokenRepository,
         signatureConfiguration: SignatureConfiguration,
-        private val authenticator: OneTimeTokenAuthenticator
+        private val authenticator: JwtAuthenticator
 )
 {
     private val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
