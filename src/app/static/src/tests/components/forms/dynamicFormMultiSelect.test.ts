@@ -27,7 +27,7 @@ describe('Dynamic form multi-select component', function () {
         expect(treeSelect.props("clearable")).toBe(false);
     });
 
-    it("renders treeselect with starting value", () => {
+    it("renders treeselect with starting array value", () => {
         const rendered = shallowMount(DynamicFormMultiSelect, {
             propsData: {
                 formControl: {...fakeSelect, value: ["opt2"]}
@@ -38,6 +38,19 @@ describe('Dynamic form multi-select component', function () {
         expect(treeSelect.props("value")).toStrictEqual(["opt2"]);
         expect(treeSelect.props("options")).toStrictEqual(fakeSelect.options);
     });
+
+    it("renders treeselect with string starting value", () => {
+        const rendered = shallowMount(DynamicFormMultiSelect, {
+            propsData: {
+                formControl: {...fakeSelect, value: "opt2"}
+            }
+        });
+
+        const treeSelect = rendered.find(TreeSelect);
+        expect(treeSelect.props("value")).toStrictEqual(["opt2"]);
+        expect(treeSelect.props("options")).toStrictEqual(fakeSelect.options);
+    });
+
 
     it("initialises hidden input with value", () => {
         const rendered = shallowMount(DynamicFormMultiSelect, {

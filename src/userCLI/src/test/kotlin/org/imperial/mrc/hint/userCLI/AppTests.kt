@@ -1,8 +1,13 @@
 package org.imperial.mrc.hint.userCLI
 
+import com.nhaarman.mockito_kotlin.eq
+import com.nhaarman.mockito_kotlin.isNull
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.db.DbConfig
+import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeEach
@@ -40,6 +45,21 @@ class AppTests {
         sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
         Assertions.assertThat(sut.userExists(mapOf("<email>" to TEST_EMAIL))).isEqualTo("true")
+    }
+
+
+    @Test
+    fun `can add user without password`()
+    {
+        sut.addUser(mapOf("<email>" to TEST_EMAIL))
+        Assertions.assertThat(sut.userExists(mapOf("<email>" to TEST_EMAIL))).isEqualTo("true")
+    }
+
+    @Test
+    fun `null password gets passed to user repo`() {
+        val mockUserRepo = mock<UserRepository>()
+        UserCLI(mockUserRepo).addUser(mapOf("<email>" to TEST_EMAIL))
+        verify(mockUserRepo).addUser(eq(TEST_EMAIL), isNull())
     }
 
     @Test
