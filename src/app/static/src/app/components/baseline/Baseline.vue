@@ -7,6 +7,7 @@
                                  :valid="pjnz.valid"
                                  :error="pjnz.error || plottingMetadataError"
                                  :upload="uploadPJNZ"
+                                 :delete-file="deletePJNZ"
                                  :existingFileName="pjnz.existingFileName"
                                  accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
                                  name="pjnz">
@@ -16,6 +17,7 @@
                                  :valid="shape.valid"
                                  :error="shape.error"
                                  :upload="uploadShape"
+                                 :delete-file="deleteShape"
                                  :existingFileName="shape.existingFileName"
                                  accept="geojson,.geojson,GEOJSON,.GEOJSON"
                                  name="shape">
@@ -24,6 +26,7 @@
                                  :valid="population.valid"
                                  :error="population.error"
                                  :upload="uploadPopulation"
+                                 :delete-file="deletePopulation"
                                  :existingFileName="population.existingFileName"
                                  accept="csv,.csv"
                                  name="population">

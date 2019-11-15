@@ -20,6 +20,7 @@ export interface BaselineActions {
     deletePJNZ: (store: ActionContext<BaselineState, RootState>) => void
     deleteShape: (store: ActionContext<BaselineState, RootState>) => void
     deletePopulation: (store: ActionContext<BaselineState, RootState>) => void
+    deleteAll: (store: ActionContext<BaselineState, RootState>) => void
 }
 
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
@@ -82,37 +83,47 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         commit({type: "Ready", payload: true});
     },
 
-    async deletePJNZ({commit, state}) {
+    async deletePJNZ({commit, dispatch, state}) {
         commit({type: "ResetInputs", payload: null}, {root: true});
         if (state.pjnz) {
             await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-                .delete(`/baseline/pjnz/${state.pjnz.hash}`)
+                .delete(`/baseline/pjnz/${state.pjnz.hash}/`)
                 .then(() => {
                     commit({type: "PJNZUpdated", payload: null});
+                    dispatch("surveyAndProgram/deleteAll", {}, {root: true});
                 })
         }
     },
 
-    async deleteShape({commit, state}) {
-        commit({type: "ResetInputs", payload: null}, {root: true});
+    async deleteShape({commit, dispatch, state}) {
         if (state.shape) {
             await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-                .delete(`/baseline/shape/${state.shape.hash}`)
+                .delete(`/baseline/shape/${state.shape.hash}/`)
                 .then(() => {
                     commit({type: "ShapeUpdated", payload: null});
+                    dispatch("surveyAndProgram/deleteAll", {}, {root: true})
                 })
         }
     },
 
-    async deletePopulation({commit, state}) {
+    async deletePopulation({commit, dispatch, state}) {
         commit({type: "ResetInputs", payload: null}, {root: true});
         if (state.population) {
             await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-                .delete(`/baseline/population/${state.population.hash}`)
+                .delete(`/baseline/population/${state.population.hash}/`)
                 .then(() => {
                     commit({type: "PopulationUpdated", payload: null});
+                    dispatch("surveyAndProgram/deleteAll", {}, {root: true});
                 })
         }
+    },
+
+    async deleteAll(store) {
+        await Promise.all([
+            actions.deletePJNZ(store),
+            actions.deletePopulation(store),
+            actions.deleteShape(store)
+        ]);
     },
 
     async validate({commit}) {

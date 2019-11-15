@@ -4,7 +4,7 @@ import {DataType} from "../filteredData/filteredData";
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
-import {BaselineErrorActionTypes} from "../baseline/actions";
+import {BaselineActionTypes, BaselineErrorActionTypes} from "../baseline/actions";
 
 export type SurveyAndProgramActionTypes = "SurveyUpdated" | "ProgramUpdated" | "ANCUpdated"
 export type SurveyAndProgramActionErrorTypes = "SurveyError" | "ProgramError" | "ANCError"
@@ -13,6 +13,10 @@ export interface SurveyAndProgramActions {
     uploadSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
     uploadProgram: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
     uploadANC: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void
+    deleteSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
+    deleteProgram: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
+    deleteANC: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
+    deleteAll: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
     getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void;
 }
 
@@ -60,6 +64,47 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
                     commitSelectedDataTypeUpdated(commit, DataType.ANC);
                 }
             });
+    },
+
+    async deleteSurvey({commit, state}) {
+        // todo reset filtered data
+        if (state.survey) {
+            await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .delete(`/disease/survey/${state.survey.hash}/`)
+                .then(() => {
+                    commit({type: "SurveyUpdated", payload: null});
+                })
+        }
+    },
+
+    async deleteProgram({commit, state}) {
+        // todo reset filtered data
+        if (state.program) {
+            await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .delete(`/disease/programme/${state.program.hash}/`)
+                .then(() => {
+                    commit({type: "ProgramUpdated", payload: null});
+                })
+        }
+    },
+
+    async deleteANC({commit, state}) {
+        // todo reset filtered data
+        if (state.anc) {
+            await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .delete(`/disease/anc/${state.anc.hash}/`)
+                .then(() => {
+                    commit({type: "ANCUpdated", payload: null});
+                })
+        }
+    },
+
+    async deleteAll(store) {
+        await Promise.all([
+            actions.deleteSurvey(store),
+            actions.deleteProgram(store),
+            actions.deleteANC(store)
+        ]);
     },
 
     async getSurveyAndProgramData({commit}) {

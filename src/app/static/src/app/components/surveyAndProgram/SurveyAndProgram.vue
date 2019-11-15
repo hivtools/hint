@@ -7,6 +7,7 @@
                              :error="survey.error"
                              :upload="uploadSurvey"
                              :existingFileName="survey.existingFileName"
+                             :delete-file="deleteSurvey"
                              accept="csv,.csv"
                              name="survey">
                 </file-upload>
@@ -14,6 +15,7 @@
                              :valid="programme.valid"
                              :error="programme.error"
                              :upload="uploadProgram"
+                             :delete-file="deleteProgram"
                              :existingFileName="programme.existingFileName"
                              accept="csv,.csv"
                              name="program">
@@ -22,6 +24,7 @@
                              :valid="anc.valid"
                              :error="anc.error"
                              :upload="uploadANC"
+                             :delete-file="deleteANC"
                              :existingFileName="anc.existingFileName"
                              accept="csv,.csv"
                              name="anc">
@@ -105,6 +108,9 @@
                 uploadSurvey: 'surveyAndProgram/uploadSurvey',
                 uploadProgram: 'surveyAndProgram/uploadProgram',
                 uploadANC: 'surveyAndProgram/uploadANC',
+                deleteSurvey: 'surveyAndProgram/deleteSurvey',
+                deleteProgram: 'surveyAndProgram/deleteProgram',
+                deleteANC: 'surveyAndProgram/deleteANC',
                 selectTab: 'filteredData/selectDataType'
             })
         },

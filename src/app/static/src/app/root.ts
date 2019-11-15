@@ -1,4 +1,4 @@
-import {MutationPayload, Store, StoreOptions} from "vuex";
+import {MutationPayload, Store, StoreOptions, SubscribeActionOptions} from "vuex";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
 import {metadata, MetadataState, initialMetadataState} from "./store/metadata/metadata";
 import {filteredData, FilteredDataState, initialFilteredDataState} from "./store/filteredData/filteredData";
@@ -36,7 +36,7 @@ const persistState = (store: Store<RootState>) => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
         console.log(mutation.type);
         localStorageManager.saveState(state);
-    })
+    });
 };
 
 export const emptyState = {
