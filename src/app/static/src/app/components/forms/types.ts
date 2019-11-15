@@ -36,7 +36,7 @@ export type SelectControl = DynamicControl & {
 
 export type MultiSelectControl = DynamicControl & {
     options: Option[]
-    value?: string[]
+    value?: string[] | string
 }
 
 export type NumberControl = DynamicControl & {

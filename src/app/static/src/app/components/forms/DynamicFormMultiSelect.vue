@@ -35,7 +35,13 @@
         computed: {
             value: {
                 get() {
-                    return this.formControl.value ? this.formControl.value as string[] : []
+                    if (Array.isArray(this.formControl.value)) {
+                        return this.formControl.value
+                    }
+                    if (typeof this.formControl.value == "string") {
+                        return [this.formControl.value]
+                    }
+                    return []
                 },
                 set(newVal: string[]) {
                     this.$emit("change", {...this.formControl, value: newVal});
