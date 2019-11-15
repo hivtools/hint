@@ -6,6 +6,13 @@ import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../app/generate
 const fs = require("fs");
 const FormData = require("form-data");
 
+export function getFormData(fileName: string): FormData {
+    const file = fs.createReadStream(`../testdata/${fileName}`);
+    const formData = new FormData();
+    formData.append('file', file);
+    return formData
+}
+
 describe("Survey and programme actions", () => {
 
     beforeAll(async () => {
@@ -19,13 +26,6 @@ describe("Survey and programme actions", () => {
 
         await baselineActions.uploadShape({commit, dispatch} as any, formData);
     });
-
-    function getFormData(fileName: string): FormData {
-        const file = fs.createReadStream(`../testdata/${fileName}`);
-        const formData = new FormData();
-        formData.append('file', file);
-        return formData
-    }
 
     it("can upload survey", async () => {
 

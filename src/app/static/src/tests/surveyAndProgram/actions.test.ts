@@ -241,4 +241,31 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
     });
 
+    it("deletes all", async () => {
+        mockAxios.onDelete("/disease/anc/hash/")
+            .reply(200, mockSuccess(true));
+
+        mockAxios.onDelete("/disease/survey/hash/")
+            .reply(200, mockSuccess(true));
+
+        mockAxios.onDelete("/disease/programme/hash/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const state = mockSurveyAndProgramState({
+            anc: mockAncResponse({hash: "hash"}),
+            survey: mockSurveyResponse({hash: "hash"}),
+            program: mockProgramResponse({hash: "hash"})
+        });
+        await actions.deleteAll({commit, state} as any);
+        expect(commit).toBeCalledTimes(6);
+        expect(commit.mock.calls.map(c => c[0]["type"])).toStrictEqual([
+            "SurveyUpdated",
+            "filteredData/Reset",
+            "ProgramUpdated",
+            "filteredData/Reset",
+            "ANCUpdated",
+            "filteredData/Reset"]);
+    });
+
 });

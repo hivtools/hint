@@ -1,6 +1,6 @@
 import {
     mockAxios,
-    mockBaselineState, mockFailure,
+    mockBaselineState, mockFailure, mockPJNZResponse,
     mockPopulationResponse,
     mockShapeResponse,
     mockSuccess,
@@ -183,6 +183,48 @@ describe("Baseline actions", () => {
 
         expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toContain("Ready");
+    });
+
+    it("delete pjnz and resets inputs", async () => {
+
+        mockAxios.onDelete("/baseline/pjnz/1234/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const state = mockBaselineState({
+            pjnz: mockPJNZResponse({hash: "1234"})
+        });
+        await actions.deletePJNZ({commit, state} as any);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PJNZUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe("ResetInputs");
+    });
+
+    it("deletes shape and resets inputs", async () => {
+
+        mockAxios.onDelete("/baseline/shape/1234/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const state = mockBaselineState({
+            shape: mockShapeResponse({hash: "1234"})
+        });
+        await actions.deleteShape({commit, state} as any);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe("ResetInputs");
+    });
+
+    it("deletes population and resets inputs", async () => {
+
+        mockAxios.onDelete("/baseline/population/1234/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const state = mockBaselineState({
+            population: mockPopulationResponse({hash: "1234"})
+        });
+        await actions.deletePopulation({commit, state} as any);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe("ResetInputs");
     });
 
 });

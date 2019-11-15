@@ -13,9 +13,13 @@ export type BaselineErrorActionTypes =
 
 export interface BaselineActions {
     uploadPJNZ: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void
-    getBaselineData: (store: ActionContext<BaselineState, RootState>) => void
     uploadShape: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void,
     uploadPopulation: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void,
+    deletePJNZ: (store: ActionContext<BaselineState, RootState>) => void
+    deleteShape: (store: ActionContext<BaselineState, RootState>) => void,
+    deleteAll: (store: ActionContext<BaselineState, RootState>) => void,
+    deletePopulation: (store: ActionContext<BaselineState, RootState>) => void,
+    getBaselineData: (store: ActionContext<BaselineState, RootState>) => void
     validate: (store: ActionContext<BaselineState, RootState>) => void
 }
 
@@ -56,6 +60,47 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .then(() => {
                 dispatch('validate');
             });
+    },
+
+    async deletePJNZ({commit, state}) {
+        if (state.pjnz) {
+            await api(commit)
+                .delete(`/baseline/pjnz/${state.pjnz.hash}/`)
+                .then(() => {
+                    commit({type: "PJNZUpdated", payload: null});
+                    commit({type: "ResetInputs", payload: null}, {root: true});
+                })
+        }
+    },
+
+    async deleteShape({commit, state}) {
+        if (state.shape) {
+            await api(commit)
+                .delete(`/baseline/shape/${state.shape.hash}/`)
+                .then(() => {
+                    commit({type: "ShapeUpdated", payload: null});
+                    commit({type: "ResetInputs", payload: null}, {root: true});
+                })
+        }
+    },
+
+    async deletePopulation({commit, state}) {
+        if (state.population) {
+            await api(commit)
+                .delete(`/baseline/population/${state.population.hash}/`)
+                .then(() => {
+                    commit({type: "PopulationUpdated", payload: null});
+                    commit({type: "ResetInputs", payload: null}, {root: true});
+                })
+        }
+    },
+
+    async deleteAll(store) {
+        await Promise.all([
+            actions.deletePJNZ(store),
+            actions.deleteShape(store),
+            actions.deletePopulation(store)
+        ]);
     },
 
     async getBaselineData({commit, dispatch}) {
