@@ -1,5 +1,11 @@
 import {mutations} from "../../app/store/baseline/mutations";
-import {mockPJNZResponse, mockPopulationResponse, mockRootState, mockShapeResponse} from "../mocks";
+import {
+    mockPJNZResponse,
+    mockPopulationResponse,
+    mockRootState,
+    mockShapeResponse,
+    mockValidateBaselineResponse
+} from "../mocks";
 import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
@@ -18,7 +24,7 @@ describe("Baseline mutations", () => {
         expect(testState.pjnzError).toBe("");
     });
 
-    it("state becomes complete once all files are Updated", () => {
+    it("state becomes complete once all files are Updated and validatedConsistent are true", () => {
         const testStore: Module<BaselineState, RootState> = {
             state: {...initialBaselineState},
             getters: baselineGetters
@@ -46,8 +52,14 @@ describe("Baseline mutations", () => {
                 mockPopulationResponse(), type: "PopulationUpdated"
         });
 
-        expect(complete(testState, null, testRootState, null)).toBe(true);
+        expect(complete(testState, null, testRootState, null)).toBe(false);
 
+        mutations.Validated(testState, {
+            payload:
+                mockValidateBaselineResponse(), type: "Validated"
+        });
+
+        expect(complete(testState, null, testRootState, null)).toBe(true);
     });
 
     it("sets error on PJNZUploadError", () => {
@@ -144,6 +156,31 @@ describe("Baseline mutations", () => {
         const testState = {...initialBaselineState};
         mutations.Ready(testState);
         expect(testState.ready).toBe(true);
-    })
+    });
+    it("Validated sets validation values", () => {
+        const testState = {...initialBaselineState, baselineError: "test error"};
+        mutations.Validated(testState, {payload: {consistent: true, complete: true}});
+        expect(testState.baselineError).toBe("");
+        expect(testState.validatedConsistent).toBe(true);
+    });
+
+    it("Validating resets validation values", () => {
+        const testState = {...initialBaselineState,
+            validatedConsistent: true,
+            baselineError: "test error"
+        };
+        mutations.Validating(testState);
+        expect(testState.baselineError).toBe("");
+        expect(testState.validatedConsistent).toBe(false);
+    });
+
+    it("BaselineError sets baseline error and validation values", () => {
+        const testState = {...initialBaselineState,
+            validatedConsistent: true
+        };
+        mutations.BaselineError(testState, {payload: "test error"});
+        expect(testState.baselineError).toBe("test error");
+        expect(testState.validatedConsistent).toBe(false);
+    });
 
 });

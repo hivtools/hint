@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.multipart.MultipartFile
 
-abstract class HintrController(private val fileManager: FileManager,
-                               private val apiClient: APIClient) {
+abstract class HintrController(protected val fileManager: FileManager,
+                               protected val apiClient: APIClient) {
 
     protected fun saveAndValidate(file: MultipartFile, type: FileType): ResponseEntity<String> {
         val sessionFile = fileManager.saveFile(file, type)
