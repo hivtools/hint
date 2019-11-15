@@ -79,6 +79,35 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         commit({type: "Ready", payload: true});
     },
 
+    async deletePJNZ({commit, state}) {
+        commit({type: "ResetInputs", payload: null}, {root: true});
+        commit({type: "PJNZUpdated", payload: null});
+        if (state.pjnz) {
+            await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .delete(`/baseline/pjnz/${state.pjnz.hash}`)
+        }
+    },
+
+
+    async deleteShape({commit, state}) {
+        commit({type: "ResetInputs", payload: null}, {root: true});
+        commit({type: "PJNZUpdated", payload: null});
+        if (state.pjnz) {
+            await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .delete(`/baseline/shape/${state.pjnz.hash}`)
+        }
+    },
+
+
+    async deletePopulation({commit, state}) {
+        commit({type: "ResetInputs", payload: null}, {root: true});
+        commit({type: "PJNZUpdated", payload: null});
+        if (state.pjnz) {
+            await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+                .delete(`/baseline/population/${state.pjnz.hash}`)
+        }
+    },
+
     async validate({commit}) {
         commit({type: "Validating", payload: null});
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
