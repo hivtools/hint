@@ -46,6 +46,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
             await api<ModelRunActionTypes, ModelRunErrorTypes>(commit)
                 .withSuccess("RunResultFetched")
                 .withError("RunResultError")
+                .freezeResponse()
                 .get<ModelResultResponse>(`/model/result/${state.modelRunId}`)
         }
         commit({type: "Ready", payload: true});
