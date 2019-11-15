@@ -84,4 +84,4 @@ fun Request.getStreamingResponseEntity(headRequest: (url: String, parameters: Pa
 
     return ResponseEntity(responseBody, headers, httpStatus)
 }
-git
+
