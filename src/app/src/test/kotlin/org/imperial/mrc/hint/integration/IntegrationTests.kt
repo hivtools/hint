@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.getForEntity
-import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
@@ -30,7 +29,7 @@ abstract class IntegrationTests {
     }
 }
 
-abstract class SecureIntegrationTests: CleanDatabaseTests() {
+abstract class SecureIntegrationTests : CleanDatabaseTests() {
 
     @Autowired
     lateinit var testRestTemplate: TestRestTemplate
@@ -52,8 +51,12 @@ abstract class SecureIntegrationTests: CleanDatabaseTests() {
 
         when (isAuthorized) {
             IsAuthorized.TRUE -> {
-                Assertions.assertThat(responseEntity.headers.contentType!!.toString()).isEqualTo("application/json")
-                assertSuccess(responseEntity)
+                Assertions.assertThat(responseEntity.headers.contentType!!.toString())
+                        .isEqualTo("application/json")
+
+                if (responseEntity.statusCode != HttpStatus.OK) {
+                    Assertions.fail<String>("Expected OK response but got error: ${responseEntity.body}")
+                }
                 if (schemaName != null) {
                     JSONValidator().validateSuccess(responseEntity.body!!, schemaName)
                 }
@@ -127,7 +130,7 @@ abstract class SecureIntegrationTests: CleanDatabaseTests() {
         testRestTemplate.restTemplate.interceptors.clear()
     }
 
-    private fun authorize() {
+    protected fun authorize() {
         testRestTemplate.restTemplate.interceptors.add(AuthInterceptor(testRestTemplate))
     }
 

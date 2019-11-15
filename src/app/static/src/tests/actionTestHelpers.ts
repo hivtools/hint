@@ -1,7 +1,5 @@
 import {mockAxios, mockBaselineState, mockFailure} from "./mocks";
 import {ActionContext} from "vuex";
-import {initialBaselineState} from "../app/store/baseline/baseline";
-import {mutations} from "../app/store/baseline/mutations";
 
 export function testUploadErrorCommitted(url: string,
                                          expectedErrorType: string,
@@ -18,13 +16,19 @@ export function testUploadErrorCommitted(url: string,
         const dispatch = jest.fn();
         await action({commit, state, dispatch} as any, new FormData());
 
-        // first a call to clear the data
+        // first calls to clear the data
         expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "ResetInputs",
+            payload: null
+        });
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: expectedSuccessType,
             payload: null
         });
-        // second a call to set the error
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+
+        // then a call to set the error
+        expect(commit.mock.calls[2][0]).toStrictEqual({
             type: expectedErrorType,
             payload: "Something went wrong"
         });
