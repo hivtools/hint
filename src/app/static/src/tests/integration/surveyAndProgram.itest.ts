@@ -1,7 +1,6 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
 import {actions as baselineActions} from "../../app/store/baseline/actions"
 import {login} from "./integrationTest";
-import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../app/generated";
 import {getFormData} from "./helpers";
 
 describe("Survey and programme actions", () => {
@@ -64,7 +63,6 @@ describe("Survey and programme actions", () => {
 
         // upload
         await actions.uploadSurvey({commit} as any, formData);
-        const hash = (commit.mock.calls[1][0]["payload"] as SurveyResponse).hash;
 
         commit.mockReset();
 
@@ -86,7 +84,6 @@ describe("Survey and programme actions", () => {
 
         // upload
         await actions.uploadProgram({commit} as any, formData);
-        const hash = (commit.mock.calls[1][0]["payload"] as ProgrammeResponse).hash;
 
         commit.mockReset();
 
@@ -108,7 +105,6 @@ describe("Survey and programme actions", () => {
 
         // upload
         await actions.uploadANC({commit} as any, formData);
-        const hash = (commit.mock.calls[1][0]["payload"] as AncResponse).hash;
 
         commit.mockReset();
 

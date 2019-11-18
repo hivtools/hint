@@ -72,8 +72,8 @@ describe("Baseline actions", () => {
         const formData = getFormData("Botswana2018.PJNZ");
 
         // upload
-        await actions.uploadPJNZ({commit, dispatch} as any, formData);
-
+        await actions.uploadPJNZ({commit, dispatch, state: {}} as any, formData);
+        
         commit.mockReset();
 
         // delete
