@@ -64,7 +64,6 @@ describe("Survey and programme actions", () => {
 
         // upload
         await actions.uploadSurvey({commit} as any, formData);
-        const hash = (commit.mock.calls[1][0]["payload"] as SurveyResponse).hash;
 
         commit.mockReset();
 
@@ -86,7 +85,6 @@ describe("Survey and programme actions", () => {
 
         // upload
         await actions.uploadProgram({commit} as any, formData);
-        const hash = (commit.mock.calls[1][0]["payload"] as ProgrammeResponse).hash;
 
         commit.mockReset();
 
@@ -108,7 +106,6 @@ describe("Survey and programme actions", () => {
 
         // upload
         await actions.uploadANC({commit} as any, formData);
-        const hash = (commit.mock.calls[1][0]["payload"] as AncResponse).hash;
 
         commit.mockReset();
 
