@@ -3,11 +3,11 @@
        <div class="col-sm-12">
            <h4>Export model outputs for Spectrum</h4>
            <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>
-               Export <download-icon size="20" class="icon"></download-icon>
+               Export <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
            </a>
            <h4 class="mt-4">Download summary</h4>
            <a class="btn btn-red btn-lg my-3" :href=summaryUrl>
-               Download <download-icon size="20" class="icon"></download-icon>
+               Download <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
            </a>
        </div>
    </div>
