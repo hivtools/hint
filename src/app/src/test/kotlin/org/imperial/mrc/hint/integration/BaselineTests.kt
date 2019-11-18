@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.integration
 
 import com.nhaarman.mockito_kotlin.isA
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
+import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -99,30 +100,30 @@ class BaselineTests : SessionFileTests() {
     @EnumSource(IsAuthorized::class)
     fun `can delete pjnz data`(isAuthorized: IsAuthorized) {
         val hash = setUpSessionFileAndGetHash(isAuthorized, "Botswana2018.PJNZ", "/baseline/pjnz/")
-        assertSessionFileExists(isAuthorized, hash)
-        val responseEntity = testRestTemplate.exchange<String>("/baseline/pjnz/$hash/", HttpMethod.DELETE)
+        assertSessionFileExists(isAuthorized, FileType.PJNZ)
+        val responseEntity = testRestTemplate.exchange<String>("/baseline/pjnz/", HttpMethod.DELETE)
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
-        assertSessionFileDoesNotExist(hash)
+        assertSessionFileDoesNotExist(FileType.PJNZ)
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can delete shape data`(isAuthorized: IsAuthorized) {
         val hash = setUpSessionFileAndGetHash(isAuthorized, "malawi.geojson", "/baseline/shape/")
-        assertSessionFileExists(isAuthorized, hash)
-        val responseEntity = testRestTemplate.exchange<String>("/baseline/shape/$hash/", HttpMethod.DELETE)
+        assertSessionFileExists(isAuthorized, FileType.Shape)
+        val responseEntity = testRestTemplate.exchange<String>("/baseline/shape/", HttpMethod.DELETE)
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
-        assertSessionFileDoesNotExist(hash)
+        assertSessionFileDoesNotExist(FileType.Shape)
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can delete population data`(isAuthorized: IsAuthorized) {
         val hash = setUpSessionFileAndGetHash(isAuthorized, "population.csv", "/baseline/population/")
-        assertSessionFileExists(isAuthorized, hash)
-        val responseEntity = testRestTemplate.exchange<String>("/baseline/population/$hash/", HttpMethod.DELETE)
+        assertSessionFileExists(isAuthorized, FileType.Population)
+        val responseEntity = testRestTemplate.exchange<String>("/baseline/population/", HttpMethod.DELETE)
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
-        assertSessionFileDoesNotExist(hash)
+        assertSessionFileDoesNotExist(FileType.Population)
     }
 
     @ParameterizedTest

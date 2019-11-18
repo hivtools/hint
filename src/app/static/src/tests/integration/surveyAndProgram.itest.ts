@@ -69,8 +69,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // delete
-        const state = {survey: {hash: hash}};
-        await actions.deleteSurvey({commit, state} as any);
+        await actions.deleteSurvey({commit} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("SurveyUpdated");
 
         commit.mockReset();
@@ -92,8 +91,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // delete
-        const state = {program: {hash: hash}};
-        await actions.deleteProgram({commit, state} as any);
+        await actions.deleteProgram({commit} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("ProgramUpdated");
 
         commit.mockReset();
@@ -115,8 +113,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // delete
-        const state = {anc: {hash: hash}};
-        await actions.deleteANC({commit, state} as any);
+        await actions.deleteANC({commit} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("ANCUpdated");
 
         commit.mockReset();

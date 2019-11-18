@@ -78,8 +78,7 @@ describe("Baseline actions", () => {
         commit.mockReset();
 
         // delete
-        const state = {pjnz: {hash: hash}};
-        await actions.deletePJNZ({commit, state} as any);
+        await actions.deletePJNZ({commit, dispatch} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("PJNZUpdated");
 
         commit.mockReset();
@@ -101,8 +100,7 @@ describe("Baseline actions", () => {
         commit.mockReset();
 
         // delete
-        const state = {shape: {hash: hash}};
-        await actions.deleteShape({commit, state} as any);
+        await actions.deleteShape({commit, dispatch} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUpdated");
 
         commit.mockReset();
@@ -125,7 +123,7 @@ describe("Baseline actions", () => {
 
         // delete
         const state = {population: {hash: hash}};
-        await actions.deletePopulation({commit, state} as any);
+        await actions.deletePopulation({commit, dispatch, state} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUpdated");
 
         commit.mockReset();

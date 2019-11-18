@@ -66,37 +66,31 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             });
     },
 
-    async deleteSurvey({commit, state}) {
-        if (state.survey) {
-            await api(commit)
-                .delete(`/disease/survey/${state.survey.hash}/`)
-                .then(() => {
-                    commit({type: "SurveyUpdated", payload: null});
-                    commit({type: "filteredData/Reset", payload: null}, {root: true});
-                })
-        }
+    async deleteSurvey({commit}) {
+        await api(commit)
+            .delete("/disease/survey/")
+            .then(() => {
+                commit({type: "SurveyUpdated", payload: null});
+                commit({type: "filteredData/Reset", payload: null}, {root: true});
+            });
     },
 
-    async deleteProgram({commit, state}) {
-        if (state.program) {
-            await api(commit)
-                .delete(`/disease/programme/${state.program.hash}/`)
-                .then(() => {
-                    commit({type: "ProgramUpdated", payload: null});
-                    commit({type: "filteredData/Reset", payload: null}, {root: true});
-                })
-        }
+    async deleteProgram({commit}) {
+        await api(commit)
+            .delete("/disease/programme/")
+            .then(() => {
+                commit({type: "ProgramUpdated", payload: null});
+                commit({type: "filteredData/Reset", payload: null}, {root: true});
+            });
     },
 
-    async deleteANC({commit, state}) {
-        if (state.anc) {
-            await api(commit)
-                .delete(`/disease/anc/${state.anc.hash}/`)
-                .then(() => {
-                    commit({type: "ANCUpdated", payload: null});
-                    commit({type: "filteredData/Reset", payload: null}, {root: true});
-                })
-        }
+    async deleteANC({commit}) {
+        await api(commit)
+            .delete("/disease/anc/")
+            .then(() => {
+                commit({type: "ANCUpdated", payload: null});
+                commit({type: "filteredData/Reset", payload: null}, {root: true});
+            });
     },
 
     async deleteAll(store) {

@@ -1,6 +1,8 @@
 import {
     mockAxios,
-    mockBaselineState, mockFailure, mockPJNZResponse,
+    mockBaselineState,
+    mockFailure,
+    mockPJNZResponse,
     mockPopulationResponse,
     mockShapeResponse,
     mockSuccess,
@@ -35,7 +37,10 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "ResetInputs", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
-        expect(commit.mock.calls[2][0]).toStrictEqual({type: "PJNZUpdated", payload: {data: {country: "Malawi", iso3: "MWI"}}});
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: "PJNZUpdated",
+            payload: {data: {country: "Malawi", iso3: "MWI"}}
+        });
 
         expect(dispatch.mock.calls.length).toBe(2);
 
@@ -125,7 +130,7 @@ describe("Baseline actions", () => {
         expect(calls).toContain("Ready");
     });
 
-    it("commits response on validate", async ()=> {
+    it("commits response on validate", async () => {
         const mockValidateResponse = mockValidateBaselineResponse();
         mockAxios.onGet(`/baseline/validate/`)
             .reply(200, mockSuccess(mockValidateResponse));
@@ -146,8 +151,8 @@ describe("Baseline actions", () => {
         });
     });
 
-    it("commits response on validate error", async ()=> {
-       mockAxios.onGet(`/baseline/validate/`)
+    it("commits response on validate error", async () => {
+        mockAxios.onGet(`/baseline/validate/`)
             .reply(400, mockFailure("Baseline is inconsistent"));
 
         const commit = jest.fn();
@@ -187,44 +192,55 @@ describe("Baseline actions", () => {
 
     it("delete pjnz and resets inputs", async () => {
 
-        mockAxios.onDelete("/baseline/pjnz/1234/")
+        mockAxios.onDelete("/baseline/pjnz/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        const state = mockBaselineState({
-            pjnz: mockPJNZResponse({hash: "1234"})
-        });
-        await actions.deletePJNZ({commit, state} as any);
+        const dispatch = jest.fn();
+        await actions.deletePJNZ({commit, dispatch} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("PJNZUpdated");
-        expect(commit.mock.calls[1][0]["type"]).toBe("ResetInputs");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
     });
 
     it("deletes shape and resets inputs", async () => {
 
-        mockAxios.onDelete("/baseline/shape/1234/")
+        mockAxios.onDelete("/baseline/shape/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        const state = mockBaselineState({
-            shape: mockShapeResponse({hash: "1234"})
-        });
-        await actions.deleteShape({commit, state} as any);
+        const dispatch = jest.fn();
+        await actions.deleteShape({commit, dispatch} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUpdated");
-        expect(commit.mock.calls[1][0]["type"]).toBe("ResetInputs");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
     });
 
     it("deletes population and resets inputs", async () => {
 
-        mockAxios.onDelete("/baseline/population/1234/")
+        mockAxios.onDelete("/baseline/population/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        const state = mockBaselineState({
-            population: mockPopulationResponse({hash: "1234"})
-        });
-        await actions.deletePopulation({commit, state} as any);
+        const dispatch = jest.fn();
+        await actions.deletePopulation({commit, dispatch} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUpdated");
-        expect(commit.mock.calls[1][0]["type"]).toBe("ResetInputs");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+    });
+
+    it("deletes all", async () => {
+        mockAxios.onDelete("/baseline/pjnz/")
+            .reply(200, mockSuccess(true));
+        mockAxios.onDelete("/baseline/shape/")
+            .reply(200, mockSuccess(true));
+        mockAxios.onDelete("/baseline/population/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.deleteAll({commit, dispatch} as any);
+        expect(mockAxios.history["delete"].length).toBe(3)
     });
 
 });

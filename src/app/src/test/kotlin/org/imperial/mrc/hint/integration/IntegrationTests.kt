@@ -44,18 +44,46 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                 if (schemaName != null) {
                     JSONValidator().validateSuccess(responseEntity.body!!, schemaName)
                 }
+
             }
             IsAuthorized.FALSE -> {
                 if (responseEntity.statusCode == HttpStatus.FOUND) {
                     // obtains when request is a POST
-                    Assertions.assertThat(responseEntity.headers.location!!.toString()).isEqualTo("/login")
+                    assertLoginLocation(responseEntity)
                 } else {
                     // obtains when request is a GET
-                    Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+                    assertSuccess(responseEntity)
                     Assertions.assertThat(responseEntity.body!!).contains("<title>Login</title>")
                 }
             }
         }
+    }
+
+    fun assertSecureWithSuccess(isAuthorized: IsAuthorized,
+                                responseEntity: ResponseEntity<ByteArray>) {
+
+        when (isAuthorized) {
+            IsAuthorized.TRUE -> {
+                assertSuccess(responseEntity)
+            }
+            IsAuthorized.FALSE -> {
+                if (responseEntity.statusCode == HttpStatus.FOUND) {
+                    // obtains when request is a POST
+                    assertLoginLocation(responseEntity)
+                } else {
+                    // obtains when request is a GET
+                    assertSuccess(responseEntity)
+                }
+            }
+        }
+    }
+
+    fun <T> assertSuccess(responseEntity: ResponseEntity<T>) {
+        Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    fun <T> assertLoginLocation(responseEntity: ResponseEntity<T>) {
+        Assertions.assertThat(responseEntity.headers.location!!.toString()).isEqualTo("/login")
     }
 
     fun assertSecureWithError(isAuthorized: IsAuthorized,

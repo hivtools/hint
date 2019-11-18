@@ -62,37 +62,31 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             });
     },
 
-    async deletePJNZ({commit, state}) {
-        if (state.pjnz) {
-            await api(commit)
-                .delete(`/baseline/pjnz/${state.pjnz.hash}/`)
-                .then(() => {
-                    commit({type: "PJNZUpdated", payload: null});
-                    commit({type: "ResetInputs", payload: null}, {root: true});
-                })
-        }
+    async deletePJNZ({commit, dispatch}) {
+        await api(commit)
+            .delete("/baseline/pjnz/")
+            .then(() => {
+                commit({type: "PJNZUpdated", payload: null});
+                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+            });
     },
 
-    async deleteShape({commit, state}) {
-        if (state.shape) {
-            await api(commit)
-                .delete(`/baseline/shape/${state.shape.hash}/`)
-                .then(() => {
-                    commit({type: "ShapeUpdated", payload: null});
-                    commit({type: "ResetInputs", payload: null}, {root: true});
-                })
-        }
+    async deleteShape({commit, dispatch}) {
+        await api(commit)
+            .delete("/baseline/shape/")
+            .then(() => {
+                commit({type: "ShapeUpdated", payload: null});
+                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+            });
     },
 
-    async deletePopulation({commit, state}) {
-        if (state.population) {
-            await api(commit)
-                .delete(`/baseline/population/${state.population.hash}/`)
-                .then(() => {
-                    commit({type: "PopulationUpdated", payload: null});
-                    commit({type: "ResetInputs", payload: null}, {root: true});
-                })
-        }
+    async deletePopulation({commit, dispatch}) {
+        await api(commit)
+            .delete("/baseline/population/")
+            .then(() => {
+                commit({type: "PopulationUpdated", payload: null});
+                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+            });
     },
 
     async deleteAll(store) {
