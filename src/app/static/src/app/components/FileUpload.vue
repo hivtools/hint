@@ -2,6 +2,7 @@
     <div class="form-group">
         <label class="font-weight-bold">{{label}}</label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
+        <a v-if="valid" class="small float-right" href="#" v-on:click="deleteFile">remove</a>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <slot></slot>
         <div class="custom-file">
@@ -45,6 +46,7 @@
 
     interface Props {
         upload: (formData: FormData) => void,
+        deleteFile: () => void,
         accept: string,
         label: string,
         valid: Boolean,
@@ -64,6 +66,7 @@
         },
         props: {
             "upload": Function,
+            "deleteFile": Function,
             "accept": String,
             "label": String,
             "valid": Boolean,
