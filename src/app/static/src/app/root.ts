@@ -1,10 +1,11 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
-import {metadata, MetadataState, initialMetadataState} from "./store/metadata/metadata";
+import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
 import {filteredData, FilteredDataState, initialFilteredDataState} from "./store/filteredData/filteredData";
 import {
     initialSurveyAndProgramDataState,
-    surveyAndProgram, SurveyAndProgramDataState,
+    surveyAndProgram,
+    SurveyAndProgramDataState,
 } from "./store/surveyAndProgram/surveyAndProgram";
 import {initialModelRunState, modelRun, ModelRunState} from "./store/modelRun/modelRun";
 import {initialStepperState, stepper, StepperState} from "./store/stepper/stepper";
@@ -36,6 +37,24 @@ const persistState = (store: Store<RootState>) => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
         console.log(mutation.type);
         localStorageManager.saveState(state);
+
+        if (state.baseline.ready
+            && state.surveyAndProgram.ready
+            && state.modelRun.ready) {
+
+            switch (mutation.type.split("/")[0]) {
+                case "baseline":
+                    if (mutation.type.indexOf("Updated") == -1) break;
+                    store.commit({type: "ResetInputs"});
+                case "surveyAndProgram":
+                    if (mutation.type.indexOf("Updated") == -1) break;
+                    store.commit({type: "ResetOptions"});
+                case "modelOptions":
+                    if (mutation.type.indexOf("update") == -1) break;
+                    store.commit({type: "ResetOutputs"});
+            }
+
+        }
     })
 };
 

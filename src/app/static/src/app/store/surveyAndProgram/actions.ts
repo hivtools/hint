@@ -71,7 +71,6 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             .delete("/disease/survey/")
             .then(() => {
                 commit({type: "SurveyUpdated", payload: null});
-                commit({type: "filteredData/Reset", payload: null}, {root: true});
             });
     },
 
@@ -80,7 +79,6 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             .delete("/disease/programme/")
             .then(() => {
                 commit({type: "ProgramUpdated", payload: null});
-                commit({type: "filteredData/Reset", payload: null}, {root: true});
             });
     },
 
@@ -89,7 +87,6 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             .delete("/disease/anc/")
             .then(() => {
                 commit({type: "ANCUpdated", payload: null});
-                commit({type: "filteredData/Reset", payload: null}, {root: true});
             });
     },
 

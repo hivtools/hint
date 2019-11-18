@@ -21,7 +21,6 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
                 dispatch("baseline/deleteAll"),
                 dispatch("surveyAndProgram/deleteAll")
             ]);
-            commit({type: "Reset"});
         }
     }
 };

@@ -3,7 +3,9 @@ import {emptyState, RootState} from "../../root";
 
 export interface RootMutations {
     Reset: Mutation<RootState>
-    ResetSteps: Mutation<RootState>
+    ResetInputs: Mutation<RootState>
+    ResetOptions: Mutation<RootState>
+    ResetOutputs: Mutation<RootState>
 }
 
 export const mutations: MutationTree<RootState> & RootMutations = {
@@ -14,18 +16,17 @@ export const mutations: MutationTree<RootState> & RootMutations = {
         state.modelRun.ready = true;
     },
 
-    ResetSteps(state: RootState, fromStep: number) {
-        switch (fromStep) {
-            case 3:
-                Object.assign(state.modelRun, emptyState.modelRun);
-                state.modelRun.ready = true;
-                Object.assign(state.modelOutput, emptyState.modelOutput);
-            case 2:
-                Object.assign(state.modelOptions, emptyState.modelOptions);
-            case 1:
-                Object.assign(state.surveyAndProgram, emptyState.surveyAndProgram);
-                Object.assign(state.filteredData, emptyState.filteredData);
-                state.surveyAndProgram.ready = true;
-        }
+    ResetInputs(state: RootState) {
+        Object.assign(state.filteredData, emptyState.filteredData);
+    },
+
+    ResetOptions(state: RootState) {
+        Object.assign(state.modelOptions, emptyState.modelOptions);
+    },
+
+    ResetOutputs(state: RootState) {
+        Object.assign(state.modelRun, emptyState.modelRun);
+        state.modelRun.ready = true;
+        Object.assign(state.modelOutput, emptyState.modelOutput);
     }
 };
