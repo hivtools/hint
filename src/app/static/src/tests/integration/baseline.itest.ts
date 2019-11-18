@@ -1,7 +1,7 @@
 import {actions} from "../../app/store/baseline/actions";
 import {login} from "./integrationTest";
-import {PjnzResponse, PopulationResponse, ShapeResponse} from "../../app/generated";
 import {getFormData} from "./helpers";
+import {BaselineMutation} from "../../app/store/baseline/mutations";
 
 describe("Baseline actions", () => {
 
@@ -17,8 +17,8 @@ describe("Baseline actions", () => {
 
         await actions.uploadPJNZ({commit, state, dispatch} as any, formData);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe("PJNZUpdated");
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(commit.mock.calls[1][0]["type"]).toBe("PJNZUpdated");
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("Botswana2018.PJNZ");
 
     });
@@ -40,8 +40,8 @@ describe("Baseline actions", () => {
         const formData = getFormData("malawi.geojson");
         await actions.uploadShape({commit, dispatch} as any, formData);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe("ShapeUpdated");
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(commit.mock.calls[1][0]["type"]).toBe("ShapeUpdated");
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("malawi.geojson");
 
     }, 10000);
@@ -52,8 +52,8 @@ describe("Baseline actions", () => {
         const formData = getFormData("population.csv");
         await actions.uploadPopulation({commit, dispatch} as any, formData);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe("PopulationUpdated");
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(commit.mock.calls[1][0]["type"]).toBe("PopulationUpdated");
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("population.csv");
     });
 
@@ -62,7 +62,7 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
 
         await actions.validate({commit, dispatch} as any);
-        expect(commit.mock.calls[1][0]["type"]).toBe("BaselineError");
+        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.BaselineError);
         expect(commit.mock.calls[1][0]["payload"]).toContain("Countries aren't consistent");
     });
 
@@ -73,7 +73,6 @@ describe("Baseline actions", () => {
 
         // upload
         await actions.uploadPJNZ({commit, dispatch} as any, formData);
-        const hash = (commit.mock.calls[2][0]["payload"] as PjnzResponse).hash;
 
         commit.mockReset();
 
@@ -95,7 +94,6 @@ describe("Baseline actions", () => {
 
         // upload
         await actions.uploadShape({commit, dispatch} as any, formData);
-        const hash = (commit.mock.calls[2][0]["payload"] as ShapeResponse).hash;
 
         commit.mockReset();
 
@@ -117,13 +115,11 @@ describe("Baseline actions", () => {
 
         // upload
         await actions.uploadPopulation({commit, dispatch} as any, formData);
-        const hash = (commit.mock.calls[2][0]["payload"] as PopulationResponse).hash;
 
         commit.mockReset();
 
         // delete
-        const state = {population: {hash: hash}};
-        await actions.deletePopulation({commit, dispatch, state} as any);
+        await actions.deletePopulation({commit, dispatch} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUpdated");
 
         commit.mockReset();
