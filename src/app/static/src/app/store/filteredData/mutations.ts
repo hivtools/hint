@@ -1,7 +1,6 @@
 import {PayloadWithType} from "../../types";
 import {Mutation, MutationTree} from "vuex";
-import {DataType, FilteredDataState, FilterType} from "./filteredData";
-import {emptyState} from "../../root";
+import {DataType, FilteredDataState, FilterType, initialFilteredDataState} from "./filteredData";
 
 type FilteredDataMutation = Mutation<FilteredDataState>
 
@@ -37,6 +36,6 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
         }
     },
     Reset(state: FilteredDataState) {
-        Object.assign(state, emptyState.filteredData);
+        Object.assign(state, initialFilteredDataState);
     }
 };
