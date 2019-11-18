@@ -48,6 +48,8 @@ const manageState = (store: Store<RootState>) => {
 
             const type = stripNamespace(mutation.type);
 
+            console.log("--------------");
+            console.log(type);
             if (BaselineUpdates.includes(type as BaselineMutation)
                 || SurveyAndProgramUpdates.includes(type as SurveyAndProgramMutation)) {
                 store.commit("ResetInputs");

@@ -73,12 +73,8 @@ export const freezer = {
     }
 };
 
-export function addNamespace(namespace: string, types: any) {
-    Object.keys(types).forEach(key => {
-        if (types.hasOwnProperty(key)) {
-            types[key] = `${namespace}/${types[key]}`;
-        }
-    });
+export function prefixNamespace(namespace: string, name: any) {
+    return `${namespace}/${name}`
 }
 
 export function stripNamespace(name: string) {
@@ -87,6 +83,6 @@ export function stripNamespace(name: string) {
         return name;
     }
     else {
-        return name[1];
+        return nameArray[1];
     }
 }

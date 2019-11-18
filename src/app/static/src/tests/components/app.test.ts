@@ -2,6 +2,13 @@ import {createLocalVue, mount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import Vue from "vue";
 import {mockAxios, mockSuccess} from "../mocks";
+import {app} from "../../app"
+import {RootState, storeOptions} from "../../app/root";
+import {localStorageManager} from "../../app/localStorageManager";
+import {prefixNamespace} from "../../app/utils";
+import {BaselineMutation} from "../../app/store/baseline/mutations";
+import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
+import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -22,11 +29,11 @@ mockAxios.onGet(`/disease/programme/`)
 mockAxios.onGet(`/disease/anc/`)
     .reply(200, mockSuccess(null));
 
-import {app} from "../../app"
-import {RootState, storeOptions} from "../../app/root";
-import {localStorageManager} from "../../app/localStorageManager";
-
 describe("App", () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
     const baselineActions = {
         getBaselineData: jest.fn()
@@ -61,10 +68,45 @@ describe("App", () => {
     it("updates local storage on every mutation", async () => {
 
         const spy = jest.spyOn(localStorageManager, "saveState");
-        store.commit("baseline/PopulationUploadError", {payload: "test"});
+        store.commit(prefixNamespace("baseline", BaselineMutation.PopulationUploadError), {payload: "test"});
 
         await Vue.nextTick();
         expect(spy).toHaveBeenCalled();
+    });
+
+    it("resets inputs if baseline update mutation is called", async () => {
+        const spy = jest.spyOn(store, "commit");
+        store.commit(prefixNamespace("baseline", BaselineMutation.PJNZUpdated), {payload: null});
+
+        await Vue.nextTick();
+        expect(spy.mock.calls[1][0]).toBe("ResetInputs");
+        expect(spy.mock.calls[2][0]).toBe("ResetOptions");
+        expect(spy.mock.calls[3][0]).toBe("ResetOutputs");
+
+        expect(spy.mock.calls.length).toBe(4);
+    });
+
+
+    it("resets inputs if surveyAndProgram update mutation is called", async () => {
+        const spy = jest.spyOn(store, "commit");
+        store.commit(prefixNamespace("surveyAndProgram", SurveyAndProgramMutation.SurveyUpdated), {payload: null});
+
+        await Vue.nextTick();
+        expect(spy.mock.calls[1][0]).toBe("ResetInputs");
+        expect(spy.mock.calls[2][0]).toBe("ResetOptions");
+        expect(spy.mock.calls[3][0]).toBe("ResetOutputs");
+
+        expect(spy.mock.calls.length).toBe(4);
+
+    });
+
+    it("resets outputs if modelOptions update mutation is called", async () => {
+        const spy = jest.spyOn(store, "commit");
+        store.commit(prefixNamespace("modelOptions", ModelOptionsMutation.Update), {payload: null});
+
+        await Vue.nextTick();
+        expect(spy.mock.calls[1][0]).toBe("ResetOutputs");
+        expect(spy.mock.calls.length).toBe(2);
     });
 
 });
