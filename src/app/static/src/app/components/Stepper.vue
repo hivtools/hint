@@ -40,7 +40,7 @@
                 <model-options v-if="isActive(3)"></model-options>
                 <model-run v-if="isActive(4)"></model-run>
                 <model-output v-if="isActive(5)"></model-output>
-                <div v-if="isActive(6)"><h4>Coming soon</h4></div>
+                <download-results v-if="isActive(6)"></download-results>
             </div>
         </div>
     </div>
@@ -56,10 +56,11 @@
     import LoadingSpinner from "./LoadingSpinner.vue";
     import ModelRun from "./modelRun/ModelRun.vue";
     import ModelOutput from "./modelOutput/ModelOutput.vue";
+    import DownloadResults from "./downloadResults/DownloadResults.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
-    import {mapGettersByNames, mapStateProps} from "../utils";
+    import { mapGettersByNames, mapStateProps} from "../utils";
 
     interface ComputedState {
         activeStep: number,
@@ -114,7 +115,8 @@
             LoadingSpinner,
             ModelRun,
             ModelOutput,
-            ModelOptions
+            ModelOptions,
+            DownloadResults
         },
         watch: {
             ready: function (newVal) {

@@ -20,10 +20,12 @@ export interface BaselineActions {
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async uploadPJNZ({commit, dispatch, state}, formData) {
+
         commit({type: BaselineMutation.PJNZUpdated, payload: null});
         await api(commit)
             .withSuccess(BaselineMutation.PJNZUpdated)
             .withError(BaselineMutation.PJNZUploadError)
+            .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData)
             .then(() => {
                 dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
@@ -32,10 +34,12 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadShape({commit, dispatch}, formData) {
+
         commit({type: BaselineMutation.ShapeUpdated, payload: null});
         await api(commit)
             .withSuccess(BaselineMutation.ShapeUpdated)
             .withError(BaselineMutation.ShapeUploadError)
+            .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/shape/", formData)
             .then(() => {
                 dispatch('validate');
@@ -43,10 +47,12 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadPopulation({commit, dispatch}, formData) {
+
         commit({type: BaselineMutation.PopulationUpdated, payload: null});
         await api(commit)
             .withSuccess(BaselineMutation.PopulationUpdated)
             .withError(BaselineMutation.PopulationUploadError)
+            .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/population/", formData)
             .then(() => {
                 dispatch('validate');
@@ -93,14 +99,17 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             api(commit)
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.PJNZUpdated)
+                .freezeResponse()
                 .get<PjnzResponse>("/baseline/pjnz/"),
             api(commit)
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.PopulationUpdated)
+                .freezeResponse()
                 .get<PjnzResponse>("/baseline/population/"),
             api(commit)
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.ShapeUpdated)
+                .freezeResponse()
                 .get<PjnzResponse>("/baseline/shape/")
         ]);
 
@@ -114,6 +123,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         await api(commit)
             .withSuccess(BaselineMutation.Validated)
             .withError(BaselineMutation.BaselineError)
+            .freezeResponse()
             .get<ValidateBaselineResponse>("/baseline/validate/");
     }
 };

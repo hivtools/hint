@@ -8,8 +8,9 @@ import {
     mockValidateBaselineResponse
 } from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
-import {testUploadErrorCommitted} from "../actionTestHelpers";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
+import {expectEqualsFrozen, testUploadErrorCommitted} from "../actionTestHelpers";
+
 
 const FormData = require("form-data");
 
@@ -36,7 +37,7 @@ describe("Baseline actions", () => {
         await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: BaselineMutation.PJNZUpdated, payload: null});
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expectEqualsFrozen(commit.mock.calls[1][0], {
             type: BaselineMutation.PJNZUpdated,
             payload: {data: {country: "Malawi", iso3: "MWI"}}
         });
@@ -70,7 +71,8 @@ describe("Baseline actions", () => {
             type: BaselineMutation.ShapeUpdated,
             payload: null
         });
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+
+        expectEqualsFrozen(commit.mock.calls[1][0], {
             type: BaselineMutation.ShapeUpdated,
             payload: mockShape
         });
@@ -93,7 +95,8 @@ describe("Baseline actions", () => {
             type: BaselineMutation.PopulationUpdated,
             payload: null
         });
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+
+        expectEqualsFrozen(commit.mock.calls[1][0], {
             type: BaselineMutation.PopulationUpdated,
             payload: mockPop
         });
@@ -126,6 +129,10 @@ describe("Baseline actions", () => {
         expect(calls).toContain(BaselineMutation.ShapeUpdated);
         expect(calls).toContain(BaselineMutation.PopulationUpdated);
         expect(calls).toContain(BaselineMutation.Ready);
+
+        const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(4);
+        //ready payload is true, which is frozen by definition
     });
 
     it("commits response on validate", async () => {

@@ -25,10 +25,12 @@ function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
 export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
 
     async uploadSurvey({commit}, formData) {
-        commit({type: "SurveyUpdated", payload: null});
+        commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
+
         await api(commit)
             .withError(SurveyAndProgramMutation.SurveyError)
             .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
+            .freezeResponse()
             .postAndReturn<SurveyResponse>("/disease/survey/", formData)
             .then((response) => {
                 if (response) {
@@ -38,10 +40,12 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     },
 
     async uploadProgram({commit}, formData) {
-        commit({type: "ProgramUpdated", payload: null});
+        commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
+
         await api(commit)
             .withError(SurveyAndProgramMutation.ProgramError)
             .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
+            .freezeResponse()
             .postAndReturn<ProgrammeResponse>("/disease/programme/", formData)
             .then((response) => {
                 if (response) {
@@ -51,10 +55,12 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     },
 
     async uploadANC({commit}, formData) {
-        commit({type: "ANCUpdated", payload: null});
+        commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
+
         await api(commit)
             .withError(SurveyAndProgramMutation.ANCError)
             .withSuccess(SurveyAndProgramMutation.ANCUpdated)
+            .freezeResponse()
             .postAndReturn<ProgrammeResponse>("/disease/anc/", formData)
             .then((response) => {
                 if (response) {
@@ -98,18 +104,23 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     async getSurveyAndProgramData({commit}) {
 
         await Promise.all(
-            [api(commit)
-                .ignoreErrors()
-                .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
-                .get<SurveyResponse>("/disease/survey/"),
+            [
+                api(commit)
+                    .ignoreErrors()
+                    .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
+                    .freezeResponse()
+                    .get<SurveyResponse>("/disease/survey/"),
                 api(commit)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
+                    .freezeResponse()
                     .get<ProgrammeResponse>("/disease/programme/"),
                 api(commit)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.ANCUpdated)
-                    .get<AncResponse>("/disease/anc/")]);
+                    .freezeResponse()
+                    .get<AncResponse>("/disease/anc/")
+            ]);
 
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
     }

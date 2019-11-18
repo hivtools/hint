@@ -1,6 +1,7 @@
 import {mockAxios, mockFailure, mockModelOptionsState, mockModelRunState, mockRootState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/modelRun/actions";
 import {ModelStatusResponse} from "../../app/generated";
+import {expectEqualsFrozen} from "../actionTestHelpers";
 
 describe("Model run actions", () => {
 
@@ -137,7 +138,7 @@ describe("Model run actions", () => {
 
         await actions.getResult({commit, state} as any);
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
+        expectEqualsFrozen(commit.mock.calls[0][0], {
             type: "RunResultFetched",
             payload: "TEST DATA"
         });
