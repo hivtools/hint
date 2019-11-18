@@ -35,6 +35,8 @@ export const mutations: MutationTree<BaselineState> & BaselineMutations = {
     PJNZUpdated(state: BaselineState, action: PayloadWithType<PjnzResponse | null>) {
         const data = action.payload;
         if (data) {
+            console.log("----------------")
+            console.log(data.data.iso3)
             state.country = data.data.country;
             state.iso3 = data.data.iso3;
             state.pjnz = data;

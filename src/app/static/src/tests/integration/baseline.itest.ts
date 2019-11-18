@@ -72,8 +72,7 @@ describe("Baseline actions", () => {
         const formData = getFormData("Botswana2018.PJNZ");
 
         // upload
-        await actions.uploadPJNZ({commit, dispatch} as any, formData);
-        const hash = (commit.mock.calls[2][0]["payload"] as PjnzResponse).hash;
+        await actions.uploadPJNZ({commit, dispatch, state: {}} as any, formData);
 
         commit.mockReset();
 
@@ -95,7 +94,6 @@ describe("Baseline actions", () => {
 
         // upload
         await actions.uploadShape({commit, dispatch} as any, formData);
-        const hash = (commit.mock.calls[2][0]["payload"] as ShapeResponse).hash;
 
         commit.mockReset();
 
@@ -117,13 +115,11 @@ describe("Baseline actions", () => {
 
         // upload
         await actions.uploadPopulation({commit, dispatch} as any, formData);
-        const hash = (commit.mock.calls[2][0]["payload"] as PopulationResponse).hash;
 
         commit.mockReset();
 
         // delete
-        const state = {population: {hash: hash}};
-        await actions.deletePopulation({commit, dispatch, state} as any);
+        await actions.deletePopulation({commit, dispatch} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUpdated");
 
         commit.mockReset();
