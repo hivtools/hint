@@ -1,6 +1,7 @@
 import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
 import {StepperState} from "./stepper";
+import {baseline} from "../baseline/baseline";
 
 interface StepperGetters {
     ready: Getter<StepperState, RootState>,
@@ -21,4 +22,5 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
             6: false
         }
     }
+
 };
