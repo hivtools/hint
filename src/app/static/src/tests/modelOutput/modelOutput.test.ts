@@ -65,11 +65,11 @@ describe("modelOutput module", () => {
     it("gets barchart filters", async () => {
 
         const result = modelOutputGetters.barchartFilters({}, null, rootState);
-        expect(result.length).toEqual(3);
-        expect (result[0]).toBe(modelRunResponse.plottingMetadata.barchart.filters[0]);
-        expect (result[1]).toBe(modelRunResponse.plottingMetadata.barchart.filters[1]);
+        expect(result.length).toEqual(4); //NB temporarily 4 rather than 3 as including sex until it comes from api
+        expect (result[0]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[0]);
+        expect (result[1]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[1]);
 
-        expect (result[2]).toStrictEqual({
+        expect (result[3]).toStrictEqual({
             id: "region",
             column_id: "area_id",
             label: "Region",

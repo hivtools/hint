@@ -19,7 +19,7 @@ export const modelOutputGetters = {
         let filters = rootState.modelRun.result!!.plottingMetadata.barchart.filters;
         //THIS IS A WORKAROUND FOR A BUG IN HINTR - take out when fixed!
         //Column_id and label are the wrong way round for quarter
-        //(Also, sex is missing, leaving that out for now)
+        //(Also, sex is missing)
         //Should get fixed as part of https://vimc.myjetbrains.com/youtrack/issue/mrc-577
         let newFilters = null;
         const quarter = filters.find((f: any) => f.id=="quarter");
@@ -33,6 +33,19 @@ export const modelOutputGetters = {
             newFilters.push(newQuarter);
 
             filters = newFilters;
+        }
+        const sex = filters.find((f: any) => f.id == "sex");
+        if (!sex){
+            filters.push({
+                "id": "sex",
+                "column_id": "sex",
+                "label": "Sex",
+                "options": [
+                    {"id": "female", "label": "female"},
+                    {"id": "male", "label": "male"},
+                    {"id": "both", "label": "both"}
+                ]
+            });
         }
 
         return  [
