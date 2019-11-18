@@ -1,17 +1,26 @@
 package org.imperial.mrc.hint
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.core.Response
-import org.imperial.mrc.hint.models.ErrorDetail
+import com.github.kittinunf.fuel.core.Request
+import com.github.kittinunf.fuel.core.requests.DownloadRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
+import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.io.OutputStream
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.core.Parameters
+import org.imperial.mrc.hint.models.ErrorDetail
 import java.io.IOException
 
-@Suppress("UNCHECKED_CAST")
-fun Response.asResponseEntity(): ResponseEntity<String> {
 
-    val httpStatus = when (this.statusCode) {
+fun httpStatusFromCode(code: Int): HttpStatus {
+    return when (code) {
         200 -> HttpStatus.OK
         201 -> HttpStatus.CREATED
         400 -> HttpStatus.BAD_REQUEST
@@ -20,6 +29,19 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
         404 -> HttpStatus.NOT_FOUND
         else -> HttpStatus.INTERNAL_SERVER_ERROR
     }
+}
+
+fun headersToMultiMap(headers: Headers): MultiValueMap<String, String> {
+    val result = LinkedMultiValueMap<String, String>()
+    headers.entries.forEach {
+        result.addAll(it.key, it.value.toList());
+    }
+    return result;
+}
+
+@Suppress("UNCHECKED_CAST")
+fun Response.asResponseEntity(): ResponseEntity<String> {
+    val httpStatus = httpStatusFromCode(this.statusCode)
 
     if (this.statusCode == -1) {
         return ErrorDetail(httpStatus, "No response returned. The request may have timed out.")
@@ -43,3 +65,23 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
     }
 
 }
+
+fun Request.getStreamingResponseEntity(headRequest: (url: String, parameters: Parameters?) -> Request): ResponseEntity<StreamingResponseBody> {
+
+    val responseBody = StreamingResponseBody { outputStream: OutputStream ->
+        //return an empty input stream to the body - don't need to re-use it
+        val returnEmptyInputStream: () -> InputStream = { ByteArrayInputStream(ByteArray(0)) }
+        (this as DownloadRequest).streamDestination{ _, _ -> Pair(outputStream, returnEmptyInputStream) }
+                .response()
+    }
+
+    val headReq = headRequest(this.url.toString(), null)
+    val response = headReq.response()
+            .second
+
+    val httpStatus = httpStatusFromCode(response.statusCode)
+    val headers = headersToMultiMap(response.headers)
+
+    return ResponseEntity(responseBody, headers, httpStatus)
+}
+

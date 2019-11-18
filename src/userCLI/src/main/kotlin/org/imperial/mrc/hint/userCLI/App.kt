@@ -21,7 +21,7 @@ import kotlin.system.exitProcess
 const val doc = """
 Hint User CLI
 Usage:
-    app add-user <email> <password>
+    app add-user <email> [<password>]
     app remove-user <email>
     app user-exists <email>
 """
@@ -62,6 +62,7 @@ class UserCLI(private val userRepository: UserRepository)
         val email = options["<email>"].getStringValue()
         val password = options["<password>"]?.getStringValue()
         println("Adding user $email")
+//        println(password)
 
         userRepository.addUser(email, password)
         return "OK"

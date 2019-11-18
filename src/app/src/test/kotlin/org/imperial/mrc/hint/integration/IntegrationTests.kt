@@ -16,6 +16,7 @@ import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.io.File
 
 @ActiveProfiles(profiles = ["test"])
@@ -59,18 +60,46 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                 if (schemaName != null) {
                     JSONValidator().validateSuccess(responseEntity.body!!, schemaName)
                 }
+
             }
             IsAuthorized.FALSE -> {
                 if (responseEntity.statusCode == HttpStatus.FOUND) {
                     // obtains when request is a POST
-                    Assertions.assertThat(responseEntity.headers.location!!.toString()).isEqualTo("/login")
+                    assertLoginLocation(responseEntity)
                 } else {
                     // obtains when request is a GET
-                    Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+                    assertSuccess(responseEntity)
                     Assertions.assertThat(responseEntity.body!!).contains("<title>Login</title>")
                 }
             }
         }
+    }
+
+    fun assertSecureWithSuccess(isAuthorized: IsAuthorized,
+                                responseEntity: ResponseEntity<ByteArray>) {
+
+        when (isAuthorized) {
+            IsAuthorized.TRUE -> {
+                assertSuccess(responseEntity)
+            }
+            IsAuthorized.FALSE -> {
+                if (responseEntity.statusCode == HttpStatus.FOUND) {
+                    // obtains when request is a POST
+                    assertLoginLocation(responseEntity)
+                } else {
+                    // obtains when request is a GET
+                    assertSuccess(responseEntity)
+                }
+            }
+        }
+    }
+
+    fun <T> assertSuccess(responseEntity: ResponseEntity<T>) {
+        Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    fun <T> assertLoginLocation(responseEntity: ResponseEntity<T>) {
+        Assertions.assertThat(responseEntity.headers.location!!.toString()).isEqualTo("/login")
     }
 
     fun assertSecureWithError(isAuthorized: IsAuthorized,
@@ -86,8 +115,14 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                 JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail)
             }
             IsAuthorized.FALSE -> {
-                Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.FOUND)
-                Assertions.assertThat(responseEntity.headers.location!!.toString()).isEqualTo("/login")
+                if (responseEntity.statusCode == HttpStatus.FOUND) {
+                    // it's a POST
+                    Assertions.assertThat(responseEntity.headers.location!!.toString()).isEqualTo("/login")
+                }
+                else {
+                    // it's a GET
+                    Assertions.assertThat(responseEntity.body!!).contains("<title>Login</title>")
+                }
             }
         }
     }
