@@ -17,21 +17,13 @@ describe("Root mutations", () => {
         expect(state.stepper.activeStep).toBe(1);
     });
 
-    it("can reset input state", () => {
+    it("can reset filtered data state", () => {
 
         const state = mockRootState({
-            surveyAndProgram: mockSurveyAndProgramState({
-                anc: "test" as any,
-                survey: "test" as any,
-                program: "test" as any
-            }),
             filteredData: mockFilteredDataState({selectedDataType: DataType.ANC})
         });
 
         mutations.ResetInputs(state);
-        expect(state.surveyAndProgram.anc).toBe(null);
-        expect(state.surveyAndProgram.survey).toBe(null);
-        expect(state.surveyAndProgram.program).toBe(null);
         expect(state.filteredData.selectedDataType).toBe(null);
     });
 

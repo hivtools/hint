@@ -25,7 +25,6 @@ describe("root actions", () => {
         };
 
         await actions.validate(mockContext as any);
-        expect(mockContext.commit).not.toHaveBeenCalled();
         expect(mockContext.dispatch).not.toHaveBeenCalled();
     });
 
@@ -49,7 +48,6 @@ describe("root actions", () => {
         };
 
         await actions.validate(mockContext as any);
-        expect(mockContext.commit).toHaveBeenCalled();
         expect(mockContext.dispatch).toHaveBeenCalled();
     });
 
@@ -72,7 +70,6 @@ describe("root actions", () => {
         };
 
         await actions.validate(mockContext as any);
-        expect(mockContext.commit).toHaveBeenCalled();
         expect(mockContext.dispatch).toHaveBeenCalled();
     });
 
@@ -95,7 +92,6 @@ describe("root actions", () => {
         };
 
         await actions.validate(mockContext as any);
-        expect(mockContext.commit).not.toHaveBeenCalled();
         expect(mockContext.dispatch).not.toHaveBeenCalled();
     });
 

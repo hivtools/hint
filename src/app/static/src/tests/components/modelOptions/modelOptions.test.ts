@@ -7,6 +7,7 @@ import {mockModelOptionsState} from "../../mocks";
 import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
 import DynamicFormControlSection from "../../../app/components/forms/DynamicFormControlSection.vue";
 import {DynamicControlSection} from "../../../app/components/forms/types";
+import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -36,7 +37,7 @@ describe("Model options component", () => {
             controlGroups: []
         };
         const store = createStore({optionsFormMeta: {controlSections: [oldControlSection]}},
-            {update: updateMock});
+            {[ModelOptionsMutation.Update]: updateMock});
 
         const rendered = mount(ModelOptions, {store});
 
@@ -54,9 +55,10 @@ describe("Model options component", () => {
         });
     });
 
-    it("commits valid mutation when form submit event is fired", () => {
+    it("commits validate mutation when form submit event is fired", () => {
         const validateMock = jest.fn();
-        const store = createStore({optionsFormMeta: {controlSections: []}}, {validate: validateMock});
+        const store = createStore({optionsFormMeta: {controlSections: []}},
+            {[ModelOptionsMutation.Validate]: validateMock});
         const rendered = shallowMount(ModelOptions, {
             store, localVue
         });

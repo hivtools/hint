@@ -57,7 +57,7 @@ export const verifyCheckSum = (content: string): false | any => {
 
 export const freezer = {
 
-    deepFreeze : (data: any): any => {
+    deepFreeze: (data: any): any => {
         if (Array.isArray(data)) {
             return Object.freeze(data.map(d => freezer.deepFreeze(d)))
         }
@@ -72,3 +72,21 @@ export const freezer = {
         return data;
     }
 };
+
+export function addNamespace(namespace: string, types: any) {
+    Object.keys(types).forEach(key => {
+        if (types.hasOwnProperty(key)) {
+            types[key] = `${namespace}/${types[key]}`;
+        }
+    });
+}
+
+export function stripNamespace(name: string) {
+    const nameArray = name.split("/");
+    if (nameArray.length == 1) {
+        return name;
+    }
+    else {
+        return name[1];
+    }
+}

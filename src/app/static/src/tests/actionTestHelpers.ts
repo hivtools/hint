@@ -16,19 +16,14 @@ export function testUploadErrorCommitted(url: string,
         const dispatch = jest.fn();
         await action({commit, state, dispatch} as any, new FormData());
 
-        // first calls to clear the data
+        // first a call to clear the existing data
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ResetInputs",
-            payload: null
-        });
-
-        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: expectedSuccessType,
             payload: null
         });
 
         // then a call to set the error
-        expect(commit.mock.calls[2][0]).toStrictEqual({
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: expectedErrorType,
             payload: "Something went wrong"
         });

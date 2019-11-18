@@ -15,6 +15,10 @@ import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations} from "./store/root/mutations";
 import {initialModelOptionsState, modelOptions, ModelOptionsState} from "./store/modelOptions/modelOptions";
+import {BaselineMutation, BaselineUpdates} from "./store/baseline/mutations";
+import {stripNamespace} from "./utils";
+import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
+import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mutations";
 
 export interface RootState {
     version: string;
@@ -33,7 +37,7 @@ export interface ReadyState {
     ready: boolean
 }
 
-const persistState = (store: Store<RootState>) => {
+const manageState = (store: Store<RootState>) => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
         console.log(mutation.type);
         localStorageManager.saveState(state);
@@ -42,18 +46,18 @@ const persistState = (store: Store<RootState>) => {
             && state.surveyAndProgram.ready
             && state.modelRun.ready) {
 
-            switch (mutation.type.split("/")[0]) {
-                case "baseline":
-                    if (mutation.type.indexOf("Updated") == -1) break;
-                    store.commit({type: "ResetInputs"});
-                case "surveyAndProgram":
-                    if (mutation.type.indexOf("Updated") == -1) break;
-                    store.commit({type: "ResetOptions"});
-                case "modelOptions":
-                    if (mutation.type.indexOf("update") == -1) break;
-                    store.commit({type: "ResetOutputs"});
+            const type = stripNamespace(mutation.type);
+
+            if (BaselineUpdates.includes(type as BaselineMutation)
+                || SurveyAndProgramUpdates.includes(type as SurveyAndProgramMutation)) {
+                store.commit("ResetInputs");
+                store.commit("ResetOptions");
+                store.commit("ResetOutputs");
             }
 
+            if (ModelOptionsUpdates.includes(type as ModelOptionsMutation)) {
+                store.commit("ResetOutputs");
+            }
         }
     })
 };
@@ -85,5 +89,5 @@ export const storeOptions: StoreOptions<RootState> = {
     },
     actions: actions,
     mutations: mutations,
-    plugins: [persistState]
+    plugins: [manageState]
 };

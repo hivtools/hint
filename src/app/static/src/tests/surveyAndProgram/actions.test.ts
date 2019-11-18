@@ -5,11 +5,11 @@ import {
     mockFailure,
     mockProgramResponse,
     mockSuccess,
-    mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../mocks";
 
 import {DataType} from "../../app/store/filteredData/filteredData";
+import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 
 const FormData = require("form-data");
 
@@ -34,12 +34,12 @@ describe("Survey and programme actions", () => {
         await actions.uploadSurvey({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "SurveyUpdated",
+            type: SurveyAndProgramMutation.SurveyUpdated,
             payload: null
         });
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "SurveyUpdated",
+            type: SurveyAndProgramMutation.SurveyUpdated,
             payload: {data: "SOME DATA"}
         });
 
@@ -57,11 +57,11 @@ describe("Survey and programme actions", () => {
         await actions.uploadSurvey({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "SurveyUpdated",
+            type: SurveyAndProgramMutation.SurveyUpdated,
             payload: null
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "SurveyError",
+            type: SurveyAndProgramMutation.SurveyError,
             payload: "error message"
         });
 
@@ -78,12 +78,12 @@ describe("Survey and programme actions", () => {
         await actions.uploadProgram({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ProgramUpdated",
+            type: SurveyAndProgramMutation.ProgramUpdated,
             payload: null
         });
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ProgramUpdated",
+            type: SurveyAndProgramMutation.ProgramUpdated,
             payload: "TEST"
         });
 
@@ -101,12 +101,12 @@ describe("Survey and programme actions", () => {
         await actions.uploadProgram({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ProgramUpdated",
+            type: SurveyAndProgramMutation.ProgramUpdated,
             payload: null
         });
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ProgramError",
+            type: SurveyAndProgramMutation.ProgramError,
             payload: "error message"
         });
 
@@ -123,12 +123,12 @@ describe("Survey and programme actions", () => {
         await actions.uploadANC({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ANCUpdated",
+            type: SurveyAndProgramMutation.ANCUpdated,
             payload: null
         });
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ANCUpdated",
+            type: SurveyAndProgramMutation.ANCUpdated,
             payload: "TEST"
         });
 
@@ -146,12 +146,12 @@ describe("Survey and programme actions", () => {
         await actions.uploadANC({commit} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ANCUpdated",
+            type: SurveyAndProgramMutation.ANCUpdated,
             payload: null
         });
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ANCError",
+            type: SurveyAndProgramMutation.ANCError,
             payload: "error message"
         });
 
@@ -174,10 +174,10 @@ describe("Survey and programme actions", () => {
         await actions.getSurveyAndProgramData({commit} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-        expect(calls).toContain("SurveyUpdated");
-        expect(calls).toContain("ProgramUpdated");
-        expect(calls).toContain("ANCUpdated");
-        expect(calls).toContain("Ready");
+        expect(calls).toContain(SurveyAndProgramMutation.SurveyUpdated);
+        expect(calls).toContain(SurveyAndProgramMutation.ProgramUpdated);
+        expect(calls).toContain(SurveyAndProgramMutation.ANCUpdated);
+        expect(calls).toContain(SurveyAndProgramMutation.Ready);
 
     });
 
@@ -196,40 +196,37 @@ describe("Survey and programme actions", () => {
         await actions.getSurveyAndProgramData({commit} as any);
 
         expect(commit).toBeCalledTimes(1);
-        expect(commit.mock.calls[0][0]["type"]).toContain("Ready");
+        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.Ready);
     });
 
-    it("deletes survey and resets filtered data", async () => {
+    it("deletes survey", async () => {
         mockAxios.onDelete("/disease/survey/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
         await actions.deleteSurvey({commit} as any);
-        expect(commit).toBeCalledTimes(2);
-        expect(commit.mock.calls[0][0]["type"]).toBe("SurveyUpdated");
-        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
+        expect(commit).toBeCalledTimes(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
     });
 
-    it("deletes program and resets filtered data", async () => {
+    it("deletes program", async () => {
         mockAxios.onDelete("/disease/programme/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
         await actions.deleteProgram({commit} as any);
-        expect(commit).toBeCalledTimes(2);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ProgramUpdated");
-        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
+        expect(commit).toBeCalledTimes(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
     });
 
-    it("deletes ANC and resets filtered data", async () => {
+    it("deletes ANC", async () => {
         mockAxios.onDelete("/disease/anc/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
         await actions.deleteANC({commit} as any);
-        expect(commit).toBeCalledTimes(2);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ANCUpdated");
-        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
+        expect(commit).toBeCalledTimes(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
     });
 
     it("deletes all", async () => {
@@ -245,14 +242,11 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         await actions.deleteAll({commit} as any);
         expect(mockAxios.history["delete"].length).toBe(3);
-        expect(commit).toBeCalledTimes(6);
+        expect(commit).toBeCalledTimes(3);
         expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([
-            "SurveyUpdated",
-            "filteredData/Reset",
-            "ProgramUpdated",
-            "filteredData/Reset",
-            "ANCUpdated",
-            "filteredData/Reset"]);
+            SurveyAndProgramMutation.SurveyUpdated,
+            SurveyAndProgramMutation.ProgramUpdated,
+            SurveyAndProgramMutation.ANCUpdated]);
     });
 
 });

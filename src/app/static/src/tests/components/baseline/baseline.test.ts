@@ -6,7 +6,7 @@ import {mockBaselineState, mockMetadataState, mockPopulationResponse, mockShapeR
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import Baseline from "../../../app/components/baseline/Baseline.vue";
 import FileUpload from "../../../app/components/FileUpload.vue";
-import {BaselineMutations} from "../../../app/store/baseline/mutations";
+import {BaselineMutation} from "../../../app/store/baseline/mutations";
 import {MetadataState} from "../../../app/store/metadata/metadata";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
@@ -17,7 +17,7 @@ Vue.use(Vuex);
 describe("Baseline upload component", () => {
 
     let actions: jest.Mocked<BaselineActions>;
-    let mutations: jest.Mocked<BaselineMutations>;
+    let mutations = {}
 
     const createSut = (baselineState?: Partial<BaselineState>, metadataState?: Partial<MetadataState>) => {
 

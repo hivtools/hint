@@ -4,10 +4,7 @@ import {DataType} from "../filteredData/filteredData";
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
-import {BaselineErrorActionTypes} from "../baseline/actions";
-
-export type SurveyAndProgramActionTypes = "SurveyUpdated" | "ProgramUpdated" | "ANCUpdated"
-export type SurveyAndProgramActionErrorTypes = "SurveyError" | "ProgramError" | "ANCError"
+import {SurveyAndProgramMutation} from "./mutations";
 
 export interface SurveyAndProgramActions {
     uploadSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
@@ -29,9 +26,9 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
 
     async uploadSurvey({commit}, formData) {
         commit({type: "SurveyUpdated", payload: null});
-        await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
-            .withError("SurveyError")
-            .withSuccess("SurveyUpdated")
+        await api(commit)
+            .withError(SurveyAndProgramMutation.SurveyError)
+            .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
             .postAndReturn<SurveyResponse>("/disease/survey/", formData)
             .then((response) => {
                 if (response) {
@@ -42,9 +39,9 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
 
     async uploadProgram({commit}, formData) {
         commit({type: "ProgramUpdated", payload: null});
-        await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
-            .withError("ProgramError")
-            .withSuccess("ProgramUpdated")
+        await api(commit)
+            .withError(SurveyAndProgramMutation.ProgramError)
+            .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
             .postAndReturn<ProgrammeResponse>("/disease/programme/", formData)
             .then((response) => {
                 if (response) {
@@ -55,9 +52,9 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
 
     async uploadANC({commit}, formData) {
         commit({type: "ANCUpdated", payload: null});
-        await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
-            .withError("ANCError")
-            .withSuccess("ANCUpdated")
+        await api(commit)
+            .withError(SurveyAndProgramMutation.ANCError)
+            .withSuccess(SurveyAndProgramMutation.ANCUpdated)
             .postAndReturn<ProgrammeResponse>("/disease/anc/", formData)
             .then((response) => {
                 if (response) {
@@ -78,7 +75,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         await api(commit)
             .delete("/disease/programme/")
             .then(() => {
-                commit({type: "ProgramUpdated", payload: null});
+                commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
             });
     },
 
@@ -86,7 +83,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         await api(commit)
             .delete("/disease/anc/")
             .then(() => {
-                commit({type: "ANCUpdated", payload: null});
+                commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
             });
     },
 
@@ -101,19 +98,19 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
     async getSurveyAndProgramData({commit}) {
 
         await Promise.all(
-            [api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
+            [api(commit)
                 .ignoreErrors()
-                .withSuccess("SurveyUpdated")
+                .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
                 .get<SurveyResponse>("/disease/survey/"),
-                api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
+                api(commit)
                     .ignoreErrors()
-                    .withSuccess("ProgramUpdated")
+                    .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
                     .get<ProgrammeResponse>("/disease/programme/"),
-                api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
+                api(commit)
                     .ignoreErrors()
-                    .withSuccess("ANCUpdated")
+                    .withSuccess(SurveyAndProgramMutation.ANCUpdated)
                     .get<AncResponse>("/disease/anc/")]);
 
-        commit({type: "Ready", payload: true});
+        commit({type: SurveyAndProgramMutation.Ready, payload: true});
     }
 };
