@@ -17,7 +17,7 @@ import java.io.File
 abstract class CleanDatabaseTests
 {
     @Autowired
-    private lateinit var dsl: DSLContext
+    protected lateinit var dsl: DSLContext
 
     @Autowired
     private lateinit var userRepo: DbProfileServiceUserRepository
@@ -27,11 +27,6 @@ abstract class CleanDatabaseTests
         File(tmpUploadDirectory).deleteRecursively()
 
         val tableFields = Tables::class.java.fields
-
-//        // this table has foreign keys
-//        // so has to be deleted first
-//        dsl.deleteFrom(SESSION_FILE)
-//                .execute()
 
         for (tableField in tableFields){
             val table = tableField.get(null) as Table<*>
