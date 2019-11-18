@@ -62,7 +62,7 @@ class UserCLI(private val userRepository: UserRepository)
         val email = options["<email>"].getStringValue()
         val password = options["<password>"]?.getStringValue()
         println("Adding user $email")
-        println(password)
+//        println(password)
 
         userRepository.addUser(email, password)
         return "OK"
