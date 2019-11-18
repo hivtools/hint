@@ -23,7 +23,6 @@ mockAxios.onGet(`/disease/anc/`)
     .reply(200, mockSuccess(null));
 
 import {app} from "../../app"
-import {mutations} from "../../app/store/root/mutations";
 import {RootState, storeOptions} from "../../app/root";
 import {localStorageManager} from "../../app/localStorageManager";
 

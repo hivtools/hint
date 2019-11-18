@@ -5,7 +5,6 @@ import Vuex from "vuex";
 import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../../mocks";
 import {DataType} from "../../../app/store/filteredData/filteredData";
 import Vue from "vue";
-import {store} from "../../../app/main";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -62,6 +61,7 @@ describe("Map control component", () => {
     };
 
     it("renders tree selects with expected properties", () => {
+        const store = getStore();
         const wrapper = shallowMount(MapControl, {store, localVue});
 
         expect(wrapper.findAll(TreeSelect).at(0).props("searchable")).toBe(false);
