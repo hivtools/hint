@@ -1,15 +1,16 @@
 package org.imperial.mrc.hint.unit
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.kittinunf.fuel.core.Body
-import com.github.kittinunf.fuel.core.Response
+import com.github.kittinunf.fuel.core.*
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.imperial.mrc.hint.asResponseEntity
+import org.imperial.mrc.hint.getStreamingResponseEntity
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.net.URL
 
 class ExtensionTests {
@@ -71,5 +72,29 @@ class ExtensionTests {
         val body = ObjectMapper().readTree(res.asResponseEntity().body)
         val errorDetail = body["errors"].first()["detail"].textValue()
         assertThat(errorDetail).isEqualTo("Could not parse response.")
+    }
+
+    @Test
+    fun `getStreamingResponseEntity sets status, headers and streaming response`() {
+        val headers = Headers()
+        headers.append("test-header", "test-value")
+        headers.append("test-header2", "test-value2")
+
+        val response = Response(URL("http://test"), 200, "test msg", headers)
+
+        val downloadRequest = mock<Request>{
+            on {url} doReturn URL("http://test")
+        }
+
+        val mockHeadRequest = mock<Request>{
+            on {response()} doReturn Triple(mock(), response, mock())
+        }
+
+        val result = downloadRequest.getStreamingResponseEntity({_,_ -> mockHeadRequest})
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.headers["test-header"]?.first()).isEqualTo("test-value")
+        assertThat(result.headers["test-header2"]?.first()).isEqualTo("test-value2")
+        assertThat(result.body).isInstanceOf(StreamingResponseBody::class.java)
     }
 }
