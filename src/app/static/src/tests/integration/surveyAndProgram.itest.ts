@@ -22,7 +22,7 @@ describe("Survey and programme actions", () => {
     it("can upload survey", async () => {
 
         const commit = jest.fn();
-        const dispatch = jest.fn()
+        const dispatch = jest.fn();
 
         const file = fs.createReadStream("../testdata/survey.csv");
         const formData = new FormData();

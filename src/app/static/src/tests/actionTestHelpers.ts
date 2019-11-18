@@ -1,5 +1,11 @@
 import {mockAxios, mockBaselineState, mockFailure} from "./mocks";
 import {ActionContext} from "vuex";
+import {PayloadWithType} from "../app/types";
+
+export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
+    expect(Object.isFrozen(args["payload"])).toBe(true);
+    expect(args).toStrictEqual(expected);
+}
 
 export function testUploadErrorCommitted(url: string,
                                          expectedErrorType: string,

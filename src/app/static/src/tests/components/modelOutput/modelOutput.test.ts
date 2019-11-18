@@ -30,6 +30,14 @@ function getStore() {
                 state: mockModelRunState({
                     result: mockModelResultResponse({data: ["TEST DATA"] as any})
                 })
+            },
+            modelOutput: {
+                namespaced: true,
+                state: {},
+                getters: {
+                    barchartIndicators: jest.fn(),
+                    barchartFilters: jest.fn()
+                }
             }
         }
     });
