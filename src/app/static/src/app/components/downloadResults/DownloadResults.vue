@@ -1,10 +1,14 @@
 <template>
    <div class="row">
        <div class="col-sm-12">
-           <h4>Download model outputs for Spectrum</h4>
-           <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>Download</a>
+           <h4>Export model outputs for Spectrum</h4>
+           <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>
+               Export <download-icon size="20" class="icon"></download-icon>
+           </a>
            <h4 class="mt-4">Download summary</h4>
-           <a class="btn btn-red btn-lg my-3" :href=summaryUrl>Download</a>
+           <a class="btn btn-red btn-lg my-3" :href=summaryUrl>
+               Download <download-icon size="20" class="icon"></download-icon>
+           </a>
        </div>
    </div>
 </template>
@@ -13,6 +17,7 @@
     import Vue from "vue";
     import {mapStateProps} from "../../utils";
     import {ModelRunState} from "../../store/modelRun/modelRun";
+    import {DownloadIcon} from "vue-feather-icons";
 
     interface Computed {
         modelRunId: string,
@@ -32,6 +37,9 @@
             summaryUrl: function() {
                 return `/download/summary/${this.modelRunId}`
             }
+        },
+        components: {
+            DownloadIcon
         }
     });
 </script>
