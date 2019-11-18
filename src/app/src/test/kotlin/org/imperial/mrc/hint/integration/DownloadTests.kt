@@ -36,6 +36,7 @@ class DownloadTests : SecureIntegrationTests() {
         do {
             Thread.sleep(500)
             val statusResponse = testRestTemplate.getForEntity<String>("/model/status/$id")
+            print(statusResponse.body)
         } while (statusResponse.body!!.contains("\"status\":\"RUNNING\""))
 
         return id
@@ -66,8 +67,12 @@ class DownloadTests : SecureIntegrationTests() {
     fun assertResponseHasExpectedDownloadHeaders(response: ResponseEntity<ByteArray>) {
         val headers = response.headers
         assertThat(headers["Content-Type"]?.first()).isEqualTo("application/octet-stream")
-        val contentLength = headers["Content-Length"]?.first()!!
-        assertThat(contentLength.toInt()).isGreaterThan(0)
+
+        val contentLength = headers["Content-Length"]?.first()!!.toInt()
+        assertThat(contentLength).isGreaterThan(0)
+        val bodyLength = response.body?.count()
+        assertThat(contentLength).isEqualTo(bodyLength)
+
         assertThat(headers["Connection"]?.first()).isEqualTo("close")
     }
 }
