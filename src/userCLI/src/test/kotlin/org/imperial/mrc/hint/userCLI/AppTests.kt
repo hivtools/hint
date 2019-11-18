@@ -42,7 +42,7 @@ class AppTests {
 
     @Test
     fun `can add user`() {
-        sut.addUser(mapOf("<email>" to TEST_EMAIL, "[<password>]" to "testpassword"))
+        sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
         Assertions.assertThat(sut.userExists(mapOf("<email>" to TEST_EMAIL))).isEqualTo("true")
     }
@@ -64,7 +64,7 @@ class AppTests {
 
     @Test
     fun `can remove user`() {
-        sut.addUser(mapOf("<email>" to TEST_EMAIL, "[<password>]" to "testpassword"))
+        sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
         sut.removeUser(mapOf("<email>" to TEST_EMAIL))
         Assertions.assertThat(sut.userExists(mapOf("<email>" to TEST_EMAIL))).isEqualTo("false")
@@ -72,7 +72,7 @@ class AppTests {
 
     @Test
     fun `cannot add same user twice`() {
-        sut.addUser(mapOf("<email>" to TEST_EMAIL, "[<password>]" to "testpassword"))
+        sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword"))
 
         Assertions.assertThatThrownBy { sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword")) }
                 .isInstanceOf(UserException::class.java)
