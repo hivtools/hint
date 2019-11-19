@@ -23,6 +23,10 @@ export function testUploadComponent(name: string, position: number) {
             uploadSurvey: jest.fn(),
             uploadProgram: jest.fn(),
             uploadANC: jest.fn(),
+            deleteSurvey: jest.fn(),
+            deleteProgram: jest.fn(),
+            deleteANC: jest.fn(),
+            deleteAll: jest.fn(),
             getSurveyAndProgramData: jest.fn()
         };
 

@@ -22,10 +22,14 @@ describe("Baseline upload component", () => {
     const createSut = (baselineState?: Partial<BaselineState>, metadataState?: Partial<MetadataState>) => {
 
         actions = {
-            uploadPJNZ: jest.fn(),
             getBaselineData: jest.fn(),
+            uploadPJNZ: jest.fn(),
             uploadShape: jest.fn(),
             uploadPopulation: jest.fn(),
+            deletePJNZ: jest.fn(),
+            deleteShape: jest.fn(),
+            deletePopulation: jest.fn(),
+            deleteAll: jest.fn(),
             validate: jest.fn()
         };
 

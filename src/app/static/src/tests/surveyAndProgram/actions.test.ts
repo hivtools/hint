@@ -1,5 +1,13 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
-import {mockAncResponse, mockAxios, mockFailure, mockProgramResponse, mockSuccess, mockSurveyResponse} from "../mocks";
+import {
+    mockAncResponse,
+    mockAxios,
+    mockFailure,
+    mockProgramResponse,
+    mockSuccess,
+    mockSurveyAndProgramState,
+    mockSurveyResponse
+} from "../mocks";
 
 import {DataType} from "../../app/store/filteredData/filteredData";
 import {expectEqualsFrozen} from "../actionTestHelpers";
@@ -194,6 +202,62 @@ describe("Survey and programme actions", () => {
 
         expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toContain("Ready");
+    });
+
+    it("deletes survey and resets filtered data", async () => {
+        mockAxios.onDelete("/disease/survey/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        await actions.deleteSurvey({commit} as any);
+        expect(commit).toBeCalledTimes(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SurveyUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
+    });
+
+    it("deletes program and resets filtered data", async () => {
+        mockAxios.onDelete("/disease/programme/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        await actions.deleteProgram({commit} as any);
+        expect(commit).toBeCalledTimes(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ProgramUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
+    });
+
+    it("deletes ANC and resets filtered data", async () => {
+        mockAxios.onDelete("/disease/anc/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        await actions.deleteANC({commit} as any);
+        expect(commit).toBeCalledTimes(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ANCUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
+    });
+
+    it("deletes all", async () => {
+        mockAxios.onDelete("/disease/anc/")
+            .reply(200, mockSuccess(true));
+
+        mockAxios.onDelete("/disease/survey/")
+            .reply(200, mockSuccess(true));
+
+        mockAxios.onDelete("/disease/programme/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        await actions.deleteAll({commit} as any);
+        expect(mockAxios.history["delete"].length).toBe(3);
+        expect(commit).toBeCalledTimes(6);
+        expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([
+            "SurveyUpdated",
+            "filteredData/Reset",
+            "ProgramUpdated",
+            "filteredData/Reset",
+            "ANCUpdated",
+            "filteredData/Reset"]);
     });
 
 });

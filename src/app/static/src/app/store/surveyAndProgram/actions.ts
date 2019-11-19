@@ -14,6 +14,10 @@ export interface SurveyAndProgramActions {
     uploadProgram: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
     uploadANC: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void
     getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void;
+    deleteSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
+    deleteProgram: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
+    deleteANC: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
+    deleteAll: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
 }
 
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
@@ -63,6 +67,41 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
                     commitSelectedDataTypeUpdated(commit, DataType.ANC);
                 }
             });
+    },
+
+    async deleteSurvey({commit}) {
+        await api(commit)
+            .delete("/disease/survey/")
+            .then(() => {
+                commit({type: "SurveyUpdated", payload: null});
+                commit({type: "filteredData/Reset", payload: null}, {root: true});
+            });
+    },
+
+    async deleteProgram({commit}) {
+        await api(commit)
+            .delete("/disease/programme/")
+            .then(() => {
+                commit({type: "ProgramUpdated", payload: null});
+                commit({type: "filteredData/Reset", payload: null}, {root: true});
+            });
+    },
+
+    async deleteANC({commit}) {
+        await api(commit)
+            .delete("/disease/anc/")
+            .then(() => {
+                commit({type: "ANCUpdated", payload: null});
+                commit({type: "filteredData/Reset", payload: null}, {root: true});
+            });
+    },
+
+    async deleteAll(store) {
+        await Promise.all([
+            actions.deleteSurvey(store),
+            actions.deleteProgram(store),
+            actions.deleteANC(store)
+        ]);
     },
 
     async getSurveyAndProgramData({commit}) {

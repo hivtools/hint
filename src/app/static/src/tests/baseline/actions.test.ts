@@ -9,7 +9,6 @@ import {
 } from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
 import {expectEqualsFrozen, testUploadErrorCommitted} from "../actionTestHelpers";
-import {PayloadWithType} from "../../app/types";
 
 const FormData = require("form-data");
 
@@ -37,8 +36,10 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "ResetInputs", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
+
         expectEqualsFrozen(commit.mock.calls[2][0],
             {type: "PJNZUpdated", payload: {data: {country: "Malawi", iso3: "MWI"}}});
+
         expect(dispatch.mock.calls.length).toBe(2);
 
         expect(dispatch.mock.calls[0][0]).toBe("metadata/getPlottingMetadata");
@@ -189,6 +190,59 @@ describe("Baseline actions", () => {
 
         expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toContain("Ready");
+    });
+
+    it("delete pjnz and resets inputs", async () => {
+
+        mockAxios.onDelete("/baseline/pjnz/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.deletePJNZ({commit, dispatch} as any);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PJNZUpdated");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+    });
+
+    it("deletes shape and resets inputs", async () => {
+
+        mockAxios.onDelete("/baseline/shape/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.deleteShape({commit, dispatch} as any);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUpdated");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+    });
+
+    it("deletes population and resets inputs", async () => {
+
+        mockAxios.onDelete("/baseline/population/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.deletePopulation({commit, dispatch} as any);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUpdated");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+    });
+
+    it("deletes all", async () => {
+        mockAxios.onDelete("/baseline/pjnz/")
+            .reply(200, mockSuccess(true));
+        mockAxios.onDelete("/baseline/shape/")
+            .reply(200, mockSuccess(true));
+        mockAxios.onDelete("/baseline/population/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.deleteAll({commit, dispatch} as any);
+        expect(mockAxios.history["delete"].length).toBe(3)
     });
 
 });

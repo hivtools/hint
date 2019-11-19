@@ -1,12 +1,13 @@
 import {PayloadWithType} from "../../types";
 import {Mutation, MutationTree} from "vuex";
-import {DataType, FilteredDataState, FilterType} from "./filteredData";
+import {DataType, FilteredDataState, FilterType, initialFilteredDataState} from "./filteredData";
 
 type FilteredDataMutation = Mutation<FilteredDataState>
 
 export interface SelectedDataMutations {
     SelectedDataTypeUpdated: FilteredDataMutation
     ChoroplethFilterUpdated: FilteredDataMutation
+    Reset: FilteredDataMutation
 }
 
 export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations  = {
@@ -33,5 +34,8 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
                 filters.regions = value as string[];
                 break;
         }
+    },
+    Reset(state: FilteredDataState) {
+        Object.assign(state, initialFilteredDataState);
     }
 };
