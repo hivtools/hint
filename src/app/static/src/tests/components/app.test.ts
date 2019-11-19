@@ -115,35 +115,19 @@ describe("App", () => {
 
     it("does not commit any reset mutations if only one module state is ready", () => {
         const store = getStore();
-        expectModuleBeingReadyIsNotEnough(store.state.baseline, store);
-        expectModuleBeingReadyIsNotEnough(store.state.surveyAndProgram, store);
-        expectModuleBeingReadyIsNotEnough(store.state.modelRun, store);
+        expectModulesBeingReadyIsNotEnough([store.state.baseline], store);
+        expectModulesBeingReadyIsNotEnough([store.state.surveyAndProgram], store);
+        expectModulesBeingReadyIsNotEnough([store.state.modelRun], store);
     });
 
     it("does not commit any reset mutations if only 2 module states are ready", () => {
         const store = getStore();
-        expectTwoModulesBeingReadyIsNotEnough([store.state.baseline, store.state.surveyAndProgram], store);
-        expectTwoModulesBeingReadyIsNotEnough([store.state.baseline, store.state.modelRun], store);
-        expectTwoModulesBeingReadyIsNotEnough([store.state.modelRun, store.state.surveyAndProgram], store);
+        expectModulesBeingReadyIsNotEnough([store.state.baseline, store.state.surveyAndProgram], store);
+        expectModulesBeingReadyIsNotEnough([store.state.baseline, store.state.modelRun], store);
+        expectModulesBeingReadyIsNotEnough([store.state.modelRun, store.state.surveyAndProgram], store);
     });
 
-    function expectModuleBeingReadyIsNotEnough(module: ReadyState, store: Store<RootState>) {
-        // make module ready
-        module.ready = true;
-
-        // reset mocks from previous call
-        jest.resetAllMocks();
-        const spy = jest.spyOn(store, "commit");
-
-        store.commit(prefixNamespace("modelOptions", ModelOptionsMutation.Update), {payload: null});
-
-        // reset module for next test
-        module.ready = false;
-
-        expect(spy).toBeCalledTimes(1);
-    }
-
-    function expectTwoModulesBeingReadyIsNotEnough(modules: ReadyState[], store: Store<RootState>) {
+    function expectModulesBeingReadyIsNotEnough(modules: ReadyState[], store: Store<RootState>) {
         // make modules ready
         modules.forEach(m => m.ready = true);
 
