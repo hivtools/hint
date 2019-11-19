@@ -20,7 +20,7 @@ export interface BaselineActions {
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async uploadPJNZ({commit, dispatch, state}, formData) {
-
+        commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: BaselineMutation.PJNZUpdated, payload: null});
         await api(commit)
             .withSuccess(BaselineMutation.PJNZUpdated)
@@ -34,7 +34,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadShape({commit, dispatch}, formData) {
-
+        commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: BaselineMutation.ShapeUpdated, payload: null});
         await api(commit)
             .withSuccess(BaselineMutation.ShapeUpdated)
@@ -47,7 +47,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadPopulation({commit, dispatch}, formData) {
-
+        commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: BaselineMutation.PopulationUpdated, payload: null});
         await api(commit)
             .withSuccess(BaselineMutation.PopulationUpdated)
