@@ -117,16 +117,16 @@
                 return options ? options.map((o: FilterOption) => o.id) : [];
             },
             barLabelLookup() {
-                return toFilterLabelLookup(this.selections.selectedFilterOptions[this.selections.disaggregateById]);
+                return toFilterLabelLookup(this.selections.selectedFilterOptions[this.selections.disaggregateById] || []);
             },
             xAxisLabelLookup() {
-                return toFilterLabelLookup(this.selections.selectedFilterOptions[this.selections.xAxisId]);
+                return toFilterLabelLookup(this.selections.selectedFilterOptions[this.selections.xAxisId] || []);
             },
             filtersAsOptions() {
                 return this.filters.map((f: Filter) => ({id: f.id, label: f.label}))
             },
             processedOutputData() {
-                return getProcessedOutputData(
+                return  this.initialised ? getProcessedOutputData(
                     this.chartdata,
                     this.selections.xAxisId,
                     this.selections.disaggregateById,
@@ -136,7 +136,7 @@
                     this.barLabelLookup,
                     this.xAxisLabelLookup,
                     this.xAxisLabels,
-                    this.xAxisValues)
+                    this.xAxisValues) : {};
             },
             indicator() {
                 return this.indicators.find((i: BarchartIndicator) => i.indicator == this.selections.indicatorId)

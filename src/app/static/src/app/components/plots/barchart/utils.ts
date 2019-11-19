@@ -1,11 +1,11 @@
 import {BarchartIndicator, Dict, Filter} from "../../../types";
 import {FilterOption} from "../../../generated";
 
-export const toFilterLabelLookup = (array: Filter[]) => array ?
+export const toFilterLabelLookup = (array: Filter[]) =>
     array.reduce((obj, current) => {
         obj[current.id] = current.label;
         return obj
-    }, {} as Dict<string>) : {};
+    }, {} as Dict<string>);
 
 export const getProcessedOutputData = (data: any[],
                                        xAxis: string,
@@ -17,10 +17,6 @@ export const getProcessedOutputData = (data: any[],
                                        xAxisLabelLookup: Dict<string>,
                                        xAxisLabels: string[],
                                        xAxisValues: string[]) => {
-
-    if (!xAxis || !disaggBy || !indicator) {
-        return {};
-    }
 
     const datasets: any[] = [];
 
