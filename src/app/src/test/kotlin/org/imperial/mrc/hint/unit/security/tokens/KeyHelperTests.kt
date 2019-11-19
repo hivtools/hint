@@ -1,12 +1,16 @@
 package org.imperial.mrc.hint.unit.security.tokens
 
 import com.nhaarman.mockito_kotlin.*
+import org.aspectj.lang.annotation.After
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.helpers.tmpUploadDirectory
 import org.imperial.mrc.hint.security.tokens.FileManager
 import org.imperial.mrc.hint.security.tokens.KeyFileManager
 import org.imperial.mrc.hint.security.tokens.KeyHelper
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.mockito.internal.verification.Times
+import java.io.File
 import java.security.KeyFactory
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
@@ -25,6 +29,13 @@ class KeyHelperTests {
     private fun keyIsEqual(bytes: ByteArray, key: RSAPrivateKey): Boolean {
         val spec = PKCS8EncodedKeySpec(bytes)
         return keyFactory.generatePrivate(spec) == key
+    }
+
+    private val tmpDir = "tmp"
+
+    @AfterEach
+    fun cleanUp() {
+        File(tmpDir).deleteRecursively()
     }
 
     @Test
@@ -63,5 +74,22 @@ class KeyHelperTests {
         assertThat(result.public).isInstanceOf(RSAPublicKey::class.java)
 
         verify(mockFileManager, Times(0)).writeToFile(any(), any())
+    }
+
+    @Test
+    fun `can tell if directory exists`() {
+        val sut = KeyFileManager()
+        assertThat(sut.exists("nonsense")).isFalse()
+        assertThat(sut.exists(".")).isTrue()
+    }
+
+    @Test
+    fun `can write to file`() {
+        File(tmpDir).mkdir()
+        val testFile = File("$tmpDir/test")
+        val sut = KeyFileManager()
+        sut.writeToFile(testFile, "TEST".toByteArray())
+
+        assertThat(testFile.readText()).isEqualTo("TEST")
     }
 }
