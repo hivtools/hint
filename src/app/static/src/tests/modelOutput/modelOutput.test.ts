@@ -1,4 +1,4 @@
-import {modelOutputGetters} from "../../app/store/modelOutput/modelOutput";
+import {initialModelOutputState, modelOutputGetters} from "../../app/store/modelOutput/modelOutput";
 import {
     mockBaselineState,
     mockModelResultResponse,
@@ -53,21 +53,21 @@ describe("modelOutput module", () => {
                 }
             })
         }),
-        modelOutput: {},
+        modelOutput: {...initialModelOutputState},
         modelRun: mockModelRunState({
             result: modelRunResponse
         })
     });
 
     it("gets barchart indicators", async () => {
-        const result = modelOutputGetters.barchartIndicators({}, null, rootState);
+        const result = modelOutputGetters.barchartIndicators({...initialModelOutputState}, null, rootState);
         expect(result.length).toEqual(2);
         expect(result).toBe(modelRunResponse.plottingMetadata.barchart.indicators);
     });
 
     it("gets barchart filters", async () => {
 
-        const result = modelOutputGetters.barchartFilters({}, null, rootState);
+        const result = modelOutputGetters.barchartFilters({...initialModelOutputState}, null, rootState);
         expect(result.length).toEqual(4); //NB temporarily 4 rather than 3 as including sex until it comes from api
         expect(result[0]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[0]);
         expect(result[1]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[1]);
