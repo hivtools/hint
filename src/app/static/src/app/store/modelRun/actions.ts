@@ -3,7 +3,6 @@ import {ModelRunState} from "./modelRun";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
-import {Dict} from "../../types";
 
 export type ModelRunActionTypes = "ModelRunStarted" | "RunStatusUpdated" | "PollingForStatusStarted" | "RunResultFetched"
 export type ModelRunErrorTypes = "ModelRunError" | "RunStatusError" | "RunResultError"
