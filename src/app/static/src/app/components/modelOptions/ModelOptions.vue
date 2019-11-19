@@ -7,25 +7,28 @@
         <dynamic-form v-if="!loading"
                       v-model="modelOptions"
                       submit-text="Validate"
-                      @submit="validate"></dynamic-form>
+                      @submit="Validate"></dynamic-form>
         <h4 v-if="valid" class="mt-3">Options are valid
             <tick color="#e31837" width="20px"></tick>
         </h4>
     </div>
+
 </template>
 <script lang="ts">
     import Vue from "vue";
     import DynamicForm from "../forms/DynamicForm.vue";
     import {DynamicFormData, DynamicFormMeta} from "../forms/types";
-    import {mapActionByName, mapMutationsByNames, mapStateProps} from "../../utils";
-    import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 
+    import {mapActionByName, mapMutationsByNames, mapStateProps} from "../../utils";
+    import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
+    import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
+
     interface Methods {
         fetchOptions: () => void
-        validate: (data: DynamicFormData) => void
-        update: (data: DynamicFormMeta) => void
+        [ModelOptionsMutation.Validate]: (data: DynamicFormData) => void
+        [ModelOptionsMutation.Update]: (data: DynamicFormMeta) => void
     }
 
     interface Computed {
@@ -36,7 +39,7 @@
 
     const namespace = "modelOptions";
 
-    export default Vue.extend<{ form: DynamicFormMeta }, Methods, Computed, {}>({
+    export default Vue.extend<{}, Methods, Computed, {}>({
         name: "ModelOptions",
         computed: {
             ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
@@ -48,13 +51,17 @@
                     return this.$store.state.modelOptions.optionsFormMeta
                 },
                 set(value: DynamicFormMeta) {
-                    this.update(value);
+                    this[ModelOptionsMutation.Update](value);
                 }
             }
         },
         methods: {
-            fetchOptions: mapActionByName(namespace, "fetchModelRunOptions"),
-            ...mapMutationsByNames<keyof Methods>(namespace, ["validate", "update"])
+            ...mapMutationsByNames<keyof Methods>("modelOptions",
+                [
+                    ModelOptionsMutation.Update,
+                    ModelOptionsMutation.Validate
+                ]),
+            fetchOptions: mapActionByName(namespace, "fetchModelRunOptions")
         },
         components: {
             DynamicForm,

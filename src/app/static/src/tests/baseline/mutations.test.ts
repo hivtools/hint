@@ -1,4 +1,4 @@
-import {mutations} from "../../app/store/baseline/mutations";
+import {BaselineMutation, mutations} from "../../app/store/baseline/mutations";
 import {
     mockPJNZResponse,
     mockPopulationResponse,
@@ -15,7 +15,7 @@ describe("Baseline mutations", () => {
     it("sets country, filename and error on PJNZUpdated", () => {
 
         const testState = {...initialBaselineState};
-        mutations.PJNZUpdated(testState, {
+        mutations[BaselineMutation.PJNZUpdated](testState, {
             payload: mockPJNZResponse({data: {country: "Malawi", iso3: "MWI"}, filename: "file.pjnz"})
         });
         expect(testState.country).toBe("Malawi");
@@ -33,28 +33,28 @@ describe("Baseline mutations", () => {
         const testRootState = mockRootState({baseline: testState});
         const complete = testStore.getters!!.complete;
 
-        mutations.PJNZUpdated(testState, {
+        mutations[BaselineMutation.PJNZUpdated](testState, {
             payload:
                 mockPJNZResponse({data: {country: "Malawi", iso3: "MWI"}}), type: "PJNZUpdated"
         });
 
         expect(complete(testState, null, testRootState, null)).toBe(false);
 
-        mutations.ShapeUpdated(testState, {
+        mutations[BaselineMutation.ShapeUpdated](testState, {
             payload:
                 mockShapeResponse(), type: "ShapeUpdated"
         });
 
         expect(complete(testState, null, testRootState, null)).toBe(false);
 
-        mutations.PopulationUpdated(testState, {
+        mutations[BaselineMutation.PopulationUpdated](testState, {
             payload:
                 mockPopulationResponse(), type: "PopulationUpdated"
         });
 
         expect(complete(testState, null, testRootState, null)).toBe(false);
 
-        mutations.Validated(testState, {
+        mutations[BaselineMutation.Validated](testState, {
             payload:
                 mockValidateBaselineResponse(), type: "Validated"
         });
@@ -65,13 +65,13 @@ describe("Baseline mutations", () => {
     it("sets error on PJNZUploadError", () => {
 
         const testState = {...initialBaselineState};
-        mutations.PJNZUploadError(testState, {payload: "Some error"});
+        mutations[BaselineMutation.PJNZUploadError](testState, {payload: "Some error"});
         expect(testState.pjnzError).toBe("Some error");
     });
 
     it("sets country and filename and clears error if present on PJNZUpdated", () => {
         const testState = {...initialBaselineState, pjnzError: "test"};
-        mutations.PJNZUpdated(testState, {
+        mutations[BaselineMutation.PJNZUpdated](testState, {
             payload: mockPJNZResponse({filename: "file.pjnz", data: {country: "Malawi", iso3: "MWI"}})
         });
         expect(testState.pjnz!!.filename).toBe("file.pjnz");
@@ -82,7 +82,7 @@ describe("Baseline mutations", () => {
     it("clears country and filename on PJNZUpdated if no data present", () => {
 
         const testState = {...initialBaselineState, pjnzError: "", country: "test", pjnz: "TEST" as any};
-        mutations.PJNZUpdated(testState, {payload: null});
+        mutations[BaselineMutation.PJNZUpdated](testState, {payload: null});
         expect(testState.pjnz).toBe(null);
         expect(testState.country).toBe("");
         expect(testState.iso3).toBe("");
@@ -93,7 +93,7 @@ describe("Baseline mutations", () => {
 
         const mockShape = mockShapeResponse();
         const testState = {...initialBaselineState, shapeError: ""};
-        mutations.ShapeUpdated(testState, {
+        mutations[BaselineMutation.ShapeUpdated](testState, {
             payload: mockShape
         });
         expect(testState.shape).toBe(mockShape);
@@ -114,7 +114,7 @@ describe("Baseline mutations", () => {
             }
         });
         const testState = {...initialBaselineState};
-        mutations.ShapeUpdated(testState, {
+        mutations[BaselineMutation.ShapeUpdated](testState, {
             payload: mockShape
         });
         expect(testState.regionFilters).toStrictEqual([{
@@ -130,7 +130,7 @@ describe("Baseline mutations", () => {
     it("sets error on ShapeUploadError", () => {
 
         const testState = {...initialBaselineState};
-        mutations.ShapeUploadError(testState, {payload: "Some error"});
+        mutations[BaselineMutation.ShapeUploadError](testState, {payload: "Some error"});
         expect(testState.shapeError).toBe("Some error");
     });
 
@@ -138,7 +138,7 @@ describe("Baseline mutations", () => {
 
         const mockPop = mockPopulationResponse();
         const testState = {...initialBaselineState, populationError: "test"};
-        mutations.PopulationUpdated(testState, {
+        mutations[BaselineMutation.PopulationUpdated](testState, {
             payload: mockPop
         });
         expect(testState.population).toBe(mockPop);
@@ -148,18 +148,18 @@ describe("Baseline mutations", () => {
     it("sets error on PopulationUploadError", () => {
 
         const testState = {...initialBaselineState};
-        mutations.PopulationUploadError(testState, {payload: "Some error"});
+        mutations[BaselineMutation.PopulationUploadError](testState, {payload: "Some error"});
         expect(testState.populationError).toBe("Some error");
     });
 
     it("sets ready state", () => {
         const testState = {...initialBaselineState};
-        mutations.Ready(testState);
+        mutations[BaselineMutation.Ready](testState);
         expect(testState.ready).toBe(true);
     });
     it("Validated sets validation values", () => {
         const testState = {...initialBaselineState, baselineError: "test error"};
-        mutations.Validated(testState, {payload: {consistent: true, complete: true}});
+        mutations[BaselineMutation.Validated](testState, {payload: {consistent: true, complete: true}});
         expect(testState.baselineError).toBe("");
         expect(testState.validatedConsistent).toBe(true);
     });
@@ -169,7 +169,7 @@ describe("Baseline mutations", () => {
             validatedConsistent: true,
             baselineError: "test error"
         };
-        mutations.Validating(testState);
+        mutations[BaselineMutation.Validating](testState);
         expect(testState.baselineError).toBe("");
         expect(testState.validatedConsistent).toBe(false);
     });
@@ -178,7 +178,7 @@ describe("Baseline mutations", () => {
         const testState = {...initialBaselineState,
             validatedConsistent: true
         };
-        mutations.BaselineError(testState, {payload: "test error"});
+        mutations[BaselineMutation.BaselineError](testState, {payload: "test error"});
         expect(testState.baselineError).toBe("test error");
         expect(testState.validatedConsistent).toBe(false);
     });

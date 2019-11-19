@@ -8,6 +8,7 @@ import {
     mockValidateBaselineResponse
 } from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
+import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {expectEqualsFrozen, testUploadErrorCommitted} from "../actionTestHelpers";
 
 const FormData = require("form-data");
@@ -34,11 +35,12 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: "ResetInputs", payload: null});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
 
-        expectEqualsFrozen(commit.mock.calls[2][0],
-            {type: "PJNZUpdated", payload: {data: {country: "Malawi", iso3: "MWI"}}});
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: BaselineMutation.PJNZUpdated, payload: null});
+        expectEqualsFrozen(commit.mock.calls[1][0], {
+            type: BaselineMutation.PJNZUpdated,
+            payload: {data: {country: "Malawi", iso3: "MWI"}}
+        });
 
         expect(dispatch.mock.calls.length).toBe(2);
 
@@ -50,7 +52,10 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls[1][0]).toBe("validate");
     });
 
-    testUploadErrorCommitted("/baseline/pjnz/", "PJNZUploadError", "PJNZUpdated", actions.uploadPJNZ);
+    testUploadErrorCommitted("/baseline/pjnz/",
+        BaselineMutation.PJNZUploadError,
+        BaselineMutation.PJNZUpdated,
+        actions.uploadPJNZ);
 
     it("commits response and validates after shape file upload", async () => {
 
@@ -62,14 +67,13 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.uploadShape({commit, dispatch} as any, new FormData());
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: "ResetInputs", payload: null});
-
-        expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ShapeUpdated",
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: BaselineMutation.ShapeUpdated,
             payload: null
         });
-        expectEqualsFrozen(commit.mock.calls[2][0], {
-            type: "ShapeUpdated",
+
+        expectEqualsFrozen(commit.mock.calls[1][0], {
+            type: BaselineMutation.ShapeUpdated,
             payload: mockShape
         });
 
@@ -87,14 +91,13 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.uploadPopulation({commit, dispatch} as any, new FormData());
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: "ResetInputs", payload: null});
-
-        expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "PopulationUpdated",
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: BaselineMutation.PopulationUpdated,
             payload: null
         });
-        expectEqualsFrozen(commit.mock.calls[2][0], {
-            type: "PopulationUpdated",
+
+        expectEqualsFrozen(commit.mock.calls[1][0], {
+            type: BaselineMutation.PopulationUpdated,
             payload: mockPop
         });
 
@@ -122,10 +125,10 @@ describe("Baseline actions", () => {
         await actions.getBaselineData({commit, dispatch} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-        expect(calls).toContain("PJNZUpdated");
-        expect(calls).toContain("ShapeUpdated");
-        expect(calls).toContain("PopulationUpdated");
-        expect(calls).toContain("Ready");
+        expect(calls).toContain(BaselineMutation.PJNZUpdated);
+        expect(calls).toContain(BaselineMutation.ShapeUpdated);
+        expect(calls).toContain(BaselineMutation.PopulationUpdated);
+        expect(calls).toContain(BaselineMutation.Ready);
 
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
         expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(4);
@@ -142,13 +145,13 @@ describe("Baseline actions", () => {
 
         //commits to Validating first
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "Validating",
+            type: BaselineMutation.Validating,
             payload: null
         });
 
         //then commits response from api
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "Validated",
+            type: BaselineMutation.Validated,
             payload: mockValidateResponse
         });
     });
@@ -162,13 +165,13 @@ describe("Baseline actions", () => {
 
         //commits to Validating first
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "Validating",
+            type: BaselineMutation.Validating,
             payload: null
         });
 
         //then commits response from api
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "BaselineError",
+            type: BaselineMutation.BaselineError,
             payload: "Baseline is inconsistent"
         });
     });
@@ -189,10 +192,10 @@ describe("Baseline actions", () => {
         await actions.getBaselineData({commit, dispatch} as any);
 
         expect(commit).toBeCalledTimes(1);
-        expect(commit.mock.calls[0][0]["type"]).toContain("Ready");
+        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.Ready);
     });
 
-    it("delete pjnz and resets inputs", async () => {
+    it("deletes pjnz and dispatches survey and program delete action", async () => {
 
         mockAxios.onDelete("/baseline/pjnz/")
             .reply(200, mockSuccess(true));
@@ -200,12 +203,12 @@ describe("Baseline actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         await actions.deletePJNZ({commit, dispatch} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PJNZUpdated");
+        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
     });
 
-    it("deletes shape and resets inputs", async () => {
+    it("deletes shape and dispatches survey and program delete action", async () => {
 
         mockAxios.onDelete("/baseline/shape/")
             .reply(200, mockSuccess(true));
@@ -213,12 +216,12 @@ describe("Baseline actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         await actions.deleteShape({commit, dispatch} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUpdated");
+        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
     });
 
-    it("deletes population and resets inputs", async () => {
+    it("deletes population and dispatches survey and program delete action", async () => {
 
         mockAxios.onDelete("/baseline/population/")
             .reply(200, mockSuccess(true));
@@ -226,7 +229,7 @@ describe("Baseline actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         await actions.deletePopulation({commit, dispatch} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUpdated");
+        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
     });

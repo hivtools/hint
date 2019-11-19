@@ -3,6 +3,7 @@ import {ActionContext, ActionTree} from "vuex";
 import {DynamicFormMeta} from "../../components/forms/types";
 import {api} from "../../apiService";
 import {RootState} from "../../root";
+import {ModelOptionsMutation} from "./mutations";
 
 export interface ModelOptionsActions {
     fetchModelRunOptions: (store: ActionContext<ModelOptionsState, RootState>) => void
@@ -11,9 +12,9 @@ export interface ModelOptionsActions {
 export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsActions = {
 
     async fetchModelRunOptions({commit}) {
-        commit("FetchingModelOptions");
+        commit(ModelOptionsMutation.FetchingModelOptions);
         await api(commit)
-            .withSuccess("ModelOptionsFetched")
+            .withSuccess(ModelOptionsMutation.ModelOptionsFetched)
             .get<DynamicFormMeta>("/model/options/");
     }
 };
