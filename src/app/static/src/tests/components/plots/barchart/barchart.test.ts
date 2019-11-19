@@ -181,7 +181,6 @@ describe("Barchart component", () => {
         const wrapper = shallowMount(Barchart, {propsData: props, localVue});
 
         Vue.nextTick();
-        console.log(JSON.stringify(wrapper.emitted()));
         expect(wrapper.emitted()["change-selections"].length).toBe(1);
 
         const expectedInitialisedSelections = {
