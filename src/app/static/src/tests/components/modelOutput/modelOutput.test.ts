@@ -38,6 +38,20 @@ function getStore() {
                     barchartIndicators: jest.fn(),
                     barchartFilters: jest.fn()
                 }
+            },
+            plottingSelections: {
+                namespaced: true,
+                state: {
+                    barchart: {
+                        indicatorId: "TestIndicator",
+                        xAxisId: "region",
+                        disaggregateById: "age",
+                        selectedFilterOptions: {
+                            region: {id: "r1", label: "region 1"},
+                            age: {id: "a1", label: "0-4"}
+                        }
+                    }
+                }
             }
         }
     });

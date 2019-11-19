@@ -13,7 +13,7 @@ const propsData = {
           value_column: "mean",
           indicator_column: "indicator",
           indicator_value: "2",
-          name: "ART coverage",
+          name: "ART coverage",S
           error_low_column: "low",
           error_high_column: "high"
       },
@@ -26,7 +26,17 @@ const propsData = {
           error_low_column: "low",
           error_high_column: "high"
       }
-  ]
+  ],
+  selections: {
+      indicatorId: "art_cov",
+      xAxisId: "region",
+      disaggregateById: "age",
+      selectedFilterOptions: {
+          region: [{id: "1", label: "Northern"}],
+          age: [{id: "0:4", label: "0-4"}],
+          sex: [{id: "female", label: "female"}]
+      }
+  }
 };
 
 const getWrapper  = () => {
