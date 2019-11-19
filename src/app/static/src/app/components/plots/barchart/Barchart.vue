@@ -100,10 +100,6 @@
     export default Vue.extend<{}, any, Computed, Props>({
         name: "Barchart",
         props: props,
-        data() {
-            return {
-            }
-        },
         computed: {
             xAxisLabel() {
                 const filter = this.filtersAsOptions.find((f: FilterOption) => f.id == this.selections.xAxisId);
