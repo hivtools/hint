@@ -102,7 +102,7 @@ describe("Baseline upload component", () => {
         const store = createSut({validating: true});
         const wrapper = shallowMount(Baseline, {store, localVue});
         const validating = wrapper.find("#baseline-validating");
-        expect(validating.text()).toEqual("Validating...")
+        expect(validating.text()).toEqual("Validating...");
         expect(validating.findAll(LoadingSpinner).length).toEqual(1)
     });
 
@@ -166,6 +166,18 @@ describe("Baseline upload component", () => {
         expectUploadToDispatchAction(2, () => actions.uploadPopulation, done);
     });
 
+    it("remove pjnz dispatches baseline/deletePJNZ", (done) => {
+        expectDeleteToDispatchAction(0, () => actions.deletePJNZ, done);
+    });
+
+    it("remove shape dispatches baseline/deleteShape", (done) => {
+        expectDeleteToDispatchAction(1, () => actions.deleteShape, done);
+    });
+
+    it("remove population dispatches baseline/deletePopulation", (done) => {
+        expectDeleteToDispatchAction(2, () => actions.deletePopulation, done);
+    });
+
     const expectUploadToDispatchAction = (index: number,
                                           action: () => jest.MockInstance<any, any>,
                                           done: jest.DoneCallback) => {
@@ -175,6 +187,19 @@ describe("Baseline upload component", () => {
         wrapper.findAll(FileUpload).at(index).props().upload({name: "TEST"});
         setTimeout(() => {
             expect(action().mock.calls[0][1]).toStrictEqual({name: "TEST"});
+            done();
+        });
+    };
+
+    const expectDeleteToDispatchAction = (index: number,
+                                          action: () => jest.MockInstance<any, any>,
+                                          done: jest.DoneCallback) => {
+        const store = createSut();
+        const wrapper = shallowMount(Baseline, {store, localVue});
+
+        wrapper.findAll(FileUpload).at(index).props().deleteFile();
+        setTimeout(() => {
+            expect(action().mock.calls.length).toBe(1);
             done();
         });
     }
