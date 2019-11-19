@@ -1,6 +1,7 @@
 import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
-import {data, filters} from "./utils.test"
-import Barchart from "../../../../app/components/plots/barchart/Barchart.vue"
+import {data, filters} from "./utils.test";
+import Barchart from "../../../../app/components/plots/barchart/Barchart.vue";
+import Vue from 'vue';
 
 const localVue = createLocalVue();
 
@@ -13,7 +14,7 @@ const propsData = {
           value_column: "mean",
           indicator_column: "indicator",
           indicator_value: "2",
-          name: "ART coverage",S
+          name: "ART coverage",
           error_low_column: "low",
           error_high_column: "high"
       },
@@ -37,6 +38,13 @@ const propsData = {
           sex: [{id: "female", label: "female"}]
       }
   }
+};
+
+const uninitializedSelections = {
+    indicatorId: "",
+    xAxisId: "",
+    disaggregateById: "",
+    selectedFilterOptions: {}
 };
 
 const getWrapper  = () => {
@@ -149,6 +157,44 @@ describe("Barchart component", () => {
                 }
             ]
         });
+    });
+
+    it("computes initialised", () => {
+       let wrapper = getWrapper();
+       let vm = (wrapper as any).vm;
+       expect(vm.initialised).toBe(true);
+
+       const props = {
+           ...propsData,
+           selections: uninitializedSelections
+       };
+       wrapper = shallowMount(Barchart, {propsData: props, localVue});
+       vm = (wrapper as any).vm;
+       expect(vm.initialised).toBe(false);
+    });
+
+    it("initialises selections on create", () => {
+        const props = {
+            ...propsData,
+            selections: uninitializedSelections
+        };
+        const wrapper = shallowMount(Barchart, {propsData: props, localVue});
+
+        Vue.nextTick();
+        console.log(JSON.stringify(wrapper.emitted()));
+        expect(wrapper.emitted()["change-selections"].length).toBe(1);
+
+        const expectedInitialisedSelections = {
+            indicatorId: "art_cov",
+            xAxisId: "region",
+            disaggregateById: "age",
+            selectedFilterOptions: {
+                region: [{id: "1", label: "Northern"}],
+                age: [{id: "0:4", label: "0-4"}],
+                sex: [{id: "female", label: "female"}]
+            }
+        };
+        expect(wrapper.emitted()["change-selections"][0][0]).toStrictEqual(expectedInitialisedSelections);
     });
 
     it("normalizeIndicators returns expected result", () => {
