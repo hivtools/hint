@@ -3,7 +3,7 @@ import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "../..
 export const updateForm = (oldForm: DynamicFormMeta, newForm: DynamicFormMeta): DynamicFormMeta => {
     const oldSectionLabels = oldForm.controlSections.map(c => c.label);
 
-    newForm.controlSections.map(s => {
+    newForm.controlSections = newForm.controlSections.map(s => {
         const oldIndex = oldSectionLabels.indexOf(s.label);
         if (oldIndex == -1) {
             return s
@@ -27,7 +27,7 @@ function updateSection(oldSection: DynamicControlSection, newSection: DynamicCon
         }
     });
 
-    return newSection;
+    return newSection
 }
 
 function updateGroup(oldGroup: DynamicControlGroup, newGroup: DynamicControlGroup) {
