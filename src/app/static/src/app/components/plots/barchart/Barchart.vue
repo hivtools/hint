@@ -1,7 +1,7 @@
 
 <template>
     <div>
-        <div class="row">
+        <div v-if="initialised" class="row">
             <div class="col-md-3">
                 <div id="indicator-fg" class="form-group">
                     <label class="font-weight-bold">Indicator</label>
@@ -31,12 +31,12 @@
                 <hr/>
                 <h3>Filters</h3>
                 <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
-                    <!-- TODO! -->
-                    <!--<filter-select v-model="selections.selectedFilterOptions[filter.id]"
+                    <filter-select :value="getSelectedFilterOptions(filter.id)"
                                    :is-disaggregate-by="filter.id === selections.disaggregateById"
                                    :is-x-axis="filter.id === selections.xAxisId"
                                    :label="filter.label"
-                                   :options="filter.options"></filter-select>-->
+                                   :options="filter.options"
+                                   @input="changeFilter(filter.id, $event)"></filter-select>
                 </div>
             </div>
             <div v-if="!!xAxisLabel" id="chart" class="col-md-9">
@@ -63,13 +63,6 @@
         selections: BarchartSelections
     }
 
-    interface Data {
-        /*indicatorId: string,
-        xAxisId: string,
-        disaggregateById: string,
-        selectedFilterOptions:  { [key: string]: FilterOption[] }*/
-    }
-
     interface Methods {
         changeIndicatorId: (newVal: string) => void;
         changeXAxisId: (newVal: string) => void;
@@ -86,6 +79,7 @@
         xAxisValues: string[]
         xAxisLabelLookup: { [key: string]: string }
         barLabelLookup: { [key: string]: string }
+        initialised: boolean
     }
 
     const props = {
@@ -103,9 +97,13 @@
         }
     };
 
-    export default Vue.extend<Data, any, Computed, Props>({
+    export default Vue.extend<{}, any, Computed, Props>({
         name: "Barchart",
         props: props,
+        data() {
+            return {
+            }
+        },
         computed: {
             xAxisLabel() {
                 const filter = this.filtersAsOptions.find((f: FilterOption) => f.id == this.selections.xAxisId);
@@ -146,6 +144,9 @@
             },
             indicator() {
                 return this.indicators.find((i: BarchartIndicator) => i.indicator == this.selections.indicatorId)
+            },
+            initialised() {
+                return !!this.selections.indicatorId && !!this.selections.xAxisId && !!this.selections.disaggregateById;
             }
         },
         methods: {
@@ -163,12 +164,18 @@
             },
             changeDisaggById(newVal: string) {
                 this.changeSelections({...this.selections, disaggregateById: newVal});
+            },
+            changeFilter(filterId: any, selectedOptions: any) {
+                const newSelectedFilterOptions = {...this.selections.selectedFilterOptions};
+                newSelectedFilterOptions[filterId] = selectedOptions;
+                this.changeSelections({...this.selections, selectedFilterOptions: newSelectedFilterOptions});
+            },
+            getSelectedFilterOptions(filterId: string) {
+                return (this.selections.selectedFilterOptions[filterId]) || [];
             }
         },
         created() {
-            //If selections have not been initialised OR if they are inconsistent with available filters,
-            //refresh them, and emit changed event
-            //TODO: this is initialisation, still need to implement inconsistency check
+            //If selections have not been initialised, refresh them, and emit changed event
             let modified = false;
             const newSelections: BarchartSelections = {...this.selections};
 
@@ -188,17 +195,18 @@
             }
 
             if (Object.keys(this.selections.selectedFilterOptions).length < 1) {
-                const selectedFilterOptions = this.filters.reduce((obj: any, current: Filter) => {
+                const defaultSelected = this.filters.reduce((obj: any, current: Filter) => {
                     obj[current.id] = [current.options[0]];
                     return obj;
                 }, {} as Dict<FilterOption[]>);
-                newSelections.selectedFilterOptions = selectedFilterOptions;
+                newSelections.selectedFilterOptions = defaultSelected;
                 modified = true;
             }
 
             if (modified) {
                 this.changeSelections(newSelections);
             }
+
         },
         components: {
             ChartjsBar,
