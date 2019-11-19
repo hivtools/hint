@@ -1,5 +1,7 @@
 import {Mutation, MutationTree} from "vuex";
 import {emptyState, RootState} from "../../root";
+import {initialModelOutputState} from "../modelOutput/modelOutput";
+import {initialModelRunState} from "../modelRun/modelRun";
 
 export interface RootMutations {
     Reset: Mutation<RootState>

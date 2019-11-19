@@ -10,7 +10,7 @@ import {
 import {initialModelRunState, modelRun, ModelRunState} from "./store/modelRun/modelRun";
 import {initialStepperState, stepper, StepperState} from "./store/stepper/stepper";
 import {initialLoadState, load, LoadState} from "./store/load/load";
-import {modelOutput, ModelOutputState} from "./store/modelOutput/modelOutput";
+import {initialModelOutputState, modelOutput, ModelOutputState} from "./store/modelOutput/modelOutput";
 import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations} from "./store/root/mutations";
@@ -47,7 +47,7 @@ const manageState = (store: Store<RootState>) => {
             && state.modelRun.ready) {
 
             const type = stripNamespace(mutation.type);
-            
+
             if (BaselineUpdates.includes(type as BaselineMutation)
                 || SurveyAndProgramUpdates.includes(type as SurveyAndProgramMutation)) {
                 store.commit("ResetInputs");
@@ -64,15 +64,15 @@ const manageState = (store: Store<RootState>) => {
 
 export const emptyState = {
     version: '0.0.0',
-    baseline: initialBaselineState,
-    metadata: initialMetadataState,
-    surveyAndProgram: initialSurveyAndProgramDataState,
-    filteredData: initialFilteredDataState,
-    modelOptions: initialModelOptionsState,
-    modelOutput: {},
-    modelRun: initialModelRunState,
-    stepper: initialStepperState,
-    load: initialLoadState,
+    baseline: {...initialBaselineState},
+    metadata: {...initialMetadataState},
+    surveyAndProgram: {...initialSurveyAndProgramDataState},
+    filteredData: {...initialFilteredDataState},
+    modelOptions: {...initialModelOptionsState},
+    modelOutput: {...initialModelOutputState},
+    modelRun: {...initialModelRunState},
+    stepper: {...initialStepperState},
+    load: {...initialLoadState},
 };
 
 export const storeOptions: StoreOptions<RootState> = {

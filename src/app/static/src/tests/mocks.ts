@@ -27,6 +27,7 @@ import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
 import {initialLoadState, LoadState} from "../app/store/load/load";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
+import {initialModelOutputState} from "../app/store/modelOutput/modelOutput";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -105,7 +106,7 @@ export const mockRootState = (props?: Partial<RootState>): RootState => {
         stepper: mockStepperState(),
         metadata: mockMetadataState(),
         load: mockLoadState(),
-        modelOutput: {},
+        modelOutput: {...initialModelOutputState},
         ...props
     }
 };

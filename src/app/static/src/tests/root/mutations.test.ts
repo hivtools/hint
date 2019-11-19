@@ -1,6 +1,14 @@
 import {mutations} from "../../app/store/root/mutations";
-import {mockFilteredDataState, mockRootState, mockStepperState, mockSurveyAndProgramState} from "../mocks";
+import {
+    mockFilteredDataState,
+    mockModelOptionsState,
+    mockModelRunState,
+    mockRootState,
+    mockStepperState
+} from "../mocks";
 import {DataType} from "../../app/store/filteredData/filteredData";
+import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
+import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 
 describe("Root mutations", () => {
 
@@ -25,6 +33,29 @@ describe("Root mutations", () => {
 
         mutations.ResetInputs(state);
         expect(state.filteredData.selectedDataType).toBe(null);
+    });
+
+    it("can reset model options state", () => {
+
+        const state = mockRootState({
+            modelOptions: mockModelOptionsState({options: "TEST" as any})
+        });
+
+        mutations.ResetOptions(state);
+        expect(state.modelOptions).toStrictEqual(initialModelOptionsState);
+    });
+
+    it("can reset model outputs state", () => {
+
+        const state = mockRootState({
+            modelRun: mockModelRunState({modelRunId: "TEST"}),
+            modelOutput: {dummyProperty: "TEST" as any}
+        });
+
+        mutations.ResetOutputs(state);
+        expect(state.modelRun).toStrictEqual({...initialModelRunState, ready: true});
+        expect(state.modelOutput.dummyProperty).toBe(false);
+
     });
 
 });
