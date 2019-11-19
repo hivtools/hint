@@ -98,4 +98,20 @@ describe("ModelOutput component", () => {
 
         expect(vm.chartdata).toStrictEqual(["TEST DATA"]);
     });
+
+    it("computes barchart selections", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const vm = (wrapper as any).vm;
+
+        expect(vm.barchartSelections).toStrictEqual({
+            indicatorId: "TestIndicator",
+            xAxisId: "region",
+            disaggregateById: "age",
+            selectedFilterOptions: {
+                region: {id: "r1", label: "region 1"},
+                age: {id: "a1", label: "0-4"}
+            }
+        });
+    });
 });

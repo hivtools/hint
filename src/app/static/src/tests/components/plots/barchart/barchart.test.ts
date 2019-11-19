@@ -173,6 +173,17 @@ describe("Barchart component", () => {
        expect(vm.initialised).toBe(false);
     });
 
+    it("does not render controls when not initialised", () => {
+        const props = {
+            ...propsData,
+            selections: uninitializedSelections
+        };
+        const wrapper = shallowMount(Barchart, {propsData: props, localVue});
+
+        expect(wrapper.findAll(".form-group").length).toBe(0);
+        expect(wrapper.findAll("#chart").length).toBe(0);
+    });
+
     it("initialises selections on create", () => {
         const props = {
             ...propsData,
@@ -201,5 +212,49 @@ describe("Barchart component", () => {
         const vm = (wrapper as any).vm;
         const result = vm.normalizeIndicators(propsData.indicators[0]);
         expect(result).toStrictEqual({id: "art_cov", label: "ART coverage"});
+    });
+
+    it("changeIndicatorId emits changed-selections event with new data", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        vm.changeIndicatorId("newIndicatorId");
+
+        expect(wrapper.emitted()["change-selections"].length).toBe(1);
+        const expected = {...propsData.selections, indicatorId: "newIndicatorId"};
+        expect(wrapper.emitted()["change-selections"][0][0]).toStrictEqual(expected);
+    });
+
+    it("changeXAxisId emits changed-selections event with new data", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        vm.changeXAxisId("newXAxisId");
+
+        expect(wrapper.emitted()["change-selections"].length).toBe(1);
+        const expected = {...propsData.selections, xAxisId: "newXAxisId"};
+        expect(wrapper.emitted()["change-selections"][0][0]).toStrictEqual(expected);
+    });
+
+    it("changeDisaggById emits changed-selections event with new data", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        vm.changeDisaggById("newDisaggById");
+
+        expect(wrapper.emitted()["change-selections"].length).toBe(1);
+        const expected = {...propsData.selections, disaggregateById: "newDisaggById"};
+        expect(wrapper.emitted()["change-selections"][0][0]).toStrictEqual(expected);
+    });
+
+    it("changeFilter emits changed-selections event with new data", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        vm.changeFilter("age", [{id: "newAgeId", label: "newAgeLabel"}]);
+
+        expect(wrapper.emitted()["change-selections"].length).toBe(1);
+
+        const expectedSelectedFilterOptions = {...propsData.selections.selectedFilterOptions,
+            age: [{id: "newAgeId", label: "newAgeLabel"}]}
+
+        const expected = {...propsData.selections, selectedFilterOptions: expectedSelectedFilterOptions};
+        expect(wrapper.emitted()["change-selections"][0][0]).toStrictEqual(expected);
     });
 });
