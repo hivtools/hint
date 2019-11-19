@@ -55,7 +55,6 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/population/", formData)
             .then(() => {
-                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
                 dispatch('validate');
             });
     },

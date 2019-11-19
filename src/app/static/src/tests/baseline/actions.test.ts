@@ -11,7 +11,6 @@ import {actions} from "../../app/store/baseline/actions";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {expectEqualsFrozen, testUploadErrorCommitted} from "../actionTestHelpers";
 
-
 const FormData = require("form-data");
 
 describe("Baseline actions", () => {
@@ -35,6 +34,7 @@ describe("Baseline actions", () => {
         const state = mockBaselineState({iso3: "MWI"});
         const dispatch = jest.fn();
         await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
+
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: BaselineMutation.PJNZUpdated, payload: null});
         expectEqualsFrozen(commit.mock.calls[1][0], {
