@@ -17,6 +17,9 @@ describe("File upload component", () => {
                 valid: true,
                 upload: () => {
                 },
+                deleteFile: () => {
+
+                },
                 name: "pjnz",
                 accept: "csv",
                 ...props
@@ -70,6 +73,25 @@ describe("File upload component", () => {
             valid: true
         });
         expect(wrapper.findAll(Tick).length).toBe(1);
+    });
+
+    it("does not render remove link if valid is false", () => {
+        const wrapper = createSut({
+            valid: false
+        });
+        expect(wrapper.findAll("a").length).toBe(0);
+    });
+
+    it("renders remove link if valid is true", () => {
+        const removeHandler =jest.fn();
+        const wrapper = createSut({
+            valid: true,
+            deleteFile: removeHandler
+        });
+        const removeLink = wrapper.find("a");
+        expect(removeLink.text()).toBe("remove");
+        removeLink.trigger("click");
+        expect(removeHandler.mock.calls.length).toBe(1);
     });
 
     it("renders error message if error is present", () => {
