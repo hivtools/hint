@@ -53,7 +53,7 @@ class KeyHelperTests {
 
     @Test
     fun `does not try to save KeyPair to disk if directory does not exists`() {
-        val mockFileManager = mock<KeyFileManager> {
+        val mockFileManager = mock<FileManager> {
             on { exists(any()) } doReturn false
         }
 

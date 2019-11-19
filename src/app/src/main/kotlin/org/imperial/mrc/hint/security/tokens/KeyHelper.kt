@@ -1,6 +1,5 @@
 package org.imperial.mrc.hint.security.tokens
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
