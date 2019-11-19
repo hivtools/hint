@@ -31,6 +31,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("PJNZUpdated")
             .withError("PJNZUploadError")
+            .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData)
             .then(() => {
                 dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
@@ -44,6 +45,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("ShapeUpdated")
             .withError("ShapeUploadError")
+            .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/shape/", formData)
             .then(() => {
                 dispatch('validate');
@@ -56,6 +58,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("PopulationUpdated")
             .withError("PopulationUploadError")
+            .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/population/", formData)
             .then(() => {
                 dispatch('validate');
@@ -102,14 +105,17 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
                 .ignoreErrors()
                 .withSuccess("PJNZUpdated")
+                .freezeResponse()
                 .get<PjnzResponse>("/baseline/pjnz/"),
             api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
                 .ignoreErrors()
                 .withSuccess("PopulationUpdated")
+                .freezeResponse()
                 .get<PjnzResponse>("/baseline/population/"),
             api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
                 .ignoreErrors()
                 .withSuccess("ShapeUpdated")
+                .freezeResponse()
                 .get<PjnzResponse>("/baseline/shape/")
         ]);
 
@@ -123,6 +129,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
             .withSuccess("Validated")
             .withError("BaselineError")
+            .freezeResponse()
             .get<ValidateBaselineResponse>("/baseline/validate/");
     }
 };
