@@ -124,7 +124,32 @@ describe("ApiService", () => {
         expect(response).toBe("TEST");
     });
 
-    it("deep freezes the response object", async () => {
+    it("deep freezes the response object if requested", async () => {
+
+        const fakeData = {name: "d1"};
+        mockAxios.onGet(`/baseline/`)
+            .reply(200, mockSuccess(fakeData));
+
+        const spy = jest.spyOn(freezer, "deepFreeze");
+
+        let committedType: any = false;
+        let committedPayload: any = false;
+        const commit = ({type, payload}: any) => {
+            committedType = type;
+            committedPayload = payload;
+        };
+
+        await api(commit as any)
+            .freezeResponse()
+            .withSuccess("TEST_TYPE")
+            .get("/baseline/");
+
+        expect(committedType).toBe("TEST_TYPE");
+        expect(Object.isFrozen(committedPayload)).toBe(true);
+        expect(spy.mock.calls[0][0]).toStrictEqual(fakeData);
+    });
+
+    it("does not deep freeze the response object if not requested", async () => {
 
         const fakeData = {name: "d1"};
         mockAxios.onGet(`/baseline/`)
@@ -144,7 +169,7 @@ describe("ApiService", () => {
             .get("/baseline/");
 
         expect(committedType).toBe("TEST_TYPE");
-        expect(Object.isFrozen(committedPayload)).toBe(true);
+        expect(Object.isFrozen(committedPayload)).toBe(false);
         expect(spy.mock.calls[0][0]).toStrictEqual(fakeData);
     });
 

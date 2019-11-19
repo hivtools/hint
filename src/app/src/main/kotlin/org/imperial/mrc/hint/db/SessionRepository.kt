@@ -4,7 +4,6 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.Tables.*
 import org.imperial.mrc.hint.exceptions.SessionException
 import org.imperial.mrc.hint.models.SessionFile
-import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
@@ -17,6 +16,7 @@ interface SessionRepository {
     fun saveNewHash(hash: String): Boolean
 
     fun saveSessionFile(sessionId: String, type: FileType, hash: String, fileName: String)
+    fun removeSessionFile(sessionId: String, type: FileType)
     fun getSessionFile(sessionId: String, type: FileType): SessionFile?
     fun getHashesForSession(sessionId: String): Map<String, String>
     fun getSessionFiles(sessionId: String): Map<String, SessionFile>
@@ -74,6 +74,13 @@ class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
                     .execute()
         }
 
+    }
+
+    override fun removeSessionFile(sessionId: String, type: FileType) {
+        dsl.deleteFrom(SESSION_FILE)
+                .where(SESSION_FILE.SESSION.eq(sessionId))
+                .and(SESSION_FILE.TYPE.eq(type.toString()))
+                .execute()
     }
 
     override fun getSessionFile(sessionId: String, type: FileType): SessionFile? {

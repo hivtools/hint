@@ -2,6 +2,7 @@ import {actions} from "../../app/store/surveyAndProgram/actions";
 import {mockAncResponse, mockAxios, mockFailure, mockProgramResponse, mockSuccess, mockSurveyResponse} from "../mocks";
 
 import {DataType} from "../../app/store/filteredData/filteredData";
+import {expectEqualsFrozen} from "../actionTestHelpers";
 
 const FormData = require("form-data");
 
@@ -30,7 +31,7 @@ describe("Survey and programme actions", () => {
             payload: null
         });
 
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expectEqualsFrozen(commit.mock.calls[1][0], {
             type: "SurveyUpdated",
             payload: {data: "SOME DATA"}
         });
@@ -74,7 +75,7 @@ describe("Survey and programme actions", () => {
             payload: null
         });
 
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expectEqualsFrozen(commit.mock.calls[1][0], {
             type: "ProgramUpdated",
             payload: "TEST"
         });
@@ -119,7 +120,7 @@ describe("Survey and programme actions", () => {
             payload: null
         });
 
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expectEqualsFrozen(commit.mock.calls[1][0], {
             type: "ANCUpdated",
             payload: "TEST"
         });
@@ -170,6 +171,10 @@ describe("Survey and programme actions", () => {
         expect(calls).toContain("ProgramUpdated");
         expect(calls).toContain("ANCUpdated");
         expect(calls).toContain("Ready");
+
+        const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(4);
+        //ready payload is true, which is frozen by definition
 
     });
 

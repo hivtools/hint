@@ -28,6 +28,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("SurveyError")
             .withSuccess("SurveyUpdated")
+            .freezeResponse()
             .postAndReturn<SurveyResponse>("/disease/survey/", formData)
             .then((response) => {
                 if (response) {
@@ -41,6 +42,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("ProgramError")
             .withSuccess("ProgramUpdated")
+            .freezeResponse()
             .postAndReturn<ProgrammeResponse>("/disease/programme/", formData)
             .then((response) => {
                 if (response) {
@@ -54,6 +56,7 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         await api<SurveyAndProgramActionTypes, SurveyAndProgramActionErrorTypes>(commit)
             .withError("ANCError")
             .withSuccess("ANCUpdated")
+            .freezeResponse()
             .postAndReturn<ProgrammeResponse>("/disease/anc/", formData)
             .then((response) => {
                 if (response) {
@@ -67,14 +70,17 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         await Promise.all(
             [api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
                 .ignoreErrors()
+                .freezeResponse()
                 .withSuccess("SurveyUpdated")
                 .get<SurveyResponse>("/disease/survey/"),
                 api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
                     .ignoreErrors()
+                    .freezeResponse()
                     .withSuccess("ProgramUpdated")
                     .get<ProgrammeResponse>("/disease/programme/"),
                 api<SurveyAndProgramActionTypes, BaselineErrorActionTypes>(commit)
                     .ignoreErrors()
+                    .freezeResponse()
                     .withSuccess("ANCUpdated")
                     .get<AncResponse>("/disease/anc/")]);
 

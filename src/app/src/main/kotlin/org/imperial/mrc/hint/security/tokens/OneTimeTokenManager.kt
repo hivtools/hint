@@ -45,7 +45,6 @@ class OneTimeTokenManager(
 
     fun validateTokenAndGetClaims(token: String): Map<String, Any>
     {
-
         return authenticator.validateTokenAndGetClaims(token)
     }
 
