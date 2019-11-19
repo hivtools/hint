@@ -4,6 +4,7 @@ import {emptyState, RootState} from "../../root";
 export interface RootMutations {
     Reset: Mutation<RootState>
     ResetInputs: Mutation<RootState>
+
 }
 
 export const mutations: MutationTree<RootState> & RootMutations = {
@@ -15,8 +16,17 @@ export const mutations: MutationTree<RootState> & RootMutations = {
     },
 
     ResetInputs(state: RootState) {
-        Object.assign(state.surveyAndProgram, emptyState.surveyAndProgram);
         Object.assign(state.filteredData, emptyState.filteredData);
-        state.surveyAndProgram.ready = true;
+    },
+
+    ResetOptions(state: RootState) {
+        Object.assign(state.modelOptions, emptyState.modelOptions);
+    },
+
+    ResetOutputs(state: RootState) {
+        Object.assign(state.modelRun, emptyState.modelRun);
+        state.modelRun.ready = true;
+        Object.assign(state.modelOutput, emptyState.modelOutput);
     }
+
 };
