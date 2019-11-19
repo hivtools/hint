@@ -40,7 +40,7 @@ describe("Baseline actions", () => {
         expectEqualsFrozen(commit.mock.calls[2][0],
             {type: "PJNZUpdated", payload: {data: {country: "Malawi", iso3: "MWI"}}});
 
-        expect(dispatch.mock.calls.length).toBe(2);
+        expect(dispatch.mock.calls.length).toBe(3);
 
         expect(dispatch.mock.calls[0][0]).toBe("metadata/getPlottingMetadata");
         expect(dispatch.mock.calls[0][1]).toBe("MWI");
@@ -48,6 +48,9 @@ describe("Baseline actions", () => {
 
         expect(dispatch.mock.calls[1].length).toBe(1);
         expect(dispatch.mock.calls[1][0]).toBe("validate");
+
+        expect(dispatch.mock.calls[2][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[2][2]).toStrictEqual({root: true});
     });
 
     testUploadErrorCommitted("/baseline/pjnz/", "PJNZUploadError", "PJNZUpdated", actions.uploadPJNZ);
@@ -73,8 +76,11 @@ describe("Baseline actions", () => {
             payload: mockShape
         });
 
-        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls.length).toBe(2);
         expect(dispatch.mock.calls[0][0]).toBe("validate");
+
+        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
     });
 
     it("commits response and validates after population file upload", async () => {
@@ -98,8 +104,11 @@ describe("Baseline actions", () => {
             payload: mockPop
         });
 
-        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls.length).toBe(2);
         expect(dispatch.mock.calls[0][0]).toBe("validate");
+
+        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
     });
 
     testUploadErrorCommitted("/baseline/shape/", "ShapeUploadError", "ShapeUpdated", actions.uploadShape);
