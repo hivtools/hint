@@ -1,8 +1,8 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
 import {actions as baselineActions} from "../../app/store/baseline/actions"
 import {login} from "./integrationTest";
-import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../app/generated";
 import {getFormData} from "./helpers";
+import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 
 describe("Survey and programme actions", () => {
 
@@ -25,7 +25,7 @@ describe("Survey and programme actions", () => {
 
         await actions.uploadSurvey({commit, dispatch} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe("SurveyUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("survey.csv")
     });
@@ -39,7 +39,7 @@ describe("Survey and programme actions", () => {
 
         await actions.uploadProgram({commit, dispatch} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe("ProgramUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("programme.csv")
     });
@@ -51,7 +51,7 @@ describe("Survey and programme actions", () => {
 
         await actions.uploadANC({commit} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe("ANCUpdated");
+        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("anc.csv");
 
@@ -69,13 +69,13 @@ describe("Survey and programme actions", () => {
 
         // delete
         await actions.deleteSurvey({commit} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("SurveyUpdated");
+        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
 
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
         await actions.getSurveyAndProgramData({commit} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == "SurveyUpdated")[0]["payload"]).toBe(null);
+        expect(commit.mock.calls.find(c => c[0]["type"] == SurveyAndProgramMutation.SurveyUpdated)[0]["payload"]).toBe(null);
     });
 
     it("can delete program", async () => {
@@ -90,13 +90,13 @@ describe("Survey and programme actions", () => {
 
         // delete
         await actions.deleteProgram({commit} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ProgramUpdated");
+        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
 
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
         await actions.getSurveyAndProgramData({commit} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == "ProgramUpdated")[0]["payload"]).toBe(null);
+        expect(commit.mock.calls.find(c => c[0]["type"] == SurveyAndProgramMutation.ProgramUpdated)[0]["payload"]).toBe(null);
     });
 
     it("can delete ANC", async () => {
@@ -111,13 +111,13 @@ describe("Survey and programme actions", () => {
 
         // delete
         await actions.deleteANC({commit} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ANCUpdated");
+        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
 
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
         await actions.getSurveyAndProgramData({commit} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == "ANCUpdated")[0]["payload"]).toBe(null);
+        expect(commit.mock.calls.find(c => c[0]["type"] == SurveyAndProgramMutation.ANCUpdated)[0]["payload"]).toBe(null);
     });
 
 });
