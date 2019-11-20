@@ -4,7 +4,6 @@ import {initialModelOptionsState} from "../../app/store/modelOptions/modelOption
 
 import {mockModelOptionsState, mockModelRunState, mockRootState} from "../mocks";
 
-
 describe("Root mutations", () => {
 
     it("can reset state", () => {
@@ -20,10 +19,18 @@ describe("Root mutations", () => {
 
         expect(state.stepper.activeStep).toBe(1);
         expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
-
         expect(state.baseline.ready).toBe(true);
         expect(state.surveyAndProgram.ready).toBe(true);
         expect(state.modelRun.ready).toBe(true);
+
+        // do mutations again
+        state.stepper.activeStep = 2;
+        state.filteredData.selectedChoroplethFilters.quarter = "test";
+
+        mutations.Reset(state);
+
+        expect(state.stepper.activeStep).toBe(1);
+        expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
 
     });
 

@@ -24,7 +24,7 @@ import {
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
-import {RootState} from "../app/root";
+import {emptyState, RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
 import {initialLoadState, LoadState} from "../app/store/load/load";
@@ -99,16 +99,7 @@ export const mockLoadState = (props?: Partial<LoadState>): LoadState => {
 
 export const mockRootState = (props?: Partial<RootState>): RootState => {
     return {
-        version: "",
-        filteredData: mockFilteredDataState(),
-        baseline: mockBaselineState(),
-        surveyAndProgram: mockSurveyAndProgramState(),
-        modelRun: mockModelRunState(),
-        modelOptions: mockModelOptionsState(),
-        stepper: mockStepperState(),
-        metadata: mockMetadataState(),
-        load: mockLoadState(),
-        modelOutput: {...initialModelOutputState},
+        ...emptyState(),
         ...props
     }
 };

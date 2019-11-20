@@ -4,7 +4,7 @@ import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/s
 import {RootState} from "../../app/root";
 import {
     mockAncResponse,
-    mockBaselineState,
+    mockBaselineState, mockFilteredDataState,
     mockModelResultResponse,
     mockModelRunState,
     mockProgramResponse,
@@ -56,8 +56,7 @@ describe("FilteredData regionIndicator getter", () => {
 
     it("gets regionIndicators for survey", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
-                ...initialFilteredDataState,
+            state: mockFilteredDataState({
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
                     age: "1",
@@ -66,7 +65,7 @@ describe("FilteredData regionIndicator getter", () => {
                     quarter: "1",
                     regions: []
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -147,8 +146,7 @@ describe("FilteredData regionIndicator getter", () => {
 
     it("filters regionIndicators for survey", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
-                ...initialFilteredDataState,
+            state: mockFilteredDataState({
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
                     age: "1",
@@ -157,7 +155,7 @@ describe("FilteredData regionIndicator getter", () => {
                     quarter: "1", //should be ignored
                     regions: []
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -229,8 +227,7 @@ describe("FilteredData regionIndicator getter", () => {
 
     it("gets regionIndicators for programme", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
-                ...initialFilteredDataState,
+            state: mockFilteredDataState({
                 selectedDataType: DataType.Program,
                 selectedChoroplethFilters: {
                     age: "1",
@@ -239,7 +236,7 @@ describe("FilteredData regionIndicator getter", () => {
                     quarter: "1",
                     regions: []
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -291,8 +288,7 @@ describe("FilteredData regionIndicator getter", () => {
 
     it("filters regionIndicators for programme", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
-                ...initialFilteredDataState,
+            state: mockFilteredDataState({
                 selectedDataType: DataType.Program,
                 selectedChoroplethFilters: {
                     age: "1",
@@ -301,7 +297,7 @@ describe("FilteredData regionIndicator getter", () => {
                     quarter: "1",
                     regions: []
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -369,8 +365,7 @@ describe("FilteredData regionIndicator getter", () => {
 
     it("gets regionIndicators for ANC", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
-                ...initialFilteredDataState,
+            state: mockFilteredDataState({
                 selectedDataType: DataType.ANC,
                 selectedChoroplethFilters: {
                     age: "1",
@@ -379,7 +374,7 @@ describe("FilteredData regionIndicator getter", () => {
                     quarter: "1",
                     regions: []
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -435,8 +430,7 @@ describe("FilteredData regionIndicator getter", () => {
 
     it("filter regionIndicators for ANC", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
-                ...initialFilteredDataState,
+            state: mockFilteredDataState({
                 selectedDataType: DataType.ANC,
                 selectedChoroplethFilters: {
                     age: "1", //should be ignored
@@ -445,7 +439,7 @@ describe("FilteredData regionIndicator getter", () => {
                     quarter: "1",
                     regions: []
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -516,7 +510,7 @@ describe("FilteredData regionIndicator getter", () => {
 
     it("gets regionIndicators for Output", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
+            state: mockFilteredDataState({
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Output,
                 selectedChoroplethFilters: {
@@ -526,7 +520,7 @@ describe("FilteredData regionIndicator getter", () => {
                     quarter: "1",
                     regions: []
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -578,7 +572,7 @@ describe("FilteredData regionIndicator getter", () => {
 
     it("filters regionIndicators for Output", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
+            state: mockFilteredDataState({
                 ...initialFilteredDataState,
                 selectedDataType: DataType.Output,
                 selectedChoroplethFilters: {
@@ -588,7 +582,7 @@ describe("FilteredData regionIndicator getter", () => {
                     quarter: "1",
                     regions: []
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -664,8 +658,7 @@ describe("FilteredData regionIndicator getter", () => {
 
     it("filters regionIndicators by region", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
-                ...initialFilteredDataState,
+            state: mockFilteredDataState({
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
                     age: "1",
@@ -674,7 +667,7 @@ describe("FilteredData regionIndicator getter", () => {
                     quarter: "1",
                     regions: ["area1"]
                 }
-            }
+            })
         };
         const testState = testStore.state as FilteredDataState;
         const testData = [
@@ -769,8 +762,7 @@ describe("FilteredData regionIndicator getter", () => {
 
     it("gets empty regionIndicators if no data", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
-                ...initialFilteredDataState,
+            state: mockFilteredDataState({
                 selectedDataType: DataType.Survey,
                 selectedChoroplethFilters: {
                     age: "1",
@@ -779,7 +771,7 @@ describe("FilteredData regionIndicator getter", () => {
                     quarter: "",
                     regions: []
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -800,7 +792,7 @@ describe("FilteredData regionIndicator getter", () => {
 
     it("gets empty regionIndicators if no selected daa type", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
+            state: mockFilteredDataState({
                 ...initialFilteredDataState,
                 selectedDataType: null,
                 selectedChoroplethFilters: {
@@ -810,7 +802,7 @@ describe("FilteredData regionIndicator getter", () => {
                     quarter: "",
                     regions: []
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;

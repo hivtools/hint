@@ -1,10 +1,11 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
-import {metadata, MetadataState, initialMetadataState} from "./store/metadata/metadata";
+import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
 import {filteredData, FilteredDataState, initialFilteredDataState} from "./store/filteredData/filteredData";
 import {
     initialSurveyAndProgramDataState,
-    surveyAndProgram, SurveyAndProgramDataState,
+    surveyAndProgram,
+    SurveyAndProgramDataState,
 } from "./store/surveyAndProgram/surveyAndProgram";
 import {initialModelRunState, modelRun, ModelRunState} from "./store/modelRun/modelRun";
 import {initialStepperState, stepper, StepperState} from "./store/stepper/stepper";
@@ -66,17 +67,19 @@ const resetState = (store: Store<RootState>) => {
     })
 };
 
-export const emptyState = {
-    version: '0.0.0',
-    baseline: initialBaselineState(),
-    metadata: initialMetadataState(),
-    surveyAndProgram: initialSurveyAndProgramDataState(),
-    filteredData: initialFilteredDataState(),
-    modelOptions: initialModelOptionsState(),
-    modelOutput: initialModelOutputState(),
-    modelRun: initialModelRunState(),
-    stepper: initialStepperState(),
-    load: initialLoadState(),
+export const emptyState = (): RootState => {
+    return {
+        version: '0.0.0',
+        baseline: initialBaselineState(),
+        metadata: initialMetadataState(),
+        surveyAndProgram: initialSurveyAndProgramDataState(),
+        filteredData: initialFilteredDataState(),
+        modelOptions: initialModelOptionsState(),
+        modelOutput: initialModelOutputState(),
+        modelRun: initialModelRunState(),
+        stepper: initialStepperState(),
+        load: initialLoadState(),
+    }
 };
 
 export const storeOptions: StoreOptions<RootState> = {
