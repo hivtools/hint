@@ -17,8 +17,8 @@ describe("Baseline actions", () => {
 
         await actions.uploadPJNZ({commit, state, dispatch} as any, formData);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("Botswana2018.PJNZ");
 
     });
@@ -40,8 +40,8 @@ describe("Baseline actions", () => {
         const formData = getFormData("malawi.geojson");
         await actions.uploadShape({commit, dispatch} as any, formData);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("malawi.geojson");
 
     }, 10000);
@@ -52,8 +52,8 @@ describe("Baseline actions", () => {
         const formData = getFormData("population.csv");
         await actions.uploadPopulation({commit, dispatch} as any, formData);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("population.csv");
     });
 
