@@ -7,7 +7,6 @@ describe("Plotting selections mutations", () => {
         const testState = {...initialPlottingSelectionsState};
         const newBarchartSelections = {
             indicatorId: "test-indicator",
-            xAxisId: "test-xaxis",
             disaggregateById: "test-disagg",
             selectedFilterOptions: {
                 testFilter: []
@@ -15,6 +14,13 @@ describe("Plotting selections mutations", () => {
         };
         mutations.updateBarchartSelections(testState, newBarchartSelections);
 
-        expect(testState.barchart).toBe(newBarchartSelections);
+        expect(testState.barchart).toStrictEqual({
+            indicatorId: "test-indicator",
+            disaggregateById: "test-disagg",
+            xAxisId: "",
+            selectedFilterOptions: {
+                testFilter: []
+            }
+        });
     });
 });

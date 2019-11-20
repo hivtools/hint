@@ -8,8 +8,7 @@
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="indicators"
-                                :value=selections.indicatorId
-                                @input="changeIndicatorId"
+                                v-model="indicatorId"
                                 :normalizer="normalizeIndicators"></treeselect>
                 </div>
                 <div id="x-axis-fg" class="form-group">
@@ -17,16 +16,14 @@
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="filtersAsOptions"
-                                :value=selections.xAxisId
-                                @input="changeXAxisId"></treeselect>
+                                v-model="xAxisId"></treeselect>
                 </div>
                 <div id="disagg-fg" class="form-group">
                     <label class="font-weight-bold">Disaggregate by</label>
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="filtersAsOptions"
-                                :value=selections.disaggregateById
-                                @input="changeDisaggById"></treeselect>
+                                v-model="disaggregateById"></treeselect>
                 </div>
                 <hr/>
                 <h3>Filters</h3>
@@ -64,12 +61,16 @@
     }
 
     interface Methods {
-        changeIndicatorId: (newVal: string) => void;
-        changeXAxisId: (newVal: string) => void;
-        changeDisaggById: (newVal: string) => void;
+        normalizeIndicators: (node: BarchartIndicator) => FilterOption,
+        changeSelections: (newSelections: Partial<BarchartSelections>) => void,
+        changeFilter: (filterId: any, selectedOptions: any) => void,
+        getSelectedFilterOptions: (filterId: string) => FilterOption[],
     }
 
     interface Computed {
+        indicatorId: string,
+        xAxisId: string,
+        disaggregateById: string,
         xAxisLabel: string,
         indicatorLabel: string,
         filtersAsOptions: FilterOption[]
@@ -101,6 +102,30 @@
         name: "Barchart",
         props: props,
         computed: {
+            indicatorId: {
+                get() {
+                    return this.selections.indicatorId;
+                },
+                set(value: string) {
+                    this.changeSelections({indicatorId: value});
+                }
+            },
+            xAxisId: {
+                get() {
+                    return this.selections.xAxisId;
+                },
+                set(value: string) {
+                    this.changeSelections({xAxisId: value});
+                }
+            },
+            disaggregateById: {
+              get() {
+                  return this.selections.disaggregateById;
+                },
+                set(value: string) {
+                  this.changeSelections({disaggregateById: value});
+                }
+            },
             xAxisLabel() {
                 const filter = this.filtersAsOptions.find((f: FilterOption) => f.id == this.selections.xAxisId);
                 return filter ? filter.label : "";
@@ -142,24 +167,17 @@
                 return this.indicators.find((i: BarchartIndicator) => i.indicator == this.selections.indicatorId)
             },
             initialised() {
-                return !!this.selections.indicatorId && !!this.selections.xAxisId && !!this.selections.disaggregateById;
+                const unsetFilters = this.filters.filter((f:Filter) => !this.selections.selectedFilterOptions[f.id]);
+                return !!this.selections.indicatorId && !!this.selections.xAxisId && !!this.selections.disaggregateById
+                    && unsetFilters.length == 0;
             }
         },
         methods: {
             normalizeIndicators(node: BarchartIndicator) {
                 return {id: node.indicator, label: node.name};
             },
-            changeSelections(newSelections: BarchartSelections) {
-                this.$emit("change-selections", newSelections)
-            },
-            changeIndicatorId(newVal: string) {
-                this.changeSelections({...this.selections, indicatorId: newVal});
-            },
-            changeXAxisId(newVal: string) {
-                this.changeSelections({...this.selections, xAxisId: newVal});
-            },
-            changeDisaggById(newVal: string) {
-                this.changeSelections({...this.selections, disaggregateById: newVal});
+            changeSelections(newSelections: Partial<BarchartSelections>) {
+                this.$emit("update", newSelections)
             },
             changeFilter(filterId: any, selectedOptions: any) {
                 const newSelectedFilterOptions = {...this.selections.selectedFilterOptions};
@@ -171,23 +189,17 @@
             }
         },
         created() {
-            //If selections have not been initialised, refresh them, and emit changed event
-            let modified = false;
-            const newSelections: BarchartSelections = {...this.selections};
-
+            //If selections have not been initialised, refresh them, and emit changed events
             if (!this.selections.indicatorId) {
-                newSelections.indicatorId = this.indicators[0].indicator;
-                modified = true;
+                this.indicatorId = this.indicators[0].indicator;
             }
 
             if (!this.selections.xAxisId) {
-                newSelections.xAxisId = this.filters[0].id;
-                modified = true;
+                this.xAxisId = this.filters[0].id;
             }
 
             if (!this.selections.disaggregateById ) {
-                newSelections.disaggregateById = this.filters[1].id;
-                modified = true;
+                this.disaggregateById = this.filters[1].id;
             }
 
             if (Object.keys(this.selections.selectedFilterOptions).length < 1) {
@@ -195,14 +207,8 @@
                     obj[current.id] = [current.options[0]];
                     return obj;
                 }, {} as Dict<FilterOption[]>);
-                newSelections.selectedFilterOptions = defaultSelected;
-                modified = true;
+                this.changeSelections({selectedFilterOptions: defaultSelected});
             }
-
-            if (modified) {
-                this.changeSelections(newSelections);
-            }
-
         },
         components: {
             ChartjsBar,

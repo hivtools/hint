@@ -8,7 +8,7 @@ export interface PlottingSelectionsMutations {
 }
 
 export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectionsMutations = {
-    updateBarchartSelections(state: PlottingSelectionsState, payload: BarchartSelections) {
-        state.barchart = payload;
+    updateBarchartSelections(state: PlottingSelectionsState, payload: Partial<BarchartSelections>) {
+        state.barchart = {...state.barchart, ...payload};
     }
 };

@@ -19,7 +19,7 @@
 
             <div id="barchart-container" :class="selectedTab==='Bar' ? 'col-md-12' : 'd-none'">
                 <barchart :chartdata="chartdata" :filters="barchartFilters" :indicators="barchartIndicators"
-                          :selections="barchartSelections" v-on:change-selections="updateBarchartSelections"></barchart>
+                          :selections="barchartSelections" v-on:update="updateBarchartSelections"></barchart>
             </div>
         </div>
     </div>

@@ -192,19 +192,16 @@ describe("Barchart component", () => {
         const wrapper = shallowMount(Barchart, {propsData: props, localVue});
 
         Vue.nextTick();
-        expect(wrapper.emitted()["change-selections"].length).toBe(1);
+        expect(wrapper.emitted()["update"].length).toBe(4);
 
-        const expectedInitialisedSelections = {
-            indicatorId: "art_cov",
-            xAxisId: "region",
-            disaggregateById: "age",
-            selectedFilterOptions: {
+        expect(wrapper.emitted()["update"][0][0]).toStrictEqual({indicatorId: "art_cov"});
+        expect(wrapper.emitted()["update"][1][0]).toStrictEqual({xAxisId: "region"});
+        expect(wrapper.emitted()["update"][2][0]).toStrictEqual({disaggregateById: "age"});
+        expect(wrapper.emitted()["update"][3][0]).toStrictEqual({selectedFilterOptions: {
                 region: [{id: "1", label: "Northern"}],
                 age: [{id: "0:4", label: "0-4"}],
                 sex: [{id: "female", label: "female"}]
-            }
-        };
-        expect(wrapper.emitted()["change-selections"][0][0]).toStrictEqual(expectedInitialisedSelections);
+            }});
     });
 
     it("normalizeIndicators returns expected result", () => {
@@ -214,47 +211,47 @@ describe("Barchart component", () => {
         expect(result).toStrictEqual({id: "art_cov", label: "ART coverage"});
     });
 
-    it("changeIndicatorId emits changed-selections event with new data", () => {
+    it("setting indicatorId emits changed-selections event with new data", () => {
         const wrapper = getWrapper();
         const vm = (wrapper as any).vm;
-        vm.changeIndicatorId("newIndicatorId");
+        vm.indicatorId = "newIndicatorId";
 
-        expect(wrapper.emitted()["change-selections"].length).toBe(1);
-        const expected = {...propsData.selections, indicatorId: "newIndicatorId"};
-        expect(wrapper.emitted()["change-selections"][0][0]).toStrictEqual(expected);
+        expect(wrapper.emitted()["update"].length).toBe(1);
+        const expected = {indicatorId: "newIndicatorId"};
+        expect(wrapper.emitted()["update"][0][0]).toStrictEqual(expected);
     });
 
-    it("changeXAxisId emits changed-selections event with new data", () => {
+    it("csetting xAxisId emits update event with new data", () => {
         const wrapper = getWrapper();
         const vm = (wrapper as any).vm;
-        vm.changeXAxisId("newXAxisId");
+        vm.xAxisId ="newXAxisId";
 
-        expect(wrapper.emitted()["change-selections"].length).toBe(1);
-        const expected = {...propsData.selections, xAxisId: "newXAxisId"};
-        expect(wrapper.emitted()["change-selections"][0][0]).toStrictEqual(expected);
+        expect(wrapper.emitted()["update"].length).toBe(1);
+        const expected = {xAxisId: "newXAxisId"};
+        expect(wrapper.emitted()["update"][0][0]).toStrictEqual(expected);
     });
 
-    it("changeDisaggById emits changed-selections event with new data", () => {
+    it("setting disaggregateById emits update event with new data", () => {
         const wrapper = getWrapper();
         const vm = (wrapper as any).vm;
-        vm.changeDisaggById("newDisaggById");
+        vm.disaggregateById = "newDisaggById";
 
-        expect(wrapper.emitted()["change-selections"].length).toBe(1);
-        const expected = {...propsData.selections, disaggregateById: "newDisaggById"};
-        expect(wrapper.emitted()["change-selections"][0][0]).toStrictEqual(expected);
+        expect(wrapper.emitted()["update"].length).toBe(1);
+        const expected = {disaggregateById: "newDisaggById"};
+        expect(wrapper.emitted()["update"][0][0]).toStrictEqual(expected);
     });
 
-    it("changeFilter emits changed-selections event with new data", () => {
+    it("changeFilter emits update event with new data", () => {
         const wrapper = getWrapper();
         const vm = (wrapper as any).vm;
         vm.changeFilter("age", [{id: "newAgeId", label: "newAgeLabel"}]);
 
-        expect(wrapper.emitted()["change-selections"].length).toBe(1);
+        expect(wrapper.emitted()["update"].length).toBe(1);
 
         const expectedSelectedFilterOptions = {...propsData.selections.selectedFilterOptions,
             age: [{id: "newAgeId", label: "newAgeLabel"}]}
 
         const expected = {...propsData.selections, selectedFilterOptions: expectedSelectedFilterOptions};
-        expect(wrapper.emitted()["change-selections"][0][0]).toStrictEqual(expected);
+        expect(wrapper.emitted()["update"][0][0]).toStrictEqual(expected);
     });
 });
