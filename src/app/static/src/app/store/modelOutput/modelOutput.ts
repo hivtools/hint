@@ -62,12 +62,14 @@ export const modelOutputGetters = {
     }
 };
 
-export const initialModelOutputState: ModelOutputState = {
-    dummyProperty: false
+export const initialModelOutputState = (): ModelOutputState => {
+    return {
+        dummyProperty: false
+    }
 };
 
 export const modelOutput: Module<ModelOutputState, RootState> = {
     namespaced,
-    state: {...initialModelOutputState},
+    state: initialModelOutputState(),
     getters: modelOutputGetters
 };

@@ -42,21 +42,21 @@ export const mockPasswordState = (props?: Partial<PasswordState>): PasswordState
 
 export const mockBaselineState = (props?: Partial<BaselineState>): BaselineState => {
     return {
-        ...initialBaselineState,
+        ...initialBaselineState(),
         ...props
     }
 };
 
 export const mockSurveyAndProgramState = (props?: Partial<SurveyAndProgramDataState>): SurveyAndProgramDataState => {
     return {
-        ...initialSurveyAndProgramDataState,
+        ...initialSurveyAndProgramDataState(),
         ...props
     }
 };
 
 export const mockModelRunState = (props?: Partial<ModelRunState>) => {
     return {
-        ...initialModelRunState,
+        ...initialModelRunState(),
         ...props
     }
 };
@@ -64,35 +64,35 @@ export const mockModelRunState = (props?: Partial<ModelRunState>) => {
 
 export const mockModelOptionsState = (props?: Partial<ModelOptionsState>): ModelOptionsState => {
     return {
-        ...initialModelOptionsState,
+        ...initialModelOptionsState(),
         ...props
     }
 };
 
 export const mockStepperState = (props?: Partial<StepperState>): StepperState => {
     return {
-        ...initialStepperState,
+        ...initialStepperState(),
         ...props
     }
 };
 
 export const mockFilteredDataState = (props?: Partial<FilteredDataState>): FilteredDataState => {
     return {
-        ...initialFilteredDataState,
+        ...initialFilteredDataState(),
         ...props
     }
 };
 
 export const mockMetadataState = (props?: Partial<MetadataState>): MetadataState => {
     return {
-        ...initialMetadataState,
+        ...initialMetadataState(),
         ...props
     }
 };
 
 export const mockLoadState = (props?: Partial<LoadState>): LoadState => {
     return {
-        ...initialLoadState,
+        ...initialLoadState(),
         ...props
     }
 };

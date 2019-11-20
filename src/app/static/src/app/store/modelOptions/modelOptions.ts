@@ -12,11 +12,13 @@ export interface ModelOptionsState {
     fetching: boolean
 }
 
-export const initialModelOptionsState: ModelOptionsState = {
-    optionsFormMeta: {controlSections: []},
-    options: {},
-    valid: false,
-    fetching: false
+export const initialModelOptionsState = (): ModelOptionsState => {
+    return {
+        optionsFormMeta: {controlSections: []},
+        options: {},
+        valid: false,
+        fetching: false
+    }
 };
 
 export const modelOptionsGetters = {
@@ -30,7 +32,7 @@ const existingState = localStorageManager.getState();
 
 export const modelOptions: Module<ModelOptionsState, RootState> = {
     namespaced,
-    state: {...initialModelOptionsState, ...existingState && existingState.modelOptions},
+    state: {...initialModelOptionsState(), ...existingState && existingState.modelOptions},
     mutations,
     actions,
     getters: modelOptionsGetters

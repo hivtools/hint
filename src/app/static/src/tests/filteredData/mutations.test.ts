@@ -5,6 +5,7 @@ import {
     initialFilteredDataState,
     SelectedChoroplethFilters
 } from "../../app/store/filteredData/filteredData";
+import {mockFilteredDataState} from "../mocks";
 
 describe("FilteredData mutations", () => {
 
@@ -24,7 +25,7 @@ describe("FilteredData mutations", () => {
     };
 
     const testChoroplethFilterUpdated = (filterType: FilterType) => {
-        const testState = {...initialFilteredDataState};
+        const testState = {...initialFilteredDataState()};
 
         //initial sate
         let expectedInitialState = "" as any;
@@ -41,15 +42,11 @@ describe("FilteredData mutations", () => {
 
         expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
             .toBe("test");
-
-        // check that the initial state hasn't been mutated due to passing by reference errors
-        expect(getSelectedChoroplethFilterByType(initialFilteredDataState.selectedChoroplethFilters, filterType))
-            .toBe(expectedInitialState);
     };
 
     it("sets selectedDataType on SelectedDataTypeUpdated", () => {
 
-        const testState = {...initialFilteredDataState};
+        const testState = mockFilteredDataState();
         mutations.SelectedDataTypeUpdated(testState, {
             payload: DataType.Program
         });

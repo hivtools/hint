@@ -1,6 +1,5 @@
 import {Mutation, MutationTree} from "vuex";
 import {emptyState, RootState} from "../../root";
-import {initialSelectedChoroplethFilters} from "../filteredData/filteredData";
 
 export interface RootMutations {
     Reset: Mutation<RootState>
@@ -22,8 +21,6 @@ export const mutations: MutationTree<RootState> & RootMutations = {
 
     ResetInputs(state: RootState) {
         Object.assign(state.filteredData, emptyState.filteredData);
-        // as selectedChoroplethFilters is a nested object need to clone explicitly to avoid passing by reference
-        state.filteredData.selectedChoroplethFilters = {...initialSelectedChoroplethFilters};
     },
 
     ResetOptions(state: RootState) {

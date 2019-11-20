@@ -33,5 +33,6 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
                 filters.regions = value as string[];
                 break;
         }
+
     }
 };

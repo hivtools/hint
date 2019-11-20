@@ -68,15 +68,15 @@ const resetState = (store: Store<RootState>) => {
 
 export const emptyState = {
     version: '0.0.0',
-    baseline: initialBaselineState,
-    metadata: initialMetadataState,
-    surveyAndProgram: initialSurveyAndProgramDataState,
-    filteredData: initialFilteredDataState,
-    modelOptions: initialModelOptionsState,
-    modelOutput: initialModelOutputState,
-    modelRun: initialModelRunState,
-    stepper: initialStepperState,
-    load: initialLoadState,
+    baseline: initialBaselineState(),
+    metadata: initialMetadataState(),
+    surveyAndProgram: initialSurveyAndProgramDataState(),
+    filteredData: initialFilteredDataState(),
+    modelOptions: initialModelOptionsState(),
+    modelOutput: initialModelOutputState(),
+    modelRun: initialModelRunState(),
+    stepper: initialStepperState(),
+    load: initialLoadState(),
 };
 
 export const storeOptions: StoreOptions<RootState> = {

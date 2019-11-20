@@ -15,33 +15,35 @@ export interface StepperState {
     steps: StepDescription[]
 }
 
-export const initialStepperState: StepperState = {
-    activeStep: 1,
-    steps: [
-        {
-            number: 1,
-            text: "Upload baseline data"
-        },
-        {
-            number: 2,
-            text: "Upload survey and programme data"
-        },
-        {
-            number: 3,
-            text: "Model options"
-        },
-        {
-            number: 4,
-            text: "Run model"
-        },
-        {
-            number: 5,
-            text: "Review output"
-        },
-        {
-            number: 6,
-            text: "Download results"
-        }]
+export const initialStepperState = (): StepperState => {
+    return {
+        activeStep: 1,
+        steps: [
+            {
+                number: 1,
+                text: "Upload baseline data"
+            },
+            {
+                number: 2,
+                text: "Upload survey and programme data"
+            },
+            {
+                number: 3,
+                text: "Model options"
+            },
+            {
+                number: 4,
+                text: "Run model"
+            },
+            {
+                number: 5,
+                text: "Review output"
+            },
+            {
+                number: 6,
+                text: "Download results"
+            }]
+    }
 };
 
 
@@ -50,7 +52,7 @@ const existingState = localStorageManager.getState();
 
 export const stepper: Module<StepperState, RootState> = {
     namespaced,
-    state: {...initialStepperState, ...existingState && existingState.stepper},
+    state: {...initialStepperState(), ...existingState && existingState.stepper},
     getters,
     actions,
     mutations

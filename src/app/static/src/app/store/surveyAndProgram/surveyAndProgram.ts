@@ -1,8 +1,8 @@
-import { Module } from 'vuex';
-import { actions } from './actions';
-import { mutations } from './mutations';
+import {Module} from 'vuex';
+import {actions} from './actions';
+import {mutations} from './mutations';
 import {ReadyState, RootState} from "../../root";
-import {ProgrammeResponse, SurveyResponse, AncResponse} from "../../generated";
+import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 
 export interface SurveyAndProgramDataState extends ReadyState {
     survey: SurveyResponse | null
@@ -13,14 +13,16 @@ export interface SurveyAndProgramDataState extends ReadyState {
     ancError: string
 }
 
-export const initialSurveyAndProgramDataState: SurveyAndProgramDataState = {
-    survey: null,
-    surveyError: "",
-    program: null,
-    programError: "",
-    anc: null,
-    ancError: "",
-    ready: false
+export const initialSurveyAndProgramDataState = (): SurveyAndProgramDataState => {
+    return {
+        survey: null,
+        surveyError: "",
+        program: null,
+        programError: "",
+        anc: null,
+        ancError: "",
+        ready: false
+    }
 };
 
 export const surveyAndProgramGetters = {
@@ -33,7 +35,7 @@ const namespaced: boolean = true;
 
 export const surveyAndProgram: Module<SurveyAndProgramDataState, RootState> = {
     namespaced,
-    state: {...initialSurveyAndProgramDataState},
+    state: initialSurveyAndProgramDataState(),
     getters: surveyAndProgramGetters,
     actions,
     mutations
