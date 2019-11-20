@@ -39,7 +39,7 @@ export const mockPasswordState = (props?: Partial<PasswordState>) => {
 
 export const mockBaselineState = (props?: Partial<BaselineState>) => {
     return {
-        ...initialBaselineState,
+        ...initialBaselineState(),
         ...props
     }
 };

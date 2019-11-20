@@ -21,28 +21,30 @@ export interface BaselineState extends ReadyState {
     baselineError: string
 }
 
-export const initialBaselineState: BaselineState = {
-    country: "",
-    iso3: "",
-    pjnzError: "",
-    pjnz: null,
-    shape: null,
-    regionFilters: [],
-    flattenedRegionFilters: {},
-    shapeError: "",
-    population: null,
-    populationError: "",
-    ready: false,
-    validating: false,
-    validatedConsistent: false,
-    baselineError: ""
+export const initialBaselineState = (): BaselineState => {
+    return {
+        country: "",
+        iso3: "",
+        pjnzError: "",
+        pjnz: null,
+        shape: null,
+        regionFilters: [],
+        flattenedRegionFilters: {},
+        shapeError: "",
+        population: null,
+        populationError: "",
+        ready: false,
+        validating: false,
+        validatedConsistent: false,
+        baselineError: ""
+    }
 };
 
 export const baselineGetters = {
-  complete: (state: BaselineState) => {
-      return state.validatedConsistent &&
-                !!state.country && !!state.iso3 && !!state.shape && !!state.population
-  }
+    complete: (state: BaselineState) => {
+        return state.validatedConsistent &&
+            !!state.country && !!state.iso3 && !!state.shape && !!state.population
+    }
 };
 
 const getters = baselineGetters;
@@ -51,7 +53,7 @@ const namespaced: boolean = true;
 
 export const baseline: Module<BaselineState, RootState> = {
     namespaced,
-    state: {...initialBaselineState},
+    state: {...initialBaselineState()},
     getters,
     actions,
     mutations
