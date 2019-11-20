@@ -8,7 +8,8 @@ export const serialiseState = (rootState: RootState): Partial<RootState> => {
         modelOptions: rootState.modelOptions,
         filteredData: rootState.filteredData,
         stepper: rootState.stepper,
-        metadata: rootState.metadata
+        metadata: rootState.metadata,
+        plottingSelections: rootState.plottingSelections
     };
 };
 

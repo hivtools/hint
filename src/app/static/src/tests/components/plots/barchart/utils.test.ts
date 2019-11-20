@@ -1,5 +1,6 @@
 import {FilterOption} from "../../../../app/generated";
-import {getProcessedOutputData} from "../../../../app/components/plots/barchart/utils";
+import {Filter} from "../../../../app/types";
+import {getProcessedOutputData, toFilterLabelLookup} from "../../../../app/components/plots/barchart/utils";
 
 export const data = [
     {area_id: 1, age_group: '0:4', sex: 'female', indicator: 2, mean: 0.40, high:0.43, low: 0.38},
@@ -92,5 +93,13 @@ describe("Barchart utils", () => {
             ]
         });
 
+    });
+
+    it("toFilterLabelLookup converts array", () => {
+        const result = toFilterLabelLookup([
+            {id: "id1", label: "label1", column_id: "colId1", options: []},
+            {id: "id2", label: "label2", column_id: "colId2", options: []}
+        ]);
+        expect(result).toStrictEqual({id1: "label1", id2: "label2"});
     });
 });

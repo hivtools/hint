@@ -14,6 +14,7 @@ import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations} from "./store/root/mutations";
 import {initialModelOptionsState, modelOptions, ModelOptionsState} from "./store/modelOptions/modelOptions";
+import {initialPlottingSelectionsState, plottingSelections, PlottingSelectionsState} from "./store/plottingSelections/plottingSelections";
 
 export interface RootState {
     version: string;
@@ -24,6 +25,7 @@ export interface RootState {
     modelOptions: ModelOptionsState
     modelRun: ModelRunState,
     modelOutput: ModelOutputState,
+    plottingSelections: PlottingSelectionsState,
     stepper: StepperState,
     load: LoadState
 }
@@ -48,6 +50,7 @@ export const emptyState = {
     modelOptions: initialModelOptionsState,
     modelOutput: {},
     modelRun: initialModelRunState,
+    plottingSelections: initialPlottingSelectionsState,
     stepper: initialStepperState,
     load: initialLoadState,
 };
@@ -61,6 +64,7 @@ export const storeOptions: StoreOptions<RootState> = {
         modelOptions,
         modelRun,
         modelOutput,
+        plottingSelections,
         stepper,
         load
     },
