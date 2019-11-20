@@ -44,7 +44,7 @@ export const emptyState = {
     baseline: initialBaselineState,
     metadata: initialMetadataState,
     surveyAndProgram: initialSurveyAndProgramDataState,
-    filteredData: initialFilteredDataState,
+    filteredData: initialFilteredDataState(),
     modelOptions: initialModelOptionsState,
     modelOutput: {},
     modelRun: initialModelRunState,

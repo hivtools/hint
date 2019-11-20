@@ -75,7 +75,7 @@ export const mockStepperState = (props?: Partial<StepperState>) => {
 
 export const mockFilteredDataState = (props?: Partial<FilteredDataState>) => {
     return {
-        ...initialFilteredDataState,
+        ...initialFilteredDataState(),
         ...props
     }
 };
