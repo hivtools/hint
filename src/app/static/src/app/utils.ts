@@ -1,6 +1,7 @@
 import * as CryptoJS from 'crypto-js';
-import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState} from "vuex";
+import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
 import {Dict} from "./types";
+import {map} from "leaflet";
 
 export type ComputedWithType<T> = () => T;
 
@@ -39,6 +40,10 @@ export const mapActionsByNames = <K extends string>(namespace: string, names: st
 export const mapMutationsByNames = <K extends string>(namespace: string, names: string[]) => {
     type R = { [key in K]: any }
     return mapMutations(namespace, names) as R
+};
+
+export const mapMutationByName = <T>(namespace: string, name: string): MutationMethod => {
+    return mapMutations(namespace, [name])[name]
 };
 
 export const addCheckSum = (data: string): string => {

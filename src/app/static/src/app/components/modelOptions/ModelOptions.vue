@@ -7,7 +7,7 @@
         <dynamic-form v-if="!loading"
                       v-model="modelOptions"
                       submit-text="Validate"
-                      @submit="Validate"></dynamic-form>
+                      @submit="validate"></dynamic-form>
         <h4 v-if="valid" class="mt-3">Options are valid
             <tick color="#e31837" width="20px"></tick>
         </h4>
@@ -21,14 +21,14 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 
-    import {mapActionByName, mapMutationsByNames, mapStateProps} from "../../utils";
+    import {mapActionByName, mapMutationByName, mapStateProps} from "../../utils";
     import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
     import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
 
     interface Methods {
         fetchOptions: () => void
-        [ModelOptionsMutation.Validate]: (data: DynamicFormData) => void
-        [ModelOptionsMutation.Update]: (data: DynamicFormMeta) => void
+        validate: (data: DynamicFormData) => void
+        update: (data: DynamicFormMeta) => void
     }
 
     interface Computed {
@@ -51,16 +51,13 @@
                     return this.$store.state.modelOptions.optionsFormMeta
                 },
                 set(value: DynamicFormMeta) {
-                    this[ModelOptionsMutation.Update](value);
+                    this.update(value);
                 }
             }
         },
         methods: {
-            ...mapMutationsByNames<keyof Methods>("modelOptions",
-                [
-                    ModelOptionsMutation.Update,
-                    ModelOptionsMutation.Validate
-                ]),
+            update: mapMutationByName(namespace, ModelOptionsMutation.Update),
+            validate: mapMutationByName(namespace, ModelOptionsMutation.Validate),
             fetchOptions: mapActionByName(namespace, "fetchModelRunOptions")
         },
         components: {

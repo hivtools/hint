@@ -22,7 +22,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async uploadPJNZ({commit, dispatch, state}, formData) {
         commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: BaselineMutation.PJNZUpdated, payload: null});
-        await api(commit)
+        await api<BaselineMutation, BaselineMutation>(commit)
             .withSuccess(BaselineMutation.PJNZUpdated)
             .withError(BaselineMutation.PJNZUploadError)
             .freezeResponse()
@@ -36,7 +36,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async uploadShape({commit, dispatch}, formData) {
         commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: BaselineMutation.ShapeUpdated, payload: null});
-        await api(commit)
+        await api<BaselineMutation, BaselineMutation>(commit)
             .withSuccess(BaselineMutation.ShapeUpdated)
             .withError(BaselineMutation.ShapeUploadError)
             .freezeResponse()
@@ -49,7 +49,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async uploadPopulation({commit, dispatch}, formData) {
         commit({type: "ResetInputs", payload: null}, {root: true});
         commit({type: BaselineMutation.PopulationUpdated, payload: null});
-        await api(commit)
+        await api<BaselineMutation, BaselineMutation>(commit)
             .withSuccess(BaselineMutation.PopulationUpdated)
             .withError(BaselineMutation.PopulationUploadError)
             .freezeResponse()
@@ -60,7 +60,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async deletePJNZ({commit, dispatch}) {
-        await api(commit)
+        await api<BaselineMutation, BaselineMutation>(commit)
             .delete("/baseline/pjnz/")
             .then(() => {
                 commit({type: BaselineMutation.PJNZUpdated, payload: null});
@@ -69,7 +69,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async deleteShape({commit, dispatch}) {
-        await api(commit)
+        await api<BaselineMutation, BaselineMutation>(commit)
             .delete("/baseline/shape/")
             .then(() => {
                 commit({type: BaselineMutation.ShapeUpdated, payload: null});
@@ -78,7 +78,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async deletePopulation({commit, dispatch}) {
-        await api(commit)
+        await api<BaselineMutation, BaselineMutation>(commit)
             .delete("/baseline/population/")
             .then(() => {
                 commit({type: BaselineMutation.PopulationUpdated, payload: null});
@@ -96,17 +96,17 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async getBaselineData({commit, dispatch}) {
         await Promise.all([
-            api(commit)
+            api<BaselineMutation, BaselineMutation>(commit)
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.PJNZUpdated)
                 .freezeResponse()
                 .get<PjnzResponse>("/baseline/pjnz/"),
-            api(commit)
+            api<BaselineMutation, BaselineMutation>(commit)
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.PopulationUpdated)
                 .freezeResponse()
                 .get<PjnzResponse>("/baseline/population/"),
-            api(commit)
+            api<BaselineMutation, BaselineMutation>(commit)
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.ShapeUpdated)
                 .freezeResponse()
@@ -120,7 +120,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async validate({commit}) {
         commit({type: "Validating", payload: null});
-        await api(commit)
+        await api<BaselineMutation, BaselineMutation>(commit)
             .withSuccess(BaselineMutation.Validated)
             .withError(BaselineMutation.BaselineError)
             .freezeResponse()
