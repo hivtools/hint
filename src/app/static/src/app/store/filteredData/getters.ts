@@ -34,9 +34,10 @@ export const getters = {
                         quarter: undefined
                     } : null;
             case (DataType.Output):
+                console.log(rootState.modelRun.result!!.filters);
                 return rootState.modelRun.result ?
                     {
-                        ...rootState.modelRun.result.filters,
+                        ...rootState.modelRun.result.plottingMetadata!!,
                         regions,
                         sex: sexFilterOptions,
                         surveys: undefined
