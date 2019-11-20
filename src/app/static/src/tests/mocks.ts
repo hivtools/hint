@@ -29,6 +29,7 @@ import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
 import {initialLoadState, LoadState} from "../app/store/load/load";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
+import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -92,6 +93,13 @@ export const mockMetadataState = (props?: Partial<MetadataState>) => {
 export const mockLoadState = (props?: Partial<LoadState>) => {
     return {
         ...initialLoadState(),
+        ...props
+    }
+};
+
+export const mockPlottingSelections = (props?: Partial<PlottingSelectionsState>) => {
+    return {
+        ...initialPlottingSelectionsState(),
         ...props
     }
 };

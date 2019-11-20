@@ -1,6 +1,7 @@
 import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
-import {data, filters} from "./utils.test"
-import Barchart from "../../../../app/components/plots/barchart/Barchart.vue"
+import {data, filters} from "./utils.test";
+import Barchart from "../../../../app/components/plots/barchart/Barchart.vue";
+import Vue from 'vue';
 
 const localVue = createLocalVue();
 
@@ -26,7 +27,24 @@ const propsData = {
           error_low_column: "low",
           error_high_column: "high"
       }
-  ]
+  ],
+  selections: {
+      indicatorId: "art_cov",
+      xAxisId: "region",
+      disaggregateById: "age",
+      selectedFilterOptions: {
+          region: [{id: "1", label: "Northern"}],
+          age: [{id: "0:4", label: "0-4"}],
+          sex: [{id: "female", label: "female"}]
+      }
+  }
+};
+
+const uninitializedSelections = {
+    indicatorId: "",
+    xAxisId: "",
+    disaggregateById: "",
+    selectedFilterOptions: {}
 };
 
 const getWrapper  = () => {
@@ -141,10 +159,99 @@ describe("Barchart component", () => {
         });
     });
 
+    it("computes initialised", () => {
+       let wrapper = getWrapper();
+       let vm = (wrapper as any).vm;
+       expect(vm.initialised).toBe(true);
+
+       const props = {
+           ...propsData,
+           selections: uninitializedSelections
+       };
+       wrapper = shallowMount(Barchart, {propsData: props, localVue});
+       vm = (wrapper as any).vm;
+       expect(vm.initialised).toBe(false);
+    });
+
+    it("does not render controls when not initialised", () => {
+        const props = {
+            ...propsData,
+            selections: uninitializedSelections
+        };
+        const wrapper = shallowMount(Barchart, {propsData: props, localVue});
+
+        expect(wrapper.findAll(".form-group").length).toBe(0);
+        expect(wrapper.findAll("#chart").length).toBe(0);
+    });
+
+    it("initialises selections on create", () => {
+        const props = {
+            ...propsData,
+            selections: uninitializedSelections
+        };
+        const wrapper = shallowMount(Barchart, {propsData: props, localVue});
+
+        Vue.nextTick();
+        expect(wrapper.emitted()["update"].length).toBe(4);
+
+        expect(wrapper.emitted()["update"][0][0]).toStrictEqual({indicatorId: "art_cov"});
+        expect(wrapper.emitted()["update"][1][0]).toStrictEqual({xAxisId: "region"});
+        expect(wrapper.emitted()["update"][2][0]).toStrictEqual({disaggregateById: "age"});
+        expect(wrapper.emitted()["update"][3][0]).toStrictEqual({selectedFilterOptions: {
+                region: [{id: "1", label: "Northern"}],
+                age: [{id: "0:4", label: "0-4"}],
+                sex: [{id: "female", label: "female"}]
+            }});
+    });
+
     it("normalizeIndicators returns expected result", () => {
         const wrapper = getWrapper();
         const vm = (wrapper as any).vm;
         const result = vm.normalizeIndicators(propsData.indicators[0]);
         expect(result).toStrictEqual({id: "art_cov", label: "ART coverage"});
+    });
+
+    it("setting indicatorId emits changed-selections event with new data", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        vm.indicatorId = "newIndicatorId";
+
+        expect(wrapper.emitted()["update"].length).toBe(1);
+        const expected = {indicatorId: "newIndicatorId"};
+        expect(wrapper.emitted()["update"][0][0]).toStrictEqual(expected);
+    });
+
+    it("csetting xAxisId emits update event with new data", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        vm.xAxisId ="newXAxisId";
+
+        expect(wrapper.emitted()["update"].length).toBe(1);
+        const expected = {xAxisId: "newXAxisId"};
+        expect(wrapper.emitted()["update"][0][0]).toStrictEqual(expected);
+    });
+
+    it("setting disaggregateById emits update event with new data", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        vm.disaggregateById = "newDisaggById";
+
+        expect(wrapper.emitted()["update"].length).toBe(1);
+        const expected = {disaggregateById: "newDisaggById"};
+        expect(wrapper.emitted()["update"][0][0]).toStrictEqual(expected);
+    });
+
+    it("changeFilter emits update event with new data", () => {
+        const wrapper = getWrapper();
+        const vm = (wrapper as any).vm;
+        vm.changeFilter("age", [{id: "newAgeId", label: "newAgeLabel"}]);
+
+        expect(wrapper.emitted()["update"].length).toBe(1);
+
+        const expectedSelectedFilterOptions = {...propsData.selections.selectedFilterOptions,
+            age: [{id: "newAgeId", label: "newAgeLabel"}]}
+
+        const expected = {...propsData.selections, selectedFilterOptions: expectedSelectedFilterOptions};
+        expect(wrapper.emitted()["update"][0][0]).toStrictEqual(expected);
     });
 });
