@@ -68,7 +68,7 @@ export const mockModelOptionsState = (props?: Partial<ModelOptionsState>) => {
 
 export const mockStepperState = (props?: Partial<StepperState>) => {
     return {
-        ...initialStepperState,
+        ...initialStepperState(),
         ...props
     }
 };
