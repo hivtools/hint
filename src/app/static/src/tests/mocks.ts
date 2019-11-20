@@ -46,7 +46,7 @@ export const mockBaselineState = (props?: Partial<BaselineState>) => {
 
 export const mockSurveyAndProgramState = (props?: Partial<SurveyAndProgramDataState>) => {
     return {
-        ...initialSurveyAndProgramDataState,
+        ...initialSurveyAndProgramDataState(),
         ...props
     }
 };

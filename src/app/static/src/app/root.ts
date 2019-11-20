@@ -41,15 +41,15 @@ const persistState = (store: Store<RootState>) => {
 
 export const emptyState = {
     version: '0.0.0',
-    baseline: initialBaselineState,
-    metadata: initialMetadataState,
-    surveyAndProgram: initialSurveyAndProgramDataState,
+    baseline: initialBaselineState(),
+    metadata: initialMetadataState(),
+    surveyAndProgram: initialSurveyAndProgramDataState(),
     filteredData: initialFilteredDataState(),
-    modelOptions: initialModelOptionsState,
+    modelOptions: initialModelOptionsState(),
     modelOutput: {},
-    modelRun: initialModelRunState,
-    stepper: initialStepperState,
-    load: initialLoadState,
+    modelRun: initialModelRunState(),
+    stepper: initialStepperState(),
+    load: initialLoadState(),
 };
 
 export const storeOptions: StoreOptions<RootState> = {
