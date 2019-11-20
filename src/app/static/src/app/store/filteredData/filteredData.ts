@@ -20,7 +20,6 @@ export interface SelectedChoroplethFilters {
 export interface FilteredDataState {
     selectedDataType: DataType | null
     selectedChoroplethFilters: SelectedChoroplethFilters
-    regionIndicators: { [k: string]: any };
 }
 
 export const initialSelectedChoroplethFilters = (): SelectedChoroplethFilters => {
@@ -36,8 +35,7 @@ export const initialSelectedChoroplethFilters = (): SelectedChoroplethFilters =>
 export const initialFilteredDataState = (): FilteredDataState => {
     return {
         selectedDataType: null,
-        selectedChoroplethFilters: initialSelectedChoroplethFilters(),
-        regionIndicators: {}
+        selectedChoroplethFilters: initialSelectedChoroplethFilters()
     }
 };
 

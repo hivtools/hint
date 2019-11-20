@@ -53,8 +53,13 @@ const resetState = (store: Store<RootState>) => {
 
             const type = stripNamespace(mutation.type);
 
-            if (BaselineUpdates.includes(type as BaselineMutation)
-                || SurveyAndProgramUpdates.includes(type as SurveyAndProgramMutation)) {
+            if (BaselineUpdates.includes(type as BaselineMutation)) {
+                store.commit("ResetInputs");
+                store.commit("ResetOptions");
+                store.commit("ResetOutputs");
+            }
+
+            if (SurveyAndProgramUpdates.includes(type as SurveyAndProgramMutation)) {
                 store.commit("ResetInputs");
                 store.commit("ResetOptions");
                 store.commit("ResetOutputs");

@@ -53,7 +53,6 @@ describe("Root mutations", () => {
         expect(state.filteredData.selectedChoroplethFilters.survey).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.regions).toEqual([]);
-
     });
 
     it("can reset model options state", () => {
