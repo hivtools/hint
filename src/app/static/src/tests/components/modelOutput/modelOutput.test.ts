@@ -3,11 +3,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
-    mockAncResponse,
     mockFilteredDataState, mockModelResultResponse,
     mockModelRunState,
-    mockProgramResponse,
-    mockSurveyResponse,
 } from "../../mocks";
 import {DataType} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";

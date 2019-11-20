@@ -2,7 +2,15 @@ import {mutations} from "../../app/store/root/mutations";
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 
-import {mockModelOptionsState, mockModelRunState, mockRootState} from "../mocks";
+import {
+    mockAncResponse,
+    mockFilteredDataState,
+    mockModelOptionsState,
+    mockModelRunState,
+    mockRootState,
+    mockSurveyAndProgramState, mockSurveyResponse
+} from "../mocks";
+import {DataType} from "../../app/store/filteredData/filteredData";
 
 describe("Root mutations", () => {
 
@@ -34,25 +42,46 @@ describe("Root mutations", () => {
 
     });
 
-    it("can reset filtered data state", () => {
+    it("sets selected data type to null if no valid type available", () => {
 
-        const state = mockRootState();
-
-        // simulate mutations
-        state.filteredData.selectedChoroplethFilters.age = "1";
-        state.filteredData.selectedChoroplethFilters.quarter = "1";
-        state.filteredData.selectedChoroplethFilters.survey = "1";
-        state.filteredData.selectedChoroplethFilters.sex = "1";
-        state.filteredData.selectedChoroplethFilters.regions = ["1"];
+        const state = mockRootState({
+            filteredData: mockFilteredDataState({
+                selectedDataType: DataType.ANC
+            })
+        });
 
         mutations.ResetInputs(state);
         expect(state.filteredData.selectedDataType).toBe(null);
+    });
 
-        expect(state.filteredData.selectedChoroplethFilters.age).toBe("");
-        expect(state.filteredData.selectedChoroplethFilters.sex).toBe("");
-        expect(state.filteredData.selectedChoroplethFilters.survey).toBe("");
-        expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
-        expect(state.filteredData.selectedChoroplethFilters.regions).toEqual([]);
+    it("sets selected data type to available type if there is one", () => {
+
+        const state = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState({
+                survey: mockSurveyResponse()
+            }),
+            filteredData: mockFilteredDataState({
+                selectedDataType: DataType.ANC
+            })
+        });
+
+        mutations.ResetInputs(state);
+        expect(state.filteredData.selectedDataType).toBe(DataType.Survey);
+    });
+
+    it("leaves selected data type as is if valid", () => {
+
+        const state = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState({
+                anc: mockAncResponse()
+            }),
+            filteredData: mockFilteredDataState({
+                selectedDataType: DataType.ANC
+            })
+        });
+
+        mutations.ResetInputs(state);
+        expect(state.filteredData.selectedDataType).toBe(DataType.ANC);
     });
 
     it("can reset model options state", () => {
