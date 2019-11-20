@@ -108,7 +108,7 @@ export const getters = {
                 return true;
             }
 
-            if (dataType != DataType.ANC && row.age_group_id != selectedFilters.age) {
+            if (dataType != DataType.ANC && row.age_group != selectedFilters.age) {
                 return true;
             }
 
@@ -116,7 +116,7 @@ export const getters = {
                 return true;
             }
 
-            if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter) {
+            if (dataType in [DataType.Program, DataType.ANC] && row.year != selectedFilters.year) {
                 return true;
             }
 

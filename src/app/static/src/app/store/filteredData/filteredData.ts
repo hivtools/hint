@@ -12,7 +12,7 @@ export interface SelectedChoroplethFilters {
     sex: string,
     age: string,
     survey: string,
-    quarter: string,
+    year: string,
     regions: string[]
 }
 
@@ -27,7 +27,7 @@ export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
     age: "",
     survey: "",
     regions: [],
-    quarter: ""
+    year: ""
 };
 
 export const initialFilteredDataState: FilteredDataState = {

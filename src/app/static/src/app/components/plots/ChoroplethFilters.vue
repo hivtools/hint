@@ -28,7 +28,7 @@
         </div>
 
         <div class="py-2" v-if="!isOutput">
-            <filter-select label="Quarter"
+            <filter-select label="Year"
                            :multiple="false"
                            :options="quarterFilters.available"
                            :value="quarterFilters.selected"
@@ -85,8 +85,8 @@
                 },
 
                 quarterFilters: function (): ChoroplethFiltersForType {
-                    return this.buildViewFiltersForType(this.selectedDataFilterOptions.quarter,
-                        this.selectedChoroplethFilters.quarter);
+                    return this.buildViewFiltersForType(this.selectedDataFilterOptions.year,
+                        this.selectedChoroplethFilters.year);
                 },
 
                 regionFilters: function (): ChoroplethFiltersForType {
@@ -167,7 +167,7 @@
                     if (newSurveyFilter) {
                         this.selectSurvey(newSurveyFilter);
                     }
-                    const newQuarterFilter = this.getNewSelectedFilterOption("quarter", this.quarterFilters.available);
+                    const newQuarterFilter = this.getNewSelectedFilterOption("year", this.quarterFilters.available);
                     if (newQuarterFilter) {
                         this.selectQuarter(newQuarterFilter);
                     }

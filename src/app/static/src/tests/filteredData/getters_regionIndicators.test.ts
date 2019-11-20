@@ -63,7 +63,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: "1",
                     survey: "s1",
                     sex: "both",
-                    quarter: "1",
+                    year: "1",
                     regions: []
                 }
             },
@@ -77,7 +77,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 0.2,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             },
             {
@@ -86,7 +86,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 0.3,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             },
             {
@@ -95,7 +95,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "artcov",
                 est: 0.4,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             },
             {
@@ -104,7 +104,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "artcov",
                 est: 0.5,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             }
         ];
@@ -154,7 +154,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: "1",
                     survey: "s1",
                     sex: "both",
-                    quarter: "1", //should be ignored
+                    year: "1", //should be ignored
                     regions: []
                 }
             },
@@ -168,7 +168,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 0.2,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             },
             {
@@ -177,7 +177,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s2",
                 indicator: "prev",
                 est: 0.3,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             },
             {
@@ -186,7 +186,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 0.4,
-                age_group_id: "2",
+                age_group: "2",
                 sex: "both"
             },
             {
@@ -195,7 +195,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 0.5,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "female"
             },
 
@@ -236,7 +236,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: "1",
                     survey: "",
                     sex: "both",
-                    quarter: "1",
+                    year: "1",
                     regions: []
                 }
             },
@@ -248,16 +248,16 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area1",
                 current_art: 0.2,
-                age_group_id: "1",
-                quarter_id: 1,
+                age_group: "1",
+                year: 1,
                 sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 current_art: 0.3,
-                age_group_id: "1",
-                quarter_id: 1,
+                age_group: "1",
+                year: 1,
                 sex: "both"
             }
         ];
@@ -298,7 +298,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: "1",
                     survey: "s1", //Should be ignored for this data type
                     sex: "both",
-                    quarter: "1",
+                    year: "1",
                     regions: []
                 }
             },
@@ -310,22 +310,22 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area1",
                 current_art: 0.2,
-                age_group_id: "1",
-                quarter_id: 1,
+                age_group: "1",
+                year: 1,
                 sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 current_art: 0.3,
-                age_group_id: "2",
+                age_group: "2",
                 sex: "both"
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
                 current_art: 0.4,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "male"
             },
             {
@@ -337,8 +337,8 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area5",
                 current_art: 0.6,
-                age_group_id: "1",
-                quarter_id: 2,
+                age_group: "1",
+                year: 2,
                 sex: "both"
             },
         ];
@@ -376,7 +376,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: "1",
                     survey: "",
                     sex: "",
-                    quarter: "1",
+                    year: "1",
                     regions: []
                 }
             },
@@ -390,16 +390,16 @@ describe("FilteredData regionIndicator getter", () => {
                 art_coverage: 0,
                 prevalence: 0.2,
 
-                age_group_id: 1,
-                quarter_id: 1
+                age_group: "1",
+                year: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 art_coverage: 0.4,
                 prevalence: 0.3,
-                age_group_id: 1,
-                quarter_id: 1
+                age_group: "1",
+                year: 1
             }
         ];
         const testRootState = mockRootState({
@@ -442,7 +442,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: "1", //should be ignored
                     survey: "",
                     sex: "male", //should be ignored
-                    quarter: "1",
+                    year: "1",
                     regions: []
                 }
             },
@@ -455,31 +455,31 @@ describe("FilteredData regionIndicator getter", () => {
                 area_id: "area1",
                 prevalence: 0.2,
                 art_coverage: 0,
-                age_group_id: 1,
-                quarter_id: 1
+                age_group: "1",
+                year: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area2",
                 prevalence: 0.3,
                 art_coverage: 0.4,
-                age_group_id: 1,
-                quarter_id: 1
+                age_group: "1",
+                year: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area3",
                 prevalence: 0.4,
-                age_group_id: 2,
-                quarter_id: 1
+                age_group: "2",
+                year: 1
             },
             {
                 iso3: "MWI",
                 area_id: "area4",
                 prevalence: 0.4,
                 art_coverage: 0.6,
-                age_group_id: 1,
-                quarter_id: 2
+                age_group: "1",
+                year: 2
             }
         ];
         const testRootState = mockRootState({
@@ -523,7 +523,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: "1",
                     survey: "",
                     sex: "both",
-                    quarter: "1",
+                    year: "1",
                     regions: []
                 }
             },
@@ -535,7 +535,7 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area1",
                 mean: 0.2,
-                age_group_id: 1,
+                age_group: 1,
                 indicator_id: 2,
                 sex: "both"
             },
@@ -543,7 +543,7 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area2",
                 mean: 0.3,
-                age_group_id: 1,
+                age_group: 1,
                 indicator_id: 2,
                 sex: "both"
             }
@@ -585,7 +585,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: "1",
                     survey: "",
                     sex: "both",
-                    quarter: "1",
+                    year: "1",
                     regions: []
                 }
             },
@@ -597,7 +597,7 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area1",
                 mean: 0.2,
-                age_group_id: 1,
+                age_group: 1,
                 indicator_id: "2",
                 sex: "both"
             },
@@ -605,7 +605,7 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area2",
                 mean: 0.3,
-                age_group_id: 1,
+                age_group: 1,
                 indicator_id: "2",
                 sex: "both"
             },
@@ -613,7 +613,7 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area3",
                 mean: 0.4,
-                age_group_id: 1,
+                age_group: 1,
                 indicator_id: "2",
                 sex: "male"
             },
@@ -621,7 +621,7 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area4",
                 mean: 0.5,
-                age_group_id: 2,
+                age_group: 2,
                 indicator_id: "2",
                 sex: "both"
             },
@@ -629,7 +629,7 @@ describe("FilteredData regionIndicator getter", () => {
                 iso3: "MWI",
                 area_id: "area5",
                 mean: 0.6,
-                age_group_id: 1,
+                age_group: 1,
                 indicator_id: "3",
                 sex: "both"
             }
@@ -671,7 +671,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: "1",
                     survey: "s1",
                     sex: "both",
-                    quarter: "1",
+                    year: "1",
                     regions: ["area1"]
                 }
             }
@@ -684,7 +684,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 0.2,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             },
             {
@@ -693,7 +693,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 0.3,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             },
             {
@@ -702,7 +702,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 0.4,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             },
             {
@@ -711,7 +711,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 0.5,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             },
             {
@@ -720,7 +720,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 0.6,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "male"
             }
 
@@ -776,7 +776,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: "1",
                     survey: "",
                     sex: "",
-                    quarter: "",
+                    year: "",
                     regions: []
                 }
             },
@@ -807,7 +807,7 @@ describe("FilteredData regionIndicator getter", () => {
                     age: "1",
                     survey: "",
                     sex: "",
-                    quarter: "",
+                    year: "",
                     regions: []
                 }
             },
@@ -821,7 +821,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 2,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             },
             {
@@ -830,7 +830,7 @@ describe("FilteredData regionIndicator getter", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 3,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             }
         ];

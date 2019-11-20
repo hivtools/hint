@@ -28,7 +28,7 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
                 filters.survey = value as string;
                 break;
             case (FilterType.Quarter):
-                filters.quarter = value as string;
+                filters.year = value as string;
                 break;
             case (FilterType.Region):
                 filters.regions = value as string[];

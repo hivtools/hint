@@ -23,7 +23,7 @@
     import MapLegend from "./MapLegend.vue";
     import {BaselineState} from "../../store/baseline/baseline";
     import {DataType, FilteredDataState} from "../../store/filteredData/filteredData";
-    import {IndicatorMetadata, NestedFilterOption} from "../../generated";
+    import {ChoroplethIndicatorMetadata, NestedFilterOption} from "../../generated";
     import {Dict, LevelLabel, IndicatorValuesDict} from "../../types";
     import {mapGettersByNames, mapStateProps} from "../../utils";
 
@@ -51,7 +51,7 @@
 
     interface MetadataGetters {
         choroplethIndicators: string[],
-        choroplethIndicatorsMetadata: IndicatorMetadata[]
+        choroplethIndicatorsMetadata: ChoroplethIndicatorMetadata[]
     }
 
     interface Computed extends BaselineComputed, FilteredDataComputed, FilteredDataGetters, MetadataGetters {
@@ -61,7 +61,7 @@
         currentFeatures: Feature[]
         options: L.GeoJSONOptions
         selectedRegionFeatures: Feature[],
-        indicatorMetadata: IndicatorMetadata
+        indicatorMetadata: ChoroplethIndicatorMetadata
     }
 
     interface Methods {
@@ -120,8 +120,7 @@
                 });
 
                 this.features.forEach((feature: Feature) => {
-                    const areas = feature.properties!!["area_id"].split(".");
-                    const adminLevel = areas.length - 1;  //Country (e.g. "MWI") is level 0
+                    const adminLevel = parseInt(feature.properties!!["area_level"]); //Country (e.g. "MWI") is level 0
                     if (result[adminLevel]) {
                         result[adminLevel].push(feature);
                     }
@@ -133,7 +132,7 @@
                 return this.featuresByLevel[this.detail]
             },
             indicatorMetadata: function() {
-                return this.choroplethIndicatorsMetadata.filter((i: IndicatorMetadata) => i.indicator == this.indicator)[0];
+                return this.choroplethIndicatorsMetadata.filter((i: ChoroplethIndicatorMetadata) => i.indicator == this.indicator)[0];
             },
             options() {
                 const regionIndicators = this.regionIndicators;

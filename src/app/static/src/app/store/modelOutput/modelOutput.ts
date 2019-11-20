@@ -9,14 +9,14 @@ export interface ModelOutputState {}
 
 export const modelOutputGetters = {
     barchartIndicators: (state: ModelOutputState, getters: any, rootState: RootState): BarchartIndicator[] => {
-        return rootState.modelRun.result!!.plottingMetadata.barchart.indicators;
+        return rootState.modelRun.result!!.plottingMetadata!!.barchart.indicators;
     },
     barchartFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
 
         const regions: FilterOption[] = rootState.baseline.shape!!.filters!!.regions ?
                                         [rootState.baseline.shape!!.filters!!.regions] : [];
 
-        let filters = rootState.modelRun.result!!.plottingMetadata.barchart.filters;
+        let filters = rootState.modelRun.result!!.plottingMetadata!!.barchart.filters;
         //THIS IS A WORKAROUND FOR A BUG IN HINTR - take out when fixed!
         //Column_id and label are the wrong way round for quarter
         //(Also, sex is missing)

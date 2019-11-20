@@ -190,7 +190,7 @@ export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): Pro
         filename: "test.csv",
         data: [],
         hash: "1234.csv",
-        filters: {"age": [], "quarter": [], indicators: []},
+        filters: {"age": [], "year": [], indicators: []},
         ...props
     }
 };
@@ -201,7 +201,7 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
         filename: "test.csv",
         hash: "1234.csv",
         data: [],
-        filters: {"quarter": [], indicators: []},
+        filters: {"year": [], indicators: []},
         ...props
     }
 };
@@ -209,7 +209,7 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
 export const mockProgramFilters = (props: Partial<ProgrammeFilters> = {}): ProgrammeFilters => {
     return {
         age: [],
-        quarter: [],
+        year: [],
         indicators: [],
         ...props
     }
@@ -236,17 +236,15 @@ export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}):
 
 export const mockValidateBaselineResponse = (props: Partial<ValidateBaselineResponse> = {}): ValidateBaselineResponse => {
     return {
-        complete: true,
         consistent: true
     }
 };
 
 export const mockModelStatusResponse = (props: Partial<ModelStatusResponse> = {}): ModelStatusResponse => {
     return {
-        timeRemaining: "",
         done: true,
         success: true,
-        progress: "0.2",
+        progress: [],
         queue: 1,
         id: "1234",
         status: "finished",
