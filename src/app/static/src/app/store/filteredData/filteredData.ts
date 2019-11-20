@@ -1,11 +1,12 @@
-import { Module } from 'vuex';
-import { actions } from './actions';
-import { mutations } from './mutations';
-import { getters } from './getters';
-import { RootState} from "../../root";
+import {Module} from 'vuex';
+import {actions} from './actions';
+import {mutations} from './mutations';
+import {getters} from './getters';
+import {RootState} from "../../root";
 import {localStorageManager} from "../../localStorageManager";
 
 export enum DataType { ANC, Program, Survey, Output }
+
 export enum FilterType { Sex, Age, Region, Survey, Quarter }
 
 export interface SelectedChoroplethFilters {
@@ -19,7 +20,7 @@ export interface SelectedChoroplethFilters {
 export interface FilteredDataState {
     selectedDataType: DataType | null
     selectedChoroplethFilters: SelectedChoroplethFilters
-    regionIndicators: {[k: string]: any};
+    regionIndicators: { [k: string]: any };
 }
 
 export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
@@ -31,9 +32,9 @@ export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
 };
 
 export const initialFilteredDataState: FilteredDataState = {
-   selectedDataType: null,
-   selectedChoroplethFilters: initialSelectedChoroplethFilters,
-   regionIndicators: {}
+    selectedDataType: null,
+    selectedChoroplethFilters: initialSelectedChoroplethFilters,
+    regionIndicators: {}
 };
 
 const namespaced: boolean = true;
@@ -41,7 +42,12 @@ const existingState = localStorageManager.getState();
 
 export const filteredData: Module<FilteredDataState, RootState> = {
     namespaced,
-    state: {...initialFilteredDataState, ...existingState && existingState.filteredData},
+    state: {
+        ...initialFilteredDataState,
+        // as selectedChoroplethFilters is a nested object need to clone explicitly to avoid passing by reference
+        selectedChoroplethFilters: {...initialSelectedChoroplethFilters},
+        ...existingState && existingState.filteredData
+    },
     actions,
     mutations,
     getters
