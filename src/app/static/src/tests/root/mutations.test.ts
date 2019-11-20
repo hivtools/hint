@@ -1,6 +1,5 @@
 import {mutations} from "../../app/store/root/mutations";
-import {mockFilteredDataState, mockRootState, mockStepperState, mockSurveyAndProgramState} from "../mocks";
-import {DataType} from "../../app/store/filteredData/filteredData";
+import {mockRootState, mockSurveyAndProgramState} from "../mocks";
 
 describe("Root mutations", () => {
 
@@ -42,7 +41,7 @@ describe("Root mutations", () => {
         expect(state.surveyAndProgram.survey).toBe(null);
         expect(state.surveyAndProgram.program).toBe(null);
         expect(state.filteredData.selectedDataType).toBe(null);
-        
+
         expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.age).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.sex).toBe("");
