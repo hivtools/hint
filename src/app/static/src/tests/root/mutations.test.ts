@@ -9,6 +9,8 @@ import {
 import {DataType} from "../../app/store/filteredData/filteredData";
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
+import {initialBaselineState} from "../../app/store/baseline/baseline";
+import {initialSurveyAndProgramDataState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 
 describe("Root mutations", () => {
 
@@ -23,6 +25,15 @@ describe("Root mutations", () => {
         mutations.Reset(state);
 
         expect(state.stepper.activeStep).toBe(1);
+
+        // test that we haven't passed initial states by reference!
+        expect(initialBaselineState.ready).toBe(false);
+        expect(initialSurveyAndProgramDataState.ready).toBe(false);
+        expect(initialModelRunState.ready).toBe(false);
+
+        expect(state.baseline.ready).toBe(true);
+        expect(state.surveyAndProgram.ready).toBe(true);
+        expect(state.modelRun.ready).toBe(true);
     });
 
     it("can reset filtered data state", () => {
