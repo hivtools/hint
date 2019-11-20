@@ -1,15 +1,16 @@
 import {mutations} from "../../app/store/load/mutations";
-import {LoadingState, initialLoadState} from "../../app/store/load/load";
+import {initialLoadState, LoadingState} from "../../app/store/load/load";
+import {mockLoadState} from "../mocks";
 
 describe("Load mutations", () => {
     it("SettingFiles updates loading state correctly", () => {
-        const testState = {...initialLoadState};
+        const testState = mockLoadState();
         mutations.SettingFiles(testState, null);
         expect(testState.loadingState).toBe(LoadingState.SettingFiles);
     });
 
     it("UpdatingState updates loading state correctly", () => {
-        const testState = {...initialLoadState};
+        const testState = mockLoadState();
         mutations.UpdatingState(testState, null);
         expect(testState.loadingState).toBe(LoadingState.UpdatingState);
     });
@@ -26,7 +27,7 @@ describe("Load mutations", () => {
     });
 
     it("LoadFailed updates loading state correctly and sets error", () => {
-        const testState = {...initialLoadState};
+        const testState = mockLoadState();
         mutations.LoadFailed(testState, {type: "LoadFailed", payload: "TEST ERROR"});
         expect(testState.loadingState).toBe(LoadingState.LoadFailed);
         expect(testState.loadError).toBe("TEST ERROR");
