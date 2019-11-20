@@ -749,7 +749,7 @@ describe("FilteredData regionIndicator getter", () => {
             filteredData: testState
         });
 
-        const testRegionGetters = testGetters(testState, testRootState);
+        const testRegionGetters = testGetters(testState);
 
         const regionIndicators = getters.regionIndicators(testState, testRegionGetters, testRootState,
             testRootGetters(testSurveyIndicatorsMetadata));

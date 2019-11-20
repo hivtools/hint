@@ -34,15 +34,12 @@ export const getters = {
                         quarter: undefined
                     } : null;
             case (DataType.Output):
-                console.log(rootState.modelRun.result!!.filters);
-                return rootState.modelRun.result ?
-                    {
-                        ...rootState.modelRun.result.plottingMetadata!!,
-                        regions,
-                        sex: sexFilterOptions,
-                        surveys: undefined
-                    } : null;
-
+                // TODO use returned filters once in
+                return {
+                    regions,
+                    sex: sexFilterOptions,
+                    surveys: undefined
+                };
             default:
                 return null;
         }
@@ -98,7 +95,7 @@ export const getters = {
 
         return result;
     },
-    excludeRow: function (state: FilteredDataState, getters: any, rootState: RootState):
+    excludeRow: function (state: FilteredDataState):
         (row: any, selectedRegions: Set<string>) => boolean {
         const dataType = state.selectedDataType!!;
         const selectedFilters = state.selectedChoroplethFilters;
