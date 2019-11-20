@@ -1,6 +1,6 @@
 import {Mutation, MutationTree} from "vuex";
 import {emptyState, RootState} from "../../root";
-import {DataType, initialFilteredDataState, initialSelectedChoroplethFilters} from "../filteredData/filteredData";
+import {DataType} from "../filteredData/filteredData";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
