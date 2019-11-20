@@ -17,6 +17,14 @@ describe("Root mutations", () => {
         expect(state.stepper.activeStep).toBe(1);
         expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
 
+        // do mutations again
+        state.stepper.activeStep = 2;
+        state.filteredData.selectedChoroplethFilters.quarter = "test";
+
+        mutations.Reset(state);
+
+        expect(state.stepper.activeStep).toBe(1);
+        expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
     });
 
     it("can reset input state", () => {

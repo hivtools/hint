@@ -13,16 +13,18 @@ import {
     ModelStatusResponse,
     PjnzResponse,
     PlottingMetadataResponse,
-    PopulationResponse, ProgrammeFilters,
+    PopulationResponse,
+    ProgrammeFilters,
     ProgrammeResponse,
     Response,
     ShapeResponse,
     SurveyFilters,
-    SurveyResponse, ValidateBaselineResponse
+    SurveyResponse,
+    ValidateBaselineResponse
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
-import {RootState} from "../app/root";
+import {emptyState, RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
 import {initialLoadState, LoadState} from "../app/store/load/load";
@@ -96,21 +98,12 @@ export const mockLoadState = (props?: Partial<LoadState>) => {
 
 export const mockRootState = (props?: Partial<RootState>): RootState => {
     return {
-        version: "",
-        filteredData: mockFilteredDataState(),
-        baseline: mockBaselineState(),
-        surveyAndProgram: mockSurveyAndProgramState(),
-        modelRun: mockModelRunState(),
-        modelOptions: mockModelOptionsState(),
-        stepper: mockStepperState(),
-        metadata: mockMetadataState(),
-        load: mockLoadState(),
-        modelOutput: {},
+        ...emptyState(),
         ...props
     }
 };
 
-export const mockFile = (filename: string, fileContents: string,  type: string = "text/csv"): File => {
+export const mockFile = (filename: string, fileContents: string, type: string = "text/csv"): File => {
     return new File([fileContents], filename, {
         type: type,
         lastModified: 1
@@ -154,7 +147,7 @@ export const mockShapeResponse = (props: Partial<ShapeResponse> = {}): ShapeResp
         filename: "test.csv",
         filters: {
             level_labels: [{id: 1, area_level_label: "Country", display: true}],
-            regions: {label: "Malawi", id: "1", children : []}
+            regions: {label: "Malawi", id: "1", children: []}
         },
         ...props
     }

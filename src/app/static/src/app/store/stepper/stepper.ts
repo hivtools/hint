@@ -16,6 +16,7 @@ export interface StepperState {
 }
 
 export const initialStepperState = (): StepperState => {
+
     return {
         activeStep: 1,
         steps: [
