@@ -1,6 +1,6 @@
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {mutations} from "../../app/store/modelRun/mutations";
-import {mockModelResultResponse} from "../mocks";
+import {mockModelResultResponse, mockModelRunState} from "../mocks";
 
 describe("Model run mutations", () => {
 
@@ -9,7 +9,7 @@ describe("Model run mutations", () => {
     });
 
     it("sets status and clears errors when started", () => {
-        const testState = {...initialModelRunState, errors: [1, 2, 3]};
+        const testState = mockModelRunState({errors: [1, 2, 3]});
         mutations.ModelRunStarted(testState, {payload: {id: "1234"}});
         expect(testState.modelRunId).toBe("1234");
         expect(testState.status).toStrictEqual({id: "1234"});
@@ -17,7 +17,7 @@ describe("Model run mutations", () => {
     });
 
     it("sets run status, success and poll id when done", () => {
-        const testState = {...initialModelRunState};
+        const testState = mockModelRunState();
         mutations.RunStatusUpdated(testState, {payload: {id: "1234", done: true, success: true}});
         expect(testState.status.success).toBe(true);
         expect(testState.status).toStrictEqual({id: "1234", done: true, success: true});
@@ -25,26 +25,26 @@ describe("Model run mutations", () => {
     });
 
     it("does not update poll id if not done", () => {
-        const testState = {...initialModelRunState, statusPollId: 10};
+        const testState = mockModelRunState({statusPollId: 10});
         mutations.RunStatusUpdated(testState, {payload: {done: false}});
         expect(testState.statusPollId).toBe(10);
     });
 
     it("sets poll id", () => {
-        const testState = {...initialModelRunState};
+        const testState = mockModelRunState();
         mutations.PollingForStatusStarted(testState, {payload: 2});
         expect(testState.statusPollId).toBe(2);
     });
 
     it("sets result", () => {
-        const testState = {...initialModelRunState};
+        const testState = mockModelRunState();
         const testResponse = mockModelResultResponse();
         mutations.RunResultFetched(testState, {payload: testResponse});
         expect(testState.result).toBe(testResponse);
     });
 
     it("sets result error", () => {
-        const testState = {...initialModelRunState};
+        const testState = mockModelRunState();
         mutations.RunResultError(testState, {payload: "Test Error"});
         expect(testState.errors).toStrictEqual(["Test Error"]);
     });

@@ -53,7 +53,7 @@ export const mockSurveyAndProgramState = (props?: Partial<SurveyAndProgramDataSt
 
 export const mockModelRunState = (props?: Partial<ModelRunState>) => {
     return {
-        ...initialModelRunState,
+        ...initialModelRunState(),
         ...props
     }
 };
@@ -61,7 +61,7 @@ export const mockModelRunState = (props?: Partial<ModelRunState>) => {
 
 export const mockModelOptionsState = (props?: Partial<ModelOptionsState>) => {
     return {
-        ...initialModelOptionsState,
+        ...initialModelOptionsState(),
         ...props
     }
 };
