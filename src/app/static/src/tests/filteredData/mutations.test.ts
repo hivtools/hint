@@ -5,7 +5,6 @@ import {
     initialFilteredDataState,
     SelectedChoroplethFilters
 } from "../../app/store/filteredData/filteredData";
-import {mockFilteredDataState} from "../mocks";
 
 describe("FilteredData mutations", () => {
 
@@ -28,18 +27,24 @@ describe("FilteredData mutations", () => {
         const testState = {...initialFilteredDataState};
 
         //initial sate
-        let expected = "" as any;
+        let expectedInitialState = "" as any;
         if (filterType == FilterType.Region){
-            expected = [];
+            expectedInitialState = [];
         }
+
         expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
-            .toStrictEqual(expected);
+            .toStrictEqual(expectedInitialState);
 
         mutations.ChoroplethFilterUpdated(testState, {
-            payload: [filterType, {id: "id", name: "name"}]
+            payload: [filterType, "test"]
         });
+
         expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
-            .toStrictEqual({id: "id", name: "name"});
+            .toBe("test");
+
+        // check that the initial state hasn't been mutated due to passing by reference errors
+        expect(getSelectedChoroplethFilterByType(initialFilteredDataState.selectedChoroplethFilters, filterType))
+            .toBe(expectedInitialState);
     };
 
     it("sets selectedDataType on SelectedDataTypeUpdated", () => {
@@ -67,13 +72,4 @@ describe("FilteredData mutations", () => {
         testChoroplethFilterUpdated(FilterType.Quarter);
     });
 
-    it("resets whole state", () => {
-        const testState = mockFilteredDataState({
-            selectedDataType: DataType.ANC,
-            regionIndicators: "TEST" as any
-        });
-        mutations.Reset(testState);
-        expect(testState.selectedDataType).toBe(null);
-        expect(testState.regionIndicators).toStrictEqual({});
-    })
 });

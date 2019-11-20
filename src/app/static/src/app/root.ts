@@ -36,10 +36,15 @@ export interface ReadyState {
     ready: boolean
 }
 
-const manageState = (store: Store<RootState>) => {
+const persistState = (store: Store<RootState>) => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
         console.log(mutation.type);
         localStorageManager.saveState(state);
+    })
+};
+
+const resetState = (store: Store<RootState>) => {
+    store.subscribe((mutation: MutationPayload, state: RootState) => {
 
         if (state.baseline.ready
             && state.surveyAndProgram.ready
@@ -88,5 +93,5 @@ export const storeOptions: StoreOptions<RootState> = {
     },
     actions: actions,
     mutations: mutations,
-    plugins: [manageState]
+    plugins: [persistState, resetState]
 };

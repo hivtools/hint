@@ -6,7 +6,7 @@ import {
     mockStepperState,
     mockSurveyAndProgramState
 } from "../mocks";
-import {DataType} from "../../app/store/filteredData/filteredData";
+import {DataType, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 import {initialBaselineState} from "../../app/store/baseline/baseline";
@@ -39,11 +39,21 @@ describe("Root mutations", () => {
     it("can reset filtered data state", () => {
 
         const state = mockRootState({
-            filteredData: mockFilteredDataState({selectedDataType: DataType.ANC})
+            filteredData: mockFilteredDataState({
+                selectedDataType: DataType.ANC,
+                selectedChoroplethFilters: {age: "1", sex: "both", survey: "s1", regions: ["test"], quarter: "1"}})
         });
 
         mutations.ResetInputs(state);
         expect(state.filteredData.selectedDataType).toBe(null);
+        expect(state.filteredData.selectedChoroplethFilters.age).toBe("");
+        expect(state.filteredData.selectedChoroplethFilters.sex).toBe("");
+        expect(state.filteredData.selectedChoroplethFilters.survey).toBe("");
+        expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
+        expect(state.filteredData.selectedChoroplethFilters.regions).toEqual([]);
+
+        state.filteredData.selectedChoroplethFilters.sex = "1";
+        expect(initialFilteredDataState.selectedChoroplethFilters.sex).toBe("");
     });
 
     it("can reset model options state", () => {
