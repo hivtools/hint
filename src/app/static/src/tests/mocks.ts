@@ -82,14 +82,14 @@ export const mockFilteredDataState = (props?: Partial<FilteredDataState>) => {
 
 export const mockMetadataState = (props?: Partial<MetadataState>) => {
     return {
-        ...initialMetadataState,
+        ...initialMetadataState(),
         ...props
     }
 };
 
 export const mockLoadState = (props?: Partial<LoadState>) => {
     return {
-        ...initialLoadState,
+        ...initialLoadState(),
         ...props
     }
 };

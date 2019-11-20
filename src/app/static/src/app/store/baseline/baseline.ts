@@ -53,7 +53,7 @@ const namespaced: boolean = true;
 
 export const baseline: Module<BaselineState, RootState> = {
     namespaced,
-    state: {...initialBaselineState()},
+    state: initialBaselineState(),
     getters,
     actions,
     mutations

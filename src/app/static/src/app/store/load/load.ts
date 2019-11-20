@@ -10,16 +10,18 @@ export interface LoadState {
     loadError: string
 }
 
-export const initialLoadState: LoadState = {
-    loadingState: LoadingState.NotLoading,
-    loadError: ""
+export const initialLoadState = (): LoadState => {
+    return {
+        loadingState: LoadingState.NotLoading,
+        loadError: ""
+    }
 };
 
 const namespaced: boolean = true;
 
 export const load: Module<LoadState, RootState> = {
     namespaced,
-    state: {...initialLoadState},
+    state: initialLoadState(),
     actions,
     mutations
 };
