@@ -1,12 +1,8 @@
 import {DataType, FilteredDataState} from "./filteredData";
 import {RootState} from "../../root";
 import {
-    AncResponseData,
     ChoroplethIndicatorMetadata,
-    ModelResultData,
     NestedFilterOption,
-    ProgrammeResponseData,
-    SurveyResponseData
 } from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {Dict} from "../../types";
