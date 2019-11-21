@@ -25,6 +25,7 @@ module.exports = {
     "collectCoverage": true,
     "coveragePathIgnorePatterns": [
         "/node_modules/",
-        "./tests/mocks.ts"
+        "./tests/mocks.ts",
+        "./tests/.*/helpers.ts"
     ]
 };
