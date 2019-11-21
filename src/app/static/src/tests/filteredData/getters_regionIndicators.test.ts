@@ -145,7 +145,7 @@ describe("FilteredData regionIndicator getter", () => {
         expect(regionIndicators).toStrictEqual(expected);
     });
 
-    it("filters regionIndicators for survey", () => {
+        it("filters regionIndicators for survey", () => {
         const testStore: Module<FilteredDataState, RootState> = {
             state: {
                 ...initialFilteredDataState,

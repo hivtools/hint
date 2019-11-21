@@ -9,12 +9,13 @@ import {interpolateGreys} from "d3-scale-chromatic";
 import {DataType} from "../../app/store/filteredData/filteredData";
 import {getGetters, testIndicatorMetadata} from "./helpers";
 import {getters} from "../../app/store/filteredData/getters";
+import {RootState} from "../../app/root";
 
 describe("getting region indicators for survey data", () => {
 
     const testMeta = testIndicatorMetadata("art_coverage", "est", "indicator", "artcov");
     const testRootGetters = {
-        "metadata/choroplethIndicatorsMetadata": testMeta
+        "metadata/choroplethIndicatorsMetadata": [testMeta]
     };
 
     const getRootState = (testData: any,
@@ -33,6 +34,15 @@ describe("getting region indicators for survey data", () => {
             selectedChoroplethFilters: {regions: [], ...filters}
         })
     });
+
+    function getResult(testData: any, filters: any) {
+        const testRootState = getRootState(testData, filters);
+        const testGetters = getGetters(testRootState);
+        return getters.regionIndicators(testRootState.filteredData,
+            testGetters,
+            testRootState,
+            testRootGetters);
+    }
 
     it("returns empty object if survey is null", () => {
         const testRootState = getRootState(null, {age: "1", sex: "both", survey: "s1", year: "1"});
@@ -63,19 +73,14 @@ describe("getting region indicators for survey data", () => {
                 est: 0.3
             }
         ];
-        const testRootState = getRootState(testData, {age: "1", sex: "both", survey: "s1", year: "1"});
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
+        const result = getResult(testData, {age: "1", sex: "both", survey: "s1", year: "1"});
 
         const expected = {
-            "area1": {value: 0.2, color: interpolateGreys(0.2)},
-            "area2": {value: 0.3, color: interpolateGreys(0.3)}
+            "area1": {"art_coverage": {value: 0.2, color: interpolateGreys(0.2)}},
+            "area2": {"art_coverage": {value: 0.3, color: interpolateGreys(0.3)}}
         };
 
-        expect(regionIndicators).toStrictEqual(expected);
+        expect(result).toStrictEqual(expected);
     });
 
     it("filters regionIndicators for survey", () => {
@@ -107,18 +112,13 @@ describe("getting region indicators for survey data", () => {
             },
 
         ];
-        const testRootState = getRootState(testData, {age: "1", sex: "both", survey: "s1"});
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
+        const result = getResult(testData, {age: "1", sex: "both", survey: "s1"});
 
         const expected = {
-            "area1": {value: 0.2, color: interpolateGreys(0.2)}
+            "area1": {"art_coverage": {value: 0.2, color: interpolateGreys(0.2)}}
         };
 
-        expect(regionIndicators).toStrictEqual(expected);
+        expect(result).toStrictEqual(expected);
     });
 
 });

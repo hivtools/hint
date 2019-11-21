@@ -122,7 +122,6 @@ describe("FilteredData getters", () => {
         };
         const testState = testStore.state as FilteredDataState;
         const testFilters = {
-            age: [{id: "age1", label: "0-4"}, {id: "age2", label: "5-9"}],
             quarter: [{id: "1", label: "2019 Q1"}],
             indicators: []
         };
@@ -141,7 +140,7 @@ describe("FilteredData getters", () => {
 
         const mockGetters = testGetters(testState);
         const filters = getters.selectedDataFilterOptions(testState, mockGetters, testRootState)!!;
-        expect(filters.age).toStrictEqual(testFilters.age);
+
         expect(filters.regions).toStrictEqual([{id: "MWI", label: "Malawi", children: []}]);
         expect(filters.sex).toStrictEqual(sexOptions);
         expect(filters.surveys).toBeUndefined();

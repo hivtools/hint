@@ -22,5 +22,16 @@ export function testIndicatorMetadata(indicator: string,
 }
 
 export function getGetters(rootState: RootState) {
-    return {excludeRow: () => getters.excludeRow(rootState.filteredData)};
+    return {excludeRow: getters.excludeRow(rootState.filteredData)};
+}
+
+export function getResult(rootState: RootState, testMeta: ChoroplethIndicatorMetadata) {
+    const testRootGetters = {
+        "metadata/choroplethIndicatorsMetadata": [testMeta]
+    };
+    const testGetters = getGetters(rootState);
+    return getters.regionIndicators(rootState.filteredData,
+        testGetters,
+        rootState,
+        testRootGetters);
 }

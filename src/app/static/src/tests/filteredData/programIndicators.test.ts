@@ -7,10 +7,17 @@ import {
 } from "../mocks";
 import {interpolateGreys} from "d3-scale-chromatic";
 import {DataType} from "../../app/store/filteredData/filteredData";
-import {getGetters, testIndicatorMetadata} from "./helpers";
-import {getters} from "../../app/store/filteredData/getters";
+import {getResult, testIndicatorMetadata} from "./helpers";
 
 const testMeta = testIndicatorMetadata("current_art", "current_art", "", "");
+
+interface ExpectedProgramData {
+    area_id: any
+    age_group: any
+    sex: any
+    year: any
+    current_art: any
+}
 
 describe("getting region indicators for program data", () => {
 
@@ -31,71 +38,57 @@ describe("getting region indicators for program data", () => {
         })
     });
 
-    const testRootGetters = {
-        "metadata/choroplethIndicatorsMetadata": testMeta
-    };
-
     it("returns empty object if survey is null", () => {
-        const testRootState = getRootState(null, {age: "1", sex: "both", survey: "s1", quarter: "1"});
+        const testRootState = getRootState(null, {age: "1", sex: "both", survey: "s1", year: "1"});
         testRootState.surveyAndProgram.program = null;
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
-        expect(regionIndicators).toStrictEqual({});
+        const result = getResult(testRootState, testMeta);
+        expect(result).toStrictEqual({});
     });
 
     it("gets regionIndicators for programme", () => {
 
-        const testData = [
+        const testData: ExpectedProgramData[] = [
             {
                 area_id: "area1",
                 current_art: 0.2,
-                age_group_id: "1",
-                quarter_id: "1",
+                age_group: "1",
+                year: "1",
                 sex: "both"
             },
             {
                 area_id: "area2",
                 current_art: 0.3,
-                age_group_id: "1",
-                quarter_id: "1",
+                age_group: "1",
+                year: "1",
                 sex: "both"
             }
         ];
-        const testRootState = getRootState(testData, {age: "1", sex: "both", quarter: "1"});
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
+        const rootState = getRootState(testData, {age: "1", sex: "both", year: "1"});
+        const result = getResult(rootState, testMeta);
 
         const expected = {
-            "area1": {value: 0.2, color: interpolateGreys(0.2)},
-            "area2": {value: 0.3, color: interpolateGreys(0.3)}
+            "area1": {"current_art": {value: 0.2, color: interpolateGreys(0.2)}},
+            "area2": {"current_art": {value: 0.3, color: interpolateGreys(0.3)}}
         };
 
-        expect(regionIndicators).toStrictEqual(expected);
+        expect(result).toStrictEqual(expected);
     });
 
     it("filters regionIndicators for programme", () => {
 
-        const testRow = {
+        const testRow: ExpectedProgramData = {
             area_id: "area1",
             current_art: 0.2,
-            age_group_id: "1",
-            quarter_id: "1",
+            age_group: "1",
+            year: "1",
             sex: "both"
         };
 
-        const testData = [testRow,
+        const testData: ExpectedProgramData[] = [testRow,
             {
                 ...testRow,
                 area_id: "area2",
-                age_group_id: "2" // wrong age
+                age_group: "2" // wrong age
             },
             {
                 ...testRow,
@@ -105,22 +98,16 @@ describe("getting region indicators for program data", () => {
             {
                 ...testRow,
                 area_id: "area5",
-                quarter_id: "2" // wrong quarter
+                year: "2" // wrong year
             },
         ];
-        const testRootState = getRootState(testData, {age: "1", sex: "both", quarter: "1"});
-
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
+        const rootState = getRootState(testData, {age: "1", sex: "both", year: "1"});
+        const result = getResult(rootState, testMeta);
         const expected = {
-            "area1": {value: 0.2, color: interpolateGreys(0.2)}
+            "area1": {"current_art": {value: 0.2, color: interpolateGreys(0.2)}}
         };
 
-        expect(regionIndicators).toStrictEqual(expected);
+        expect(result).toStrictEqual(expected);
     });
 
 });
