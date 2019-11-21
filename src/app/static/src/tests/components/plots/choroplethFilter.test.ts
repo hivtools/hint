@@ -256,7 +256,7 @@ describe("ChoroplethFilters component", () => {
         const callCount = mockFilterUpdated.mock.calls.length;
 
         const newFilter = "2";
-        vm.selectQuarter(newFilter);
+        vm.selectYear(newFilter);
 
         expect(mockFilterUpdated.mock.calls[callCount][1])
             .toStrictEqual([FilterType.Year, "2"]);

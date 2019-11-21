@@ -33,7 +33,7 @@
                            :options="yearFilters.available"
                            :value="yearFilters.selected"
                            :disabled="yearFilters.disabled"
-                           @select="selectyear"></filter-select>
+                           @select="selectYear"></filter-select>
         </div>
 
         <div class="py-2">
@@ -136,7 +136,7 @@
             selectSurvey(id: string) {
                 this.selectFilterOption(FilterType.Survey, id);
             },
-            selectyear(id: string) {
+            selectYear(id: string) {
                 this.selectFilterOption(FilterType.Year, id);
             },
             selectRegion(ids: string[]) {
@@ -169,7 +169,7 @@
                     }
                     const newyearFilter = this.getNewSelectedFilterOption("year", this.yearFilters.available);
                     if (newyearFilter) {
-                        this.selectyear(newyearFilter);
+                        this.selectYear(newyearFilter);
                     }
                 }
             }
