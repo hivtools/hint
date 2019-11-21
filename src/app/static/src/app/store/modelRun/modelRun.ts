@@ -26,7 +26,7 @@ export const initialModelRunState = (): ModelRunState => {
 
 export const modelRunGetters = {
     complete: (state: ModelRunState) => {
-        return !!state.status.success && state.errors.length == 0
+        return !!state.status.success && state.errors.length == 0 && !!state.result
     },
     running: (state: ModelRunState) => {
         return !!state.status.id && !state.status.done
