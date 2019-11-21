@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.unit.logging
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.logging.ErrorLoggingFilter
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.util.ContentCachingResponseWrapper
 import javax.servlet.http.HttpServletRequest
@@ -11,13 +12,19 @@ import javax.servlet.FilterChain
 import javax.servlet.ServletOutputStream
 
 class ErrorLoggingFilterTests {
+    val capturedMessages = mutableListOf<String>()
+    val mockLogMethod =  { message: String ->
+        capturedMessages.add(message)
+        Unit
+    }
+
+    @BeforeEach
+    fun clearCapturedMessages() {
+        capturedMessages.clear()
+    }
+
     @Test
     fun `logs expected messages on error status`() {
-        val capturedMessages = mutableListOf<String>()
-        val mockLogMethod =  { message: String ->
-                capturedMessages.add(message)
-                Unit
-        }
 
         val mockRequest = mock<HttpServletRequest>{
             on { servletPath }  doReturn "/test"
@@ -55,12 +62,6 @@ class ErrorLoggingFilterTests {
 
     @Test
     fun `logs no messages on success status`() {
-        val capturedMessages = mutableListOf<String>()
-        val mockLogMethod =  { message: String ->
-            capturedMessages.add(message)
-            Unit
-        }
-
         val mockRequest = mock<HttpServletRequest>{
             on { servletPath }  doReturn "/test"
         }
@@ -73,8 +74,31 @@ class ErrorLoggingFilterTests {
         val sut = ErrorLoggingFilter(mockLogMethod)
         sut.doFilter(mockRequest, mockResponse, mock())
 
-        //Assert expected messages logged
         assertThat(capturedMessages.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `logs expected message on error status for download endpoint`() {
+
+        val mockRequest = mock<HttpServletRequest>{
+            on { servletPath }  doReturn "/download/test"
+        }
+
+        val mockResponse = mock<HttpServletResponse>{
+            on { status } doReturn 500
+        }
+
+        val mockChain = mock<FilterChain>()
+
+        val sut = ErrorLoggingFilter(mockLogMethod)
+        sut.doFilter(mockRequest, mockResponse, mockChain)
+
+        assertThat(capturedMessages.count()).isEqualTo(1)
+        assertThat(capturedMessages[0]).isEqualTo("ERROR: 500 response for /download/test")
+
+        //verify doFilter was called with unwrapped response
+        verify(mockChain).doFilter(mockRequest, mockResponse)
+
     }
 
 }
