@@ -7,7 +7,7 @@ import {
     mockShapeResponse,
     mockValidateBaselineResponse
 } from "../mocks";
-import {baselineGetters, BaselineState, initialBaselineState} from "../../app/store/baseline/baseline";
+import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
 
@@ -175,6 +175,8 @@ describe("Baseline mutations", () => {
         const testState = mockBaselineState({
             validatedConsistent: true,
             baselineError: "test error"
+        });
+
         mutations[BaselineMutation.Validating](testState);
         expect(testState.baselineError).toBe("");
         expect(testState.validatedConsistent).toBe(false);
