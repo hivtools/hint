@@ -119,7 +119,7 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
         val entity = restTemplate.postForEntity<String>("/password/reset-password/",
                 HttpEntity(map, headers))
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        Assertions.assertThat(entity.body).isEqualTo(expectedErrorResponse("postResetPassword.password: Password must be at least 6 characters long."))
+        Assertions.assertThat(entity.body).isEqualTo(expectedErrorResponse("postResetPassword.password: Password must be at least 6 characters long"))
     }
 
     private fun getTokenFromEmailText(emailText: String): String {
