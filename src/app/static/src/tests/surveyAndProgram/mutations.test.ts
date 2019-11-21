@@ -1,11 +1,6 @@
-import {
-    initialSurveyAndProgramDataState,
-    SurveyAndProgramDataState, surveyAndProgramGetters
-} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {mutations, SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
-import {mockRootState, mockSurveyResponse} from "../mocks";
+import {mockRootState, mockSurveyAndProgramState, mockSurveyResponse} from "../mocks";
 import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
-import {mutations} from "../../app/store/surveyAndProgram/mutations";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
 
