@@ -52,7 +52,7 @@
         props,
         data() {
             return {
-                selected: [this.value[0]]
+                selected: (this.isXAxis || this.isDisaggregateBy) ? this.value : [this.value[0]]
             }
         },
         methods: {

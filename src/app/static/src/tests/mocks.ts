@@ -30,6 +30,7 @@ import {initialMetadataState, MetadataState} from "../app/store/metadata/metadat
 import {initialLoadState, LoadState} from "../app/store/load/load";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
 import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
+import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -100,6 +101,12 @@ export const mockLoadState = (props?: Partial<LoadState>): LoadState => {
 export const mockModelOutputState = (props?: Partial<ModelOutputState>): ModelOutputState => {
     return {
         ...initialModelOutputState(),
+    }
+}
+
+export const mockPlottingSelections = (props?: Partial<PlottingSelectionsState>) => {
+    return {
+        ...initialPlottingSelectionsState(),
         ...props
     }
 };

@@ -37,6 +37,7 @@ describe("Survey and programme mutations", () => {
     it("sets programme data and filename and clears error on ProgramUpdated", () => {
         const testState = mockSurveyAndProgramState({programError: "test"});
         mutations[SurveyAndProgramMutation.ProgramUpdated](testState, testPayload);
+
         expect(testState.program!!.data).toStrictEqual(testData);
         expect(testState.program!!.filename).toBe("somefile.csv");
         expect(testState.programError).toBe("");

@@ -19,6 +19,8 @@ import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mu
 import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
 import {BaselineMutation, BaselineUpdates} from "./store/baseline/mutations";
 import {stripNamespace} from "./utils";
+import {initialPlottingSelectionsState, plottingSelections, PlottingSelectionsState} from "./store/plottingSelections/plottingSelections";
+
 
 export interface RootState {
     version: string;
@@ -29,6 +31,7 @@ export interface RootState {
     modelOptions: ModelOptionsState
     modelRun: ModelRunState,
     modelOutput: ModelOutputState,
+    plottingSelections: PlottingSelectionsState,
     stepper: StepperState,
     load: LoadState
 }
@@ -84,8 +87,9 @@ export const emptyState = (): RootState => {
         modelRun: initialModelRunState(),
         stepper: initialStepperState(),
         load: initialLoadState(),
+        plottingSelections: initialPlottingSelectionsState(),
     }
-};
+}
 
 export const storeOptions: StoreOptions<RootState> = {
     modules: {
@@ -96,6 +100,7 @@ export const storeOptions: StoreOptions<RootState> = {
         modelOptions,
         modelRun,
         modelOutput,
+        plottingSelections,
         stepper,
         load
     },

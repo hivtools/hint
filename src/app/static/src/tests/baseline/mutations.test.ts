@@ -71,6 +71,7 @@ describe("Baseline mutations", () => {
     });
 
     it("sets country and filename and clears error if present on PJNZUpdated", () => {
+
         const testState = mockBaselineState({pjnzError: "test"});
         mutations[BaselineMutation.PJNZUpdated](testState, {
             payload: mockPJNZResponse({filename: "file.pjnz", data: {country: "Malawi", iso3: "MWI"}})
@@ -81,6 +82,7 @@ describe("Baseline mutations", () => {
     });
 
     it("clears country and filename on PJNZUpdated if no data present", () => {
+
         const testState = mockBaselineState({pjnzError: "", country: "test", pjnz: "TEST" as any});
         mutations[BaselineMutation.PJNZUpdated](testState, {payload: null});
 
@@ -114,6 +116,7 @@ describe("Baseline mutations", () => {
                 }
             }
         });
+
         const testState = mockBaselineState();
         mutations[BaselineMutation.ShapeUpdated](testState, {
             payload: mockShape
@@ -168,8 +171,8 @@ describe("Baseline mutations", () => {
         const testState = mockBaselineState({
             validatedConsistent: true,
             baselineError: "test error"
-
         });
+
         mutations[BaselineMutation.Validating](testState);
 
         expect(testState.baselineError).toBe("");

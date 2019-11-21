@@ -29,6 +29,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .then(() => {
                 dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
                 dispatch('validate');
+                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
             });
     },
 
@@ -41,6 +42,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .postAndReturn<PjnzResponse>("/baseline/shape/", formData)
             .then(() => {
                 dispatch('validate');
+                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
             });
     },
 
@@ -53,6 +55,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .postAndReturn<PjnzResponse>("/baseline/population/", formData)
             .then(() => {
                 dispatch('validate');
+                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
             });
     },
 
