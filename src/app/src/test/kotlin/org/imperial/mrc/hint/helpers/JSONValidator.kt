@@ -31,7 +31,7 @@ class JSONValidator {
     private val responseSchema = getSchema("Response")
 
     fun validateError(response: String, expectedErrorCode: String, expectedErrorMessage: String? = null,
-                      expectedErrorStartsWith: Boolean = false) {
+                      expectErrorCodeInstructions: Boolean = false) {
         assertValidates(response, responseSchema, "Response")
         val error = objectMapper.readValue<JsonNode>(response)["errors"].first()
         val status = objectMapper.readValue<JsonNode>(response)["status"].textValue()
@@ -40,8 +40,11 @@ class JSONValidator {
         assertThat(error["error"].asText()).isEqualTo(expectedErrorCode)
         if (expectedErrorMessage != null) {
             val actualError = error["detail"].asText()
-            if (expectedErrorStartsWith) {
-                assertThat(actualError).startsWith(expectedErrorMessage)
+            if (expectErrorCodeInstructions) {
+                val start = expectedErrorMessage + " Please contact support at naomi-support@imperial.ac.uk and quote this code: "
+                assertThat(actualError).startsWith(start)
+                val code = actualError.replace(start,"")
+                assertThat(errorCodeRegex.find(code)).isNotNull
             }
             else {
                 assertThat(actualError).isEqualTo(expectedErrorMessage)

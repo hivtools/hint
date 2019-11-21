@@ -8,6 +8,7 @@ import org.springframework.util.LinkedMultiValueMap
 import java.io.File
 
 const val tmpUploadDirectory = "tmp"
+val errorCodeRegex = Regex("u[a-z]{2}-[a-z]{3}-[a-z]{3}")
 
 fun getTestEntity(fileName: String, acceptGzip: Boolean = false): HttpEntity<LinkedMultiValueMap<String, Any>> {
     val testFile = File("testdata/$fileName")
@@ -20,3 +21,4 @@ fun getTestEntity(fileName: String, acceptGzip: Boolean = false): HttpEntity<Lin
     }
     return HttpEntity(body, headers)
 }
+

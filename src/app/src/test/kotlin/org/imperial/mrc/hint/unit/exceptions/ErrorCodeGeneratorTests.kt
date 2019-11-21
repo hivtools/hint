@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.unit.exceptions
 
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.exceptions.RandomErrorCodeGenerator
+import org.imperial.mrc.hint.helpers.errorCodeRegex
 import org.junit.jupiter.api.Test
 
 class ErrorCodeGeneratorTests {
@@ -10,8 +11,7 @@ class ErrorCodeGeneratorTests {
         val sut = RandomErrorCodeGenerator()
         val result = sut.newCode()
 
-        val regex = Regex("u[a-z]{2}-[a-z]{3}-[a-z]{3}")
-        val match = regex.find(result)
+        val match = errorCodeRegex.find(result)
         assertThat(match).isNotNull()
     }
 }

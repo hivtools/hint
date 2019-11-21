@@ -1,6 +1,5 @@
 package org.imperial.mrc.hint
 
-import org.imperial.mrc.hint.logging.ErrorLoggingFilter
 import org.pac4j.core.config.Config
 import org.pac4j.springframework.web.SecurityInterceptor
 import org.springframework.boot.SpringApplication

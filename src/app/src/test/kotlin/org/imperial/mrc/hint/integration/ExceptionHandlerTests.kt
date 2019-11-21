@@ -21,7 +21,7 @@ class ExceptionHandlerTests() : SecureIntegrationTests() {
     fun `route not found errors are correctly formatted`() {
         val entity = testRestTemplate.getForEntity("/nonsense/route/", String::class.java)
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        JSONValidator().validateError(entity.body!!, "OTHER_ERROR", "No handler found for GET /nonsense/route/", true)
+        JSONValidator().validateError(entity.body!!, "OTHER_ERROR", "No handler found for GET /nonsense/route/.", true)
     }
 
     @ParameterizedTest
@@ -42,7 +42,7 @@ class ExceptionHandlerTests() : SecureIntegrationTests() {
                 entity,
                 HttpStatus.BAD_REQUEST,
                 "OTHER_ERROR",
-                "Required request part 'file' is not present",
+                "Required request part 'file' is not present.",
                 true)
     }
 }

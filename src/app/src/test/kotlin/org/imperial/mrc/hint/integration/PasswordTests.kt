@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.emails.WriteToDiskEmailManager
 import org.imperial.mrc.hint.helpers.AuthInterceptor
-import org.imperial.mrc.hint.helpers.JSONValidator
+import org.imperial.mrc.hint.helpers.errorCodeRegex
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -42,11 +42,10 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
 
         assertThat(actual).startsWith(start)
         assertThat(actual).endsWith(end)
-        val code = actual.replace(start, "").replace(end, "")
 
-        val regex = Regex("u[a-z]{2}-[a-z]{3}-[a-z]{3}")
-        val match = regex.find(code)
-        assertThat(match).isNotNull()
+        val code = actual.replace(start, "").replace(end, "")
+        val match = errorCodeRegex.find(code)
+        assertThat(match).isNotNull
     }
 
     @AfterEach

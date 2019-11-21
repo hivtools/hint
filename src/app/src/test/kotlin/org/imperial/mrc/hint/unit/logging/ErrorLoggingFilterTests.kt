@@ -57,7 +57,7 @@ class ErrorLoggingFilterTests {
         assertThat(capturedMessages[1]).isEqualTo("TEST BODY")
 
         //Assert that write was called on our wrapped output stream (this happens as part of
-        //ContentCachingResponseWrapper.copyBodyToResponse
+        //ContentCachingResponseWrapper.copyBodyToResponse)
         verify(mockOutputStream).write(any(), eq(0), eq(9)) //expected length of test body
     }
 
