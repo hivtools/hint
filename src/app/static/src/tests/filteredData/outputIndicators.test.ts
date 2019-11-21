@@ -7,7 +7,7 @@ import {
 } from "../mocks";
 import {interpolateGreys} from "d3-scale-chromatic";
 import {DataType} from "../../app/store/filteredData/filteredData";
-import {getGetters, testIndicatorMetadata} from "./helpers";
+import {getGetters, getResult, testIndicatorMetadata} from "./helpers";
 import {getters} from "../../app/store/filteredData/getters";
 
 describe("getting region indicators for output data", () => {
@@ -30,20 +30,11 @@ describe("getting region indicators for output data", () => {
         })
     });
 
-    const testRootGetters = {
-        "metadata/choroplethIndicatorsMetadata": testMeta
-    };
-
     it("returns empty object if survey is null", () => {
         const testRootState = getRootState(null, {age: "1", sex: "both", survey: "s1", quarter: "1"});
         testRootState.modelRun.result = null;
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
-        expect(regionIndicators).toStrictEqual({});
+        const result = getResult(testRootState, testMeta);
+        expect(result).toStrictEqual({});
     });
 
     it("gets regionIndicators for Output", () => {
@@ -65,19 +56,14 @@ describe("getting region indicators for output data", () => {
             }
         ];
         const testRootState = getRootState(testData, {age: "1", sex: "both"});
+        const result = getResult(testRootState, testMeta);
 
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
         const expected = {
-            "area1": {value: 0.2, color: interpolateGreys(0.2)},
-            "area2": {value: 0.3, color: interpolateGreys(0.3)}
+            "area1": {"prevalence": {value: 0.2, color: interpolateGreys(0.2)}},
+            "area2": {"prevalence": {value: 0.3, color: interpolateGreys(0.3)}}
         };
 
-        expect(regionIndicators).toStrictEqual(expected);
+        expect(result).toStrictEqual(expected);
     });
 
     it("filters regionIndicators for Output", () => {
@@ -112,18 +98,13 @@ describe("getting region indicators for output data", () => {
         ];
         const testRootState = getRootState(testData, {age: "1", sex: "both"});
 
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
+        const result = getResult(testRootState, testMeta);
         const expected = {
             "area1": {value: 0.2, color: interpolateGreys(0.2)},
             "area2": {value: 0.3, color: interpolateGreys(0.3)}
         };
 
-        expect(regionIndicators).toStrictEqual(expected);
+        expect(result).toStrictEqual(expected);
     });
 
 });

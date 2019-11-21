@@ -7,16 +7,11 @@ import {
 } from "../mocks";
 import {interpolateGreys} from "d3-scale-chromatic";
 import {DataType} from "../../app/store/filteredData/filteredData";
-import {getGetters, testIndicatorMetadata} from "./helpers";
-import {getters} from "../../app/store/filteredData/getters";
-import {RootState} from "../../app/root";
+import {getResult, testIndicatorMetadata} from "./helpers";
 
 describe("getting region indicators for survey data", () => {
 
     const testMeta = testIndicatorMetadata("art_coverage", "est", "indicator", "artcov");
-    const testRootGetters = {
-        "metadata/choroplethIndicatorsMetadata": [testMeta]
-    };
 
     const getRootState = (testData: any,
                           filters: any) => mockRootState({
@@ -35,24 +30,11 @@ describe("getting region indicators for survey data", () => {
         })
     });
 
-    function getResult(testData: any, filters: any) {
-        const testRootState = getRootState(testData, filters);
-        const testGetters = getGetters(testRootState);
-        return getters.regionIndicators(testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
-    }
-
     it("returns empty object if survey is null", () => {
         const testRootState = getRootState(null, {age: "1", sex: "both", survey: "s1", year: "1"});
         testRootState.surveyAndProgram.survey = null;
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
-        expect(regionIndicators).toStrictEqual({});
+        const result = getResult(testRootState, testMeta);
+        expect(result).toStrictEqual({});
     });
 
     it("gets regionIndicators for survey", () => {
@@ -73,8 +55,8 @@ describe("getting region indicators for survey data", () => {
                 est: 0.3
             }
         ];
-        const result = getResult(testData, {age: "1", sex: "both", survey: "s1", year: "1"});
-
+        const rootState = getRootState(testData, {age: "1", sex: "both", survey: "s1", year: "1"});
+        const result = getResult(rootState, testMeta);
         const expected = {
             "area1": {"art_coverage": {value: 0.2, color: interpolateGreys(0.2)}},
             "area2": {"art_coverage": {value: 0.3, color: interpolateGreys(0.3)}}
@@ -112,8 +94,8 @@ describe("getting region indicators for survey data", () => {
             },
 
         ];
-        const result = getResult(testData, {age: "1", sex: "both", survey: "s1"});
-
+        const rootState = getRootState(testData, {age: "1", sex: "both", survey: "s1"});
+        const result = getResult(rootState, testMeta);
         const expected = {
             "area1": {"art_coverage": {value: 0.2, color: interpolateGreys(0.2)}}
         };
