@@ -9,6 +9,15 @@ import {interpolateGreys} from "d3-scale-chromatic";
 import {DataType} from "../../app/store/filteredData/filteredData";
 import {getResult, testIndicatorMetadata} from "./helpers";
 
+interface ExpectedSurveyData {
+    area_id: any
+    age_group: any
+    sex: any
+    indicator: any
+    est: any
+    survey_id: any
+}
+
 describe("getting region indicators for survey data", () => {
 
     const testMeta = testIndicatorMetadata("art_coverage", "est", "indicator", "artcov");
@@ -39,7 +48,7 @@ describe("getting region indicators for survey data", () => {
 
     it("gets regionIndicators for survey", () => {
 
-        const testRow = {
+        const testRow: ExpectedSurveyData = {
             area_id: "area1",
             survey_id: "s1",
             indicator: "artcov",
@@ -47,7 +56,7 @@ describe("getting region indicators for survey data", () => {
             age_group: "1",
             sex: "both"
         };
-        const testData = [
+        const testData: ExpectedSurveyData[] = [
             testRow,
             {
                 ...testRow,
@@ -67,7 +76,7 @@ describe("getting region indicators for survey data", () => {
 
     it("filters regionIndicators for survey", () => {
 
-        const testRow = {
+        const testRow: ExpectedSurveyData = {
             area_id: "area1",
             survey_id: "s1",
             indicator: "artcov",
@@ -76,7 +85,7 @@ describe("getting region indicators for survey data", () => {
             sex: "both"
         };
 
-        const testData = [
+        const testData: ExpectedSurveyData[] = [
             testRow,
             {
                 ...testRow,
@@ -89,6 +98,7 @@ describe("getting region indicators for survey data", () => {
                 age_group: "2" // wrong age
             },
             {
+                ...testRow,
                 area_id: "area4",
                 sex: "female" // wrong sex
             },

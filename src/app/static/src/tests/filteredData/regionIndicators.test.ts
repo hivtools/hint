@@ -7,8 +7,17 @@ import {
     mockSurveyResponse
 } from "../mocks";
 import {interpolateGreys} from "d3-scale-chromatic";
-import {getGetters, testIndicatorMetadata} from "./helpers";
-import {getters} from "../../app/store/filteredData/getters";
+import {getResult, testIndicatorMetadata} from "./helpers";
+
+interface ExpectedSurveyData {
+    iso3: any
+    area_id: any
+    age_group: any
+    sex: any
+    indicator: any
+    est: any
+    survey_id: any
+}
 
 describe("getRegionIndicators function", () => {
 
@@ -49,22 +58,18 @@ describe("getRegionIndicators function", () => {
         })
     });
 
-    const testRootGetters = {
-        "metadata/choroplethIndicatorsMetadata": testMetadata
-    };
-
     it("filters by region", () => {
 
-        const testRow = {
+        const testRow: ExpectedSurveyData = {
             iso3: "MWI",
             area_id: "area1",
             survey_id: "s1",
             indicator: "prev",
             est: 0.2,
-            age_group_id: "1",
+            age_group: "1",
             sex: "both"
         };
-        const testData = [testRow,
+        const testData: ExpectedSurveyData[] = [testRow,
             {
                 ...testRow,
                 area_id: "area2",
@@ -82,66 +87,51 @@ describe("getRegionIndicators function", () => {
             }
         ];
         const testRootState = getRootState(testData, ["area1", "area2"]);
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
+        const result = getResult(testRootState, testMetadata);
 
         const expected = {
-            "area1": {value: 0.2, color: interpolateGreys(0.2)},
-            "area2": {value: 0.3, color: interpolateGreys(0.3)}
+            "area1": {"prevalence": {value: 0.2, color: interpolateGreys(0.2)}},
+            "area2": {"prevalence": {value: 0.3, color: interpolateGreys(0.3)}}
         };
 
-        expect(regionIndicators).toStrictEqual(expected);
+        expect(result).toStrictEqual(expected);
     });
 
     it("returns empty object if no data", () => {
         const testRootState = getRootState(null, ["area1", "area2"]);
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
-        expect(regionIndicators).toStrictEqual({});
+        const result = getResult(testRootState, testMetadata);
+        expect(result).toStrictEqual({});
     });
 
     it("gets empty regionIndicators if no selected data type", () => {
 
-        const testData = [
+        const testData: ExpectedSurveyData[] = [
             {
                 iso3: "MWI",
                 area_id: "area1",
                 survey_id: "s1",
                 indicator: "prev",
                 est: 2,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             }
         ];
 
         const testRootState = getRootState(testData, ["area1"], null as any);
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
-        expect(regionIndicators).toStrictEqual({});
+        const result = getResult(testRootState, testMetadata);
+        expect(result).toStrictEqual({});
     });
 
     it("returns all rows if no regions are selected", () => {
 
-        const testData = [
+        const testData: ExpectedSurveyData[] = [
             {
                 iso3: "MWI",
                 area_id: "area1",
                 survey_id: "s1",
                 indicator: "prev",
                 est: 2,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             },
             {
@@ -150,66 +140,52 @@ describe("getRegionIndicators function", () => {
                 survey_id: "s1",
                 indicator: "prev",
                 est: 3,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             }
         ];
 
         const testRootState = getRootState(testData, []);
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
-        expect(Object.keys(regionIndicators)).toStrictEqual(["area1", "area2"]);
+        const result = getResult(testRootState, testMetadata);
+        expect(Object.keys(result)).toStrictEqual(["area1", "area2"]);
     });
 
     it("filters out rows with wrong indicators", () => {
 
-        const testData = [
+        const testData: ExpectedSurveyData[] = [
             {
                 iso3: "MWI",
                 area_id: "area1",
                 survey_id: "s1",
                 indicator: "artcov",
                 est: 2,
-                age_group_id: "1",
+                age_group: "1",
                 sex: "both"
             }
         ];
 
         const testRootState = getRootState(testData, []);
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
-        expect(regionIndicators).toStrictEqual({});
+        const result = getResult(testRootState, testMetadata);
+        expect(result).toStrictEqual({});
     });
 
     it("filters out rows with no value", () => {
 
-        const testData = [
+        const testData: ExpectedSurveyData[] = [
             {
                 iso3: "MWI",
                 area_id: "area1",
                 survey_id: "s1",
                 indicator: "prev",
-                age_group_id: "1",
+                age_group: "1",
+                est: undefined,
                 sex: "both"
             }
         ];
 
         const testRootState = getRootState(testData, []);
-        const testGetters = getGetters(testRootState);
-        const regionIndicators = getters.regionIndicators(
-            testRootState.filteredData,
-            testGetters,
-            testRootState,
-            testRootGetters);
-        expect(regionIndicators).toStrictEqual({});
+        const result = getResult(testRootState, testMetadata);
+        expect(result).toStrictEqual({});
     });
 
 });

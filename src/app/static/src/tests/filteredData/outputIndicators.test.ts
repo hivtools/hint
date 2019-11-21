@@ -10,6 +10,14 @@ import {DataType} from "../../app/store/filteredData/filteredData";
 import {getGetters, getResult, testIndicatorMetadata} from "./helpers";
 import {getters} from "../../app/store/filteredData/getters";
 
+interface ExpectedOutputData {
+    area_id: any
+    age_group: any
+    sex: any
+    mean: any
+    indicator_id: any
+}
+
 describe("getting region indicators for output data", () => {
 
     const testMeta = testIndicatorMetadata("prevalence", "mean", "indicator_id", "2");
@@ -39,18 +47,18 @@ describe("getting region indicators for output data", () => {
 
     it("gets regionIndicators for Output", () => {
 
-        const testData = [
+        const testData: ExpectedOutputData[] = [
             {
                 area_id: "area1",
                 mean: 0.2,
-                age_group_id: 1,
+                age_group: 1,
                 indicator_id: 2,
                 sex: "both"
             },
             {
                 area_id: "area2",
                 mean: 0.3,
-                age_group_id: 1,
+                age_group: 1,
                 indicator_id: 2,
                 sex: "both"
             }
@@ -68,14 +76,14 @@ describe("getting region indicators for output data", () => {
 
     it("filters regionIndicators for Output", () => {
 
-        const testRow = {
+        const testRow: ExpectedOutputData = {
             area_id: "area1",
             mean: 0.2,
-            age_group_id: 1,
+            age_group: 1,
             indicator_id: "2",
             sex: "both"
         };
-        const testData = [testRow,
+        const testData: ExpectedOutputData[] = [testRow,
             {
                 ...testRow,
                 area_id: "area2",
@@ -89,9 +97,10 @@ describe("getting region indicators for output data", () => {
             {
                 ...testRow,
                 area_id: "area4",
-                age_group_id: 2 // wrong age
+                age_group: 2 // wrong age
             },
             {
+                ...testRow,
                 area_id: "area5",
                 indicator_id: "3" // wrong indicator id
             }
@@ -100,8 +109,8 @@ describe("getting region indicators for output data", () => {
 
         const result = getResult(testRootState, testMeta);
         const expected = {
-            "area1": {value: 0.2, color: interpolateGreys(0.2)},
-            "area2": {value: 0.3, color: interpolateGreys(0.3)}
+            "area1": {"prevalence": {value: 0.2, color: interpolateGreys(0.2)}},
+            "area2": {"prevalence": {value: 0.3, color: interpolateGreys(0.3)}}
         };
 
         expect(result).toStrictEqual(expected);

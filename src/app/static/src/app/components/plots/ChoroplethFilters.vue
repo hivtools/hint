@@ -30,10 +30,10 @@
         <div class="py-2" v-if="!isOutput">
             <filter-select label="Year"
                            :multiple="false"
-                           :options="quarterFilters.available"
-                           :value="quarterFilters.selected"
-                           :disabled="quarterFilters.disabled"
-                           @select="selectQuarter"></filter-select>
+                           :options="yearFilters.available"
+                           :value="yearFilters.selected"
+                           :disabled="yearFilters.disabled"
+                           @select="selectyear"></filter-select>
         </div>
 
         <div class="py-2">
@@ -84,7 +84,7 @@
                         this.selectedChoroplethFilters.survey);
                 },
 
-                quarterFilters: function (): ChoroplethFiltersForType {
+                yearFilters: function (): ChoroplethFiltersForType {
                     return this.buildViewFiltersForType(this.selectedDataFilterOptions.year,
                         this.selectedChoroplethFilters.year);
                 },
@@ -136,8 +136,8 @@
             selectSurvey(id: string) {
                 this.selectFilterOption(FilterType.Survey, id);
             },
-            selectQuarter(id: string) {
-                this.selectFilterOption(FilterType.Quarter, id);
+            selectyear(id: string) {
+                this.selectFilterOption(FilterType.Year, id);
             },
             selectRegion(ids: string[]) {
                 this.filterUpdated([FilterType.Region, ids]);
@@ -167,9 +167,9 @@
                     if (newSurveyFilter) {
                         this.selectSurvey(newSurveyFilter);
                     }
-                    const newQuarterFilter = this.getNewSelectedFilterOption("year", this.quarterFilters.available);
-                    if (newQuarterFilter) {
-                        this.selectQuarter(newQuarterFilter);
+                    const newyearFilter = this.getNewSelectedFilterOption("year", this.yearFilters.available);
+                    if (newyearFilter) {
+                        this.selectyear(newyearFilter);
                     }
                 }
             }

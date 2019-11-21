@@ -420,9 +420,15 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
     }
 
-
     it("model run step is not complete without success", () => {
-        const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
+        const store = createSut({ready: true}, {ready: true}, {}, {ready: true, result: "TEST" as any});
+        const wrapper = shallowMount(Stepper, {store, localVue});
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(3).props().complete).toBe(false);
+    });
+
+    it("model run step is not complete without result", () => {
+        const store = createSut({ready: true}, {ready: true}, {}, {ready: true, status: {success: true} as any});
         const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(false);
@@ -431,6 +437,7 @@ describe("Stepper component", () => {
     it("model run step is not complete with errors", () => {
         const modelRunState = {
             ready: true, status: {success: true} as ModelStatusResponse,
+            result: "TEST" as any,
             errors: ["TEST" as any]
         };
         const store = createSut({ready: true}, {ready: true}, {}, modelRunState);
@@ -439,9 +446,10 @@ describe("Stepper component", () => {
         expect(steps.at(3).props().complete).toBe(false);
     });
 
-    it("model run step is complete on success", () => {
+    it("model run step is complete on success and result", () => {
         const modelRunState = {
             ready: true,
+            result: "TEST" as any,
             status: {success: true} as ModelStatusResponse
         };
         const store = createSut({ready: true}, {ready: true}, {}, modelRunState);
@@ -450,7 +458,7 @@ describe("Stepper component", () => {
         expect(steps.at(3).props().complete).toBe(true);
     });
 
-    it("model run step becomes complete on success", async () => {
+    it("model run step becomes complete on success and result fetched", async () => {
         const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
         const wrapper = shallowMount(Stepper, {store, localVue});
 
@@ -465,6 +473,11 @@ describe("Stepper component", () => {
                 timeRemaining: "",
                 status: "running"
             }
+        });
+
+        store.commit("modelRun/RunResultFetched", {
+            "type": "RunResultFetched",
+            "payload": "TEST"
         });
 
         await Vue.nextTick();

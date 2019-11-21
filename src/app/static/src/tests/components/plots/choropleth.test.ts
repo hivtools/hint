@@ -22,7 +22,7 @@ describe("Choropleth component", () => {
     const fakeFeatures = [
         {
             "type": "Feature",
-            "properties": {"iso3": "MWI", "area_id": "MWI_3_1"},
+            "properties": {"iso3": "MWI", "area_id": "MWI_3_1", "area_level": 3},
             "geometry": {
                 "type": "MultiPolygon",
                 "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
@@ -30,7 +30,7 @@ describe("Choropleth component", () => {
         },
         {
             "type": "Feature",
-            "properties": {"iso3": "MWI", "area_id": "MWI_4_1"},
+            "properties": {"iso3": "MWI", "area_id": "MWI_4_1", "area_level": 4},
             "geometry": {
                 "type": "MultiPolygon",
                 "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
@@ -38,7 +38,7 @@ describe("Choropleth component", () => {
         },
         {
             "type": "Feature",
-            "properties": {"iso3": "MWI", "area_id": "MWI_4_2"},
+            "properties": {"iso3": "MWI", "area_id": "MWI_4_2", "area_level": 4},
             "geometry": {
                 "type": "MultiPolygon",
                 "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
@@ -114,7 +114,7 @@ describe("Choropleth component", () => {
                                 sex: "",
                                 age: "",
                                 survey: "",
-                                quarter: ""
+                                year: ""
                             },
                             ...filteredDataProps
                         }),
@@ -400,7 +400,7 @@ describe("Choropleth component", () => {
                 sex: "",
                 age: "",
                 survey: "",
-                quarter: ""
+                year: ""
             }
         });
 
@@ -418,7 +418,7 @@ describe("Choropleth component", () => {
                 sex: "",
                 age: "",
                 survey: "",
-                quarter: ""
+                year: ""
             }
         });
         const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
