@@ -1,48 +1,54 @@
-import {Mutation, MutationTree} from 'vuex';
+import {MutationTree} from 'vuex';
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {PayloadWithType} from "../../types";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
-import {readyStateMutations} from "../shared/readyStateMutations";
+import {ReadyState} from "../../root";
 
-type SurveyAndProgramMutation = Mutation<SurveyAndProgramDataState>
-
-export interface SurveyAndProgramMutations {
-    SurveyUpdated: SurveyAndProgramMutation
-    SurveyError: SurveyAndProgramMutation,
-    ProgramUpdated: SurveyAndProgramMutation
-    ProgramError: SurveyAndProgramMutation,
-    ANCUpdated: SurveyAndProgramMutation
-    ANCError: SurveyAndProgramMutation
-    Ready: SurveyAndProgramMutation
+export enum SurveyAndProgramMutation {
+    SurveyUpdated = "SurveyUpdated",
+    SurveyError = "SurveyError",
+    ProgramUpdated = "ProgramUpdated",
+    ProgramError = "ProgramError",
+    ANCUpdated = "ANCUpdated",
+    ANCError = "ANCError",
+    Ready = "Ready"
 }
 
-export const mutations: MutationTree<SurveyAndProgramDataState> & SurveyAndProgramMutations = {
-    SurveyUpdated(state: SurveyAndProgramDataState, action: PayloadWithType<SurveyResponse>) {
+export const SurveyAndProgramUpdates = [
+    SurveyAndProgramMutation.SurveyUpdated,
+    SurveyAndProgramMutation.ProgramUpdated,
+    SurveyAndProgramMutation.ANCUpdated
+];
+
+export const mutations: MutationTree<SurveyAndProgramDataState> = {
+    [SurveyAndProgramMutation.SurveyUpdated](state: SurveyAndProgramDataState, action: PayloadWithType<SurveyResponse>) {
         state.survey = action.payload;
         state.surveyError = "";
     },
 
-    SurveyError(state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
+    [SurveyAndProgramMutation.SurveyError](state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
         state.surveyError = action.payload;
     },
 
-    ProgramUpdated(state: SurveyAndProgramDataState, action: PayloadWithType<ProgrammeResponse>) {
+    [SurveyAndProgramMutation.ProgramUpdated](state: SurveyAndProgramDataState, action: PayloadWithType<ProgrammeResponse>) {
         state.program = action.payload;
         state.programError = "";
     },
 
-    ProgramError(state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
+    [SurveyAndProgramMutation.ProgramError](state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
         state.programError = action.payload;
     },
 
-    ANCUpdated(state: SurveyAndProgramDataState, action: PayloadWithType<AncResponse>) {
+    [SurveyAndProgramMutation.ANCUpdated](state: SurveyAndProgramDataState, action: PayloadWithType<AncResponse>) {
         state.anc = action.payload;
         state.ancError = "";
     },
 
-    ANCError(state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
+    [SurveyAndProgramMutation.ANCError](state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
         state.ancError = action.payload;
     },
 
-    ...readyStateMutations
+    [SurveyAndProgramMutation.Ready](state: ReadyState) {
+        state.ready = true;
+    }
 };

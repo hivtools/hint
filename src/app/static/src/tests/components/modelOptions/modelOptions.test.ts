@@ -7,9 +7,9 @@ import {mockModelOptionsState} from "../../mocks";
 import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
 import DynamicFormControlSection from "../../../app/components/forms/DynamicFormControlSection.vue";
 import {DynamicControlSection} from "../../../app/components/forms/types";
+import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Tick from "../../../app/components/Tick.vue";
-import {ModelOptionsMutations} from "../../../app/store/modelOptions/mutations";
 import {ModelOptionsActions} from "../../../app/store/modelOptions/actions";
 import {RootState} from "../../../app/root";
 
@@ -22,14 +22,14 @@ describe("Model options component", () => {
         fetchModelRunOptions: jest.fn()
     };
     const mockMutations = {
-        update: jest.fn(),
-        validate: jest.fn(),
-        ModelOptionsFetched: jest.fn(),
-        FetchingModelOptions: jest.fn()
+        [ModelOptionsMutation.Update]: jest.fn(),
+        [ModelOptionsMutation.Validate]: jest.fn(),
+        [ModelOptionsMutation.ModelOptionsFetched]: jest.fn(),
+        [ModelOptionsMutation.FetchingModelOptions]: jest.fn()
     };
 
     const createStore = (props: Partial<ModelOptionsState>,
-                         mutations: ModelOptionsMutations & MutationTree<ModelOptionsState> = mockMutations,
+                         mutations: MutationTree<ModelOptionsState> = mockMutations,
                          actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) => new Vuex.Store({
         modules: {
             modelOptions: {
@@ -76,17 +76,14 @@ describe("Model options component", () => {
             label: "label 1",
             controlGroups: []
         };
+
         const store = createStore(
             {
-                optionsFormMeta: {
-                    controlSections: [oldControlSection]
-                }
+                optionsFormMeta: {controlSections: [oldControlSection]}
             },
             {
-                ...mockMutations,
-                update: updateMock
-            }
-        );
+                [ModelOptionsMutation.Update]: updateMock
+            });
 
         const rendered = mount(ModelOptions, {store});
 
@@ -104,20 +101,18 @@ describe("Model options component", () => {
         });
     });
 
-    it("commits valid mutation when form submit event is fired", () => {
+    it("commits validate mutation when form submit event is fired", () => {
         const validateMock = jest.fn();
+
         const store = createStore(
             {
-                optionsFormMeta:
-                    {
-                        controlSections: []
-                    }
+                optionsFormMeta: {controlSections: []}
             },
             {
                 ...mockMutations,
-                validate: validateMock
-            }
-        );
+                [ModelOptionsMutation.Validate]: validateMock
+            });
+
         const rendered = shallowMount(ModelOptions, {
             store, localVue
         });
