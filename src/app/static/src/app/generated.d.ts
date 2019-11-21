@@ -147,7 +147,7 @@ export interface ModelResultResponse {
     upper: number;
     [k: string]: any;
   }[];
-  plottingMetadata?: {
+  plottingMetadata: {
     barchart: {
       indicators: {
         indicator: string;
