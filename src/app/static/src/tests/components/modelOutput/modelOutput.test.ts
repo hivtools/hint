@@ -3,11 +3,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
-    mockAncResponse,
     mockFilteredDataState, mockModelResultResponse,
     mockModelRunState,
-    mockProgramResponse,
-    mockSurveyResponse,
 } from "../../mocks";
 import {DataType} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
@@ -37,6 +34,20 @@ function getStore() {
                 getters: {
                     barchartIndicators: jest.fn(),
                     barchartFilters: jest.fn()
+                }
+            },
+            plottingSelections: {
+                namespaced: true,
+                state: {
+                    barchart: {
+                        indicatorId: "TestIndicator",
+                        xAxisId: "region",
+                        disaggregateById: "age",
+                        selectedFilterOptions: {
+                            region: {id: "r1", label: "region 1"},
+                            age: {id: "a1", label: "0-4"}
+                        }
+                    }
                 }
             }
         }
@@ -83,5 +94,21 @@ describe("ModelOutput component", () => {
         const vm = (wrapper as any).vm;
 
         expect(vm.chartdata).toStrictEqual(["TEST DATA"]);
+    });
+
+    it("computes barchart selections", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const vm = (wrapper as any).vm;
+
+        expect(vm.barchartSelections).toStrictEqual({
+            indicatorId: "TestIndicator",
+            xAxisId: "region",
+            disaggregateById: "age",
+            selectedFilterOptions: {
+                region: {id: "r1", label: "region 1"},
+                age: {id: "a1", label: "0-4"}
+            }
+        });
     });
 });

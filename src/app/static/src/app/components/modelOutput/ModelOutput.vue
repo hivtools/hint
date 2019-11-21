@@ -18,7 +18,8 @@
             </div>
 
             <div id="barchart-container" :class="selectedTab==='Bar' ? 'col-md-12' : 'd-none'">
-                <barchart :chartdata="chartdata" :filters="barchartFilters" :indicators="barchartIndicators"></barchart>
+                <barchart :chartdata="chartdata" :filters="barchartFilters" :indicators="barchartIndicators"
+                          :selections="barchartSelections" v-on:update="updateBarchartSelections"></barchart>
             </div>
         </div>
     </div>
@@ -31,11 +32,18 @@
     import ChoroplethFilters from "../plots/ChoroplethFilters.vue";
     import Barchart from "../plots/barchart/Barchart.vue";
     import {DataType} from "../../store/filteredData/filteredData";
-    import {mapActionsByNames, mapGettersByNames, mapStateProp, mapStatePropByName} from "../../utils";
+    import {
+        mapActionsByNames,
+        mapGettersByNames,
+        mapMutationsByNames,
+        mapStateProp,
+        mapStatePropByName
+    } from "../../utils";
     import {BarchartIndicator, Filter} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import {ModelResultResponse} from "../../generated";
+    import {BarchartSelections} from "../../store/plottingSelections/plottingSelections";
 
     const namespace: string = 'filteredData';
 
@@ -49,12 +57,14 @@
     interface Methods {
         selectDataType: (dataType: DataType) => void,
         selectTab: (tab: string) => void
+        updateBarchartSelections: (data: BarchartSelections) => void
     }
 
     interface Computed {
         barchartFilters: Filter[],
         barchartIndicators: BarchartIndicator[],
-        chartdata: any
+        chartdata: any,
+        barchartSelections: BarchartSelections
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -72,10 +82,14 @@
             ...mapGettersByNames("modelOutput", ["barchartFilters", "barchartIndicators"]),
             chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
                 return state.result ? state.result.data : [];
-            })
+            }),
+            barchartSelections() {
+               return this.$store.state.plottingSelections.barchart
+            }
         },
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["selectDataType"]),
+            ...mapMutationsByNames<keyof Methods>("plottingSelections", ["updateBarchartSelections"]),
             selectTab: function(tab: string){
                 this.selectedTab = tab;
             }

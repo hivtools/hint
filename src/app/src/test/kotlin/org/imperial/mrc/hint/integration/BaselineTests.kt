@@ -99,7 +99,7 @@ class BaselineTests : SessionFileTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can delete pjnz data`(isAuthorized: IsAuthorized) {
-        val hash = setUpSessionFileAndGetHash(isAuthorized, "Botswana2018.PJNZ", "/baseline/pjnz/")
+        setUpSessionFileAndGetHash(isAuthorized, "Botswana2018.PJNZ", "/baseline/pjnz/")
         assertSessionFileExists(isAuthorized, FileType.PJNZ)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/pjnz/", HttpMethod.DELETE)
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
@@ -109,7 +109,7 @@ class BaselineTests : SessionFileTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can delete shape data`(isAuthorized: IsAuthorized) {
-        val hash = setUpSessionFileAndGetHash(isAuthorized, "malawi.geojson", "/baseline/shape/")
+        setUpSessionFileAndGetHash(isAuthorized, "malawi.geojson", "/baseline/shape/")
         assertSessionFileExists(isAuthorized, FileType.Shape)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/shape/", HttpMethod.DELETE)
         assertSecureWithSuccess(isAuthorized, responseEntity, null)
@@ -119,7 +119,7 @@ class BaselineTests : SessionFileTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can delete population data`(isAuthorized: IsAuthorized) {
-        val hash = setUpSessionFileAndGetHash(isAuthorized, "population.csv", "/baseline/population/")
+        setUpSessionFileAndGetHash(isAuthorized, "population.csv", "/baseline/population/")
         assertSessionFileExists(isAuthorized, FileType.Population)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/population/", HttpMethod.DELETE)
         assertSecureWithSuccess(isAuthorized, responseEntity, null)

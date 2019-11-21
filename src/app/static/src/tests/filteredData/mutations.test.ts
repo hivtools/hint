@@ -25,26 +25,26 @@ describe("FilteredData mutations", () => {
     };
 
     const testChoroplethFilterUpdated = (filterType: FilterType) => {
-        const testState = {...initialFilteredDataState};
+        const testState = {...initialFilteredDataState()};
 
         //initial sate
-        let expected = "" as any;
+        let expectedInitialState = "" as any;
         if (filterType == FilterType.Region){
-            expected = [];
+            expectedInitialState = [];
         }
         expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
-            .toStrictEqual(expected);
+            .toStrictEqual(expectedInitialState);
 
         mutations.ChoroplethFilterUpdated(testState, {
-            payload: [filterType, {id: "id", name: "name"}]
+            payload: [filterType, "test"]
         });
         expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
-            .toStrictEqual({id: "id", name: "name"});
+            .toStrictEqual("test");
     };
 
     it("sets selectedDataType on SelectedDataTypeUpdated", () => {
 
-        const testState = {...initialFilteredDataState};
+        const testState = mockFilteredDataState();
         mutations.SelectedDataTypeUpdated(testState, {
             payload: DataType.Program
         });

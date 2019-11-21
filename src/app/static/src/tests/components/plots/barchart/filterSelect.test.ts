@@ -3,17 +3,19 @@ import {createLocalVue, shallowMount} from "@vue/test-utils";
 
 const localVue = createLocalVue();
 
-const propsData = {
-    id: "test",
-    options: [{id: "fo1", label: "option 1"}, {id: "fo2", label: "option 2"}],
-    isXAxis: true,
-    isDisaggregateBy: false,
-    value: [{id: "fo2", label: "option 2"}],
-    label: "Test Filter"
+const defaultProps = () => {
+    return {
+        id: "test",
+        options: [{id: "fo1", label: "option 1"}, {id: "fo2", label: "option 2"}],
+        isXAxis: true,
+        isDisaggregateBy: false,
+        value: [{id: "fo2", label: "option 2"}],
+        label: "Test Filter"
+    }
 };
 
 const getWrapper = (props: any = {}) => {
-    return shallowMount(FilterSelect, {propsData: {...propsData, ...props}, localVue});
+    return shallowMount(FilterSelect, {propsData: {...defaultProps(), ...props}, localVue});
 };
 
 describe("FilterSelect component", () => {
@@ -33,10 +35,20 @@ describe("FilterSelect component", () => {
     });
 
     it("initialises selected", () => {
-        const  wrapper = getWrapper();
+        const  wrapper = getWrapper({value: [{id: "fo1", label: "option 1"}, {id: "fo2", label: "option 2"}]});
         const vm = (wrapper as any).vm;
 
-        expect(vm.selected).toStrictEqual([{id: "fo2", label: "option 2"}]);
+        expect(vm.selected).toStrictEqual([{id: "fo1", label: "option 1"}, {id: "fo2", label: "option 2"}]);
+    });
+
+    it("initialises selected when not xAxis or disAgg", () => {
+        const  wrapper = getWrapper({
+                isXAxis: false,
+                value: [{id: "fo1", label: "option 1"}, {id: "fo2", label: "option 2"}]
+        });
+        const vm = (wrapper as any).vm;
+
+        expect(vm.selected).toStrictEqual([{id: "fo1", label: "option 1"}]);
     });
 
     it("emits input event on select when isXAxisOrDisAgg", () => {

@@ -1,10 +1,11 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
-import {metadata, MetadataState, initialMetadataState} from "./store/metadata/metadata";
+import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
 import {filteredData, FilteredDataState, initialFilteredDataState} from "./store/filteredData/filteredData";
 import {
     initialSurveyAndProgramDataState,
-    surveyAndProgram, SurveyAndProgramDataState,
+    surveyAndProgram,
+    SurveyAndProgramDataState,
 } from "./store/surveyAndProgram/surveyAndProgram";
 import {initialModelRunState, modelRun, ModelRunState} from "./store/modelRun/modelRun";
 import {initialStepperState, stepper, StepperState} from "./store/stepper/stepper";
@@ -14,6 +15,7 @@ import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations} from "./store/root/mutations";
 import {initialModelOptionsState, modelOptions, ModelOptionsState} from "./store/modelOptions/modelOptions";
+import {initialPlottingSelectionsState, plottingSelections, PlottingSelectionsState} from "./store/plottingSelections/plottingSelections";
 
 export interface RootState {
     version: string;
@@ -24,6 +26,7 @@ export interface RootState {
     modelOptions: ModelOptionsState
     modelRun: ModelRunState,
     modelOutput: ModelOutputState,
+    plottingSelections: PlottingSelectionsState,
     stepper: StepperState,
     load: LoadState
 }
@@ -39,18 +42,21 @@ const persistState = (store: Store<RootState>) => {
     })
 };
 
-export const emptyState = {
-    version: '0.0.0',
-    baseline: initialBaselineState,
-    metadata: initialMetadataState,
-    surveyAndProgram: initialSurveyAndProgramDataState,
-    filteredData: initialFilteredDataState,
-    modelOptions: initialModelOptionsState,
-    modelOutput: {},
-    modelRun: initialModelRunState,
-    stepper: initialStepperState,
-    load: initialLoadState,
-};
+export const emptyState = (): RootState => {
+    return {
+        version: '0.0.0',
+        baseline: initialBaselineState(),
+        metadata: initialMetadataState(),
+        surveyAndProgram: initialSurveyAndProgramDataState(),
+        filteredData: initialFilteredDataState(),
+        modelOptions: initialModelOptionsState(),
+        modelOutput: {},
+        modelRun: initialModelRunState(),
+        stepper: initialStepperState(),
+        load: initialLoadState(),
+        plottingSelections: initialPlottingSelectionsState(),
+    }
+}
 
 export const storeOptions: StoreOptions<RootState> = {
     modules: {
@@ -61,6 +67,7 @@ export const storeOptions: StoreOptions<RootState> = {
         modelOptions,
         modelRun,
         modelOutput,
+        plottingSelections,
         stepper,
         load
     },
