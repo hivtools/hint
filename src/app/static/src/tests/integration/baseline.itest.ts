@@ -1,7 +1,7 @@
 import {actions} from "../../app/store/baseline/actions";
 import {login} from "./integrationTest";
-import {PjnzResponse, PopulationResponse, ShapeResponse} from "../../app/generated";
 import {getFormData} from "./helpers";
+import {BaselineMutation} from "../../app/store/baseline/mutations";
 
 describe("Baseline actions", () => {
 
@@ -17,7 +17,7 @@ describe("Baseline actions", () => {
 
         await actions.uploadPJNZ({commit, state, dispatch} as any, formData);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe("PJNZUpdated");
+        expect(commit.mock.calls[2][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
         expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("Botswana2018.PJNZ");
 
@@ -29,9 +29,9 @@ describe("Baseline actions", () => {
         await actions.getBaselineData({commit, dispatch} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-        expect(calls).toContain("PJNZUpdated");
-        expect(calls).toContain("ShapeUpdated");
-        expect(calls).toContain("PopulationUpdated");
+        expect(calls).toContain(BaselineMutation.PJNZUpdated);
+        expect(calls).toContain(BaselineMutation.ShapeUpdated);
+        expect(calls).toContain(BaselineMutation.PopulationUpdated);
     });
 
     it("can upload shape file", async () => {
@@ -40,7 +40,7 @@ describe("Baseline actions", () => {
         const formData = getFormData("malawi.geojson");
         await actions.uploadShape({commit, dispatch} as any, formData);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe("ShapeUpdated");
+        expect(commit.mock.calls[2][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
         expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("malawi.geojson");
 
@@ -52,7 +52,7 @@ describe("Baseline actions", () => {
         const formData = getFormData("population.csv");
         await actions.uploadPopulation({commit, dispatch} as any, formData);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe("PopulationUpdated");
+        expect(commit.mock.calls[2][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
         expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("population.csv");
     });
@@ -62,7 +62,7 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
 
         await actions.validate({commit, dispatch} as any);
-        expect(commit.mock.calls[1][0]["type"]).toBe("BaselineError");
+        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.BaselineError);
         expect(commit.mock.calls[1][0]["payload"]).toContain("Countries aren't consistent");
     });
 
@@ -78,13 +78,13 @@ describe("Baseline actions", () => {
 
         // delete
         await actions.deletePJNZ({commit, dispatch} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PJNZUpdated");
+        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
 
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
         await actions.getBaselineData({commit, dispatch} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == "PJNZUpdated")[0]["payload"]).toBe(null);
+        expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.PJNZUpdated)[0]["payload"]).toBe(null);
     });
 
     it("can delete shape", async () => {
@@ -99,13 +99,13 @@ describe("Baseline actions", () => {
 
         // delete
         await actions.deleteShape({commit, dispatch} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ShapeUpdated");
+        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
 
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
         await actions.getBaselineData({commit, dispatch} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == "ShapeUpdated")[0]["payload"]).toBe(null);
+        expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.ShapeUpdated)[0]["payload"]).toBe(null);
     });
 
     it("can delete population", async () => {
@@ -120,13 +120,13 @@ describe("Baseline actions", () => {
 
         // delete
         await actions.deletePopulation({commit, dispatch} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PopulationUpdated");
+        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
 
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
         await actions.getBaselineData({commit, dispatch} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == "PopulationUpdated")[0]["payload"]).toBe(null);
+        expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.PopulationUpdated)[0]["payload"]).toBe(null);
     });
 
 });

@@ -12,15 +12,18 @@
             <tick color="#e31837" width="20px"></tick>
         </h4>
     </div>
+
 </template>
 <script lang="ts">
     import Vue from "vue";
     import DynamicForm from "../forms/DynamicForm.vue";
     import {DynamicFormData, DynamicFormMeta} from "../forms/types";
-    import {mapActionByName, mapMutationsByNames, mapStateProps} from "../../utils";
-    import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
+
+    import {mapActionByName, mapMutationByName, mapStateProps} from "../../utils";
+    import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
+    import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
 
     interface Methods {
         fetchOptions: () => void
@@ -36,7 +39,7 @@
 
     const namespace = "modelOptions";
 
-    export default Vue.extend<{ form: DynamicFormMeta }, Methods, Computed, {}>({
+    export default Vue.extend<{}, Methods, Computed, {}>({
         name: "ModelOptions",
         computed: {
             ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
@@ -53,8 +56,9 @@
             }
         },
         methods: {
-            fetchOptions: mapActionByName(namespace, "fetchModelRunOptions"),
-            ...mapMutationsByNames<keyof Methods>(namespace, ["validate", "update"])
+            update: mapMutationByName(namespace, ModelOptionsMutation.Update),
+            validate: mapMutationByName(namespace, ModelOptionsMutation.Validate),
+            fetchOptions: mapActionByName(namespace, "fetchModelRunOptions")
         },
         components: {
             DynamicForm,

@@ -3,13 +3,7 @@ import {BaselineState} from "./baseline";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {PjnzResponse, ValidateBaselineResponse} from "../../generated";
-
-export type BaselineActionTypes = "PJNZUpdated" | "ShapeUpdated" | "PopulationUpdated" | "Validated"
-export type BaselineErrorActionTypes =
-    "PJNZUploadError"
-    | "ShapeUploadError"
-    | "PopulationUploadError"
-    | "BaselineError"
+import {BaselineMutation} from "./mutations";
 
 export interface BaselineActions {
     uploadPJNZ: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void
@@ -27,10 +21,10 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async uploadPJNZ({commit, dispatch, state}, formData) {
         commit({type: "ResetInputs", payload: null}, {root: true});
-        commit({type: "PJNZUpdated", payload: null});
-        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .withSuccess("PJNZUpdated")
-            .withError("PJNZUploadError")
+        commit({type: BaselineMutation.PJNZUpdated, payload: null});
+        await api<BaselineMutation, BaselineMutation>(commit)
+            .withSuccess(BaselineMutation.PJNZUpdated)
+            .withError(BaselineMutation.PJNZUploadError)
             .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData)
             .then(() => {
@@ -42,10 +36,10 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async uploadShape({commit, dispatch}, formData) {
         commit({type: "ResetInputs", payload: null}, {root: true});
-        commit({type: "ShapeUpdated", payload: null});
-        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .withSuccess("ShapeUpdated")
-            .withError("ShapeUploadError")
+        commit({type: BaselineMutation.ShapeUpdated, payload: null});
+        await api<BaselineMutation, BaselineMutation>(commit)
+            .withSuccess(BaselineMutation.ShapeUpdated)
+            .withError(BaselineMutation.ShapeUploadError)
             .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/shape/", formData)
             .then(() => {
@@ -56,10 +50,10 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async uploadPopulation({commit, dispatch}, formData) {
         commit({type: "ResetInputs", payload: null}, {root: true});
-        commit({type: "PopulationUpdated", payload: null});
-        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .withSuccess("PopulationUpdated")
-            .withError("PopulationUploadError")
+        commit({type: BaselineMutation.PopulationUpdated, payload: null});
+        await api<BaselineMutation, BaselineMutation>(commit)
+            .withSuccess(BaselineMutation.PopulationUpdated)
+            .withError(BaselineMutation.PopulationUploadError)
             .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/population/", formData)
             .then(() => {
@@ -69,28 +63,28 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async deletePJNZ({commit, dispatch}) {
-        await api(commit)
+        await api<BaselineMutation, BaselineMutation>(commit)
             .delete("/baseline/pjnz/")
             .then(() => {
-                commit({type: "PJNZUpdated", payload: null});
+                commit({type: BaselineMutation.PJNZUpdated, payload: null});
                 dispatch("surveyAndProgram/deleteAll", {}, {root: true});
             });
     },
 
     async deleteShape({commit, dispatch}) {
-        await api(commit)
+        await api<BaselineMutation, BaselineMutation>(commit)
             .delete("/baseline/shape/")
             .then(() => {
-                commit({type: "ShapeUpdated", payload: null});
+                commit({type: BaselineMutation.ShapeUpdated, payload: null});
                 dispatch("surveyAndProgram/deleteAll", {}, {root: true});
             });
     },
 
     async deletePopulation({commit, dispatch}) {
-        await api(commit)
+        await api<BaselineMutation, BaselineMutation>(commit)
             .delete("/baseline/population/")
             .then(() => {
-                commit({type: "PopulationUpdated", payload: null});
+                commit({type: BaselineMutation.PopulationUpdated, payload: null});
                 dispatch("surveyAndProgram/deleteAll", {}, {root: true});
             });
     },
@@ -105,19 +99,19 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async getBaselineData({commit, dispatch}) {
         await Promise.all([
-            api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+            api<BaselineMutation, BaselineMutation>(commit)
                 .ignoreErrors()
-                .withSuccess("PJNZUpdated")
+                .withSuccess(BaselineMutation.PJNZUpdated)
                 .freezeResponse()
                 .get<PjnzResponse>("/baseline/pjnz/"),
-            api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+            api<BaselineMutation, BaselineMutation>(commit)
                 .ignoreErrors()
-                .withSuccess("PopulationUpdated")
+                .withSuccess(BaselineMutation.PopulationUpdated)
                 .freezeResponse()
                 .get<PjnzResponse>("/baseline/population/"),
-            api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
+            api<BaselineMutation, BaselineMutation>(commit)
                 .ignoreErrors()
-                .withSuccess("ShapeUpdated")
+                .withSuccess(BaselineMutation.ShapeUpdated)
                 .freezeResponse()
                 .get<PjnzResponse>("/baseline/shape/")
         ]);
@@ -129,9 +123,9 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async validate({commit}) {
         commit({type: "Validating", payload: null});
-        await api<BaselineActionTypes, BaselineErrorActionTypes>(commit)
-            .withSuccess("Validated")
-            .withError("BaselineError")
+        await api<BaselineMutation, BaselineMutation>(commit)
+            .withSuccess(BaselineMutation.Validated)
+            .withError(BaselineMutation.BaselineError)
             .freezeResponse()
             .get<ValidateBaselineResponse>("/baseline/validate/");
     }

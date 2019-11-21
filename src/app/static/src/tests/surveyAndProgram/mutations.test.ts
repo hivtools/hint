@@ -1,6 +1,6 @@
-import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
-import {mutations} from "../../app/store/surveyAndProgram/mutations";
+import {mutations, SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {mockRootState, mockSurveyAndProgramState, mockSurveyResponse} from "../mocks";
+import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
 
@@ -20,8 +20,9 @@ describe("Survey and programme mutations", () => {
     };
 
     it("sets surveys data and filename and clears error on SurveyUpdated", () => {
+
         const testState = mockSurveyAndProgramState({surveyError: "test"});
-        mutations.SurveyUpdated(testState, testPayload);
+        mutations[SurveyAndProgramMutation.SurveyUpdated](testState, testPayload);
         expect(testState.survey!!.data).toStrictEqual(testData);
         expect(testState.survey!!.filename).toBe("somefile.csv");
         expect(testState.surveyError).toBe("");
@@ -29,13 +30,14 @@ describe("Survey and programme mutations", () => {
 
     it("sets error on SurveyError", () => {
         const testState = mockSurveyAndProgramState();
-        mutations.SurveyError(testState, {payload: "Some error"});
+        mutations[SurveyAndProgramMutation.SurveyError](testState, {payload: "Some error"});
         expect(testState.surveyError).toBe("Some error");
     });
 
     it("sets programme data and filename and clears error on ProgramUpdated", () => {
         const testState = mockSurveyAndProgramState({programError: "test"});
-        mutations.ProgramUpdated(testState, testPayload);
+        mutations[SurveyAndProgramMutation.ProgramUpdated](testState, testPayload);
+
         expect(testState.program!!.data).toStrictEqual(testData);
         expect(testState.program!!.filename).toBe("somefile.csv");
         expect(testState.programError).toBe("");
@@ -43,13 +45,13 @@ describe("Survey and programme mutations", () => {
 
     it("sets error on ProgramError", () => {
         const testState = mockSurveyAndProgramState();
-        mutations.ProgramError(testState, {payload: "Some error"});
+        mutations[SurveyAndProgramMutation.ProgramError](testState, {payload: "Some error"});
         expect(testState.programError).toBe("Some error");
     });
 
     it("sets anc data and filename and clears error on ANCUpdated", () => {
         const testState = mockSurveyAndProgramState({ancError: "test"});
-        mutations.ANCUpdated(testState, testPayload);
+        mutations[SurveyAndProgramMutation.ANCUpdated](testState, testPayload);
         expect(testState.anc!!.data).toStrictEqual(testData);
         expect(testState.anc!!.filename).toBe("somefile.csv");
         expect(testState.ancError).toBe("");
@@ -57,7 +59,7 @@ describe("Survey and programme mutations", () => {
 
     it("sets error on ANCError", () => {
         const testState = mockSurveyAndProgramState();
-        mutations.ANCError(testState, {payload: "Some error"});
+        mutations[SurveyAndProgramMutation.ANCError](testState, {payload: "Some error"});
         expect(testState.ancError).toBe("Some error");
     });
 
@@ -73,7 +75,7 @@ describe("Survey and programme mutations", () => {
 
         expect(complete(testState, null, testRootState, null)).toBe(false);
 
-        mutations.SurveyUpdated(testState, testPayload);
+        mutations[SurveyAndProgramMutation.SurveyUpdated](testState, testPayload);
         expect(complete(testState, null, testRootState, null)).toBe(true);
     });
 
