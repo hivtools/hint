@@ -30,7 +30,8 @@ class JSONValidator {
 
     private val responseSchema = getSchema("Response")
 
-    fun validateError(response: String, expectedErrorCode: String, expectedErrorMessage: String? = null) {
+    fun validateError(response: String, expectedErrorCode: String, expectedErrorMessage: String? = null,
+                      expectedErrorStartsWith: Boolean = false) {
         assertValidates(response, responseSchema, "Response")
         val error = objectMapper.readValue<JsonNode>(response)["errors"].first()
         val status = objectMapper.readValue<JsonNode>(response)["status"].textValue()
@@ -38,8 +39,13 @@ class JSONValidator {
         assertThat(status).isEqualTo("failure")
         assertThat(error["error"].asText()).isEqualTo(expectedErrorCode)
         if (expectedErrorMessage != null) {
-            assertThat(error["detail"].asText()).isEqualTo(expectedErrorMessage)
-
+            val actualError = error["detail"].asText()
+            if (expectedErrorStartsWith) {
+                assertThat(actualError).startsWith(expectedErrorMessage)
+            }
+            else {
+                assertThat(actualError).isEqualTo(expectedErrorMessage)
+            }
         }
     }
 

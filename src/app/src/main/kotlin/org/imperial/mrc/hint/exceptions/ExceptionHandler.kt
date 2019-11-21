@@ -52,7 +52,8 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
 
     private fun String.appendErrorCodeInstructions(): String {
         val code = errorCodeGenerator.newCode()
-        return "$this Please contact support at ${appProperties.supportEmail} and quote this code: $code"
+        val fullStopIfNeeded =  if (this.endsWith('.')) ""  else "."
+        return "$this$fullStopIfNeeded Please contact support at ${appProperties.supportEmail} and quote this code: $code"
     }
 
 }

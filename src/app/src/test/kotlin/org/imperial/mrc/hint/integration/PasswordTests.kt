@@ -35,6 +35,20 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
         return "{\"data\":{},\"status\":\"failure\",\"errors\":[{\"error\":\"OTHER_ERROR\",\"detail\":\"$errorMessage\"}]}"
     }
 
+    private fun assertBodyMatchesErrorResponseWithErrorCode(actual: String, errorMessage: String) {
+        val start = "{\"data\":{},\"status\":\"failure\",\"errors\":[{\"error\":\"OTHER_ERROR\",\"detail\":\"$errorMessage" +
+                " Please contact support at naomi-support@imperial.ac.uk and quote this code:"
+        val end = "\"}]}"
+
+        assertThat(actual).startsWith(start)
+        assertThat(actual).endsWith(end)
+        val code = actual.replace(start, "").replace(end, "")
+
+        val regex = Regex("u[a-z]{2}-[a-z]{3}-[a-z]{3}")
+        val match = regex.find(code)
+        assertThat(match).isNotNull()
+    }
+
     @AfterEach
     override fun tearDown() {
         super.tearDown()
@@ -86,7 +100,8 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
                 HttpEntity(map, headers))
 
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        Assertions.assertThat(entity.body).isEqualTo(expectedErrorResponse("Token is not valid"))
+        assertBodyMatchesErrorResponseWithErrorCode(entity.body!!, "Token is not valid.")
+
     }
 
     @Test
@@ -104,7 +119,7 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
         val entity = restTemplate.postForEntity<String>("/password/reset-password/",
                 HttpEntity(map, headers))
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        Assertions.assertThat(entity.body).isEqualTo(expectedErrorResponse("postResetPassword.password: Password must be at least 6 characters long"))
+        Assertions.assertThat(entity.body).isEqualTo(expectedErrorResponse("postResetPassword.password: Password must be at least 6 characters long."))
     }
 
     private fun getTokenFromEmailText(emailText: String): String {
