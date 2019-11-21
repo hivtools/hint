@@ -8,16 +8,9 @@ import {
 import {interpolateGreys} from "d3-scale-chromatic";
 import {DataType} from "../../app/store/filteredData/filteredData";
 import {getResult, testIndicatorMetadata} from "./helpers";
+import {ProgrammeDataRow} from "../../app/generated";
 
 const testMeta = testIndicatorMetadata("current_art", "current_art", "", "");
-
-interface ExpectedProgramData {
-    area_id: any
-    age_group: any
-    sex: any
-    year: any
-    current_art: any
-}
 
 describe("getting region indicators for program data", () => {
 
@@ -47,19 +40,19 @@ describe("getting region indicators for program data", () => {
 
     it("gets regionIndicators for programme", () => {
 
-        const testData: ExpectedProgramData[] = [
+        const testData: Partial<ProgrammeDataRow>[] = [
             {
                 area_id: "area1",
                 current_art: 0.2,
                 age_group: "1",
-                year: "1",
+                year: 1,
                 sex: "both"
             },
             {
                 area_id: "area2",
                 current_art: 0.3,
                 age_group: "1",
-                year: "1",
+                year: 1,
                 sex: "both"
             }
         ];
@@ -76,15 +69,15 @@ describe("getting region indicators for program data", () => {
 
     it("filters regionIndicators for programme", () => {
 
-        const testRow: ExpectedProgramData = {
+        const testRow: Partial<ProgrammeDataRow> = {
             area_id: "area1",
             current_art: 0.2,
             age_group: "1",
-            year: "1",
+            year: 1,
             sex: "both"
         };
 
-        const testData: ExpectedProgramData[] = [testRow,
+        const testData: Partial<ProgrammeDataRow>[] = [testRow,
             {
                 ...testRow,
                 area_id: "area2",
@@ -98,7 +91,7 @@ describe("getting region indicators for program data", () => {
             {
                 ...testRow,
                 area_id: "area5",
-                year: "2" // wrong year
+                year: 2 // wrong year
             },
         ];
         const rootState = getRootState(testData, {age: "1", sex: "both", year: "1"});

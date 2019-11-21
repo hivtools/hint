@@ -4,6 +4,20 @@
   * Instead, modify the hintr JSON schema files
   * and run ./generate-types.sh to regenerate this file.
 */
+export interface AncDataRow {
+  area_id: string;
+  age_group: string;
+  year: number;
+  anc_clients: number;
+  ancrt_hiv_status: number;
+  ancrt_known_pos: number;
+  ancrt_already_art: number;
+  ancrt_tested: number;
+  ancrt_test_pos: number;
+  prevalence: number;
+  art_coverage: number;
+  [k: string]: any;
+}
 export interface AncFilters {
   year: {
     label: string;
@@ -16,16 +30,16 @@ export interface AncFilters {
 }
 export type AncResponseData = {
   area_id: string;
-  age_group?: string;
-  year?: number;
-  anc_clients?: number;
-  ancrt_hiv_status?: number;
-  ancrt_known_pos?: number;
-  ancrt_already_art?: number;
-  ancrt_tested?: number;
-  ancrt_test_pos?: number;
-  prevalence?: number;
-  art_coverage?: number;
+  age_group: string;
+  year: number;
+  anc_clients: number;
+  ancrt_hiv_status: number;
+  ancrt_known_pos: number;
+  ancrt_already_art: number;
+  ancrt_tested: number;
+  ancrt_test_pos: number;
+  prevalence: number;
+  art_coverage: number;
   [k: string]: any;
 }[];
 export interface BarchartIndicator {
@@ -135,7 +149,7 @@ export interface ModelResultFilters {
   }[];
 }
 export interface ModelResultResponse {
-  data?: {
+  data: {
     area_id: string;
     sex: string;
     age_group: string;
@@ -172,6 +186,18 @@ export interface ModelResultResponse {
       [k: string]: any;
     };
   };
+  [k: string]: any;
+}
+export interface ModelResultRow {
+  area_id: string;
+  sex: string;
+  age_group: string;
+  calendar_quarter: string;
+  indicator_id: number;
+  mode: number;
+  mean: number;
+  lower: number;
+  upper: number;
   [k: string]: any;
 }
 export interface ModelRunOptions {
@@ -312,6 +338,14 @@ export interface Metadata {
   [k: string]: any;
 }
 export type PopulationResponseData = null;
+export interface ProgrammeDataRow {
+  area_id: string;
+  year: number;
+  sex: string;
+  age_group: string;
+  current_art: number;
+  [k: string]: any;
+}
 export interface ProgrammeFilters {
   age: {
     label: string;
@@ -328,6 +362,9 @@ export interface ProgrammeFilters {
 }
 export type ProgrammeResponseData = {
   area_id: string;
+  year: number;
+  sex: string;
+  age_group: string;
   current_art: number;
   [k: string]: any;
 }[];
@@ -367,6 +404,21 @@ export interface GeoJSONObject {
   }[];
   [k: string]: any;
 }
+export interface SurveyDataRow {
+  indicator: string;
+  survey_id: string;
+  survey_year: number;
+  area_id: string;
+  sex: string;
+  age_group: string;
+  n_cluster: number;
+  n_obs: number;
+  est: number;
+  se: number;
+  ci_l: number | null;
+  ci_u: number | null;
+  [k: string]: any;
+}
 export interface SurveyFilters {
   age: {
     label: string;
@@ -382,8 +434,18 @@ export interface SurveyFilters {
   }[];
 }
 export type SurveyResponseData = {
-  area_id: string;
+  indicator: string;
   survey_id: string;
+  survey_year: number;
+  area_id: string;
+  sex: string;
+  age_group: string;
+  n_cluster: number;
+  n_obs: number;
+  est: number;
+  se: number;
+  ci_l: number | null;
+  ci_u: number | null;
   [k: string]: any;
 }[];
 export type URI = string;
@@ -469,6 +531,9 @@ export interface ProgrammeResponse {
   type: "programme";
   data: {
     area_id: string;
+    year: number;
+    sex: string;
+    age_group: string;
     current_art: number;
     [k: string]: any;
   }[];
@@ -493,16 +558,16 @@ export interface AncResponse {
   type: "anc";
   data: {
     area_id: string;
-    age_group?: string;
-    year?: number;
-    anc_clients?: number;
-    ancrt_hiv_status?: number;
-    ancrt_known_pos?: number;
-    ancrt_already_art?: number;
-    ancrt_tested?: number;
-    ancrt_test_pos?: number;
-    prevalence?: number;
-    art_coverage?: number;
+    age_group: string;
+    year: number;
+    anc_clients: number;
+    ancrt_hiv_status: number;
+    ancrt_known_pos: number;
+    ancrt_already_art: number;
+    ancrt_tested: number;
+    ancrt_test_pos: number;
+    prevalence: number;
+    art_coverage: number;
     [k: string]: any;
   }[];
   filters: {
@@ -521,8 +586,18 @@ export interface SurveyResponse {
   filename: string;
   type: "survey";
   data: {
-    area_id: string;
+    indicator: string;
     survey_id: string;
+    survey_year: number;
+    area_id: string;
+    sex: string;
+    age_group: string;
+    n_cluster: number;
+    n_obs: number;
+    est: number;
+    se: number;
+    ci_l: number | null;
+    ci_u: number | null;
     [k: string]: any;
   }[];
   filters: {

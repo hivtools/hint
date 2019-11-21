@@ -8,16 +8,7 @@ import {
 } from "../mocks";
 import {interpolateGreys} from "d3-scale-chromatic";
 import {getResult, testIndicatorMetadata} from "./helpers";
-
-interface ExpectedSurveyData {
-    iso3: any
-    area_id: any
-    age_group: any
-    sex: any
-    indicator: any
-    est: any
-    survey_id: any
-}
+import {SurveyDataRow} from "../../app/generated";
 
 describe("getRegionIndicators function", () => {
 
@@ -60,7 +51,7 @@ describe("getRegionIndicators function", () => {
 
     it("filters by region", () => {
 
-        const testRow: ExpectedSurveyData = {
+        const testRow: Partial<SurveyDataRow> = {
             iso3: "MWI",
             area_id: "area1",
             survey_id: "s1",
@@ -69,7 +60,7 @@ describe("getRegionIndicators function", () => {
             age_group: "1",
             sex: "both"
         };
-        const testData: ExpectedSurveyData[] = [testRow,
+        const testData: Partial<SurveyDataRow>[] = [testRow,
             {
                 ...testRow,
                 area_id: "area2",
@@ -105,7 +96,7 @@ describe("getRegionIndicators function", () => {
 
     it("gets empty regionIndicators if no selected data type", () => {
 
-        const testData: ExpectedSurveyData[] = [
+        const testData: Partial<SurveyDataRow>[] = [
             {
                 iso3: "MWI",
                 area_id: "area1",
@@ -124,7 +115,7 @@ describe("getRegionIndicators function", () => {
 
     it("returns all rows if no regions are selected", () => {
 
-        const testData: ExpectedSurveyData[] = [
+        const testData: Partial<SurveyDataRow>[] = [
             {
                 iso3: "MWI",
                 area_id: "area1",
@@ -152,7 +143,7 @@ describe("getRegionIndicators function", () => {
 
     it("filters out rows with wrong indicators", () => {
 
-        const testData: ExpectedSurveyData[] = [
+        const testData: Partial<SurveyDataRow>[] = [
             {
                 iso3: "MWI",
                 area_id: "area1",
@@ -171,7 +162,7 @@ describe("getRegionIndicators function", () => {
 
     it("filters out rows with no value", () => {
 
-        const testData: ExpectedSurveyData[] = [
+        const testData: Partial<SurveyDataRow>[] = [
             {
                 iso3: "MWI",
                 area_id: "area1",

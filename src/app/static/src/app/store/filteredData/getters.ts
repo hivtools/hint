@@ -1,6 +1,6 @@
 import {RootState} from "../../root";
 import {DataType, FilteredDataState} from "./filteredData";
-import {FilterOption} from "../../generated";
+import {FilterOption, SurveyDataRow} from "../../generated";
 import {Dict, IndicatorValuesDict} from "../../types";
 import {flattenToIdSet, getColor, getUnfilteredData, sexFilterOptions} from "./utils";
 

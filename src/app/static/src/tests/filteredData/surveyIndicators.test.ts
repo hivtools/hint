@@ -8,15 +8,7 @@ import {
 import {interpolateGreys} from "d3-scale-chromatic";
 import {DataType} from "../../app/store/filteredData/filteredData";
 import {getResult, testIndicatorMetadata} from "./helpers";
-
-interface ExpectedSurveyData {
-    area_id: any
-    age_group: any
-    sex: any
-    indicator: any
-    est: any
-    survey_id: any
-}
+import {SurveyDataRow} from "../../app/generated";
 
 describe("getting region indicators for survey data", () => {
 
@@ -48,7 +40,7 @@ describe("getting region indicators for survey data", () => {
 
     it("gets regionIndicators for survey", () => {
 
-        const testRow: ExpectedSurveyData = {
+        const testRow: Partial<SurveyDataRow> = {
             area_id: "area1",
             survey_id: "s1",
             indicator: "artcov",
@@ -56,7 +48,7 @@ describe("getting region indicators for survey data", () => {
             age_group: "1",
             sex: "both"
         };
-        const testData: ExpectedSurveyData[] = [
+        const testData: Partial<SurveyDataRow>[] = [
             testRow,
             {
                 ...testRow,
@@ -76,7 +68,7 @@ describe("getting region indicators for survey data", () => {
 
     it("filters regionIndicators for survey", () => {
 
-        const testRow: ExpectedSurveyData = {
+        const testRow: Partial<SurveyDataRow> = {
             area_id: "area1",
             survey_id: "s1",
             indicator: "artcov",
@@ -85,7 +77,7 @@ describe("getting region indicators for survey data", () => {
             sex: "both"
         };
 
-        const testData: ExpectedSurveyData[] = [
+        const testData: Partial<SurveyDataRow>[] = [
             testRow,
             {
                 ...testRow,
