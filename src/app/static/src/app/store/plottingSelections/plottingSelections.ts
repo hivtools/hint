@@ -15,15 +15,19 @@ export interface BarchartSelections {
     selectedFilterOptions:  { [key: string]: FilterOption[] }
 }
 
-export const initialBarchartSelections = {
-    indicatorId: "",
-    xAxisId: "",
-    disaggregateById: "",
-    selectedFilterOptions: {}
+export const initialBarchartSelections = (): BarchartSelections => {
+    return {
+        indicatorId: "",
+        xAxisId: "",
+        disaggregateById: "",
+        selectedFilterOptions: {}
+    }
 };
 
-export const initialPlottingSelectionsState = {
-  barchart: {...initialBarchartSelections}
+export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
+    return {
+        barchart: initialBarchartSelections()
+    }
 };
 
 const namespaced: boolean = true;
@@ -31,7 +35,7 @@ const existingState = localStorageManager.getState();
 
 export const plottingSelections: Module<PlottingSelectionsState, RootState> = {
     namespaced,
-    state: {...initialPlottingSelectionsState, ...existingState && existingState.plottingSelections},
+    state: {...initialPlottingSelectionsState(), ...existingState && existingState.plottingSelections},
     mutations
 };
 

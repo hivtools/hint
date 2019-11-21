@@ -48,7 +48,7 @@ describe("ChoroplethFilters component", () => {
             {id: "a2", label: "5-9"}
         ];
         const mockSelectedFilters = {
-            ...initialSelectedChoroplethFilters,
+            ...initialSelectedChoroplethFilters(),
             age: "a1"
         };
 
@@ -68,7 +68,7 @@ describe("ChoroplethFilters component", () => {
 
     it("computes selected sexFilters", () => {
         const mockSelectedFilters = {
-            ...initialSelectedChoroplethFilters,
+            ...initialSelectedChoroplethFilters(),
             sex: "both"
         };
 
@@ -84,7 +84,7 @@ describe("ChoroplethFilters component", () => {
             {id: "s2", label: "survey 2"}
         ];
         const mockSelectedFilters = {
-            ...initialSelectedChoroplethFilters,
+            ...initialSelectedChoroplethFilters(),
             survey: "s1"
         };
 
@@ -110,7 +110,7 @@ describe("ChoroplethFilters component", () => {
             {id: "2", label: "Apr-Jun 2019"}
         ];
         const mockSelectedFilters = {
-            ...initialSelectedChoroplethFilters,
+            ...initialSelectedChoroplethFilters(),
             quarter: "1"
         };
 
@@ -140,7 +140,7 @@ describe("ChoroplethFilters component", () => {
                 ]
             }];
         const mockSelectedFilters = {
-            ...initialSelectedChoroplethFilters,
+            ...initialSelectedChoroplethFilters(),
             regions: ["a2"]
         };
         const mockGetters = {

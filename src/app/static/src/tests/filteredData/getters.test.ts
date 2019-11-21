@@ -1,10 +1,11 @@
 import {flattenedSelectedRegionFilters, getters} from "../../app/store/filteredData/getters"
 import {Module} from "vuex";
-import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
+import {DataType, FilteredDataState} from "../../app/store/filteredData/filteredData";
 import {RootState} from "../../app/root";
 import {
     mockAncResponse,
     mockBaselineState,
+    mockFilteredDataState,
     mockModelResultResponse,
     mockModelRunState,
     mockProgramFilters,
@@ -46,7 +47,7 @@ describe("FilteredData getters", () => {
 
     it("gets correct selectedDataFilters when selectedDataType is Program", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Program},
+            state: mockFilteredDataState({selectedDataType: DataType.Program}),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -73,7 +74,7 @@ describe("FilteredData getters", () => {
 
     it("gets correct selectedDataFilters when selectedDataType is Survey", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Survey},
+            state: mockFilteredDataState({selectedDataType: DataType.Survey}),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -105,7 +106,7 @@ describe("FilteredData getters", () => {
 
     it("gets correct selectedDataFilters when selectedDataType is ANC", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.ANC},
+            state: mockFilteredDataState({selectedDataType: DataType.ANC}),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -133,7 +134,7 @@ describe("FilteredData getters", () => {
 
     it("gets correct selectedDataFilters when selectedDataType is Output", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Output},
+            state: mockFilteredDataState({selectedDataType: DataType.Output}),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -165,7 +166,7 @@ describe("FilteredData getters", () => {
 
     it("gets null selectedDataFilters when unknown data type", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: 99 as any},
+            state: mockFilteredDataState({selectedDataType: 99 as any}),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -177,7 +178,7 @@ describe("FilteredData getters", () => {
 
     it("gets unfilteredData when selectedDataType is Survey", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Survey},
+            state: mockFilteredDataState({selectedDataType: DataType.Survey}),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -198,7 +199,7 @@ describe("FilteredData getters", () => {
 
     it("gets unfilteredData when selectedDataType is Program", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Program},
+            state: mockFilteredDataState({selectedDataType: DataType.Program}),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -219,7 +220,7 @@ describe("FilteredData getters", () => {
 
     it("gets unfilteredData when selectedDataType is ANC", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.ANC},
+            state: mockFilteredDataState({selectedDataType: DataType.ANC}),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -240,7 +241,7 @@ describe("FilteredData getters", () => {
 
     it("gets unfilteredData when selectedDataType is Output", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Output},
+            state: mockFilteredDataState({selectedDataType: DataType.Output}),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -261,7 +262,7 @@ describe("FilteredData getters", () => {
 
     it("gets unfilteredData when selectedDataType is unknown", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: 99 as DataType.Output},
+            state: mockFilteredDataState({selectedDataType: 99 as DataType.Output}),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -304,8 +305,7 @@ describe("FilteredData getters", () => {
     it("gets flattened selected region filter", () => {
 
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
-                ...initialFilteredDataState,
+            state: mockFilteredDataState({
                 selectedDataType: DataType.ANC,
                 selectedChoroplethFilters: {
                     age: "1",
@@ -314,7 +314,7 @@ describe("FilteredData getters", () => {
                     quarter: "",
                     regions: ["R1", "R2", "R3"]
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
@@ -325,8 +325,7 @@ describe("FilteredData getters", () => {
 
     it("gets flattened selected region filter when region filter is empty", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {
-                ...initialFilteredDataState,
+            state: mockFilteredDataState({
                 selectedDataType: DataType.ANC,
                 selectedChoroplethFilters: {
                     age: "1",
@@ -335,7 +334,7 @@ describe("FilteredData getters", () => {
                     quarter: "",
                     regions: []
                 }
-            },
+            }),
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
