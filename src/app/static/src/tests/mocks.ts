@@ -29,7 +29,10 @@ import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
 import {initialLoadState, LoadState} from "../app/store/load/load";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
-import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
+import {
+    initialPlottingSelectionsState,
+    PlottingSelectionsState
+} from "../app/store/plottingSelections/plottingSelections";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -246,6 +249,22 @@ export const mockModelStatusResponse = (props: Partial<ModelStatusResponse> = {}
 
 export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}): ModelResultResponse => {
     return {
+        plottingMetadata: {
+            barchart: {
+                indicators: [], filters: []
+            }
+        },
+        data: [{
+            area_id: "MWI",
+            sex: "both",
+            age_group: "1",
+            calendar_quarter: "1",
+            indicator_id: 1,
+            lower: 0.5,
+            mean: 0.5,
+            mode: 0.5,
+            upper: 0.5
+        }],
         ...props
     }
 };
