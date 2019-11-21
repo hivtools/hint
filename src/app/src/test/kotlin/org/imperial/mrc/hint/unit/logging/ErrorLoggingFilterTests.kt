@@ -20,7 +20,7 @@ class ErrorLoggingFilterTests {
         }
 
         val mockRequest = mock<HttpServletRequest>{
-            on { requestURL }  doReturn StringBuffer("http://test")
+            on { servletPath }  doReturn "/test"
         }
 
         val mockOutputStream = mock<ServletOutputStream>()
@@ -45,7 +45,7 @@ class ErrorLoggingFilterTests {
 
         //Assert expected messages logged
         assertThat(capturedMessages.count()).isEqualTo(2)
-        assertThat(capturedMessages[0]).isEqualTo("ERROR: 500 response for http://test")
+        assertThat(capturedMessages[0]).isEqualTo("ERROR: 500 response for /test")
         assertThat(capturedMessages[1]).isEqualTo("TEST BODY")
 
         //Assert that write was called on our wrapped output stream (this happens as part of
@@ -61,13 +61,17 @@ class ErrorLoggingFilterTests {
             Unit
         }
 
+        val mockRequest = mock<HttpServletRequest>{
+            on { servletPath }  doReturn "/test"
+        }
+
         val mockResponse = mock<HttpServletResponse>{
             on { status } doReturn 200
             on { outputStream } doReturn mock<ServletOutputStream>()
         }
 
         val sut = ErrorLoggingFilter(mockLogMethod)
-        sut.doFilter(mock(), mockResponse, mock())
+        sut.doFilter(mockRequest, mockResponse, mock())
 
         //Assert expected messages logged
         assertThat(capturedMessages.count()).isEqualTo(0)

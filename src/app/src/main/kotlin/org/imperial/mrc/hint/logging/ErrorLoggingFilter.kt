@@ -13,20 +13,32 @@ import java.nio.charset.Charset
 @Component
 class ErrorLoggingFilter(private val logMethod: (msg: String) -> Unit = ::println): Filter {
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
+        //ContentCachingResponseWrapper doesn't play nicely with streamed data, so don't use wrapper for a download.
+        //We'll still be able to log any status errors
+        val isDownload = (request as HttpServletRequest).servletPath.startsWith("/download")
         val responseWrapper = ContentCachingResponseWrapper(response as HttpServletResponse)
 
-        chain.doFilter(request, responseWrapper)
+        if (isDownload) {
+            chain.doFilter(request, response)
+        }
+        else {
+            chain.doFilter(request, responseWrapper)
+        }
 
         if (response.status >= 400) {
-            val message = "ERROR: ${response.status} response for ${(request as HttpServletRequest).requestURL}"
+            val message = "ERROR: ${response.status} response for ${request.servletPath}"
             logMethod(message)
 
             //log content
-            val bytes = responseWrapper.contentAsByteArray
-            val content = String(bytes, Charset.forName(responseWrapper.characterEncoding))
-            logMethod(content)
+            if (!isDownload) {
+                val bytes = responseWrapper.contentAsByteArray
+                val content = String(bytes, Charset.forName(responseWrapper.characterEncoding))
+                logMethod(content)
+            }
         }
 
-        responseWrapper.copyBodyToResponse()
+        if (!isDownload) {
+            responseWrapper.copyBodyToResponse()
+        }
     }
 }
