@@ -15,16 +15,18 @@ export interface BarchartSelections {
     selectedFilterOptions:  { [key: string]: FilterOption[] }
 }
 
-export const initialBarchartSelections = {
-    indicatorId: "",
-    xAxisId: "",
-    disaggregateById: "",
-    selectedFilterOptions: {}
+export const initialBarchartSelections = (): BarchartSelections => {
+    return {
+        indicatorId: "",
+        xAxisId: "",
+        disaggregateById: "",
+        selectedFilterOptions: {}
+    }
 };
 
 export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
     return {
-        barchart: {...initialBarchartSelections}
+        barchart: initialBarchartSelections()
     }
 };
 
