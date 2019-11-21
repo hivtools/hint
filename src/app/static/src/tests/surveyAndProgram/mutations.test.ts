@@ -14,7 +14,7 @@ describe("Survey and programme mutations", () => {
 
     const testPayload = {
         payload: mockSurveyResponse({
-            data: testData,
+            data: testData as any,
             filename: "somefile.csv"
         })
     };
