@@ -22,18 +22,22 @@ export interface FilteredDataState {
     regionIndicators: {[k: string]: any};
 }
 
-export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
-    sex: "",
-    age: "",
-    survey: "",
-    regions: [],
-    year: ""
+export const initialSelectedChoroplethFilters = (): SelectedChoroplethFilters => {
+    return {
+        sex: "",
+        age: "",
+        survey: "",
+        regions: [],
+        year: ""
+    }
 };
 
-export const initialFilteredDataState: FilteredDataState = {
-   selectedDataType: null,
-   selectedChoroplethFilters: initialSelectedChoroplethFilters,
-   regionIndicators: {}
+export const initialFilteredDataState = (): FilteredDataState => {
+    return {
+        selectedDataType: null,
+        selectedChoroplethFilters: initialSelectedChoroplethFilters(),
+        regionIndicators: {}
+    }
 };
 
 const namespaced: boolean = true;
@@ -41,7 +45,7 @@ const existingState = localStorageManager.getState();
 
 export const filteredData: Module<FilteredDataState, RootState> = {
     namespaced,
-    state: {...initialFilteredDataState, ...existingState && existingState.filteredData},
+    state: {...initialFilteredDataState(), ...existingState && existingState.filteredData},
     actions,
     mutations,
     getters

@@ -1,10 +1,10 @@
-import {initialPlottingSelectionsState} from "../../app/store/plottingSelections/plottingSelections";
 import {mutations} from "../../app/store/plottingSelections/mutations";
+import {mockPlottingSelections} from "../mocks";
 
 describe("Plotting selections mutations", () => {
 
     it("updates barchart selections", () => {
-        const testState = {...initialPlottingSelectionsState};
+        const testState = mockPlottingSelections();
         const newBarchartSelections = {
             indicatorId: "test-indicator",
             disaggregateById: "test-disagg",

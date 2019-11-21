@@ -9,8 +9,7 @@ import {mutations} from "../../../app/store/filteredData/mutations";
 import {
     DataType,
     FilteredDataState,
-    FilterType,
-    initialFilteredDataState
+    FilterType
 } from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
 
@@ -232,7 +231,7 @@ describe("Choropleth component", () => {
 
     it("updates indicator if necessary when selectedDataType changes", () => {
         //defaults to prev, should get updated to art on data type change if no prev data
-        const filteredData = {...initialFilteredDataState};
+        const filteredData = mockFilteredDataState()
         const testStore = new Vuex.Store({
             modules: {
                 baseline: {
@@ -295,7 +294,7 @@ describe("Choropleth component", () => {
 
     it("options onEachFeature returns function which generates correct tooltips", () => {
 
-        const filteredData = {...initialFilteredDataState};
+        const filteredData = mockFilteredDataState();
         const testStore = new Vuex.Store({
             modules: {
                 baseline: {

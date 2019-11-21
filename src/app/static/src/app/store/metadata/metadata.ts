@@ -11,16 +11,18 @@ export interface MetadataState {
     plottingMetadata: PlottingMetadataResponse | null
 }
 
-export const initialMetadataState: MetadataState = {
-    plottingMetadataError: "",
-    plottingMetadata: null
+export const initialMetadataState = (): MetadataState => {
+    return {
+        plottingMetadataError: "",
+        plottingMetadata: null
+    }
 };
 
 export const metadataGetters = {
     complete: (state: MetadataState) => {
         return !!state.plottingMetadata
     },
-    choroplethIndicatorsMetadata: (state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
+    choroplethIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
         const plottingMetadata = state.plottingMetadata;
 
         if (!plottingMetadata) {
@@ -30,7 +32,7 @@ export const metadataGetters = {
         const selectedDataType = rootState.filteredData.selectedDataType;
 
         let metadataForType = null;
-        switch(selectedDataType) {
+        switch (selectedDataType) {
             case (DataType.ANC):
                 metadataForType = plottingMetadata.anc;
                 break;
@@ -45,9 +47,9 @@ export const metadataGetters = {
                 break;
         }
 
-        return  (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
+        return (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
     },
-    choroplethIndicators:(state: MetadataState,  getters: any, rootState: RootState, rootGetters: any) => {
+    choroplethIndicators: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
         const metadata = getters.choroplethIndicatorsMetadata;
         return  metadata.map((i: ChoroplethIndicatorMetadata) => i.indicator);
     }
@@ -58,7 +60,7 @@ const existingState = localStorageManager.getState();
 
 export const metadata: Module<MetadataState, RootState> = {
     namespaced,
-    state: {...initialMetadataState, ...existingState && existingState.metadata},
+    state: {...initialMetadataState(), ...existingState && existingState.metadata},
     actions,
     mutations,
     getters: metadataGetters

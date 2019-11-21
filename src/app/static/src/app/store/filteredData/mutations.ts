@@ -36,6 +36,6 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
         }
     },
     Reset(state: FilteredDataState) {
-        Object.assign(state, initialFilteredDataState);
+        Object.assign(state, initialFilteredDataState());
     }
 };

@@ -2,7 +2,7 @@ import {Module} from "vuex";
 import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
 import {RootState} from "../../app/root";
 import {
-    mockAncResponse,
+    mockAncResponse, mockFilteredDataState,
     mockModelResultResponse,
     mockModelRunState,
     mockProgramResponse,
@@ -38,7 +38,7 @@ describe("filtered data utils", () => {
 
     it("gets unfilteredData when selectedDataType is Survey", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Survey}
+            state: mockFilteredDataState({selectedDataType: DataType.Survey})
         };
         const testState = testStore.state as FilteredDataState;
 
@@ -48,7 +48,7 @@ describe("filtered data utils", () => {
 
     it("gets unfilteredData when selectedDataType is Program", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Program},
+            state: mockFilteredDataState({selectedDataType: DataType.Program})
         };
         const testState = testStore.state as FilteredDataState;
 
@@ -58,7 +58,7 @@ describe("filtered data utils", () => {
 
     it("gets unfilteredData when selectedDataType is ANC", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.ANC}
+            state: mockFilteredDataState({selectedDataType: DataType.ANC})
         };
         const testState = testStore.state as FilteredDataState;
 
@@ -68,7 +68,7 @@ describe("filtered data utils", () => {
 
     it("gets unfilteredData when selectedDataType is Output", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: DataType.Output}
+            state: mockFilteredDataState({selectedDataType: DataType.Output})
         };
         const testState = testStore.state as FilteredDataState;
 
@@ -78,7 +78,7 @@ describe("filtered data utils", () => {
 
     it("gets unfilteredData when selectedDataType is unknown", () => {
         const testStore: Module<FilteredDataState, RootState> = {
-            state: {...initialFilteredDataState, selectedDataType: 99 as DataType.Output}
+            state: mockFilteredDataState({selectedDataType: 99 as DataType.Output})
         };
         const testState = testStore.state as FilteredDataState;
 
