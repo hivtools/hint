@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.logging.ErrorLoggingFilter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.test.context.TestPropertySource
 import org.springframework.web.util.ContentCachingResponseWrapper
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -100,5 +101,4 @@ class ErrorLoggingFilterTests {
         verify(mockChain).doFilter(mockRequest, mockResponse)
 
     }
-
 }

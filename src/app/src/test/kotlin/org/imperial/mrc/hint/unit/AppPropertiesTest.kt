@@ -118,4 +118,10 @@ class AppPropertiesTests {
         assertThat(sut.dbPassword).isEqualTo("test")
     }
 
+    @Test
+    fun `can read support email`() {
+        val props = readPropsFromTempFile("support_email=test@email.com")
+        val sut = ConfiguredAppProperties(props)
+        assertThat(sut.supportEmail).isEqualTo("test@email.com")
+    }
 }
