@@ -1,6 +1,6 @@
 import {DataType, FilteredDataState} from "./filteredData";
 import {RootState} from "../../root";
-import {IndicatorMetadata, NestedFilterOption} from "../../generated";
+import {ChoroplethIndicatorMetadata, NestedFilterOption} from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {Dict} from "../../types";
 
@@ -29,7 +29,7 @@ export const colorFunctionFromName = function (name: string) {
     return result;
 };
 
-export const getColor = (value: number, metadata: IndicatorMetadata) => {
+export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata) => {
     const max = metadata.max;
     const min = metadata.min;
     const colorFunction = colorFunctionFromName(metadata.colour);

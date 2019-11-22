@@ -1,7 +1,6 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
 import {Dict} from "./types";
-import {map} from "leaflet";
 
 export type ComputedWithType<T> = () => T;
 

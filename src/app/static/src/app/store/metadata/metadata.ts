@@ -2,7 +2,7 @@ import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {RootState} from "../../root";
-import {IndicatorMetadata, PlottingMetadataResponse} from "../../generated";
+import {ChoroplethIndicatorMetadata, PlottingMetadataResponse} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../filteredData/filteredData";
 
@@ -51,7 +51,7 @@ export const metadataGetters = {
     },
     choroplethIndicators: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
         const metadata = getters.choroplethIndicatorsMetadata;
-        return metadata.map((i: IndicatorMetadata) => i.indicator);
+        return metadata.map((i: ChoroplethIndicatorMetadata) => i.indicator);
     }
 };
 

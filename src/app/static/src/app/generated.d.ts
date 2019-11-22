@@ -28,6 +28,50 @@ export type AncResponseData = {
   art_coverage?: number;
   [k: string]: any;
 }[];
+export interface BarchartIndicator {
+  indicator: string;
+  value_column: string;
+  indicator_column: string;
+  indicator_value: string;
+  name: string;
+  error_low_column: string;
+  error_high_column: string;
+  [k: string]: any;
+}
+export interface BarchartMetadata {
+  indicators: {
+    indicator: string;
+    value_column: string;
+    indicator_column: string;
+    indicator_value: string;
+    name: string;
+    error_low_column: string;
+    error_high_column: string;
+    [k: string]: any;
+  }[];
+  filters: {
+    id: string;
+    column_id: string;
+    label: string;
+    options: {
+      label: string;
+      id: string;
+    }[];
+    [k: string]: any;
+  }[];
+  [k: string]: any;
+}
+export interface ChoroplethIndicatorMetadata {
+  indicator: string;
+  value_column: string;
+  indicator_column?: string;
+  indicator_value?: string;
+  name: string;
+  min: number;
+  max: number;
+  colour: string;
+  invert_scale: boolean;
+}
 export interface Data {
   placeholder?: boolean;
 }
@@ -38,6 +82,16 @@ export interface Error {
 }
 export type FileName = string;
 export type FilePath = string | null;
+export interface Filter {
+  id: string;
+  column_id: string;
+  label: string;
+  options: {
+    label: string;
+    id: string;
+  }[];
+  [k: string]: any;
+}
 export interface FilterOption {
   label: string;
   id: string;
@@ -47,17 +101,6 @@ export interface HintrVersionResponse {
 }
 export interface HintrWorkerStatus {
   [k: string]: "BUSY" | "IDLE" | "PAUSED" | "EXITED" | "LOST";
-}
-export interface IndicatorMetadata {
-  indicator: string;
-  value_column: string;
-  indicator_column?: string;
-  indicator_value?: string;
-  name: string;
-  min: number;
-  max: number;
-  colour: string;
-  invert_scale: boolean;
 }
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface LevelLabels {
@@ -104,19 +147,30 @@ export interface ModelResultResponse {
     upper: number;
     [k: string]: any;
   }[];
-  filters?: {
-    age: {
-      label: string;
-      id: string;
-    }[];
-    quarter: {
-      label: string;
-      id: string;
-    }[];
-    indicators: {
-      label: string;
-      id: string;
-    }[];
+  plottingMetadata: {
+    barchart: {
+      indicators: {
+        indicator: string;
+        value_column: string;
+        indicator_column: string;
+        indicator_value: string;
+        name: string;
+        error_low_column: string;
+        error_high_column: string;
+        [k: string]: any;
+      }[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+        }[];
+        [k: string]: any;
+      }[];
+      [k: string]: any;
+    };
   };
   [k: string]: any;
 }
@@ -126,17 +180,36 @@ export interface ModelRunOptions {
 export interface ControlSection {
   label: string;
   description?: string;
-  controlGroups: ControlGroup;
+  controlGroups: ControlGroup[];
 }
 export interface ControlGroup {
   label?: string;
-  controls:
-    | {
-        [k: string]: any;
-      }
-    | {
-        [k: string]: any;
-      };
+  controls: (SelectControl | NumberControl)[];
+}
+export interface SelectControl {
+  name: string;
+  label?: string;
+  type: "select" | "multiselect";
+  required: boolean;
+  value?: string;
+  helpText?: string;
+  options?: {
+    id: string;
+    label: string;
+    children?: {
+      [k: string]: any;
+    }[];
+  }[];
+}
+export interface NumberControl {
+  name: string;
+  label?: string;
+  type: "number";
+  required: boolean;
+  value?: number;
+  helpText?: string;
+  min?: number;
+  max?: number;
 }
 export interface ModelRunOptionsRequest {
   shape: {
@@ -166,8 +239,13 @@ export interface ModelStatusResponse {
   status: string;
   success: boolean | null;
   queue: number;
-  progress: string;
-  timeRemaining: string;
+  progress: {
+    started: boolean;
+    complete: boolean;
+    value?: number;
+    name: string;
+    helpText?: string;
+  }[];
 }
 export interface ModelSubmitData {
   pjnz: string | null;
@@ -191,6 +269,12 @@ export interface ModelSubmitRequest {
     anc: string | null;
   };
   options: {
+    [k: string]: any;
+  };
+  version: {
+    hintr: string;
+    naomi: string;
+    rrq: string;
     [k: string]: any;
   };
 }
@@ -253,13 +337,28 @@ export type ProgrammeResponseData = {
   current_art: number;
   [k: string]: any;
 }[];
+export interface ProgressPhase {
+  started: boolean;
+  complete: boolean;
+  value?: number;
+  name: string;
+  helpText?: string;
+}
 export interface Response {
   status: "success" | "failure";
-  data: any;
+  data: {
+    [k: string]: any;
+  };
   errors: {
     error?: string;
     detail?: string | null;
   }[];
+  version?: {
+    hintr: string;
+    naomi: string;
+    rrq: string;
+    [k: string]: any;
+  };
 }
 export interface SessionFile {
   path: string | null;
@@ -274,9 +373,7 @@ export interface GeoJSONObject {
   crs?: {
     [k: string]: any;
   };
-  name?: {
-    [k: string]: any;
-  };
+  name?: string;
   features: {
     [k: string]: any;
   }[];
@@ -367,9 +464,7 @@ export interface GeoJSONObject {
   crs?: {
     [k: string]: any;
   };
-  name?: {
-    [k: string]: any;
-  };
+  name?: string;
   features: {
     [k: string]: any;
   }[];
@@ -468,4 +563,10 @@ export interface ValidateSurveyAndProgrammeRequest {
     filename: string;
   };
   shape: string | null;
+}
+export interface VersionInfo {
+  hintr: string;
+  naomi: string;
+  rrq: string;
+  [k: string]: any;
 }

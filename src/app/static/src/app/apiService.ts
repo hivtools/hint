@@ -1,34 +1,15 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {
-    AncResponse,
-    ModelResultResponse,
-    ModelStatusResponse,
-    ModelSubmitResponse,
-    PjnzResponse,
-    PopulationResponse,
-    ProgrammeResponse,
     Response,
-    ShapeResponse,
-    SurveyResponse,
-    ValidateInputResponse
 } from "./generated";
 import {Commit} from "vuex";
 import {freezer} from "./utils";
 
-type ResponseData =
-    ValidateInputResponse
-    | ModelSubmitResponse
-    | ModelStatusResponse
-    | ModelResultResponse
-    | AncResponse
-    | PjnzResponse
-    | PopulationResponse
-    | ProgrammeResponse
-    | ShapeResponse
-    | SurveyResponse
-    | Boolean
-
 declare var appUrl: string;
+
+export interface ResponseWithType<T> extends Response {
+    data: T
+}
 
 export interface API<S, E> {
 
@@ -36,9 +17,9 @@ export interface API<S, E> {
     withSuccess: (type: S) => API<S, E>
     ignoreErrors: () => API<S, E>
 
-    postAndReturn<T extends ResponseData>(url: string, data: any): Promise<void | T>
+    postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>>
 
-    get<T extends ResponseData>(url: string): Promise<void | T>
+    get<T>(url: string): Promise<void | ResponseWithType<T>>
     delete(url: string): Promise<void | true>
 }
 
@@ -101,7 +82,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
             if (this._onSuccess) {
                 this._onSuccess(data);
             }
-            return data;
+            return response.data;
         }).catch((e: AxiosError) => {
             return this._handleError(e)
         });
@@ -132,13 +113,13 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
     }
 
-    async get<T extends ResponseData>(url: string): Promise<void | T> {
+    async get<T>(url: string): Promise<void | ResponseWithType<T>> {
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
         return this._handleAxiosResponse(axios.get(fullUrl));
     }
 
-    async postAndReturn<T extends ResponseData>(url: string, data: any): Promise<void | T> {
+    async postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>> {
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
 

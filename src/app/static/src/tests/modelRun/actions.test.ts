@@ -28,7 +28,7 @@ describe("Model run actions", () => {
         });
         await actions.run({commit, rootState} as any);
         expect(JSON.parse(mockAxios.history.post[0].data))
-            .toStrictEqual({1: "TEST", sleep: 1})
+            .toStrictEqual({1: "TEST"})
     });
 
     it("commits run id after triggering a model run", async () => {

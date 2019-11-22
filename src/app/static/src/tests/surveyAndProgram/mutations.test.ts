@@ -3,6 +3,7 @@ import {mockRootState, mockSurveyAndProgramState, mockSurveyResponse} from "../m
 import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
+import {expectAllMutationsDefined} from "../mutationTestHelper";
 
 describe("Survey and programme mutations", () => {
 
@@ -18,6 +19,10 @@ describe("Survey and programme mutations", () => {
             filename: "somefile.csv"
         })
     };
+
+    it("all mutation types are defined", () => {
+        expectAllMutationsDefined(SurveyAndProgramMutation, mutations);
+    });
 
     it("sets surveys data and filename and clears error on SurveyUpdated", () => {
 

@@ -10,6 +10,7 @@ export interface ModelOptionsState {
     options: DynamicFormData
     valid: boolean
     fetching: boolean
+    version: string
 }
 
 export const initialModelOptionsState = (): ModelOptionsState => {
@@ -17,7 +18,8 @@ export const initialModelOptionsState = (): ModelOptionsState => {
         optionsFormMeta: {controlSections: []},
         options: {},
         valid: false,
-        fetching: false
+        fetching: false,
+        version: ""
     }
 };
 
