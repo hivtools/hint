@@ -1,7 +1,7 @@
 <template>
-    <div class="container">
+    <div v-if="hasErrors" class="container">
         <div class="content">
-            <div v-if="hasErrors" class="alert alert-danger alert-dismissible fade-show" role="alert">
+            <div class="alert alert-danger alert-dismissible fade-show" role="alert">
                 <p>The following errors occurred. Please contact {{title}} support if this problem persists.</p>
                 <p v-for="error in errors">
                     {{error}}
@@ -23,8 +23,7 @@
     const namespace = "errors";
 
     interface Props {
-        title: string,
-        user: string
+        title: string
     }
 
     interface Methods {
@@ -42,6 +41,9 @@
 
     export default Vue.extend<{}, Methods, Computed, Props>({
         name: "Errors",
+        props: {
+            title: String
+        },
         computed: {
             ...mapStateProps<ErrorsState, keyof ComputedState>(namespace, {
                 errors: state => state.errors

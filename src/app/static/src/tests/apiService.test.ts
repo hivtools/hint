@@ -1,6 +1,7 @@
 import {api} from "../app/apiService";
 import {mockAxios, mockFailure, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
+import {ErrorsMutation} from "../app/store/errors/mutations";
 
 describe("ApiService", () => {
 
@@ -30,23 +31,22 @@ describe("ApiService", () => {
             .toBe("some error message");
     });
 
-    it("throws the first error message by default", async () => {
+    it("commits the the first error message to errors module by default", async () => {
 
         mockAxios.onGet(`/unusual/`)
             .reply(500, mockFailure("some error message"));
 
-        let error: Error;
-        try {
-            await api(jest.fn())
-                .get("/unusual/");
+        const commit = jest.fn();
 
-        } catch (e) {
-            error = e
-        }
+        await api(commit)
+                .get("/unusual/");
 
         expect((console.warn as jest.Mock).mock.calls[0][0])
             .toBe("No error handler registered for request /unusual/.");
-        expect(error!!.message).toBe("some error message");
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: `errors/ErrorAdded`, payload: "some error message"});
+        expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
     });
 
     it("commits the first error with the specified type if well formatted", async () => {
