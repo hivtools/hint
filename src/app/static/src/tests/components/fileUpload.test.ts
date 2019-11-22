@@ -94,6 +94,19 @@ describe("File upload component", () => {
         expect(removeHandler.mock.calls.length).toBe(1);
     });
 
+    it("renders remove link if there are errors", () => {
+        const removeHandler =jest.fn();
+        const wrapper = createSut({
+            valid: false,
+            error: "invalid file",
+            deleteFile: removeHandler
+        });
+        const removeLink = wrapper.find("a");
+        expect(removeLink.text()).toBe("remove");
+        removeLink.trigger("click");
+        expect(removeHandler.mock.calls.length).toBe(1);
+    });
+
     it("renders error message if error is present", () => {
         const wrapper = createSut({
             error: "File upload went wrong"
