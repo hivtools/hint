@@ -8,7 +8,7 @@ export interface ErrorsState {
 
 export const initialErrorsState = (): ErrorsState => {
     return {
-        errors: ["TEST ERROR"]
+        errors: []
     }
 };
 

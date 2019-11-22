@@ -10,7 +10,7 @@
 <div id="app">
     <user-header title="${title}"></user-header>
     <stepper></stepper>
-    <errors></errors>
+    <errors title="${title}"></errors>
 </div>
 <script src="/public/js/app.js"></script>
 </body>

@@ -14,6 +14,7 @@ import {
 } from "./generated";
 import {Commit} from "vuex";
 import {freezer} from "./utils";
+import {ErrorsMutation} from "./store/errors/mutations";
 
 type ResponseData =
     ValidateInputResponse
@@ -61,8 +62,18 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     private _freezeResponse: Boolean = false;
 
     static getFirstErrorFromFailure = (failure: Response) => {
-        const firstError = failure.errors[0];
-        return firstError.detail ? firstError.detail : firstError.error;
+        const firstError = failure.errors && failure.errors[0];
+        let result;
+        if (firstError) {
+            result =  firstError.detail ? firstError.detail : firstError.error;
+        }
+
+        if (!result)
+        {
+            result = "Unknown error";
+        }
+
+        return result;
     };
 
     private _onError: ((failure: Response) => void) | null = null;
@@ -116,11 +127,15 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         if (!failure || !failure.status) {
             throw new Error("Could not parse API response");
         }
-        if (this._onError) {
+        else if (this._onError) {
             this._onError(failure);
         } else {
-            throw new Error(APIService.getFirstErrorFromFailure(failure));
+            this._addErrorToStore(APIService.getFirstErrorFromFailure(failure));
         }
+    };
+
+    private  _addErrorToStore = (error: String) => {
+        this._commit({type: `errors/${ErrorsMutation.ErrorAdded}`, payload: error}, {root: true});
     };
 
     private _verifyHandlers(url: string) {

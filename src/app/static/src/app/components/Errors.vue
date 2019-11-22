@@ -2,7 +2,7 @@
     <div class="container">
         <div class="content">
             <div v-if="hasErrors" class="alert alert-danger alert-dismissible fade-show" role="alert">
-                <p>The following errors occurred. Please contact support if this problem persists.</p>
+                <p>The following errors occurred. Please contact {{title}} support if this problem persists.</p>
                 <p v-for="error in errors">
                     {{error}}
                 </p>
@@ -16,20 +16,37 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapState} from "vuex";
     import {ErrorsState} from "../store/errors/errors";
-    import {mapMutationByName} from "../utils";
+    import {mapMutationByName, mapStateProps} from "../utils";
     import {ErrorsMutation} from "../store/errors/mutations";
 
     const namespace = "errors";
 
-    export default Vue.extend({
+    interface Props {
+        title: string,
+        user: string
+    }
+
+    interface Methods {
+        dismissAll: () => void
+    }
+
+    interface ComputedState {
+        errors: string[]
+    }
+
+    interface Computed extends ComputedState{
+        hasErrors: boolean
+
+    }
+
+    export default Vue.extend<{}, Methods, Computed, Props>({
         name: "Errors",
         computed: {
-            ...mapState<ErrorsState>(namespace, {
-                hasErrors: state => state.errors.length > 0,
+            ...mapStateProps<ErrorsState, keyof ComputedState>(namespace, {
                 errors: state => state.errors
-            })
+            }),
+            hasErrors: function() { return this.errors.length > 0}
         },
         methods: {
             dismissAll: mapMutationByName(namespace, ErrorsMutation.DismissAll)
