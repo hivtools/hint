@@ -1,9 +1,8 @@
 package org.imperial.mrc.hint.integration
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.imperial.mrc.hint.helpers.getTestEntity
+import org.imperial.mrc.hint.models.ModelRunOptions
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
@@ -16,10 +15,11 @@ import org.springframework.http.MediaType
 class ModelRunTests : SecureIntegrationTests() {
 
     private fun getJsonEntity(): HttpEntity<String> {
-        val options = mapOf("sleep" to 1)
+        val versions = mapOf("hintr" to "1", "rrq" to "1", "naomi" to "1")
+        val modelRunOptions = ModelRunOptions(emptyMap(), versions)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
-        val jsonString = ObjectMapper().writeValueAsString(options)
+        val jsonString = ObjectMapper().writeValueAsString(modelRunOptions)
         return HttpEntity(jsonString, headers)
     }
 
@@ -28,23 +28,13 @@ class ModelRunTests : SecureIntegrationTests() {
     fun `can run model`(isAuthorized: IsAuthorized) {
         val entity = getJsonEntity()
         val responseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
-        assertSecureWithSuccess(isAuthorized, responseEntity, "ModelSubmitResponse")
+        assertSecureWithError(isAuthorized, responseEntity, HttpStatus.BAD_REQUEST, "VERSION_OUT_OF_DATE")
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get model run status`(isAuthorized: IsAuthorized) {
-
-        val id = when (isAuthorized) {
-            IsAuthorized.TRUE -> {
-                val entity = getJsonEntity()
-                val runResult = testRestTemplate.postForEntity<String>("/model/run/", entity)
-                ObjectMapper().readValue<JsonNode>(runResult.body!!)["data"]["id"].textValue()
-            }
-            IsAuthorized.FALSE -> "nonsense"
-        }
-
-        val responseEntity = testRestTemplate.getForEntity<String>("/model/status/${id}")
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/status/1234")
         assertSecureWithSuccess(isAuthorized, responseEntity, "ModelStatusResponse")
     }
 
