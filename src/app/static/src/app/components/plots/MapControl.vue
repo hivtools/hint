@@ -38,7 +38,7 @@
     import TreeSelect from '@riophae/vue-treeselect'
     import {LControl} from 'vue2-leaflet';
     import {BaselineState} from "../../store/baseline/baseline";
-    import {IndicatorMetadata} from "../../generated";
+    import {ChoroplethIndicatorMetadata} from "../../generated";
     import {mapGetterByName, mapStateProp} from "../../utils";
     import {LevelLabel} from "../../types";
 
@@ -60,7 +60,7 @@
     interface Computed {
         detailOptions: Option[]
         indicatorOptions: Option[]
-        choroplethIndicatorsMetadata: IndicatorMetadata[],
+        choroplethIndicatorsMetadata: ChoroplethIndicatorMetadata[],
         choroplethIndicators: string[]
     }
 
@@ -86,7 +86,7 @@
         },
         computed: {
             choroplethIndicatorsMetadata:
-                mapGetterByName<IndicatorMetadata[]>("metadata", "choroplethIndicatorsMetadata"),
+                mapGetterByName<ChoroplethIndicatorMetadata[]>("metadata", "choroplethIndicatorsMetadata"),
             choroplethIndicators:
                 mapGetterByName<string[]>("metadata", "choroplethIndicators"),
             detailOptions: mapStateProp<BaselineState, Option[]>("baseline", state => {
@@ -101,7 +101,7 @@
             }),
             indicatorOptions: function() {
                 const indicators = this.choroplethIndicatorsMetadata;
-                return indicators.map((i: IndicatorMetadata) => { return {id: i.indicator, label: i.name}; });
+                return indicators.map((i: ChoroplethIndicatorMetadata) => { return {id: i.indicator, label: i.name}; });
             }
         },
         methods: {
