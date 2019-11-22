@@ -104,8 +104,8 @@ describe("ChoroplethFilters component", () => {
         expect(surveyFilters.selected).toStrictEqual("s1");
     });
 
-    it("computes quarterFilters", () => {
-        const stateQuarterFilterOptions = [
+    it("computes yearFilters", () => {
+        const stateYearFilterOptions = [
             {id: "1", label: "Jan-Mar 2019"},
             {id: "2", label: "Apr-Jun 2019"}
         ];
@@ -118,16 +118,16 @@ describe("ChoroplethFilters component", () => {
         const mockGetters = {
             selectedDataFilterOptions: () => {
                 return {
-                    quarter: stateQuarterFilterOptions
+                    year: stateYearFilterOptions
                 }
             }
         };
 
         const wrapper = getWrapper(mockState, mockGetters);
         const vm = (wrapper as any).vm;
-        const quarterFilters = vm.quarterFilters;
-        expect(quarterFilters.available).toStrictEqual(stateQuarterFilterOptions);
-        expect(quarterFilters.selected).toStrictEqual("1");
+        const yearFilters = vm.yearFilters;
+        expect(yearFilters.available).toStrictEqual(stateYearFilterOptions);
+        expect(yearFilters.selected).toStrictEqual("1");
     });
 
     it("computes regionFilters", () => {
@@ -256,10 +256,10 @@ describe("ChoroplethFilters component", () => {
         const callCount = mockFilterUpdated.mock.calls.length;
 
         const newFilter = "2";
-        vm.selectQuarter(newFilter);
+        vm.selectYear(newFilter);
 
         expect(mockFilterUpdated.mock.calls[callCount][1])
-            .toStrictEqual([FilterType.Quarter, "2"]);
+            .toStrictEqual([FilterType.Year, "2"]);
     });
 
     it("invokes store actions when region filter is edited", () => {
@@ -313,7 +313,7 @@ describe("ChoroplethFilters component", () => {
             {id: "s1", label: "Survey 1"},
             {id: "s2", label: "Survey 2"}
         ];
-        const stateQuarterFilterOptions = [
+        const stateYearFilterOptions = [
             {id: "1", label: "Jan-Mar 2019"},
             {id: "2", label: "Apr-Jun 2019"}
         ];
@@ -321,7 +321,7 @@ describe("ChoroplethFilters component", () => {
             age: "a2",
             survey: "s1",
             sex: "female",
-            quarter: "1",
+            year: "1",
             regions: []
         };
         const mockFilterUpdated = jest.fn();
@@ -335,7 +335,7 @@ describe("ChoroplethFilters component", () => {
                 return {
                     age: stateAgeFilterOptions,
                     survey: stateSurveyFilterOptions,
-                    quarter: stateQuarterFilterOptions
+                    year: stateYearFilterOptions
                 }
             }
         };
@@ -356,7 +356,7 @@ describe("ChoroplethFilters component", () => {
             {id: "a1", label: "0-4"},
             {id: "a2", label: "5-9"}
         ];
-        const stateQuarterFilterOptions = [
+        const stateYearFilterOptions = [
             {id: "1", label: "Jan-Mar 2019"},
             {id: "2", label: "Apr-Jun 2019"}
         ];
@@ -373,7 +373,7 @@ describe("ChoroplethFilters component", () => {
             age: "a3",
             survey: "s1",
             sex: "male",
-            quarter: "3",
+            year: "3",
             regions: []
         };
 
@@ -389,7 +389,7 @@ describe("ChoroplethFilters component", () => {
                         age: stateAgeFilterOptions,
                         survey: null,
                         regions: stateRegionOptions,
-                        quarter: stateQuarterFilterOptions
+                        year: stateYearFilterOptions
                     }
                 }
             },
@@ -405,7 +405,7 @@ describe("ChoroplethFilters component", () => {
         expect(mockFilterUpdated.mock.calls[callCount][1])
             .toStrictEqual([FilterType.Age, "a1"]);
         expect(mockFilterUpdated.mock.calls[callCount + 1][1])
-            .toStrictEqual([FilterType.Quarter, "1"]);
+            .toStrictEqual([FilterType.Year, "1"]);
     });
 
     const getWrapper = (state?: Partial<FilteredDataState>,

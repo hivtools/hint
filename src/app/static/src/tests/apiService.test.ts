@@ -49,6 +49,29 @@ describe("ApiService", () => {
         expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
     });
 
+    it("if no first error message, commits a default error message to errors module by default", async () => {
+
+        const failure = {
+            data: {},
+            status: "failure",
+                errors: []
+        };
+        mockAxios.onGet(`/unusual/`)
+            .reply(500, failure);
+
+        const commit = jest.fn();
+
+        await api(commit)
+            .get("/unusual/");
+
+        expect((console.warn as jest.Mock).mock.calls[0][0])
+            .toBe("No error handler registered for request /unusual/.");
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: `errors/ErrorAdded`, payload: "Unknown error"});
+        expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
+    });
+
     it("commits the first error with the specified type if well formatted", async () => {
 
         mockAxios.onGet(`/baseline/`)
