@@ -45,11 +45,11 @@ export const mutations: MutationTree<ModelRunState>  = {
         state.ready = true;
     },
 
-    [ModelRunMutation.ModelRunError](state: ModelRunState, error: string) {
-        state.errors.push(error);
+    [ModelRunMutation.ModelRunError](state: ModelRunState, action: PayloadWithType<string>) {
+        state.errors.push(action.payload);
     },
 
-    [ModelRunMutation.RunStatusError](state: ModelRunState, error: string) {
-        state.errors.push(error);
+    [ModelRunMutation.RunStatusError](state: ModelRunState, action: PayloadWithType<string>) {
+        state.errors.push(action.payload);
     }
 };

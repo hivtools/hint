@@ -13,8 +13,8 @@ describe("model run options actions", () => {
         (console.log as jest.Mock).mockClear();
     });
 
-    it("fetches and commits model run options", async () => {
-        mockAxios.onGet("/model/options/").reply(200, mockSuccess("TEST"));
+    it("fetches and commits model run options and version", async () => {
+        mockAxios.onGet("/model/options/").reply(200, mockSuccess("TEST", "v1"));
         const commit = jest.fn();
         await actions.fetchModelRunOptions({commit} as any);
 
@@ -22,6 +22,11 @@ describe("model run options actions", () => {
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "ModelOptionsFetched",
             payload: "TEST"
+        });
+
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: "SetModelOptionsVersion",
+            payload: "v1"
         });
     });
 

@@ -45,6 +45,7 @@ describe("Model run actions", () => {
                 clearInterval(testInterval);
                 done();
             }
+
         })
     });
 

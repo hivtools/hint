@@ -4,6 +4,7 @@ import {DynamicFormData, DynamicFormMeta} from "../../components/forms/types";
 import {PayloadWithType} from "../../types";
 import {updateForm} from "./utils";
 import {ModelRunMutation} from "../modelRun/mutations";
+import {VersionInfo} from "../../generated";
 
 
 export enum ModelOptionsMutation {
@@ -36,7 +37,7 @@ export const mutations: MutationTree<ModelOptionsState> = {
         state.fetching = false;
     },
 
-    [ModelOptionsMutation.SetModelOptionsVersion](state: ModelOptionsState, version: string) {
-        state.version = version
+    [ModelOptionsMutation.SetModelOptionsVersion](state: ModelOptionsState, action: PayloadWithType<VersionInfo>) {
+        state.version = action.payload
     }
 };

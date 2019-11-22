@@ -18,7 +18,7 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
             .get<DynamicFormMeta>("/model/options/");
 
         if (response) {
-            commit(ModelOptionsMutation.SetModelOptionsVersion, response.version);
+            commit({type: ModelOptionsMutation.SetModelOptionsVersion, payload: response.version});
         }
     }
 };

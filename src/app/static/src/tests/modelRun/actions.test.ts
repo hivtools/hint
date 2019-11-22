@@ -15,7 +15,7 @@ describe("Model run actions", () => {
         (console.log as jest.Mock).mockClear();
     });
 
-    it("passes model options from state", async () => {
+    it("passes model options and version from state", async () => {
 
         mockAxios.onPost(`/model/run/`)
             .reply(200, mockSuccess({id: "12345"}));
@@ -23,12 +23,13 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const rootState = mockRootState({
             modelOptions: mockModelOptionsState({
-                options: {1: "TEST"}
+                options: {1: "TEST"},
+                version: "v1" as any
             })
         });
         await actions.run({commit, rootState} as any);
         expect(JSON.parse(mockAxios.history.post[0].data))
-            .toStrictEqual({1: "TEST"})
+            .toStrictEqual({options: {1: "TEST"}, version: "v1"})
     });
 
     it("commits run id after triggering a model run", async () => {
