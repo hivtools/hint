@@ -6,14 +6,13 @@ import {RootState} from "../../root";
 import {localStorageManager} from "../../localStorageManager";
 
 export enum DataType { ANC, Program, Survey, Output }
-
-export enum FilterType { Sex, Age, Region, Survey, Quarter }
+export enum FilterType { Sex, Age, Region, Survey, Year }
 
 export interface SelectedChoroplethFilters {
     sex: string,
     age: string,
     survey: string,
-    quarter: string,
+    year: string,
     regions: string[]
 }
 
@@ -28,7 +27,7 @@ export const initialSelectedChoroplethFilters = (): SelectedChoroplethFilters =>
         age: "",
         survey: "",
         regions: [],
-        quarter: ""
+        year: ""
     }
 };
 

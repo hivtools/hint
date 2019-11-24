@@ -14,10 +14,10 @@
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
     import {colorFunctionFromName, roundToContext} from "../../store/filteredData/utils";
-    import {IndicatorMetadata} from "../../generated";
+    import {ChoroplethIndicatorMetadata} from "../../generated";
 
     interface Props {
-        metadata: IndicatorMetadata
+        metadata: ChoroplethIndicatorMetadata
     }
 
     interface Level {

@@ -21,23 +21,28 @@ describe("Root mutations", () => {
         // mutate simple prop
         state.stepper.activeStep = 2;
         // mutate nested prop
-        state.filteredData.selectedChoroplethFilters.quarter = "test";
+        state.filteredData.selectedChoroplethFilters.year = "test";
 
         mutations.Reset(state);
 
         expect(state.stepper.activeStep).toBe(1);
+<<<<<<< HEAD
         expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
         expect(state.baseline.ready).toBe(true);
         expect(state.surveyAndProgram.ready).toBe(true);
         expect(state.modelRun.ready).toBe(true);
+=======
+        expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
+>>>>>>> master
 
         // do mutations again
         state.stepper.activeStep = 2;
-        state.filteredData.selectedChoroplethFilters.quarter = "test";
+        state.filteredData.selectedChoroplethFilters.year = "test";
 
         mutations.Reset(state);
 
         expect(state.stepper.activeStep).toBe(1);
+<<<<<<< HEAD
         expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
 
     });
@@ -52,6 +57,9 @@ describe("Root mutations", () => {
 
         mutations.ResetInputs(state);
         expect(state.filteredData.selectedDataType).toBe(null);
+=======
+        expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
+>>>>>>> master
     });
 
     it("sets selected data type to available type if there is one", () => {
@@ -65,6 +73,7 @@ describe("Root mutations", () => {
             })
         });
 
+<<<<<<< HEAD
         mutations.ResetInputs(state);
         expect(state.filteredData.selectedDataType).toBe(DataType.Survey);
     });
@@ -79,6 +88,14 @@ describe("Root mutations", () => {
                 selectedDataType: DataType.ANC
             })
         });
+=======
+        // simulate mutations
+        state.filteredData.selectedChoroplethFilters.age = "1";
+        state.filteredData.selectedChoroplethFilters.year = "1";
+        state.filteredData.selectedChoroplethFilters.survey = "1";
+        state.filteredData.selectedChoroplethFilters.sex = "1";
+        state.filteredData.selectedChoroplethFilters.regions = ["1"];
+>>>>>>> master
 
         mutations.ResetInputs(state);
         expect(state.filteredData.selectedDataType).toBe(DataType.ANC);
@@ -105,7 +122,7 @@ describe("Root mutations", () => {
         expect(state.modelRun).toStrictEqual({...initialModelRunState(), ready: true});
         expect(state.modelOutput.dummyProperty).toBe(false);
 
-        expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
+        expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.age).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.sex).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.survey).toBe("");
