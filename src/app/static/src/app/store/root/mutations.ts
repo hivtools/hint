@@ -4,6 +4,7 @@ import {DataType} from "../filteredData/filteredData";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
+import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
 
 export interface RootMutations {
     Reset: Mutation<RootState>
@@ -57,6 +58,7 @@ export const mutations: MutationTree<RootState> & RootMutations = {
         Object.assign(state.modelRun, initialModelRunState());
         state.modelRun.ready = true;
         Object.assign(state.modelOutput, initialModelOutputState());
+        Object.assign(state.plottingSelections, initialPlottingSelectionsState());
     }
 
 };
