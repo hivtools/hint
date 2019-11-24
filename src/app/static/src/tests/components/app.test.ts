@@ -26,6 +26,7 @@ storeOptions.modules!!.modelRun!!.actions = modelRunActions;
 // only import the app after we have replaced action with mocks
 // as the app will call these actions on import
 import {app} from "../../app"
+import {RootMutation} from "../../app/store/root/mutations";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -74,9 +75,9 @@ describe("App", () => {
         const spy = jest.spyOn(store, "commit");
         store.commit(prefixNamespace("baseline", BaselineMutation.PJNZUpdated), {payload: null});
 
-        expect(spy.mock.calls[1][0]).toBe("ResetInputs");
-        expect(spy.mock.calls[2][0]).toBe("ResetOptions");
-        expect(spy.mock.calls[3][0]).toBe("ResetOutputs");
+        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetFilteredDataSelections);
+        expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetOptions);
+        expect(spy.mock.calls[3][0]).toBe(RootMutation.ResetOutputs);
 
         expect(spy).toBeCalledTimes(4);
     });
@@ -87,9 +88,9 @@ describe("App", () => {
         const spy = jest.spyOn(store, "commit");
         store.commit(prefixNamespace("surveyAndProgram", SurveyAndProgramMutation.SurveyUpdated), {payload: null});
 
-        expect(spy.mock.calls[1][0]).toBe("ResetInputs");
-        expect(spy.mock.calls[2][0]).toBe("ResetOptions");
-        expect(spy.mock.calls[3][0]).toBe("ResetOutputs");
+        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetFilteredDataSelections);
+        expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetOptions);
+        expect(spy.mock.calls[3][0]).toBe(RootMutation.ResetOutputs);
 
         expect(spy).toBeCalledTimes(4);
     });
@@ -99,7 +100,7 @@ describe("App", () => {
         const spy = jest.spyOn(store, "commit");
         store.commit(prefixNamespace("modelOptions", ModelOptionsMutation.Update), {payload: null});
 
-        expect(spy.mock.calls[1][0]).toBe("ResetOutputs");
+        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetOutputs);
         expect(spy).toBeCalledTimes(2);
     });
 
