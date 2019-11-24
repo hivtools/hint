@@ -26,14 +26,12 @@ describe("Root mutations", () => {
         mutations.Reset(state);
 
         expect(state.stepper.activeStep).toBe(1);
-<<<<<<< HEAD
-        expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
+        expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
         expect(state.baseline.ready).toBe(true);
         expect(state.surveyAndProgram.ready).toBe(true);
         expect(state.modelRun.ready).toBe(true);
-=======
+
         expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
->>>>>>> master
 
         // do mutations again
         state.stepper.activeStep = 2;
@@ -42,8 +40,7 @@ describe("Root mutations", () => {
         mutations.Reset(state);
 
         expect(state.stepper.activeStep).toBe(1);
-<<<<<<< HEAD
-        expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
+        expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
 
     });
 
@@ -55,11 +52,8 @@ describe("Root mutations", () => {
             })
         });
 
-        mutations.ResetInputs(state);
+        mutations.ResetFilteredDataSelections(state);
         expect(state.filteredData.selectedDataType).toBe(null);
-=======
-        expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
->>>>>>> master
     });
 
     it("sets selected data type to available type if there is one", () => {
@@ -73,8 +67,7 @@ describe("Root mutations", () => {
             })
         });
 
-<<<<<<< HEAD
-        mutations.ResetInputs(state);
+        mutations.ResetFilteredDataSelections(state);
         expect(state.filteredData.selectedDataType).toBe(DataType.Survey);
     });
 
@@ -88,16 +81,15 @@ describe("Root mutations", () => {
                 selectedDataType: DataType.ANC
             })
         });
-=======
+
         // simulate mutations
         state.filteredData.selectedChoroplethFilters.age = "1";
         state.filteredData.selectedChoroplethFilters.year = "1";
         state.filteredData.selectedChoroplethFilters.survey = "1";
         state.filteredData.selectedChoroplethFilters.sex = "1";
         state.filteredData.selectedChoroplethFilters.regions = ["1"];
->>>>>>> master
 
-        mutations.ResetInputs(state);
+        mutations.ResetFilteredDataSelections(state);
         expect(state.filteredData.selectedDataType).toBe(DataType.ANC);
     });
 

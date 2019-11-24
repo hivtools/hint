@@ -85,9 +85,9 @@ export function prefixNamespace(namespace: string, name: any) {
 export function stripNamespace(name: string) {
     const nameArray = name.split("/");
     if (nameArray.length == 1) {
-        return name;
+        return ["root", name];
     }
     else {
-        return nameArray[1];
+        return nameArray;
     }
 }

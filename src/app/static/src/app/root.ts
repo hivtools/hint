@@ -13,7 +13,7 @@ import {initialLoadState, load, LoadState} from "./store/load/load";
 import {initialModelOutputState, modelOutput, ModelOutputState} from "./store/modelOutput/modelOutput";
 import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
-import {mutations} from "./store/root/mutations";
+import {mutations, RootMutation} from "./store/root/mutations";
 import {initialModelOptionsState, modelOptions, ModelOptionsState} from "./store/modelOptions/modelOptions";
 import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mutations";
 import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
@@ -56,20 +56,21 @@ const resetState = (store: Store<RootState>) => {
 
             const type = stripNamespace(mutation.type);
 
-            if (BaselineUpdates.includes(type as BaselineMutation)) {
-                store.commit("ResetInputs");
-                store.commit("ResetOptions");
-                store.commit("ResetOutputs");
+            if (type[0] =="baseline" && BaselineUpdates.includes(type[1] as BaselineMutation)) {
+                store.commit(RootMutation.ResetFilteredDataSelections);
+                store.commit(RootMutation.ResetOptions);
+                store.commit(RootMutation.ResetOutputs);
             }
 
-            if (SurveyAndProgramUpdates.includes(type as SurveyAndProgramMutation)) {
-                store.commit("ResetInputs");
-                store.commit("ResetOptions");
-                store.commit("ResetOutputs");
+            if (type[0] == "surveyAndProgram" && SurveyAndProgramUpdates.includes(type[1] as SurveyAndProgramMutation)) {
+
+                store.commit(RootMutation.ResetFilteredDataSelections);
+                store.commit(RootMutation.ResetOptions);
+                store.commit(RootMutation.ResetOutputs);
             }
 
-            if (ModelOptionsUpdates.includes(type as ModelOptionsMutation)) {
-                store.commit("ResetOutputs");
+            if (type[0] == "modelOptions" && ModelOptionsUpdates.includes(type[1] as ModelOptionsMutation)) {
+                store.commit(RootMutation.ResetOutputs);
             }
         }
     })
