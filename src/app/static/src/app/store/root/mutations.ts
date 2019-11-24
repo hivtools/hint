@@ -26,7 +26,6 @@ export const mutations: MutationTree<RootState> = {
 
     [RootMutation.ResetFilteredDataSelections](state: RootState) {
         const dataAvailable = (dataType: DataType | null) => {
-
             if (dataType == null) {
                 return true
             }
@@ -45,12 +44,9 @@ export const mutations: MutationTree<RootState> = {
         // only update filtered data state if the selected type is no longer valid
         if (!dataAvailable(state.filteredData.selectedDataType)) {
 
-            console.log(state.filteredData.selectedDataType);
             const availableData: number[] = Object.keys(DataType)
                 .filter(k => !isNaN(Number(k)) && dataAvailable(Number(k)))
                 .map(k => Number(k));
-
-            console.log(availableData);
 
             state.filteredData.selectedDataType = availableData.length > 0 ? availableData[0] : null;
         }

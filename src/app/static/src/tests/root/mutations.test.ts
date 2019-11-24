@@ -6,7 +6,7 @@ import {
     mockAncResponse,
     mockFilteredDataState,
     mockModelOptionsState,
-    mockModelRunState,
+    mockModelRunState, mockPlottingSelections,
     mockRootState,
     mockSurveyAndProgramState, mockSurveyResponse
 } from "../mocks";
@@ -110,6 +110,8 @@ describe("Root mutations", () => {
             modelOutput: {dummyProperty: "TEST" as any}
         });
 
+        state.plottingSelections.barchart.xAxisId = "test";
+
         mutations.ResetOutputs(state);
         expect(state.modelRun).toStrictEqual({...initialModelRunState(), ready: true});
         expect(state.modelOutput.dummyProperty).toBe(false);
@@ -119,6 +121,8 @@ describe("Root mutations", () => {
         expect(state.filteredData.selectedChoroplethFilters.sex).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.survey).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.regions).toStrictEqual([]);
+
+        expect(state.plottingSelections.barchart.xAxisId).toBe("");
     });
 
 });
