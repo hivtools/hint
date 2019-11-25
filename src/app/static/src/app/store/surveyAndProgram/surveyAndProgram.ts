@@ -27,7 +27,7 @@ export const initialSurveyAndProgramDataState = (): SurveyAndProgramDataState =>
 
 export const surveyAndProgramGetters = {
     complete: (state: SurveyAndProgramDataState) => {
-        return !!state.survey
+        return !!state.survey && !state.programError && !state.ancError
     }
 };
 
