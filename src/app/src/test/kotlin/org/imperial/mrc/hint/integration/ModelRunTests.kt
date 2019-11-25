@@ -1,6 +1,8 @@
 package org.imperial.mrc.hint.integration
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.treeToValue
 import org.imperial.mrc.hint.helpers.getTestEntity
 import org.imperial.mrc.hint.models.ModelRunOptions
 import org.junit.jupiter.params.ParameterizedTest
@@ -14,8 +16,7 @@ import org.springframework.http.MediaType
 
 class ModelRunTests : SecureIntegrationTests() {
 
-    private fun getJsonEntity(): HttpEntity<String> {
-        val versions = mapOf("hintr" to "1", "rrq" to "1", "naomi" to "1")
+    private fun getModelRunEntity(versions: Map<String, String>): HttpEntity<String> {
         val modelRunOptions = ModelRunOptions(emptyMap(), versions)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
@@ -23,12 +24,14 @@ class ModelRunTests : SecureIntegrationTests() {
         return HttpEntity(jsonString, headers)
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can run model`(isAuthorized: IsAuthorized) {
-        val entity = getJsonEntity()
-        val responseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
-        assertSecureWithError(isAuthorized, responseEntity, HttpStatus.BAD_REQUEST, "VERSION_OUT_OF_DATE")
+    private val parser = ObjectMapper()
+
+    private fun uploadMinimalFiles() {
+        testRestTemplate.postForEntity<String>("/baseline/shape/",
+                getTestEntity("malawi.geojson"))
+
+        testRestTemplate.postForEntity<String>("/disease/survey/",
+                getTestEntity("survey.csv"))
     }
 
     @ParameterizedTest
@@ -51,15 +54,25 @@ class ModelRunTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get model run options`(isAuthorized: IsAuthorized) {
-
-        testRestTemplate.postForEntity<String>("/baseline/shape/",
-                getTestEntity("malawi.geojson"))
-
-        testRestTemplate.postForEntity<String>("/disease/survey/",
-                getTestEntity("survey.csv"))
-
+        uploadMinimalFiles()
         val responseEntity = testRestTemplate.getForEntity<String>("/model/options/")
         assertSecureWithSuccess(isAuthorized, responseEntity, "ModelRunOptions")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can run model`(isAuthorized: IsAuthorized) {
+        val version = if (isAuthorized == IsAuthorized.TRUE) {
+            uploadMinimalFiles()
+            val optionsResponseEntity = testRestTemplate.getForEntity<String>("/model/options/")
+            val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
+            parser.treeToValue<Map<String, String>>(versionJson)
+        } else {
+            mapOf()
+        }
+        val entity = getModelRunEntity(version)
+        val responseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ModelSubmitResponse")
     }
 
 }

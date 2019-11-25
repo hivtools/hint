@@ -1,8 +1,6 @@
 package org.imperial.mrc.hint.integration
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.FileType
@@ -49,27 +47,20 @@ class HintrApiClientTests {
     fun `can submit model run`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.submit(emptyMap(), ModelRunOptions(emptyMap(), emptyMap()))
-        assertThat(result.statusCodeValue).isEqualTo(200)
-        JSONValidator().validateSuccess(result.body!!, "ModelSubmitResponse")
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "VERSION_OUT_OF_DATE")
     }
 
     @Test
     fun `can get model run status`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val submitResult = sut.submit(emptyMap(), ModelRunOptions(emptyMap(), emptyMap()))
-
-        val id = ObjectMapper().readValue<JsonNode>(submitResult.body!!)["data"]["id"].textValue()
-        val result = sut.getStatus(id)
+        val result = sut.getStatus("1234")
         JSONValidator().validateSuccess(result.body!!, "ModelStatusResponse")
     }
     @Test
     fun `can get model run result`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val submitResult = sut.submit(emptyMap(), ModelRunOptions(emptyMap(), emptyMap()))
-
-        val id = ObjectMapper().readValue<JsonNode>(submitResult.body!!)["data"]["id"].textValue()
-
-        val result = sut.getResult(id)
+        val result = sut.getResult("1234")
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
     }
