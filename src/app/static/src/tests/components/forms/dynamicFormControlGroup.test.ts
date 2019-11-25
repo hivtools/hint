@@ -31,7 +31,7 @@ describe('Dynamic form control group component', function () {
 
         const labelCol = rendered.find(BCol);
         expect(labelCol.find("label").text()).toBe("Test 1");
-        expect(labelCol.attributes("md")).toBe("3");
+        expect(labelCol.attributes("md")).toBe("4");
     });
 
     it("does not render label col if there is no label", () => {

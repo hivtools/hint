@@ -37,12 +37,9 @@
         mapGettersByNames,
         mapMutationsByNames,
         mapStateProp,
-        mapStatePropByName
     } from "../../utils";
     import {BarchartIndicator, Filter} from "../../types";
-    import {BaselineState} from "../../store/baseline/baseline";
     import {ModelRunState} from "../../store/modelRun/modelRun";
-    import {ModelResultResponse} from "../../generated";
     import {BarchartSelections} from "../../store/plottingSelections/plottingSelections";
 
     const namespace: string = 'filteredData';

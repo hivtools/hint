@@ -1,6 +1,6 @@
 import {RootState} from "../../root";
 import {DataType, FilteredDataState} from "./filteredData";
-import {FilterOption} from "../../generated";
+import {FilterOption, SurveyDataRow} from "../../generated";
 import {Dict, IndicatorValuesDict} from "../../types";
 import {flattenToIdSet, getColor, getUnfilteredData, sexFilterOptions} from "./utils";
 
@@ -34,14 +34,12 @@ export const getters = {
                         quarter: undefined
                     } : null;
             case (DataType.Output):
-                return rootState.modelRun.result ?
-                    {
-                        ...rootState.modelRun.result.filters,
-                        regions,
-                        sex: sexFilterOptions,
-                        surveys: undefined
-                    } : null;
-
+                // TODO use returned filters once in
+                return {
+                    regions,
+                    sex: sexFilterOptions,
+                    surveys: undefined
+                };
             default:
                 return null;
         }
@@ -97,7 +95,7 @@ export const getters = {
 
         return result;
     },
-    excludeRow: function (state: FilteredDataState, getters: any, rootState: RootState):
+    excludeRow: function (state: FilteredDataState):
         (row: any, selectedRegions: Set<string>) => boolean {
         const dataType = state.selectedDataType!!;
         const selectedFilters = state.selectedChoroplethFilters;
@@ -108,7 +106,7 @@ export const getters = {
                 return true;
             }
 
-            if (dataType != DataType.ANC && row.age_group_id != selectedFilters.age) {
+            if (dataType != DataType.ANC && row.age_group != selectedFilters.age) {
                 return true;
             }
 
@@ -116,7 +114,7 @@ export const getters = {
                 return true;
             }
 
-            if (dataType in [DataType.Program, DataType.ANC] && row.quarter_id != selectedFilters.quarter) {
+            if (dataType in [DataType.Program, DataType.ANC] && row.year != selectedFilters.year) {
                 return true;
             }
 

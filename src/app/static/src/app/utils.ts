@@ -1,6 +1,10 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
 import {Dict} from "./types";
+<<<<<<< HEAD
+=======
+import {Response, Error} from "./generated";
+>>>>>>> master
 
 export type ComputedWithType<T> = () => T;
 
@@ -58,6 +62,18 @@ export const verifyCheckSum = (content: string): false | any => {
 
     return valid && JSON.parse(data);
 };
+
+function isHINTError(object: any): object is Error {
+    return typeof object.error == "string"
+        && object.details == undefined || typeof object.details == "string"
+}
+
+export function isHINTResponse(object: any): object is Response {
+    return object && (typeof object.status == "string")
+        && (Array.isArray(object.errors))
+        && typeof object.data == "object"
+        && object.errors.every((e: any) => isHINTError(e))
+}
 
 export const freezer = {
 

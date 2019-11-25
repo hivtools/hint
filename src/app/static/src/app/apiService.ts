@@ -1,10 +1,30 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {
+<<<<<<< HEAD
     Response,
+=======
+    AncResponse,
+    ModelResultResponse,
+    ModelStatusResponse,
+    ModelSubmitResponse,
+    PjnzResponse,
+    PopulationResponse,
+    ProgrammeResponse,
+    Response, SessionFile,
+    ShapeResponse,
+    SurveyResponse, ValidateBaselineResponse,
+    ValidateInputResponse
+>>>>>>> master
 } from "./generated";
 import {Commit} from "vuex";
-import {freezer} from "./utils";
+import {freezer, isHINTResponse} from "./utils";
 
+<<<<<<< HEAD
+=======
+import {ErrorsMutation} from "./store/errors/mutations";
+import {Dict, LocalSessionFile} from "./types";
+
+>>>>>>> master
 declare var appUrl: string;
 
 export interface ResponseWithType<T> extends Response {
@@ -17,9 +37,15 @@ export interface API<S, E> {
     withSuccess: (type: S) => API<S, E>
     ignoreErrors: () => API<S, E>
 
+<<<<<<< HEAD
     postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>>
 
     get<T>(url: string): Promise<void | ResponseWithType<T>>
+=======
+    postAndReturn<T>(url: string, data: any): Promise<void | T>
+
+    get<T>(url: string): Promise<void | T>
+>>>>>>> master
     delete(url: string): Promise<void | true>
 }
 
@@ -42,6 +68,9 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     private _freezeResponse: Boolean = false;
 
     static getFirstErrorFromFailure = (failure: Response) => {
+        if (failure.errors.length == 0){
+            return "Unknown error"
+        }
         const firstError = failure.errors[0];
         return firstError.detail ? firstError.detail : firstError.error;
     };
@@ -93,15 +122,19 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         if (this._ignoreErrors) {
             return
         }
-        const failure = e.response && e.response.data as Response;
-        if (!failure || !failure.status) {
+        const failure = e.response && e.response.data;
+        if (!isHINTResponse(failure)) {
             throw new Error("Could not parse API response");
         }
-        if (this._onError) {
+        else if (this._onError) {
             this._onError(failure);
         } else {
-            throw new Error(APIService.getFirstErrorFromFailure(failure));
+            this._addErrorToStore(APIService.getFirstErrorFromFailure(failure));
         }
+    };
+
+    private  _addErrorToStore = (error: string) => {
+        this._commit({type: `errors/${ErrorsMutation.ErrorAdded}`, payload: error}, {root: true});
     };
 
     private _verifyHandlers(url: string) {
@@ -113,13 +146,21 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
     }
 
+<<<<<<< HEAD
     async get<T>(url: string): Promise<void | ResponseWithType<T>> {
+=======
+    async get<T>(url: string): Promise<void | T> {
+>>>>>>> master
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
         return this._handleAxiosResponse(axios.get(fullUrl));
     }
 
+<<<<<<< HEAD
     async postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>> {
+=======
+    async postAndReturn<T>(url: string, data: any): Promise<void | T> {
+>>>>>>> master
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
 

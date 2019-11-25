@@ -120,8 +120,7 @@
                 });
 
                 this.features.forEach((feature: Feature) => {
-                    const areas = feature.properties!!["area_id"].split(".");
-                    const adminLevel = areas.length - 1;  //Country (e.g. "MWI") is level 0
+                    const adminLevel = parseInt(feature.properties!!["area_level"]); //Country (e.g. "MWI") is level 0
                     if (result[adminLevel]) {
                         result[adminLevel].push(feature);
                     }

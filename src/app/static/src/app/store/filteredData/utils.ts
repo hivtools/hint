@@ -1,6 +1,7 @@
 import {DataType, FilteredDataState} from "./filteredData";
 import {RootState} from "../../root";
 import {ChoroplethIndicatorMetadata, NestedFilterOption} from "../../generated";
+
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {Dict} from "../../types";
 

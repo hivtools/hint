@@ -29,7 +29,10 @@ import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
 import {initialLoadState, LoadState} from "../app/store/load/load";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
-import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
+import {
+    initialPlottingSelectionsState,
+    PlottingSelectionsState
+} from "../app/store/plottingSelections/plottingSelections";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -183,7 +186,7 @@ export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): Pro
         filename: "test.csv",
         data: [],
         hash: "1234.csv",
-        filters: {"age": [], "quarter": [], indicators: []},
+        filters: {"age": [], "year": [], indicators: []},
         ...props
     }
 };
@@ -194,7 +197,7 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
         filename: "test.csv",
         hash: "1234.csv",
         data: [],
-        filters: {"quarter": [], indicators: []},
+        filters: {"year": [], indicators: []},
         ...props
     }
 };
@@ -202,7 +205,7 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
 export const mockProgramFilters = (props: Partial<ProgrammeFilters> = {}): ProgrammeFilters => {
     return {
         age: [],
-        quarter: [],
+        year: [],
         indicators: [],
         ...props
     }
@@ -229,7 +232,6 @@ export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}):
 
 export const mockValidateBaselineResponse = (props: Partial<ValidateBaselineResponse> = {}): ValidateBaselineResponse => {
     return {
-        complete: true,
         consistent: true
     }
 };
@@ -253,6 +255,17 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
                 indicators: [], filters: []
             }
         },
+        data: [{
+            area_id: "MWI",
+            sex: "both",
+            age_group: "1",
+            calendar_quarter: "1",
+            indicator_id: 1,
+            lower: 0.5,
+            mean: 0.5,
+            mode: 0.5,
+            upper: 0.5
+        }],
         ...props
     }
 };

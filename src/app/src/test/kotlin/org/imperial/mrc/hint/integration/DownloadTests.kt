@@ -72,7 +72,6 @@ class DownloadTests : SecureIntegrationTests() {
         assertThat(contentLength).isGreaterThan(0)
         val bodyLength = response.body?.count()
         assertThat(contentLength).isEqualTo(bodyLength)
-
         assertThat(headers["Connection"]?.first()).isEqualTo("close")
     }
 }

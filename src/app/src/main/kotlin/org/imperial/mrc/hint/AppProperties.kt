@@ -21,6 +21,7 @@ interface AppProperties {
     val dbUser: String
     val dbPassword: String
     val dbUrl: String
+    val supportEmail: String
 }
 
 //prevent auto-wiring of default Properties
@@ -42,6 +43,7 @@ class ConfiguredAppProperties(private val props: HintProperties = properties): A
     override val dbUser: String = propString("db_user")
     override val dbPassword: String = propString("db_password")
     override val dbUrl: String = propString("db_url")
+    override val supportEmail: String = propString("support_email")
 
     companion object {
 

@@ -10,21 +10,21 @@ describe("Root mutations", () => {
         // mutate simple prop
         state.stepper.activeStep = 2;
         // mutate nested prop
-        state.filteredData.selectedChoroplethFilters.quarter = "test";
+        state.filteredData.selectedChoroplethFilters.year = "test";
 
         mutations.Reset(state);
 
         expect(state.stepper.activeStep).toBe(1);
-        expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
+        expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
 
         // do mutations again
         state.stepper.activeStep = 2;
-        state.filteredData.selectedChoroplethFilters.quarter = "test";
+        state.filteredData.selectedChoroplethFilters.year = "test";
 
         mutations.Reset(state);
 
         expect(state.stepper.activeStep).toBe(1);
-        expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
+        expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
     });
 
     it("can reset input state", () => {
@@ -39,7 +39,7 @@ describe("Root mutations", () => {
 
         // simulate mutations
         state.filteredData.selectedChoroplethFilters.age = "1";
-        state.filteredData.selectedChoroplethFilters.quarter = "1";
+        state.filteredData.selectedChoroplethFilters.year = "1";
         state.filteredData.selectedChoroplethFilters.survey = "1";
         state.filteredData.selectedChoroplethFilters.sex = "1";
         state.filteredData.selectedChoroplethFilters.regions = ["1"];
@@ -50,7 +50,7 @@ describe("Root mutations", () => {
         expect(state.surveyAndProgram.program).toBe(null);
         expect(state.filteredData.selectedDataType).toBe(null);
 
-        expect(state.filteredData.selectedChoroplethFilters.quarter).toBe("");
+        expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.age).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.sex).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.survey).toBe("");
