@@ -381,7 +381,7 @@ export interface Response {
     [k: string]: any;
   };
   errors: {
-    error?: string;
+    error: string;
     detail?: string | null;
   }[];
 }
