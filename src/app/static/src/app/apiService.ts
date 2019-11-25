@@ -1,22 +1,10 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {
-    AncResponse,
-    ModelResultResponse,
-    ModelStatusResponse,
-    ModelSubmitResponse,
-    PjnzResponse,
-    PopulationResponse,
-    ProgrammeResponse,
-    Response, SessionFile,
-    ShapeResponse,
-    SurveyResponse, ValidateBaselineResponse,
-    ValidateInputResponse
+    Response
 } from "./generated";
 import {Commit} from "vuex";
 import {freezer, isHINTResponse} from "./utils";
-
 import {ErrorsMutation} from "./store/errors/mutations";
-import {Dict, LocalSessionFile} from "./types";
 
 declare var appUrl: string;
 
@@ -29,6 +17,7 @@ export interface API<S, E> {
     postAndReturn<T>(url: string, data: any): Promise<void | T>
 
     get<T>(url: string): Promise<void | T>
+
     delete(url: string): Promise<void | true>
 }
 
@@ -51,8 +40,8 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     private _freezeResponse: Boolean = false;
 
     static getFirstErrorFromFailure = (failure: Response) => {
-        if (failure.errors.length == 0){
-            return "Unknown error"
+        if (failure.errors.length == 0) {
+            return "API response failed but did not contain any error information. Please contact support."
         }
         const firstError = failure.errors[0];
         return firstError.detail ? firstError.detail : firstError.error;
@@ -107,16 +96,15 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
         const failure = e.response && e.response.data;
         if (!isHINTResponse(failure)) {
-            throw new Error("Could not parse API response");
-        }
-        else if (this._onError) {
+            this._commitError("Could not parse API response. Please contact support.");
+        } else if (this._onError) {
             this._onError(failure);
         } else {
-            this._addErrorToStore(APIService.getFirstErrorFromFailure(failure));
+            this._commitError(APIService.getFirstErrorFromFailure(failure));
         }
     };
 
-    private  _addErrorToStore = (error: string) => {
+    private _commitError = (error: string) => {
         this._commit({type: `errors/${ErrorsMutation.ErrorAdded}`, payload: error}, {root: true});
     };
 
