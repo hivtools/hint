@@ -1,30 +1,9 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
-import {
-<<<<<<< HEAD
-    Response,
-=======
-    AncResponse,
-    ModelResultResponse,
-    ModelStatusResponse,
-    ModelSubmitResponse,
-    PjnzResponse,
-    PopulationResponse,
-    ProgrammeResponse,
-    Response, SessionFile,
-    ShapeResponse,
-    SurveyResponse, ValidateBaselineResponse,
-    ValidateInputResponse
->>>>>>> master
-} from "./generated";
+import {ErrorsMutation} from "./store/errors/mutations";
 import {Commit} from "vuex";
 import {freezer, isHINTResponse} from "./utils";
+import {Response, Error} from "./generated";
 
-<<<<<<< HEAD
-=======
-import {ErrorsMutation} from "./store/errors/mutations";
-import {Dict, LocalSessionFile} from "./types";
-
->>>>>>> master
 declare var appUrl: string;
 
 export interface ResponseWithType<T> extends Response {
@@ -37,15 +16,8 @@ export interface API<S, E> {
     withSuccess: (type: S) => API<S, E>
     ignoreErrors: () => API<S, E>
 
-<<<<<<< HEAD
     postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>>
-
     get<T>(url: string): Promise<void | ResponseWithType<T>>
-=======
-    postAndReturn<T>(url: string, data: any): Promise<void | T>
-
-    get<T>(url: string): Promise<void | T>
->>>>>>> master
     delete(url: string): Promise<void | true>
 }
 
@@ -146,21 +118,14 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
     }
 
-<<<<<<< HEAD
+
     async get<T>(url: string): Promise<void | ResponseWithType<T>> {
-=======
-    async get<T>(url: string): Promise<void | T> {
->>>>>>> master
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
         return this._handleAxiosResponse(axios.get(fullUrl));
     }
 
-<<<<<<< HEAD
     async postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>> {
-=======
-    async postAndReturn<T>(url: string, data: any): Promise<void | T> {
->>>>>>> master
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
 

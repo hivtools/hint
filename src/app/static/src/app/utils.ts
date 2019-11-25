@@ -1,10 +1,7 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
 import {Dict} from "./types";
-<<<<<<< HEAD
-=======
 import {Response, Error} from "./generated";
->>>>>>> master
 
 export type ComputedWithType<T> = () => T;
 
