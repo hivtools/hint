@@ -41,10 +41,8 @@ class JSONValidator {
         if (expectedErrorMessage != null) {
             val actualError = error["detail"].asText()
             if (expectErrorCodeInstructions) {
-                val start = expectedErrorMessage + " Please contact support at naomi-support@imperial.ac.uk and quote this code: "
-                assertThat(actualError).startsWith(start)
-                val code = actualError.replace(start,"")
-                assertThat(errorCodeRegex.find(code)).isNotNull
+                assertThat(actualError).startsWith(expectedErrorMessage)
+                assertThat(errorMessageRegex.matchEntire(actualError)).isNotNull()
             }
             else {
                 assertThat(actualError).isEqualTo(expectedErrorMessage)

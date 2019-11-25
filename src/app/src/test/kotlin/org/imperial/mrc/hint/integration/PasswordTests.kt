@@ -1,10 +1,11 @@
 package org.imperial.mrc.hint.integration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.emails.WriteToDiskEmailManager
 import org.imperial.mrc.hint.helpers.AuthInterceptor
-import org.imperial.mrc.hint.helpers.errorCodeRegex
+import org.imperial.mrc.hint.helpers.errorMessageRegex
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -33,19 +34,6 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
 
     private fun expectedErrorResponse(errorMessage: String): String {
         return "{\"data\":{},\"status\":\"failure\",\"errors\":[{\"error\":\"OTHER_ERROR\",\"detail\":\"$errorMessage\"}]}"
-    }
-
-    private fun assertBodyMatchesErrorResponseWithErrorCode(actual: String, errorMessage: String) {
-        val start = "{\"data\":{},\"status\":\"failure\",\"errors\":[{\"error\":\"OTHER_ERROR\",\"detail\":\"$errorMessage" +
-                " Please contact support at naomi-support@imperial.ac.uk and quote this code:"
-        val end = "\"}]}"
-
-        assertThat(actual).startsWith(start)
-        assertThat(actual).endsWith(end)
-
-        val code = actual.replace(start, "").replace(end, "")
-        val match = errorCodeRegex.find(code)
-        assertThat(match).isNotNull
     }
 
     @AfterEach
@@ -98,9 +86,8 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
         val entity = restTemplate.postForEntity<String>("/password/reset-password/",
                 HttpEntity(map, headers))
 
-        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertBodyMatchesErrorResponseWithErrorCode(entity.body!!, "Token is not valid.")
-
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(entity.body).isEqualTo(expectedErrorResponse("Token is not valid"))
     }
 
     @Test

@@ -6,12 +6,13 @@ import org.imperial.mrc.hint.helpers.errorCodeRegex
 import org.junit.jupiter.api.Test
 
 class ErrorCodeGeneratorTests {
+
     @Test
     fun `generates a new error code`() {
         val sut = RandomErrorCodeGenerator()
         val result = sut.newCode()
 
-        val match = errorCodeRegex.find(result)
+        val match = errorCodeRegex.matchEntire(result)
         assertThat(match).isNotNull()
     }
 }

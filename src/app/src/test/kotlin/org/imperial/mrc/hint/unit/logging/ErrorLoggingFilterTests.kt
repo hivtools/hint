@@ -5,6 +5,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.logging.ErrorLoggingFilter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.internal.verification.Times
+import org.slf4j.Logger
 import org.springframework.test.context.TestPropertySource
 import org.springframework.web.util.ContentCachingResponseWrapper
 import javax.servlet.http.HttpServletRequest
@@ -13,16 +15,8 @@ import javax.servlet.FilterChain
 import javax.servlet.ServletOutputStream
 
 class ErrorLoggingFilterTests {
-    val capturedMessages = mutableListOf<String>()
-    val mockLogMethod =  { message: String ->
-        capturedMessages.add(message)
-        Unit
-    }
 
-    @BeforeEach
-    fun clearCapturedMessages() {
-        capturedMessages.clear()
-    }
+    private val mockLogger =  mock<Logger> ()
 
     @Test
     fun `logs expected messages on error status`() {
@@ -48,13 +42,13 @@ class ErrorLoggingFilterTests {
             })
         }
 
-        val sut = ErrorLoggingFilter(mockLogMethod)
+        val sut = ErrorLoggingFilter(mockLogger)
         sut.doFilter(mockRequest, mockResponse, mockChain)
 
         //Assert expected messages logged
-        assertThat(capturedMessages.count()).isEqualTo(2)
-        assertThat(capturedMessages[0]).isEqualTo("ERROR: 500 response for /test")
-        assertThat(capturedMessages[1]).isEqualTo("TEST BODY")
+        verify(mockLogger).error("ERROR: 500 response for /test")
+        verify(mockLogger).error("TEST BODY")
+        verifyNoMoreInteractions(mockLogger)
 
         //Assert that write was called on our wrapped output stream (this happens as part of
         //ContentCachingResponseWrapper.copyBodyToResponse)
@@ -72,10 +66,10 @@ class ErrorLoggingFilterTests {
             on { outputStream } doReturn mock<ServletOutputStream>()
         }
 
-        val sut = ErrorLoggingFilter(mockLogMethod)
+        val sut = ErrorLoggingFilter(mockLogger)
         sut.doFilter(mockRequest, mockResponse, mock())
 
-        assertThat(capturedMessages.count()).isEqualTo(0)
+        verifyZeroInteractions(mockLogger)
     }
 
     @Test
@@ -91,11 +85,11 @@ class ErrorLoggingFilterTests {
 
         val mockChain = mock<FilterChain>()
 
-        val sut = ErrorLoggingFilter(mockLogMethod)
+        val sut = ErrorLoggingFilter(mockLogger)
         sut.doFilter(mockRequest, mockResponse, mockChain)
 
-        assertThat(capturedMessages.count()).isEqualTo(1)
-        assertThat(capturedMessages[0]).isEqualTo("ERROR: 500 response for /download/test")
+        verify(mockLogger).error("ERROR: 500 response for /download/test")
+        verifyNoMoreInteractions(mockLogger)
 
         //verify doFilter was called with unwrapped response
         verify(mockChain).doFilter(mockRequest, mockResponse)

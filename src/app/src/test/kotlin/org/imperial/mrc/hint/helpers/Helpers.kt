@@ -9,6 +9,9 @@ import java.io.File
 
 const val tmpUploadDirectory = "tmp"
 val errorCodeRegex = Regex("u[a-z]{2}-[a-z]{3}-[a-z]{3}")
+val errorMessageRegex = Regex("(.*) If you see this message while you are using (.*) at a workshop, please contact your" +
+        " workshop technical support and show them this code: (u[a-z]{2}-[a-z]{3}-[a-z]{3})." +
+        " Otherwise please contact support at (.*) and quote this code: (u[a-z]{2}-[a-z]{3}-[a-z]{3})")
 
 fun getTestEntity(fileName: String, acceptGzip: Boolean = false): HttpEntity<LinkedMultiValueMap<String, Any>> {
     val testFile = File("testdata/$fileName")

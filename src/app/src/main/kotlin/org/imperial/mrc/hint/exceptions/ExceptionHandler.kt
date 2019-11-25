@@ -34,7 +34,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     @ExceptionHandler(HintException::class)
     protected fun handleHintException(e: HintException): ResponseEntity<Any> {
         logger.error(e.message)
-        return ErrorDetail(e.httpStatus, e.message!!.appendErrorCodeInstructions()).toResponseEntity()
+        return ErrorDetail(e.httpStatus, e.message!!).toResponseEntity()
     }
 
     @ExceptionHandler(ConstraintViolationException::class)
@@ -53,7 +53,9 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     private fun String.appendErrorCodeInstructions(): String {
         val code = errorCodeGenerator.newCode()
         val fullStopIfNeeded =  if (this.endsWith('.')) ""  else "."
-        return "$this$fullStopIfNeeded Please contact support at ${appProperties.supportEmail} and quote this code: $code"
+        return "$this$fullStopIfNeeded If you see this message while you are using ${appProperties.applicationTitle} at" +
+                " a workshop, please contact your workshop technical support and show them this code: $code. " +
+                "Otherwise please contact support at ${appProperties.supportEmail} and quote this code: $code"
     }
 
 }
