@@ -1,7 +1,6 @@
 import {api} from "../app/apiService";
 import {mockAxios, mockFailure, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
-import {ErrorsMutation} from "../app/store/errors/mutations";
 
 describe("ApiService", () => {
 
@@ -39,7 +38,7 @@ describe("ApiService", () => {
         const commit = jest.fn();
 
         await api(commit)
-                .get("/unusual/");
+            .get("/unusual/");
 
         expect((console.warn as jest.Mock).mock.calls[0][0])
             .toBe("No error handler registered for request /unusual/.");
@@ -54,7 +53,7 @@ describe("ApiService", () => {
         const failure = {
             data: {},
             status: "failure",
-                errors: []
+            errors: []
         };
         mockAxios.onGet(`/unusual/`)
             .reply(500, failure);
@@ -196,10 +195,42 @@ describe("ApiService", () => {
         expect(spy.mock.calls[0][0]).toStrictEqual(fakeData);
     });
 
-    it("throws error if API response is badly formatted", async () => {
+    it("throws error if API response is null", async () => {
 
         mockAxios.onGet(`/baseline/`)
             .reply(500);
+
+        let error: Error;
+        try {
+            await api(jest.fn())
+                .get("/baseline/");
+
+        } catch (e) {
+            error = e
+        }
+        expect(error!!.message).toBe("Could not parse API response");
+    });
+
+    it("throws error if API response status is missing", async () => {
+
+        mockAxios.onGet(`/baseline/`)
+            .reply(500, {data: {}, errors: []});
+
+        let error: Error;
+        try {
+            await api(jest.fn())
+                .get("/baseline/");
+
+        } catch (e) {
+            error = e
+        }
+        expect(error!!.message).toBe("Could not parse API response");
+    });
+
+    it("throws error if API response errors are missing", async () => {
+
+        mockAxios.onGet(`/baseline/`)
+            .reply(500, {data: {}, status: "failure"});
 
         let error: Error;
         try {

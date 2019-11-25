@@ -13,7 +13,7 @@ import {
     ValidateInputResponse
 } from "./generated";
 import {Commit} from "vuex";
-import {freezer} from "./utils";
+import {freezer, isHINTResponse} from "./utils";
 
 import {ErrorsMutation} from "./store/errors/mutations";
 import {Dict, LocalSessionFile} from "./types";
@@ -51,18 +51,11 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     private _freezeResponse: Boolean = false;
 
     static getFirstErrorFromFailure = (failure: Response) => {
-        const firstError = failure.errors && failure.errors[0];
-        let result;
-        if (firstError) {
-            result =  firstError.detail ? firstError.detail : firstError.error;
+        if (failure.errors.length == 0){
+            return "Unknown error"
         }
-
-        if (!result)
-        {
-            result = "Unknown error";
-        }
-
-        return result;
+        const firstError = failure.errors[0];
+        return firstError.detail ? firstError.detail : firstError.error;
     };
 
     private _onError: ((failure: Response) => void) | null = null;
@@ -112,8 +105,8 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         if (this._ignoreErrors) {
             return
         }
-        const failure = e.response && e.response.data as Response;
-        if (!failure || !failure.status) {
+        const failure = e.response && e.response.data;
+        if (!isHINTResponse(failure)) {
             throw new Error("Could not parse API response");
         }
         else if (this._onError) {
@@ -123,7 +116,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
     };
 
-    private  _addErrorToStore = (error: String) => {
+    private  _addErrorToStore = (error: string) => {
         this._commit({type: `errors/${ErrorsMutation.ErrorAdded}`, payload: error}, {root: true});
     };
 

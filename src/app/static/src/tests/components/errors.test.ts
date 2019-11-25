@@ -28,10 +28,9 @@ describe("Errors component", () => {
         const wrapper = shallowMount(Errors, {propsData, store, localVue});
 
         const paras = wrapper.findAll("p");
-        expect(paras.length).toBe(3);
-        expect(paras.at(0).text()).toBe("The following errors occurred. Please contact TestApp support if this problem persists.");
-        expect(paras.at(1).text()).toBe("First error");
-        expect(paras.at(2).text()).toBe("Second error");
+        expect(paras.length).toBe(2);
+        expect(paras.at(0).text()).toBe("First error");
+        expect(paras.at(1).text()).toBe("Second error");
     });
 
     it ("renders nothing when no errors", () => {

@@ -2,7 +2,6 @@
     <div v-if="hasErrors" class="container">
         <div class="content">
             <div class="alert alert-danger alert-dismissible fade-show" role="alert">
-                <p>The following errors occurred. Please contact {{title}} support if this problem persists.</p>
                 <p v-for="error in errors">
                     {{error}}
                 </p>
