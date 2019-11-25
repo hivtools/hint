@@ -107,6 +107,20 @@ describe("File upload component", () => {
         expect(removeHandler.mock.calls.length).toBe(1);
     });
 
+    it("clears selected file on remove", () => {
+        const removeHandler =jest.fn();
+        const wrapper = createSut({
+            valid: true,
+            deleteFile: removeHandler
+        });
+        const removeLink = wrapper.find("a");
+        expect(removeLink.text()).toBe("remove");
+        removeLink.trigger("click");
+        const fileName = wrapper.find(".custom-file label").text();
+        expect(fileName).toBe("Choose a file");
+        expect(wrapper.vm.$data.selectedFile).toBe(null);
+    });
+
     it("renders error message if error is present", () => {
         const wrapper = createSut({
             error: "File upload went wrong"

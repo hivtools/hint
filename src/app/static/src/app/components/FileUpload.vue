@@ -2,7 +2,7 @@
     <div class="form-group">
         <label class="font-weight-bold">{{label}}</label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
-        <a v-if="showRemove" class="small float-right" href="#" v-on:click="deleteFile">remove</a>
+        <a v-if="showRemove" class="small float-right" href="#" v-on:click="remove">remove</a>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <slot></slot>
         <div class="custom-file">
@@ -43,6 +43,7 @@
 
     interface Methods {
         handleFileSelect: (_: Event, files: FileList | null) => void
+        remove: () => void
     }
 
     interface Props {
@@ -99,6 +100,11 @@
                     this.uploading = true;
                     this.upload(formData);
                 }
+            },
+            remove() {
+                this.deleteFile();
+                this.selectedFile = null;
+                this.selectedFileName = "";
             }
         },
         watch: {
