@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.exceptions
 
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.postgresql.util.PSQLException
 import org.slf4j.LoggerFactory
@@ -18,7 +19,8 @@ import javax.validation.ConstraintViolationException
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
-class HintExceptionHandler : ResponseEntityExceptionHandler() {
+class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
+                           private val appProperties: AppProperties) : ResponseEntityExceptionHandler() {
 
     override fun handleExceptionInternal(e: java.lang.Exception,
                                          @Nullable body: Any?,
@@ -26,7 +28,7 @@ class HintExceptionHandler : ResponseEntityExceptionHandler() {
                                          status: HttpStatus,
                                          request: WebRequest): ResponseEntity<Any> {
         logger.error(e.message)
-        return ErrorDetail(status, e.message ?: "Something went wrong").toResponseEntity()
+        return ErrorDetail(status, (e.message ?: "Something went wrong").appendErrorCodeInstructions()).toResponseEntity()
     }
 
     @ExceptionHandler(HintException::class)
@@ -44,7 +46,16 @@ class HintExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(PSQLException::class)
     protected fun handlePSQLException(e: PSQLException, request: HttpServletRequest): ResponseEntity<Any> {
         logger.error(e.message)
-        return ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.").toResponseEntity()
+        return ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.".appendErrorCodeInstructions())
+                .toResponseEntity()
+    }
+
+    private fun String.appendErrorCodeInstructions(): String {
+        val code = errorCodeGenerator.newCode()
+        val fullStopIfNeeded =  if (this.endsWith('.')) ""  else "."
+        return "$this$fullStopIfNeeded If you see this message while you are using ${appProperties.applicationTitle} at" +
+                " a workshop, please contact your workshop technical support and show them this code: $code. " +
+                "Otherwise please contact support at ${appProperties.supportEmail} and quote this code: $code"
     }
 
 }
