@@ -27,8 +27,8 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
             case (FilterType.Survey):
                 filters.survey = value as string;
                 break;
-            case (FilterType.Quarter):
-                filters.quarter = value as string;
+            case (FilterType.Year):
+                filters.year = value as string;
                 break;
             case (FilterType.Region):
                 filters.regions = value as string[];
@@ -36,6 +36,6 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
         }
     },
     Reset(state: FilteredDataState) {
-        Object.assign(state, initialFilteredDataState);
+        Object.assign(state, initialFilteredDataState());
     }
 };

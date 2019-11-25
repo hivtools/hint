@@ -4,8 +4,22 @@
   * Instead, modify the hintr JSON schema files
   * and run ./generate-types.sh to regenerate this file.
 */
+export interface AncDataRow {
+  area_id: string;
+  age_group: string;
+  year: number;
+  anc_clients: number;
+  ancrt_hiv_status: number;
+  ancrt_known_pos: number;
+  ancrt_already_art: number;
+  ancrt_tested: number;
+  ancrt_test_pos: number;
+  prevalence: number;
+  art_coverage: number;
+  [k: string]: any;
+}
 export interface AncFilters {
-  quarter: {
+  year: {
     label: string;
     id: string;
   }[];
@@ -16,39 +30,52 @@ export interface AncFilters {
 }
 export type AncResponseData = {
   area_id: string;
-  age_group_id?: number;
-  quarter_id?: number;
-  anc_clients?: number;
-  ancrt_hiv_status?: number;
-  ancrt_known_pos?: number;
-  ancrt_already_art?: number;
-  ancrt_tested?: number;
-  ancrt_test_pos?: number;
-  prevalence?: number;
-  art_coverage?: number;
+  age_group: string;
+  year: number;
+  anc_clients: number;
+  ancrt_hiv_status: number;
+  ancrt_known_pos: number;
+  ancrt_already_art: number;
+  ancrt_tested: number;
+  ancrt_test_pos: number;
+  prevalence: number;
+  art_coverage: number;
   [k: string]: any;
 }[];
-export interface Data {
-  placeholder?: boolean;
+export interface BarchartIndicator {
+  indicator: string;
+  value_column: string;
+  indicator_column: string;
+  indicator_value: string;
+  name: string;
+  error_low_column: string;
+  error_high_column: string;
+  [k: string]: any;
 }
-export type ErrorCode = string;
-export interface Error {
-  error?: string;
-  detail?: string | null;
+export interface BarchartMetadata {
+  indicators: {
+    indicator: string;
+    value_column: string;
+    indicator_column: string;
+    indicator_value: string;
+    name: string;
+    error_low_column: string;
+    error_high_column: string;
+    [k: string]: any;
+  }[];
+  filters: {
+    id: string;
+    column_id: string;
+    label: string;
+    options: {
+      label: string;
+      id: string;
+    }[];
+    [k: string]: any;
+  }[];
+  [k: string]: any;
 }
-export type FileName = string;
-export type FilePath = string | null;
-export interface FilterOption {
-  label: string;
-  id: string;
-}
-export interface HintrVersionResponse {
-  [k: string]: string;
-}
-export interface HintrWorkerStatus {
-  [k: string]: "BUSY" | "IDLE" | "PAUSED" | "EXITED" | "LOST";
-}
-export interface IndicatorMetadata {
+export interface ChoroplethIndicatorMetadata {
   indicator: string;
   value_column: string;
   indicator_column?: string;
@@ -59,6 +86,36 @@ export interface IndicatorMetadata {
   colour: string;
   invert_scale: boolean;
 }
+export interface Data {
+  placeholder?: boolean;
+}
+export type ErrorCode = string;
+export interface Error {
+  error?: string;
+  detail?: string | null;
+}
+export type FileName = string;
+export type FilePath = string | null;
+export interface Filter {
+  id: string;
+  column_id: string;
+  label: string;
+  options: {
+    label: string;
+    id: string;
+  }[];
+  [k: string]: any;
+}
+export interface FilterOption {
+  label: string;
+  id: string;
+}
+export interface HintrVersionResponse {
+  [k: string]: string;
+}
+export interface HintrWorkerStatus {
+  [k: string]: "BUSY" | "IDLE" | "PAUSED" | "EXITED" | "LOST";
+}
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface LevelLabels {
   id: number;
@@ -68,8 +125,8 @@ export interface LevelLabels {
 export type ModelResultData = {
   area_id: string;
   sex: string;
-  age_group_id: number;
-  quarter_id: number;
+  age_group: string;
+  calendar_quarter: string;
   indicator_id: number;
   mode: number;
   mean: number;
@@ -92,11 +149,11 @@ export interface ModelResultFilters {
   }[];
 }
 export interface ModelResultResponse {
-  data?: {
+  data: {
     area_id: string;
     sex: string;
-    age_group_id: number;
-    quarter_id: number;
+    age_group: string;
+    calendar_quarter: string;
     indicator_id: number;
     mode: number;
     mean: number;
@@ -104,20 +161,43 @@ export interface ModelResultResponse {
     upper: number;
     [k: string]: any;
   }[];
-  filters?: {
-    age: {
-      label: string;
-      id: string;
-    }[];
-    quarter: {
-      label: string;
-      id: string;
-    }[];
-    indicators: {
-      label: string;
-      id: string;
-    }[];
+  plottingMetadata: {
+    barchart: {
+      indicators: {
+        indicator: string;
+        value_column: string;
+        indicator_column: string;
+        indicator_value: string;
+        name: string;
+        error_low_column: string;
+        error_high_column: string;
+        [k: string]: any;
+      }[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+        }[];
+        [k: string]: any;
+      }[];
+      [k: string]: any;
+    };
   };
+  [k: string]: any;
+}
+export interface ModelResultRow {
+  area_id: string;
+  sex: string;
+  age_group: string;
+  calendar_quarter: string;
+  indicator_id: number;
+  mode: number;
+  mean: number;
+  lower: number;
+  upper: number;
   [k: string]: any;
 }
 export interface ModelRunOptions {
@@ -126,17 +206,36 @@ export interface ModelRunOptions {
 export interface ControlSection {
   label: string;
   description?: string;
-  controlGroups: ControlGroup;
+  controlGroups: ControlGroup[];
 }
 export interface ControlGroup {
   label?: string;
-  controls:
-    | {
-        [k: string]: any;
-      }
-    | {
-        [k: string]: any;
-      };
+  controls: (SelectControl | NumberControl)[];
+}
+export interface SelectControl {
+  name: string;
+  label?: string;
+  type: "select" | "multiselect";
+  required: boolean;
+  value?: string;
+  helpText?: string;
+  options?: {
+    id: string;
+    label: string;
+    children?: {
+      [k: string]: any;
+    }[];
+  }[];
+}
+export interface NumberControl {
+  name: string;
+  label?: string;
+  type: "number";
+  required: boolean;
+  value?: number;
+  helpText?: string;
+  min?: number;
+  max?: number;
 }
 export interface ModelRunOptionsRequest {
   shape: {
@@ -166,8 +265,13 @@ export interface ModelStatusResponse {
   status: string;
   success: boolean | null;
   queue: number;
-  progress: string;
-  timeRemaining: string;
+  progress: {
+    started: boolean;
+    complete: boolean;
+    value?: number;
+    name: string;
+    helpText?: string;
+  }[];
 }
 export interface ModelSubmitData {
   pjnz: string | null;
@@ -234,12 +338,20 @@ export interface Metadata {
   [k: string]: any;
 }
 export type PopulationResponseData = null;
+export interface ProgrammeDataRow {
+  area_id: string;
+  year: number;
+  sex: string;
+  age_group: string;
+  current_art: number;
+  [k: string]: any;
+}
 export interface ProgrammeFilters {
   age: {
     label: string;
     id: string;
   }[];
-  quarter: {
+  year: {
     label: string;
     id: string;
   }[];
@@ -250,12 +362,24 @@ export interface ProgrammeFilters {
 }
 export type ProgrammeResponseData = {
   area_id: string;
+  year: number;
+  sex: string;
+  age_group: string;
   current_art: number;
   [k: string]: any;
 }[];
+export interface ProgressPhase {
+  started: boolean;
+  complete: boolean;
+  value?: number;
+  name: string;
+  helpText?: string;
+}
 export interface Response {
   status: "success" | "failure";
-  data: any;
+  data: {
+    [k: string]: any;
+  };
   errors: {
     error?: string;
     detail?: string | null;
@@ -274,12 +398,25 @@ export interface GeoJSONObject {
   crs?: {
     [k: string]: any;
   };
-  name?: {
-    [k: string]: any;
-  };
+  name?: string;
   features: {
     [k: string]: any;
   }[];
+  [k: string]: any;
+}
+export interface SurveyDataRow {
+  indicator: string;
+  survey_id: string;
+  survey_year: number;
+  area_id: string;
+  sex: string;
+  age_group: string;
+  n_cluster: number;
+  n_obs: number;
+  est: number;
+  se: number;
+  ci_l: number | null;
+  ci_u: number | null;
   [k: string]: any;
 }
 export interface SurveyFilters {
@@ -297,9 +434,18 @@ export interface SurveyFilters {
   }[];
 }
 export type SurveyResponseData = {
-  iso3: string;
-  area_id: string;
+  indicator: string;
   survey_id: string;
+  survey_year: number;
+  area_id: string;
+  sex: string;
+  age_group: string;
+  n_cluster: number;
+  n_obs: number;
+  est: number;
+  se: number;
+  ci_l: number | null;
+  ci_u: number | null;
   [k: string]: any;
 }[];
 export type URI = string;
@@ -309,7 +455,6 @@ export interface ValidateBaselineRequest {
   population: string | null;
 }
 export interface ValidateBaselineResponse {
-  complete: boolean;
   consistent: boolean;
 }
 export interface ValidateInputRequest {
@@ -367,9 +512,7 @@ export interface GeoJSONObject {
   crs?: {
     [k: string]: any;
   };
-  name?: {
-    [k: string]: any;
-  };
+  name?: string;
   features: {
     [k: string]: any;
   }[];
@@ -388,6 +531,9 @@ export interface ProgrammeResponse {
   type: "programme";
   data: {
     area_id: string;
+    year: number;
+    sex: string;
+    age_group: string;
     current_art: number;
     [k: string]: any;
   }[];
@@ -396,7 +542,7 @@ export interface ProgrammeResponse {
       label: string;
       id: string;
     }[];
-    quarter: {
+    year: {
       label: string;
       id: string;
     }[];
@@ -412,20 +558,20 @@ export interface AncResponse {
   type: "anc";
   data: {
     area_id: string;
-    age_group_id?: number;
-    quarter_id?: number;
-    anc_clients?: number;
-    ancrt_hiv_status?: number;
-    ancrt_known_pos?: number;
-    ancrt_already_art?: number;
-    ancrt_tested?: number;
-    ancrt_test_pos?: number;
-    prevalence?: number;
-    art_coverage?: number;
+    age_group: string;
+    year: number;
+    anc_clients: number;
+    ancrt_hiv_status: number;
+    ancrt_known_pos: number;
+    ancrt_already_art: number;
+    ancrt_tested: number;
+    ancrt_test_pos: number;
+    prevalence: number;
+    art_coverage: number;
     [k: string]: any;
   }[];
   filters: {
-    quarter: {
+    year: {
       label: string;
       id: string;
     }[];
@@ -440,9 +586,18 @@ export interface SurveyResponse {
   filename: string;
   type: "survey";
   data: {
-    iso3: string;
-    area_id: string;
+    indicator: string;
     survey_id: string;
+    survey_year: number;
+    area_id: string;
+    sex: string;
+    age_group: string;
+    n_cluster: number;
+    n_obs: number;
+    est: number;
+    se: number;
+    ci_l: number | null;
+    ci_u: number | null;
     [k: string]: any;
   }[];
   filters: {

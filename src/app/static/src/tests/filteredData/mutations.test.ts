@@ -19,32 +19,32 @@ describe("FilteredData mutations", () => {
                 return selectedFilters.survey;
             case (FilterType.Region):
                 return selectedFilters.regions;
-            case (FilterType.Quarter):
-                return selectedFilters.quarter;
+            case (FilterType.Year):
+                return selectedFilters.year;
         }
     };
 
     const testChoroplethFilterUpdated = (filterType: FilterType) => {
-        const testState = {...initialFilteredDataState};
+        const testState = {...initialFilteredDataState()};
 
         //initial sate
-        let expected = "" as any;
+        let expectedInitialState = "" as any;
         if (filterType == FilterType.Region){
-            expected = [];
+            expectedInitialState = [];
         }
         expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
-            .toStrictEqual(expected);
+            .toStrictEqual(expectedInitialState);
 
         mutations.ChoroplethFilterUpdated(testState, {
-            payload: [filterType, {id: "id", name: "name"}]
+            payload: [filterType, "test"]
         });
         expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
-            .toStrictEqual({id: "id", name: "name"});
+            .toStrictEqual("test");
     };
 
     it("sets selectedDataType on SelectedDataTypeUpdated", () => {
 
-        const testState = {...initialFilteredDataState};
+        const testState = mockFilteredDataState();
         mutations.SelectedDataTypeUpdated(testState, {
             payload: DataType.Program
         });
@@ -64,7 +64,7 @@ describe("FilteredData mutations", () => {
         testChoroplethFilterUpdated(FilterType.Region);
     });
     it("updates quarter choropleth filter", () => {
-        testChoroplethFilterUpdated(FilterType.Quarter);
+        testChoroplethFilterUpdated(FilterType.Year);
     });
 
     it("resets whole state", () => {

@@ -6,13 +6,13 @@ import { RootState} from "../../root";
 import {localStorageManager} from "../../localStorageManager";
 
 export enum DataType { ANC, Program, Survey, Output }
-export enum FilterType { Sex, Age, Region, Survey, Quarter }
+export enum FilterType { Sex, Age, Region, Survey, Year }
 
 export interface SelectedChoroplethFilters {
     sex: string,
     age: string,
     survey: string,
-    quarter: string,
+    year: string,
     regions: string[]
 }
 
@@ -22,18 +22,22 @@ export interface FilteredDataState {
     regionIndicators: {[k: string]: any};
 }
 
-export const initialSelectedChoroplethFilters: SelectedChoroplethFilters = {
-    sex: "",
-    age: "",
-    survey: "",
-    regions: [],
-    quarter: ""
+export const initialSelectedChoroplethFilters = (): SelectedChoroplethFilters => {
+    return {
+        sex: "",
+        age: "",
+        survey: "",
+        regions: [],
+        year: ""
+    }
 };
 
-export const initialFilteredDataState: FilteredDataState = {
-   selectedDataType: null,
-   selectedChoroplethFilters: initialSelectedChoroplethFilters,
-   regionIndicators: {}
+export const initialFilteredDataState = (): FilteredDataState => {
+    return {
+        selectedDataType: null,
+        selectedChoroplethFilters: initialSelectedChoroplethFilters(),
+        regionIndicators: {}
+    }
 };
 
 const namespaced: boolean = true;
@@ -41,7 +45,7 @@ const existingState = localStorageManager.getState();
 
 export const filteredData: Module<FilteredDataState, RootState> = {
     namespaced,
-    state: {...initialFilteredDataState, ...existingState && existingState.filteredData},
+    state: {...initialFilteredDataState(), ...existingState && existingState.filteredData},
     actions,
     mutations,
     getters

@@ -9,8 +9,7 @@ import {mutations} from "../../../app/store/filteredData/mutations";
 import {
     DataType,
     FilteredDataState,
-    FilterType,
-    initialFilteredDataState
+    FilterType
 } from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
 
@@ -22,7 +21,7 @@ describe("Choropleth component", () => {
     const fakeFeatures = [
         {
             "type": "Feature",
-            "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1"},
+            "properties": {"iso3": "MWI", "area_id": "MWI_3_1", "area_level": 3},
             "geometry": {
                 "type": "MultiPolygon",
                 "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
@@ -30,7 +29,7 @@ describe("Choropleth component", () => {
         },
         {
             "type": "Feature",
-            "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1.1"},
+            "properties": {"iso3": "MWI", "area_id": "MWI_4_1", "area_level": 4},
             "geometry": {
                 "type": "MultiPolygon",
                 "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
@@ -38,7 +37,7 @@ describe("Choropleth component", () => {
         },
         {
             "type": "Feature",
-            "properties": {"iso3": "MWI", "area_id": "MWI.1.1.1.2"},
+            "properties": {"iso3": "MWI", "area_id": "MWI_4_2", "area_level": 4},
             "geometry": {
                 "type": "MultiPolygon",
                 "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
@@ -46,15 +45,15 @@ describe("Choropleth component", () => {
         }
     ];
     const testRegionIndicators = {
-        "MWI.1.1.1.1": {
+        "MWI_4_1": {
             prev: {value: 0.1, color: "rgb(1,1,1)"},
             art: {value: 0.08, color: "rgb(2,2,2)"}
         },
-        "MWI.1.1.1.2": {
+        "MWI_1_2": {
             prev: {value: 0.05, color: "rgb(3,3,3)"},
             art: {value: 0.06, color: "rgb(4,4,4)"}
         },
-        "MWI.1.1.1": {
+        "MWI_3_1": {
             prev: {value: 0.07, color: "rgb(5,5,5)"},
             art: {value: 0.2, color: "rgb(6,6,6)"}
         }
@@ -93,7 +92,7 @@ describe("Choropleth component", () => {
                             data: {features: fakeFeatures} as any,
                             filters: {
                                 regions: {
-                                    id: "MWI.1.1.1",
+                                    id: "MWI_3_1",
                                     label: "test country"
                                 },
                                 level_labels: [
@@ -110,11 +109,11 @@ describe("Choropleth component", () => {
                         {
                             selectedDataType: DataType.Survey,
                             selectedChoroplethFilters: {
-                                regions: ["MWI.1.1.1"],
+                                regions: ["MWI_3_1"],
                                 sex: "",
                                 age: "",
                                 survey: "",
-                                quarter: ""
+                                year: ""
                             },
                             ...filteredDataProps
                         }),
@@ -195,7 +194,7 @@ describe("Choropleth component", () => {
     it("can get feature from area id", () => {
         const wrapper = shallowMount(Choropleth, {store, localVue});
         const vm = wrapper.vm as any;
-        const feature = vm.getFeatureFromAreaId("MWI.1.1.1.2");
+        const feature = vm.getFeatureFromAreaId("MWI_4_2");
         expect(feature).toStrictEqual(fakeFeatures[2]);
     });
 
@@ -232,7 +231,7 @@ describe("Choropleth component", () => {
 
     it("updates indicator if necessary when selectedDataType changes", () => {
         //defaults to prev, should get updated to art on data type change if no prev data
-        const filteredData = {...initialFilteredDataState};
+        const filteredData = mockFilteredDataState()
         const testStore = new Vuex.Store({
             modules: {
                 baseline: {
@@ -295,7 +294,7 @@ describe("Choropleth component", () => {
 
     it("options onEachFeature returns function which generates correct tooltips", () => {
 
-        const filteredData = {...initialFilteredDataState};
+        const filteredData = mockFilteredDataState();
         const testStore = new Vuex.Store({
             modules: {
                 baseline: {
@@ -384,7 +383,7 @@ describe("Choropleth component", () => {
 
         testStore.commit({
             type: "filteredData/ChoroplethFilterUpdated",
-            payload: [FilterType.Region, [{id: "MWI.1.1.1.2", label: "test area"}]]
+            payload: [FilterType.Region, [{id: "MWI_4_2", label: "test area"}]]
         });
 
         setTimeout(() => {
@@ -396,11 +395,11 @@ describe("Choropleth component", () => {
     it("selectedRegionFeatures gets selected region features", () => {
         const testStore = getTestStore({
             selectedChoroplethFilters: {
-                regions: ["MWI.1.1.1.1", "MWI.1.1.1.2"],
+                regions: ["MWI_4_1", "MWI_4_2"],
                 sex: "",
                 age: "",
                 survey: "",
-                quarter: ""
+                year: ""
             }
         });
 
@@ -418,7 +417,7 @@ describe("Choropleth component", () => {
                 sex: "",
                 age: "",
                 survey: "",
-                quarter: ""
+                year: ""
             }
         });
         const wrapper = shallowMount(Choropleth, {store: testStore, localVue});

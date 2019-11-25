@@ -2,7 +2,7 @@
     <div class="form-group">
         <label class="font-weight-bold">{{label}}</label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
-        <a v-if="valid" class="small float-right" href="#" v-on:click="remove">remove</a>
+        <a v-if="showRemove" class="small float-right" href="#" v-on:click="remove">remove</a>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <slot></slot>
         <div class="custom-file">
@@ -38,6 +38,7 @@
 
     interface Computed {
         hasError: boolean
+        showRemove: boolean
     }
 
     interface Methods {
@@ -50,7 +51,7 @@
         deleteFile: () => void,
         accept: string,
         label: string,
-        valid: Boolean,
+        valid: boolean,
         error: string,
         existingFileName: string,
         name: string
@@ -78,6 +79,9 @@
         computed: {
             hasError: function () {
                 return this.error.length > 0
+            },
+            showRemove: function() {
+                return this.hasError || this.valid
             }
         },
         methods: {

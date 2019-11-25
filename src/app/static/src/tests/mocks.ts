@@ -13,21 +13,26 @@ import {
     ModelStatusResponse,
     PjnzResponse,
     PlottingMetadataResponse,
-    PopulationResponse, ProgrammeFilters,
+    PopulationResponse,
+    ProgrammeFilters,
     ProgrammeResponse,
     Response,
     ShapeResponse,
     SurveyFilters,
-    SurveyResponse, ValidateBaselineResponse
+    SurveyResponse,
+    ValidateBaselineResponse
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
-import {RootState} from "../app/root";
+import {emptyState, RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
 import {initialLoadState, LoadState} from "../app/store/load/load";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
-import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
+import {
+    initialPlottingSelectionsState,
+    PlottingSelectionsState
+} from "../app/store/plottingSelections/plottingSelections";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -40,21 +45,21 @@ export const mockPasswordState = (props?: Partial<PasswordState>) => {
 
 export const mockBaselineState = (props?: Partial<BaselineState>) => {
     return {
-        ...initialBaselineState,
+        ...initialBaselineState(),
         ...props
     }
 };
 
 export const mockSurveyAndProgramState = (props?: Partial<SurveyAndProgramDataState>) => {
     return {
-        ...initialSurveyAndProgramDataState,
+        ...initialSurveyAndProgramDataState(),
         ...props
     }
 };
 
 export const mockModelRunState = (props?: Partial<ModelRunState>) => {
     return {
-        ...initialModelRunState,
+        ...initialModelRunState(),
         ...props
     }
 };
@@ -62,64 +67,54 @@ export const mockModelRunState = (props?: Partial<ModelRunState>) => {
 
 export const mockModelOptionsState = (props?: Partial<ModelOptionsState>) => {
     return {
-        ...initialModelOptionsState,
+        ...initialModelOptionsState(),
         ...props
     }
 };
 
 export const mockStepperState = (props?: Partial<StepperState>) => {
     return {
-        ...initialStepperState,
+        ...initialStepperState(),
         ...props
     }
 };
 
 export const mockFilteredDataState = (props?: Partial<FilteredDataState>) => {
     return {
-        ...initialFilteredDataState,
+        ...initialFilteredDataState(),
         ...props
     }
 };
 
 export const mockMetadataState = (props?: Partial<MetadataState>) => {
     return {
-        ...initialMetadataState,
+        ...initialMetadataState(),
         ...props
     }
 };
 
 export const mockLoadState = (props?: Partial<LoadState>) => {
     return {
-        ...initialLoadState,
+        ...initialLoadState(),
         ...props
     }
 };
 
 export const mockPlottingSelections = (props?: Partial<PlottingSelectionsState>) => {
     return {
-        ...initialPlottingSelectionsState,
+        ...initialPlottingSelectionsState(),
         ...props
     }
 };
 
 export const mockRootState = (props?: Partial<RootState>): RootState => {
     return {
-        version: "",
-        filteredData: mockFilteredDataState(),
-        baseline: mockBaselineState(),
-        surveyAndProgram: mockSurveyAndProgramState(),
-        modelRun: mockModelRunState(),
-        modelOptions: mockModelOptionsState(),
-        stepper: mockStepperState(),
-        metadata: mockMetadataState(),
-        load: mockLoadState(),
-        modelOutput: {},
-        plottingSelections: mockPlottingSelections(),
+        ...emptyState(),
         ...props
     }
 };
 
-export const mockFile = (filename: string, fileContents: string,  type: string = "text/csv"): File => {
+export const mockFile = (filename: string, fileContents: string, type: string = "text/csv"): File => {
     return new File([fileContents], filename, {
         type: type,
         lastModified: 1
@@ -163,7 +158,7 @@ export const mockShapeResponse = (props: Partial<ShapeResponse> = {}): ShapeResp
         filename: "test.csv",
         filters: {
             level_labels: [{id: 1, area_level_label: "Country", display: true}],
-            regions: {label: "Malawi", id: "1", children : []}
+            regions: {label: "Malawi", id: "1", children: []}
         },
         ...props
     }
@@ -190,7 +185,7 @@ export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): Pro
         filename: "test.csv",
         data: [],
         hash: "1234.csv",
-        filters: {"age": [], "quarter": [], indicators: []},
+        filters: {"age": [], "year": [], indicators: []},
         ...props
     }
 };
@@ -201,7 +196,7 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
         filename: "test.csv",
         hash: "1234.csv",
         data: [],
-        filters: {"quarter": [], indicators: []},
+        filters: {"year": [], indicators: []},
         ...props
     }
 };
@@ -209,7 +204,7 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
 export const mockProgramFilters = (props: Partial<ProgrammeFilters> = {}): ProgrammeFilters => {
     return {
         age: [],
-        quarter: [],
+        year: [],
         indicators: [],
         ...props
     }
@@ -236,17 +231,15 @@ export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}):
 
 export const mockValidateBaselineResponse = (props: Partial<ValidateBaselineResponse> = {}): ValidateBaselineResponse => {
     return {
-        complete: true,
         consistent: true
     }
 };
 
 export const mockModelStatusResponse = (props: Partial<ModelStatusResponse> = {}): ModelStatusResponse => {
     return {
-        timeRemaining: "",
         done: true,
         success: true,
-        progress: "0.2",
+        progress: [],
         queue: 1,
         id: "1234",
         status: "finished",
@@ -256,6 +249,22 @@ export const mockModelStatusResponse = (props: Partial<ModelStatusResponse> = {}
 
 export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}): ModelResultResponse => {
     return {
+        plottingMetadata: {
+            barchart: {
+                indicators: [], filters: []
+            }
+        },
+        data: [{
+            area_id: "MWI",
+            sex: "both",
+            age_group: "1",
+            calendar_quarter: "1",
+            indicator_id: 1,
+            lower: 0.5,
+            mean: 0.5,
+            mode: 0.5,
+            upper: 0.5
+        }],
         ...props
     }
 };

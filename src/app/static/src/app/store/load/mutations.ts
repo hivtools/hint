@@ -4,14 +4,14 @@ import {PayloadWithType} from "../../types";
 
 type LoadMutation = Mutation<LoadState>
 
-export interface BaselineMutations {
+export interface LoadMutations {
     SettingFiles: LoadMutation,
     UpdatingState: LoadMutation,
     LoadFailed: LoadMutation,
     LoadStateCleared: LoadMutation
 }
 
-export const mutations: MutationTree<LoadState> & BaselineMutations = {
+export const mutations: MutationTree<LoadState> & LoadMutations = {
     SettingFiles(state: LoadState) {
         state.loadingState = LoadingState.SettingFiles;
     },

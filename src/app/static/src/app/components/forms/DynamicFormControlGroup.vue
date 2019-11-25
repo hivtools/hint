@@ -1,6 +1,6 @@
 <template>
     <b-row class="my-2">
-        <b-col md="3" v-if="controlGroup.label">
+        <b-col md="4" v-if="controlGroup.label">
             <label class="group-label">{{controlGroup.label}}
                 <span v-if="required" class="small">(required)</span>
             </label>

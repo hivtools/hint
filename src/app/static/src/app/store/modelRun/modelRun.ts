@@ -13,18 +13,20 @@ export interface ModelRunState extends ReadyState {
     result: ModelResultResponse | null
 }
 
-export const initialModelRunState: ModelRunState = {
-    modelRunId: "",
-    errors: [],
-    status: {} as ModelStatusResponse,
-    statusPollId: -1,
-    result: null,
-    ready: false
+export const initialModelRunState = (): ModelRunState => {
+    return {
+        modelRunId: "",
+        errors: [],
+        status: {} as ModelStatusResponse,
+        statusPollId: -1,
+        result: null,
+        ready: false
+    }
 };
 
 export const modelRunGetters = {
     complete: (state: ModelRunState) => {
-        return !!state.status.success && state.errors.length == 0
+        return !!state.status.success && state.errors.length == 0 && !!state.result
     },
     running: (state: ModelRunState) => {
         return !!state.status.id && !state.status.done
@@ -36,7 +38,7 @@ const existingState = localStorageManager.getState();
 
 export const modelRun: Module<ModelRunState, RootState> = {
     namespaced,
-    state: {...initialModelRunState, ...existingState && existingState.modelRun},
+    state: {...initialModelRunState(), ...existingState && existingState.modelRun},
     actions,
     getters: modelRunGetters,
     mutations

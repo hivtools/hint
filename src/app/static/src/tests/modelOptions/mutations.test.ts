@@ -1,12 +1,13 @@
 import {mockModelOptionsState} from "../mocks";
-import {mutations} from "../../app/store/modelOptions/mutations";
+import {ModelOptionsMutation, mutations} from "../../app/store/modelOptions/mutations";
 import {DynamicFormMeta, NumberControl} from "../../app/components/forms/types";
+
 
 describe("Model run options mutations", () => {
 
     it("validates and saves options", () => {
         const state = mockModelOptionsState();
-        mutations.validate(state, {"test": 123});
+        mutations[ModelOptionsMutation.Validate](state, {"test": 123});
         expect(state.valid).toBe(true);
         expect(state.options).toStrictEqual({"test": 123});
     });
@@ -21,7 +22,7 @@ describe("Model run options mutations", () => {
                 }
             ]
         };
-        mutations.update(state, mockForm);
+        mutations[ModelOptionsMutation.Update](state, mockForm);
         expect(state.optionsFormMeta).toStrictEqual(mockForm);
     });
 
