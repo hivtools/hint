@@ -12,8 +12,8 @@ describe("Model run options mutations", () => {
         expect(state.options).toStrictEqual({"test": 123});
     });
 
-    it("updates form", () => {
-        const state = mockModelOptionsState();
+    it("updates form and requires re-validation", () => {
+        const state = mockModelOptionsState({valid: true});
         const mockForm: DynamicFormMeta = {
             controlSections: [
                 {
@@ -24,6 +24,7 @@ describe("Model run options mutations", () => {
         };
         mutations[ModelOptionsMutation.Update](state, mockForm);
         expect(state.optionsFormMeta).toStrictEqual(mockForm);
+        expect(state.valid).toBe(false);
     });
 
     const mockControl: NumberControl = {
@@ -35,54 +36,9 @@ describe("Model run options mutations", () => {
     it("updates form without overwriting existing form control values and sets fetching to false", () => {
 
         const state = mockModelOptionsState({
-            fetching: true, optionsFormMeta: {
-                controlSections: [
-                    {
-                        label: "general",
-                        controlGroups: [
-                            {
-                                label: "g1",
-                                controls: [{...mockControl, value: 10}]
-                            },
-                            {
-                                label: "g2",
-                                controls: [{...mockControl, value: 10}]
-                            }
-                        ]
-                    }
-                ]
-            }
+            fetching: true,
+            optionsFormMeta: testForm
         });
-
-        const newForm: DynamicFormMeta = {
-            controlSections: [
-                {
-                    label: "general",
-                    controlGroups: [
-                        {
-                            label: "g1",
-                            controls: [
-                                {...mockControl},
-                                {...mockControl, name: "new_control"}
-                            ]
-                        },
-                        {
-                            label: "new_group",
-                            controls: [{...mockControl}]
-                        }
-                    ]
-                },
-                {
-                    label: "survey",
-                    controlGroups: [
-                        {
-                            label: "g2",
-                            controls: []
-                        }
-                    ]
-                }
-            ]
-        };
 
         const expected: DynamicFormMeta = {
             controlSections: [
@@ -117,10 +73,80 @@ describe("Model run options mutations", () => {
         expect(state.fetching).toBe(false);
     });
 
+    it("sets valid to false if updated form differs from existing", () => {
+
+        const state = mockModelOptionsState({
+            valid: true,
+            optionsFormMeta: testForm
+        });
+
+        mutations.ModelOptionsFetched(state, {payload: newForm});
+        expect(state.valid).toBe(false);
+    });
+
+    it("does not set valid to false if updated form is identical to existing", () => {
+
+        const state = mockModelOptionsState({
+            valid: true,
+            optionsFormMeta: testForm
+        });
+
+        mutations.ModelOptionsFetched(state, {payload: testForm});
+        expect(state.valid).toBe(true);
+    });
+
     it("sets fetching to true", () => {
         const state = mockModelOptionsState();
         mutations.FetchingModelOptions(state);
         expect(state.fetching).toBe(true);
-    })
+    });
+
+    const testForm = {
+        controlSections: [
+            {
+                label: "general",
+                controlGroups: [
+                    {
+                        label: "g1",
+                        controls: [{...mockControl, value: 10}]
+                    },
+                    {
+                        label: "g2",
+                        controls: [{...mockControl, value: 10}]
+                    }
+                ]
+            }
+        ]
+    };
+
+    const newForm: DynamicFormMeta = {
+        controlSections: [
+            {
+                label: "general",
+                controlGroups: [
+                    {
+                        label: "g1",
+                        controls: [
+                            {...mockControl},
+                            {...mockControl, name: "new_control"}
+                        ]
+                    },
+                    {
+                        label: "new_group",
+                        controls: [{...mockControl}]
+                    }
+                ]
+            },
+            {
+                label: "survey",
+                controlGroups: [
+                    {
+                        label: "g2",
+                        controls: []
+                    }
+                ]
+            }
+        ]
+    };
 
 });
