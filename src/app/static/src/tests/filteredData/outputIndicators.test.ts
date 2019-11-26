@@ -100,7 +100,8 @@ describe("getting region indicators for output data", () => {
             },
             {
                 ...testRow,
-                quarter: "2",  // wrong quarter
+                area_id: "area5",
+                calendar_quarter: "2" //wrong quarter
             }
         ];
         const testRootState = getRootState(testData, {age: "1", sex: "both", quarter: "1"});
