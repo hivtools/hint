@@ -29,28 +29,26 @@ import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
 import {initialLoadState, LoadState} from "../app/store/load/load";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
-import {
-    initialPlottingSelectionsState,
-    PlottingSelectionsState
-} from "../app/store/plottingSelections/plottingSelections";
+import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
+import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
 
 export const mockAxios = new MockAdapter(axios);
 
-export const mockPasswordState = (props?: Partial<PasswordState>) => {
+export const mockPasswordState = (props?: Partial<PasswordState>): PasswordState => {
     return {
         ...initialPasswordState,
         ...props
     }
 };
 
-export const mockBaselineState = (props?: Partial<BaselineState>) => {
+export const mockBaselineState = (props?: Partial<BaselineState>): BaselineState => {
     return {
         ...initialBaselineState(),
         ...props
     }
 };
 
-export const mockSurveyAndProgramState = (props?: Partial<SurveyAndProgramDataState>) => {
+export const mockSurveyAndProgramState = (props?: Partial<SurveyAndProgramDataState>): SurveyAndProgramDataState => {
     return {
         ...initialSurveyAndProgramDataState(),
         ...props
@@ -65,40 +63,46 @@ export const mockModelRunState = (props?: Partial<ModelRunState>) => {
 };
 
 
-export const mockModelOptionsState = (props?: Partial<ModelOptionsState>) => {
+export const mockModelOptionsState = (props?: Partial<ModelOptionsState>): ModelOptionsState => {
     return {
         ...initialModelOptionsState(),
         ...props
     }
 };
 
-export const mockStepperState = (props?: Partial<StepperState>) => {
+export const mockStepperState = (props?: Partial<StepperState>): StepperState => {
     return {
         ...initialStepperState(),
         ...props
     }
 };
 
-export const mockFilteredDataState = (props?: Partial<FilteredDataState>) => {
+export const mockFilteredDataState = (props?: Partial<FilteredDataState>): FilteredDataState => {
     return {
         ...initialFilteredDataState(),
         ...props
     }
 };
 
-export const mockMetadataState = (props?: Partial<MetadataState>) => {
+export const mockMetadataState = (props?: Partial<MetadataState>): MetadataState => {
     return {
         ...initialMetadataState(),
         ...props
     }
 };
 
-export const mockLoadState = (props?: Partial<LoadState>) => {
+export const mockLoadState = (props?: Partial<LoadState>): LoadState => {
     return {
         ...initialLoadState(),
         ...props
     }
 };
+
+export const mockModelOutputState = (props?: Partial<ModelOutputState>): ModelOutputState => {
+    return {
+        ...initialModelOutputState(),
+    }
+}
 
 export const mockPlottingSelections = (props?: Partial<PlottingSelectionsState>) => {
     return {

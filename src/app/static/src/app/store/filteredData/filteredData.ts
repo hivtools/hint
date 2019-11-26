@@ -1,8 +1,8 @@
-import { Module } from 'vuex';
-import { actions } from './actions';
-import { mutations } from './mutations';
-import { getters } from './getters';
-import { RootState} from "../../root";
+import {Module} from 'vuex';
+import {actions} from './actions';
+import {mutations} from './mutations';
+import {getters} from './getters';
+import {RootState} from "../../root";
 import {localStorageManager} from "../../localStorageManager";
 
 export enum DataType { ANC, Program, Survey, Output }
@@ -19,7 +19,6 @@ export interface SelectedChoroplethFilters {
 export interface FilteredDataState {
     selectedDataType: DataType | null
     selectedChoroplethFilters: SelectedChoroplethFilters
-    regionIndicators: {[k: string]: any};
 }
 
 export const initialSelectedChoroplethFilters = (): SelectedChoroplethFilters => {
@@ -35,8 +34,7 @@ export const initialSelectedChoroplethFilters = (): SelectedChoroplethFilters =>
 export const initialFilteredDataState = (): FilteredDataState => {
     return {
         selectedDataType: null,
-        selectedChoroplethFilters: initialSelectedChoroplethFilters(),
-        regionIndicators: {}
+        selectedChoroplethFilters: initialSelectedChoroplethFilters()
     }
 };
 

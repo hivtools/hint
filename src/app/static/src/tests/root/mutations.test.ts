@@ -1,5 +1,16 @@
 import {mutations} from "../../app/store/root/mutations";
-import {mockRootState, mockSurveyAndProgramState} from "../mocks";
+import {initialModelRunState} from "../../app/store/modelRun/modelRun";
+import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
+
+import {
+    mockAncResponse,
+    mockFilteredDataState,
+    mockModelOptionsState,
+    mockModelRunState, mockPlottingSelections,
+    mockRootState,
+    mockSurveyAndProgramState, mockSurveyResponse
+} from "../mocks";
+import {DataType} from "../../app/store/filteredData/filteredData";
 
 describe("Root mutations", () => {
 
@@ -16,6 +27,11 @@ describe("Root mutations", () => {
 
         expect(state.stepper.activeStep).toBe(1);
         expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
+        expect(state.baseline.ready).toBe(true);
+        expect(state.surveyAndProgram.ready).toBe(true);
+        expect(state.modelRun.ready).toBe(true);
+
+        expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
 
         // do mutations again
         state.stepper.activeStep = 2;
@@ -25,15 +41,44 @@ describe("Root mutations", () => {
 
         expect(state.stepper.activeStep).toBe(1);
         expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
+
     });
 
-    it("can reset input state", () => {
+    it("sets selected data type to null if no valid type available", () => {
+
+        const state = mockRootState({
+            filteredData: mockFilteredDataState({
+                selectedDataType: DataType.ANC
+            })
+        });
+
+        mutations.ResetFilteredDataSelections(state);
+        expect(state.filteredData.selectedDataType).toBe(null);
+    });
+
+    it("sets selected data type to available type if there is one", () => {
 
         const state = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState({
-                anc: "test" as any,
-                survey: "test" as any,
-                program: "test" as any
+                survey: mockSurveyResponse()
+            }),
+            filteredData: mockFilteredDataState({
+                selectedDataType: DataType.ANC
+            })
+        });
+
+        mutations.ResetFilteredDataSelections(state);
+        expect(state.filteredData.selectedDataType).toBe(DataType.Survey);
+    });
+
+    it("leaves selected data type as is if valid", () => {
+
+        const state = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState({
+                anc: mockAncResponse()
+            }),
+            filteredData: mockFilteredDataState({
+                selectedDataType: DataType.ANC
             })
         });
 
@@ -44,11 +89,32 @@ describe("Root mutations", () => {
         state.filteredData.selectedChoroplethFilters.sex = "1";
         state.filteredData.selectedChoroplethFilters.regions = ["1"];
 
-        mutations.ResetInputs(state);
-        expect(state.surveyAndProgram.anc).toBe(null);
-        expect(state.surveyAndProgram.survey).toBe(null);
-        expect(state.surveyAndProgram.program).toBe(null);
-        expect(state.filteredData.selectedDataType).toBe(null);
+        mutations.ResetFilteredDataSelections(state);
+        expect(state.filteredData.selectedDataType).toBe(DataType.ANC);
+    });
+
+    it("can reset model options state", () => {
+
+        const state = mockRootState({
+            modelOptions: mockModelOptionsState({options: "TEST" as any})
+        });
+
+        mutations.ResetOptions(state);
+        expect(state.modelOptions).toStrictEqual(initialModelOptionsState());
+    });
+
+    it("can reset model outputs state", () => {
+
+        const state = mockRootState({
+            modelRun: mockModelRunState({modelRunId: "TEST"}),
+            modelOutput: {dummyProperty: "TEST" as any}
+        });
+
+        state.plottingSelections.barchart.xAxisId = "test";
+
+        mutations.ResetOutputs(state);
+        expect(state.modelRun).toStrictEqual({...initialModelRunState(), ready: true});
+        expect(state.modelOutput.dummyProperty).toBe(false);
 
         expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.age).toBe("");
@@ -56,6 +122,7 @@ describe("Root mutations", () => {
         expect(state.filteredData.selectedChoroplethFilters.survey).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.regions).toStrictEqual([]);
 
+        expect(state.plottingSelections.barchart.xAxisId).toBe("");
     });
 
 });

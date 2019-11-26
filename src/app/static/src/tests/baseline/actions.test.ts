@@ -35,11 +35,9 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: "ResetInputs", payload: null});
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: BaselineMutation.PJNZUpdated, payload: null});
 
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: BaselineMutation.PJNZUpdated, payload: null});
-
-        expectEqualsFrozen(commit.mock.calls[2][0], {
+        expectEqualsFrozen(commit.mock.calls[1][0], {
             type: BaselineMutation.PJNZUpdated,
             payload: {data: {country: "Malawi", iso3: "MWI"}}
         });
@@ -72,14 +70,12 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.uploadShape({commit, dispatch} as any, new FormData());
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: "ResetInputs", payload: null});
-
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expect(commit.mock.calls[0][0]).toStrictEqual({
             type: BaselineMutation.ShapeUpdated,
             payload: null
         });
 
-        expectEqualsFrozen(commit.mock.calls[2][0], {
+        expectEqualsFrozen(commit.mock.calls[1][0], {
             type: BaselineMutation.ShapeUpdated,
             payload: mockShape
         });
@@ -101,14 +97,12 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.uploadPopulation({commit, dispatch} as any, new FormData());
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: "ResetInputs", payload: null});
-
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expect(commit.mock.calls[0][0]).toStrictEqual({
             type: BaselineMutation.PopulationUpdated,
             payload: null
         });
 
-        expectEqualsFrozen(commit.mock.calls[2][0], {
+        expectEqualsFrozen(commit.mock.calls[1][0], {
             type: BaselineMutation.PopulationUpdated,
             payload: mockPop
         });

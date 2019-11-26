@@ -203,9 +203,8 @@ describe("Survey and programme actions", () => {
 
         const commit = jest.fn();
         await actions.deleteSurvey({commit} as any);
-        expect(commit).toBeCalledTimes(2);
+        expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
-        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
     });
 
     it("deletes program", async () => {
@@ -214,9 +213,8 @@ describe("Survey and programme actions", () => {
 
         const commit = jest.fn();
         await actions.deleteProgram({commit} as any);
-        expect(commit).toBeCalledTimes(2);
+        expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
-        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
     });
 
     it("deletes ANC", async () => {
@@ -225,9 +223,8 @@ describe("Survey and programme actions", () => {
 
         const commit = jest.fn();
         await actions.deleteANC({commit} as any);
-        expect(commit).toBeCalledTimes(2);
+        expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
-        expect(commit.mock.calls[1][0]["type"]).toBe("filteredData/Reset");
     });
 
     it("deletes all", async () => {
@@ -243,14 +240,11 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         await actions.deleteAll({commit} as any);
         expect(mockAxios.history["delete"].length).toBe(3);
-        expect(commit).toBeCalledTimes(6);
+        expect(commit).toBeCalledTimes(3);
         expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([
             SurveyAndProgramMutation.SurveyUpdated,
-            "filteredData/Reset",
             SurveyAndProgramMutation.ProgramUpdated,
-            "filteredData/Reset",
-            SurveyAndProgramMutation.ANCUpdated,
-            "filteredData/Reset"]);
+            SurveyAndProgramMutation.ANCUpdated]);
     });
 
 });

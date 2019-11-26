@@ -67,7 +67,10 @@ describe("ApiService", () => {
             .toBe("No error handler registered for request /unusual/.");
 
         expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: `errors/ErrorAdded`, payload: "Unknown error"});
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: `errors/ErrorAdded`,
+            payload: "API response failed but did not contain any error information. Please contact support."
+        });
         expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
     });
 
@@ -200,15 +203,7 @@ describe("ApiService", () => {
         mockAxios.onGet(`/baseline/`)
             .reply(500);
 
-        let error: Error;
-        try {
-            await api(jest.fn())
-                .get("/baseline/");
-
-        } catch (e) {
-            error = e
-        }
-        expect(error!!.message).toBe("Could not parse API response");
+        await expectCouldNotParseAPIResponseError();
     });
 
     it("throws error if API response status is missing", async () => {
@@ -216,15 +211,7 @@ describe("ApiService", () => {
         mockAxios.onGet(`/baseline/`)
             .reply(500, {data: {}, errors: []});
 
-        let error: Error;
-        try {
-            await api(jest.fn())
-                .get("/baseline/");
-
-        } catch (e) {
-            error = e
-        }
-        expect(error!!.message).toBe("Could not parse API response");
+        await expectCouldNotParseAPIResponseError();
     });
 
     it("throws error if API response errors are missing", async () => {
@@ -232,15 +219,7 @@ describe("ApiService", () => {
         mockAxios.onGet(`/baseline/`)
             .reply(500, {data: {}, status: "failure"});
 
-        let error: Error;
-        try {
-            await api(jest.fn())
-                .get("/baseline/");
-
-        } catch (e) {
-            error = e
-        }
-        expect(error!!.message).toBe("Could not parse API response");
+        await expectCouldNotParseAPIResponseError();
     });
 
     it("does nothing on error if ignoreErrors is true", async () => {
@@ -269,5 +248,18 @@ describe("ApiService", () => {
         expect(warnings[0][0]).toBe("No error handler registered for request /baseline/.");
         expect(warnings[1][0]).toBe("No success handler registered for request /baseline/.");
     });
+
+    async function expectCouldNotParseAPIResponseError() {
+        const commit = jest.fn();
+        await api(commit)
+            .get("/baseline/");
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: `errors/ErrorAdded`,
+            payload: "Could not parse API response. Please contact support."
+        });
+        expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
+    }
 
 });
