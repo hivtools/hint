@@ -20,6 +20,7 @@ import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyA
 import {BaselineMutation, BaselineUpdates} from "./store/baseline/mutations";
 import {stripNamespace} from "./utils";
 import {initialPlottingSelectionsState, plottingSelections, PlottingSelectionsState} from "./store/plottingSelections/plottingSelections";
+import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 
 
 export interface RootState {
@@ -33,7 +34,8 @@ export interface RootState {
     modelOutput: ModelOutputState,
     plottingSelections: PlottingSelectionsState,
     stepper: StepperState,
-    load: LoadState
+    load: LoadState,
+    errors: ErrorsState
 }
 
 export interface ReadyState {
@@ -89,6 +91,7 @@ export const emptyState = (): RootState => {
         stepper: initialStepperState(),
         load: initialLoadState(),
         plottingSelections: initialPlottingSelectionsState(),
+        errors: initialErrorsState()
     }
 }
 
@@ -103,7 +106,8 @@ export const storeOptions: StoreOptions<RootState> = {
         modelOutput,
         plottingSelections,
         stepper,
-        load
+        load,
+        errors
     },
     actions: actions,
     mutations: mutations,
