@@ -54,16 +54,5 @@ describe("Model run mutations", () => {
         expect(testState.errors).toStrictEqual(["Test Error"]);
     });
 
-    it("sets status error", () => {
-        const testState = mockModelRunState();
-        mutations[ModelRunMutation.RunStatusError](testState, {payload: "Test Error"});
-        expect(testState.errors).toStrictEqual(["Test Error"]);
-    });
-
-    it("sets run error", () => {
-        const testState = mockModelRunState();
-        mutations[ModelRunMutation.ModelRunError](testState, {payload: "Test Error"});
-        expect(testState.errors).toStrictEqual(["Test Error"]);
-    });
 
 });
