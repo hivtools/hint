@@ -2,16 +2,19 @@ package org.imperial.mrc.hint.integration
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.treeToValue
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.helpers.AuthInterceptor
 import org.imperial.mrc.hint.helpers.JSONValidator
+import org.imperial.mrc.hint.helpers.getTestEntity
+import org.imperial.mrc.hint.models.ModelRunOptions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.getForEntity
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.http.*
 
 abstract class SecureIntegrationTests : CleanDatabaseTests() {
 
@@ -27,6 +30,32 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
         } else {
             clear()
         }
+    }
+
+    protected fun getModelRunEntity(isAuthorized: IsAuthorized): HttpEntity<String> {
+        val version = if (isAuthorized == IsAuthorized.TRUE) {
+            uploadMinimalFiles()
+            val optionsResponseEntity = testRestTemplate.getForEntity<String>("/model/options/")
+            val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
+            parser.treeToValue<Map<String, String>>(versionJson)
+        } else {
+            mapOf()
+        }
+        val modelRunOptions = ModelRunOptions(emptyMap(), version)
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        val jsonString = ObjectMapper().writeValueAsString(modelRunOptions)
+        return HttpEntity(jsonString, headers)
+    }
+
+    protected val parser = ObjectMapper()
+
+    protected fun uploadMinimalFiles() {
+        testRestTemplate.postForEntity<String>("/baseline/shape/",
+                getTestEntity("malawi.geojson"))
+
+        testRestTemplate.postForEntity<String>("/disease/survey/",
+                getTestEntity("survey.csv"))
     }
 
     fun assertSecureWithSuccess(isAuthorized: IsAuthorized,
