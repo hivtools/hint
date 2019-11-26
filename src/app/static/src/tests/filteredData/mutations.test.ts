@@ -21,6 +21,8 @@ describe("FilteredData mutations", () => {
                 return selectedFilters.regions;
             case (FilterType.Year):
                 return selectedFilters.year;
+            case (FilterType.Quarter):
+                return selectedFilters.quarter;
         }
     };
 
@@ -65,8 +67,11 @@ describe("FilteredData mutations", () => {
     it("updates region choropleth filter", () => {
         testChoroplethFilterUpdated(FilterType.Region);
     });
-    it("updates quarter choropleth filter", () => {
+    it("updates year choropleth filter", () => {
         testChoroplethFilterUpdated(FilterType.Year);
+    });
+    it("updates quarter choropleth filter", () => {
+        testChoroplethFilterUpdated(FilterType.Quarter);
     });
 
 });

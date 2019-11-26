@@ -196,6 +196,7 @@ describe("FilteredData getters", () => {
                     survey: "",
                     sex: "male",
                     year: "",
+                    quarter: "",
                     regions: ["R1", "R2", "R3"]
                 }
             }),
@@ -216,6 +217,7 @@ describe("FilteredData getters", () => {
                     survey: "",
                     sex: "male",
                     year: "",
+                    quarter: "",
                     regions: []
                 }
             }),

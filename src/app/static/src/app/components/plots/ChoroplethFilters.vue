@@ -36,7 +36,7 @@
                            @select="selectYear"></filter-select>
         </div>
 
-        <div class="py-2" v-if="isOutput">
+        <div class="py-2" id="quarter-filter" v-if="isOutput">
             <filter-select label="Period"
                            :multiple="false"
                            :options="quarterFilters.available"
