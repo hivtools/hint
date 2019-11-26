@@ -111,14 +111,24 @@ describe("File upload component", () => {
         const removeHandler =jest.fn();
         const wrapper = createSut({
             valid: true,
-            deleteFile: removeHandler
+            deleteFile: removeHandler,
+            name: "pjnz"
         });
+
+        const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
+        const vm = wrapper.vm;
+        (vm.$refs["pjnz"] as any) = {
+            value: "TEST FILE NAME"
+        };
+
+        wrapper.find("input").trigger("change");
         const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
         removeLink.trigger("click");
         const fileName = wrapper.find(".custom-file label").text();
         expect(fileName).toBe("Choose a file");
         expect(wrapper.vm.$data.selectedFile).toBe(null);
+        expect((wrapper.vm.$refs["pjnz"] as HTMLInputElement).value).toBe("");
     });
 
     it("renders error message if error is present", () => {
