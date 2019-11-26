@@ -141,4 +141,27 @@ describe("Model run component", () => {
         expect(wrapper.findAll(Tick).length).toBe(0);
     });
 
+    it("does not display message or tick if run was successful but error fetching result", () => {
+        const store = createStore({status: {success: true} as ModelStatusResponse, errors: ["fetch error"]});
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        expect(wrapper.findAll("#model-run-complete").length).toBe(0);
+        expect(wrapper.findAll(Tick).length).toBe(0);
+    });
+
+    it("displays error alerts for errors", () => {
+        const store = createStore({errors: ["first error", "second error"]});
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        const errorAlerts = wrapper.findAll("error-alert-stub");
+        expect(errorAlerts.length).toBe(2);
+        expect(errorAlerts.at(0).attributes("message")).toEqual("first error");
+        expect(errorAlerts.at(1).attributes("message")).toEqual("second error");
+    });
+
+    it("displays no error alerts if no errors", () => {
+        const store = createStore();
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        const errorAlerts = wrapper.findAll("error-alert-stub");
+        expect(errorAlerts.length).toBe(0);
+    });
+
 });

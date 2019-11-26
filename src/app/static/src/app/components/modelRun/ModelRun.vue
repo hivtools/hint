@@ -50,7 +50,7 @@
         computed: {
             ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
                 runId: state => state.modelRunId,
-                success: state => state.status.success,
+                success: state => state.status.success && (!state.errors.length),
                 pollId: state => state.statusPollId,
                 errors: state => state.errors
             }),
