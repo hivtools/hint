@@ -256,6 +256,9 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
         plottingMetadata: {
             barchart: {
                 indicators: [], filters: []
+            },
+            choropleth: {
+                indicators: [], filters: []
             }
         },
         data: [{
@@ -276,24 +279,16 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
 export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResponse> = {}): PlottingMetadataResponse => {
     return {
         anc: {
-            choropleth: {
-                indicators: []
-            }
+            choropleth: {}
         },
         output: {
-            choropleth: {
-                indicators: []
-            }
+            choropleth: {}
         },
         programme: {
-            choropleth: {
-                indicators: []
-            }
+            choropleth: {}
         },
         survey: {
-            choropleth: {
-                indicators: []
-            }
+            choropleth: {}
         },
         ...props
     }

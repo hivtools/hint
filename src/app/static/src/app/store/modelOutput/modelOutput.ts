@@ -15,33 +15,20 @@ export const modelOutputGetters = {
     },
     barchartFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
 
-        const regions: FilterOption[] = rootState.baseline.shape!!.filters!!.regions ?
-            [rootState.baseline.shape!!.filters!!.regions] : [];
-
         let filters = [...rootState.modelRun.result!!.plottingMetadata.barchart.filters];
 
-        const sex = filters.find((f: any) => f.id == "sex");
-        if (!sex) {
-            filters.push({
-                "id": "sex",
-                "column_id": "sex",
-                "label": "Sex",
-                "options": [
-                    {"id": "female", "label": "female"},
-                    {"id": "male", "label": "male"},
-                    {"id": "both", "label": "both"}
-                ]
-            });
+        const area = filters.find((f: any) => f.id == "area");
+        if (area && area.use_shape_regions) {
+            const regions: FilterOption[] = rootState.baseline.shape!!.filters!!.regions ?
+                [rootState.baseline.shape!!.filters!!.regions] : [];
+
+            //remove old, frozen area filter, add new one with regions from shape
+            filters = filters.filter((f: any) => f.id != "area");
+            filters.push({...area, options: regions})
         }
 
         return [
-            ...filters,
-            {
-                "id": "region",
-                "column_id": "area_id",
-                "label": "Region",
-                "options": regions
-            }
+            ...filters
         ];
     }
 };

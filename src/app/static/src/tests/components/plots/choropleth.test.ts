@@ -113,7 +113,8 @@ describe("Choropleth component", () => {
                                 sex: "",
                                 age: "",
                                 survey: "",
-                                year: ""
+                                year: "",
+                                quarter: ""
                             },
                             ...filteredDataProps
                         }),
@@ -399,7 +400,8 @@ describe("Choropleth component", () => {
                 sex: "",
                 age: "",
                 survey: "",
-                year: ""
+                year: "",
+                quarter: ""
             }
         });
 
@@ -417,7 +419,8 @@ describe("Choropleth component", () => {
                 sex: "",
                 age: "",
                 survey: "",
-                year: ""
+                year: "",
+                quarter: ""
             }
         });
         const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
