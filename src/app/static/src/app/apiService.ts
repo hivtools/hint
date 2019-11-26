@@ -44,7 +44,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
             return "API response failed but did not contain any error information. Please contact support."
         }
         const firstError = failure.errors[0];
-        return firstError.detail ? firstError.detail : firstError.error;
+        return firstError.detail ? firstError.detail : firstError.error!!;
     };
 
     private _onError: ((failure: Response) => void) | null = null;

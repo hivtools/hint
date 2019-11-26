@@ -32,6 +32,9 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
             case (FilterType.Region):
                 filters.regions = value as string[];
                 break;
+            case (FilterType.Quarter):
+                filters.quarter = value as string;
+                break;
         }
     }
 };
