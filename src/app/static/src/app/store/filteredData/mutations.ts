@@ -7,7 +7,6 @@ type FilteredDataMutation = Mutation<FilteredDataState>
 export interface SelectedDataMutations {
     SelectedDataTypeUpdated: FilteredDataMutation
     ChoroplethFilterUpdated: FilteredDataMutation
-    Reset: FilteredDataMutation
 }
 
 export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations  = {
@@ -34,8 +33,5 @@ export const mutations: MutationTree<FilteredDataState> & SelectedDataMutations 
                 filters.regions = value as string[];
                 break;
         }
-    },
-    Reset(state: FilteredDataState) {
-        Object.assign(state, initialFilteredDataState());
     }
 };

@@ -17,7 +17,7 @@ describe("load actions", () => {
         const formData = new FormData();
         formData.append('file', file);
         await baselineActions.uploadShape({commit, dispatch: jest.fn()} as any, formData);
-        shape = (commit.mock.calls[2][0]["payload"] as ShapeResponse);
+        shape = (commit.mock.calls[1][0]["payload"] as ShapeResponse);
     });
 
     it("can set files", async () => {

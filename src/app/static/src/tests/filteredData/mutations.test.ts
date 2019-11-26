@@ -32,14 +32,16 @@ describe("FilteredData mutations", () => {
         if (filterType == FilterType.Region){
             expectedInitialState = [];
         }
+
         expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
             .toStrictEqual(expectedInitialState);
 
         mutations.ChoroplethFilterUpdated(testState, {
             payload: [filterType, "test"]
         });
+
         expect(getSelectedChoroplethFilterByType(testState.selectedChoroplethFilters, filterType))
-            .toStrictEqual("test");
+            .toBe("test");
     };
 
     it("sets selectedDataType on SelectedDataTypeUpdated", () => {
@@ -67,13 +69,4 @@ describe("FilteredData mutations", () => {
         testChoroplethFilterUpdated(FilterType.Year);
     });
 
-    it("resets whole state", () => {
-        const testState = mockFilteredDataState({
-            selectedDataType: DataType.ANC,
-            regionIndicators: "TEST" as any
-        });
-        mutations.Reset(testState);
-        expect(testState.selectedDataType).toBe(null);
-        expect(testState.regionIndicators).toStrictEqual({});
-    })
 });

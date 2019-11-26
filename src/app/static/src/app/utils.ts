@@ -89,3 +89,17 @@ export const freezer = {
         return data;
     }
 };
+
+export function prefixNamespace(namespace: string, name: any) {
+    return `${namespace}/${name}`
+}
+
+export function stripNamespace(name: string) {
+    const nameArray = name.split("/");
+    if (nameArray.length == 1) {
+        return ["root", name];
+    }
+    else {
+        return nameArray;
+    }
+}
