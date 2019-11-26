@@ -53,7 +53,7 @@
     }
 
     interface Methods {
-        handleFileSelect: (_: Event) => void
+        handleFileSelect: (_: Event, files: FileList | null) => void
         deleteAndRemove: () => void
         deleteWithConfirmation: () => void
         uploadSelectedFile: (files: FileList | null) => void
@@ -102,12 +102,12 @@
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation")
         },
         methods: {
-            handleFileSelect(_: Event) {
+            handleFileSelect(_: Event, files: FileList | null) {
                 if (this.editsRequireConfirmation) {
                     this.showUploadConfirmation = true;
                 }
                 else {
-                    this.uploadSelectedFile(null);
+                    this.uploadSelectedFile(files);
                 }
             },
             uploadSelectedFile(files: FileList | null) {
