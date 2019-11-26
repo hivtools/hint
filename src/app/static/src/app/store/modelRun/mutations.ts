@@ -4,17 +4,17 @@ import {PayloadWithType} from "../../types";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 
 export enum ModelRunMutation {
-    ModelRunStarted="ModelRunStarted",
-    ModelRunError="ModelRunError",
+    ModelRunStarted = "ModelRunStarted",
+    ModelRunError = "ModelRunError",
     RunStatusUpdated = "RunStatusUpdated",
     PollingForStatusStarted = "PollingForStatusStarted",
     RunResultFetched = "RunResultFetched",
-    RunResultError= "RunResultError",
-    RunStatusError="RunStatusError",
-    Ready= "Ready"
+    RunResultError = "RunResultError",
+    RunStatusError = "RunStatusError",
+    Ready = "Ready"
 }
 
-export const mutations: MutationTree<ModelRunState>  = {
+export const mutations: MutationTree<ModelRunState> = {
     [ModelRunMutation.ModelRunStarted](state: ModelRunState, action: PayloadWithType<ModelSubmitResponse>) {
         state.modelRunId = action.payload.id;
         state.status = {id: action.payload.id} as ModelStatusResponse;
@@ -46,10 +46,10 @@ export const mutations: MutationTree<ModelRunState>  = {
     },
 
     [ModelRunMutation.ModelRunError](state: ModelRunState, action: PayloadWithType<string>) {
-        state.errors.push(action.payload);
+        // TODO do something with the error
     },
 
     [ModelRunMutation.RunStatusError](state: ModelRunState, action: PayloadWithType<string>) {
-        state.errors.push(action.payload);
+        // TODO do something with the error
     }
 };
