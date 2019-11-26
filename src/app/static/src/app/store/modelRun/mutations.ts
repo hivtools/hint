@@ -22,6 +22,10 @@ export const mutations: MutationTree<ModelRunState> & ModelRunMutations = {
         state.errors = [];
     },
 
+    ModelRunError(state: ModelRunState, action: PayloadWithType<string>) {
+        state.errors.push(action.payload);
+    },
+
     RunStatusUpdated(state: ModelRunState, action: PayloadWithType<ModelStatusResponse>) {
         if (action.payload.done) {
             clearInterval(state.statusPollId);

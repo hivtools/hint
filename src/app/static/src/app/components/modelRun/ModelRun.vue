@@ -10,6 +10,7 @@
         <modal :open="running" :okButton="false">
             <h4>Running model</h4>
         </modal>
+        <error-alert v-for="error in errors" :message="error"></error-alert>
     </div>
 </template>
 
@@ -20,6 +21,7 @@
     import Tick from "../Tick.vue";
     import {mapActionsByNames, mapGettersByNames, mapStateProps} from "../../utils";
     import {BProgress} from "bootstrap-vue";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     interface ComputedState {
         runId: string
@@ -29,6 +31,7 @@
 
     interface ComputedGetters {
         running: boolean
+        errorMessage: string
     }
 
     interface Computed extends ComputedGetters, ComputedState {
@@ -48,7 +51,8 @@
             ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
                 runId: state => state.modelRunId,
                 success: state => state.status.success,
-                pollId: state => state.statusPollId
+                pollId: state => state.statusPollId,
+                errors: state => state.errors
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running"])
         },
@@ -70,7 +74,8 @@
         components: {
             Modal,
             Tick,
-            BProgress
+            BProgress,
+            ErrorAlert,
         }
     });
 </script>
