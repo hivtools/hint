@@ -26,10 +26,19 @@
                 <a href="/logout">Logout</a>
             </div>
         </nav>
-        <modal :open="hasError" :okButton="true" @ok="clearLoadError">
+        <modal :open="hasError">
             <h4>Load Error</h4>
             <p>Failed to load state.</p>
             <p>{{loadError}}</p>
+            <template v-slot:footer>
+                <button type="button"
+                        class="btn btn-red"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                        @click="clearLoadError">
+                    OK
+                </button>
+            </template>
         </modal>
     </header>
 </template>
@@ -38,11 +47,11 @@
     import Vue from "vue";
     import {serialiseState} from "../localStorageManager";
     import {BaselineState} from "../store/baseline/baseline";
-    import {LoadState, LoadingState} from "../store/load/load";
+    import {LoadingState, LoadState} from "../store/load/load";
     import {surveyAndProgram, SurveyAndProgramDataState} from "../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import {LocalSessionFile} from "../types";
-    import {mapActionByName, mapStateProp, mapStateProps, addCheckSum} from "../utils";
+    import {addCheckSum, mapActionByName, mapStateProp, mapStateProps} from "../utils";
     import {ValidateInputResponse} from "../generated";
     import Modal from "./Modal.vue"
 
@@ -64,7 +73,7 @@
         hasError: boolean
     }
 
-    interface Computed extends LoadComputed{
+    interface Computed extends LoadComputed {
         baselineFiles: BaselineFiles
         surveyAndProgramFiles: SurveyAndProgramFiles
     }
@@ -102,7 +111,7 @@
         },
         computed: {
             ...mapStateProps<LoadState, keyof LoadComputed>("load", {
-                hasError: state => state.loadingState==LoadingState.LoadFailed,
+                hasError: state => state.loadingState == LoadingState.LoadFailed,
                 loadError: state => state.loadError
             }),
             baselineFiles: mapStateProp<BaselineState, BaselineFiles>("baseline", state => {
@@ -122,9 +131,9 @@
         },
         methods: {
             loadAction:
-                    mapActionByName<File>("load", "load"),
+                mapActionByName<File>("load", "load"),
             clearLoadError:
-                    mapActionByName("load", "clearLoadState"),
+                mapActionByName("load", "clearLoadState"),
             toggle() {
                 this.show = !this.show;
             },
@@ -147,7 +156,7 @@
                 a.download = `${this.title}-${new Date().toISOString()}.json`.toLowerCase();
                 a.click();
             },
-            load(){
+            load() {
                 const input = this.$refs.loadFile as HTMLInputElement;
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];

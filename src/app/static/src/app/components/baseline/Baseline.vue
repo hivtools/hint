@@ -9,6 +9,7 @@
                                  :upload="uploadPJNZ"
                                  :delete-file="deletePJNZ"
                                  :existingFileName="pjnz.existingFileName"
+                                 :edits-require-confirmation="editRequireConfirmation"
                                  accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
                                  name="pjnz">
                         <label v-if="country"><strong>Country</strong>: {{country}}</label>

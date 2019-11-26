@@ -19,12 +19,17 @@ import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mu
 import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
 import {BaselineMutation, BaselineUpdates} from "./store/baseline/mutations";
 import {stripNamespace} from "./utils";
-import {initialPlottingSelectionsState, plottingSelections, PlottingSelectionsState} from "./store/plottingSelections/plottingSelections";
+import {
+    initialPlottingSelectionsState,
+    plottingSelections,
+    PlottingSelectionsState
+} from "./store/plottingSelections/plottingSelections";
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 
 
 export interface RootState {
     version: string;
+    showResetModal: boolean,
     baseline: BaselineState,
     metadata: MetadataState,
     surveyAndProgram: SurveyAndProgramDataState,
@@ -58,14 +63,13 @@ const resetState = (store: Store<RootState>) => {
 
             const type = stripNamespace(mutation.type);
 
-            if (type[0] =="baseline" && BaselineUpdates.includes(type[1] as BaselineMutation)) {
+            if (type[0] == "baseline" && BaselineUpdates.includes(type[1] as BaselineMutation)) {
                 store.commit(RootMutation.ResetFilteredDataSelections);
                 store.commit(RootMutation.ResetOptions);
                 store.commit(RootMutation.ResetOutputs);
             }
 
             if (type[0] == "surveyAndProgram" && SurveyAndProgramUpdates.includes(type[1] as SurveyAndProgramMutation)) {
-
                 store.commit(RootMutation.ResetFilteredDataSelections);
                 store.commit(RootMutation.ResetOptions);
                 store.commit(RootMutation.ResetOutputs);
@@ -81,6 +85,7 @@ const resetState = (store: Store<RootState>) => {
 export const emptyState = (): RootState => {
     return {
         version: '0.0.0',
+        showResetModal: false,
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
         surveyAndProgram: initialSurveyAndProgramDataState(),
@@ -93,7 +98,7 @@ export const emptyState = (): RootState => {
         plottingSelections: initialPlottingSelectionsState(),
         errors: initialErrorsState()
     }
-}
+};
 
 export const storeOptions: StoreOptions<RootState> = {
     modules: {

@@ -5,13 +5,15 @@ import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
 import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
-import {data} from "../../../tests/components/plots/barchart/utils.test";
+import {StepDescription} from "../stepper/stepper";
 
 export enum RootMutation {
     Reset = "Reset",
     ResetFilteredDataSelections = "ResetFilteredDataSelections",
     ResetOptions = "ResetOptions",
-    ResetOutputs = "ResetOutputs"
+    ResetOutputs = "ResetOutputs",
+    ShowResetConfirmation = "ShowResetConfirmation",
+    HideResetConfirmation = "HideResetConfirmation"
 }
 
 export const mutations: MutationTree<RootState> = {

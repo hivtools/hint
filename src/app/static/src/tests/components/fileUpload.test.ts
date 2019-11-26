@@ -1,16 +1,34 @@
 import {shallowMount, Slots} from '@vue/test-utils';
-import Vue from 'vue';
 
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import Tick from "../../app/components/Tick.vue";
 import FileUpload from "../../app/components/FileUpload.vue";
 import {mockFile} from "../mocks";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
+import Vuex from "vuex";
+import Vue from "vue";
+
+Vue.use(Vuex);
 
 describe("File upload component", () => {
 
+    const mockGetters = {
+        editsRequireConfirmation: () => false,
+        laterCompleteSteps: () => [{number: 4, text: "Run model"}]
+    };
+
+    const createStore = () => new Vuex.Store({
+        modules: {
+            stepper: {
+                namespaced: true,
+                getters: mockGetters
+            }
+        }
+    });
+
     const createSut = (props?: any, slots?: Slots) => {
         return shallowMount(FileUpload, {
+            store: createStore(),
             propsData: {
                 error: "",
                 label: "",
@@ -18,7 +36,6 @@ describe("File upload component", () => {
                 upload: () => {
                 },
                 deleteFile: () => {
-
                 },
                 name: "pjnz",
                 accept: "csv",
