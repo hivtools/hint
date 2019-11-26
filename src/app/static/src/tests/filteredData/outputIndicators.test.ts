@@ -74,7 +74,8 @@ describe("getting region indicators for output data", () => {
             mean: 0.2,
             age_group: "1",
             indicator_id: 2,
-            sex: "both"
+            sex: "both",
+            calendar_quarter: "1"
         };
         const testData: Partial<ModelResultRow>[] = [testRow,
             {
@@ -96,9 +97,13 @@ describe("getting region indicators for output data", () => {
                 ...testRow,
                 area_id: "area5",
                 indicator_id: 3 // wrong indicator id
+            },
+            {
+                ...testRow,
+                quarter: "2",  // wrong quarter
             }
         ];
-        const testRootState = getRootState(testData, {age: "1", sex: "both"});
+        const testRootState = getRootState(testData, {age: "1", sex: "both", quarter: "1"});
 
         const result = getResult(testRootState, testMeta);
         const expected = {
