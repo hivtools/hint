@@ -476,14 +476,25 @@ describe("ChoroplethFilters component", () => {
             .toStrictEqual([FilterType.Quarter, "1"]);
     });
 
-    it("shows quarter filter if data type is output", () => {
-        const wrapper = getWrapper({selectedDataType: DataType.Output});
-        expect(wrapper.findAll("#quarter-filter").length).toBe(1);
+    it("renders filters in correct order for input data types", () => {
+        const wrapper = getWrapper({selectedDataType: DataType.Survey});
+        const filters = wrapper.findAll("filter-select-stub");
+        expect(filters.length).toBe(5);
+        expect(filters.at(0).attributes("label")).toBe("Area");
+        expect(filters.at(1).attributes("label")).toBe("Year");
+        expect(filters.at(2).attributes("label")).toBe("Sex");
+        expect(filters.at(3).attributes("label")).toBe("Age");
+        expect(filters.at(4).attributes("label")).toBe("Survey");
     });
 
-    it("does not show quarter filter if data type is not output", () => {
-        const wrapper = getWrapper({selectedDataType: DataType.Survey});
-        expect(wrapper.findAll("#quarter-filter").length).toBe(0);
+    it("renders filters in correct order for output data type", () => {
+        const wrapper = getWrapper({selectedDataType: DataType.Output});
+        const filters = wrapper.findAll("filter-select-stub");
+        expect(filters.length).toBe(4);
+        expect(filters.at(0).attributes("label")).toBe("Area");
+        expect(filters.at(1).attributes("label")).toBe("Period");
+        expect(filters.at(2).attributes("label")).toBe("Sex");
+        expect(filters.at(3).attributes("label")).toBe("Age");
     });
 
     const getWrapper = (state?: Partial<FilteredDataState>,

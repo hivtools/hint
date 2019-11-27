@@ -77,10 +77,7 @@ describe("modelOutput module", () => {
 
         const result = modelOutputGetters.barchartFilters(mockModelOutputState(), null, rootState);
         expect(result.length).toEqual(3);
-        expect(result[0]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[0]);
-        expect(result[1]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[1]);
-
-        expect(result[2]).toStrictEqual({
+        expect(result[0]).toStrictEqual({
             id: "area",
             column_id: "area_id",
             label: "Area",
@@ -89,5 +86,7 @@ describe("modelOutput module", () => {
                 {id: "id1", label: "label 1", children: []}
             ]
         });
+        expect(result[1]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[0]);
+        expect(result[2]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[1]);
     });
 });

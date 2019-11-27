@@ -23,8 +23,10 @@ export const modelOutputGetters = {
                 [rootState.baseline.shape!!.filters!!.regions] : [];
 
             //remove old, frozen area filter, add new one with regions from shape
-            filters = filters.filter((f: any) => f.id != "area");
-            filters.push({...area, options: regions})
+            filters = [
+                {...area, options: regions},
+                ...filters.filter((f: any) => f.id != "area")
+            ];
         }
 
         return [
