@@ -91,6 +91,7 @@ describe("Model options component when edit confirmation is required", () => {
         rendered.find(ResetConfirmation).find(".btn-red").trigger("click");
         await Vue.nextTick();
         expect(mockMutations[ModelOptionsMutation.Update].mock.calls.length).toBe(0);
+        expect(rendered.find(ResetConfirmation).props("open")).toBe(false);
     });
 
     it("reloads the form if user cancels action", (done) => {
@@ -101,8 +102,10 @@ describe("Model options component when edit confirmation is required", () => {
 
         rendered.find(ResetConfirmation).find(".btn-red").trigger("click");
         expect(rendered.vm.$data.reloading).toBe(true);
+
         setTimeout(() => {
             expect(rendered.vm.$data.reloading).toBe(false);
+            expect(rendered.find(ResetConfirmation).props("open")).toBe(false);
             done();
         })
     });

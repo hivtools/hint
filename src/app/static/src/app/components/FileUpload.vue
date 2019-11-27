@@ -56,7 +56,7 @@
         handleFileSelect: (_: Event, files: FileList | null) => void
         deleteAndRemove: () => void
         deleteWithConfirmation: () => void
-        uploadSelectedFile: (files: FileList | null) => void
+        uploadSelectedFile: (_: Event, files: FileList | null) => void
         cancelEdit: () => void
     }
 
@@ -107,10 +107,11 @@
                     this.showUploadConfirmation = true;
                 }
                 else {
-                    this.uploadSelectedFile(files);
+                    this.uploadSelectedFile(_, files);
                 }
             },
-            uploadSelectedFile(files: FileList | null) {
+            uploadSelectedFile(_: Event, files: FileList | null) {
+
                 if (!files) {
                     const fileInput = this.$refs[this.name] as HTMLInputElement;
                     files = fileInput.files

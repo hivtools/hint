@@ -31,7 +31,8 @@
             formattedSteps() {
                 const steps = this.laterCompleteSteps;
                 if (steps.length == 0) {
-                    return ""
+                    // in practice this will never happen
+                    return "no steps"
                 }
                 if (steps.length == 1) {
                     return "step " + formatStep(steps[0])
