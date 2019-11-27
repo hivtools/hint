@@ -45,7 +45,7 @@ describe("getRegionIndicators function", () => {
             }),
         filteredData: mockFilteredDataState({
             selectedDataType: selectedDataType,
-            selectedChoroplethFilters: {regions: selectedFilters, age: "1", sex: "both", year: "", survey: "s1"}
+            selectedChoroplethFilters: {regions: selectedFilters, age: "1", sex: "both", year: "", survey: "s1", quarter: "q1"}
         })
     });
 

@@ -1,12 +1,13 @@
 import {RootState} from "../../root";
 import {DataType, FilteredDataState} from "./filteredData";
 import {FilterOption, SurveyDataRow} from "../../generated";
-import {Dict, IndicatorValuesDict} from "../../types";
+import {Dict, Filter, IndicatorValuesDict} from "../../types";
 import {flattenToIdSet, getColor, getUnfilteredData, sexFilterOptions} from "./utils";
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState): Dict<FilterOption[] | undefined> | null => {
         const sapState = rootState.surveyAndProgram;
+        const modelRunState = rootState.modelRun;
         const regions = rootState.baseline.regionFilters;
         switch (state.selectedDataType) {
             case (DataType.ANC):
@@ -15,7 +16,8 @@ export const getters = {
                         ...sapState.anc.filters,
                         regions,
                         sex: undefined,
-                        surveys: undefined
+                        surveys: undefined,
+                        quarter: undefined
                     } : null;
             case (DataType.Program):
                 return sapState.program ?
@@ -23,7 +25,8 @@ export const getters = {
                         ...sapState.program.filters,
                         regions,
                         sex: sexFilterOptions,
-                        surveys: undefined
+                        surveys: undefined,
+                        quarter: undefined
                     } : null;
             case (DataType.Survey):
                 return sapState.survey ?
@@ -34,11 +37,19 @@ export const getters = {
                         quarter: undefined
                     } : null;
             case (DataType.Output):
-                // TODO use returned filters once in
+                let quarter;
+                let age;
+                if (modelRunState.result){
+                    const filters = modelRunState.result.plottingMetadata.choropleth.filters;
+                    quarter = filters.find((f: Filter) => f.id == "quarter");
+                    age = filters.find((f: Filter) => f.id == "age");
+                }
                 return {
                     regions,
                     sex: sexFilterOptions,
-                    surveys: undefined
+                    surveys: undefined,
+                    quarter: quarter ? quarter.options : undefined,
+                    age: age ? age.options : undefined
                 };
             default:
                 return null;
@@ -115,6 +126,10 @@ export const getters = {
             }
 
             if (dataType in [DataType.Program, DataType.ANC] && row.year != selectedFilters.year) {
+                return true;
+            }
+
+            if (dataType == DataType.Output && row.calendar_quarter != selectedFilters.quarter) {
                 return true;
             }
 

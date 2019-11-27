@@ -54,6 +54,7 @@ describe("FilteredData getters", () => {
         expect(filters.age).toStrictEqual(testFilters.age);
         expect(filters.regions).toStrictEqual([{id: "MWI", label: "Malawi", children: []}]);
         expect(filters.sex).toStrictEqual(sexOptions);
+        expect(filters.quarter).toBeUndefined();
     });
 
     it("gets correct selectedDataFilters when selectedDataType is Survey", () => {
@@ -85,6 +86,7 @@ describe("FilteredData getters", () => {
         expect(filters.regions).toStrictEqual([{id: "MWI", label: "Malawi", children: []}]);
         expect(filters.sex).toStrictEqual(sexOptions);
         expect(filters.surveys).toStrictEqual(testFilters.surveys);
+        expect(filters.quarter).toBeUndefined();
 
     });
 
@@ -114,6 +116,7 @@ describe("FilteredData getters", () => {
         expect(filters.regions).toStrictEqual([{id: "MWI", label: "Malawi", children: []}]);
         expect(filters.sex).toBeUndefined();
         expect(filters.surveys).toBeUndefined();
+        expect(filters.quarter).toBeUndefined();
     });
 
     it("gets correct selectedDataFilters when selectedDataType is Output", () => {
@@ -122,15 +125,24 @@ describe("FilteredData getters", () => {
             getters: getters
         };
         const testState = testStore.state as FilteredDataState;
-        const testFilters = {
-            quarter: [{id: "1", label: "2019 Q1"}],
-            indicators: []
-        };
+        const testFilters = [
+            {id: "quarter", column_id: "calendar_quarter", label: "Quarter", options: [{id: "1", label: "2019 Q1"}]},
+            {id: "age", column_id: "age_group", label: "Age", options: [{id: "1", label: "0-4"}]}
+        ];
         const testRootState = mockRootState({
             modelRun: mockModelRunState(
                 {
                     result: mockModelResultResponse(
-                        {filters: testFilters}
+                            {plottingMetadata: {
+                                choropleth: {
+                                    indicators: [],
+                                    filters: testFilters
+                                },
+                                barchart: {
+                                   indicators: [], filters: []
+                                }
+                            }
+                         }
                     )
                 }),
             baseline: mockBaselineState({
@@ -145,6 +157,8 @@ describe("FilteredData getters", () => {
         expect(filters.regions).toStrictEqual([{id: "MWI", label: "Malawi", children: []}]);
         expect(filters.sex).toStrictEqual(sexOptions);
         expect(filters.surveys).toBeUndefined();
+        expect(filters.quarter).toStrictEqual(testFilters[0].options);
+        expect(filters.age).toStrictEqual(testFilters[1].options);
     });
 
     it("gets null selectedDataFilters when unknown data type", () => {
@@ -196,6 +210,7 @@ describe("FilteredData getters", () => {
                     survey: "",
                     sex: "male",
                     year: "",
+                    quarter: "",
                     regions: ["R1", "R2", "R3"]
                 }
             }),
@@ -216,6 +231,7 @@ describe("FilteredData getters", () => {
                     survey: "",
                     sex: "male",
                     year: "",
+                    quarter: "",
                     regions: []
                 }
             }),
