@@ -26,10 +26,19 @@
                 <a href="/logout">Logout</a>
             </div>
         </nav>
-        <modal :open="hasError" :okButton="true" @ok="clearLoadError">
+        <modal :open="hasError">
             <h4>Load Error</h4>
             <p>Failed to load state.</p>
             <p>{{loadError}}</p>
+            <template v-slot:footer>
+                <button type="button"
+                        class="btn btn-red"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                        @click="clearLoadError">
+                    OK
+                </button>
+            </template>
         </modal>
     </header>
 </template>
