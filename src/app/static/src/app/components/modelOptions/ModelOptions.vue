@@ -36,6 +36,7 @@
         validate: (data: DynamicFormData) => void
         update: (data: DynamicFormMeta) => void
         cancelEditing: () => void
+        continueEditing: () => void
     }
 
     interface Computed {
@@ -50,7 +51,7 @@
     interface Data {
         reloading: boolean
         showConfirmation: boolean,
-        continueEditing: () => void
+        pendingChanges: DynamicFormMeta
     }
 
     const namespace = "modelOptions";
@@ -58,10 +59,9 @@
     export default Vue.extend<Data, Methods, Computed, {}>({
         data() {
             return {
-                continueEditing: () => {
-                },
                 showConfirmation: false,
-                reloading: false
+                reloading: false,
+                pendingChanges: {controlSections: []}
             }
         },
         name: "ModelOptions",
@@ -82,10 +82,7 @@
                 set(value: DynamicFormMeta) {
                     if (this.editsRequireConfirmation) {
                         this.showConfirmation = true;
-                        this.continueEditing = () => {
-                            this.update(value);
-                            this.showConfirmation = false;
-                        }
+                        this.pendingChanges = value;
                     } else {
                         this.update(value);
                     }
@@ -104,6 +101,10 @@
                 setTimeout(() => {
                     self.reloading = false;
                 })
+            },
+            continueEditing() {
+                this.update(this.pendingChanges);
+                this.showConfirmation = false;
             },
             update: mapMutationByName(namespace, ModelOptionsMutation.Update),
             validate: mapMutationByName(namespace, ModelOptionsMutation.Validate),
