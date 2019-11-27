@@ -26,6 +26,7 @@ module.exports = {
     "coveragePathIgnorePatterns": [
         "/node_modules/",
         "./tests/mocks.ts",
+        "./tests/mutationTestHelper.ts",
         "./tests/.*/helpers.ts"
     ]
 };

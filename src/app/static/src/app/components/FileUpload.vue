@@ -2,7 +2,7 @@
     <div class="form-group">
         <label class="font-weight-bold">{{label}}</label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
-        <a v-if="showRemove" class="small float-right" href="#" v-on:click="deleteWithConfirmation">remove</a>
+        <a v-if="showRemove" class="small float-right" href="#" v-on:click="handleFileDelete">remove</a>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <slot></slot>
         <div class="custom-file">
@@ -23,7 +23,7 @@
         <reset-confirmation :continue-editing="uploadSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showUploadConfirmation"></reset-confirmation>
-        <reset-confirmation :continue-editing="deleteAndRemove"
+        <reset-confirmation :continue-editing="deleteSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showDeleteConfirmation"></reset-confirmation>
     </div>
@@ -53,10 +53,10 @@
     }
 
     interface Methods {
-        handleFileSelect: (_: Event, files: FileList | null) => void
-        deleteAndRemove: () => void
-        deleteWithConfirmation: () => void
-        uploadSelectedFile: (_: Event, files: FileList | null) => void
+        handleFileSelect: () => void
+        deleteSelectedFile: () => void
+        handleFileDelete: () => void
+        uploadSelectedFile: () => void
         cancelEdit: () => void
     }
 
@@ -96,48 +96,42 @@
             hasError: function () {
                 return this.error.length > 0
             },
-            showRemove: function() {
+            showRemove: function () {
                 return this.hasError || this.valid
             },
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation")
         },
         methods: {
-            handleFileSelect(_: Event, files: FileList | null) {
+            handleFileSelect() {
                 if (this.editsRequireConfirmation) {
                     this.showUploadConfirmation = true;
-                }
-                else {
-                    this.uploadSelectedFile(_, files);
+                } else {
+                    this.uploadSelectedFile();
                 }
             },
-            uploadSelectedFile(_: Event, files: FileList | null) {
+            uploadSelectedFile() {
+                const fileInput = this.$refs[this.name] as HTMLInputElement;
+                this.selectedFile = fileInput.files!![0]!!;
+                this.selectedFileName = this.selectedFile.name.split("\\").pop() || "";
 
-                if (!files) {
-                    const fileInput = this.$refs[this.name] as HTMLInputElement;
-                    files = fileInput.files
-                }
-
-                this.selectedFile = files && files[0];
-                this.selectedFileName = this.selectedFile && this.selectedFile.name.split("\\").pop() || "";
-                if (this.selectedFile) {
-                    const formData = new FormData();
-                    formData.append('file', this.selectedFile);
-                    this.uploading = true;
-                    this.upload(formData);
-                }
+                const formData = new FormData();
+                formData.append('file', this.selectedFile);
+                this.uploading = true;
+                this.upload(formData);
                 this.showUploadConfirmation = false;
             },
-            deleteWithConfirmation() {
+            handleFileDelete() {
                 if (this.editsRequireConfirmation) {
                     this.showDeleteConfirmation = true;
                 } else {
-                    this.deleteAndRemove();
+                    this.deleteSelectedFile();
                 }
             },
-            deleteAndRemove() {
+            deleteSelectedFile() {
                 this.deleteFile();
                 this.selectedFile = null;
                 this.selectedFileName = "";
+                (this.$refs[this.name] as HTMLInputElement).value = "";
                 this.showDeleteConfirmation = false;
             },
             cancelEdit() {

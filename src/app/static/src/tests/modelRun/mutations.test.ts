@@ -1,11 +1,16 @@
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
-import {mutations} from "../../app/store/modelRun/mutations";
+import {ModelRunMutation, mutations} from "../../app/store/modelRun/mutations";
 import {mockModelResultResponse, mockModelRunState} from "../mocks";
+import {expectAllMutationsDefined} from "../mutationTestHelper";
 
 describe("Model run mutations", () => {
 
     afterEach(() => {
         localStorage.clear();
+    });
+
+    it("all mutation types are defined", () => {
+        expectAllMutationsDefined(ModelRunMutation, mutations);
     });
 
     it("sets status and clears errors when started", () => {
@@ -48,5 +53,6 @@ describe("Model run mutations", () => {
         mutations.RunResultError(testState, {payload: "Test Error"});
         expect(testState.errors).toStrictEqual(["Test Error"]);
     });
+
 
 });

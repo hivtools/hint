@@ -1,7 +1,7 @@
 import {mockModelOptionsState} from "../mocks";
 import {ModelOptionsMutation, mutations} from "../../app/store/modelOptions/mutations";
 import {DynamicFormMeta, NumberControl} from "../../app/components/forms/types";
-
+import {VersionInfo} from "../../app/generated";
 
 describe("Model run options mutations", () => {
 
@@ -11,6 +11,18 @@ describe("Model run options mutations", () => {
         expect(state.valid).toBe(true);
         expect(state.options).toStrictEqual({"test": 123});
     });
+
+    it("saves version", () => {
+        const state = mockModelOptionsState();
+        const mockVersion: VersionInfo = {
+            hintr: "1",
+            naomi: "2",
+            rrq: "3"
+        };
+        mutations[ModelOptionsMutation.SetModelOptionsVersion](state, {payload: mockVersion});
+        expect(state.version).toStrictEqual(mockVersion);
+    });
+
 
     it("updates form and requires re-validation", () => {
         const state = mockModelOptionsState({valid: true});

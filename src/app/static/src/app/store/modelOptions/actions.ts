@@ -1,7 +1,7 @@
 import {ModelOptionsState} from "./modelOptions";
 import {ActionContext, ActionTree} from "vuex";
 import {DynamicFormMeta} from "../../components/forms/types";
-import {api} from "../../apiService";
+import {api, ResponseWithType} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelOptionsMutation} from "./mutations";
 
@@ -13,8 +13,12 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
 
     async fetchModelRunOptions({commit}) {
         commit(ModelOptionsMutation.FetchingModelOptions);
-        await api(commit)
+        const response = await api<ModelOptionsMutation, ModelOptionsMutation>(commit)
             .withSuccess(ModelOptionsMutation.ModelOptionsFetched)
             .get<DynamicFormMeta>("/model/options/");
+
+        if (response) {
+            commit({type: ModelOptionsMutation.SetModelOptionsVersion, payload: response.version});
+        }
     }
 };

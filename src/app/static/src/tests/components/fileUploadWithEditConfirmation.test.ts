@@ -1,7 +1,7 @@
-import {mount, shallowMount, Slots, Wrapper} from '@vue/test-utils';
-import FileUpload from "../../app/components/FileUpload.vue";
 import Vuex from "vuex";
 import Vue from "vue";
+import {mount, Slots, Wrapper} from '@vue/test-utils';
+import FileUpload from "../../app/components/FileUpload.vue";
 import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
 import {mockFile} from "../mocks";
 
@@ -41,6 +41,8 @@ describe("File upload component", () => {
             slots: slots
         });
     };
+
+    const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
 
     function uploadConfirmationModal(wrapper: Wrapper<FileUpload>) {
         return wrapper.findAll(ResetConfirmation).at(0)
@@ -92,7 +94,10 @@ describe("File upload component", () => {
 
     it("opens confirmation modal when new file is selected", () => {
         const wrapper = createSut();
-        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+        (wrapper.vm as any).handleFileSelect();
         expect(uploadConfirmationModal(wrapper).props("open")).toBe(true);
     });
 
@@ -102,12 +107,11 @@ describe("File upload component", () => {
             upload: uploader
         });
 
-        const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
         (wrapper.vm.$refs as any).pjnz = {
             files: [testFile]
         };
 
-        (wrapper.vm as any).handleFileSelect(null, null);
+        (wrapper.vm as any).handleFileSelect();
         uploadConfirmationModal(wrapper).find(".btn-white").trigger("click");
 
         setTimeout(() => {
@@ -123,12 +127,11 @@ describe("File upload component", () => {
             upload: uploader
         });
 
-        const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
         (wrapper.vm.$refs as any).pjnz = {
             files: [testFile]
         };
 
-        (wrapper.vm as any).handleFileSelect(null, null);
+        (wrapper.vm as any).handleFileSelect();
         uploadConfirmationModal(wrapper).find(".btn-red").trigger("click");
 
         setTimeout(() => {

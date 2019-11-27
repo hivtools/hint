@@ -3,13 +3,16 @@ import {ModelOptionsState} from "./modelOptions";
 import {DynamicFormData, DynamicFormMeta} from "../../components/forms/types";
 import {PayloadWithType} from "../../types";
 import {updateForm} from "./utils";
+import {ModelRunMutation} from "../modelRun/mutations";
+import {VersionInfo} from "../../generated";
 
 
 export enum ModelOptionsMutation {
     Validate = "Validate",
     Update = "Update",
     FetchingModelOptions = "FetchingModelOptions",
-    ModelOptionsFetched = "ModelOptionsFetched"
+    ModelOptionsFetched = "ModelOptionsFetched",
+    SetModelOptionsVersion = "SetModelOptionsVersion"
 }
 
 export const ModelOptionsUpdates = [ModelOptionsMutation.Update];
@@ -35,5 +38,9 @@ export const mutations: MutationTree<ModelOptionsState> = {
         state.valid = JSON.stringify(newForm) == JSON.stringify(state.optionsFormMeta);
         state.optionsFormMeta = newForm;
         state.fetching = false;
+    },
+
+    [ModelOptionsMutation.SetModelOptionsVersion](state: ModelOptionsState, action: PayloadWithType<VersionInfo>) {
+        state.version = action.payload
     }
 };

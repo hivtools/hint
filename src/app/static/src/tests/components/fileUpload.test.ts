@@ -45,6 +45,8 @@ describe("File upload component", () => {
         });
     };
 
+    const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
+
     it("renders label", () => {
         const wrapper = createSut({
             label: "Some title"
@@ -73,9 +75,11 @@ describe("File upload component", () => {
         const wrapper = createSut({
             existingFileName: "existing-name.csv"
         });
-
-        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
-        expect(wrapper.find(".custom-file label").text()).toBe("TEST");
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+        (wrapper.vm as any).handleFileSelect();
+        expect(wrapper.find(".custom-file label").text()).toBe("TEST FILE NAME");
     });
 
     it("does not render tick if valid is false", () => {
@@ -128,14 +132,24 @@ describe("File upload component", () => {
         const removeHandler =jest.fn();
         const wrapper = createSut({
             valid: true,
-            deleteFile: removeHandler
+            deleteFile: removeHandler,
+            name: "pjnz"
         });
+
+        const vm = wrapper.vm;
+        (vm.$refs["pjnz"] as any) = {
+            files: [testFile],
+            value: "TEST FILE NAME"
+        };
+
+        wrapper.find("input").trigger("change");
         const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
         removeLink.trigger("click");
         const fileName = wrapper.find(".custom-file label").text();
         expect(fileName).toBe("Choose a file");
         expect(wrapper.vm.$data.selectedFile).toBe(null);
+        expect((wrapper.vm.$refs["pjnz"] as HTMLInputElement).value).toBe("");
     });
 
     it("renders error message if error is present", () => {
@@ -166,7 +180,6 @@ describe("File upload component", () => {
             upload: uploader
         });
 
-        const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
         const vm = wrapper.vm;
         (vm.$refs as any).pjnz = {
             files: [testFile]
@@ -188,7 +201,11 @@ describe("File upload component", () => {
             upload: uploader
         });
 
-        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+
+        (wrapper.vm as any).handleFileSelect();
 
         setTimeout(() => {
             expect(uploader.mock.calls[0][0] instanceof FormData).toBe(true);
@@ -205,8 +222,10 @@ describe("File upload component", () => {
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAll(Tick).length).toBe(0);
-
-        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+        (wrapper.vm as any).handleFileSelect();
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(Tick).length).toBe(0);
@@ -228,7 +247,10 @@ describe("File upload component", () => {
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAll(Tick).length).toBe(0);
 
-        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+        (wrapper.vm as any).handleFileSelect();
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(Tick).length).toBe(0);
@@ -250,7 +272,10 @@ describe("File upload component", () => {
         expect(wrapper.find(".custom-file-label").classes()).not.toContain("uploading");
         expect(wrapper.find(".custom-file-label").attributes().disabled).toBeUndefined();
 
-        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+        (wrapper.vm as any).handleFileSelect();
 
         expect(wrapper.find(".custom-file-label").classes()).toContain("uploading");
         expect(wrapper.find(".custom-file-label").attributes().disabled).not.toBeUndefined();

@@ -10,8 +10,13 @@ import {
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
+import {expectAllMutationsDefined} from "../mutationTestHelper";
 
 describe("Baseline mutations", () => {
+
+    it("all mutation types are defined", () => {
+        expectAllMutationsDefined(BaselineMutation, mutations);
+    });
 
     it("sets country, filename and error on PJNZUpdated", () => {
 
