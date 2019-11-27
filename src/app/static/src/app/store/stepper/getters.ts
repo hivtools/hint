@@ -27,11 +27,6 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
         return state.steps.filter((s: StepDescription) => s.number > activeStep && getters.complete[s.number]);
     },
     editsRequireConfirmation: (state: StepperState, getters: any) => {
-        const activeStep = state.activeStep;
-        const completeSteps = state.steps.map((s: StepDescription) => s.number)
-            .filter((i: number) => getters.complete[i]);
-
-        return activeStep < Math.max(...completeSteps);
+        return getters.laterCompleteSteps.length > 0;
     }
 };
-

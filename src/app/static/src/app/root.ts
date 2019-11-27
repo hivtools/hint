@@ -29,7 +29,6 @@ import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 
 export interface RootState {
     version: string;
-    showResetModal: boolean,
     baseline: BaselineState,
     metadata: MetadataState,
     surveyAndProgram: SurveyAndProgramDataState,
@@ -85,7 +84,6 @@ const resetState = (store: Store<RootState>) => {
 export const emptyState = (): RootState => {
     return {
         version: '0.0.0',
-        showResetModal: false,
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
         surveyAndProgram: initialSurveyAndProgramDataState(),

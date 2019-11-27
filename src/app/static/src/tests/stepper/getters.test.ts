@@ -21,18 +21,18 @@ describe("stepper getters", () => {
     it("returns later complete steps", () => {
         const steps = getters.laterCompleteSteps(state, testGetters, null as any, null as any);
         expect(steps.length).toBe(1);
+        expect(steps[0].number).toBe(2);
     });
 
-    it("edits require confirmation if there are complete steps after the active step", () => {
-        const result = getters.editsRequireConfirmation(state, testGetters, null as any, null as any);
+    it("edits require confirmation if there are later complete steps", () => {
+        const localTestGetters = {...testGetters, laterCompleteSteps: [{}]};
+        const result = getters.editsRequireConfirmation(state, localTestGetters, null as any, null as any);
         expect(result).toBe(true);
     });
 
-    it("edits do not require confirmation if the active step is the latest complete step", () => {
-        const state = mockStepperState({
-            activeStep: 2
-        });
-        const result = getters.editsRequireConfirmation(state, testGetters, null as any, null as any);
+    it("edits do not require confirmation if there are no later complete steps", () => {
+        const localTestGetters = {...testGetters, laterCompleteSteps: []};
+        const result = getters.editsRequireConfirmation(state, localTestGetters, null as any, null as any);
         expect(result).toBe(false);
     });
 });

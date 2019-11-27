@@ -4,7 +4,6 @@ import Stepper from "./components/Stepper.vue";
 import UserHeader from "./components/UserHeader.vue";
 import Errors from "./components/Errors.vue";
 import {mapActions} from "vuex";
-import ResetConfirmation from "./components/ResetConfirmation.vue";
 
 export const app = new Vue({
     el: "#app",

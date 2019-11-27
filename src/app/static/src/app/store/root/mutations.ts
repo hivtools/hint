@@ -5,7 +5,6 @@ import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
 import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
-import {StepDescription} from "../stepper/stepper";
 
 export enum RootMutation {
     Reset = "Reset",
