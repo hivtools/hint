@@ -2,6 +2,30 @@
     <div v-if="hasFilters">
         <h4>Filters</h4>
         <div class="py-2">
+            <filter-select label="Area"
+                           :multiple="true"
+                           :options="regionFilters.available"
+                           :value="regionFilters.selected"
+                           :disabled="regionFilters.disabled"
+                           @select="selectRegion"></filter-select>
+        </div>
+        <div class="py-2" v-if="!isOutput">
+            <filter-select label="Year"
+                           :multiple="false"
+                           :options="yearFilters.available"
+                           :value="yearFilters.selected"
+                           :disabled="yearFilters.disabled"
+                           @select="selectYear"></filter-select>
+        </div>
+        <div class="py-2" id="quarter-filter" v-if="isOutput">
+            <filter-select label="Period"
+                           :multiple="false"
+                           :options="quarterFilters.available"
+                           :value="quarterFilters.selected"
+                           :disabled="quarterFilters.disabled"
+                           @select="selectQuarter"></filter-select>
+        </div>
+        <div class="py-2">
             <filter-select label="Sex"
                            :multiple="false"
                            :options="sexFilters.available"
@@ -25,33 +49,6 @@
                            :value="surveyFilters.selected"
                            :disabled="surveyFilters.disabled"
                            @select="selectSurvey"></filter-select>
-        </div>
-
-        <div class="py-2" v-if="!isOutput">
-            <filter-select label="Year"
-                           :multiple="false"
-                           :options="yearFilters.available"
-                           :value="yearFilters.selected"
-                           :disabled="yearFilters.disabled"
-                           @select="selectYear"></filter-select>
-        </div>
-
-        <div class="py-2" id="quarter-filter" v-if="isOutput">
-            <filter-select label="Period"
-                           :multiple="false"
-                           :options="quarterFilters.available"
-                           :value="quarterFilters.selected"
-                           :disabled="quarterFilters.disabled"
-                           @select="selectQuarter"></filter-select>
-        </div>
-
-        <div class="py-2">
-            <filter-select label="Region"
-                           :multiple="true"
-                           :options="regionFilters.available"
-                           :value="regionFilters.selected"
-                           :disabled="regionFilters.disabled"
-                           @select="selectRegion"></filter-select>
         </div>
     </div>
 </template>
