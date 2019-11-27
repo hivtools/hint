@@ -105,6 +105,7 @@
                 this.deleteFile();
                 this.selectedFile = null;
                 this.selectedFileName = "";
+                (this.$refs[this.name] as HTMLInputElement).value = "";
             }
         },
         watch: {
