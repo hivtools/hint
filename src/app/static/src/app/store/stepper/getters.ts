@@ -1,10 +1,12 @@
 import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
-import {StepperState} from "./stepper";
+import {StepDescription, StepperState} from "./stepper";
 
 interface StepperGetters {
     ready: Getter<StepperState, RootState>,
     complete: Getter<StepperState, RootState>
+    laterCompleteSteps: Getter<StepperState, RootState>
+    editsRequireConfirmation: Getter<StepperState, RootState>
 }
 
 export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
@@ -20,5 +22,12 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
             5: rootGetters['modelRun/complete'],
             6: false
         }
+    },
+    laterCompleteSteps: (state: StepperState, getters: any) => {
+        const activeStep = state.activeStep;
+        return state.steps.filter((s: StepDescription) => s.number > activeStep && getters.complete[s.number]);
+    },
+    editsRequireConfirmation: (state: StepperState, getters: any) => {
+        return getters.laterCompleteSteps.length > 0;
     }
 };
