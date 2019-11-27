@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div :class="hasSelectedDataType ? 'col-sm-3' : 'col-sm-6 col-md-8'" class="upload-section">
+        <div :class="hasSelectedDataType ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
             <form>
                 <file-upload label="Survey"
                              :valid="survey.valid"
