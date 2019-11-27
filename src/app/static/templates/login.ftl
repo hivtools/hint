@@ -4,7 +4,8 @@
     <title>${title}</title>
     <link rel="shortcut icon" href="/public/favicon.ico"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="/public/css/style.css"/>
+    <!-- inject:css -->
+    <!-- endinject -->
     <script>
         function validate(event) {
             const form = document.getElementById("login-form");
