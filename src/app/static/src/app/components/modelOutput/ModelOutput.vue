@@ -4,7 +4,7 @@
             <div class="col">
                 <ul class="nav nav-tabs col-md-12">
                     <li v-for="tab in tabs" class="nav-item">
-                        <a class="nav-link" :class="selectedTab === tab ? 'active' :  ''" v-on:click="selectTab(tab)">{{tab}}</a>
+                        <a class="nav-link" :class="selectedTab === tab ? 'active' :  ''" v-on:click="tabSelected(tab)">{{tab}}</a>
                     </li>
                 </ul>
             </div>
@@ -34,26 +34,27 @@
     import {DataType} from "../../store/filteredData/filteredData";
     import {
         mapActionsByNames,
-        mapGettersByNames,
+        mapGettersByNames, mapMutationByName,
         mapMutationsByNames,
-        mapStateProp,
+        mapStateProp, mapStatePropByName,
     } from "../../utils";
     import {BarchartIndicator, Filter} from "../../types";
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import {BarchartSelections} from "../../store/plottingSelections/plottingSelections";
+    import {ModelOutputState} from "../../store/modelOutput/modelOutput";
+    import {ModelOutputMutation} from "../../store/modelOutput/mutations";
 
     const namespace: string = 'filteredData';
 
     const tabs = ["Map", "Bar"];
 
     interface Data {
-        tabs: string[],
-        selectedTab: string
+        tabs: string[]
     }
 
     interface Methods {
         selectDataType: (dataType: DataType) => void,
-        selectTab: (tab: string) => void
+        tabSelected: (tab: string) => void
         updateBarchartSelections: (data: BarchartSelections) => void
     }
 
@@ -61,22 +62,27 @@
         barchartFilters: Filter[],
         barchartIndicators: BarchartIndicator[],
         chartdata: any,
-        barchartSelections: BarchartSelections
+        barchartSelections: BarchartSelections,
+        selectedTab: string
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
         name: "ModelOutput",
         created() {
             this.selectDataType(DataType.Output)
+
+            if (!this.selectedTab) {
+                this.tabSelected(tabs[0]);
+            }
         },
         data: () => {
             return {
-                tabs: tabs,
-                selectedTab: tabs[0]
+                tabs: tabs
             }
         },
         computed: {
             ...mapGettersByNames("modelOutput", ["barchartFilters", "barchartIndicators"]),
+            selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
             chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
                 return state.result ? state.result.data : [];
             }),
@@ -87,9 +93,7 @@
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["selectDataType"]),
             ...mapMutationsByNames<keyof Methods>("plottingSelections", ["updateBarchartSelections"]),
-            selectTab: function(tab: string){
-                this.selectedTab = tab;
-            }
+            tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected)
         },
         components: {
             Choropleth,

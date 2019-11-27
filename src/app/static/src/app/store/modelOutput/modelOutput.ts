@@ -2,11 +2,12 @@ import {Module} from "vuex";
 import {RootState} from "../../root";
 import {BarchartIndicator, Filter} from "../../types";
 import {FilterOption} from "../../generated";
+import {mutations} from "./mutations";
 
 const namespaced: boolean = true;
 
 export interface ModelOutputState {
-    dummyProperty: boolean // unused except for testing
+    selectedTab: string
 }
 
 export const modelOutputGetters = {
@@ -37,12 +38,13 @@ export const modelOutputGetters = {
 
 export const initialModelOutputState = (): ModelOutputState => {
     return {
-        dummyProperty: false
+        selectedTab: ""
     }
 };
 
 export const modelOutput: Module<ModelOutputState, RootState> = {
     namespaced,
     state: initialModelOutputState(),
-    getters: modelOutputGetters
+    getters: modelOutputGetters,
+    mutations
 };
