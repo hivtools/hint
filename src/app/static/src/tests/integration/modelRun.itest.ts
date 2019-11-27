@@ -12,7 +12,8 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const mockState = {
             modelOptions: {
-                options: {}
+                options: {},
+                version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"}
             }
         } as RootState;
         await actions.run({commit, rootState: mockState} as any);
@@ -23,11 +24,13 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const mockState = {
             modelOptions: {
-                options: {}
+                options: {},
+                version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"}
             }
         } as RootState;
         await actions.run({commit, rootState: mockState} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ModelRunStarted");
+        expect(commit.mock.calls[0][0]["type"]).toBe("ModelRunError");
+        expect(commit.mock.calls[0][0]["payload"]).toBe("Trying to run model with old version of options. Update model run options");
     });
 
     it("can get model run status", (done) => {
@@ -45,6 +48,7 @@ describe("Model run actions", () => {
                 clearInterval(testInterval);
                 done();
             }
+
         })
     });
 

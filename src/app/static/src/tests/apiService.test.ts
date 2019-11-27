@@ -136,7 +136,7 @@ describe("ApiService", () => {
         expect(committedPayload).toBe(true);
     });
 
-    it("returns the success response data", async () => {
+    it("returns the response object", async () => {
 
         mockAxios.onGet(`/baseline/`)
             .reply(200, mockSuccess("TEST"));
@@ -146,7 +146,7 @@ describe("ApiService", () => {
             .withSuccess("TEST_TYPE")
             .get("/baseline/");
 
-        expect(response).toBe("TEST");
+        expect(response).toStrictEqual({data: "TEST", errors: [], status: "success"});
     });
 
     it("deep freezes the response object if requested", async () => {

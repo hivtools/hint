@@ -350,6 +350,12 @@ export interface ModelSubmitRequest {
   options: {
     [k: string]: any;
   };
+  version: {
+    hintr: string;
+    naomi: string;
+    rrq: string;
+    [k: string]: any;
+  };
 }
 export interface ModelSubmitResponse {
   id: string;
@@ -437,6 +443,12 @@ export interface Response {
     error: string;
     detail: string | null;
   }[];
+  version?: {
+    hintr: string;
+    naomi: string;
+    rrq: string;
+    [k: string]: any;
+  };
 }
 export interface SessionFile {
   path: string | null;
@@ -676,4 +688,10 @@ export interface ValidateSurveyAndProgrammeRequest {
     filename: string;
   };
   shape: string | null;
+}
+export interface VersionInfo {
+  hintr: string;
+  naomi: string;
+  rrq: string;
+  [k: string]: any;
 }

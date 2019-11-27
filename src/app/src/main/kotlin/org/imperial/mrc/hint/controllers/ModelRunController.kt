@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.controllers
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
+import org.imperial.mrc.hint.models.ModelRunOptions
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -12,9 +13,9 @@ class ModelRunController(val fileManager: FileManager, val apiClient: APIClient)
 
     @PostMapping("/run/")
     @ResponseBody
-    fun run(@RequestBody options: Map<String, Any>): ResponseEntity<String> {
+    fun run(@RequestBody modelRunOptions: ModelRunOptions): ResponseEntity<String> {
         val allFiles = fileManager.getAllHashes()
-        return apiClient.submit(allFiles, options)
+        return apiClient.submit(allFiles, modelRunOptions)
     }
 
     @GetMapping("/status/{id}")

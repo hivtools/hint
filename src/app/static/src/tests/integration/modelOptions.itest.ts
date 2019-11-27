@@ -33,5 +33,8 @@ describe("model options actions integration", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("ModelOptionsFetched");
         const payload = commit.mock.calls[1][0]["payload"];
         expect(isDynamicFormMeta(payload)).toBe(true);
+
+        expect(commit.mock.calls[2][0]["type"]).toBe("SetModelOptionsVersion");
+        expect(commit.mock.calls[2][0]["payload"]).toBeDefined();
     })
 });

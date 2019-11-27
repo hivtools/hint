@@ -4,12 +4,14 @@ import {DynamicFormData, DynamicFormMeta} from "../../components/forms/types";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
 import {actions} from "./actions";
+import {VersionInfo} from "../../generated";
 
 export interface ModelOptionsState {
     optionsFormMeta: DynamicFormMeta
     options: DynamicFormData
     valid: boolean
     fetching: boolean
+    version: VersionInfo
 }
 
 export const initialModelOptionsState = (): ModelOptionsState => {
@@ -17,7 +19,8 @@ export const initialModelOptionsState = (): ModelOptionsState => {
         optionsFormMeta: {controlSections: []},
         options: {},
         valid: false,
-        fetching: false
+        fetching: false,
+        version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"}
     }
 };
 

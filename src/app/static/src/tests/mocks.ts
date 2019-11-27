@@ -125,11 +125,12 @@ export const mockFile = (filename: string, fileContents: string, type: string = 
     });
 };
 
-export const mockSuccess = (data: any): Response => {
+export const mockSuccess = (data: any, version?: any): Response => {
     return {
         data,
         status: "success",
-        errors: []
+        errors: [],
+        version: version
     }
 };
 
@@ -292,29 +293,4 @@ export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResp
         },
         ...props
     }
-};
-
-export interface Indicators {
-    value_column: string,
-    indicator_column: string,
-    indicator_value: string,
-    name: string,
-    min: number,
-    max: number,
-    colour: string,
-    invert_scale: boolean
-}
-
-export const mockIndicators = (props: Partial<Indicators>) => {
-    return {
-        value_column: "",
-        indicator_column: "",
-        indicator_value: "",
-        name: "",
-        min: 0,
-        max: 0,
-        colour: "",
-        invert_scale: false,
-        ...props
-    };
 };
