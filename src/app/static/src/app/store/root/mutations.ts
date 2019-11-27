@@ -11,9 +11,7 @@ export enum RootMutation {
     Reset = "Reset",
     ResetFilteredDataSelections = "ResetFilteredDataSelections",
     ResetOptions = "ResetOptions",
-    ResetOutputs = "ResetOutputs",
-    ShowResetConfirmation = "ShowResetConfirmation",
-    HideResetConfirmation = "HideResetConfirmation"
+    ResetOutputs = "ResetOutputs"
 }
 
 export const mutations: MutationTree<RootState> = {

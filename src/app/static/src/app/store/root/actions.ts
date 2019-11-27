@@ -1,11 +1,9 @@
 import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
 import {StepDescription} from "../stepper/stepper";
-import {RootMutation} from "./mutations";
 
 export interface RootActions {
     validate: (store: ActionContext<RootState, RootState>) => void;
-    confirmReset: (store: ActionContext<RootState, RootState>) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -24,17 +22,6 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
                 dispatch("surveyAndProgram/deleteAll")
             ]);
             commit({type: "Reset"});
-        }
-    },
-
-    confirmReset(store) {
-        const {state, getters, commit} = store;
-        const activeStep = state.stepper.activeStep;
-        const completeSteps = state.stepper.steps.map((s: StepDescription) => s.number)
-            .filter((i: number) => getters["stepper/complete"][i]);
-
-        if (activeStep < Math.max(...completeSteps)) {
-            commit({type: RootMutation.ShowResetConfirmation})
         }
     }
 };
