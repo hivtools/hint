@@ -13,10 +13,6 @@ export const mapStatePropByName = <T>(namespace: string, name: string): Computed
     return mapState(namespace, [name])[name]
 };
 
-export const mapRootStateProp = <S, T>(func: (s: S) => T): ComputedWithType<T> => {
-    return (mapState<S>({prop: (state) => func(state)}) as Dict<ComputedWithType<T>>)["prop"]
-};
-
 export const mapStateProps = <S, K extends string>(namespace: string,
                                                    map: Dict<(this: CustomVue, state: S) => any>) => {
     type R = { [key in K]: any }
@@ -48,10 +44,6 @@ export const mapMutationsByNames = <K extends string>(namespace: string, names: 
 
 export const mapMutationByName = <T>(namespace: string, name: string): MutationMethod => {
     return mapMutations(namespace, [name])[name]
-};
-
-export const mapRootMutationByName = <T>(name: string): MutationMethod => {
-    return mapMutations([name])[name]
 };
 
 export const addCheckSum = (data: string): string => {
