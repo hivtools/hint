@@ -7,7 +7,7 @@
             <button type="button"
                     class="btn btn-white"
                     @click="continueEditing">
-                I understand and I want to keep editing
+                Discard these steps and keep editing
             </button>
             <button type="button"
                     class="btn btn-red"
