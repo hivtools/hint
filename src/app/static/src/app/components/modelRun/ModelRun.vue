@@ -10,7 +10,9 @@
         <modal :open="running" :okButton="false">
             <h4>Running model</h4>
         </modal>
-        <error-alert v-for="error in errors" :message="error"></error-alert>
+        <div class="mt-3">
+            <error-alert v-for="error in errors" :message="error"></error-alert>
+        </div>
     </div>
 </template>
 
