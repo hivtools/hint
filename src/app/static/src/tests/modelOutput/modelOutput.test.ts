@@ -10,13 +10,16 @@ import {
 
 describe("modelOutput module", () => {
 
+    const filters = [
+        {id: "age", column_id: "age_group_id", label: "Age", options: []},
+        {id: "quarter", column_id: "quarter_id", label: "Quarter", options: []},
+        {id: "area", column_id: "area_id", label: "Area", options: [], use_shape_regions: true},
+    ];
+
     const modelRunResponse = mockModelResultResponse({
         plottingMetadata: {
             barchart: {
-                filters: [
-                    {id: "age", column_id: "age_group_id", label: "Age", options: []},
-                    {id: "quarter", column_id: "quarter_id", label: "Quarter", options: []}
-                ],
+                filters,
                 indicators: [
                     {
                         error_high_column: "upper",
@@ -37,7 +40,12 @@ describe("modelOutput module", () => {
                         value_column: "mean"
                     }
                 ]
+            },
+            choropleth: {
+                filters,
+                indicators: []
             }
+
         }
     });
 
@@ -68,17 +76,17 @@ describe("modelOutput module", () => {
     it("gets barchart filters", async () => {
 
         const result = modelOutputGetters.barchartFilters(mockModelOutputState(), null, rootState);
-        expect(result.length).toEqual(4); //NB temporarily 4 rather than 3 as including sex until it comes from api
-        expect(result[0]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[0]);
-        expect(result[1]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[1]);
-
-        expect(result[3]).toStrictEqual({
-            id: "region",
+        expect(result.length).toEqual(3);
+        expect(result[0]).toStrictEqual({
+            id: "area",
             column_id: "area_id",
-            label: "Region",
+            label: "Area",
+            use_shape_regions: true,
             options: [
                 {id: "id1", label: "label 1", children: []}
             ]
         });
+        expect(result[1]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[0]);
+        expect(result[2]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[1]);
     });
 });

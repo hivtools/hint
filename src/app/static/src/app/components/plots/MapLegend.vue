@@ -15,7 +15,7 @@
     import {LControl} from 'vue2-leaflet';
     import {colorFunctionFromName, roundToContext} from "../../store/filteredData/utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
-
+    var numeral = require('numeral');
     interface Props {
         metadata: ChoroplethIndicatorMetadata
     }
@@ -45,7 +45,7 @@
                     const colorFunction = colorFunctionFromName(this.metadata.colour);
                     const step = (max - min) / 5;
 
-                    return [0, 1, 2, 3, 4, 5].map((i) => {
+                    return [5, 4, 3, 2, 1, 0].map((i) => {
                         let val = min + (i * step);
                         val = roundToContext(val, max);
 
@@ -54,6 +54,9 @@
                             valAsProportion = 1 - valAsProportion;
                         }
 
+                        if (val >= 1000) {
+                            val = numeral(val).format("0a")
+                        }
                         return {
                             val, style: {background: colorFunction(valAsProportion)}
                         }

@@ -5,6 +5,7 @@ import com.github.kittinunf.fuel.Fuel.head
 import com.github.kittinunf.fuel.httpDownload
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
+import org.imperial.mrc.hint.models.ModelRunOptions
 import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -14,7 +15,7 @@ interface APIClient {
     fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, SessionFileWithPath?>): ResponseEntity<String>
     fun validateSurveyAndProgramme(file: SessionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
-    fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String>
+    fun submit(data: Map<String, String>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
@@ -52,10 +53,11 @@ class HintrAPIClient(
         return postJson("validate/survey-and-programme", json)
     }
 
-    override fun submit(data: Map<String, String>, options: Map<String, Any>): ResponseEntity<String> {
+    override fun submit(data: Map<String, String>, modelRunOptions: ModelRunOptions): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
-                mapOf("options" to options,
+                mapOf("options" to modelRunOptions.options,
+                        "version" to modelRunOptions.version,
                         "data" to data))
 
         return postJson("model/submit", json)

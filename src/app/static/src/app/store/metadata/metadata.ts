@@ -51,7 +51,7 @@ export const metadataGetters = {
     },
     choroplethIndicators: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
         const metadata = getters.choroplethIndicatorsMetadata;
-        return  metadata.map((i: ChoroplethIndicatorMetadata) => i.indicator);
+        return metadata.map((i: ChoroplethIndicatorMetadata) => i.indicator);
     }
 };
 

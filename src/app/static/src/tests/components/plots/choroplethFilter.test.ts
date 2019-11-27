@@ -106,12 +106,12 @@ describe("ChoroplethFilters component", () => {
 
     it("computes yearFilters", () => {
         const stateYearFilterOptions = [
-            {id: "1", label: "Jan-Mar 2019"},
-            {id: "2", label: "Apr-Jun 2019"}
+            {id: "1", label: "2018"},
+            {id: "2", label: "2019"}
         ];
         const mockSelectedFilters = {
             ...initialSelectedChoroplethFilters(),
-            quarter: "1"
+            year: "1"
         };
 
         const mockState = {selectedChoroplethFilters: mockSelectedFilters};
@@ -128,6 +128,32 @@ describe("ChoroplethFilters component", () => {
         const yearFilters = vm.yearFilters;
         expect(yearFilters.available).toStrictEqual(stateYearFilterOptions);
         expect(yearFilters.selected).toStrictEqual("1");
+    });
+
+    it("computes quarterFilters", () => {
+        const stateQuarterFilterOptions = [
+            {id: "1", label: "Jan-Mar 2019"},
+            {id: "2", label: "Apr-Jun 2019"}
+        ];
+        const mockSelectedFilters = {
+            ...initialSelectedChoroplethFilters(),
+            quarter: "1"
+        };
+
+        const mockState = {selectedChoroplethFilters: mockSelectedFilters};
+        const mockGetters = {
+            selectedDataFilterOptions: () => {
+                return {
+                    quarter: stateQuarterFilterOptions
+                }
+            }
+        };
+
+        const wrapper = getWrapper(mockState, mockGetters);
+        const vm = (wrapper as any).vm;
+        const quarterFilters = vm.quarterFilters;
+        expect(quarterFilters.available).toStrictEqual(stateQuarterFilterOptions);
+        expect(quarterFilters.selected).toStrictEqual("1");
     });
 
     it("computes regionFilters", () => {
@@ -235,6 +261,33 @@ describe("ChoroplethFilters component", () => {
         expect(mockFilterUpdated.mock.calls[callCount][1]).toStrictEqual([FilterType.Age, "a2"]);
     });
 
+    it("invokes store actions when year filter is edited", () => {
+        const mockFilterUpdated = jest.fn();
+        const mockActions = {
+            choroplethFilterUpdated: mockFilterUpdated
+        };
+        const mockGetters = {
+            selectedDataFilterOptions: () => {
+                return {
+                    year: [
+                        {id: "1", label: "2018"},
+                        {id: "2", label: "2019"}
+                    ]
+                }
+            }
+        };
+
+        const wrapper = getWrapper({}, mockGetters, mockActions);
+        const vm = (wrapper as any).vm;
+        const callCount = mockFilterUpdated.mock.calls.length;
+
+        const newFilter = "2";
+        vm.selectYear(newFilter);
+
+        expect(mockFilterUpdated.mock.calls[callCount][1])
+            .toStrictEqual([FilterType.Year, "2"]);
+    });
+
     it("invokes store actions when quarter filter is edited", () => {
         const mockFilterUpdated = jest.fn();
         const mockActions = {
@@ -256,10 +309,10 @@ describe("ChoroplethFilters component", () => {
         const callCount = mockFilterUpdated.mock.calls.length;
 
         const newFilter = "2";
-        vm.selectYear(newFilter);
+        vm.selectQuarter(newFilter);
 
         expect(mockFilterUpdated.mock.calls[callCount][1])
-            .toStrictEqual([FilterType.Year, "2"]);
+            .toStrictEqual([FilterType.Quarter, "2"]);
     });
 
     it("invokes store actions when region filter is edited", () => {
@@ -317,12 +370,18 @@ describe("ChoroplethFilters component", () => {
             {id: "1", label: "Jan-Mar 2019"},
             {id: "2", label: "Apr-Jun 2019"}
         ];
+        const stateQuarterFilterOptions = [
+            {id: "1", label: "2018"},
+            {id: "2", label: "2019"}
+        ];
+
         const mockSelectedFilters = {
             age: "a2",
             survey: "s1",
             sex: "female",
             year: "1",
-            regions: []
+            regions: [],
+            quarter: "1"
         };
         const mockFilterUpdated = jest.fn();
         const mockState = {
@@ -335,7 +394,8 @@ describe("ChoroplethFilters component", () => {
                 return {
                     age: stateAgeFilterOptions,
                     survey: stateSurveyFilterOptions,
-                    year: stateYearFilterOptions
+                    year: stateYearFilterOptions,
+                    quarter: stateQuarterFilterOptions
                 }
             }
         };
@@ -360,6 +420,10 @@ describe("ChoroplethFilters component", () => {
             {id: "1", label: "Jan-Mar 2019"},
             {id: "2", label: "Apr-Jun 2019"}
         ];
+        const stateQuarterFilterOptions = [
+            {id: "1", label: "2018"},
+            {id: "2", label: "2019"}
+        ];
         const stateRegionOptions = [
             {
                 id: "a1",
@@ -374,6 +438,7 @@ describe("ChoroplethFilters component", () => {
             survey: "s1",
             sex: "male",
             year: "3",
+            quarter: "3",
             regions: []
         };
 
@@ -389,7 +454,8 @@ describe("ChoroplethFilters component", () => {
                         age: stateAgeFilterOptions,
                         survey: null,
                         regions: stateRegionOptions,
-                        year: stateYearFilterOptions
+                        year: stateYearFilterOptions,
+                        quarter: stateQuarterFilterOptions
                     }
                 }
             },
@@ -401,11 +467,34 @@ describe("ChoroplethFilters component", () => {
 
         vm.refreshSelectedChoroplethFilters();
         //Sex should be left unchanged as there are no available sex options for ANC
-        expect(mockFilterUpdated.mock.calls.length).toBe(callCount + 2);
+        expect(mockFilterUpdated.mock.calls.length).toBe(callCount + 3);
         expect(mockFilterUpdated.mock.calls[callCount][1])
             .toStrictEqual([FilterType.Age, "a1"]);
         expect(mockFilterUpdated.mock.calls[callCount + 1][1])
             .toStrictEqual([FilterType.Year, "1"]);
+        expect(mockFilterUpdated.mock.calls[callCount + 2][1])
+            .toStrictEqual([FilterType.Quarter, "1"]);
+    });
+
+    it("renders filters in correct order for input data types", () => {
+        const wrapper = getWrapper({selectedDataType: DataType.Survey});
+        const filters = wrapper.findAll("filter-select-stub");
+        expect(filters.length).toBe(5);
+        expect(filters.at(0).attributes("label")).toBe("Area");
+        expect(filters.at(1).attributes("label")).toBe("Year");
+        expect(filters.at(2).attributes("label")).toBe("Sex");
+        expect(filters.at(3).attributes("label")).toBe("Age");
+        expect(filters.at(4).attributes("label")).toBe("Survey");
+    });
+
+    it("renders filters in correct order for output data type", () => {
+        const wrapper = getWrapper({selectedDataType: DataType.Output});
+        const filters = wrapper.findAll("filter-select-stub");
+        expect(filters.length).toBe(4);
+        expect(filters.at(0).attributes("label")).toBe("Area");
+        expect(filters.at(1).attributes("label")).toBe("Period");
+        expect(filters.at(2).attributes("label")).toBe("Sex");
+        expect(filters.at(3).attributes("label")).toBe("Age");
     });
 
     const getWrapper = (state?: Partial<FilteredDataState>,
@@ -428,4 +517,6 @@ describe("ChoroplethFilters component", () => {
         });
         return shallowMount(ChoroplethFilters, {localVue, store});
     };
+
+
 });

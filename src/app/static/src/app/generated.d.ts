@@ -71,6 +71,7 @@ export interface BarchartMetadata {
       label: string;
       id: string;
     }[];
+    use_shape_regions?: boolean | null;
     [k: string]: any;
   }[];
   [k: string]: any;
@@ -86,13 +87,38 @@ export interface ChoroplethIndicatorMetadata {
   colour: string;
   invert_scale: boolean;
 }
+export interface ChoroplethMetadata {
+  indicators: {
+    indicator: string;
+    value_column: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+  }[];
+  filters: {
+    id: string;
+    column_id: string;
+    label: string;
+    options: {
+      label: string;
+      id: string;
+    }[];
+    use_shape_regions?: boolean | null;
+    [k: string]: any;
+  }[];
+  [k: string]: any;
+}
 export interface Data {
   placeholder?: boolean;
 }
 export type ErrorCode = string;
 export interface Error {
-  error?: string;
-  detail?: string | null;
+  error: string;
+  detail: string | null;
 }
 export type FileName = string;
 export type FilePath = string | null;
@@ -104,6 +130,7 @@ export interface Filter {
     label: string;
     id: string;
   }[];
+  use_shape_regions?: boolean | null;
   [k: string]: any;
 }
 export interface FilterOption {
@@ -181,6 +208,32 @@ export interface ModelResultResponse {
           label: string;
           id: string;
         }[];
+        use_shape_regions?: boolean | null;
+        [k: string]: any;
+      }[];
+      [k: string]: any;
+    };
+    choropleth: {
+      indicators: {
+        indicator: string;
+        value_column: string;
+        indicator_column?: string;
+        indicator_value?: string;
+        name: string;
+        min: number;
+        max: number;
+        colour: string;
+        invert_scale: boolean;
+      }[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+        }[];
+        use_shape_regions?: boolean | null;
         [k: string]: any;
       }[];
       [k: string]: any;
@@ -297,6 +350,12 @@ export interface ModelSubmitRequest {
   options: {
     [k: string]: any;
   };
+  version: {
+    hintr: string;
+    naomi: string;
+    rrq: string;
+    [k: string]: any;
+  };
 }
 export interface ModelSubmitResponse {
   id: string;
@@ -382,8 +441,14 @@ export interface Response {
   };
   errors: {
     error: string;
-    detail?: string | null;
+    detail: string | null;
   }[];
+  version?: {
+    hintr: string;
+    naomi: string;
+    rrq: string;
+    [k: string]: any;
+  };
 }
 export interface SessionFile {
   path: string | null;
@@ -623,4 +688,10 @@ export interface ValidateSurveyAndProgrammeRequest {
     filename: string;
   };
   shape: string | null;
+}
+export interface VersionInfo {
+  hintr: string;
+  naomi: string;
+  rrq: string;
+  [k: string]: any;
 }
