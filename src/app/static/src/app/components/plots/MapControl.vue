@@ -1,6 +1,6 @@
 <template>
     <l-control position="topright">
-        <div style="width: 250px;" class="p-3 map-control">
+        <div style="width: 265px;" class="p-3 map-control">
             <form>
                 <div class="row form-group">
                     <label class="col-3 col-form-label">
