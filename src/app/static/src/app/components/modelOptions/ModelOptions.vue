@@ -11,6 +11,10 @@
         <h4 v-if="valid" class="mt-3">Options are valid
             <tick color="#e31837" width="20px"></tick>
         </h4>
+        <reset-confirmation :continue-editing="continueEditing"
+                            :cancel-editing="cancelEditing"
+                            :steps="laterCompleteSteps"
+                            :open="showConfirmation"></reset-confirmation>
     </div>
 
 </template>
@@ -21,41 +25,87 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 
-    import {mapActionByName, mapMutationByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProps} from "../../utils";
     import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
     import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
+    import ResetConfirmation from "../ResetConfirmation.vue";
+    import {StepDescription} from "../../store/stepper/stepper";
 
     interface Methods {
         fetchOptions: () => void
         validate: (data: DynamicFormData) => void
         update: (data: DynamicFormMeta) => void
+        cancelEditing: () => void
+        continueEditing: () => void
     }
 
     interface Computed {
         modelOptions: DynamicFormMeta
+        fetching: boolean
         loading: boolean
         valid: boolean
+        editsRequireConfirmation: boolean
+        laterCompleteSteps: StepDescription[]
+    }
+
+    interface Data {
+        reloading: boolean
+        showConfirmation: boolean,
+        pendingChanges: DynamicFormMeta
     }
 
     const namespace = "modelOptions";
 
-    export default Vue.extend<{}, Methods, Computed, {}>({
+    export default Vue.extend<Data, Methods, Computed, {}>({
+        data() {
+            return {
+                showConfirmation: false,
+                reloading: false,
+                pendingChanges: {controlSections: []}
+            }
+        },
         name: "ModelOptions",
         computed: {
+            laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
+            editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
-                loading: s => s.fetching,
+                fetching: s => s.fetching,
                 valid: s => s.valid
             }),
+            loading() {
+                return this.fetching || this.reloading
+            },
             modelOptions: {
                 get() {
                     return this.$store.state.modelOptions.optionsFormMeta
                 },
                 set(value: DynamicFormMeta) {
-                    this.update(value);
+                    if (this.editsRequireConfirmation) {
+                        this.showConfirmation = true;
+                        this.pendingChanges = value;
+                    } else {
+                        this.update(value);
+                    }
                 }
             }
         },
         methods: {
+            cancelEditing() {
+                this.showConfirmation = false;
+
+                // This is a little awkward - the form data in the store has not been updated
+                // but the html input element has. We force the component to re-render so that
+                // the correct data is reflected once again.
+                this.reloading = true;
+                const self = this;
+                setTimeout(() => {
+                    self.reloading = false;
+                })
+            },
+            continueEditing() {
+                this.update(this.pendingChanges);
+                this.showConfirmation = false;
+            },
             update: mapMutationByName(namespace, ModelOptionsMutation.Update),
             validate: mapMutationByName(namespace, ModelOptionsMutation.Validate),
             fetchOptions: mapActionByName(namespace, "fetchModelRunOptions")
@@ -63,7 +113,8 @@
         components: {
             DynamicForm,
             LoadingSpinner,
-            Tick
+            Tick,
+            ResetConfirmation
         },
         mounted() {
             this.fetchOptions();
