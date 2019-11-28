@@ -16,27 +16,7 @@ const createStore = (mockGetters: any) => new Vuex.Store({
 
 describe("Reset confirmation modal", () => {
 
-
-    it("can deal with no later complete steps", () => {
-        // even though in practice it should never be opened with no steps to be reset
-        const mockGetters = {
-            laterCompleteSteps: () => []
-        };
-        const rendered = shallowMount(ResetConfirmation, {store: createStore(mockGetters)});
-        expect(rendered.find("p").text())
-            .toContain("Changing this will result in no steps being reset.");
-    });
-
-    it("returns single later complete step", () => {
-        const mockGetters = {
-            laterCompleteSteps: () => [{number: 2, text: "Upload survey and programme data"}]
-        };
-        const rendered = shallowMount(ResetConfirmation, {store: createStore(mockGetters)});
-        expect(rendered.find("p").text())
-            .toContain("Changing this will result in step 2 (Upload survey and programme data) being reset.");
-    });
-
-    it("returns multiple later complete steps", () => {
+    it("returns later complete steps", () => {
         const mockGetters = {
             laterCompleteSteps: () => [{number: 2, text: "Upload survey and programme data"},
                 {number: 3, text: "Model options"},
@@ -44,7 +24,13 @@ describe("Reset confirmation modal", () => {
         };
         const rendered = shallowMount(ResetConfirmation, {store: createStore(mockGetters)});
         expect(rendered.find("p").text())
-            .toContain("Changing this will result in steps 2 (Upload survey and programme data), 3 (Model options), and 4 (Run model)");
+            .toContain("Changing this will result in the following steps being discarded:");
+        const steps = rendered.findAll("li");
+        expect(steps.length).toBe(3);
+        expect(steps.at(0).text()).toBe("Step 2: Upload survey and programme data");
+        expect(steps.at(1).text()).toBe("Step 3: Model options");
+        expect(steps.at(2).text()).toBe("Step 4: Run model");
+
     });
 
 });
