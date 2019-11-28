@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
+import java.io.File
 
 class HintApplicationTests : SecureIntegrationTests() {
 
@@ -58,7 +59,9 @@ class HintApplicationTests : SecureIntegrationTests() {
 
     @Test
     fun `can get static resources`() {
-        val entity = testRestTemplate.getForEntity<String>("/public/css/style.css")
+        val testCssFile = File("static/public/css").listFiles()!![0]
+        val path = testCssFile.path.split("/").drop(1).joinToString("/")
+        val entity = testRestTemplate.getForEntity<String>("/$path")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(entity.headers.contentType!!.toString()).isEqualTo("text/css")
     }
@@ -68,7 +71,9 @@ class HintApplicationTests : SecureIntegrationTests() {
         val headers = HttpHeaders()
         headers.set("Accept-Encoding", "gzip")
         val entity = HttpEntity<String>(headers)
-        val response = testRestTemplate.exchange<String>("/public/css/style.css", HttpMethod.GET, entity)
+        val testCssFile = File("static/public/css").listFiles()!![0]
+        val path = testCssFile.path.split("/").drop(1).joinToString("/")
+        val response = testRestTemplate.exchange<String>("/$path", HttpMethod.GET, entity)
         assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
     }
 
