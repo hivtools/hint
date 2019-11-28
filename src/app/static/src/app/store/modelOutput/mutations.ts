@@ -8,7 +8,7 @@ export enum ModelOutputMutation {
 
 export const mutations: MutationTree<ModelOutputState> = {
 
-    [ModelOutputMutation.TabSelected](state: ModelOutputState, action: PayloadWithType<string>) {
-        state.selectedTab = action.payload;
+    [ModelOutputMutation.TabSelected](state: ModelOutputState, tab: string) {
+        state.selectedTab = tab;
     }
 };

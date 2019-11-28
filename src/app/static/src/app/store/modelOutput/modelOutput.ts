@@ -3,6 +3,8 @@ import {RootState} from "../../root";
 import {BarchartIndicator, Filter} from "../../types";
 import {FilterOption} from "../../generated";
 import {mutations} from "./mutations";
+import {initialModelRunState} from "../modelRun/modelRun";
+import {localStorageManager} from "../../localStorageManager";
 
 const namespaced: boolean = true;
 
@@ -42,9 +44,11 @@ export const initialModelOutputState = (): ModelOutputState => {
     }
 };
 
+const existingState = localStorageManager.getState();
+
 export const modelOutput: Module<ModelOutputState, RootState> = {
     namespaced,
-    state: initialModelOutputState(),
+    state: {...initialModelOutputState(), ...existingState && existingState.modelOutput},
     getters: modelOutputGetters,
     mutations
 };
