@@ -33,7 +33,7 @@
 
     interface ComputedGetters {
         running: boolean
-        errorMessage: string
+        complete: boolean
     }
 
     interface Computed extends ComputedGetters, ComputedState {
@@ -56,7 +56,7 @@
                 pollId: state => state.statusPollId,
                 errors: state => state.errors
             }),
-            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running"])
+            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
         },
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll"])
@@ -69,7 +69,7 @@
             }
         },
         created() {
-            if (this.runId && this.pollId == -1) {
+            if (this.runId && this.pollId == -1 && !this.complete) {
                 this.poll(this.runId);
             }
         },
