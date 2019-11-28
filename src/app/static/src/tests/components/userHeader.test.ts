@@ -1,4 +1,4 @@
-import {shallowMount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import UserHeader from "../../app/components/UserHeader.vue";
 import Vuex from "vuex";
 import {
@@ -208,6 +208,30 @@ describe("user header", () => {
         const modal = wrapper.find(Modal);
         expect(modal.attributes("open")).toEqual("true");
         expect(modal.text()).toContain("test error");
-    })
+    });
+
+
+    it("modal can be dismissed", () => {
+        const clearErrorMock = jest.fn();
+        const wrapper = mount(UserHeader,
+            {
+                store: createStore({
+                    load: {
+                        namespaced: true,
+                        state: mockLoadState({
+                            loadingState: LoadingState.LoadFailed,
+                            loadError: "test error"
+                        }),
+                        actions: {
+                            clearLoadState: clearErrorMock
+                        }
+                    }
+                })
+            });
+
+        const modal = wrapper.find(Modal);
+        modal.find(".btn").trigger("click");
+        expect(clearErrorMock.mock.calls.length).toBe(1);
+    });
 
 });

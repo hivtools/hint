@@ -40,34 +40,32 @@ describe("modal", () => {
         expect(wrapper.find(".modal-body").text()).toBe("TEST");
     });
 
-    it ("does not include button if okButton is false", () => {
+    it ("does not include footer if footer slot is missing", () => {
         const wrapper = shallowMount(Modal, {
             propsData: {
-                open: true,
-                okButton: false
+                open: true
             },
             slots: {
                 default: "TEST"
             }
         });
 
-        expect(wrapper.findAll("button").length).toBe(0);
+        expect(wrapper.findAll(".modal-footer").length).toBe(0);
     });
 
-    it ("okButton emits event when clicked", () => {
+    it ("includes footer slot if provided", () => {
         const wrapper = shallowMount(Modal, {
             propsData: {
-                open: true,
-                okButton: true
+                open: true
             },
             slots: {
-                default: "TEST"
+                default: "TEST",
+                footer: "test-footer"
             }
         });
 
-        const okButton = wrapper.find("button");
-        okButton.trigger("click");
-        expect(wrapper.emitted("ok").length).toEqual(1);
+        expect(wrapper.findAll(".modal-footer").length).toBe(1);
+        expect(wrapper.find(".modal-footer").text()).toBe("test-footer");
     });
 
 });
