@@ -13,6 +13,8 @@ export interface ModelRunState extends ReadyState {
     result: ModelResultResponse | null
 }
 
+export const maxPollErrors = 5;
+
 export const initialModelRunState = (): ModelRunState => {
     return {
         modelRunId: "",
