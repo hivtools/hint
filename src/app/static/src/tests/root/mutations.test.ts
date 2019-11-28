@@ -107,14 +107,14 @@ describe("Root mutations", () => {
 
         const state = mockRootState({
             modelRun: mockModelRunState({modelRunId: "TEST"}),
-            modelOutput: {dummyProperty: "TEST" as any}
+            modelOutput: {selectedTab: "TEST"}
         });
 
         state.plottingSelections.barchart.xAxisId = "test";
 
         mutations.ResetOutputs(state);
         expect(state.modelRun).toStrictEqual({...initialModelRunState(), ready: true});
-        expect(state.modelOutput.dummyProperty).toBe(false);
+        expect(state.modelOutput.selectedTab).toBe("");
 
         expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
         expect(state.filteredData.selectedChoroplethFilters.age).toBe("");
