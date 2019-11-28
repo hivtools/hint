@@ -8,12 +8,13 @@
     <script>
         function validate(event) {
             const form = document.getElementById("login-form");
-            if (!form.checkValidity()) {
+            if (form.checkValidity()) {
+                localStorage.clear();
+            } else {
                 event.preventDefault();
                 form.classList.add('was-validated');
             }
         }
-        localStorage.clear();
     </script>
 </head>
 <body>
