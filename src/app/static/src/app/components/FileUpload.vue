@@ -2,7 +2,7 @@
     <div class="form-group">
         <label class="font-weight-bold">{{label}}</label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
-        <a v-if="showRemove" class="small float-right" href="#" v-on:click="remove">remove</a>
+        <a v-if="showRemove" class="small float-right" href="#" v-on:click="handleFileDelete">remove</a>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <slot></slot>
         <div class="custom-file">
@@ -20,6 +20,12 @@
             </label>
         </div>
         <error-alert v-if="hasError" :message="error"></error-alert>
+        <reset-confirmation :continue-editing="uploadSelectedFile"
+                            :cancel-editing="cancelEdit"
+                            :open="showUploadConfirmation"></reset-confirmation>
+        <reset-confirmation :continue-editing="deleteSelectedFile"
+                            :cancel-editing="cancelEdit"
+                            :open="showDeleteConfirmation"></reset-confirmation>
     </div>
 </template>
 
@@ -29,21 +35,29 @@
     import Tick from "./Tick.vue";
     import ErrorAlert from "./ErrorAlert.vue";
     import LoadingSpinner from "./LoadingSpinner.vue";
+    import {mapGetterByName} from "../utils";
+    import ResetConfirmation from "./ResetConfirmation.vue";
 
     interface Data {
         selectedFile: File | null
         selectedFileName: string,
-        uploading: boolean
+        uploading: boolean,
+        showUploadConfirmation: boolean,
+        showDeleteConfirmation: boolean
     }
 
     interface Computed {
         hasError: boolean
-        showRemove: boolean
+        showRemove: boolean,
+        editsRequireConfirmation: boolean
     }
 
     interface Methods {
-        handleFileSelect: (_: Event, files: FileList | null) => void
-        remove: () => void
+        handleFileSelect: () => void
+        deleteSelectedFile: () => void
+        handleFileDelete: () => void
+        uploadSelectedFile: () => void
+        cancelEdit: () => void
     }
 
     interface Props {
@@ -63,7 +77,9 @@
             return {
                 selectedFile: null,
                 selectedFileName: "",
-                uploading: false
+                uploading: false,
+                showUploadConfirmation: false,
+                showDeleteConfirmation: false
             }
         },
         props: {
@@ -80,32 +96,47 @@
             hasError: function () {
                 return this.error.length > 0
             },
-            showRemove: function() {
+            showRemove: function () {
                 return this.hasError || this.valid
-            }
+            },
+            editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation")
         },
         methods: {
-            handleFileSelect(_: Event, files: FileList | null) {
-                if (!files) {
-                    const fileInput = this.$refs[this.name] as HTMLInputElement;
-                    files = fileInput.files
-                }
-
-                this.selectedFile = files && files[0];
-                this.selectedFileName = this.selectedFile && this.selectedFile.name.split("\\").pop() || "";
-
-                if (this.selectedFile) {
-                    const formData = new FormData();
-                    formData.append('file', this.selectedFile);
-                    this.uploading = true;
-                    this.upload(formData);
+            handleFileSelect() {
+                if (this.editsRequireConfirmation) {
+                    this.showUploadConfirmation = true;
+                } else {
+                    this.uploadSelectedFile();
                 }
             },
-            remove() {
+            uploadSelectedFile() {
+                const fileInput = this.$refs[this.name] as HTMLInputElement;
+                this.selectedFile = fileInput.files!![0]!!;
+                this.selectedFileName = this.selectedFile.name.split("\\").pop() || "";
+
+                const formData = new FormData();
+                formData.append('file', this.selectedFile);
+                this.uploading = true;
+                this.upload(formData);
+                this.showUploadConfirmation = false;
+            },
+            handleFileDelete() {
+                if (this.editsRequireConfirmation) {
+                    this.showDeleteConfirmation = true;
+                } else {
+                    this.deleteSelectedFile();
+                }
+            },
+            deleteSelectedFile() {
                 this.deleteFile();
                 this.selectedFile = null;
                 this.selectedFileName = "";
                 (this.$refs[this.name] as HTMLInputElement).value = "";
+                this.showDeleteConfirmation = false;
+            },
+            cancelEdit() {
+                this.showDeleteConfirmation = false;
+                this.showUploadConfirmation = false
             }
         },
         watch: {
@@ -123,9 +154,9 @@
         components: {
             Tick,
             LoadingSpinner,
-            ErrorAlert
+            ErrorAlert,
+            ResetConfirmation
         }
     });
-
 
 </script>

@@ -1,25 +1,40 @@
 import {shallowMount, Slots} from '@vue/test-utils';
-import Vue from 'vue';
 
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import Tick from "../../app/components/Tick.vue";
 import FileUpload from "../../app/components/FileUpload.vue";
 import {mockFile} from "../mocks";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
+import Vuex from "vuex";
+import Vue from "vue";
+
+Vue.use(Vuex);
 
 describe("File upload component", () => {
 
+    const mockGetters = {
+        editsRequireConfirmation: () => false,
+        laterCompleteSteps: () => [{number: 4, text: "Run model"}]
+    };
+
+    const createStore = () => new Vuex.Store({
+        modules: {
+            stepper: {
+                namespaced: true,
+                getters: mockGetters
+            }
+        }
+    });
+
     const createSut = (props?: any, slots?: Slots) => {
         return shallowMount(FileUpload, {
+            store: createStore(),
             propsData: {
                 error: "",
                 label: "",
                 valid: true,
-                upload: () => {
-                },
-                deleteFile: () => {
-
-                },
+                upload: jest.fn(),
+                deleteFile: jest.fn(),
                 name: "pjnz",
                 accept: "csv",
                 ...props
@@ -27,6 +42,8 @@ describe("File upload component", () => {
             slots: slots
         });
     };
+
+    const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
 
     it("renders label", () => {
         const wrapper = createSut({
@@ -56,9 +73,11 @@ describe("File upload component", () => {
         const wrapper = createSut({
             existingFileName: "existing-name.csv"
         });
-
-        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
-        expect(wrapper.find(".custom-file label").text()).toBe("TEST");
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+        (wrapper.vm as any).handleFileSelect();
+        expect(wrapper.find(".custom-file label").text()).toBe("TEST FILE NAME");
     });
 
     it("does not render tick if valid is false", () => {
@@ -83,7 +102,7 @@ describe("File upload component", () => {
     });
 
     it("renders remove link if valid is true", () => {
-        const removeHandler =jest.fn();
+        const removeHandler = jest.fn();
         const wrapper = createSut({
             valid: true,
             deleteFile: removeHandler
@@ -95,7 +114,7 @@ describe("File upload component", () => {
     });
 
     it("renders remove link if there are errors", () => {
-        const removeHandler =jest.fn();
+        const removeHandler = jest.fn();
         const wrapper = createSut({
             valid: false,
             error: "invalid file",
@@ -108,16 +127,16 @@ describe("File upload component", () => {
     });
 
     it("clears selected file on remove", () => {
-        const removeHandler =jest.fn();
+        const removeHandler = jest.fn();
         const wrapper = createSut({
             valid: true,
             deleteFile: removeHandler,
             name: "pjnz"
         });
 
-        const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
         const vm = wrapper.vm;
         (vm.$refs["pjnz"] as any) = {
+            files: [testFile],
             value: "TEST FILE NAME"
         };
 
@@ -159,7 +178,6 @@ describe("File upload component", () => {
             upload: uploader
         });
 
-        const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
         const vm = wrapper.vm;
         (vm.$refs as any).pjnz = {
             files: [testFile]
@@ -181,7 +199,11 @@ describe("File upload component", () => {
             upload: uploader
         });
 
-        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+
+        (wrapper.vm as any).handleFileSelect();
 
         setTimeout(() => {
             expect(uploader.mock.calls[0][0] instanceof FormData).toBe(true);
@@ -198,8 +220,10 @@ describe("File upload component", () => {
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAll(Tick).length).toBe(0);
-
-        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+        (wrapper.vm as any).handleFileSelect();
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(Tick).length).toBe(0);
@@ -221,7 +245,10 @@ describe("File upload component", () => {
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAll(Tick).length).toBe(0);
 
-        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+        (wrapper.vm as any).handleFileSelect();
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(Tick).length).toBe(0);
@@ -243,7 +270,10 @@ describe("File upload component", () => {
         expect(wrapper.find(".custom-file-label").classes()).not.toContain("uploading");
         expect(wrapper.find(".custom-file-label").attributes().disabled).toBeUndefined();
 
-        (wrapper.vm as any).handleFileSelect(null, [{name: "TEST"}] as any);
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+        (wrapper.vm as any).handleFileSelect();
 
         expect(wrapper.find(".custom-file-label").classes()).toContain("uploading");
         expect(wrapper.find(".custom-file-label").attributes().disabled).not.toBeUndefined();
@@ -254,6 +284,5 @@ describe("File upload component", () => {
         expect(wrapper.find(".custom-file-label").attributes().disabled).toBeUndefined();
 
     });
-
 
 });
