@@ -44,7 +44,6 @@
 
     interface Computed {
         modelOptions: DynamicFormMeta
-        fetching: boolean
         loading: boolean
         valid: boolean
         editsRequireConfirmation: boolean
@@ -52,9 +51,7 @@
     }
 
     interface Data {
-        reloading: boolean
-        showConfirmation: boolean,
-        pendingChanges: DynamicFormMeta
+        showConfirmation: boolean
     }
 
     const namespace = "modelOptions";
@@ -62,9 +59,7 @@
     export default Vue.extend<Data, Methods, Computed, {}>({
         data() {
             return {
-                showConfirmation: false,
-                reloading: false,
-                pendingChanges: {controlSections: []}
+                showConfirmation: false
             }
         },
         name: "ModelOptions",
@@ -72,23 +67,15 @@
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
-                fetching: s => s.fetching,
+                loading: s => s.fetching,
                 valid: s => s.valid
             }),
-            loading() {
-                return this.fetching || this.reloading
-            },
             modelOptions: {
                 get() {
                     return this.$store.state.modelOptions.optionsFormMeta
                 },
                 set(value: DynamicFormMeta) {
-                    if (this.editsRequireConfirmation) {
-                        this.showConfirmation = true;
-                        this.pendingChanges = value;
-                    } else {
-                        this.update(value);
-                    }
+                    this.update(value);
                 }
             }
         },
