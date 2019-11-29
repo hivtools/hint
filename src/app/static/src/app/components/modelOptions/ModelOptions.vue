@@ -93,7 +93,7 @@
             }
         },
         methods: {
-            confirmEditing(e: any) {
+            confirmEditing(e: Event) {
                 if (this.editsRequireConfirmation) {
                     e.preventDefault();
                     this.showConfirmation = true;
