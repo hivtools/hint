@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const commonConfig = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
@@ -41,6 +42,14 @@ const commonConfig = {
                     'vue-style-loader',
                     'css-loader'
                 ]
+            },
+            {
+                test: /\.ftl$/,
+                use: [
+                    {
+                        loader: 'html-loader'
+                    }
+                ]
             }
         ]
     },
@@ -67,28 +76,49 @@ const commonConfig = {
 const appConfig = {...commonConfig,
     entry: './src/app/index.ts',
     output: {
-        path: path.resolve(__dirname, './public/js'),
-        publicPath: '/public/js/',
-        filename: 'app.js'
-    }
+        path: path.resolve(__dirname, './public'),
+        publicPath: '/public/',
+        filename: 'js/app.js'
+    },
+    plugins: [...commonConfig.plugins,
+        new HtmlWebpackPlugin({
+            hash: true,
+            template: 'public/index.ftl',
+            filename: 'index.ftl'
+        })
+    ]
 };
 
 const forgotPasswordAppConfig = {...commonConfig,
     entry: './src/app/forgotPassword.ts',
     output: {
-        path: path.resolve(__dirname, './public/js'),
-        publicPath: '/public/js/',
-        filename: 'forgotPassword.js'
-    }
+        path: path.resolve(__dirname, './public'),
+        publicPath: '/public/',
+        filename: 'js/forgotPassword.js'
+    },
+    plugins: [...commonConfig.plugins,
+        new HtmlWebpackPlugin({
+            hash: true,
+            template: 'public/forgot-password.ftl',
+            filename: 'forgot-password.ftl'
+        })
+    ]
 };
 
 const resetPasswordAppConfig =  {...commonConfig,
     entry: './src/app/resetPassword.ts',
     output: {
-        path: path.resolve(__dirname, './public/js'),
-        publicPath: '/public/js/',
-        filename: 'resetPassword.js'
-    }
+        path: path.resolve(__dirname, './public'),
+        publicPath: '/public/',
+        filename: 'js/resetPassword.js'
+    },
+    plugins: [...commonConfig.plugins,
+        new HtmlWebpackPlugin({
+            hash: true,
+            template: 'public/reset-password.ftl',
+            filename: 'reset-password.ftl'
+        })
+    ]
 };
 
 module.exports = [appConfig, forgotPasswordAppConfig, resetPasswordAppConfig];
