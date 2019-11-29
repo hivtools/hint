@@ -154,7 +154,6 @@ describe("Model run component", () => {
     });
 
     it("button is enabled once status is success and result exists", () => {
-
         const store = createStore({
             result: mockModelResultResponse(),
             status: {id: "1234", success: true, done: true} as ModelStatusResponse
@@ -166,7 +165,6 @@ describe("Model run component", () => {
     });
 
     it("button is enabled once status is done without success", () => {
-
         const store = createStore({
             result: mockModelResultResponse(),
             status: {id: "1234", success: false, done: true} as ModelStatusResponse
@@ -177,15 +175,20 @@ describe("Model run component", () => {
         expect(wrapper.find(Modal).props().open).toBe(false);
     });
 
-    it("displays message and tick if run is successful", () => {
-        const store = createStore({status: {success: true} as ModelStatusResponse});
+    it("displays message and tick if step is complete", () => {
+        const store = createStore({
+            result: mockModelResultResponse(),
+            status: {id: "1234", success: true, done: true} as ModelStatusResponse
+        });
         const wrapper = shallowMount(ModelRun, {store, localVue});
         expect(wrapper.find("#model-run-complete").text()).toBe("Model run complete");
         expect(wrapper.findAll(Tick).length).toBe(1);
     });
 
-    it("does not display message or tick if run is not successful", () => {
-        const store = createStore({status: {success: false} as ModelStatusResponse});
+    it("does not display message or tick if result is not fetched", () => {
+        const store = createStore({
+            status: {id: "1234", success: true, done: true} as ModelStatusResponse
+        });
         const wrapper = shallowMount(ModelRun, {store, localVue});
         expect(wrapper.findAll("#model-run-complete").length).toBe(0);
         expect(wrapper.findAll(Tick).length).toBe(0);

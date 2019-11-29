@@ -4,7 +4,7 @@
                 v-on:click="run"
                 :disabled="running">Run model
         </button>
-        <h4 v-if="success" class="mt-3" id="model-run-complete">Model run complete
+        <h4 v-if="complete" class="mt-3" id="model-run-complete">Model run complete
             <tick color="#e31837" width="20px"></tick>
         </h4>
         <modal :open="running">
@@ -27,7 +27,6 @@
 
     interface ComputedState {
         runId: string
-        success: boolean
         pollId: number
     }
 
@@ -52,7 +51,6 @@
         computed: {
             ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
                 runId: state => state.modelRunId,
-                success: state => state.status.success && (!state.errors.length),
                 pollId: state => state.statusPollId,
                 errors: state => state.errors
             }),
