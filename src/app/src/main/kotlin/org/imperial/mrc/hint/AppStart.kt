@@ -29,9 +29,14 @@ class MvcConfig(val config: Config) : WebMvcConfigurer {
     }
 
     override fun addInterceptors(registry: InterceptorRegistry) {
+        //Root url - redirect to login if required
         registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
+                .addPathPatterns("/")
+
+        //'API' endpoints - secure, but do not redirect with login form client
+        registry.addInterceptor(SecurityInterceptor(config, ""))
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
+                .excludePathPatterns("/", "/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
     }
 
     override fun configureAsyncSupport(configurer: AsyncSupportConfigurer) {
