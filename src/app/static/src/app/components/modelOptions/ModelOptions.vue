@@ -7,6 +7,7 @@
         <dynamic-form v-if="!loading"
                       v-model="modelOptions"
                       submit-text="Validate"
+                      v-on:mousedown.native="confirmEditing"
                       @submit="validate"></dynamic-form>
         <h4 v-if="valid" class="mt-3">Options are valid
             <tick color="#e31837" width="20px"></tick>
@@ -34,9 +35,11 @@
     interface Methods {
         fetchOptions: () => void
         validate: (data: DynamicFormData) => void
+        unValidate: () => void
         update: (data: DynamicFormMeta) => void
         cancelEditing: () => void
         continueEditing: () => void
+        confirmEditing: (e: Event) => void
     }
 
     interface Computed {
@@ -90,24 +93,22 @@
             }
         },
         methods: {
+            confirmEditing(e: any) {
+                if (this.editsRequireConfirmation) {
+                    e.preventDefault();
+                    this.showConfirmation = true;
+                }
+            },
             cancelEditing() {
                 this.showConfirmation = false;
-
-                // This is a little awkward - the form data in the store has not been updated
-                // but the html input element has. We force the component to re-render so that
-                // the correct data is reflected once again.
-                this.reloading = true;
-                const self = this;
-                setTimeout(() => {
-                    self.reloading = false;
-                })
             },
             continueEditing() {
-                this.update(this.pendingChanges);
+                this.unValidate();
                 this.showConfirmation = false;
             },
             update: mapMutationByName(namespace, ModelOptionsMutation.Update),
             validate: mapMutationByName(namespace, ModelOptionsMutation.Validate),
+            unValidate: mapMutationByName(namespace, ModelOptionsMutation.UnValidate),
             fetchOptions: mapActionByName(namespace, "fetchModelRunOptions")
         },
         components: {

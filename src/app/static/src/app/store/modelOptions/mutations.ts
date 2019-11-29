@@ -8,6 +8,7 @@ import {VersionInfo} from "../../generated";
 
 
 export enum ModelOptionsMutation {
+    UnValidate = "UnValidate",
     Validate = "Validate",
     Update = "Update",
     FetchingModelOptions = "FetchingModelOptions",
@@ -15,9 +16,13 @@ export enum ModelOptionsMutation {
     SetModelOptionsVersion = "SetModelOptionsVersion"
 }
 
-export const ModelOptionsUpdates = [ModelOptionsMutation.Update];
+export const ModelOptionsUpdates = [ModelOptionsMutation.Update, ModelOptionsMutation.UnValidate];
 
 export const mutations: MutationTree<ModelOptionsState> = {
+    [ModelOptionsMutation.UnValidate](state: ModelOptionsState) {
+        state.valid = false;
+    },
+
     [ModelOptionsMutation.Validate](state: ModelOptionsState, payload: DynamicFormData) {
         state.options = payload;
         // TODO validate from server
