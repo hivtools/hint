@@ -8,19 +8,21 @@ import {
 } from "../../mocks";
 import {DataType} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
-import {mutations} from "../../../app/store/filteredData/mutations";
+import {mutations as filteredDataMutations}  from "../../../app/store/filteredData/mutations";
+import {mutations as modelOutputMutations}  from "../../../app/store/modelOutput/mutations";
+import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
 
-function getStore() {
+function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
     return new Vuex.Store({
         modules: {
             filteredData: {
                 namespaced: true,
                 state: mockFilteredDataState(),
                 actions: actions,
-                mutations: mutations
+                mutations: filteredDataMutations
             },
             modelRun: {
                 namespaced: true,
@@ -30,11 +32,15 @@ function getStore() {
             },
             modelOutput: {
                 namespaced: true,
-                state: {},
+                state: {
+                    selectedTab: "",
+                    ...modelOutputState,
+                },
                 getters: {
                     barchartIndicators: jest.fn(),
                     barchartFilters: jest.fn()
-                }
+                },
+                mutations: modelOutputMutations
             },
             plottingSelections: {
                 namespaced: true,
@@ -70,6 +76,22 @@ describe("ModelOutput component", () => {
         expect(store.state.filteredData.selectedDataType).toBe(DataType.Output);
     });
 
+    it ("if no selected tab in state, defaults to select Map tab", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const activeTab = wrapper.find("a.active");
+        expect(activeTab.text()).toBe("Map");
+    });
+
+    it ("gets selected tab from state", () => {
+        const store = getStore({selectedTab: "Bar"});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const activeTab = wrapper.find("a.active");
+        expect(activeTab.text()).toBe("Bar");
+    });
+
     it("can change tabs", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {store, localVue});
@@ -79,6 +101,7 @@ describe("ModelOutput component", () => {
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
         expect(wrapper.find("#barchart-container").classes()).toEqual(["d-none"]);
 
+        //should invoke mutation
         wrapper.findAll(".nav-link").at(1).trigger("click");
 
         expect(wrapper.find(".nav-link.active").text()).toBe("Bar");
