@@ -1,5 +1,5 @@
 import {MutationTree} from "vuex";
-import {ModelRunState} from "./modelRun";
+import {maxPollErrors, ModelRunState} from "./modelRun";
 import {PayloadWithType} from "../../types";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 
@@ -23,10 +23,10 @@ export const mutations: MutationTree<ModelRunState> = {
 
     [ModelRunMutation.RunStatusUpdated](state: ModelRunState, action: PayloadWithType<ModelStatusResponse>) {
         if (action.payload.done) {
-            clearInterval(state.statusPollId);
-            state.statusPollId = -1;
+            stopPolling(state);
         }
         state.status = action.payload;
+        state.errors = [];
     },
 
     [ModelRunMutation.PollingForStatusStarted](state: ModelRunState, action: PayloadWithType<number>) {
@@ -46,10 +46,23 @@ export const mutations: MutationTree<ModelRunState> = {
     },
 
     [ModelRunMutation.ModelRunError](state: ModelRunState, action: PayloadWithType<string>) {
-        // TODO do something with the error
+        state.errors.push(action.payload);
     },
 
     [ModelRunMutation.RunStatusError](state: ModelRunState, action: PayloadWithType<string>) {
-        // TODO do something with the error
-    }
+        state.errors.push(action.payload);
+        if (state.errors.length >= maxPollErrors) {
+            stopPolling(state);
+            state.status = {} as ModelStatusResponse;
+            state.modelRunId = "";
+            state.errors.push("Unable to retrieve model run status. Please retry the model run, or contact support if the error persists.");
+        }
+    },
 };
+
+const stopPolling = (state: ModelRunState) => {
+    clearInterval(state.statusPollId);
+    state.statusPollId = -1;
+};
+
+

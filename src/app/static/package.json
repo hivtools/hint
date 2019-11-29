@@ -69,6 +69,7 @@
   "dependencies": {
     "@types/geojson": "^7946.0.7",
     "@types/leaflet": "^1.5.5",
+    "chart.js": "^2.9.2",
     "chartjs-plugin-error-bars": "^1.2.2",
     "vue-chartjs": "^3.5.0"
   }
