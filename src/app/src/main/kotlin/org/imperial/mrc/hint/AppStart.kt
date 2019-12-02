@@ -33,7 +33,7 @@ class MvcConfig(val config: Config) : WebMvcConfigurer {
         registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
                 .addPathPatterns("/")
 
-        //Ajax endpoints - secure, but do not redirect with login form client
+        //Ajax endpoints - secure, but do not redirect with login form client - return a 401
         registry.addInterceptor(SecurityInterceptor(config, ""))
                 .addPathPatterns("/**")
                 .excludePathPatterns("/", "/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
