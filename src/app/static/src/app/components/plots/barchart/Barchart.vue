@@ -177,6 +177,7 @@
                 return {id: node.indicator, label: node.name};
             },
             changeSelections(newSelections: Partial<BarchartSelections>) {
+                console.log("CHANGING SELECTIONS FROM BARCHART");
                 this.$emit("update", newSelections)
             },
             changeFilter(filterId: any, selectedOptions: any) {

@@ -42,6 +42,30 @@ export type AncResponseData = {
   art_coverage: number;
   [k: string]: any;
 }[];
+export interface BarchartDefaults {
+  indicator_id: string;
+  x_axis_id: string;
+  disaggregate_by_id: string;
+  selected_filter_options: {
+    area: {
+      label: string;
+      id: string;
+    }[];
+    quarter: {
+      label: string;
+      id: string;
+    }[];
+    age: {
+      label: string;
+      id: string;
+    }[];
+    sex: {
+      label: string;
+      id: string;
+    }[];
+  };
+  [k: string]: any;
+}
 export interface BarchartIndicator {
   indicator: string;
   value_column: string;
@@ -74,6 +98,30 @@ export interface BarchartMetadata {
     use_shape_regions?: boolean | null;
     [k: string]: any;
   }[];
+  defaults?: {
+    indicator_id: string;
+    x_axis_id: string;
+    disaggregate_by_id: string;
+    selected_filter_options: {
+      area: {
+        label: string;
+        id: string;
+      }[];
+      quarter: {
+        label: string;
+        id: string;
+      }[];
+      age: {
+        label: string;
+        id: string;
+      }[];
+      sex: {
+        label: string;
+        id: string;
+      }[];
+    };
+    [k: string]: any;
+  };
   [k: string]: any;
 }
 export interface ChoroplethIndicatorMetadata {
@@ -149,6 +197,14 @@ export interface LevelLabels {
   area_level_label: string;
   display: boolean;
 }
+export interface ModelOptionsValidate {
+  valid: true;
+}
+export interface ModelOptionsValidateRequest {
+  options: {
+    [k: string]: any;
+  };
+}
 export type ModelResultData = {
   area_id: string;
   sex: string;
@@ -211,6 +267,30 @@ export interface ModelResultResponse {
         use_shape_regions?: boolean | null;
         [k: string]: any;
       }[];
+      defaults?: {
+        indicator_id: string;
+        x_axis_id: string;
+        disaggregate_by_id: string;
+        selected_filter_options: {
+          area: {
+            label: string;
+            id: string;
+          }[];
+          quarter: {
+            label: string;
+            id: string;
+          }[];
+          age: {
+            label: string;
+            id: string;
+          }[];
+          sex: {
+            label: string;
+            id: string;
+          }[];
+        };
+        [k: string]: any;
+      };
       [k: string]: any;
     };
     choropleth: {

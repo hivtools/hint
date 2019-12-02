@@ -1,5 +1,6 @@
 import {Mutation, MutationTree} from 'vuex';
 import {PlottingSelectionsState, BarchartSelections} from "./plottingSelections";
+import {PayloadWithType} from "../../types";
 
 type PlottingSelectionsMutation = Mutation<PlottingSelectionsState>
 
@@ -8,7 +9,8 @@ export interface PlottingSelectionsMutations {
 }
 
 export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectionsMutations = {
-    updateBarchartSelections(state: PlottingSelectionsState, payload: Partial<BarchartSelections>) {
-        state.barchart = {...state.barchart, ...payload};
+    updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
+        console.log("UPDATING BARCHART MUTATION: " + JSON.stringify(action));
+        state.barchart = {...state.barchart, ...action.payload};
     }
 };
