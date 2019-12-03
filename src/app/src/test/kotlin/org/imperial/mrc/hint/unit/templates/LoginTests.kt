@@ -71,7 +71,7 @@ class LoginTests
 
         assertThat(doc.select("a[href='https://www.unaids.org'] img").attr("src")).isEqualTo("public/images/unaids_logo.png")
         assertThat(doc.select("a[href='https://www.imperial.ac.uk'] img").attr("src")).isEqualTo("public/images/imperial_logo.png")
-        assertThat(doc.select("a[href='https://www.github.com/reside-ic'] img").attr("src")).isEqualTo("public/images/reside-logo-250.png")
+        assertThat(doc.select("a[href='https://github.com/reside-ic'] img").attr("src")).isEqualTo("public/images/reside-logo-250.png")
         assertThat(doc.select("a[href='https://www.washington.edu'] img").attr("src")).isEqualTo("public/images/uq_logo.png")
     }
 
