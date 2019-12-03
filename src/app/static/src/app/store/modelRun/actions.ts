@@ -4,6 +4,7 @@ import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {ModelRunMutation} from "./mutations";
+import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
 
 export interface ModelRunActions {
     run: (store: ActionContext<ModelRunState, RootState>) => void
@@ -45,6 +46,21 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
                 .withError(ModelRunMutation.RunResultError)
                 .freezeResponse()
                 .get<ModelResultResponse>(`/model/result/${state.modelRunId}`)
+                .then(() => {
+                    if (state.result && state.result.plottingMetadata.barchart.defaults) {
+                        const defaults = state.result.plottingMetadata.barchart.defaults;
+                        commit({
+                                type: "plottingSelections/updateBarchartSelections",
+                                payload: {
+                                    indicatorId: defaults.indicator_id,
+                                    xAxisId: defaults.x_axis_id,
+                                    disaggregateById: defaults.disaggregate_by_id,
+                                    selectedFilterOptions: {...defaults.selected_filter_options}
+                                }
+                            },
+                            {root: true});
+                    }
+                });
         }
         commit({type: "Ready", payload: true});
     }
