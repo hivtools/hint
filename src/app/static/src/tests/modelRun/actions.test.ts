@@ -130,7 +130,7 @@ describe("Model run actions", () => {
         }, 2100);
     });
 
-    it("getResult sets default plotting selections after successful result fetch", async () => {
+    it("getResult commits result when successfully fetched", async () => {
         mockAxios.onGet(`/model/result/1234`)
             .reply(200, mockSuccess("TEST DATA"));
 
