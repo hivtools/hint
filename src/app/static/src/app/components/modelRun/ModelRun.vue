@@ -11,7 +11,7 @@
             <h4>Running model</h4>
         </modal>
         <div class="mt-3">
-            <error-alert v-for="error in errors" :error="error" :key="error"></error-alert>
+            <error-alert v-for="error in errors" :error="error" :key="error.error"></error-alert>
         </div>
     </div>
 </template>

@@ -1,6 +1,6 @@
 import {Mutation, MutationTree} from 'vuex';
 import {MetadataState} from "./metadata";
-import {PlottingMetadataResponse} from "../../generated";
+import {PlottingMetadataResponse, Error} from "../../generated";
 import {PayloadWithType} from "../../types";
 
 type MetadataMutation = Mutation<MetadataState>
@@ -12,12 +12,12 @@ export interface MetadataMutations {
 
 export const mutations: MutationTree<MetadataState> & MetadataMutations = {
 
-    PlottingMetadataError(state: MetadataState, action: PayloadWithType<string>) {
+    PlottingMetadataError(state: MetadataState, action: PayloadWithType<Error>) {
         state.plottingMetadataError = action.payload;
     },
 
     PlottingMetadataFetched(state: MetadataState, action: PayloadWithType<PlottingMetadataResponse>) {
         state.plottingMetadata = action.payload;
-        state.plottingMetadataError = "";
+        state.plottingMetadataError = null;
     }
 };
