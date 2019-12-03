@@ -12,6 +12,7 @@ import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
 import java.io.File
 
+
 class HintApplicationTests : SecureIntegrationTests() {
 
     @ParameterizedTest
@@ -59,7 +60,7 @@ class HintApplicationTests : SecureIntegrationTests() {
 
     @Test
     fun `can get static resources`() {
-        val testCssFile = File("static/public/css").listFiles()!![0]
+        val testCssFile = File("static/public/css").listFiles()!!.find { it.extension == "css" }!!
         val path = testCssFile.path.split("/").drop(1).joinToString("/")
         val entity = testRestTemplate.getForEntity<String>("/$path")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
@@ -71,7 +72,7 @@ class HintApplicationTests : SecureIntegrationTests() {
         val headers = HttpHeaders()
         headers.set("Accept-Encoding", "gzip")
         val entity = HttpEntity<String>(headers)
-        val testCssFile = File("static/public/css").listFiles()!![0]
+        val testCssFile = File("static/public/css").listFiles()!!.find { it.extension == "css" }!!
         val path = testCssFile.path.split("/").drop(1).joinToString("/")
         val response = testRestTemplate.exchange<String>("/$path", HttpMethod.GET, entity)
         assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
