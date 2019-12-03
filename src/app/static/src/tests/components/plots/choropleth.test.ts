@@ -329,7 +329,7 @@ describe("Choropleth component", () => {
         const onEachFeatureFunction = options.onEachFeature;
 
         const mockLayer = {
-            bindPopup: jest.fn()
+            bindTooltip: jest.fn()
         };
 
         const mockFeature = {
@@ -340,7 +340,7 @@ describe("Choropleth component", () => {
         };
 
         onEachFeatureFunction(mockFeature, mockLayer);
-        expect(mockLayer.bindPopup.mock.calls[0][0]).toEqual(`<div>
+        expect(mockLayer.bindTooltip.mock.calls[0][0]).toEqual(`<div>
                             <strong>Area 1</strong>
                             <br/>1
                         </div>`);
@@ -353,7 +353,7 @@ describe("Choropleth component", () => {
         };
 
         onEachFeatureFunction(mockZeroValueFeature, mockLayer);
-        expect(mockLayer.bindPopup.mock.calls[1][0]).toEqual(`<div>
+        expect(mockLayer.bindTooltip.mock.calls[1][0]).toEqual(`<div>
                             <strong>Area 2</strong>
                             <br/>0
                         </div>`);

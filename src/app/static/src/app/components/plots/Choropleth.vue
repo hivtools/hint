@@ -151,7 +151,8 @@
                         let value = values && values[indicator] && values[indicator]!!.value;
                         const stringVal =  (value || value === 0) ? value.toString() : "";
 
-                        layer.bindPopup(`<div>
+                        //layer.bindPopup(`<div>
+                        layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${stringVal}
                             </div>`);
