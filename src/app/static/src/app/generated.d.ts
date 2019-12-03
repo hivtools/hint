@@ -47,19 +47,11 @@ export interface BarchartDefaults {
   x_axis_id: string;
   disaggregate_by_id: string;
   selected_filter_options: {
-    area: {
-      label: string;
-      id: string;
-    }[];
-    quarter: {
-      label: string;
-      id: string;
-    }[];
-    age: {
-      label: string;
-      id: string;
-    }[];
-    sex: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^.*$".
+     */
+    [k: string]: {
       label: string;
       id: string;
     }[];
@@ -103,19 +95,11 @@ export interface BarchartMetadata {
     x_axis_id: string;
     disaggregate_by_id: string;
     selected_filter_options: {
-      area: {
-        label: string;
-        id: string;
-      }[];
-      quarter: {
-        label: string;
-        id: string;
-      }[];
-      age: {
-        label: string;
-        id: string;
-      }[];
-      sex: {
+      /**
+       * This interface was referenced by `undefined`'s JSON-Schema definition
+       * via the `patternProperty` "^.*$".
+       */
+      [k: string]: {
         label: string;
         id: string;
       }[];
@@ -167,6 +151,9 @@ export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
+  key?: string;
+  trace?: string[];
+  [k: string]: any;
 }
 export type FileName = string;
 export type FilePath = string | null;
@@ -272,19 +259,11 @@ export interface ModelResultResponse {
         x_axis_id: string;
         disaggregate_by_id: string;
         selected_filter_options: {
-          area: {
-            label: string;
-            id: string;
-          }[];
-          quarter: {
-            label: string;
-            id: string;
-          }[];
-          age: {
-            label: string;
-            id: string;
-          }[];
-          sex: {
+          /**
+           * This interface was referenced by `undefined`'s JSON-Schema definition
+           * via the `patternProperty` "^.*$".
+           */
+          [k: string]: {
             label: string;
             id: string;
           }[];
@@ -522,6 +501,9 @@ export interface Response {
   errors: {
     error: string;
     detail: string | null;
+    key?: string;
+    trace?: string[];
+    [k: string]: any;
   }[];
   version?: {
     hintr: string;

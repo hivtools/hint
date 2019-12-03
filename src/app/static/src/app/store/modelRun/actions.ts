@@ -47,9 +47,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
                 .freezeResponse()
                 .get<ModelResultResponse>(`/model/result/${state.modelRunId}`)
                 .then(() => {
-                    console.log("GOT MODEL RESULT");
                     if (state.result && state.result.plottingMetadata.barchart.defaults) {
-                        console.log("UPDATING PLOTTING METADATA WITH DEFAULTS");
                         const defaults = state.result.plottingMetadata.barchart.defaults;
                         commit({
                                 type: "plottingSelections/updateBarchartSelections",

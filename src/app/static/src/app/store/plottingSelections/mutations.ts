@@ -10,7 +10,6 @@ export interface PlottingSelectionsMutations {
 
 export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectionsMutations = {
     updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
-        console.log("UPDATING BARCHART MUTATION: " + JSON.stringify(action));
         state.barchart = {...state.barchart, ...action.payload};
     }
 };
