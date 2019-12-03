@@ -104,6 +104,15 @@ describe("App", () => {
         expect(spy).toBeCalledTimes(2);
     });
 
+    it("resets outputs if modelOptions UnValidate mutation is called and state is ready", () => {
+        const store = getStore(true);
+        const spy = jest.spyOn(store, "commit");
+        store.commit(prefixNamespace("modelOptions", ModelOptionsMutation.UnValidate));
+
+        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetOutputs);
+        expect(spy).toBeCalledTimes(2);
+    });
+
     it("does not commit any reset mutations if state is not ready", () => {
         const store = getStore();
         const spy = jest.spyOn(store, "commit");

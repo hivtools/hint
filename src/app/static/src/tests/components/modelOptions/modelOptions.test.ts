@@ -28,6 +28,11 @@ describe("Model options component", () => {
         [ModelOptionsMutation.FetchingModelOptions]: jest.fn()
     };
 
+    const mockGetters = {
+        editsRequireConfirmation: () => false,
+        laterCompleteSteps: () => [{number: 4, text: "Run model"}]
+    };
+
     const createStore = (props: Partial<ModelOptionsState>,
                          mutations: MutationTree<ModelOptionsState> = mockMutations,
                          actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) => new Vuex.Store({
@@ -37,6 +42,10 @@ describe("Model options component", () => {
                 state: mockModelOptionsState(props),
                 mutations,
                 actions
+            },
+            stepper: {
+                namespaced: true,
+                getters: mockGetters
             }
         }
     });
