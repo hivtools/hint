@@ -9,6 +9,10 @@
         </h4>
         <modal :open="running">
             <h4>Running model</h4>
+            <progress-bar v-for="(phase, index) in phases"
+                          :key="index"
+                          :phase="phase"
+                          :index="index"></progress-bar>
         </modal>
         <div class="mt-3">
             <error-alert v-for="error in errors" :message="error"></error-alert>
@@ -24,11 +28,14 @@
     import {mapActionsByNames, mapGettersByNames, mapStateProps} from "../../utils";
     import {BProgress} from "bootstrap-vue";
     import ErrorAlert from "../ErrorAlert.vue";
+    import {ProgressPhase} from "../../generated";
+    import ProgressBar from "../progress/ProgressBar.vue";
 
     interface ComputedState {
         runId: string
         success: boolean
         pollId: number
+        phases: ProgressPhase[]
     }
 
     interface ComputedGetters {
@@ -54,7 +61,8 @@
                 runId: state => state.modelRunId,
                 success: state => state.status.success && (!state.errors.length),
                 pollId: state => state.statusPollId,
-                errors: state => state.errors
+                errors: state => state.errors,
+                phases: state => state.status.progress || []
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running"])
         },
@@ -78,6 +86,7 @@
             Tick,
             BProgress,
             ErrorAlert,
+            ProgressBar
         }
     });
 </script>
