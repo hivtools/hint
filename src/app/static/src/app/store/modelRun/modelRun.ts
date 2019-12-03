@@ -31,7 +31,9 @@ export const modelRunGetters = {
         return !!state.status.success && state.errors.length == 0 && !!state.result
     },
     running: (state: ModelRunState) => {
-        return !!state.status.id && !state.status.done
+        const started = !!state.status.id;
+        const finished = state.status.done && (!state.status.success || !!state.result);
+        return started && !finished
     }
 };
 

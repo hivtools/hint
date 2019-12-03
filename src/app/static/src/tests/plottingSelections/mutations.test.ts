@@ -12,7 +12,7 @@ describe("Plotting selections mutations", () => {
                 testFilter: []
             }
         };
-        mutations.updateBarchartSelections(testState, newBarchartSelections);
+        mutations.updateBarchartSelections(testState, {payload: newBarchartSelections});
 
         expect(testState.barchart).toStrictEqual({
             indicatorId: "test-indicator",

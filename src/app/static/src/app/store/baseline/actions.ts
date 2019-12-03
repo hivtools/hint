@@ -2,7 +2,7 @@ import {ActionContext, ActionTree} from 'vuex';
 import {BaselineState} from "./baseline";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
-import {PjnzResponse, ValidateBaselineResponse} from "../../generated";
+import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
 import {BaselineMutation} from "./mutations";
 
 export interface BaselineActions {
@@ -27,7 +27,9 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData)
             .then(() => {
-                dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
+                if (!state.baselineError && state.iso3) {
+                    dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
+                }
                 dispatch('validate');
                 dispatch("surveyAndProgram/deleteAll", {}, {root: true});
             });
@@ -39,7 +41,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .withSuccess(BaselineMutation.ShapeUpdated)
             .withError(BaselineMutation.ShapeUploadError)
             .freezeResponse()
-            .postAndReturn<PjnzResponse>("/baseline/shape/", formData)
+            .postAndReturn<ShapeResponse>("/baseline/shape/", formData)
             .then(() => {
                 dispatch('validate');
                 dispatch("surveyAndProgram/deleteAll", {}, {root: true});
@@ -52,7 +54,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .withSuccess(BaselineMutation.PopulationUpdated)
             .withError(BaselineMutation.PopulationUploadError)
             .freezeResponse()
-            .postAndReturn<PjnzResponse>("/baseline/population/", formData)
+            .postAndReturn<PopulationResponse>("/baseline/population/", formData)
             .then(() => {
                 dispatch('validate');
                 dispatch("surveyAndProgram/deleteAll", {}, {root: true});

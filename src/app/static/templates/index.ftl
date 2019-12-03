@@ -4,7 +4,8 @@
     <title>${title}</title>
     <link rel="shortcut icon" href="/public/favicon.ico"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="/public/css/style.css"/>
+    <!-- inject:css -->
+    <!-- endinject -->
 </head>
 <body>
 <div id="app">
@@ -12,6 +13,5 @@
     <stepper></stepper>
     <errors title="${title}"></errors>
 </div>
-<script src="/public/js/app.js"></script>
 </body>
 </html>

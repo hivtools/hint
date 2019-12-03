@@ -4,7 +4,7 @@
                 v-on:click="run"
                 :disabled="running">Run model
         </button>
-        <h4 v-if="success" class="mt-3" id="model-run-complete">Model run complete
+        <h4 v-if="complete" class="mt-3" id="model-run-complete">Model run complete
             <tick color="#e31837" width="20px"></tick>
         </h4>
         <modal :open="running">
@@ -33,14 +33,13 @@
 
     interface ComputedState {
         runId: string
-        success: boolean
         pollId: number
         phases: ProgressPhase[]
     }
 
     interface ComputedGetters {
         running: boolean
-        errorMessage: string
+        complete: boolean
     }
 
     interface Computed extends ComputedGetters, ComputedState {
@@ -59,12 +58,11 @@
         computed: {
             ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
                 runId: state => state.modelRunId,
-                success: state => state.status.success && (!state.errors.length),
                 pollId: state => state.statusPollId,
                 errors: state => state.errors,
                 phases: state => state.status.progress || []
             }),
-            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running"])
+            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
         },
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll"])
@@ -77,7 +75,7 @@
             }
         },
         created() {
-            if (this.runId && this.pollId == -1) {
+            if (this.runId && this.pollId == -1 && !this.complete) {
                 this.poll(this.runId);
             }
         },
