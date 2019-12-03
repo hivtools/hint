@@ -11,6 +11,7 @@ interface StepperGetters {
 
 export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
     ready: (state: StepperState, getters: any, rootState: RootState) => {
+        console.log(rootState.baseline.ready, rootState.surveyAndProgram.ready, rootState.modelRun.ready)
         return rootState.baseline.ready && rootState.surveyAndProgram.ready && rootState.modelRun.ready
     },
     complete: (state: StepperState, getters: any, rootState: RootState, rootGetters: any) => {
