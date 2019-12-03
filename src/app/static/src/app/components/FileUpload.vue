@@ -19,7 +19,7 @@
                 {{selectedFileName || existingFileName || "Choose a file" }}
             </label>
         </div>
-        <error-alert v-if="hasError" :message="error"></error-alert>
+        <error-alert v-if="hasError" :error="error"></error-alert>
         <reset-confirmation :continue-editing="uploadSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showUploadConfirmation"></reset-confirmation>
@@ -36,6 +36,7 @@
     import ErrorAlert from "./ErrorAlert.vue";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import {mapGetterByName} from "../utils";
+    import {Error} from "../generated";
     import ResetConfirmation from "./ResetConfirmation.vue";
 
     interface Data {
@@ -66,7 +67,7 @@
         accept: string,
         label: string,
         valid: boolean,
-        error: string,
+        error: Error,
         existingFileName: string,
         name: string
     }
@@ -88,13 +89,13 @@
             "accept": String,
             "label": String,
             "valid": Boolean,
-            "error": String,
+            "error": Object,
             "existingFileName": String,
             "name": String
         },
         computed: {
             hasError: function () {
-                return this.error.length > 0
+                return !!this.error
             },
             showRemove: function () {
                 return this.hasError || this.valid

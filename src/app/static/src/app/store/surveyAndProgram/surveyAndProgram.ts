@@ -6,21 +6,21 @@ import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 
 export interface SurveyAndProgramDataState extends ReadyState {
     survey: SurveyResponse | null
-    surveyError: string,
+    surveyError: Error | null
     program: ProgrammeResponse | null
-    programError: string
+    programError: Error | null
     anc: AncResponse | null
-    ancError: string
+    ancError: Error | null
 }
 
 export const initialSurveyAndProgramDataState = (): SurveyAndProgramDataState => {
     return {
         survey: null,
-        surveyError: "",
+        surveyError: null,
         program: null,
-        programError: "",
+        programError: null,
         anc: null,
-        ancError: "",
+        ancError: null,
         ready: false
     }
 };

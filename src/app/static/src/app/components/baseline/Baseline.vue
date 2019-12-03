@@ -36,7 +36,7 @@
                     <loading-spinner size="xs"></loading-spinner>
                     Validating...
                 </div>
-                <error-alert v-if="hasBaselineError" :message="baselineError"></error-alert>
+                <error-alert v-if="hasBaselineError" :error="baselineError"></error-alert>
             </div>
         </div>
     </div>
@@ -76,7 +76,7 @@
                     error: state.populationError,
                     existingFileName: state.population && state.population.filename
                 } as PartialFileUploadProps),
-                hasBaselineError: state => state.baselineError.length > 0,
+                hasBaselineError: state => !!state.baselineError,
                 baselineError: state => state.baselineError,
                 validating: state => state.validating
             }),

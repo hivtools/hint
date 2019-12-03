@@ -5,7 +5,27 @@
 </template>
 
 <script lang="ts">
-    export default {
-        props: ["message"]
+    import Vue from "vue";
+    import {Error} from "../generated.d";
+
+    interface Props {
+        error: Error | null
     }
+
+    interface Computed {
+        message: String
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
+        props: {
+            "error": Object
+        },
+        computed: {
+            message: function() {
+                return this.error ?
+                    (this.error.detail ? this.error.detail : this.error.error) :
+                    "";
+            }
+        }
+    });
 </script>

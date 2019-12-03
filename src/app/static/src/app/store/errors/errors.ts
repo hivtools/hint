@@ -3,7 +3,7 @@ import {RootState} from "../../root";
 import {mutations} from "./mutations";
 
 export interface ErrorsState {
-    errors: String[]
+    errors: Error[]
 }
 
 export const initialErrorsState = (): ErrorsState => {

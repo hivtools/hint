@@ -2,7 +2,7 @@ import axios, {AxiosError, AxiosResponse} from "axios";
 import {ErrorsMutation} from "./store/errors/mutations";
 import {Commit} from "vuex";
 import {freezer, isHINTResponse} from "./utils";
-import {Response} from "./generated";
+import {Response, Error} from "./generated";
 
 declare var appUrl: string;
 
@@ -41,11 +41,17 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     static getFirstErrorFromFailure = (failure: Response) => {
         if (failure.errors.length == 0) {
-            return "API response failed but did not contain any error information. Please contact support."
+            return APIService.createError("API response failed but did not contain any error information. Please contact support.");
         }
-        const firstError = failure.errors[0];
-        return firstError.detail ? firstError.detail : firstError.error;
+        return failure.errors[0];
     };
+
+    static createError(error: string) {
+        return {
+            error,
+            detail: null
+        }
+    }
 
     private _onError: ((failure: Response) => void) | null = null;
 
@@ -96,7 +102,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
         const failure = e.response && e.response.data;
         if (!isHINTResponse(failure)) {
-            this._commitError("Could not parse API response. Please contact support.");
+            this._commitError(APIService.createError("Could not parse API response. Please contact support."));
         } else if (this._onError) {
             this._onError(failure);
         } else {
@@ -104,7 +110,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
     };
 
-    private _commitError = (error: string) => {
+    private _commitError = (error: Error) => {
         this._commit({type: `errors/${ErrorsMutation.ErrorAdded}`, payload: error}, {root: true});
     };
 

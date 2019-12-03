@@ -9,7 +9,7 @@ export enum ErrorsMutation {
 
 export const mutations: MutationTree<ErrorsState> = {
 
-    [ErrorsMutation.ErrorAdded](state: ErrorsState, action: PayloadWithType<string>) {
+    [ErrorsMutation.ErrorAdded](state: ErrorsState, action: PayloadWithType<Error>) {
         state.errors.push(action.payload);
     },
 
