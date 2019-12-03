@@ -2,7 +2,7 @@
     <div v-if="hasErrors" class="container">
         <div class="content">
             <div class="alert alert-danger alert-dismissible fade-show" role="alert">
-                <p v-for="error in errors" :key="error">
+                <p v-for="(error, index) in errors" :key="index">
                     {{error}}
                 </p>
                 <button type="button" class="close" @click="dismissAll">

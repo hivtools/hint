@@ -8,8 +8,8 @@
             <tick color="#e31837" width="20px"></tick>
         </h4>
         <modal :open="running">
-            <progress-bar v-for="(phase, index) in phases"
-                          :key="index"
+            <progress-bar v-for="phase in phases"
+                          :key="phase.name"
                           :phase="phase"></progress-bar>
             <div class="text-center" v-if="phases.length == 0">
                 <h4>Initialising model run</h4>
