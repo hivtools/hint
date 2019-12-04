@@ -43,8 +43,8 @@ class DbProfileServiceUserRepository(private val dsl: DSLContext,
     }
 
     override fun removeUser(email: String) {
-        getUser(email) ?: throw UserException("User does not exist")
-        profileService.removeById(email)
+        val user = getUser(email) ?: throw UserException("User does not exist")
+        profileService.removeById(user.id)
     }
 
     override fun getUser(email: String): CommonProfile? {

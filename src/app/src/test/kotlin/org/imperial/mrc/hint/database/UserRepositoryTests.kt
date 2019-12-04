@@ -29,14 +29,14 @@ class UserRepositoryTests {
     fun `can add user`() {
         sut.addUser(TEST_EMAIL, "testpassword")
 
-        Assertions.assertThat(sut.getUser(TEST_EMAIL)).isNotNull
+        assertThat(sut.getUser(TEST_EMAIL)).isNotNull
     }
 
     @Test
     fun `can add user without password`() {
         sut.addUser(TEST_EMAIL, null)
 
-        Assertions.assertThat(sut.getUser(TEST_EMAIL)).isNotNull
+        assertThat(sut.getUser(TEST_EMAIL)).isNotNull
     }
 
     @Test
@@ -44,7 +44,15 @@ class UserRepositoryTests {
         sut.addUser(TEST_EMAIL, "testpassword")
 
         sut.removeUser(TEST_EMAIL)
-        Assertions.assertThat(sut.getUser(TEST_EMAIL)).isNull()
+        assertThat(sut.getUser(TEST_EMAIL)).isNull()
+    }
+
+    @Test
+    fun `can remove user with differently cased domain`() {
+        sut.addUser("test@test.com", "testpassword")
+
+        sut.removeUser("test@TEST.com")
+        assertThat(sut.getUser("test@test.com")).isNull()
     }
 
     @Test
