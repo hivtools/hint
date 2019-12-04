@@ -2,7 +2,7 @@ package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.exceptions.UserException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class UserRepositoryTests {
     @Autowired
-    private lateinit var sut: UserRepository
+    private lateinit var sut: UserLogic
 
     companion object {
         const val TEST_EMAIL = "test@test.com"
@@ -37,6 +37,14 @@ class UserRepositoryTests {
         sut.addUser(TEST_EMAIL, null)
 
         assertThat(sut.getUser(TEST_EMAIL)).isNotNull
+    }
+
+    @Test
+    fun `emails without @ signs are invalid`() {
+
+        Assertions.assertThatThrownBy { sut.addUser("email", "testpassword") }
+                .isInstanceOf(UserException::class.java)
+                .hasMessageContaining("Please provide a valid email address")
     }
 
     @Test
@@ -95,4 +103,5 @@ class UserRepositoryTests {
         assertThat(sut.getUser("test@TEST.com")!!.username).isEqualTo(TEST_EMAIL)
 
     }
+
 }

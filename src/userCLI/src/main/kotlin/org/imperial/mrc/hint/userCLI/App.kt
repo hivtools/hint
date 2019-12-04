@@ -3,9 +3,9 @@ package org.imperial.mrc.hint.userCLI
 import org.docopt.Docopt
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.db.DbConfig
-import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
+import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic
 import org.imperial.mrc.hint.db.JooqTokenRepository
-import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.emails.EmailConfig
 import org.imperial.mrc.hint.security.HintDbProfileService
 import org.imperial.mrc.hint.security.SecurePasswordEncoder
@@ -55,7 +55,7 @@ fun main(args: Array<String>) {
     }
 }
 
-class UserCLI(private val userRepository: UserRepository)
+class UserCLI(private val userLogic: UserLogic)
 {
     fun addUser(options: Map<String, Any>): String
     {
@@ -64,7 +64,7 @@ class UserCLI(private val userRepository: UserRepository)
         println("Adding user $email")
 //        println(password)
 
-        userRepository.addUser(email, password)
+        userLogic.addUser(email, password)
         return "OK"
     }
 
@@ -74,7 +74,7 @@ class UserCLI(private val userRepository: UserRepository)
         println("Removing user $email")
 
 
-        userRepository.removeUser(email)
+        userLogic.removeUser(email)
         return "OK"
     }
 
@@ -84,7 +84,7 @@ class UserCLI(private val userRepository: UserRepository)
         val email = options["<email>"].getStringValue()
         println("Checking if user exists: $email")
 
-        val exists = userRepository.getUser(email) != null
+        val exists = userLogic.getUser(email) != null
         return exists.toString()
     }
 
@@ -94,7 +94,7 @@ class UserCLI(private val userRepository: UserRepository)
     }
 }
 
-fun getUserRepository(dataSource: DataSource): UserRepository {
+fun getUserRepository(dataSource: DataSource): UserLogic {
 
     val profileService = HintDbProfileService(dataSource, SecurePasswordEncoder())
 
@@ -109,6 +109,6 @@ fun getUserRepository(dataSource: DataSource): UserRepository {
             signatureConfig,
             JwtAuthenticator(signatureConfig))
 
-    return DbProfileServiceUserRepository(profileService,
+    return DbProfileServiceUserLogic(profileService,
             EmailConfig().getEmailManager(appProperties, oneTimeTokenManager))
 }

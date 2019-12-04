@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.controllers.PasswordController
 import org.imperial.mrc.hint.controllers.TokenException
-import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
@@ -19,7 +19,7 @@ class PasswordControllerTests {
         on { username } doReturn "test.user"
     }
 
-    val mockUserRepo = mock<UserRepository> {
+    val mockUserRepo = mock<UserLogic> {
         on { getUser("test.user@test.com") } doReturn mockUser
     }
 
