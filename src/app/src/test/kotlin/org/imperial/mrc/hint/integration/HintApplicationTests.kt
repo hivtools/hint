@@ -12,6 +12,7 @@ import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
 import java.io.File
 
+
 class HintApplicationTests : SecureIntegrationTests() {
 
     @ParameterizedTest

@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount} from '@vue/test-utils';
+import {createLocalVue, mount, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {
@@ -17,6 +17,9 @@ import ModelRun from "../../../app/components/modelRun/ModelRun.vue";
 import Modal from "../../../app/components/Modal.vue";
 import Tick from "../../../app/components/Tick.vue";
 import {ModelStatusResponse} from "../../../app/generated";
+import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
+import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
+
 const localVue = createLocalVue();
 Vue.use(Vuex);
 
@@ -53,7 +56,7 @@ describe("Model run component", () => {
     });
 
     afterEach(() => {
-       mockAxios.reset();
+        mockAxios.reset();
     });
 
     it("run models and polls for status", (done) => {
@@ -139,7 +142,60 @@ describe("Model run component", () => {
         const wrapper = shallowMount(ModelRun, {store, localVue});
         expect(wrapper.find("button").attributes().disabled).toBe("disabled");
         expect(wrapper.find(Modal).props().open).toBe(true);
-        expect(wrapper.find(Modal).find("h4").text()).toBe("Running model");
+    });
+
+    it("loading spinner is shown until progress bars appear", () => {
+
+        const store = createStore({
+            status: {id: "1234", done: false} as ModelStatusResponse
+        });
+
+        const wrapper = mount(ModelRun, {store, localVue});
+        expect(wrapper.find(Modal).props().open).toBe(true);
+        expect(wrapper.find(Modal).find("h4").text()).toBe("Initialising model run");
+        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
+        expect(wrapper.find(Modal).findAll(ProgressBar).length).toBe(0);
+    });
+
+    it("loading spinner is not shown once progress bars appear", () => {
+
+        const store = createStore({
+            status: {
+                id: "1234",
+                done: false,
+                progress: [{started: true, complete: false, name: "phase 1"}]
+            } as ModelStatusResponse
+        });
+
+        const wrapper = mount(ModelRun, {store, localVue});
+        expect(wrapper.find(Modal).props().open).toBe(true);
+        expect(wrapper.find(Modal).findAll("h4").length).toBe(0);
+        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
+        expect(wrapper.find(Modal).findAll(ProgressBar).length).toBe(1);
+    });
+
+    it("renders progress phases with numbers in titles", () => {
+
+        const store = createStore({
+            status: {
+                id: "1234",
+                done: false,
+                progress: [{started: true, complete: false, name: "phase 1"},
+                    {started: true, complete: false, name: "phase 2"}]
+            } as ModelStatusResponse
+        });
+
+        const wrapper = mount(ModelRun, {store, localVue});
+        expect(wrapper.find(Modal).props().open).toBe(true);
+        expect(wrapper.find(Modal).findAll(ProgressBar).length).toBe(2);
+        expect(wrapper.find(Modal).findAll(ProgressBar).at(0).props("phase"))
+            .toStrictEqual({
+                started: true, complete: false, name: "1. phase 1"
+            });
+        expect(wrapper.find(Modal).findAll(ProgressBar).at(1).props("phase"))
+            .toStrictEqual({
+                started: true, complete: false, name: "2. phase 2"
+            });
     });
 
     it("on success button is not enabled until result exists", () => {
