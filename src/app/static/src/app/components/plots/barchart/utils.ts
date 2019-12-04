@@ -70,7 +70,7 @@ export const getProcessedOutputData = (data: any[],
 
         const value = row[indicator.value_column];
 
-        if (value == undefined) {
+        if (!value) {
             continue;
         }
 

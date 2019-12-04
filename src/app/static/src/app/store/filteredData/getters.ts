@@ -84,7 +84,7 @@ export const getters = {
                     continue;
                 }
 
-                if (row[metadata.value_column] == undefined) {
+                if (!row[metadata.value_column]) {
                     //No value for this indicator in this row
                     continue;
                 }
