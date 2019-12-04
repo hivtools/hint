@@ -52,16 +52,13 @@ class DbProfileServiceUserRepository(private val dsl: DSLContext,
         val emailArray = email.split("@")
         val caseInsensitiveDomainRegex = Regex("(?-i)${emailArray[0]}@(?i)${emailArray[1]}")
 
-        val emails = dsl.select(Tables.USERS.USERNAME)
+        val existingEmail = dsl.select(Tables.USERS.USERNAME)
                 .from(Tables.USERS)
                 .fetchInto(String::class.java)
-                .filter { caseInsensitiveDomainRegex.matches(it) }
+                .find { caseInsensitiveDomainRegex.matches(it) }
+                ?: return null
 
-        return if (emails.count() == 1) {
-            profileService.findById(emails[0])
-        } else {
-            profileService.findById(email)
-        }
+        return profileService.findById(existingEmail)
     }
 
     override fun updateUserPassword(user: CommonProfile, password: String) {
