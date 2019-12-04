@@ -20,7 +20,8 @@ import {
     ShapeResponse,
     SurveyFilters,
     SurveyResponse,
-    ValidateBaselineResponse
+    ValidateBaselineResponse,
+    Error
 } from "../app/generated";
 import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
@@ -138,8 +139,12 @@ export const mockFailure = (errorMessage: string): Response => {
     return {
         data: {},
         status: "failure",
-        errors: [{error: "OTHER_ERROR", detail: errorMessage}]
+        errors: [mockError(errorMessage)]
     }
+};
+
+export const mockError = (errorMessage: string):Error => {
+    return {error: "OTHER_ERROR", detail: errorMessage};
 };
 
 export const mockPJNZResponse = (props: Partial<PjnzResponse> = {}): PjnzResponse => {

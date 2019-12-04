@@ -1,4 +1,12 @@
-import {mockAxios, mockFailure, mockModelOptionsState, mockModelRunState, mockRootState, mockSuccess} from "../mocks";
+import {
+    mockAxios,
+    mockError,
+    mockFailure,
+    mockModelOptionsState,
+    mockModelRunState,
+    mockRootState,
+    mockSuccess
+} from "../mocks";
 import {actions} from "../../app/store/modelRun/actions";
 import {ModelResultResponse, ModelStatusResponse} from "../../app/generated";
 import {expectEqualsFrozen} from "../actionTestHelpers";
@@ -123,7 +131,7 @@ describe("Model run actions", () => {
 
             expect(commit.mock.calls[1][0]).toStrictEqual({
                 type: "RunStatusError",
-                payload: "Test Error"
+                payload: mockError("Test Error")
             });
 
             done();
@@ -197,7 +205,7 @@ describe("Model run actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "RunResultError",
-            payload: "Test Error"
+            payload: mockError("Test Error")
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "Ready",
