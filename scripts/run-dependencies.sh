@@ -38,7 +38,7 @@ docker run --rm -d \
   -v $HERE/../src/app/uploads:/uploads \
   -e REDIS_URL=redis://redis:6379 \
   $HINTR_IMAGE
-   #-e USE_MOCK_MODEL=true \
+  -e USE_MOCK_MODEL=true \
 
 # Need to give the database a little time to initialise before we can run the migration
 docker exec -it $DB wait-for-db
