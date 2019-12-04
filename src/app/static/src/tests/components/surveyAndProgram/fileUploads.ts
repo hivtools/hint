@@ -130,7 +130,6 @@ export function testUploadComponent(name: string, position: number) {
         });
     });
 
-
     it(`delete ${name} dispatches surveyAndProgram/delete${name}`, (done) => {
         const store = createSut();
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
