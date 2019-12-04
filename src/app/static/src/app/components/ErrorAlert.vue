@@ -4,7 +4,7 @@
         <div v-if="hasTrace" >
             <a href="#" @click="toggleTrace"><strong>{{traceLinkText}}</strong></a>
             <div v-if="showTrace" class="ml-3">
-                <div v-for="traceMessage in error.trace" class="error-trace">{{traceMessage}}</div>
+                <div v-for="(traceMessage, index) in error.trace" :key="index" class="error-trace">{{traceMessage}}</div>
             </div>
         </div>
     </div>

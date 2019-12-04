@@ -3,7 +3,7 @@ import UserHeader from "../../app/components/UserHeader.vue";
 import Vuex from "vuex";
 import {
     mockAncResponse,
-    mockBaselineState, mockFile,
+    mockBaselineState, mockError, mockFile,
     mockLoadState,
     mockModelRunState,
     mockPJNZResponse,
@@ -199,7 +199,7 @@ describe("user header", () => {
                         namespaced: true,
                         state: mockLoadState({
                             loadingState: LoadingState.LoadFailed,
-                            loadError: "test error"
+                            loadError: mockError("test error")
                         }),
                     }
                 })
@@ -220,7 +220,7 @@ describe("user header", () => {
                         namespaced: true,
                         state: mockLoadState({
                             loadingState: LoadingState.LoadFailed,
-                            loadError: "test error"
+                            loadError: mockError("test error")
                         }),
                         actions: {
                             clearLoadState: clearErrorMock
