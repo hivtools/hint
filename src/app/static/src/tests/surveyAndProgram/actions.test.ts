@@ -1,5 +1,13 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
-import {mockAncResponse, mockAxios, mockFailure, mockProgramResponse, mockSuccess, mockSurveyResponse} from "../mocks";
+import {
+    mockAncResponse,
+    mockAxios,
+    mockError,
+    mockFailure,
+    mockProgramResponse,
+    mockSuccess,
+    mockSurveyResponse
+} from "../mocks";
 
 import {DataType} from "../../app/store/filteredData/filteredData";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
@@ -56,7 +64,7 @@ describe("Survey and programme actions", () => {
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: SurveyAndProgramMutation.SurveyError,
-            payload: "error message"
+            payload: mockError("error message")
         });
 
         //Should not have set selectedDataType
@@ -101,7 +109,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramError,
-            payload: "error message"
+            payload: mockError("error message")
         });
 
         //Should not have set selectedDataType
@@ -146,7 +154,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCError,
-            payload: "error message"
+            payload: mockError("error message")
         });
 
         //Should not have set selectedDataType

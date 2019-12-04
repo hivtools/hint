@@ -18,7 +18,7 @@
                            v-on:click="handleRequestResetLink">
                 </div>
             </form>
-            <error-alert v-if="hasError" :message="error"></error-alert>
+            <error-alert v-if="hasError" :error="error"></error-alert>
             <div v-if="resetLinkRequested" class="alert alert-success mt-4" role="alert">
                 Thank you. If we have an account registered for this email address, you wil receive a password reset link.
             </div>
@@ -41,7 +41,7 @@
         },
         computed: mapState<PasswordState>( {
             error: state => state.requestResetLinkError,
-            hasError:  state => state.requestResetLinkError && state.requestResetLinkError.length > 0,
+            hasError:  state => !!state.requestResetLinkError,
             resetLinkRequested: state => state.resetLinkRequested
         }),
        components: {

@@ -18,13 +18,13 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
     UpdatingState(state: LoadState) {
         state.loadingState = LoadingState.UpdatingState;
     },
-    LoadFailed(state: LoadState, action: PayloadWithType<string>) {
+    LoadFailed(state: LoadState, action: PayloadWithType<Error>) {
         state.loadingState = LoadingState.LoadFailed;
         state.loadError = action.payload;
     },
     LoadStateCleared(state: LoadState) {
         //For both load success and clear error
         state.loadingState = LoadingState.NotLoading;
-        state.loadError = "";
+        state.loadError = null;
     }
 };

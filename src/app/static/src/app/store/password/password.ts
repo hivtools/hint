@@ -1,14 +1,15 @@
+import {Error} from "../../generated";
 
 export interface PasswordState {
     resetLinkRequested: boolean
-    requestResetLinkError: string
+    requestResetLinkError: Error | null
     passwordWasReset: boolean
-    resetPasswordError: string
+    resetPasswordError: Error | null
 }
 
 export const initialPasswordState: PasswordState = {
     resetLinkRequested: false,
-    requestResetLinkError: "",
+    requestResetLinkError: null,
     passwordWasReset: false,
-    resetPasswordError: ""
+    resetPasswordError: null
 };

@@ -1,5 +1,5 @@
 import {api} from "../app/apiService";
-import {mockAxios, mockFailure, mockSuccess} from "./mocks";
+import {mockAxios, mockError, mockFailure, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
 
 describe("ApiService", () => {
@@ -44,7 +44,10 @@ describe("ApiService", () => {
             .toBe("No error handler registered for request /unusual/.");
 
         expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: `errors/ErrorAdded`, payload: "some error message"});
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: `errors/ErrorAdded`,
+            payload: mockError("some error message")
+        });
         expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
     });
 
@@ -69,7 +72,10 @@ describe("ApiService", () => {
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: `errors/ErrorAdded`,
-            payload: "API response failed but did not contain any error information. Please contact support."
+            payload: {
+                error: "API response failed but did not contain any error information. Please contact support.",
+                detail: null
+            }
         });
         expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
     });
@@ -92,7 +98,7 @@ describe("ApiService", () => {
             .get("/baseline/");
 
         expect(committedType).toBe("TEST_TYPE");
-        expect(committedPayload).toBe("some error message");
+        expect(committedPayload).toStrictEqual(mockError("some error message"));
     });
 
     it("commits the error type if the error detail is missing", async () => {
@@ -113,7 +119,7 @@ describe("ApiService", () => {
             .get("/baseline/");
 
         expect(committedType).toBe("TEST_TYPE");
-        expect(committedPayload).toBe("OTHER_ERROR");
+        expect(committedPayload).toStrictEqual({error: "OTHER_ERROR", detail: null});
     });
 
     it("commits the success response with the specified type", async () => {
@@ -257,7 +263,7 @@ describe("ApiService", () => {
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: `errors/ErrorAdded`,
-            payload: "Could not parse API response. Please contact support."
+            payload: {error: "Could not parse API response. Please contact support.", detail: null}
         });
         expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
     }

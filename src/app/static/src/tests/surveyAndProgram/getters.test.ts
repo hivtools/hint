@@ -1,5 +1,5 @@
 import {surveyAndProgram, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
-import {mockSurveyAndProgramState, mockSurveyResponse} from "../mocks";
+import {mockError, mockSurveyAndProgramState, mockSurveyResponse} from "../mocks";
 
 describe("survey and program getters", () => {
 
@@ -10,14 +10,14 @@ describe("survey and program getters", () => {
     it("is not complete if has a program error", () => {
         expect(surveyAndProgramGetters.complete(mockSurveyAndProgramState({
             survey: mockSurveyResponse(),
-            programError: "something"
+            programError: mockError("something")
         }))).toBe(false);
     });
 
     it("is not complete if has an ANC error", () => {
         expect(surveyAndProgramGetters.complete(mockSurveyAndProgramState({
             survey: mockSurveyResponse(),
-            ancError: "something"
+            ancError: mockError("something")
         }))).toBe(false);
     });
 

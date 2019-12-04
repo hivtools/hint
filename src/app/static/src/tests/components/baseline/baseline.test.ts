@@ -2,7 +2,7 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
-import {mockBaselineState, mockMetadataState, mockPopulationResponse, mockShapeResponse} from "../../mocks";
+import {mockBaselineState, mockError, mockMetadataState, mockPopulationResponse, mockShapeResponse} from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import Baseline from "../../../app/components/baseline/Baseline.vue";
 import FileUpload from "../../../app/components/FileUpload.vue";
@@ -74,28 +74,32 @@ describe("Baseline upload component", () => {
     });
 
     it("passes pjnz error to file upload", () => {
-        const store = createSut({pjnzError: "File upload went wrong"});
+        const error = mockError("File upload went wrong");
+        const store = createSut({pjnzError: error});
         const wrapper = shallowMount(Baseline, {store, localVue});
-        expect(wrapper.findAll(FileUpload).at(0).props().error).toBe("File upload went wrong");
+        expect(wrapper.findAll(FileUpload).at(0).props().error).toBe(error);
     });
 
     it("shows metadata error if present", () => {
-        const store = createSut({}, {plottingMetadataError: "Metadata went wrong"});
+        const plottingMetadataError = mockError("Metadata went wrong");
+        const store = createSut({}, {plottingMetadataError});
         const wrapper = shallowMount(Baseline, {store, localVue});
-        expect(wrapper.findAll(FileUpload).at(0).props().error).toBe("Metadata went wrong");
+        expect(wrapper.findAll(FileUpload).at(0).props().error).toBe(plottingMetadataError);
     });
 
     it("shows pjnz error, not metadata error, if both are present", () => {
-        const store = createSut({pjnzError: "File upload went wrong"},
-                                {plottingMetadataError: "Metadata went wrong"});
+        const pjnzError = mockError("File upload went wrong");
+        const plottingMetadataError = mockError("Metadata went wrong");
+        const store = createSut({pjnzError},{plottingMetadataError});
         const wrapper = shallowMount(Baseline, {store, localVue});
-        expect(wrapper.findAll(FileUpload).at(0).props().error).toBe("File upload went wrong");
+        expect(wrapper.findAll(FileUpload).at(0).props().error).toBe(pjnzError);
     });
 
     it("shows baseline error if present", () => {
-        const store = createSut({baselineError: "Baseline is inconsistent"});
+        const error = mockError("Baseline is inconsistent");
+        const store = createSut({baselineError: error});
         const wrapper = shallowMount(Baseline, {store, localVue});
-        expect(wrapper.find(ErrorAlert).props().message).toEqual("Baseline is inconsistent")
+        expect(wrapper.find(ErrorAlert).props().error).toBe(error)
     });
 
     it("shows baseline validating indicator", () => {
@@ -119,9 +123,10 @@ describe("Baseline upload component", () => {
     });
 
     it("passes shape error to file upload", () => {
-        const store = createSut({shapeError: "File upload went wrong"});
+        const error = mockError("File upload went wrong");
+        const store = createSut({shapeError: error});
         const wrapper = shallowMount(Baseline, {store, localVue});
-        expect(wrapper.findAll(FileUpload).at(1).props().error).toBe("File upload went wrong");
+        expect(wrapper.findAll(FileUpload).at(1).props().error).toBe(error);
     });
 
     it("shape upload accepts geojson", () => {
@@ -143,9 +148,10 @@ describe("Baseline upload component", () => {
     });
 
     it("passes population error to file upload", () => {
-        const store = createSut({populationError: "File upload went wrong"});
+        const error = mockError("File upload went wrong")
+        const store = createSut({populationError: error});
         const wrapper = shallowMount(Baseline, {store, localVue});
-        expect(wrapper.findAll(FileUpload).at(2).props().error).toBe("File upload went wrong");
+        expect(wrapper.findAll(FileUpload).at(2).props().error).toBe(error);
     });
 
     it("population upload accepts csv", () => {

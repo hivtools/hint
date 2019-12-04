@@ -1,4 +1,4 @@
-import {mockAxios, mockFailure, mockLoadState, mockRootState, mockSuccess} from "../mocks";
+import {mockAxios, mockError, mockFailure, mockLoadState, mockRootState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/load/actions";
 import {LoadingState} from "../../app/store/load/load";
 import {addCheckSum} from "../../app/utils";
@@ -90,7 +90,7 @@ describe("Load actions", () => {
         await actions.setFiles({commit, state, dispatch} as any, fileContents);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "LoadFailed", payload: "Test error"});
+        expect(commit.mock.calls[1][0]).toStrictEqual({type: "LoadFailed", payload: mockError("Test error")});
 
         //should not hand on to updateState action
         expect(dispatch.mock.calls.length).toEqual(0);

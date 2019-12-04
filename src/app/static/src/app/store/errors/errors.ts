@@ -1,5 +1,6 @@
 import {Module} from "vuex";
 import {RootState} from "../../root";
+import {Error} from "../../generated";
 import {mutations} from "./mutations";
 
 export interface ErrorsState {

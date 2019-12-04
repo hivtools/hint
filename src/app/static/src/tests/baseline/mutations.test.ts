@@ -1,6 +1,6 @@
 import {BaselineMutation, mutations} from "../../app/store/baseline/mutations";
 import {
-    mockBaselineState,
+    mockBaselineState, mockError,
     mockPJNZResponse,
     mockPopulationResponse,
     mockRootState,
@@ -27,7 +27,7 @@ describe("Baseline mutations", () => {
         expect(testState.country).toBe("Malawi");
         expect(testState.iso3).toBe("MWI");
         expect(testState.pjnz!!.filename).toBe("file.pjnz");
-        expect(testState.pjnzError).toBe("");
+        expect(testState.pjnzError).toBe(null);
     });
 
     it("state becomes complete once all files are Updated and validatedConsistent are true", () => {
@@ -77,35 +77,35 @@ describe("Baseline mutations", () => {
 
     it("sets country and filename and clears error if present on PJNZUpdated", () => {
 
-        const testState = mockBaselineState({pjnzError: "test"});
+        const testState = mockBaselineState({pjnzError: mockError("test")});
         mutations[BaselineMutation.PJNZUpdated](testState, {
             payload: mockPJNZResponse({filename: "file.pjnz", data: {country: "Malawi", iso3: "MWI"}})
         });
         expect(testState.pjnz!!.filename).toBe("file.pjnz");
         expect(testState.country).toBe("Malawi");
-        expect(testState.pjnzError).toBe("");
+        expect(testState.pjnzError).toBe(null);
     });
 
     it("clears country and filename on PJNZUpdated if no data present", () => {
 
-        const testState = mockBaselineState({pjnzError: "", country: "test", pjnz: "TEST" as any});
+        const testState = mockBaselineState({pjnzError: null, country: "test", pjnz: "TEST" as any});
         mutations[BaselineMutation.PJNZUpdated](testState, {payload: null});
 
         expect(testState.pjnz).toBe(null);
         expect(testState.country).toBe("");
         expect(testState.iso3).toBe("");
-        expect(testState.pjnzError).toBe("");
+        expect(testState.pjnzError).toBe(null);
     });
 
     it("sets shape and clears error on ShapeUpdated", () => {
 
         const mockShape = mockShapeResponse();
-        const testState = mockBaselineState({shapeError: ""});
+        const testState = mockBaselineState({shapeError: null});
         mutations[BaselineMutation.ShapeUpdated](testState, {
             payload: mockShape
         });
         expect(testState.shape).toBe(mockShape);
-        expect(testState.shapeError).toBe("");
+        expect(testState.shapeError).toBe(null);
     });
 
     it("sets region filters and flattened region filters on ShapeUpdated", () => {
@@ -145,12 +145,12 @@ describe("Baseline mutations", () => {
     it("sets response and clears error on PopulationUpdated", () => {
 
         const mockPop = mockPopulationResponse();
-        const testState = mockBaselineState({populationError: "test"});
+        const testState = mockBaselineState({populationError: mockError("test")});
         mutations[BaselineMutation.PopulationUpdated](testState, {
             payload: mockPop
         });
         expect(testState.population).toBe(mockPop);
-        expect(testState.populationError).toBe("");
+        expect(testState.populationError).toBe(null);
     });
 
     it("sets error on PopulationUploadError", () => {
@@ -166,21 +166,21 @@ describe("Baseline mutations", () => {
     });
 
     it("Validated sets validation values", () => {
-        const testState = mockBaselineState({baselineError: "test error"});
+        const testState = mockBaselineState({baselineError: mockError("test error")});
         mutations[BaselineMutation.Validated](testState, {payload: {consistent: true, complete: true}});
-        expect(testState.baselineError).toBe("");
+        expect(testState.baselineError).toBe(null);
         expect(testState.validatedConsistent).toBe(true);
     });
 
     it("Validating resets validation values", () => {
         const testState = mockBaselineState({
             validatedConsistent: true,
-            baselineError: "test error"
+            baselineError: mockError("test error")
         });
 
         mutations[BaselineMutation.Validating](testState);
 
-        expect(testState.baselineError).toBe("");
+        expect(testState.baselineError).toBe(null);
         expect(testState.validatedConsistent).toBe(false);
     });
 

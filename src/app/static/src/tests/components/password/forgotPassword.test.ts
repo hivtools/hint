@@ -3,8 +3,9 @@ import ForgotPassword from "../../../app/components/password/ForgotPassword.vue"
 import {PasswordState} from "../../../app/store/password/password";
 import {PasswordActions} from "../../../app/store/password/actions";
 import Vuex, {Store} from "vuex";
-import {mockPasswordState} from "../../mocks";
+import {mockError, mockPasswordState} from "../../mocks";
 import Vue from "vue";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -34,7 +35,7 @@ describe("Forgot password component", () => {
     it("renders form with no error", () => {
         const store = createStore({
             resetLinkRequested: false,
-            requestResetLinkError: ""});
+            requestResetLinkError: null});
 
         const wrapper = createSut(store);
 
@@ -46,9 +47,10 @@ describe("Forgot password component", () => {
     });
 
     it("renders form with error", () => {
+        const error = mockError("test error")
         const store = createStore({
             resetLinkRequested: false,
-            requestResetLinkError: "test error"});
+            requestResetLinkError: error});
 
         const wrapper = createSut(store);
 
@@ -56,14 +58,14 @@ describe("Forgot password component", () => {
         expect((wrapper.find("input[type='email']").element as HTMLInputElement).value).toEqual("");
         expect((wrapper.find("input[type='submit']").element as HTMLInputElement).value).toEqual("Request password reset email");
         expect(wrapper.findAll("error-alert-stub").length).toEqual(1);
-        expect(wrapper.find("error-alert-stub").props("message")).toEqual("test error");
+        expect(wrapper.find(ErrorAlert).props().error).toBe(error);
         expect(wrapper.findAll(".alert-success").length).toEqual(0);
     });
 
     it("renders form with request success message", () => {
         const store = createStore({
             resetLinkRequested: true,
-            requestResetLinkError: ""});
+            requestResetLinkError: null});
 
         const wrapper = createSut(store);
 

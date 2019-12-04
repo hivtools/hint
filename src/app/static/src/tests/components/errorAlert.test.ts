@@ -1,12 +1,13 @@
 import { shallowMount} from '@vue/test-utils';
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
+import {mockError} from "../mocks";
 
 describe("Error alert component", () => {
 
     it("renders error message", () => {
         const wrapper = shallowMount(ErrorAlert, {
             propsData: {
-                message: "Error text"
+                error: mockError("Error text")
             }
         });
 

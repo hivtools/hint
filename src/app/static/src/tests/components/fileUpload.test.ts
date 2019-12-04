@@ -3,7 +3,7 @@ import {shallowMount, Slots} from '@vue/test-utils';
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import Tick from "../../app/components/Tick.vue";
 import FileUpload from "../../app/components/FileUpload.vue";
-import {mockFile} from "../mocks";
+import {mockError, mockFile} from "../mocks";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
 import Vue from "vue";
@@ -151,10 +151,9 @@ describe("File upload component", () => {
     });
 
     it("renders error message if error is present", () => {
-        const wrapper = createSut({
-            error: "File upload went wrong"
-        });
-        expect(wrapper.find(ErrorAlert).props().message).toBe("File upload went wrong");
+        const error = mockError("File upload went wrong");
+        const wrapper = createSut({error});
+        expect(wrapper.find(ErrorAlert).props().error).toBe(error);
     });
 
     it("does not render error message if no error is present", () => {
