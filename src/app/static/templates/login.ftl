@@ -47,7 +47,7 @@
     </div>
     <div id="partner-logos" class="logos mx-auto mt-5">
       <a href="https://www.imperial.ac.uk"><img src="public/images/imperial_logo.png" class="small-logo"></a>
-      <a href="https://github.com/reside-ic"><img src="public/images/reside-logo-250.png" class="small-logo"></a>
+      <a href="https://github.com/reside-ic"><img src="public/images/reside_logo.png" class="small-logo"></a>
       <a href="https://www.washington.edu"><img src="public/images/uw_logo.png" class="small-logo"></a>
     </div>
 </body>
