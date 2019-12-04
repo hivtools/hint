@@ -36,7 +36,8 @@ class MvcConfig(val config: Config) : WebMvcConfigurer {
         //Ajax endpoints - secure, but do not redirect with login form client - return a 401
         registry.addInterceptor(SecurityInterceptor(config, ""))
                 .addPathPatterns("/**")
-                .excludePathPatterns("/", "/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**")
+                .excludePathPatterns("/", "/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**",
+                        "/logout", "/logout/")
     }
 
     override fun configureAsyncSupport(configurer: AsyncSupportConfigurer) {
