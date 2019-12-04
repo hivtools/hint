@@ -1,6 +1,11 @@
 <template>
     <b-col :md="colWidth">
         <label v-if="formControl.label">{{formControl.label}}
+            <span v-if="formControl.helpText"
+                  class="icon-small"
+                  v-tooltip="formControl.helpText">
+                <info-icon></info-icon>
+            </span>
             <span v-if="formControl.required" class="small">(required)</span>
         </label>
         <component :is="dynamicComponent"
@@ -15,6 +20,10 @@
     import DynamicFormSelect from "./DynamicFormSelect.vue";
     import {DynamicControl} from "./types";
     import DynamicFormNumberInput from "./DynamicFormNumberInput.vue";
+    import {VTooltip} from 'v-tooltip'
+    import {InfoIcon} from "vue-feather-icons";
+
+    Vue.directive('tooltip', VTooltip);
 
     interface Computed {
         dynamicComponent: string,
@@ -60,7 +69,8 @@
             BCol,
             DynamicFormNumberInput,
             DynamicFormSelect,
-            DynamicFormMultiSelect
+            DynamicFormMultiSelect,
+            InfoIcon
         },
     });
 </script>
