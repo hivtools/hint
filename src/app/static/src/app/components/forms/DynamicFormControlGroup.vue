@@ -18,7 +18,7 @@
     import {BCol, BRow} from "bootstrap-vue";
     import {Control, DynamicControlGroup} from "./types";
     import DynamicFormControl from "./DynamicFormControl.vue";
-    import {VTooltip} from 'v-tooltip'
+    import {VTooltip} from 'v-tooltip';
     import {InfoIcon} from "vue-feather-icons";
 
     Vue.directive('tooltip', VTooltip);

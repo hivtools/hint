@@ -5,6 +5,9 @@ import DynamicFormNumberInput from "../../../app/components/forms/DynamicFormNum
 import DynamicFormSelect from "../../../app/components/forms/DynamicFormSelect.vue";
 import DynamicFormMultiSelect from "../../../app/components/forms/DynamicFormMultiSelect.vue";
 import TreeSelect from '@riophae/vue-treeselect';
+import {VTooltip} from 'v-tooltip';
+
+const tooltipSpy = jest.spyOn(VTooltip, "bind");
 
 describe('Dynamic form control component', function () {
 
@@ -41,6 +44,15 @@ describe('Dynamic form control component', function () {
     it("renders label if it exists", () => {
         const rendered = getWrapper(fakeNumber, shallowMount);
         expect(rendered.find("label").text()).toBe("Number label");
+    });
+
+    it("renders tooltip if help text exists", () => {
+        const rendered = getWrapper({...fakeNumber, helpText: "Some help text"}, shallowMount);
+        expect(rendered.find("label").text()).toBe("Number label");
+
+        expect(rendered.find("label").find("span").classes()).toContain("has-tooltip");
+        expect(tooltipSpy).toHaveBeenCalled();
+        expect((tooltipSpy.mock.calls[0][1] as any).value).toBe("Some help text")
     });
 
     it("renders required indicator if input is required", () => {
