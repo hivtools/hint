@@ -49,7 +49,7 @@ export const getProcessedOutputData = (data: any[],
         const datasetLabel = barLabelLookup[datasetValue];
 
         //filter out unknown disaggregations e.g regions at levels we're not showing
-        if (datasetLabel == undefined) {
+        if (datasetLabel === undefined) {
             continue;
         }
 
@@ -69,6 +69,11 @@ export const getProcessedOutputData = (data: any[],
         }
 
         const value = row[indicator.value_column];
+
+        if (value == undefined) {
+            continue;
+        }
+
         const valueIdx = xAxisValues.indexOf(xAxisValue.toString());
         while (dataset.data.length <= valueIdx) {
             dataset.data.push(0);

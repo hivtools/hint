@@ -8,7 +8,7 @@ import {
 } from "../mocks";
 import {interpolateGreys} from "d3-scale-chromatic";
 import {getResult, testIndicatorMetadata} from "./helpers";
-import {SurveyDataRow} from "../../app/generated";
+import {ModelResultRow, SurveyDataRow} from "../../app/generated";
 
 describe("getRegionIndicators function", () => {
 
