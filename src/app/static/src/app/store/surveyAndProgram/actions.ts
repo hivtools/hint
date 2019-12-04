@@ -71,7 +71,6 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
 
     async deleteSurvey({commit}) {
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
-            .ignoreErrors()
             .delete("/disease/survey/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
@@ -80,7 +79,6 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
 
     async deleteProgram({commit}) {
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
-            .ignoreErrors()
             .delete("/disease/programme/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
@@ -89,7 +87,6 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
 
     async deleteANC({commit}) {
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
-            .ignoreErrors()
             .delete("/disease/anc/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});

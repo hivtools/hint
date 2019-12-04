@@ -45,7 +45,7 @@
         },
         computed: {
             ...mapStateProps<ErrorsState, keyof ComputedState>(namespace, {
-                errors: state => state.errors
+                errors: state => Array.from(new Set(state.errors))
             }),
             hasErrors: function() { return this.errors.length > 0}
         },

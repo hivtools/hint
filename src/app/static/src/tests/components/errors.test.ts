@@ -39,6 +39,15 @@ describe("Errors component", () => {
         expect(wrapper.html()).toBeFalsy();
     });
 
+    it ("only renders duplicate errors once", () => {
+        const store = createStore(["Error 1", "Error 1", "New Error"]);
+        const wrapper = shallowMount(Errors, {propsData, store, localVue});
+        const paras = wrapper.findAll("p");
+        expect(paras.length).toBe(2);
+        expect(paras.at(0).text()).toBe("Error 1");
+        expect(paras.at(1).text()).toBe("New Error");
+    });
+
     it ("commits dismissAll mutation when close button pressed", () => {
         const store = createStore(["First error"]);
         const wrapper = shallowMount(Errors, {propsData, store, localVue});
