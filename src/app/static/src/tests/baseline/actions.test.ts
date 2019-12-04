@@ -55,7 +55,7 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls[2][2]).toStrictEqual({root: true});
     });
 
-    it("upload PJNZ does not fetch plotting metadata if error occurs", async () => {
+    it("upload PJNZ does not fetch plotting metadata or validate if error occurs", async () => {
         mockAxios.onPost(`/baseline/pjnz/`)
             .reply(400, mockFailure("test error"));
 
@@ -64,25 +64,8 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
 
-        expect(dispatch.mock.calls.length).toBe(2);
-
-        expect(dispatch.mock.calls[0][0]).toBe("validate");
-        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
-    });
-
-    it("upload PJNZ does not fetch plotting metadata if iso3 not set", async () => {
-        mockAxios.onPost(`/baseline/pjnz/`)
-            .reply(400, mockFailure("test error"));
-
-        const commit = jest.fn();
-        const state = mockBaselineState({iso3: ""});
-        const dispatch = jest.fn();
-        await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
-
-        expect(dispatch.mock.calls.length).toBe(2);
-
-        expect(dispatch.mock.calls[0][0]).toBe("validate");
-        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
     });
 
     testUploadErrorCommitted("/baseline/pjnz/",
