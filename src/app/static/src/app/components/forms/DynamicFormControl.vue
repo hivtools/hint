@@ -4,7 +4,7 @@
             <span v-if="formControl.helpText"
                   class="icon-small"
                   v-tooltip="formControl.helpText">
-                <info-icon></info-icon>
+                <help-circle-icon></help-circle-icon>
             </span>
             <span v-if="formControl.required" class="small">(required)</span>
         </label>
@@ -21,7 +21,7 @@
     import {DynamicControl} from "./types";
     import DynamicFormNumberInput from "./DynamicFormNumberInput.vue";
     import {VTooltip} from 'v-tooltip'
-    import {InfoIcon} from "vue-feather-icons";
+    import {HelpCircleIcon} from "vue-feather-icons";
 
     Vue.directive('tooltip', VTooltip);
 
@@ -70,7 +70,7 @@
             DynamicFormNumberInput,
             DynamicFormSelect,
             DynamicFormMultiSelect,
-            InfoIcon
+            HelpCircleIcon
         },
     });
 </script>

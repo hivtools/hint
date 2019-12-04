@@ -2,7 +2,7 @@
     <b-row class="my-2">
         <label v-if="controlGroup.label" class="col-form-label col-md-5">{{controlGroup.label}}
             <span v-if="helpText" class="icon-small" v-tooltip="helpText">
-                    <info-icon></info-icon>
+                    <help-circle-icon></help-circle-icon>
                 </span>
             <span v-if="required" class="small">(required)</span>
         </label>
@@ -19,7 +19,7 @@
     import {Control, DynamicControlGroup} from "./types";
     import DynamicFormControl from "./DynamicFormControl.vue";
     import {VTooltip} from 'v-tooltip';
-    import {InfoIcon} from "vue-feather-icons";
+    import {HelpCircleIcon} from "vue-feather-icons";
 
     Vue.directive('tooltip', VTooltip);
 
@@ -50,7 +50,7 @@
             BRow,
             BCol,
             DynamicFormControl,
-            InfoIcon
+            HelpCircleIcon
         },
         methods: {
             change(newVal: Control, index: number) {
