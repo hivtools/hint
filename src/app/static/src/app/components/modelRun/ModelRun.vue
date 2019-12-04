@@ -8,10 +8,16 @@
             <tick color="#e31837" width="20px"></tick>
         </h4>
         <modal :open="running">
-            <h4>Running model</h4>
+            <progress-bar v-for="phase in phases"
+                          :key="phase.name"
+                          :phase="phase"></progress-bar>
+            <div class="text-center" v-if="phases.length == 0">
+                <h4>Initialising model run</h4>
+                <loading-spinner size="sm"></loading-spinner>
+            </div>
         </modal>
         <div class="mt-3">
-            <error-alert v-for="error in errors" :error="error" :key="error.detail"></error-alert>
+            <error-alert v-for="(error, index) in errors" :key="index" :error="error"></error-alert>
         </div>
     </div>
 </template>
@@ -24,10 +30,14 @@
     import {mapActionsByNames, mapGettersByNames, mapStateProps} from "../../utils";
     import {BProgress} from "bootstrap-vue";
     import ErrorAlert from "../ErrorAlert.vue";
+    import {ProgressPhase} from "../../generated";
+    import ProgressBar from "../progress/ProgressBar.vue";
+    import LoadingSpinner from "../LoadingSpinner.vue";
 
     interface ComputedState {
         runId: string
         pollId: number
+        phases: ProgressPhase[]
     }
 
     interface ComputedGetters {
@@ -52,7 +62,11 @@
             ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
                 runId: state => state.modelRunId,
                 pollId: state => state.statusPollId,
-                errors: state => state.errors
+                errors: state => state.errors,
+                phases: state => {
+                    const progress = state.status.progress || [];
+                    return progress.map((item, index) => ({...item, name: `${index+1}. ${item.name}`}))
+                }
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
         },
@@ -76,6 +90,8 @@
             Tick,
             BProgress,
             ErrorAlert,
+            ProgressBar,
+            LoadingSpinner
         }
     });
 </script>

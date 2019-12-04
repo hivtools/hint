@@ -12,6 +12,7 @@ import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
 import java.io.File
 
+
 class HintApplicationTests : SecureIntegrationTests() {
 
     @ParameterizedTest
@@ -49,17 +50,17 @@ class HintApplicationTests : SecureIntegrationTests() {
     @EnumSource(IsAuthorized::class)
     fun `only authorized users can access REST endpoints`(isAuthorized: IsAuthorized) {
         val entity = testRestTemplate.getForEntity<String>("/baseline/pjnz/")
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         if (isAuthorized == IsAuthorized.TRUE) {
+            assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
             assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
         } else {
-            assertThat(entity.body!!).contains("<title>Login</title>")
+            assertThat(entity.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
         }
     }
 
     @Test
     fun `can get static resources`() {
-        val testCssFile = File("static/public/css").listFiles()!![0]
+        val testCssFile = File("static/public/css").listFiles()!!.find { it.extension == "css" }!!
         val path = testCssFile.path.split("/").drop(1).joinToString("/")
         val entity = testRestTemplate.getForEntity<String>("/$path")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
@@ -71,7 +72,7 @@ class HintApplicationTests : SecureIntegrationTests() {
         val headers = HttpHeaders()
         headers.set("Accept-Encoding", "gzip")
         val entity = HttpEntity<String>(headers)
-        val testCssFile = File("static/public/css").listFiles()!![0]
+        val testCssFile = File("static/public/css").listFiles()!!.find { it.extension == "css" }!!
         val path = testCssFile.path.split("/").drop(1).joinToString("/")
         val response = testRestTemplate.exchange<String>("/$path", HttpMethod.GET, entity)
         assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
