@@ -1,9 +1,6 @@
 package org.imperial.mrc.hint.unit.security
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.MvcConfig
 import org.junit.jupiter.api.Test
@@ -27,7 +24,7 @@ class SecurityConfigTests {
             on { addInterceptor(any()) } doReturn mockInterceptor
         }
         sut.addInterceptors(interceptors)
-        verify(interceptors).addInterceptor(any())
+        verify(interceptors, times(2)).addInterceptor(any())
     }
 
 }

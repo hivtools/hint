@@ -94,7 +94,18 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         if (this._ignoreErrors) {
             return
         }
-        const failure = e.response && e.response.data;
+
+        let failure = e.response && e.response.data;
+        if (!failure && e.response && e.response.status == 401) {
+            failure = {
+                status: "failure",
+                errors: [{
+                    error: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing."}
+                ],
+                data: {}
+            }
+        }
+
         if (!isHINTResponse(failure)) {
             this._commitError("Could not parse API response. Please contact support.");
         } else if (this._onError) {

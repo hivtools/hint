@@ -49,11 +49,11 @@ class HintApplicationTests : SecureIntegrationTests() {
     @EnumSource(IsAuthorized::class)
     fun `only authorized users can access REST endpoints`(isAuthorized: IsAuthorized) {
         val entity = testRestTemplate.getForEntity<String>("/baseline/pjnz/")
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         if (isAuthorized == IsAuthorized.TRUE) {
+            assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
             assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
         } else {
-            assertThat(entity.body!!).contains("<title>Login</title>")
+            assertThat(entity.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
         }
     }
 

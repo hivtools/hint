@@ -25,8 +25,7 @@ class DownloadTests : SecureIntegrationTests() {
         do {
             Thread.sleep(500)
             val statusResponse = testRestTemplate.getForEntity<String>("/model/status/$id")
-            print(statusResponse.body)
-        } while (statusResponse.body!!.contains("\"status\":\"RUNNING\""))
+        } while (statusResponse.body != null && statusResponse.body!!.contains("\"status\":\"RUNNING\""))
 
         return id
     }
