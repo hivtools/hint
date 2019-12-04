@@ -24,7 +24,7 @@ class UserRepositoryTests {
     fun `add user calls create on profile service`() {
 
         val mockProfileService = mock<DbProfileService>()
-        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
+        val sut = DbProfileServiceUserRepository(mock(), mockProfileService, mock())
 
         sut.addUser(TEST_EMAIL, "testpassword")
 
@@ -39,7 +39,7 @@ class UserRepositoryTests {
     fun `adding user without password creates random pw and sends account creation email`() {
         val mockEmailManager = mock<EmailManager>()
         val mockProfileService = mock<DbProfileService>()
-        val sut = DbProfileServiceUserRepository(mockProfileService, mockEmailManager)
+        val sut = DbProfileServiceUserRepository(mock(), mockProfileService, mockEmailManager)
 
         sut.addUser(TEST_EMAIL, null)
         verify(mockEmailManager).sendPasswordEmail(eq(TEST_EMAIL),
@@ -55,7 +55,7 @@ class UserRepositoryTests {
     @Test
     fun `adding user with password does not send email`() {
         val mockEmailManager = mock<EmailManager>()
-        val sut = DbProfileServiceUserRepository(mock(), mockEmailManager)
+        val sut = DbProfileServiceUserRepository(mock(), mock(), mockEmailManager)
 
         sut.addUser(TEST_EMAIL, "test_pw")
         verifyZeroInteractions(mockEmailManager)
@@ -68,7 +68,7 @@ class UserRepositoryTests {
             on { findById(TEST_EMAIL) } doReturn mock<DbProfile>()
         }
 
-        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
+        val sut = DbProfileServiceUserRepository(mock(), mockProfileService, mock())
 
         assertThatThrownBy { sut.addUser(TEST_EMAIL, "testpassword") }
                 .isInstanceOf(UserException::class.java)
@@ -82,7 +82,7 @@ class UserRepositoryTests {
             on { findById(TEST_EMAIL) } doReturn mock<DbProfile>()
         }
 
-        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
+        val sut = DbProfileServiceUserRepository(mock(), mockProfileService, mock())
         sut.removeUser(TEST_EMAIL)
 
         verify(mockProfileService).removeById(TEST_EMAIL)
@@ -93,7 +93,7 @@ class UserRepositoryTests {
 
         val mockProfileService = mock<DbProfileService>()
 
-        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
+        val sut = DbProfileServiceUserRepository(mock(), mockProfileService, mock())
 
         assertThatThrownBy { sut.removeUser(TEST_EMAIL) }
                 .isInstanceOf(UserException::class.java)
@@ -107,7 +107,7 @@ class UserRepositoryTests {
             on { findById(TEST_EMAIL) } doReturn mockProfile
         }
 
-        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
+        val sut = DbProfileServiceUserRepository(mock(), mockProfileService, mock())
         val result = sut.getUser(TEST_EMAIL)
         assertThat(result).isSameAs(mockProfile)
     }
@@ -124,7 +124,7 @@ class UserRepositoryTests {
             on { findById(TEST_EMAIL) } doReturn mockDbProfile
         }
 
-        val sut = DbProfileServiceUserRepository(mockProfileService, mock())
+        val sut = DbProfileServiceUserRepository(mock(), mockProfileService, mock())
         sut.updateUserPassword(mockCommonProfile, "testPassword")
 
         verify(mockProfileService).update(mockDbProfile, "testPassword")

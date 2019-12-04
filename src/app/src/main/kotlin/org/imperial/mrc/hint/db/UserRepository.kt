@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.db
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.UserException
+import org.jooq.DSLContext
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
@@ -18,10 +19,12 @@ interface UserRepository {
 }
 
 @Component
-class DbProfileServiceUserRepository(private val profileService: DbProfileService,
+class DbProfileServiceUserRepository(private val dsl: DSLContext,
+                                     private val profileService: DbProfileService,
                                      private val emailManager: EmailManager) : UserRepository {
 
     override fun addUser(email: String, password: String?) {
+
         if (getUser(email) != null) {
             throw UserException("User already exists")
         }
@@ -45,7 +48,20 @@ class DbProfileServiceUserRepository(private val profileService: DbProfileServic
     }
 
     override fun getUser(email: String): CommonProfile? {
-        return profileService.findById(email)
+
+        val emailArray = email.split("@")
+        val caseInsensitiveDomainRegex = Regex("(?-i)${emailArray[0]}@(?i)${emailArray[1]}")
+
+        val emails = dsl.select(Tables.USERS.USERNAME)
+                .from(Tables.USERS)
+                .fetchInto(String::class.java)
+                .filter { caseInsensitiveDomainRegex.matches(it) }
+
+        return if (emails.count() == 1) {
+            profileService.findById(emails[0])
+        } else {
+            profileService.findById(email)
+        }
     }
 
     override fun updateUserPassword(user: CommonProfile, password: String) {

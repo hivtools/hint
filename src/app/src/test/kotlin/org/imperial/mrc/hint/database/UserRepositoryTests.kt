@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.junit.jupiter.api.Test
@@ -12,7 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.transaction.annotation.Transactional
 
 //Database should be running (via ./scripts/run-dependencies.sh)
-@ActiveProfiles(profiles=["test"])
+@ActiveProfiles(profiles = ["test"])
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @Transactional
@@ -25,24 +26,21 @@ class UserRepositoryTests {
     }
 
     @Test
-    fun `can add user`()
-    {
+    fun `can add user`() {
         sut.addUser(TEST_EMAIL, "testpassword")
 
         Assertions.assertThat(sut.getUser(TEST_EMAIL)).isNotNull
     }
 
     @Test
-    fun `can add user without password`()
-    {
+    fun `can add user without password`() {
         sut.addUser(TEST_EMAIL, null)
 
         Assertions.assertThat(sut.getUser(TEST_EMAIL)).isNotNull
     }
 
     @Test
-    fun `can remove user`()
-    {
+    fun `can remove user`() {
         sut.addUser(TEST_EMAIL, "testpassword")
 
         sut.removeUser(TEST_EMAIL)
@@ -50,8 +48,7 @@ class UserRepositoryTests {
     }
 
     @Test
-    fun `cannot add same user twice`()
-    {
+    fun `cannot add same user twice`() {
         sut.addUser(TEST_EMAIL, "testpassword")
 
         Assertions.assertThatThrownBy { sut.addUser(TEST_EMAIL, "testpassword") }
@@ -61,11 +58,33 @@ class UserRepositoryTests {
     }
 
     @Test
-    fun `cannot remove nonexistent user`()
-    {
-        Assertions.assertThatThrownBy{ sut.removeUser("notaperson.@email.com") }
+    fun `cannot add same user twice with differently cased domain`() {
+        sut.addUser("test@test.com", "testpassword")
+
+        Assertions.assertThatThrownBy { sut.addUser("test@TEST.com", "testpassword") }
+                .isInstanceOf(UserException::class.java)
+                .hasMessageContaining("User already exists")
+
+    }
+
+    @Test
+    fun `cannot remove nonexistent user`() {
+        Assertions.assertThatThrownBy { sut.removeUser("notaperson.@email.com") }
                 .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("User does not exist")
+
+    }
+
+    @Test
+    fun `can get user`() {
+        sut.addUser(TEST_EMAIL, "testpassword")
+        assertThat(sut.getUser(TEST_EMAIL)!!.username).isEqualTo(TEST_EMAIL)
+    }
+
+    @Test
+    fun `can get user with differently cased domain`() {
+        sut.addUser("test@test.com", "testpassword")
+        assertThat(sut.getUser("test@TEST.com")!!.username).isEqualTo(TEST_EMAIL)
 
     }
 }
