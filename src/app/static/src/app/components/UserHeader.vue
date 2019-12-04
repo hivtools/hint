@@ -23,6 +23,7 @@
                         <input type="file" style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
                     </div>
                 </div>
+                <a href="https://forms.gle/QxCT1b4ScLqKPg6a7" target="_blank" style="margin-right: 10px">Report a bug</a>
                 <a href="/logout">Logout</a>
             </div>
         </nav>
