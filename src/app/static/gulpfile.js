@@ -5,7 +5,8 @@ const gulp = require('gulp'),
     rename = require('gulp-rename'),
     minify = require('gulp-clean-css'),
     hash = require('gulp-hash-filename'),
-    inject = require('gulp-inject');
+    inject = require('gulp-inject'),
+    del = require('del');
 
 sass.compiler = require('node-sass');
 
@@ -39,4 +40,8 @@ gulp.task('copy-templates', function () {
         .pipe(gulp.dest('public'));
 });
 
-gulp.task('styles', gulp.series(gulp.parallel('sass', 'cssmap'), 'inject'));
+gulp.task('clean-css', function () {
+    return del('public/css/**', {force: true});
+});
+
+gulp.task('styles', gulp.series('clean-css', gulp.parallel('sass', 'cssmap'), 'inject'));

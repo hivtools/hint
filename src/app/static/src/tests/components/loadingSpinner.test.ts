@@ -9,7 +9,7 @@ describe("Loading spinner", () => {
         expect(wrapper.attributes().width).toBe("200px");
     });
 
-    it("is 40px when small", () => {
+    it("is 40px when xs", () => {
         const wrapper = shallowMount(LoadingSpinner, {
             propsData: {
                 size: "xs"
@@ -17,6 +17,16 @@ describe("Loading spinner", () => {
         });
         expect(wrapper.attributes().height).toBe("40px");
         expect(wrapper.attributes().width).toBe("40px");
+    });
+
+    it("is 100px when sm", () => {
+        const wrapper = shallowMount(LoadingSpinner, {
+            propsData: {
+                size: "sm"
+            }
+        });
+        expect(wrapper.attributes().height).toBe("100px");
+        expect(wrapper.attributes().width).toBe("100px");
     });
 
     it("gets size as class", () => {

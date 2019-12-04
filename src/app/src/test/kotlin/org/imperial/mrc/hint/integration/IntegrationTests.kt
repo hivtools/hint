@@ -76,14 +76,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
 
             }
             IsAuthorized.FALSE -> {
-                if (responseEntity.statusCode == HttpStatus.FOUND) {
-                    // obtains when request is a POST
-                    assertLoginLocation(responseEntity)
-                } else {
-                    // obtains when request is a GET
-                    assertSuccess(responseEntity)
-                    Assertions.assertThat(responseEntity.body!!).contains("<title>Login</title>")
-                }
+                assertUnauthorized(responseEntity)
             }
         }
     }
@@ -96,15 +89,13 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                 assertSuccess(responseEntity)
             }
             IsAuthorized.FALSE -> {
-                if (responseEntity.statusCode == HttpStatus.FOUND) {
-                    // obtains when request is a POST
-                    assertLoginLocation(responseEntity)
-                } else {
-                    // obtains when request is a GET
-                    assertSuccess(responseEntity)
-                }
+               assertUnauthorized(responseEntity)
             }
         }
+    }
+
+    fun <T> assertUnauthorized(responseEntity: ResponseEntity<T>) {
+        Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 
     fun <T> assertSuccess(responseEntity: ResponseEntity<T>) {
@@ -129,14 +120,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                 JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail, errorStartsWith)
             }
             IsAuthorized.FALSE -> {
-                if (responseEntity.statusCode == HttpStatus.FOUND) {
-                    // it's a POST
-                    Assertions.assertThat(responseEntity.headers.location!!.toString()).isEqualTo("/login")
-                }
-                else {
-                    // it's a GET
-                    Assertions.assertThat(responseEntity.body!!).contains("<title>Login</title>")
-                }
+                assertUnauthorized(responseEntity)
             }
         }
     }
