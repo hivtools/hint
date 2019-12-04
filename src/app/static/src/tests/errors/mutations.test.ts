@@ -1,6 +1,7 @@
 import {mutations} from "../../app/store/errors/mutations";
 import {ErrorsState} from "../../app/store/errors/errors";
 import {mockError} from "../mocks";
+import {Error} from "../../app/generated";
 
 describe("Errors mutations", () => {
     it("ErrorAdded adds error", () => {

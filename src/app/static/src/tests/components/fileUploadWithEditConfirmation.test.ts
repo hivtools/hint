@@ -27,7 +27,7 @@ describe("File upload component", () => {
         return mount(FileUpload, {
             store: createStore(),
             propsData: {
-                error: "",
+                error: null,
                 label: "",
                 valid: true,
                 upload: jest.fn(),

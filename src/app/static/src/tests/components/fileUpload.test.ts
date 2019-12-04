@@ -30,7 +30,7 @@ describe("File upload component", () => {
         return shallowMount(FileUpload, {
             store: createStore(),
             propsData: {
-                error: "",
+                error: null,
                 label: "",
                 valid: true,
                 upload: jest.fn(),

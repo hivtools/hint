@@ -1,6 +1,7 @@
 import {Mutation, MutationTree} from 'vuex';
 import {LoadingState, LoadState} from "./load";
 import {PayloadWithType} from "../../types";
+import {Error} from "../../generated";
 
 type LoadMutation = Mutation<LoadState>
 

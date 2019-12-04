@@ -1,7 +1,7 @@
 import {MutationTree} from 'vuex';
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {PayloadWithType} from "../../types";
-import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
+import {AncResponse, ProgrammeResponse, SurveyResponse, Error} from "../../generated";
 import {ReadyState} from "../../root";
 
 export enum SurveyAndProgramMutation {

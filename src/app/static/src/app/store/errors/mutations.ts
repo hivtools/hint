@@ -1,5 +1,6 @@
 import {MutationTree} from "vuex";
 import {PayloadWithType} from "../../types";
+import {Error} from "../../generated";
 import {ErrorsState} from "./errors";
 
 export enum ErrorsMutation {
