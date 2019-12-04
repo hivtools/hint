@@ -26,11 +26,11 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .withError(BaselineMutation.PJNZUploadError)
             .freezeResponse()
             .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData)
-            .then(() => {
-                if (!state.baselineError && state.iso3) {
+            .then((response) => {
+                if (response) {
                     dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
+                    dispatch('validate');
                 }
-                dispatch('validate');
                 dispatch("surveyAndProgram/deleteAll", {}, {root: true});
             });
     },
@@ -42,8 +42,10 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .withError(BaselineMutation.ShapeUploadError)
             .freezeResponse()
             .postAndReturn<ShapeResponse>("/baseline/shape/", formData)
-            .then(() => {
-                dispatch('validate');
+            .then((response) => {
+                if (response) {
+                    dispatch('validate');
+                }
                 dispatch("surveyAndProgram/deleteAll", {}, {root: true});
             });
     },
@@ -55,14 +57,17 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .withError(BaselineMutation.PopulationUploadError)
             .freezeResponse()
             .postAndReturn<PopulationResponse>("/baseline/population/", formData)
-            .then(() => {
-                dispatch('validate');
+            .then((response) => {
+                if (response) {
+                    dispatch('validate');
+                }
                 dispatch("surveyAndProgram/deleteAll", {}, {root: true});
             });
     },
 
     async deletePJNZ({commit, dispatch}) {
         await api<BaselineMutation, BaselineMutation>(commit)
+            .ignoreErrors()
             .delete("/baseline/pjnz/")
             .then(() => {
                 commit({type: BaselineMutation.PJNZUpdated, payload: null});
@@ -72,6 +77,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async deleteShape({commit, dispatch}) {
         await api<BaselineMutation, BaselineMutation>(commit)
+            .ignoreErrors()
             .delete("/baseline/shape/")
             .then(() => {
                 commit({type: BaselineMutation.ShapeUpdated, payload: null});
@@ -81,6 +87,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async deletePopulation({commit, dispatch}) {
         await api<BaselineMutation, BaselineMutation>(commit)
+            .ignoreErrors()
             .delete("/baseline/population/")
             .then(() => {
                 commit({type: BaselineMutation.PopulationUpdated, payload: null});
