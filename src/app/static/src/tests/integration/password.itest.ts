@@ -1,4 +1,5 @@
 import {actions} from "../../app/store/password/actions";
+import {mockError} from "../mocks";
 
 describe("Password actions", () => {
 
@@ -20,7 +21,10 @@ describe("Password actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ResetPasswordError",
-            payload: "postResetPassword.password: Password must be at least 6 characters long"
+            payload: {
+                error: "OTHER_ERROR",
+                detail: "postResetPassword.password: Password must be at least 6 characters long"
+            }
         });
     });
 

@@ -30,7 +30,7 @@ describe("Model run actions", () => {
         } as RootState;
         await actions.run({commit, rootState: mockState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("ModelRunError");
-        expect(commit.mock.calls[0][0]["payload"]).toBe("Trying to run model with old version of options. Update model run options");
+        expect(commit.mock.calls[0][0]["payload"].detail).toBe("Trying to run model with old version of options. Update model run options");
     });
 
     it("can get model run status", (done) => {
@@ -67,7 +67,7 @@ describe("Model run actions", () => {
         // but the expected error message confirms
         // that we're hitting the correct endpoint
         expect(commit.mock.calls[0][0]["type"]).toBe("RunResultError");
-        expect(commit.mock.calls[0][0]["payload"]).toBe("Missing some results");
+        expect(commit.mock.calls[0][0]["payload"].detail).toBe("Missing some results");
     });
 
 });

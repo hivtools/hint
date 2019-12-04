@@ -63,7 +63,7 @@ describe("Baseline actions", () => {
 
         await actions.validate({commit, dispatch} as any);
         expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.BaselineError);
-        expect(commit.mock.calls[1][0]["payload"]).toContain("Countries aren't consistent");
+        expect(commit.mock.calls[1][0]["payload"].detail).toContain("Countries aren't consistent");
     });
 
     it("can delete PJNZ", async () => {
