@@ -59,6 +59,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
         }
 
         val caseInsensitiveDomainRegex = Regex("(?-i)${emailArray[0]}@(?i)${emailArray[1]}")
+
         val username = userRepository.getAllUserNames()
                 .find { caseInsensitiveDomainRegex.matches(it) }
                 ?: return null

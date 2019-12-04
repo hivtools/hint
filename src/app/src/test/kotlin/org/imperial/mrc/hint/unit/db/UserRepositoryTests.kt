@@ -84,7 +84,7 @@ class UserRepositoryTests {
     fun `remove user calls removeById on profile service`() {
 
         val mockProfileService = mock<DbProfileService> {
-            on { findById(TEST_EMAIL) } doReturn mock<DbProfile>()
+            on { findById(TEST_EMAIL) } doReturn DbProfile().apply { id = TEST_EMAIL }
         }
 
         val sut = DbProfileServiceUserLogic(mockUserRepo, mockProfileService, mock())
@@ -123,13 +123,12 @@ class UserRepositoryTests {
             on { id } doReturn TEST_EMAIL
         }
 
-        val mockDbProfile = mock<DbProfile>()
-
+        val mockDbProfile = DbProfile().apply { id = TEST_EMAIL }
         val mockProfileService = mock<DbProfileService> {
             on { findById(TEST_EMAIL) } doReturn mockDbProfile
         }
 
-        val sut = DbProfileServiceUserLogic(mock(), mockProfileService, mock())
+        val sut = DbProfileServiceUserLogic(mockUserRepo, mockProfileService, mock())
         sut.updateUserPassword(mockCommonProfile, "testPassword")
 
         verify(mockProfileService).update(mockDbProfile, "testPassword")
