@@ -117,7 +117,7 @@ describe("File upload component", () => {
         const removeHandler = jest.fn();
         const wrapper = createSut({
             valid: false,
-            error: "invalid file",
+            error: mockError("invalid file"),
             deleteFile: removeHandler
         });
         const removeLink = wrapper.find("a");
@@ -238,7 +238,7 @@ describe("File upload component", () => {
         const wrapper = createSut({
             upload: uploader,
             valid: false,
-            error: ""
+            error: null
         });
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
@@ -263,7 +263,7 @@ describe("File upload component", () => {
         const wrapper = createSut({
             upload: uploader,
             valid: false,
-            error: ""
+            error: null
         });
 
         expect(wrapper.find(".custom-file-label").classes()).not.toContain("uploading");
