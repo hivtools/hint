@@ -42,7 +42,7 @@ const existingState = localStorageManager.getState();
 
 export const modelRun: Module<ModelRunState, RootState> = {
     namespaced,
-    state: {...initialModelRunState(), ...existingState && existingState.modelRun},
+    state: {...initialModelRunState(), ...existingState && existingState.modelRun, ready: false},
     actions,
     getters: modelRunGetters,
     mutations
