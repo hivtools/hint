@@ -73,8 +73,8 @@ describe("ApiService", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: `errors/ErrorAdded`,
             payload: {
-                error: "API response failed but did not contain any error information. Please contact support.",
-                detail: null
+                error: "MALFORMED_RESPONSE",
+                detail: "API response failed but did not contain any error information. Please contact support.",
             }
         });
         expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
@@ -122,10 +122,10 @@ describe("ApiService", () => {
         expect(committedPayload).toStrictEqual({error: "OTHER_ERROR", detail: null});
     });
 
-    it ("commits a default error message if an empty 401 response is received", async () => {
+    it("commits a default error message if an empty 401 response is received", async () => {
 
         mockAxios.onGet("/baseline/")
-            .reply(401, null)
+            .reply(401, null);
 
         let committedType: any = false;
         let committedPayload: any = false;
@@ -141,7 +141,8 @@ describe("ApiService", () => {
 
         expect(committedType).toBe("TEST_TYPE");
         expect(committedPayload).toStrictEqual({
-            error: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing."
+            error: "SESSION_TIMEOUT",
+            detail: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing."
         });
     });
 
@@ -286,7 +287,10 @@ describe("ApiService", () => {
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: `errors/ErrorAdded`,
-            payload: {error: "Could not parse API response. Please contact support.", detail: null}
+            payload: {
+                error: "MALFORMED_RESPONSE",
+                detail: "Could not parse API response. Please contact support."
+            }
         });
         expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
     }

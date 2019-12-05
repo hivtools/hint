@@ -46,8 +46,9 @@ describe("Error alert component", () => {
         });
 
         expect(wrapper.find(".error-message").text()).toBe("Error text");
-        expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "text-danger"])
-        expect(wrapper.find("a").text()).toBe("show details");
+        expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "text-danger"]);
+        expect(wrapper.find("a").text()).toBe("stack trace");
+        expect(wrapper.find("a").classes()).toContain("down");
         expect(wrapper.findAll(".error-trace").length).toBe(0);
     });
 
@@ -59,14 +60,16 @@ describe("Error alert component", () => {
         const link = wrapper.find("a");
         link.trigger("click");
 
-        expect(link.text()).toBe("hide details");
+        expect(link.text()).toBe("stack trace");
+        expect(link.classes()).toContain("up");
         const traceMsgs = wrapper.findAll(".error-trace");
         expect(traceMsgs.length).toBe(2);
         expect(traceMsgs.at(0).text()).toBe("trace1");
         expect(traceMsgs.at(1).text()).toBe("trace2");
 
         link.trigger("click");
-        expect(link.text()).toBe("show details");
+        expect(link.text()).toBe("stack trace");
+        expect(link.classes()).toContain("down");
         expect(wrapper.findAll(".error-trace").length).toBe(0);
     });
 

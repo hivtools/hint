@@ -32,6 +32,7 @@ import {initialLoadState, LoadState} from "../app/store/load/load";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
 import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
 import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
+import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -74,6 +75,13 @@ export const mockModelOptionsState = (props?: Partial<ModelOptionsState>): Model
 export const mockStepperState = (props?: Partial<StepperState>): StepperState => {
     return {
         ...initialStepperState(),
+        ...props
+    }
+};
+
+export const mockErrorsState = (props?: Partial<ErrorsState>): ErrorsState => {
+    return {
+        ...initialErrorsState(),
         ...props
     }
 };

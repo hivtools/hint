@@ -3,7 +3,7 @@
         <div class="content">
             <div class="alert alert-danger alert-dismissible fade-show" role="alert">
                 <p v-for="(error, index) in errors" :key="index">
-                    {{error}}
+                    {{error.detail ? error.detail : error.error}}
                 </p>
                 <button type="button" class="close" @click="dismissAll">
                     <span aria-hidden="true">&times;</span>
@@ -18,6 +18,7 @@
     import {ErrorsState} from "../store/errors/errors";
     import {mapMutationByName, mapStateProps} from "../utils";
     import {ErrorsMutation} from "../store/errors/mutations";
+    import {Error} from "../generated"
 
     const namespace = "errors";
 
@@ -30,7 +31,7 @@
     }
 
     interface ComputedState {
-        errors: string[]
+        errors: Error[]
     }
 
     interface Computed extends ComputedState{

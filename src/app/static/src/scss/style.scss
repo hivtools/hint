@@ -84,3 +84,11 @@ a {
 .custom-file, .custom-file label {
   overflow: hidden;
 }
+
+a.up::after {
+  content: '\25b2';
+}
+
+a.down::after {
+  content: '\25bc';
+}

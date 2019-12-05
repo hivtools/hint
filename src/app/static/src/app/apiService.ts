@@ -46,10 +46,10 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return failure.errors[0];
     };
 
-    static createError(error: string) {
+    static createError(detail: string) {
         return {
-            error,
-            detail: null
+            error: "MALFORMED_RESPONSE",
+            detail
         }
     }
 
@@ -106,7 +106,8 @@ export class APIService<S extends string, E extends string> implements API<S, E>
             failure = {
                 status: "failure",
                 errors: [{
-                    error: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing."}
+                    error: "SESSION_TIMEOUT",
+                    detail: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing."}
                 ],
                 data: {}
             }

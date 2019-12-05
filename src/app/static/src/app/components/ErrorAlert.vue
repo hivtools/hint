@@ -2,9 +2,11 @@
     <div class="pt-1 text-danger">
         <div class="error-message">{{message}}</div>
         <div v-if="hasTrace" >
-            <a href="#" @click="toggleTrace"><strong>{{traceLinkText}}</strong></a>
+            <a href="#" @click="toggleTrace" :class="cssClass"><strong>stack trace</strong></a>
             <div v-if="showTrace" class="ml-3">
-                <div v-for="(traceMessage, index) in error.trace" :key="index" class="error-trace">{{traceMessage}}</div>
+                <div v-for="(traceMessage, index) in error.trace" :key="index" class="error-trace">
+                    {{traceMessage}}
+                </div>
             </div>
         </div>
     </div>
@@ -12,20 +14,20 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {Error} from "../generated.d";
+    import {Error} from "../generated";
 
     interface Data {
         showTrace: Boolean
     }
 
     interface Props {
-        error: Error | null
+        error: Error
     }
 
     interface Computed {
         message: String,
         hasTrace: Boolean,
-        traceLinkText: String
+        cssClass: String
     }
 
     interface Methods {
@@ -43,15 +45,13 @@
         },
         computed: {
             message: function() {
-                return this.error ?
-                    (this.error.detail ? this.error.detail : this.error.error) :
-                    "";
+                return this.error.detail ? this.error.detail : this.error.error
             },
             hasTrace: function() {
-                return !!this.error && !!this.error.trace && this.error.trace.length > 0
+                return !!this.error.trace && this.error.trace.length > 0
             },
-            traceLinkText: function() {
-                return (this.showTrace ? "hide" : "show") + " details";
+            cssClass: function() {
+                return this.showTrace ? "up" : "down";
             }
         },
         methods: {
