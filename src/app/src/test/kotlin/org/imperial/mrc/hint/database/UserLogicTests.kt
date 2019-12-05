@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @Transactional
-class UserRepositoryTests {
+class UserLogicTests {
     @Autowired
     private lateinit var sut: UserLogic
 
@@ -101,7 +101,13 @@ class UserRepositoryTests {
     fun `can get user with differently cased domain`() {
         sut.addUser("test@test.com", "testpassword")
         assertThat(sut.getUser("test@TEST.com")!!.username).isEqualTo(TEST_EMAIL)
-
+    }
+    
+    @Test
+    fun `throws error if trying to get user with invalid email`() {
+        Assertions.assertThatThrownBy { sut.getUser("email", "testpassword") }
+                .isInstanceOf(UserException::class.java)
+                .hasMessageContaining("Please provide a valid email address")
     }
 
 }
