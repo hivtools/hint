@@ -105,7 +105,7 @@ class UserLogicTests {
     
     @Test
     fun `throws error if trying to get user with invalid email`() {
-        Assertions.assertThatThrownBy { sut.getUser("email", "testpassword") }
+        Assertions.assertThatThrownBy { sut.getUser("email") }
                 .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("Please provide a valid email address")
     }
