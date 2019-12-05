@@ -249,7 +249,7 @@ describe("Barchart component", () => {
         expect(wrapper.emitted()["update"].length).toBe(1);
 
         const expectedSelectedFilterOptions = {...propsData.selections.selectedFilterOptions,
-            age: [{id: "newAgeId", label: "newAgeLabel"}]}
+            age: [{id: "newAgeId", label: "newAgeLabel"}]};
 
         const expected = {...propsData.selections, selectedFilterOptions: expectedSelectedFilterOptions};
         expect(wrapper.emitted()["update"][0][0]).toStrictEqual(expected);

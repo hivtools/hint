@@ -69,6 +69,11 @@ export const getProcessedOutputData = (data: any[],
         }
 
         const value = row[indicator.value_column];
+
+        if (!value) {
+            continue;
+        }
+
         const valueIdx = xAxisValues.indexOf(xAxisValue.toString());
         while (dataset.data.length <= valueIdx) {
             dataset.data.push(0);

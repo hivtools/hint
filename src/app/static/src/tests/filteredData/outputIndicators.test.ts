@@ -7,9 +7,8 @@ import {
 } from "../mocks";
 import {interpolateGreys} from "d3-scale-chromatic";
 import {DataType} from "../../app/store/filteredData/filteredData";
-import {getGetters, getResult, testIndicatorMetadata} from "./helpers";
-import {getters} from "../../app/store/filteredData/getters";
-import {ModelResultData, ModelResultRow} from "../../app/generated";
+import { getResult, testIndicatorMetadata} from "./helpers";
+import { ModelResultRow} from "../../app/generated";
 
 describe("getting region indicators for output data", () => {
 
@@ -113,6 +112,28 @@ describe("getting region indicators for output data", () => {
         };
 
         expect(result).toStrictEqual(expected);
+    });
+
+    it("omits rows with null or undefined values", () => {
+        const testData: Partial<ModelResultRow>[] = [
+            {
+                area_id: "area1",
+                age_group: "1",
+                indicator_id: 2,
+                sex: "both"
+            },
+            {
+                area_id: "area2",
+                mean: null,
+                age_group: "1",
+                indicator_id: 2,
+                sex: "both"
+            }
+        ];
+        const testRootState = getRootState(testData, {age: "1", sex: "both"});
+        const result = getResult(testRootState, testMeta);
+
+        expect(result).toStrictEqual({});
     });
 
 });
