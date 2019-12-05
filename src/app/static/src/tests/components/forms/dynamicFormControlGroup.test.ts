@@ -3,6 +3,9 @@ import {BCol} from "bootstrap-vue";
 import DynamicFormControlGroup from "../../../app/components/forms/DynamicFormControlGroup.vue";
 import DynamicFormControl from "../../../app/components/forms/DynamicFormControl.vue";
 import {DynamicControlGroup, NumberControl, SelectControl} from "../../../app/components/forms/types";
+import {VTooltip} from 'v-tooltip';
+
+const tooltipSpy = jest.spyOn(VTooltip, "bind");
 
 describe('Dynamic form control group component', function () {
 
@@ -29,9 +32,9 @@ describe('Dynamic form control group component', function () {
             }
         });
 
-        const labelCol = rendered.find(BCol);
-        expect(labelCol.find("label").text()).toBe("Test 1");
-        expect(labelCol.attributes("md")).toBe("4");
+        const labelCol = rendered.find("label");
+        expect(labelCol.text()).toBe("Test 1");
+        expect(labelCol.classes()).toStrictEqual(["col-form-label", "col-md-5"]);
     });
 
     it("does not render label col if there is no label", () => {
@@ -42,6 +45,20 @@ describe('Dynamic form control group component', function () {
         });
 
         expect(rendered.findAll(BCol).length).toBe(0);
+    });
+
+    it("renders tooltip with help text if only one control exists", () => {
+        const fakeGroup = {...fakeFormGroup, controls: [{...fakeFormGroup.controls[0]}]};
+        fakeGroup.controls[0].helpText = "Some help text";
+        const rendered = shallowMount(DynamicFormControlGroup, {
+            propsData: {
+                controlGroup: fakeGroup
+            }
+        });
+
+        expect(rendered.find("label").find("span").classes()).toContain("has-tooltip");
+        expect(tooltipSpy).toHaveBeenCalled();
+        expect((tooltipSpy.mock.calls[0][1] as any).value).toBe("Some help text")
     });
 
     it("renders controls", () => {
