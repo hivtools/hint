@@ -9,7 +9,7 @@ export interface AncDataRow {
   age_group: string;
   year: number;
   anc_clients: number;
-  ancrt_hiv_status: number;
+  ancrt_hiv_status?: number;
   ancrt_known_pos: number;
   ancrt_already_art: number;
   ancrt_tested: number;
@@ -33,7 +33,7 @@ export type AncResponseData = {
   age_group: string;
   year: number;
   anc_clients: number;
-  ancrt_hiv_status: number;
+  ancrt_hiv_status?: number;
   ancrt_known_pos: number;
   ancrt_already_art: number;
   ancrt_tested: number;
@@ -198,10 +198,10 @@ export type ModelResultData = {
   age_group: string;
   calendar_quarter: string;
   indicator_id: number;
-  mode: number;
-  mean: number;
-  lower: number;
-  upper: number;
+  mode: number | null;
+  mean: number | null;
+  lower: number | null;
+  upper: number | null;
   [k: string]: any;
 }[];
 export interface ModelResultFilters {
@@ -225,10 +225,10 @@ export interface ModelResultResponse {
     age_group: string;
     calendar_quarter: string;
     indicator_id: number;
-    mode: number;
-    mean: number;
-    lower: number;
-    upper: number;
+    mode: number | null;
+    mean: number | null;
+    lower: number | null;
+    upper: number | null;
     [k: string]: any;
   }[];
   plottingMetadata: {
@@ -306,10 +306,10 @@ export interface ModelResultRow {
   age_group: string;
   calendar_quarter: string;
   indicator_id: number;
-  mode: number;
-  mean: number;
-  lower: number;
-  upper: number;
+  mode: number | null;
+  mean: number | null;
+  lower: number | null;
+  upper: number | null;
   [k: string]: any;
 }
 export interface ModelRunOptions {
@@ -688,7 +688,7 @@ export interface AncResponse {
     age_group: string;
     year: number;
     anc_clients: number;
-    ancrt_hiv_status: number;
+    ancrt_hiv_status?: number;
     ancrt_known_pos: number;
     ancrt_already_art: number;
     ancrt_tested: number;
