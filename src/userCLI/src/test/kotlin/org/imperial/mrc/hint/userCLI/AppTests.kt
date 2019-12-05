@@ -7,7 +7,7 @@ import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.db.DbConfig
-import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.exceptions.UserException
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeEach
@@ -20,8 +20,8 @@ class AppTests {
         const val TEST_EMAIL = "test@test.com"
 
         val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
-        val userRepository = getUserRepository(dataSource)
-        val sut = UserCLI(userRepository)
+        val userLogic = getUserLogic(dataSource)
+        val sut = UserCLI(userLogic)
 
         @AfterAll
         @JvmStatic
@@ -57,7 +57,7 @@ class AppTests {
 
     @Test
     fun `null password gets passed to user repo`() {
-        val mockUserRepo = mock<UserRepository>()
+        val mockUserRepo = mock<UserLogic>()
         UserCLI(mockUserRepo).addUser(mapOf("<email>" to TEST_EMAIL))
         verify(mockUserRepo).addUser(eq(TEST_EMAIL), isNull())
     }

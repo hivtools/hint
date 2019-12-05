@@ -5,7 +5,7 @@ import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.db.Tables.SESSION_FILE
-import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.db.tables.UserSession.USER_SESSION
 import org.imperial.mrc.hint.exceptions.SessionException
 import org.imperial.mrc.hint.models.SessionFile
@@ -25,17 +25,18 @@ class SessionRepositoryTests {
     private lateinit var sut: SessionRepository
 
     @Autowired
-    private lateinit var userRepo: UserRepository
+    private lateinit var userRepo: UserLogic
 
     @Autowired
     private lateinit var dsl: DSLContext
 
     private val sessionId = "sid"
+    private val testEmail = "test@test.com"
 
     @Test
     fun `can save session`() {
-        userRepo.addUser("email", "pw")
-        val uid = userRepo.getUser("email")!!.id
+        userRepo.addUser(testEmail, "pw")
+        val uid = userRepo.getUser(testEmail)!!.id
         sut.saveSession(sessionId, uid)
 
         val session = dsl.selectFrom(USER_SESSION)
@@ -47,8 +48,8 @@ class SessionRepositoryTests {
 
     @Test
     fun `saveSession is idempotent`() {
-        userRepo.addUser("email", "pw")
-        val uid = userRepo.getUser("email")!!.id
+        userRepo.addUser(testEmail, "pw")
+        val uid = userRepo.getUser(testEmail)!!.id
         sut.saveSession(sessionId, uid)
         sut.saveSession(sessionId, uid)
 
@@ -258,8 +259,8 @@ class SessionRepositoryTests {
     }
 
     private fun setUpSession(): String {
-        userRepo.addUser("email", "pw")
-        val uid = userRepo.getUser("email")!!.id
+        userRepo.addUser(testEmail, "pw")
+        val uid = userRepo.getUser(testEmail)!!.id
         sut.saveSession(sessionId, uid)
 
         return uid
