@@ -4,10 +4,11 @@ import {getters} from "./getters";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
+import {Translations} from "../../translations/locales";
 
 export interface StepDescription {
     number: number,
-    text: string
+    text: keyof Translations
 }
 
 export interface StepperState {
@@ -22,27 +23,27 @@ export const initialStepperState = (): StepperState => {
         steps: [
             {
                 number: 1,
-                text: "Upload baseline data"
+                text: "uploadBaseline"
             },
             {
                 number: 2,
-                text: "Upload survey and programme data"
+                text: "uploadSurvey"
             },
             {
                 number: 3,
-                text: "Model options"
+                text: "modelOptions"
             },
             {
                 number: 4,
-                text: "Run model"
+                text: "runModel"
             },
             {
                 number: 5,
-                text: "Review output"
+                text: "reviewOutput"
             },
             {
                 number: 6,
-                text: "Download results"
+                text: "downloadResults"
             }]
     }
 };

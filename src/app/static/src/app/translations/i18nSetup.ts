@@ -1,12 +1,6 @@
 import i18next from "i18next";
-import {locales, Translations} from "../app/translations/locales";
+import {locales, Translations} from "./locales";
 import Vue from "vue";
-import Vuex from "vuex";
-
-// create mock element for app to attach to
-const app = document.createElement('div');
-app.setAttribute('id', 'app');
-document.body.appendChild(app);
 
 i18next.init({
     lng: "en",
@@ -16,9 +10,11 @@ i18next.init({
     },
     fallbackLng: "en"
 });
+//
+// export const i18n = new VueI18Next(i18next);
+//
+// Vue.use(VueI18Next);
 
 Vue.filter("t", (value: keyof Translations) => {
     return i18next.t(value);
 });
-
-Vue.use(Vuex);

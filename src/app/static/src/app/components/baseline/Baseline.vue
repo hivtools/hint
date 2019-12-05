@@ -11,7 +11,7 @@
                                  :existingFileName="pjnz.existingFileName"
                                  accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
                                  name="pjnz">
-                        <label v-if="country"><strong>Country</strong>: {{country}}</label>
+                        <label v-if="country"><strong>{{"country" | t}}</strong>: {{country}}</label>
                     </file-upload>
                     <file-upload label="Shape file"
                                  :valid="shape.valid"

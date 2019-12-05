@@ -2,7 +2,7 @@
     <div class="row">
         <div :class="hasSelectedDataType ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
             <form>
-                <file-upload label="Survey"
+                <file-upload label="survey"
                              :valid="survey.valid"
                              :error="survey.error"
                              :upload="uploadSurvey"
@@ -40,7 +40,7 @@
             <div>
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)">Survey</a>
+                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)">{{"survey" |t}}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)">ART</a>

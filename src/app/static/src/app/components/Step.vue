@@ -4,7 +4,7 @@
                 :disabled="!enabled"
                 v-on:click="$emit('jump', number)">{{number}}
         </button>
-        <div class="text-center mt-3">{{text}}</div>
+        <div class="text-center mt-3">{{text |t}}</div>
     </div>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
     <div class="form-group">
-        <label class="font-weight-bold">{{label}}</label>
+        <label class="font-weight-bold">{{label |t}}</label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
-        <a v-if="showRemove" class="small float-right" href="#" v-on:click="handleFileDelete">remove</a>
+        <a v-if="showRemove" class="small float-right" href="#" v-on:click="handleFileDelete">{{"remove" | t}}</a>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <slot></slot>
         <div class="custom-file">
@@ -16,7 +16,7 @@
                    class="custom-file-label"
                    :disabled="uploading"
                    :class="{'selected': selectedFileName || existingFileName, 'uploading': uploading}">
-                {{selectedFileName || existingFileName || "Choose a file" }}
+                {{(selectedFileName || existingFileName || "chooseFile") |t}}
             </label>
         </div>
         <error-alert v-if="hasError" :error="error"></error-alert>
