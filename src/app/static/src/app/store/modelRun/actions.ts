@@ -4,12 +4,12 @@ import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {ModelRunMutation} from "./mutations";
-import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
 
 export interface ModelRunActions {
     run: (store: ActionContext<ModelRunState, RootState>) => void
     poll: (store: ActionContext<ModelRunState, RootState>, runId: string) => void
     getResult: (store: ActionContext<ModelRunState, RootState>) => void
+    cancelRun: (store: ActionContext<ModelRunState, RootState>) => void
 }
 
 export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
@@ -63,5 +63,12 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
                 });
         }
         commit({type: "Ready", payload: true});
+    },
+
+    async cancelRun({commit, state}) {
+        api<ModelRunMutation, ModelRunMutation>(commit)
+            .post(`/model/cancel/${state.modelRunId}`);
+
+        commit({type: "RunCancelled", payload: null});
     }
 };

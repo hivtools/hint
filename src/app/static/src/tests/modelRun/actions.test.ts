@@ -228,4 +228,19 @@ describe("Model run actions", () => {
             payload: true
         });
     });
+
+    it("cancel run calls endpoint and commits mutation", async() => {
+        const commit = jest.fn();
+        const state = mockModelRunState({modelRunId: "123"});
+
+        await actions.cancelRun({commit, state} as any);
+
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0].url).toBe("/model/cancel/123");
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "RunCancelled",
+            payload: null
+        });
+    });
 });

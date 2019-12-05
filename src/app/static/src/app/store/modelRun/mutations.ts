@@ -11,6 +11,7 @@ export enum ModelRunMutation {
     RunResultFetched = "RunResultFetched",
     RunResultError = "RunResultError",
     RunStatusError = "RunStatusError",
+    RunCancelled = "RunCancelled",
     Ready = "Ready"
 }
 
@@ -61,6 +62,14 @@ export const mutations: MutationTree<ModelRunState> = {
             });
         }
     },
+
+    [ModelRunMutation.RunCancelled](state: ModelRunState) {
+        stopPolling(state);
+        state.modelRunId = "";
+        state.status = {} as ModelStatusResponse;
+        state.errors = [];
+        state.result = null;
+    }
 };
 
 const stopPolling = (state: ModelRunState) => {
