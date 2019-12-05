@@ -234,4 +234,11 @@ describe("user header", () => {
         expect(clearErrorMock.mock.calls.length).toBe(1);
     });
 
+    it("contains bug report link", () => {
+        const wrapper = shallowMount(UserHeader,
+            {
+                store: createStore()
+            });
+        expect(wrapper.find("a[href='https://forms.gle/QxCT1b4ScLqKPg6a7']")).toBeDefined();
+    });
 });

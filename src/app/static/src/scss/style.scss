@@ -6,6 +6,7 @@
 @import "partials/stepper";
 @import "partials/form";
 @import "partials/header";
+@import "partials/tooltips";
 @import "partials/progress";
 
 a {
@@ -77,6 +78,11 @@ a {
   width: 20em;
 }
 
+.large-logo {
+  display: flex;
+  width: 20em;
+}
+
 .reset-password-form {
   width: 30em;
 }
@@ -91,4 +97,19 @@ a.up::after {
 
 a.down::after {
   content: '\25bc';
+}
+
+.logos {
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.logos img {
+  margin: 10px 30px 10px 30px;
+  width: auto;
+  max-width: 230px;
+  max-height: 100px;
 }

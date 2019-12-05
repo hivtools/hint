@@ -60,4 +60,19 @@ class LoginTests
         assertThat(doc.select("#error").count()).isEqualTo(0)
     }
 
+    @Test
+    fun `renders partner logos without error`()
+    {
+        val model = ConcurrentModel()
+        model["username"] = ""
+        model["error"] = ""
+        model["title"] = "test title"
+        val doc = template.jsoupDocFor(model)
+
+        assertThat(doc.select("a[href='https://www.unaids.org'] img").attr("src")).isEqualTo("public/images/unaids_logo.png")
+        assertThat(doc.select("a[href='https://www.imperial.ac.uk'] img").attr("src")).isEqualTo("public/images/imperial_logo.png")
+        assertThat(doc.select("a[href='https://github.com/reside-ic'] img").attr("src")).isEqualTo("public/images/reside_logo.png")
+        assertThat(doc.select("a[href='https://www.washington.edu'] img").attr("src")).isEqualTo("public/images/uw_logo.png")
+    }
+
 }

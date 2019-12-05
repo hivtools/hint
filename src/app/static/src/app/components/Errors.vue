@@ -3,7 +3,7 @@
         <div class="content">
             <div class="alert alert-danger alert-dismissible fade-show" role="alert">
                 <p v-for="(error, index) in errors" :key="index">
-                    {{error.detail ? error.detail : error.error}}
+                    {{error}}
                 </p>
                 <button type="button" class="close" @click="dismissAll">
                     <span aria-hidden="true">&times;</span>
@@ -34,7 +34,7 @@
         errors: Error[]
     }
 
-    interface Computed extends ComputedState{
+    interface Computed extends ComputedState {
         hasErrors: boolean
 
     }
@@ -46,9 +46,14 @@
         },
         computed: {
             ...mapStateProps<ErrorsState, keyof ComputedState>(namespace, {
-                errors: state => state.errors
+                errors: state => {
+                    const messages = state.errors.map(e => e.detail ? e.detail : e.error);
+                    return Array.from(new Set(messages))
+                }
             }),
-            hasErrors: function() { return this.errors.length > 0}
+            hasErrors: function () {
+                return this.errors.length > 0
+            }
         },
         methods: {
             dismissAll: mapMutationByName(namespace, ErrorsMutation.DismissAll)
