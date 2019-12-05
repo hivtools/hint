@@ -1,6 +1,6 @@
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {ModelRunMutation, mutations} from "../../app/store/modelRun/mutations";
-import {mockModelResultResponse, mockModelRunState} from "../mocks";
+import {mockError, mockModelResultResponse, mockModelRunState} from "../mocks";
 import {expectAllMutationsDefined} from "../mutationTestHelper";
 import {ModelStatusResponse} from "../../app/generated";
 
@@ -15,7 +15,7 @@ describe("Model run mutations", () => {
     });
 
     it("sets status and clears errors when started", () => {
-        const testState = mockModelRunState({errors: [1, 2, 3]});
+        const testState = mockModelRunState({errors: [mockError("1"), mockError("2"), mockError("3")]});
         mutations.ModelRunStarted(testState, {payload: {id: "1234"}});
         expect(testState.modelRunId).toBe("1234");
         expect(testState.status).toStrictEqual({id: "1234"});
@@ -31,7 +31,7 @@ describe("Model run mutations", () => {
     });
 
     it("successful run status update clears errors", () => {
-        const testState = mockModelRunState({errors: ["error 1"]});
+        const testState = mockModelRunState({errors: [mockError("error 1")]});
         mutations.RunStatusUpdated(testState, {payload: {id: "1234", done: true, success: true}});
         expect(testState.errors).toStrictEqual([]);
     });
@@ -68,17 +68,27 @@ describe("Model run mutations", () => {
     });
 
     it("run status error adds error and stops polling if max errors exceeded", () => {
+        const error1 = mockError("1");
+        const error2 = mockError("2");
+        const error3 = mockError("3");
+        const error4 =  mockError("4");
         const testState = mockModelRunState({
-            errors: ["1", "2", "3", "4"],
+            errors: [error1, error2, error3, error4],
             statusPollId: 999,
             status: {done: false} as ModelStatusResponse,
             modelRunId: "123"
         });
 
-        mutations.RunStatusError(testState, {payload: "5"});
+        const error5 = mockError("5");
+        mutations.RunStatusError(testState, {payload: error5});
 
-        expect(testState.errors).toStrictEqual(["1", "2", "3", "4", "5",
-            "Unable to retrieve model run status. Please retry the model run, or contact support if the error persists."]);
+        expect(testState.errors).toStrictEqual([
+            error1, error2, error3, error4, error5,
+            {
+                error: "Unable to retrieve model run status. Please retry the model run, or contact support if the error persists.",
+                detail: null
+            }
+         ]);
         expect(testState.statusPollId).toEqual(-1);
         expect(testState.status).toStrictEqual({});
         expect(testState.modelRunId).toStrictEqual("");

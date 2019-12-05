@@ -1,5 +1,5 @@
 import {
-    mockAxios,
+    mockAxios, mockError,
     mockFailure,
     mockSuccess
 } from "../mocks";
@@ -43,6 +43,6 @@ describe("Metadata actions", () => {
         const commit = jest.fn();
         await actions.getPlottingMetadata({commit} as any, "Malawi");
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: "PlottingMetadataError", payload: "Test Error"});
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "PlottingMetadataError", payload: mockError("Test Error")});
     }
 });

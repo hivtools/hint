@@ -1,4 +1,4 @@
-import {mockAxios, mockBaselineState, mockFailure} from "./mocks";
+import {mockAxios, mockBaselineState, mockError, mockFailure} from "./mocks";
 import {ActionContext} from "vuex";
 import {PayloadWithType} from "../app/types";
 
@@ -31,7 +31,7 @@ export function testUploadErrorCommitted(url: string,
         // then a call to set the error
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: expectedErrorType,
-            payload: "Something went wrong"
+            payload: mockError("Something went wrong")
         });
     });
 }

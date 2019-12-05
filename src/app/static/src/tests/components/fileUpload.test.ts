@@ -3,7 +3,7 @@ import {shallowMount, Slots} from '@vue/test-utils';
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import Tick from "../../app/components/Tick.vue";
 import FileUpload from "../../app/components/FileUpload.vue";
-import {mockFile} from "../mocks";
+import {mockError, mockFile} from "../mocks";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
 import Vue from "vue";
@@ -30,7 +30,7 @@ describe("File upload component", () => {
         return shallowMount(FileUpload, {
             store: createStore(),
             propsData: {
-                error: "",
+                error: null,
                 label: "",
                 valid: true,
                 upload: jest.fn(),
@@ -117,7 +117,7 @@ describe("File upload component", () => {
         const removeHandler = jest.fn();
         const wrapper = createSut({
             valid: false,
-            error: "invalid file",
+            error: mockError("invalid file"),
             deleteFile: removeHandler
         });
         const removeLink = wrapper.find("a");
@@ -151,10 +151,9 @@ describe("File upload component", () => {
     });
 
     it("renders error message if error is present", () => {
-        const wrapper = createSut({
-            error: "File upload went wrong"
-        });
-        expect(wrapper.find(ErrorAlert).props().message).toBe("File upload went wrong");
+        const error = mockError("File upload went wrong");
+        const wrapper = createSut({error});
+        expect(wrapper.find(ErrorAlert).props().error).toBe(error);
     });
 
     it("does not render error message if no error is present", () => {
@@ -239,7 +238,7 @@ describe("File upload component", () => {
         const wrapper = createSut({
             upload: uploader,
             valid: false,
-            error: ""
+            error: null
         });
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
@@ -264,7 +263,7 @@ describe("File upload component", () => {
         const wrapper = createSut({
             upload: uploader,
             valid: false,
-            error: ""
+            error: null
         });
 
         expect(wrapper.find(".custom-file-label").classes()).not.toContain("uploading");

@@ -5,7 +5,7 @@ import SurveyAndProgram from "../../../app/components/surveyAndProgram/SurveyAnd
 import FileUpload from "../../../app/components/FileUpload.vue";
 import {SurveyAndProgramDataState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
-import {mockFilteredDataState, mockSurveyAndProgramState} from "../../mocks";
+import {mockError, mockFilteredDataState, mockSurveyAndProgramState} from "../../mocks";
 
 export function testUploadComponent(name: string, position: number) {
 
@@ -64,13 +64,13 @@ export function testUploadComponent(name: string, position: number) {
     let errorState: object;
     switch (name) {
         case "surveys":
-            errorState = {surveyError: "File upload went wrong"};
+            errorState = {surveyError: mockError("File upload went wrong")};
             break;
         case "program":
-            errorState = {programError: "File upload went wrong"};
+            errorState = {programError: mockError("File upload went wrong")};
             break;
         case "anc":
-            errorState = {ancError: "File upload went wrong"};
+            errorState = {ancError: mockError("File upload went wrong")};
             break;
     }
 
@@ -116,7 +116,7 @@ export function testUploadComponent(name: string, position: number) {
     it(`passes ${name} upload error to file upload`, () => {
         const store = createSut(errorState);
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.findAll(FileUpload).at(position).props().error).toBe("File upload went wrong");
+        expect(wrapper.findAll(FileUpload).at(position).props().error).toStrictEqual(mockError("File upload went wrong"));
     });
 
     it(`upload ${name} dispatches surveyAndProgram/upload${name}`, (done) => {
@@ -129,7 +129,6 @@ export function testUploadComponent(name: string, position: number) {
             done();
         });
     });
-
 
     it(`delete ${name} dispatches surveyAndProgram/delete${name}`, (done) => {
         const store = createSut();

@@ -17,7 +17,7 @@
             </div>
         </modal>
         <div class="mt-3">
-            <error-alert v-for="(error, index) in errors" :key="index" :message="error"></error-alert>
+            <error-alert v-for="(error, index) in errors" :key="index" :error="error"></error-alert>
         </div>
     </div>
 </template>

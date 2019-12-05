@@ -16,7 +16,7 @@
                     </div>
                 </form>
                 <div v-if="hasError">
-                    <error-alert :message="error"></error-alert>
+                    <error-alert :error="error"></error-alert>
                     <div id="request-new-link">
                         This password reset link is not valid. It may have expired or already been used.
                         Please request another link <a href="/password/forgot-password">here</a>.
@@ -46,7 +46,7 @@
         },
         computed: mapState<PasswordState>( {
             error: state => state.resetPasswordError,
-            hasError:  state => state.resetPasswordError && state.resetPasswordError.length > 0,
+            hasError:  state => !!state.resetPasswordError,
             passwordWasReset: state => state.passwordWasReset
         }),
         components: {

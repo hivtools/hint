@@ -91,6 +91,14 @@ a {
   overflow: hidden;
 }
 
+a.up::after {
+  content: '\25b2';
+}
+
+a.down::after {
+  content: '\25bc';
+}
+
 .logos {
   margin: 0 auto;
   display: flex;

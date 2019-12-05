@@ -1,6 +1,6 @@
 import {
     mockAxios,
-    mockBaselineState,
+    mockBaselineState, mockError,
     mockFailure,
     mockPopulationResponse,
     mockShapeResponse,
@@ -60,7 +60,7 @@ describe("Baseline actions", () => {
             .reply(400, mockFailure("test error"));
 
         const commit = jest.fn();
-        const state = mockBaselineState({pjnzError: "test error"});
+        const state = mockBaselineState({pjnzError: mockError("test error")});
         const dispatch = jest.fn();
         await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
 
@@ -194,7 +194,7 @@ describe("Baseline actions", () => {
         //then commits response from api
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: BaselineMutation.BaselineError,
-            payload: "Baseline is inconsistent"
+            payload: mockError("Baseline is inconsistent")
         });
     });
 

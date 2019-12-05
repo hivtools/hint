@@ -2,41 +2,41 @@ import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {ReadyState, RootState} from "../../root";
-import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse} from "../../generated";
+import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse, Error} from "../../generated";
 import {Dict} from "../../types";
 
 export interface BaselineState extends ReadyState {
-    pjnzError: string
+    pjnzError: Error | null
     country: string
     iso3: string
     pjnz: PjnzResponse | null
     shape: ShapeResponse | null
     regionFilters: NestedFilterOption[]
     flattenedRegionFilters: Dict<NestedFilterOption>
-    shapeError: string
+    shapeError: Error | null
     population: PopulationResponse | null,
-    populationError: string,
+    populationError: Error | null,
     validating: boolean,
     validatedConsistent: boolean,
-    baselineError: string
+    baselineError: Error | null
 }
 
 export const initialBaselineState = (): BaselineState => {
     return {
         country: "",
         iso3: "",
-        pjnzError: "",
+        pjnzError: null,
         pjnz: null,
         shape: null,
         regionFilters: [],
         flattenedRegionFilters: {},
-        shapeError: "",
+        shapeError: null,
         population: null,
-        populationError: "",
+        populationError: null,
         ready: false,
         validating: false,
         validatedConsistent: false,
-        baselineError: ""
+        baselineError: null
     }
 };
 

@@ -1,7 +1,7 @@
 import {MutationTree} from 'vuex';
 import {SurveyAndProgramDataState} from "./surveyAndProgram";
 import {PayloadWithType} from "../../types";
-import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
+import {AncResponse, ProgrammeResponse, SurveyResponse, Error} from "../../generated";
 import {ReadyState} from "../../root";
 
 export enum SurveyAndProgramMutation {
@@ -23,28 +23,28 @@ export const SurveyAndProgramUpdates = [
 export const mutations: MutationTree<SurveyAndProgramDataState> = {
     [SurveyAndProgramMutation.SurveyUpdated](state: SurveyAndProgramDataState, action: PayloadWithType<SurveyResponse>) {
         state.survey = action.payload;
-        state.surveyError = "";
+        state.surveyError = null;
     },
 
-    [SurveyAndProgramMutation.SurveyError](state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
+    [SurveyAndProgramMutation.SurveyError](state: SurveyAndProgramDataState, action: PayloadWithType<Error>) {
         state.surveyError = action.payload;
     },
 
     [SurveyAndProgramMutation.ProgramUpdated](state: SurveyAndProgramDataState, action: PayloadWithType<ProgrammeResponse>) {
         state.program = action.payload;
-        state.programError = "";
+        state.programError = null;
     },
 
-    [SurveyAndProgramMutation.ProgramError](state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
+    [SurveyAndProgramMutation.ProgramError](state: SurveyAndProgramDataState, action: PayloadWithType<Error>) {
         state.programError = action.payload;
     },
 
     [SurveyAndProgramMutation.ANCUpdated](state: SurveyAndProgramDataState, action: PayloadWithType<AncResponse>) {
         state.anc = action.payload;
-        state.ancError = "";
+        state.ancError = null;
     },
 
-    [SurveyAndProgramMutation.ANCError](state: SurveyAndProgramDataState, action: PayloadWithType<string>) {
+    [SurveyAndProgramMutation.ANCError](state: SurveyAndProgramDataState, action: PayloadWithType<Error>) {
         state.ancError = action.payload;
     },
 

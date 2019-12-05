@@ -18,6 +18,7 @@
     import {ErrorsState} from "../store/errors/errors";
     import {mapMutationByName, mapStateProps} from "../utils";
     import {ErrorsMutation} from "../store/errors/mutations";
+    import {Error} from "../generated"
 
     const namespace = "errors";
 
@@ -30,10 +31,10 @@
     }
 
     interface ComputedState {
-        errors: string[]
+        errors: Error[]
     }
 
-    interface Computed extends ComputedState{
+    interface Computed extends ComputedState {
         hasErrors: boolean
 
     }
@@ -45,9 +46,14 @@
         },
         computed: {
             ...mapStateProps<ErrorsState, keyof ComputedState>(namespace, {
-                errors: state => Array.from(new Set(state.errors))
+                errors: state => {
+                    const messages = state.errors.map(e => e.detail ? e.detail : e.error);
+                    return Array.from(new Set(messages))
+                }
             }),
-            hasErrors: function() { return this.errors.length > 0}
+            hasErrors: function () {
+                return this.errors.length > 0
+            }
         },
         methods: {
             dismissAll: mapMutationByName(namespace, ErrorsMutation.DismissAll)

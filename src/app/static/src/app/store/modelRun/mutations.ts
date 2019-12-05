@@ -1,7 +1,7 @@
 import {MutationTree} from "vuex";
 import {maxPollErrors, ModelRunState} from "./modelRun";
 import {PayloadWithType} from "../../types";
-import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
+import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse, Error} from "../../generated";
 
 export enum ModelRunMutation {
     ModelRunStarted = "ModelRunStarted",
@@ -37,7 +37,7 @@ export const mutations: MutationTree<ModelRunState> = {
         state.result = action.payload;
     },
 
-    [ModelRunMutation.RunResultError](state: ModelRunState, action: PayloadWithType<string>) {
+    [ModelRunMutation.RunResultError](state: ModelRunState, action: PayloadWithType<Error>) {
         state.errors.push(action.payload);
     },
 
@@ -45,17 +45,20 @@ export const mutations: MutationTree<ModelRunState> = {
         state.ready = true;
     },
 
-    [ModelRunMutation.ModelRunError](state: ModelRunState, action: PayloadWithType<string>) {
+    [ModelRunMutation.ModelRunError](state: ModelRunState, action: PayloadWithType<Error>) {
         state.errors.push(action.payload);
     },
 
-    [ModelRunMutation.RunStatusError](state: ModelRunState, action: PayloadWithType<string>) {
+    [ModelRunMutation.RunStatusError](state: ModelRunState, action: PayloadWithType<Error>) {
         state.errors.push(action.payload);
         if (state.errors.length >= maxPollErrors) {
             stopPolling(state);
             state.status = {} as ModelStatusResponse;
             state.modelRunId = "";
-            state.errors.push("Unable to retrieve model run status. Please retry the model run, or contact support if the error persists.");
+            state.errors.push({
+                error: "Unable to retrieve model run status. Please retry the model run, or contact support if the error persists.",
+                detail: null
+            });
         }
     },
 };

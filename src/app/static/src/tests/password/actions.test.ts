@@ -1,4 +1,4 @@
-import {mockAxios, mockFailure, mockSuccess} from "../mocks";
+import {mockAxios, mockError, mockFailure, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/password/actions";
 
 describe("Password actions", () => {
@@ -38,7 +38,7 @@ describe("Password actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "RequestResetLinkError",
-            payload: "test error"
+            payload: mockError("test error")
         });
     });
 
@@ -66,7 +66,7 @@ describe("Password actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ResetPasswordError",
-            payload: "test error"
+            payload: mockError("test error")
         });
     });
 

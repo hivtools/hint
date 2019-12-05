@@ -2,7 +2,7 @@ import {createLocalVue, mount, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {
-    mockAxios,
+    mockAxios, mockError,
     mockModelOptionsState,
     mockModelResultResponse,
     mockModelRunState,
@@ -17,6 +17,7 @@ import ModelRun from "../../../app/components/modelRun/ModelRun.vue";
 import Modal from "../../../app/components/Modal.vue";
 import Tick from "../../../app/components/Tick.vue";
 import {ModelStatusResponse} from "../../../app/generated";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
 
@@ -251,19 +252,22 @@ describe("Model run component", () => {
     });
 
     it("does not display message or tick if run was successful but error fetching result", () => {
-        const store = createStore({status: {success: true} as ModelStatusResponse, errors: ["fetch error"]});
+        const store = createStore({status: {success: true} as ModelStatusResponse, errors: [mockError("fetch error")]});
         const wrapper = shallowMount(ModelRun, {store, localVue});
         expect(wrapper.findAll("#model-run-complete").length).toBe(0);
         expect(wrapper.findAll(Tick).length).toBe(0);
     });
 
     it("displays error alerts for errors", () => {
-        const store = createStore({errors: ["first error", "second error"]});
+        const firstError = mockError("first error");
+        const secondError =  mockError("second error");
+        const store = createStore({errors: [firstError, secondError]});
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        const errorAlerts = wrapper.findAll("error-alert-stub");
+
+        const errorAlerts = wrapper.findAll(ErrorAlert);
         expect(errorAlerts.length).toBe(2);
-        expect(errorAlerts.at(0).attributes("message")).toEqual("first error");
-        expect(errorAlerts.at(1).attributes("message")).toEqual("second error");
+        expect(errorAlerts.at(0).props().error).toBe(firstError);
+        expect(errorAlerts.at(1).props().error).toBe(secondError);
     });
 
     it("displays no error alerts if no errors", () => {

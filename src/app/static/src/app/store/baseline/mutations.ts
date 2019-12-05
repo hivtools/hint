@@ -5,7 +5,8 @@ import {
     PjnzResponse,
     PopulationResponse,
     ShapeResponse,
-    ValidateBaselineResponse
+    ValidateBaselineResponse,
+    Error
 } from "../../generated";
 import {PayloadWithType} from "../../types";
 import {flattenOptions} from "../filteredData/utils";
@@ -32,7 +33,7 @@ export const BaselineUpdates = [
 
 export const mutations: MutationTree<BaselineState> = {
 
-    [BaselineMutation.PJNZUploadError](state: BaselineState, action: PayloadWithType<string>) {
+    [BaselineMutation.PJNZUploadError](state: BaselineState, action: PayloadWithType<Error>) {
         state.pjnzError = action.payload;
     },
 
@@ -47,7 +48,7 @@ export const mutations: MutationTree<BaselineState> = {
             state.iso3 = "";
             state.pjnz = null;
         }
-        state.pjnzError = "";
+        state.pjnzError = null;
     },
 
     [BaselineMutation.ShapeUpdated](state: BaselineState, action: PayloadWithType<ShapeResponse>) {
@@ -56,36 +57,36 @@ export const mutations: MutationTree<BaselineState> = {
             state.regionFilters = action.payload.filters.regions.children as NestedFilterOption[];
             state.flattenedRegionFilters = Object.freeze(flattenOptions(state.regionFilters));
         }
-        state.shapeError = "";
+        state.shapeError = null;
     },
 
-    [BaselineMutation.ShapeUploadError](state: BaselineState, action: PayloadWithType<string>) {
+    [BaselineMutation.ShapeUploadError](state: BaselineState, action: PayloadWithType<Error>) {
         state.shapeError = action.payload;
     },
 
     [BaselineMutation.PopulationUpdated](state: BaselineState, action: PayloadWithType<PopulationResponse>) {
         state.population = action.payload;
-        state.populationError = "";
+        state.populationError = null;
     },
 
-    [BaselineMutation.PopulationUploadError](state: BaselineState, action: PayloadWithType<string>) {
+    [BaselineMutation.PopulationUploadError](state: BaselineState, action: PayloadWithType<Error>) {
         state.populationError = action.payload;
     },
 
     [BaselineMutation.Validating](state: BaselineState) {
         state.validating = true;
         state.validatedConsistent = false;
-        state.baselineError = "";
+        state.baselineError = null;
     },
 
     [BaselineMutation.Validated](state: BaselineState, action: PayloadWithType<ValidateBaselineResponse>) {
         state.validating = false;
 
         state.validatedConsistent = action.payload.consistent;
-        state.baselineError = "";
+        state.baselineError = null;
     },
 
-    [BaselineMutation.BaselineError](state: BaselineState, action: PayloadWithType<string>) {
+    [BaselineMutation.BaselineError](state: BaselineState, action: PayloadWithType<Error>) {
         state.validating = false;
         state.validatedConsistent = false;
         state.baselineError = action.payload;
