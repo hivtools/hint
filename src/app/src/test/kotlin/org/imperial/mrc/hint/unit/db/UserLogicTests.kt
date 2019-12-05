@@ -15,7 +15,7 @@ import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
 import java.util.*
 
-class UserRepositoryTests {
+class UserLogicTests {
 
     companion object {
         const val TEST_EMAIL = "test@test.com"

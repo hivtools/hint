@@ -36,7 +36,7 @@ fun main(args: Array<String>) {
     val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
 
     try {
-        val userCLI = UserCLI(getUserRepository(dataSource))
+        val userCLI = UserCLI(getUserLogic(dataSource))
         val result = when {
             addUser -> userCLI.addUser(options)
             removeUser -> userCLI.removeUser(options)
@@ -86,7 +86,7 @@ class UserCLI(private val userLogic: UserLogic) {
     }
 }
 
-fun getUserRepository(dataSource: DataSource): UserLogic {
+fun getUserLogic(dataSource: DataSource): UserLogic {
 
     val profileService = HintDbProfileService(dataSource, SecurePasswordEncoder())
 

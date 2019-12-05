@@ -20,8 +20,8 @@ class AppTests {
         const val TEST_EMAIL = "test@test.com"
 
         val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
-        val userRepository = getUserRepository(dataSource)
-        val sut = UserCLI(userRepository)
+        val userLogic = getUserLogic(dataSource)
+        val sut = UserCLI(userLogic)
 
         @AfterAll
         @JvmStatic
