@@ -36,4 +36,10 @@ class ModelRunController(val fileManager: FileManager, val apiClient: APIClient)
         val allFiles = fileManager.getFiles(FileType.Shape, FileType.Survey, FileType.Programme, FileType.ANC)
         return apiClient.getModelRunOptions(allFiles)
     }
+
+    @PostMapping("/cancel/{id}")
+    @ResponseBody
+    fun cancel(@PathVariable("id") id: String): ResponseEntity<String> {
+        return apiClient.cancelModelRun(id)
+    }
 }
