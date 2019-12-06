@@ -279,17 +279,6 @@ describe("ApiService", () => {
         expect(warnings[1][0]).toBe("No success handler registered for request /baseline/.");
     });
 
-    it ("posts request", async () => {
-        mockAxios.onPost(`/test/`)
-            .reply(200, mockSuccess(true));
-
-        await api(jest.fn())
-            .post("/test/");
-
-        expect(mockAxios.history.post.length).toBe(1);
-        expect(mockAxios.history.post[0].url).toBe("/test/");
-    });
-
     async function expectCouldNotParseAPIResponseError() {
         const commit = jest.fn();
         await api(commit)

@@ -19,7 +19,6 @@ export interface API<S, E> {
     postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>>
     get<T>(url: string): Promise<void | ResponseWithType<T>>
     delete(url: string): Promise<void | true>
-    post(url: string): Promise<void | true>
 }
 
 export class APIService<S extends string, E extends string> implements API<S, E> {
@@ -143,22 +142,17 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this._handleAxiosResponse(axios.get(fullUrl));
     }
 
-    async postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>> {
+    async postAndReturn<T>(url: string, data?: any): Promise<void | ResponseWithType<T>> {
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
 
         // this allows us to pass data of type FormData in both the browser and
         // in node for testing, using the "form-data" package in the latter case
-        const config = typeof data.getHeaders == "function" ? {
+        const config = data && typeof data.getHeaders == "function" ? {
             headers: data.getHeaders()
         } : {};
 
         return this._handleAxiosResponse(axios.post(fullUrl, data, config));
-    }
-
-    async post(url: string) {
-        const fullUrl = this._buildFullUrl(url);
-        return this._handleAxiosResponse(axios.post(fullUrl));
     }
 
     async delete(url: string) {
