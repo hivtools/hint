@@ -4,7 +4,7 @@ import Vuex from "vuex";
 import {
     mockAncResponse,
     mockBaselineState, mockError, mockFile,
-    mockLoadState,
+    mockLoadState, mockMetadataState,
     mockModelRunState,
     mockPJNZResponse,
     mockPopulationResponse,
@@ -48,6 +48,10 @@ describe("user header", () => {
         load: {
             namespaced: true,
             state: mockLoadState()
+        },
+        metadata: {
+            namespaced: true,
+            state: mockMetadataState()
         }
     };
 
@@ -110,7 +114,11 @@ describe("user header", () => {
         expect((hiddenLink.attributes("download") as string).match(re)).toBeDefined();
 
         const expectedJson = JSON.stringify({
-            state: {modelRun: mockModelRunState()}, files: {
+            state: {
+                modelRun: mockModelRunState(),
+                metadata: mockMetadataState()
+            },
+            files: {
                 pjnz: {hash: "2csv", filename: "2.csv"},
                 population: {hash: "1csv", filename: "1.csv"},
                 shape: {hash: "3csv", filename: "3.csv"},
