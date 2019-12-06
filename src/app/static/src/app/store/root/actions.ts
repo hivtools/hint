@@ -2,6 +2,7 @@ import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
 import {StepDescription} from "../stepper/stepper";
 import i18next from 'i18next';
+import {RootMutation} from "./mutations";
 
 export interface RootActions {
     validate: (store: ActionContext<RootState, RootState>) => void;
@@ -27,7 +28,8 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         }
     },
 
-    async changeLanguage(store, lang) {
+    async changeLanguage({commit}, lang) {
         await i18next.changeLanguage(lang);
+        commit({type: RootMutation.ChangeLanguage, payload: lang})
     }
 };

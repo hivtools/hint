@@ -14,6 +14,7 @@ import {SurveyAndProgramDataState} from "../../../app/store/surveyAndProgram/sur
 import {DataType, FilteredDataState} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
 import {mutations} from "../../../app/store/filteredData/mutations";
+import Translated from "../../../app/components/Translated.vue";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
@@ -99,7 +100,7 @@ describe("Survey and programme component", () => {
     });
 
     it("survey tab is enabled when survey data is present", () => {
-        expectTabEnabled({survey: mockSurveyResponse()}, "Survey", 0);
+        expectTabEnabled({survey: mockSurveyResponse()}, "survey", 0);
     });
 
     it("programme (ART) tab is enabled when programme data is present", () => {
@@ -114,7 +115,7 @@ describe("Survey and programme component", () => {
         const store = createStore(state);
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         expect(wrapper.findAll(".nav-link").at(index).classes()).not.toContain("disabled");
-        expect(wrapper.findAll(".nav-link").at(index).text()).toBe(name);
+        expect(wrapper.findAll(".nav-link").at(index).find(Translated).props("value")).toBe(name);
         expect(wrapper.findAll(".nav-link.disabled").length).toBe(2);
     }
 
@@ -129,19 +130,19 @@ describe("Survey and programme component", () => {
                 selectedDataType: DataType.Program
             });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.find(".nav-link.active").text()).toBe("ART");
+        expect(wrapper.find(".nav-link.active").find(Translated).props("value")).toBe("ART");
 
         wrapper.findAll(".nav-link").at(2).trigger("click");
         Vue.nextTick();
-        expect(wrapper.find(".nav-link.active").text()).toBe("ANC");
+        expect(wrapper.find(".nav-link.active").find(Translated).props("value")).toBe("ANC");
 
         wrapper.findAll(".nav-link").at(0).trigger("click");
         Vue.nextTick();
-        expect(wrapper.find(".nav-link.active").text()).toBe("Survey");
+        expect(wrapper.find(".nav-link.active").find(Translated).props("value")).toBe("survey");
 
         wrapper.findAll(".nav-link").at(1).trigger("click");
         Vue.nextTick();
-        expect(wrapper.find(".nav-link.active").text()).toBe("ART");
+        expect(wrapper.find(".nav-link.active").find(Translated).props("value")).toBe("ART");
 
 
         expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
@@ -162,7 +163,7 @@ describe("Survey and programme component", () => {
         const vm = (wrapper as any).vm;
         expect(vm.selectedDataType).toBe(DataType.Survey);
 
-        expect(wrapper.find(".nav-link.active").text()).toBe("Survey");
+        expect(wrapper.find(".nav-link.active").find(Translated).props("value")).toBe("survey");
 
         expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);

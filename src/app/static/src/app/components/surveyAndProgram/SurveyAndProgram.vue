@@ -40,13 +40,19 @@
             <div>
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)">{{"survey" |t}}</a>
+                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)">
+                            <translated value="survey"></translated>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)">ART</a>
+                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)">
+                            <translated value="ART"></translated>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)">ANC</a>
+                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)">
+                            <translated value="ANC"></translated>
+                        </a>
                     </li>
                 </ul>
                 <choropleth></choropleth>
@@ -65,6 +71,7 @@
     import {PartialFileUploadProps} from "../../types";
     import {RootState} from "../../root";
     import {DataType} from "../../store/filteredData/filteredData";
+    import Translated from "../Translated.vue";
 
     const namespace: string = 'surveyAndProgram';
 
@@ -122,7 +129,8 @@
         components: {
             FileUpload,
             Choropleth,
-            ChoroplethFilters
+            ChoroplethFilters,
+            Translated
         }
     })
 </script>

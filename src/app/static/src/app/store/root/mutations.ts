@@ -5,13 +5,16 @@ import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
 import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
-import {data} from "../../../tests/components/plots/barchart/utils.test";
+import {Language} from "../../translations/locales";
+import {PayloadWithType} from "../../types";
+import {ModelSubmitResponse} from "../../generated";
 
 export enum RootMutation {
     Reset = "Reset",
     ResetFilteredDataSelections = "ResetFilteredDataSelections",
     ResetOptions = "ResetOptions",
-    ResetOutputs = "ResetOutputs"
+    ResetOutputs = "ResetOutputs",
+    ChangeLanguage = "ChangeLanguage"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -61,6 +64,11 @@ export const mutations: MutationTree<RootState> = {
         state.modelRun.ready = true;
         Object.assign(state.modelOutput, initialModelOutputState());
         Object.assign(state.plottingSelections, initialPlottingSelectionsState());
+    },
+
+    [RootMutation.ChangeLanguage](state: RootState, action: PayloadWithType<Language>) {
+        console.log(action.payload);
+        state.lang = action.payload
     }
 
 };

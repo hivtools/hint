@@ -1,8 +1,12 @@
 <template>
     <div class="form-group">
-        <label class="font-weight-bold">{{label |t}}</label>
+        <label class="font-weight-bold">
+            <translated :value="label"></translated>
+        </label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
-        <a v-if="showRemove" class="small float-right" href="#" v-on:click="handleFileDelete">{{"remove" | t}}</a>
+        <a v-if="showRemove" class="small float-right" href="#" v-on:click="handleFileDelete">
+            <translated value="remove"></translated>
+        </a>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <slot></slot>
         <div class="custom-file">
@@ -16,7 +20,10 @@
                    class="custom-file-label"
                    :disabled="uploading"
                    :class="{'selected': selectedFileName || existingFileName, 'uploading': uploading}">
-                {{(selectedFileName || existingFileName || "chooseFile") |t}}
+                <span v-if="selectedFileName || existingFileName">
+                    {{selectedFileName || existingFileName}}
+                </span>
+                <translated v-if="!selectedFileName && !existingFileName" value="chooseFile"></translated>
             </label>
         </div>
         <error-alert v-if="hasError" :error="error"></error-alert>
@@ -38,6 +45,7 @@
     import {mapGetterByName} from "../utils";
     import {Error} from "../generated";
     import ResetConfirmation from "./ResetConfirmation.vue";
+    import Translated from "./Translated.vue";
 
     interface Data {
         selectedFile: File | null
@@ -156,7 +164,8 @@
             Tick,
             LoadingSpinner,
             ErrorAlert,
-            ResetConfirmation
+            ResetConfirmation,
+            Translated
         }
     });
 

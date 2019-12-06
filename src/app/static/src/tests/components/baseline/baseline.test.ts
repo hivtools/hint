@@ -1,5 +1,4 @@
-import {createLocalVue, shallowMount} from '@vue/test-utils';
-import Vue from 'vue';
+import {createLocalVue, mount, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {mockBaselineState, mockError, mockMetadataState, mockPopulationResponse, mockShapeResponse} from "../../mocks";
@@ -9,6 +8,7 @@ import FileUpload from "../../../app/components/FileUpload.vue";
 import {MetadataState} from "../../../app/store/metadata/metadata";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
+import {emptyState} from "../../../app/root";
 
 const localVue = createLocalVue();
 
@@ -32,6 +32,7 @@ describe("Baseline upload component", () => {
         };
 
         return new Vuex.Store({
+            state: emptyState(),
             modules: {
                 baseline: {
                     namespaced: true,
@@ -42,6 +43,12 @@ describe("Baseline upload component", () => {
                 metadata: {
                     namespaced: true,
                     state: mockMetadataState(metadataState)
+                },
+                stepper: {
+                    namespaced: true,
+                    getters: {
+                        laterCompleteSteps: () => []
+                    }
                 }
             }
         })
@@ -68,8 +75,8 @@ describe("Baseline upload component", () => {
 
     it("country name is passed to file upload component if country is present", () => {
         const store = createSut({country: "Malawi"});
-        const wrapper = shallowMount(Baseline, {store, localVue});
-        expect(wrapper.findAll(FileUpload).at(0).find("label").text()).toBe("Country: Malawi");
+        const wrapper = mount(Baseline, {store, localVue});
+        expect(wrapper.findAll(FileUpload).at(0).findAll("label").at(1).text()).toBe("Country: Malawi");
     });
 
     it("passes pjnz error to file upload", () => {
@@ -89,7 +96,7 @@ describe("Baseline upload component", () => {
     it("shows pjnz error, not metadata error, if both are present", () => {
         const pjnzError = mockError("File upload went wrong");
         const plottingMetadataError = mockError("Metadata went wrong");
-        const store = createSut({pjnzError},{plottingMetadataError});
+        const store = createSut({pjnzError}, {plottingMetadataError});
         const wrapper = shallowMount(Baseline, {store, localVue});
         expect(wrapper.findAll(FileUpload).at(0).props().error).toBe(pjnzError);
     });

@@ -2,13 +2,14 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import Step from "../../app/components/Step.vue";
+import Translated from "../../app/components/Translated.vue";
 
 const localVue = createLocalVue();
 Vue.use(Vuex);
 
 describe("Step component", () => {
 
-    it("renders step", () => {
+    it("renders translated step name", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
@@ -16,7 +17,7 @@ describe("Step component", () => {
             }
         });
 
-        expect(wrapper.find("div").text()).toBe("Test text");
+        expect(wrapper.find(Translated).props("value")).toBe("Test text");
     });
 
     it("renders enabled step", () => {

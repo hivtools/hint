@@ -307,3 +307,68 @@ export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResp
         ...props
     }
 };
+
+export const fakeFeatures = [
+    {
+        "type": "Feature",
+        "properties": {"iso3": "MWI", "area_id": "MWI_3_1", "area_level": 3},
+        "geometry": {
+            "type": "MultiPolygon",
+            "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {"iso3": "MWI", "area_id": "MWI_4_1", "area_level": 4},
+        "geometry": {
+            "type": "MultiPolygon",
+            "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {"iso3": "MWI", "area_id": "MWI_4_2", "area_level": 4},
+        "geometry": {
+            "type": "MultiPolygon",
+            "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
+        }
+    }
+];
+
+export const testRegionIndicators = {
+    "MWI_4_1": {
+        prev: {value: 0.1, color: "rgb(1,1,1)"},
+        art: {value: 0.08, color: "rgb(2,2,2)"}
+    },
+    "MWI_1_2": {
+        prev: {value: 0.05, color: "rgb(3,3,3)"},
+        art: {value: 0.06, color: "rgb(4,4,4)"}
+    },
+    "MWI_3_1": {
+        prev: {value: 0.07, color: "rgb(5,5,5)"},
+        art: {value: 0.2, color: "rgb(6,6,6)"}
+    }
+};
+
+export const testFilteredDataGetters = {
+    regionIndicators: () => {
+        return testRegionIndicators;
+    }
+};
+
+export const testMetadataGetters = {
+    choroplethIndicators: () => {
+        return ["prev", "art"];
+    },
+    choroplethIndicatorsMetadata: () => {
+        return [
+            {indicator: "prev", name: "Prevalence", min: 0, max: 0.5},
+            {indicator: "art", name: "ART Coverage", min: 0.1, max: 1}
+        ];
+    }
+};
+
+export const testMetadataModule = {
+    namespaced: true,
+    getters: testMetadataGetters
+};

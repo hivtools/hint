@@ -11,7 +11,11 @@
                                  :existingFileName="pjnz.existingFileName"
                                  accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
                                  name="pjnz">
-                        <label v-if="country"><strong>{{"country" | t}}</strong>: {{country}}</label>
+                        <label v-if="country">
+                            <strong>
+                                <translated value="country"></translated>
+                            </strong>: {{country}}
+                        </label>
                     </file-upload>
                     <file-upload label="Shape file"
                                  :valid="shape.valid"
@@ -53,6 +57,7 @@
     import {MetadataState} from "../../store/metadata/metadata";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
+    import Translated from "../Translated.vue";
 
     const namespace: string = 'baseline';
 
@@ -97,7 +102,8 @@
         components: {
             FileUpload,
             ErrorAlert,
-            LoadingSpinner
+            LoadingSpinner,
+            Translated
         }
     })
 </script>

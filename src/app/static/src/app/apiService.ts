@@ -142,7 +142,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this._handleAxiosResponse(axios.get(fullUrl));
     }
 
-    async postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>> {
+    async postAndReturn<T>(url: string, data?: any): Promise<void | ResponseWithType<T>> {
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
 

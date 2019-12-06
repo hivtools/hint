@@ -24,7 +24,19 @@
                     </div>
                 </div>
                 <a href="https://forms.gle/QxCT1b4ScLqKPg6a7" target="_blank" class="pr-2 mr-2 border-right">Report a bug</a>
-                <a href="/logout">Logout</a>
+                <a href="/logout" class="pr-2 mr-2 border-right">Logout</a>
+                <div class="dropdown">
+                    <a href="#"
+                       class="dropdown-toggle">
+                        EN
+                    </a>
+                    <div class="dropdown-menu show">
+                        <a class="dropdown-item" href="#" @click="() => changeLanguage('en')">EN
+                        </a>
+                        <a class="dropdown-item" href="#" @click="() => changeLanguage('fr')">FR
+                        </a>
+                    </div>
+                </div>
             </div>
         </nav>
         <modal :open="hasError">
@@ -67,6 +79,7 @@
         loadAction: (file: File) => void;
         close: () => void;
         clearLoadError: () => void
+        changeLanguage: (lang: string) => void
     }
 
     interface LoadComputed {
@@ -163,7 +176,8 @@
                     const file = input.files[0];
                     this.loadAction(file);
                 }
-            }
+            },
+            changeLanguage: mapActionByName<File>(null, "changeLanguage"),
         },
         components: {
             UploadIcon,

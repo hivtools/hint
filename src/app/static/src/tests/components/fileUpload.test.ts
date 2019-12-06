@@ -7,6 +7,8 @@ import {mockError, mockFile} from "../mocks";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
 import Vue from "vue";
+import Translated from "../../app/components/Translated.vue";
+import i18next from "i18next";
 
 Vue.use(Vuex);
 
@@ -49,7 +51,7 @@ describe("File upload component", () => {
         const wrapper = createSut({
             label: "Some title"
         });
-        expect(wrapper.find("label").text()).toBe("Some title");
+        expect(wrapper.find("label").find(Translated).props("value")).toBe("Some title");
     });
 
     it("renders input", () => {
@@ -108,7 +110,7 @@ describe("File upload component", () => {
             deleteFile: removeHandler
         });
         const removeLink = wrapper.find("a");
-        expect(removeLink.text()).toBe("remove");
+        expect(removeLink.find(Translated).props("value")).toBe("remove");
         removeLink.trigger("click");
         expect(removeHandler.mock.calls.length).toBe(1);
     });
@@ -121,7 +123,7 @@ describe("File upload component", () => {
             deleteFile: removeHandler
         });
         const removeLink = wrapper.find("a");
-        expect(removeLink.text()).toBe("remove");
+        expect(removeLink.find(Translated).props("value")).toBe("remove");
         removeLink.trigger("click");
         expect(removeHandler.mock.calls.length).toBe(1);
     });
@@ -142,9 +144,9 @@ describe("File upload component", () => {
 
         wrapper.find("input").trigger("change");
         const removeLink = wrapper.find("a");
-        expect(removeLink.text()).toBe("remove");
+        expect(removeLink.find(Translated).props("value")).toBe("remove");
         removeLink.trigger("click");
-        const fileName = wrapper.find(".custom-file label").text();
+        const fileName = i18next.t(wrapper.find(".custom-file label").find(Translated).props("value"));
         expect(fileName).toBe("Choose a file");
         expect(wrapper.vm.$data.selectedFile).toBe(null);
         expect((wrapper.vm.$refs["pjnz"] as HTMLInputElement).value).toBe("");

@@ -4,7 +4,6 @@ import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {ModelRunMutation} from "./mutations";
-import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
 
 export interface ModelRunActions {
     run: (store: ActionContext<ModelRunState, RootState>) => void

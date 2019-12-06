@@ -17,8 +17,4 @@ i18next.init({
     fallbackLng: "en"
 });
 
-Vue.filter("t", (value: keyof Translations) => {
-    return i18next.t(value);
-});
-
 Vue.use(Vuex);

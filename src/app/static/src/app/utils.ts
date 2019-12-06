@@ -9,8 +9,8 @@ export const mapStateProp = <S, T>(namespace: string, func: (s: S) => T): Comput
     return (mapState<S>(namespace, {prop: (state) => func(state)}) as Dict<ComputedWithType<T>>)["prop"]
 };
 
-export const mapStatePropByName = <T>(namespace: string, name: string): ComputedWithType<T> => {
-    return mapState(namespace, [name])[name]
+export const mapStatePropByName = <T>(namespace: string | null, name: string): ComputedWithType<T> => {
+    return (namespace && mapState(namespace, [name])[name]) || mapState([name])[name]
 };
 
 export const mapStateProps = <S, K extends string>(namespace: string,
@@ -28,8 +28,8 @@ export const mapGettersByNames = <K extends string>(namespace: string, names: st
     return mapGetters(namespace, names) as R
 };
 
-export const mapActionByName = <T>(namespace: string, name: string): ActionMethod => {
-    return mapActions(namespace, [name])[name]
+export const mapActionByName = <T>(namespace: string | null, name: string): ActionMethod => {
+    return (!!namespace && mapActions(namespace, [name])[name]) || mapActions([name])[name]
 };
 
 export const mapActionsByNames = <K extends string>(namespace: string, names: string[]) => {
@@ -42,8 +42,8 @@ export const mapMutationsByNames = <K extends string>(namespace: string, names: 
     return mapMutations(namespace, names) as R
 };
 
-export const mapMutationByName = <T>(namespace: string, name: string): MutationMethod => {
-    return mapMutations(namespace, [name])[name]
+export const mapMutationByName = <T>(namespace: string | null, name: string): MutationMethod => {
+    return (namespace && mapMutations(namespace, [name])[name]) || mapMutations([name])[name]
 };
 
 export const addCheckSum = (data: string): string => {

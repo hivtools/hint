@@ -21,17 +21,17 @@
                 <a href="#" id="back"
                    v-on:click="back"
                    class="text-uppercase font-weight-bold"
-                   :class="{'disabled': activeStep === 1}">{{"back" | t}}nbsp;</a>/
+                   :class="{'disabled': activeStep === 1}"><translated value="back"></translated>&nbsp;</a>/
                 <a href="#" id="continue"
                    v-on:click="next"
                    class="text-uppercase font-weight-bold"
-                   :class="{'disabled': !isComplete(activeStep)}">{{"continue" | t}}</a>
+                   :class="{'disabled': !isComplete(activeStep)}"><translated value="continue"></translated></a>
             </div>
         </div>
         <hr/>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
-            <h2 id="loading-message">{{"loadingData" | t}}</h2>
+            <h2 id="loading-message"><translated value="loadingData"></translated></h2>
         </div>
         <div v-if="!loading" class="content">
             <div class="pt-4">
@@ -60,6 +60,7 @@
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
+    import Translated from "./Translated.vue";
 
     import {mapGettersByNames, mapStateProps} from "../utils";
 
@@ -117,7 +118,8 @@
             ModelRun,
             ModelOutput,
             ModelOptions,
-            DownloadResults
+            DownloadResults,
+            Translated
         },
         watch: {
             ready: function (newVal) {

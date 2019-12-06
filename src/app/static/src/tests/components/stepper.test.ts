@@ -108,7 +108,7 @@ describe("Stepper component", () => {
     it("renders loading spinner while states are not ready", () => {
 
         const store = createSut();
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = mount(Stepper, {store, localVue});
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
         expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
@@ -123,7 +123,7 @@ describe("Stepper component", () => {
             {ready: true},
             {},
             {loadingState: LoadingState.SettingFiles});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = mount(Stepper, {store, localVue});
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);

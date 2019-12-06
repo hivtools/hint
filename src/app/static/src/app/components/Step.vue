@@ -4,7 +4,7 @@
                 :disabled="!enabled"
                 v-on:click="$emit('jump', number)">{{number}}
         </button>
-        <div class="text-center mt-3">{{text |t}}</div>
+        <div class="text-center mt-3"><translated :value="text"></translated></div>
     </div>
 </template>
 
@@ -12,10 +12,11 @@
 
     import Vue from "vue";
     import Tick from "./Tick.vue";
+    import Translated from "./Translated.vue";
 
     export default Vue.extend({
         props: ["active", "number", "text", "enabled", "complete"],
-        components: {Tick}
+        components: {Tick, Translated}
     })
 
 </script>
