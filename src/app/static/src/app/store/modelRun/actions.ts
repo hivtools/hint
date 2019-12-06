@@ -67,6 +67,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
     async cancelRun({commit, state}) {
         api<ModelRunMutation, ModelRunMutation>(commit)
+            .ignoreErrors()
             .post(`/model/cancel/${state.modelRunId}`);
 
         commit({type: "RunCancelled", payload: null});
