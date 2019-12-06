@@ -10,7 +10,7 @@ import {serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
 
 describe("LocalStorageManager", () => {
-    it("serialiseState removed errors", async () => {
+    it("serialiseState removes errors", async () => {
         const mockRoot = {
             modelRun: mockModelRunState({
                 errors: [mockError("modelRunError1"), mockError("modelRunError2")]
