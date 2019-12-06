@@ -3,6 +3,7 @@ import {login} from "./integrationTest";
 import {ModelSubmitResponse} from "../../app/generated";
 import {RootState} from "../../app/root";
 import {ModelRunState} from "../../app/store/modelRun/modelRun";
+import {mockModelStatusResponse} from "../mocks";
 
 describe("Model run actions", () => {
 
@@ -70,4 +71,15 @@ describe("Model run actions", () => {
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Missing some results");
     });
 
+    it("can can model run", async () => {
+        const commit = jest.fn();
+        const mockState = {
+            modelRunId: "1234"
+        } as ModelRunState;
+
+        await actions.cancelRun({commit, state: mockState} as any);
+
+        expect(commit.mock.calls[0][0]["type"]).toBe("RunCancelled");
+        expect(commit.mock.calls[0][0]["payload"]).toBeNull();
+    });
 });

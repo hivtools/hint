@@ -41,4 +41,15 @@ class ModelRunTests : SecureIntegrationTests() {
         assertSecureWithSuccess(isAuthorized, responseEntity, "ModelSubmitResponse")
     }
 
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can cancel run model`(isAuthorized: IsAuthorized) {
+        //TODO: Update this to withSuccess when hintr endpoint is in place
+        val responseEntity = testRestTemplate.postForEntity<String>("/model/cancel/1234")
+        assertSecureWithError(isAuthorized,
+                responseEntity,
+                HttpStatus.NOT_FOUND,
+                "NOT_FOUND", "POST /model/cancel/1234 is not a valid hintr path")
+    }
+
 }
