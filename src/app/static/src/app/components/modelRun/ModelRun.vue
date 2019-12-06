@@ -16,7 +16,7 @@
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <div>
-                <button class="btn btn-red float-right"
+                <button class="btn btn-red float-right" id="cancel-model-run"
                         v-on:click="cancelRun">Cancel run
                 </button>
             </div>
