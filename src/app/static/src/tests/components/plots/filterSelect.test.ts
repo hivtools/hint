@@ -1,11 +1,6 @@
-import {createLocalVue, shallowMount} from '@vue/test-utils';
-import Vue from 'vue';
-import Vuex from 'vuex';
+import {shallowMount} from '@vue/test-utils';
 import FilterSelect from "../../../app/components/plots/FilterSelect.vue";
 import TreeSelect from '@riophae/vue-treeselect';
-
-const localVue = createLocalVue();
-;
 
 describe("FilterSelect component", () => {
     const testOptions = [{id: "1", label: "one"}, {id: "2", label: "two"}];

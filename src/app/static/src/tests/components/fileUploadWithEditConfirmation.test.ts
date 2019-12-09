@@ -1,11 +1,8 @@
 import Vuex from "vuex";
-import Vue from "vue";
 import {mount, Slots, Wrapper} from '@vue/test-utils';
 import FileUpload from "../../app/components/FileUpload.vue";
 import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
 import {mockFile} from "../mocks";
-
-;
 
 describe("File upload component", () => {
 

@@ -1,10 +1,8 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
-import Vuex from 'vuex';
 import Step from "../../app/components/Step.vue";
 
 const localVue = createLocalVue();
-;
 
 describe("Step component", () => {
 

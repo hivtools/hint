@@ -6,9 +6,6 @@ import FileUpload from "../../app/components/FileUpload.vue";
 import {mockError, mockFile} from "../mocks";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
-import Vue from "vue";
-
-;
 
 describe("File upload component", () => {
 

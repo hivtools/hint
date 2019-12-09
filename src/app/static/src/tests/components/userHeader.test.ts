@@ -13,11 +13,9 @@ import {
     mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../mocks";
-import Vue from "vue";
 import Modal from "../../app/components/Modal.vue";
 import {LoadingState} from "../../app/store/load/load";
 
-;
 // jsdom has only implemented navigate up to hashes, hence appending a hash here to the base url
 const mockCreateObjectUrl = jest.fn(() => "http://localhost#1234");
 window.URL.createObjectURL = mockCreateObjectUrl;

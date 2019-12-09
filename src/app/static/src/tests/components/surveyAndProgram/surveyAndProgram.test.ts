@@ -16,7 +16,6 @@ import {actions} from "../../../app/store/filteredData/actions";
 import {mutations} from "../../../app/store/filteredData/mutations";
 
 const localVue = createLocalVue();
-;
 
 describe("Survey and programme component", () => {
 

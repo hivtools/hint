@@ -1,5 +1,4 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
-import Vue from 'vue';
 import Vuex, {ActionTree} from 'vuex';
 import ChoroplethFilters from "../../../app/components/plots/ChoroplethFilters.vue";
 import {
@@ -15,7 +14,6 @@ import {RootState} from "../../../app/root";
 import {mutations} from "../../../app/store/filteredData/mutations";
 
 const localVue = createLocalVue();
-;
 
 describe("ChoroplethFilters component", () => {
 

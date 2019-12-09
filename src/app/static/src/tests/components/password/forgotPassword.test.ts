@@ -4,11 +4,9 @@ import {PasswordState} from "../../../app/store/password/password";
 import {PasswordActions} from "../../../app/store/password/actions";
 import Vuex, {Store} from "vuex";
 import {mockError, mockPasswordState} from "../../mocks";
-import Vue from "vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 const localVue = createLocalVue();
-;
 
 describe("Forgot password component", () => {
 
