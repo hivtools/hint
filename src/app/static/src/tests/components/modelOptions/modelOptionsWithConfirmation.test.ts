@@ -11,7 +11,7 @@ import {mockModelOptionsState} from "../../mocks";
 import DynamicForm from "../../../app/components/forms/DynamicForm.vue";
 import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
 
-Vue.use(Vuex);
+;
 
 describe("Model options component when edit confirmation is required", () => {
 

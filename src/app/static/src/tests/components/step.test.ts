@@ -4,7 +4,7 @@ import Vuex from 'vuex';
 import Step from "../../app/components/Step.vue";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
+;
 
 describe("Step component", () => {
 

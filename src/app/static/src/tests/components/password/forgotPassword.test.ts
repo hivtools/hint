@@ -8,7 +8,7 @@ import Vue from "vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
+;
 
 describe("Forgot password component", () => {
 

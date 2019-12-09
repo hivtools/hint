@@ -7,7 +7,7 @@ import {mockErrorsState} from "../mocks";
 import {Error} from "../../app/generated";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
+;
 
 describe("Errors component", () => {
 

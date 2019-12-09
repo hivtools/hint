@@ -19,11 +19,17 @@ import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mu
 import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
 import {BaselineMutation, BaselineUpdates} from "./store/baseline/mutations";
 import {stripNamespace} from "./utils";
-import {initialPlottingSelectionsState, plottingSelections, PlottingSelectionsState} from "./store/plottingSelections/plottingSelections";
+import {
+    initialPlottingSelectionsState,
+    plottingSelections,
+    PlottingSelectionsState
+} from "./store/plottingSelections/plottingSelections";
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
+import {Language} from "./store/translations/locales";
 
 
 export interface RootState {
+    language: Language,
     version: string;
     baseline: BaselineState,
     metadata: MetadataState,
@@ -80,6 +86,7 @@ const resetState = (store: Store<RootState>) => {
 
 export const emptyState = (): RootState => {
     return {
+        language: Language.en,
         version: '0.0.0',
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
@@ -93,9 +100,10 @@ export const emptyState = (): RootState => {
         plottingSelections: initialPlottingSelectionsState(),
         errors: initialErrorsState()
     }
-}
+};
 
 export const storeOptions: StoreOptions<RootState> = {
+    state: emptyState(),
     modules: {
         baseline,
         metadata,

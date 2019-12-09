@@ -8,7 +8,7 @@ import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
 import Vue from "vue";
 
-Vue.use(Vuex);
+;
 
 describe("File upload component", () => {
 

@@ -22,7 +22,7 @@ import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
+;
 
 describe("Model run component", () => {
 

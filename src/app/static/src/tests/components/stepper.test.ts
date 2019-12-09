@@ -34,7 +34,7 @@ import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
+;
 
 describe("Stepper component", () => {
     const createSut = (baselineState?: Partial<BaselineState>,

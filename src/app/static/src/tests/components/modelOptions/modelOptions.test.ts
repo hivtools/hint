@@ -14,7 +14,7 @@ import {ModelOptionsActions} from "../../../app/store/modelOptions/actions";
 import {RootState} from "../../../app/root";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
+;
 
 describe("Model options component", () => {
 

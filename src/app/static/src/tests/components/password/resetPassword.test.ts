@@ -7,7 +7,7 @@ import {mockError, mockPasswordState} from "../../mocks";
 import Vue from "vue";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
+;
 
 describe("Reset password component", () => {
 

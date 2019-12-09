@@ -5,7 +5,7 @@ import FilterSelect from "../../../app/components/plots/FilterSelect.vue";
 import TreeSelect from '@riophae/vue-treeselect';
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
+;
 
 describe("FilterSelect component", () => {
     const testOptions = [{id: "1", label: "one"}, {id: "2", label: "two"}];

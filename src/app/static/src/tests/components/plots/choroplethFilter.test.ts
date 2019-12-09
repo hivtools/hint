@@ -15,7 +15,7 @@ import {RootState} from "../../../app/root";
 import {mutations} from "../../../app/store/filteredData/mutations";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
+;
 
 describe("ChoroplethFilters component", () => {
 
