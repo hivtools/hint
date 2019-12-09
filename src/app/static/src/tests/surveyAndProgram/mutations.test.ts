@@ -5,7 +5,7 @@ import {mockError, mockRootState, mockSurveyAndProgramState, mockSurveyResponse}
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
 import {Error} from "../../app/generated";
-import {expectAllMutationsDefined} from "../mutationTestHelper";
+import {expectAllMutationsDefined} from "../testHelpers";
 
 describe("Survey and programme mutations", () => {
 

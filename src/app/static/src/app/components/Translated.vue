@@ -21,7 +21,6 @@
         }),
         watch: {
             lang() {
-                console.log("language changed")
                 this.text = i18next.t(this.value);
             }
         }

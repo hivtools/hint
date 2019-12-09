@@ -11,7 +11,7 @@ import {
 
 import {DataType} from "../../app/store/filteredData/filteredData";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
-import {expectEqualsFrozen} from "../actionTestHelpers";
+import {expectEqualsFrozen} from "../testHelpers";
 
 const FormData = require("form-data");
 

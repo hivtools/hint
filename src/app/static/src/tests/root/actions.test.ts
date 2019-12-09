@@ -1,5 +1,6 @@
 import {actions} from "../../app/store/root/actions";
 import {mockStepperState} from "../mocks";
+import {RootMutation} from "../../app/store/root/mutations";
 
 describe("root actions", () => {
 
@@ -121,4 +122,14 @@ describe("root actions", () => {
         expect(mockContext.dispatch.mock.calls[0][0]).toBe("baseline/deleteAll");
         expect(mockContext.dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
     });
+
+    it("changes language", async () => {
+        const commit = jest.fn();
+        await actions.changeLanguage({commit} as any, "fr");
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: RootMutation.ChangeLanguage,
+            payload: "fr"
+        })
+    });
+
 });

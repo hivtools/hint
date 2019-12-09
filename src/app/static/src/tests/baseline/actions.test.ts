@@ -9,7 +9,7 @@ import {
 } from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
-import {expectEqualsFrozen, testUploadErrorCommitted} from "../actionTestHelpers";
+import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 
 const FormData = require("form-data");
 
