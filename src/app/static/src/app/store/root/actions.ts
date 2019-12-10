@@ -22,6 +22,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
                 dispatch("surveyAndProgram/deleteAll")
             ]);
             commit({type: "Reset"});
+            commit({type: "load/LoadFailed", payload: {detail: "State is invalid. Resetting all steps."}});
         }
     }
 };

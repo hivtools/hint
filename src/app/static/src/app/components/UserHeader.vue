@@ -113,7 +113,7 @@
         computed: {
             ...mapStateProps<LoadState, keyof LoadComputed>("load", {
                 hasError: state => state.loadingState==LoadingState.LoadFailed,
-                loadError: state => state.loadError
+                loadError: state => state.loadError && state.loadError.detail
             }),
             baselineFiles: mapStateProp<BaselineState, BaselineFiles>("baseline", state => {
                 return {
