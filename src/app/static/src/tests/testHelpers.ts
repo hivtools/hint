@@ -55,6 +55,6 @@ export function expectAllMutationsDefined(mutationDefinitions: any, mutationTree
 }
 
 export function expectTranslatedText(wrapper: Wrapper<any>, expected: string) {
-    const text = wrapper.find(Translated).props("value");
+    const text = wrapper.find(Translated).props("textKey");
     expect(i18next.t(text)).toBe(expected);
 }

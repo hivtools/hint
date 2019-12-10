@@ -24,7 +24,7 @@ describe("Translated", () => {
     it("displays translated text", () => {
         const wrapper = shallowMount(Translated, {
             propsData: {
-                value: "reportBug"
+                textKey: "reportBug"
             },
             store: createStore()
         });
@@ -36,7 +36,7 @@ describe("Translated", () => {
         const store = createStore();
         const wrapper = shallowMount(Translated, {
             propsData: {
-                value: "reportBug"
+                textKey: "reportBug"
             },
             store
         });

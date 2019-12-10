@@ -10,10 +10,10 @@
 
     export default Vue.extend({
         name: "Translated",
-        props: ["value"],
+        props: ["textKey"],
         data() {
             return {
-                text: i18next.t(this.value)
+                text: i18next.t(this.textKey)
             }
         },
         computed: mapState<RootState>({
@@ -21,7 +21,7 @@
         }),
         watch: {
             lang() {
-                this.text = i18next.t(this.value);
+                this.text = i18next.t(this.textKey);
             }
         }
     })
