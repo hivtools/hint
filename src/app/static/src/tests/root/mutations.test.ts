@@ -1,4 +1,4 @@
-import {mutations} from "../../app/store/root/mutations";
+import {mutations, RootMutation} from "../../app/store/root/mutations";
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 
@@ -6,9 +6,10 @@ import {
     mockAncResponse,
     mockFilteredDataState,
     mockModelOptionsState,
-    mockModelRunState, mockPlottingSelections,
+    mockModelRunState,
     mockRootState,
-    mockSurveyAndProgramState, mockSurveyResponse
+    mockSurveyAndProgramState,
+    mockSurveyResponse
 } from "../mocks";
 import {DataType} from "../../app/store/filteredData/filteredData";
 
@@ -125,5 +126,10 @@ describe("Root mutations", () => {
         expect(state.plottingSelections.barchart.xAxisId).toBe("");
     });
 
+    it("can change language", () => {
+        const state = mockRootState();
+        mutations[RootMutation.ChangeLanguage](state, {payload: "fr"});
+        expect(state.language).toBe("fr");
+    });
 });
 

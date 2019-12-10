@@ -1,5 +1,4 @@
 import {createLocalVue, mount, shallowMount} from '@vue/test-utils';
-import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {
     mockAxios, mockError,
@@ -22,7 +21,6 @@ import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
 
 describe("Model run component", () => {
 

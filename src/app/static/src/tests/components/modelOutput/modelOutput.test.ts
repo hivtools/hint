@@ -13,7 +13,7 @@ import {mutations as modelOutputMutations}  from "../../../app/store/modelOutput
 import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
+;
 
 function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
     return new Vuex.Store({

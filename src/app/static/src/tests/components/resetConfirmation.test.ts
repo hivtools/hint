@@ -1,9 +1,6 @@
 import {shallowMount} from "@vue/test-utils";
 import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
 import Vuex from "vuex";
-import Vue from "vue";
-
-Vue.use(Vuex);
 
 const createStore = (mockGetters: any) => new Vuex.Store({
     modules: {

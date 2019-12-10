@@ -1,4 +1,4 @@
-import {createLocalVue, mount} from '@vue/test-utils';
+import {mount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {ReadyState, RootState, storeOptions} from "../../app/root";
 import {localStorageManager} from "../../app/localStorageManager";
@@ -27,9 +27,6 @@ storeOptions.modules!!.modelRun!!.actions = modelRunActions;
 // as the app will call these actions on import
 import {app} from "../../app"
 import {RootMutation} from "../../app/store/root/mutations";
-
-const localVue = createLocalVue();
-localVue.use(Vuex);
 
 describe("App", () => {
 

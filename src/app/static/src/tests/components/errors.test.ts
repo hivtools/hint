@@ -1,5 +1,4 @@
 import {createLocalVue, shallowMount} from "@vue/test-utils";
-import Vue from "vue";
 import Vuex from "vuex";
 import {mutations} from "../../app/store/errors/mutations";
 import Errors from "../../app/components/Errors.vue";
@@ -7,7 +6,6 @@ import {mockErrorsState} from "../mocks";
 import {Error} from "../../app/generated";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
 
 describe("Errors component", () => {
 

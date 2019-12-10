@@ -14,7 +14,6 @@ import {
 import {actions} from "../../../app/store/filteredData/actions";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
 
 describe("Choropleth component", () => {
 
