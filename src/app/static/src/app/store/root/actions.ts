@@ -1,6 +1,7 @@
 import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
 import {StepDescription} from "../stepper/stepper";
+import {RootMutation} from "./mutations";
 
 export interface RootActions {
     validate: (store: ActionContext<RootState, RootState>) => void;
@@ -17,11 +18,25 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             .filter((i: number) => i < maxCompleteOrActive && !completeSteps.includes(i));
 
         if (invalidSteps.length > 0) {
-            await Promise.all([
-                dispatch("baseline/deleteAll"),
-                dispatch("surveyAndProgram/deleteAll")
-            ]);
-            commit({type: "Reset"});
+
+            //Invalidate any steps which come after the first invalid step
+            const maxValidStep = Math.min(...invalidSteps) - 1;
+
+            const promises = [];
+
+            if (maxValidStep < 1){
+                promises.push(dispatch("baseline/deleteAll"));
+            }
+            if (maxValidStep < 2){
+                promises.push(dispatch("surveyAndProgram/deleteAll"));
+            }
+
+            if (promises.length > 0) {
+                await Promise.all(promises);
+            }
+
+            commit({type: RootMutation.Reset, payload: maxValidStep});
+            commit({type: RootMutation.ResetFilteredDataSelections});
         }
     }
 };
