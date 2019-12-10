@@ -1,4 +1,4 @@
-import {actions} from "../../app/store/modelRun/actions";
+import {actions, makeCancelRunRequest} from "../../app/store/modelRun/actions";
 import {login} from "./integrationTest";
 import {ModelSubmitResponse} from "../../app/generated";
 import {RootState} from "../../app/root";
@@ -71,7 +71,7 @@ describe("Model run actions", () => {
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Missing some results");
     });
 
-    it("can can model run", async () => {
+    it("can cancel model run", async () => {
         const commit = jest.fn();
         const mockState = {
             modelRunId: "1234"
@@ -81,5 +81,16 @@ describe("Model run actions", () => {
 
         expect(commit.mock.calls[0][0]["type"]).toBe("RunCancelled");
         expect(commit.mock.calls[0][0]["payload"]).toBeNull();
+    });
+
+    it ("makeCancelRunRequest gets response from API", async () => {
+        //TODO: regenerate types when hintr change goes in and expect the actual response type
+        //in the API call rather than null
+        const commit = jest.fn();
+        const mockState = {
+            modelRunId: "1234"
+        } as ModelRunState;
+        const result = await makeCancelRunRequest(commit, mockState);
+        expect(result).toBeUndefined();
     });
 });

@@ -16,7 +16,7 @@ export interface API<S, E> {
     withSuccess: (type: S) => API<S, E>
     ignoreErrors: () => API<S, E>
 
-    postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>>
+    postAndReturn<T>(url: string, data?: any): Promise<void | ResponseWithType<T>>
     get<T>(url: string): Promise<void | ResponseWithType<T>>
     delete(url: string): Promise<void | true>
 }
