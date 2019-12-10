@@ -24,10 +24,11 @@ function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
 
 export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
 
-    async uploadSurvey({commit}, formData) {
+    async uploadSurvey(context, formData) {
+        const {commit} = context;
         commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
 
-        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
+        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .withError(SurveyAndProgramMutation.SurveyError)
             .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
             .freezeResponse()
@@ -39,10 +40,11 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             });
     },
 
-    async uploadProgram({commit}, formData) {
+    async uploadProgram(context, formData) {
+        const {commit} = context;
         commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
 
-        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
+        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .withError(SurveyAndProgramMutation.ProgramError)
             .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
             .freezeResponse()
@@ -54,10 +56,11 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             });
     },
 
-    async uploadANC({commit}, formData) {
+    async uploadANC(context, formData) {
+        const {commit} = context;
         commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
 
-        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
+        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .withError(SurveyAndProgramMutation.ANCError)
             .withSuccess(SurveyAndProgramMutation.ANCUpdated)
             .freezeResponse()
@@ -69,24 +72,27 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
             });
     },
 
-    async deleteSurvey({commit}) {
-        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
+    async deleteSurvey(context) {
+        const {commit} = context;
+        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .delete("/disease/survey/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
             });
     },
 
-    async deleteProgram({commit}) {
-        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
+    async deleteProgram(context) {
+        const {commit} = context;
+        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .delete("/disease/programme/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
             });
     },
 
-    async deleteANC({commit}) {
-        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
+    async deleteANC(context) {
+        const {commit} = context;
+        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .delete("/disease/anc/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
@@ -101,21 +107,21 @@ export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyA
         ]);
     },
 
-    async getSurveyAndProgramData({commit}) {
-
+    async getSurveyAndProgramData(context) {
+        const {commit} = context;
         await Promise.all(
             [
-                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
+                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
                     .freezeResponse()
                     .get<SurveyResponse>("/disease/survey/"),
-                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
+                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
                     .freezeResponse()
                     .get<ProgrammeResponse>("/disease/programme/"),
-                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(commit)
+                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.ANCUpdated)
                     .freezeResponse()

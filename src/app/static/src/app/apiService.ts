@@ -1,8 +1,9 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {ErrorsMutation} from "./store/errors/mutations";
-import {Commit} from "vuex";
+import {ActionContext, Commit} from "vuex";
 import {freezer, isHINTResponse} from "./utils";
-import {Response, Error} from "./generated";
+import {Error, Response} from "./generated";
+import {RootState} from "./root";
 
 declare var appUrl: string;
 
@@ -17,16 +18,20 @@ export interface API<S, E> {
     ignoreErrors: () => API<S, E>
 
     postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>>
+
     get<T>(url: string): Promise<void | ResponseWithType<T>>
+
     delete(url: string): Promise<void | true>
 }
 
 export class APIService<S extends string, E extends string> implements API<S, E> {
 
     private readonly _commit: Commit;
+    private readonly _headers: any;
 
-    constructor(commit: Commit) {
-        this._commit = commit
+    constructor(context: ActionContext<any, RootState>) {
+        this._commit = context.commit;
+        this._headers = {"Accept-Language": context.rootState.language};
     }
 
     // appUrl will be set as a jest global during testing
@@ -107,7 +112,8 @@ export class APIService<S extends string, E extends string> implements API<S, E>
                 status: "failure",
                 errors: [{
                     error: "SESSION_TIMEOUT",
-                    detail: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing."}
+                    detail: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing."
+                }
                 ],
                 data: {}
             }
@@ -135,11 +141,10 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
     }
 
-
     async get<T>(url: string): Promise<void | ResponseWithType<T>> {
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
-        return this._handleAxiosResponse(axios.get(fullUrl));
+        return this._handleAxiosResponse(axios.get(fullUrl, {headers: this._headers}));
     }
 
     async postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>> {
@@ -148,11 +153,11 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
         // this allows us to pass data of type FormData in both the browser and
         // in node for testing, using the "form-data" package in the latter case
-        const config = typeof data.getHeaders == "function" ? {
-            headers: data.getHeaders()
-        } : {};
+        const headers = typeof data.getHeaders == "function" ?
+            {...this._headers, ...data.getHeaders()}
+            : this._headers;
 
-        return this._handleAxiosResponse(axios.post(fullUrl, data, config));
+        return this._handleAxiosResponse(axios.post(fullUrl, data, {headers}));
     }
 
     async delete(url: string) {
@@ -162,4 +167,5 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
 }
 
-export const api = <S extends string, E extends string>(commit: Commit) => new APIService<S, E>(commit);
+export const api =
+    <S extends string, E extends string>(context: ActionContext<any, RootState>) => new APIService<S, E>(context);

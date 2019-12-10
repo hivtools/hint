@@ -1,6 +1,7 @@
 import {actions} from "../../app/store/modelOptions/actions";
-import {mockAxios, mockSuccess} from "../mocks";
+import {mockAxios, mockRootState, mockSuccess} from "../mocks";
 
+const rootState = mockRootState();
 describe("model run options actions", () => {
 
     beforeEach(() => {
@@ -16,7 +17,7 @@ describe("model run options actions", () => {
     it("fetches and commits model run options and version", async () => {
         mockAxios.onGet("/model/options/").reply(200, mockSuccess("TEST", "v1"));
         const commit = jest.fn();
-        await actions.fetchModelRunOptions({commit} as any);
+        await actions.fetchModelRunOptions({commit, rootState} as any);
 
         expect(commit.mock.calls[0][0]).toStrictEqual("FetchingModelOptions");
         expect(commit.mock.calls[1][0]).toStrictEqual({

@@ -2,6 +2,7 @@ import {ActionContext, ActionTree} from "vuex";
 import {PasswordState} from "./password";
 import {api} from "../../apiService";
 import qs from "qs";
+import {RootState} from "../../root";
 
 export type PasswordActionTypes = "ResetLinkRequested" | "ResetPassword"
 export type PasswordActionErrorTypes = "RequestResetLinkError" | "ResetPasswordError"
@@ -12,21 +13,21 @@ export interface ResetPasswordActionParams {
 }
 
 export interface PasswordActions {
-    requestResetLink: (store: ActionContext<PasswordState, PasswordState>, email: string) => void
-    resetPassword: (store: ActionContext<PasswordState, PasswordState>, payload: ResetPasswordActionParams) => void
+    requestResetLink: (store: ActionContext<PasswordState, RootState>, email: string) => void
+    resetPassword: (store: ActionContext<PasswordState, RootState>, payload: ResetPasswordActionParams) => void
 }
 
-export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions = {
+export const actions: ActionTree<PasswordState, RootState> & PasswordActions = {
 
-    async requestResetLink({commit}, email) {
-        await api<PasswordActionTypes, PasswordActionErrorTypes>(commit)
+    async requestResetLink(context, email) {
+        await api<PasswordActionTypes, PasswordActionErrorTypes>(context)
             .withError("RequestResetLinkError")
             .withSuccess("ResetLinkRequested")
             .postAndReturn<Boolean>("/password/request-reset-link/", qs.stringify({email: email}));
     },
 
-    async resetPassword({commit}, payload) {
-        await api<PasswordActionTypes, PasswordActionErrorTypes>(commit)
+    async resetPassword(context, payload) {
+        await api<PasswordActionTypes, PasswordActionErrorTypes>(context)
             .withError("ResetPasswordError")
             .withSuccess("ResetPassword")
             .postAndReturn<Boolean>("/password/reset-password/", qs.stringify({

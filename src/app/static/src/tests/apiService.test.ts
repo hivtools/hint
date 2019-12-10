@@ -1,6 +1,8 @@
 import {api} from "../app/apiService";
-import {mockAxios, mockError, mockFailure, mockSuccess} from "./mocks";
+import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
+
+const rootState = mockRootState();
 
 describe("ApiService", () => {
 
@@ -19,7 +21,7 @@ describe("ApiService", () => {
             .reply(500, mockFailure("some error message"));
 
         try {
-            await api(jest.fn())
+            await api({commit: jest.fn(), rootState} as any)
                 .get("/baseline/")
         } catch (e) {
 
@@ -37,7 +39,7 @@ describe("ApiService", () => {
 
         const commit = jest.fn();
 
-        await api(commit)
+        await api({commit, rootState} as any)
             .get("/unusual/");
 
         expect((console.warn as jest.Mock).mock.calls[0][0])
@@ -63,7 +65,7 @@ describe("ApiService", () => {
 
         const commit = jest.fn();
 
-        await api(commit)
+        await api({commit, rootState} as any)
             .get("/unusual/");
 
         expect((console.warn as jest.Mock).mock.calls[0][0])
@@ -93,7 +95,7 @@ describe("ApiService", () => {
             committedPayload = payload;
         };
 
-        await api(commit as any)
+        await api({commit, rootState} as any)
             .withError("TEST_TYPE")
             .get("/baseline/");
 
@@ -114,7 +116,7 @@ describe("ApiService", () => {
             committedPayload = payload;
         };
 
-        await api(commit as any)
+        await api({commit, rootState} as any)
             .withError("TEST_TYPE")
             .get("/baseline/");
 
@@ -135,7 +137,7 @@ describe("ApiService", () => {
             committedPayload = payload;
         };
 
-        await api(commit as any)
+        await api({commit, rootState} as any)
             .withError("TEST_TYPE")
             .get("/baseline/");
 
@@ -158,7 +160,7 @@ describe("ApiService", () => {
             committedPayload = payload;
         };
 
-        await api(commit as any)
+        await api({commit, rootState} as any)
             .withSuccess("TEST_TYPE")
             .get("/baseline/");
 
@@ -172,7 +174,7 @@ describe("ApiService", () => {
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
-        const response = await api(commit as any)
+        const response = await api({commit, rootState} as any)
             .withSuccess("TEST_TYPE")
             .get("/baseline/");
 
@@ -194,7 +196,7 @@ describe("ApiService", () => {
             committedPayload = payload;
         };
 
-        await api(commit as any)
+        await api({commit, rootState} as any)
             .freezeResponse()
             .withSuccess("TEST_TYPE")
             .get("/baseline/");
@@ -219,7 +221,7 @@ describe("ApiService", () => {
             committedPayload = payload;
         };
 
-        await api(commit as any)
+        await api({commit, rootState} as any)
             .withSuccess("TEST_TYPE")
             .get("/baseline/");
 
@@ -257,7 +259,7 @@ describe("ApiService", () => {
         mockAxios.onGet(`/baseline/`)
             .reply(500, mockFailure("some error message"));
 
-        await api(jest.fn())
+        await api({commit: jest.fn(), rootState} as any)
             .withSuccess("whatever")
             .ignoreErrors()
             .get("/baseline/");
@@ -270,7 +272,7 @@ describe("ApiService", () => {
         mockAxios.onGet(`/baseline/`)
             .reply(200, mockSuccess(true));
 
-        await api(jest.fn())
+        await api({commit: jest.fn(), rootState} as any)
             .get("/baseline/");
 
         const warnings = (console.warn as jest.Mock).mock.calls;
@@ -281,7 +283,7 @@ describe("ApiService", () => {
 
     async function expectCouldNotParseAPIResponseError() {
         const commit = jest.fn();
-        await api(commit)
+        await api({commit, rootState} as any)
             .get("/baseline/");
 
         expect(commit.mock.calls.length).toBe(1);
