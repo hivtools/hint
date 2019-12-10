@@ -7,10 +7,10 @@
                 </div>
                 <file-menu :title="title"></file-menu>
                 <a href="https://forms.gle/QxCT1b4ScLqKPg6a7" target="_blank" class="pr-2 mr-2 border-right">
-                    <translated value="reportBug"></translated>
+                    <translated text-key="reportBug"></translated>
                 </a>
                 <a href="/logout" class="pr-2 mr-2 border-right">
-                    <translated value="logout"></translated>
+                    <translated text-key="logout"></translated>
                 </a>
                 <language-menu></language-menu>
             </div>
