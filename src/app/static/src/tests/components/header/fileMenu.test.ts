@@ -182,7 +182,7 @@ describe("File menu", () => {
 
         const modal = wrapper.find(Modal);
         expect(modal.attributes("open")).toEqual("true");
-        expect(modal.text()).toContain("test error");
+        expect(modal.find("p").text()).toEqual("test error");
     });
 
 

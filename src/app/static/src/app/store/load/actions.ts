@@ -31,7 +31,10 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const objectContents = verifyCheckSum(savedFileContents);
 
         if (!objectContents) {
-            commit({type: "LoadFailed", payload: "The file contents are corrupted."});
+            commit({
+                type: "LoadFailed",
+                payload: {detail: "The file contents are corrupted."}
+            });
             return;
         }
 
