@@ -3,7 +3,7 @@ import {ErrorsMutation} from "./store/errors/mutations";
 import {ActionContext, Commit} from "vuex";
 import {freezer, isHINTResponse} from "./utils";
 import {Error, Response} from "./generated";
-import {RootState} from "./root";
+import {RootState, TranslatableState} from "./root";
 
 declare var appUrl: string;
 
@@ -29,7 +29,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     private readonly _commit: Commit;
     private readonly _headers: any;
 
-    constructor(context: ActionContext<any, RootState>) {
+    constructor(context: ActionContext<any, TranslatableState>) {
         this._commit = context.commit;
         this._headers = {"Accept-Language": context.rootState.language};
     }
@@ -147,13 +147,13 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this._handleAxiosResponse(axios.get(fullUrl, {headers: this._headers}));
     }
 
-    async postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>> {
+    async postAndReturn<T>(url: string, data?: any): Promise<void | ResponseWithType<T>> {
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
 
         // this allows us to pass data of type FormData in both the browser and
         // in node for testing, using the "form-data" package in the latter case
-        const headers = typeof data.getHeaders == "function" ?
+        const headers = data && typeof data.getHeaders == "function" ?
             {...this._headers, ...data.getHeaders()}
             : this._headers;
 
@@ -168,4 +168,4 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 }
 
 export const api =
-    <S extends string, E extends string>(context: ActionContext<any, RootState>) => new APIService<S, E>(context);
+    <S extends string, E extends string>(context: ActionContext<any, TranslatableState>) => new APIService<S, E>(context);
