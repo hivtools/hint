@@ -8,6 +8,9 @@
     <!-- endinject -->
     <script>
         function validate(event) {
+            const userIdInput = document.getElementById("user-id");
+            userIdInput.value = userIdInput.value.trim();
+
             const form = document.getElementById("login-form");
             if (form.checkValidity()) {
                 localStorage.clear();
