@@ -9,6 +9,7 @@ describe("ApiService", () => {
     beforeEach(() => {
         console.log = jest.fn();
         console.warn = jest.fn();
+        mockAxios.reset();
     });
 
     afterEach(() => {
@@ -279,6 +280,39 @@ describe("ApiService", () => {
 
         expect(warnings[0][0]).toBe("No error handler registered for request /baseline/.");
         expect(warnings[1][0]).toBe("No success handler registered for request /baseline/.");
+    });
+
+    it("passes language header on get", async () => {
+
+        mockAxios.onGet(`/baseline/`)
+            .reply(200, mockSuccess(true));
+
+        await api({commit: jest.fn(), rootState} as any)
+            .withSuccess("whatever")
+            .ignoreErrors()
+            .get("/baseline/");
+
+        expect(mockAxios.history.get[0].headers).toStrictEqual({
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en"
+        })
+    });
+
+    it("passes language header on post", async () => {
+
+        mockAxios.onPost(`/baseline/`)
+            .reply(200, mockSuccess(true));
+
+        await api({commit: jest.fn(), rootState} as any)
+            .withSuccess("whatever")
+            .ignoreErrors()
+            .postAndReturn("/baseline/");
+
+        expect(mockAxios.history.post[0].headers).toStrictEqual({
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en",
+            "Content-Type": "application/x-www-form-urlencoded"
+        })
     });
 
     async function expectCouldNotParseAPIResponseError() {
