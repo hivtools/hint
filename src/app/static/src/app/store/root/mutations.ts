@@ -40,12 +40,12 @@ export const mutations: MutationTree<RootState> = {
             plottingSelections: initialPlottingSelectionsState(),
             filteredData: state.filteredData,
             stepper: state.stepper,
-            load: state.load,
-            errors: state.errors
+            load: initialLoadState(),
+            errors: initialErrorsState()
         };
         Object.assign(state, resetState);
 
-        const maxAccessibleStep = maxValidStep < 4 ? maxValidStep  : 4; //might be 0
+        const maxAccessibleStep = maxValidStep < 4 ? Math.max(maxValidStep,1) : 4;
         if (state.stepper.activeStep > maxAccessibleStep) {
             state.stepper.activeStep = maxAccessibleStep;
         }
