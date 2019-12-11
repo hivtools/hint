@@ -52,7 +52,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
 
     private fun translatedError(key: String, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
         val language = request.getHeader("Accept-Language") ?: "en"
-        val resources = ResourceBundle.getBundle("MessageBundle", Locale(language))
+        val resources = ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
 
         val message = if (resources.containsKey(key)) {
             resources.getString(key)
@@ -65,7 +65,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
 
     private fun unexpectedError(e: Exception, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
         val locale = Locale(request.getHeader("Accept-Language") ?: "en")
-        val resources = ResourceBundle.getBundle("MessageBundle", locale)
+        val resources = ResourceBundle.getBundle("ErrorMessageBundle", locale)
 
         var message = resources.getString("unexpectedError")
         val formatter = MessageFormat(message, locale)
@@ -76,12 +76,12 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         )
         message = formatter.format(messageArguments)
 
-        val trace = if (!e.message.isNullOrEmpty()) {
+        val originalMessage = if (!e.message.isNullOrEmpty()) {
             listOf(e.message!!)
         } else {
             listOf()
         }
-        return ErrorDetail(status, message, trace)
+        return ErrorDetail(status, message, originalMessage)
                 .toResponseEntity()
     }
 
