@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/metadata/actions";
-import {login} from "./integrationTest";
+import {login, rootState} from "./integrationTest";
 import {PlottingMetadataResponse} from "../../app/generated";
 
 describe("Metadata actions", () => {
