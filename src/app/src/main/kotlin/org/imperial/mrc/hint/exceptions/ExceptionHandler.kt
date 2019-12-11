@@ -29,19 +29,23 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                                          status: HttpStatus,
                                          request: WebRequest): ResponseEntity<Any> {
         logger.error(e.message)
-        return unexpectedError(e, status, request)
-    }
-
-    @ExceptionHandler(HintException::class)
-    protected fun handleHintException(e: HintException, request: WebRequest): ResponseEntity<Any> {
-        logger.error(e.message)
-        return translatedError(e.message!!, e.httpStatus, request)
+        // this handles standard Spring MVC exceptions which do not contain
+        // sensitive info so we return the original error message here
+        return unexpectedError(status, request, e.message)
     }
 
     @ExceptionHandler(PSQLException::class)
     protected fun handlePSQLException(e: PSQLException, request: WebRequest): ResponseEntity<Any> {
         logger.error(e.message)
-        return unexpectedError(e, HttpStatus.INTERNAL_SERVER_ERROR, request)
+        // for security reasons we should not return arbitrary db errors to the frontend
+        // so do not pass the original error message here
+        return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
+    }
+    
+    @ExceptionHandler(HintException::class)
+    protected fun handleHintException(e: HintException, request: WebRequest): ResponseEntity<Any> {
+        logger.error(e.message)
+        return translatedError(e.message!!, e.httpStatus, request)
     }
 
     private fun getBundle (request: WebRequest): ResourceBundle {
@@ -59,7 +63,10 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return ErrorDetail(status, message).toResponseEntity()
     }
 
-    private fun unexpectedError(e: Exception, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+    private fun unexpectedError(status: HttpStatus,
+                                request: WebRequest,
+                                originalMessage: String? = null): ResponseEntity<Any> {
+
         val resourceBundle = getBundle(request)
         var message = resourceBundle.getString("unexpectedError")
         val formatter = MessageFormat(message, resourceBundle.locale)
@@ -70,12 +77,12 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         )
         message = formatter.format(messageArguments)
 
-        val originalMessage = if (!e.message.isNullOrEmpty()) {
-            listOf(e.message!!)
+        val trace = if (!originalMessage.isNullOrEmpty()) {
+            listOf(originalMessage)
         } else {
             null
         }
-        return ErrorDetail(status, message, originalMessage)
+        return ErrorDetail(status, message, trace)
                 .toResponseEntity()
     }
 
