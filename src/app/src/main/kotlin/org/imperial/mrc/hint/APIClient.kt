@@ -7,6 +7,7 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import org.imperial.mrc.hint.models.ModelRunOptions
 import org.imperial.mrc.hint.models.SessionFileWithPath
+import org.pac4j.core.context.WebContext
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
@@ -82,7 +83,7 @@ class HintrAPIClient(
 
     override fun validateBaselineCombined(files: Map<String, SessionFileWithPath?>): ResponseEntity<String> {
         val json = objectMapper.writeValueAsString(
-           files.mapValues{ it.value?.path }
+                files.mapValues { it.value?.path }
         )
         return postJson("validate/baseline-combined", json)
     }

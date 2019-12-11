@@ -26,21 +26,21 @@ abstract class HintrController(protected val fileManager: FileManager,
     protected fun getAndValidate(type: FileType): ResponseEntity<String> {
         val file = fileManager.getFile(type)
         return if (file != null) {
-           validate(file, type)
+            validate(file, type)
         } else {
             SuccessResponse(null).asResponseEntity()
         }
     }
 
     private fun validate(file: SessionFileWithPath, type: FileType): ResponseEntity<String> {
-        return when (type)
-        {
+        return when (type) {
             FileType.PJNZ, FileType.Population, FileType.Shape -> apiClient.validateBaselineIndividual(file, type)
             else -> {
                 val shapePath = fileManager.getFile(FileType.Shape)?.path
-                        ?: throw HintException("You must upload a shape file before uploading survey or programme data",
+                        ?: throw HintException("missingShapeFile",
                                 HttpStatus.BAD_REQUEST)
-                apiClient.validateSurveyAndProgramme(file, shapePath, type)}
+                apiClient.validateSurveyAndProgramme(file, shapePath, type)
+            }
         }
     }
 }

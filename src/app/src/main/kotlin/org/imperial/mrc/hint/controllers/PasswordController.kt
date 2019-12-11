@@ -15,7 +15,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import javax.validation.constraints.Size
 
-class TokenException(message: String) : HintException(message, HttpStatus.BAD_REQUEST)
+class TokenException(key: String) : HintException(key, HttpStatus.BAD_REQUEST)
 
 @Controller
 @Validated
@@ -53,7 +53,7 @@ class PasswordController(private val userLogic: UserLogic,
     fun postResetPassword(@RequestParam("token") token: String,
                           @RequestParam("password") @Size(min = 6, message = "Password must be at least 6 characters long")
                           password: String): String {
-        val user = oneTimeTokenManager.validateToken(token) ?: throw TokenException("Token is not valid")
+        val user = oneTimeTokenManager.validateToken(token) ?: throw TokenException("invalidToken")
         userLogic.updateUserPassword(user, password)
         return EmptySuccessResponse.toJsonString()
     }

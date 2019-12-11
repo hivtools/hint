@@ -34,6 +34,7 @@ class BaselineController(fileManager: FileManager,
     @DeleteMapping("/pjnz/")
     @ResponseBody
     fun removePJNZ(): ResponseEntity<String> {
+        session
         sessionRepository.removeSessionFile(session.getId(), FileType.PJNZ)
         return EmptySuccessResponse.asResponseEntity()
     }
@@ -81,7 +82,7 @@ class BaselineController(fileManager: FileManager,
     fun validate(): ResponseEntity<String> {
         return apiClient.validateBaselineCombined(
                 listOf(FileType.PJNZ, FileType.Shape, FileType.Population)
-                        .map{ it.toString() to fileManager.getFile(it)}.toMap()
+                        .map { it.toString() to fileManager.getFile(it) }.toMap()
         )
     }
 

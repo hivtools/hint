@@ -2,8 +2,8 @@ package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.exceptions.UserException
+import org.imperial.mrc.hint.logic.UserLogic
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
