@@ -50,25 +50,26 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return unexpectedError(e, HttpStatus.INTERNAL_SERVER_ERROR, request)
     }
 
-    private fun translatedError(key: String, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+    private fun getBundle (request: WebRequest): ResourceBundle {
         val language = request.getHeader("Accept-Language") ?: "en"
-        val resources = ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
+        return ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
+    }
 
-        val message = if (resources.containsKey(key)) {
-            resources.getString(key)
+
+    private fun translatedError(key: String, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+        val resourceBundle = getBundle(request)
+        val message = if (resourceBundle.containsKey(key)) {
+            resourceBundle.getString(key)
         } else {
             key
         }
-
         return ErrorDetail(status, message).toResponseEntity()
     }
 
     private fun unexpectedError(e: Exception, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
-        val locale = Locale(request.getHeader("Accept-Language") ?: "en")
-        val resources = ResourceBundle.getBundle("ErrorMessageBundle", locale)
-
-        var message = resources.getString("unexpectedError")
-        val formatter = MessageFormat(message, locale)
+        val resourceBundle = getBundle(request)
+        var message = resourceBundle.getString("unexpectedError")
+        val formatter = MessageFormat(message, resourceBundle.locale)
         val messageArguments = arrayOf(
                 appProperties.applicationTitle,
                 errorCodeGenerator.newCode(),
