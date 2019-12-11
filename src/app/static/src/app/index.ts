@@ -1,7 +1,7 @@
 import Vue from "vue";
 import {store} from "./main"
 import Stepper from "./components/Stepper.vue";
-import UserHeader from "./components/UserHeader.vue";
+import UserHeader from "./components/header/UserHeader.vue";
 import Errors from "./components/Errors.vue";
 import {mapActions} from "vuex";
 

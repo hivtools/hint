@@ -4,10 +4,8 @@ import TreeSelect from '@riophae/vue-treeselect'
 import Vuex from "vuex";
 import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../../mocks";
 import {DataType} from "../../../app/store/filteredData/filteredData";
-import Vue from "vue";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
 
 describe("Map control component", () => {
 

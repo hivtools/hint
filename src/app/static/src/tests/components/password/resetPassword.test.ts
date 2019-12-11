@@ -4,10 +4,8 @@ import {PasswordState} from "../../../app/store/password/password";
 import {PasswordActions} from "../../../app/store/password/actions";
 import Vuex, {Store} from "vuex";
 import {mockError, mockPasswordState} from "../../mocks";
-import Vue from "vue";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
 
 describe("Reset password component", () => {
 

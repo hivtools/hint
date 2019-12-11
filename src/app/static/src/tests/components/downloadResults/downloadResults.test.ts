@@ -1,11 +1,9 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
-import Vue from 'vue';
 import Vuex from 'vuex';
 import {mockModelRunState} from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
 
 describe("Download Results component", () => {
 

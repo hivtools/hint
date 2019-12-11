@@ -10,7 +10,7 @@ import {
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
-import {expectAllMutationsDefined} from "../mutationTestHelper";
+import {expectAllMutationsDefined} from "../testHelpers";
 
 describe("Baseline mutations", () => {
 

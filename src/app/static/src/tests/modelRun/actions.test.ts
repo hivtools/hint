@@ -9,7 +9,7 @@ import {
 } from "../mocks";
 import {actions} from "../../app/store/modelRun/actions";
 import {ModelResultResponse, ModelStatusResponse} from "../../app/generated";
-import {expectEqualsFrozen} from "../actionTestHelpers";
+import {expectEqualsFrozen} from "../testHelpers";
 
 describe("Model run actions", () => {
 

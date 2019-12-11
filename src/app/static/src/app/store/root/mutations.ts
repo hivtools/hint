@@ -1,25 +1,24 @@
 import {MutationTree} from "vuex";
-import {emptyState, RootState} from "../../root";
-import {DataType, initialFilteredDataState} from "../filteredData/filteredData";
+import {RootState} from "../../root";
+import {DataType} from "../filteredData/filteredData";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
 import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
-import {data} from "../../../tests/components/plots/barchart/utils.test";
 import {initialLoadState, LoadState} from "../load/load";
-import {PayloadWithType} from "../../types";
-import {Error} from "../../generated";
 import {initialMetadataState} from "../metadata/metadata";
 import {initialSurveyAndProgramDataState} from "../surveyAndProgram/surveyAndProgram";
-import {initialStepperState} from "../stepper/stepper";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
+import {PayloadWithType} from "../../types";
+import {Language} from "../translations/locales";
 
 export enum RootMutation {
     Reset = "Reset",
     ResetFilteredDataSelections = "ResetFilteredDataSelections",
     ResetOptions = "ResetOptions",
-    ResetOutputs = "ResetOutputs"
+    ResetOutputs = "ResetOutputs",
+    ChangeLanguage = "ChangeLanguage"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -31,6 +30,7 @@ export const mutations: MutationTree<RootState> = {
         //at all we assume that these steps will be invalidated but earlier steps may be retainable
         const resetState: RootState = {
             version: state.version,
+            language: state.language,
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
             surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramDataState() : state.surveyAndProgram,
@@ -92,6 +92,10 @@ export const mutations: MutationTree<RootState> = {
         state.modelRun.ready = true;
         Object.assign(state.modelOutput, initialModelOutputState());
         Object.assign(state.plottingSelections, initialPlottingSelectionsState());
+    },
+
+    [RootMutation.ChangeLanguage](state: RootState, action: PayloadWithType<Language>) {
+        state.language = action.payload
     }
 
 };
