@@ -10,7 +10,7 @@ Vue.use(Vuex);
 
 const passwordStoreOptions: StoreOptions<PasswordState> = {
     state: initialPasswordState,
-   // actions: actions,
+    actions: actions,
     mutations: mutations
 };
 

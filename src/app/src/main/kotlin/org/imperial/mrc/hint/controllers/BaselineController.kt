@@ -34,7 +34,6 @@ class BaselineController(fileManager: FileManager,
     @DeleteMapping("/pjnz/")
     @ResponseBody
     fun removePJNZ(): ResponseEntity<String> {
-        session
         sessionRepository.removeSessionFile(session.getId(), FileType.PJNZ)
         return EmptySuccessResponse.asResponseEntity()
     }
