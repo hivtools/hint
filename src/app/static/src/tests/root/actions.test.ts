@@ -52,7 +52,7 @@ describe("root actions", () => {
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset"});
         expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({
             type: "load/LoadFailed",
-            payload: {detail: "State is invalid. Resetting all steps."}
+            payload: {detail: "There was a problem loading your data. Some data may have been invalid. Please contact support if this issue persists."}
         });
 
         expect(mockContext.dispatch).toHaveBeenCalled();

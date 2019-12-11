@@ -215,10 +215,7 @@ describe("user header", () => {
 
         const modal = wrapper.find(Modal);
         expect(modal.attributes("open")).toEqual("true");
-
-        const paras = modal.findAll("p");
-        expect(paras.at(0).text()).toEqual("Failed to load state.");
-        expect(paras.at(1).text()).toEqual("test error");
+        expect(modal.find("p").text()).toEqual("test error");
     });
 
 
