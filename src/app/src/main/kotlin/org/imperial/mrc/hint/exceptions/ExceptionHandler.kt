@@ -38,12 +38,6 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return translatedError(e.message!!, e.httpStatus, request)
     }
 
-    @ExceptionHandler(ConstraintViolationException::class)
-    protected fun handleConstraintViolationException(e: ConstraintViolationException, request: WebRequest): ResponseEntity<Any> {
-        logger.error(e.message)
-        return translatedError(e.message!!, HttpStatus.BAD_REQUEST, request)
-    }
-
     @ExceptionHandler(PSQLException::class)
     protected fun handlePSQLException(e: PSQLException, request: WebRequest): ResponseEntity<Any> {
         logger.error(e.message)
@@ -54,7 +48,6 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         val language = request.getHeader("Accept-Language") ?: "en"
         return ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
     }
-
 
     private fun translatedError(key: String, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
         val resourceBundle = getBundle(request)

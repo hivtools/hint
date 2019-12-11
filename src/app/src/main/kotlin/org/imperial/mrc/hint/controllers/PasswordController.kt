@@ -51,8 +51,12 @@ class PasswordController(private val userLogic: UserLogic,
     @ResponseBody
     @Throws(TokenException::class)
     fun postResetPassword(@RequestParam("token") token: String,
-                          @RequestParam("password") @Size(min = 6, message = "Password must be at least 6 characters long")
+                          @RequestParam("password")
                           password: String): String {
+        if (password.length < 6) {
+            throw HintException("invalidPasswordLength", HttpStatus.BAD_REQUEST)
+        }
+
         val user = oneTimeTokenManager.validateToken(token) ?: throw TokenException("invalidToken")
         userLogic.updateUserPassword(user, password)
         return EmptySuccessResponse.toJsonString()

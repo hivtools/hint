@@ -23,7 +23,7 @@ describe("Password actions", () => {
             type: "ResetPasswordError",
             payload: {
                 error: "OTHER_ERROR",
-                detail: "postResetPassword.password: Password must be at least 6 characters long"
+                detail: "Password must be at least 6 characters long."
             }
         });
     });
