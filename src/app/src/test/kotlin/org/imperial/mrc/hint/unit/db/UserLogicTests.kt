@@ -8,6 +8,7 @@ import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.UserException
+import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.pac4j.core.profile.CommonProfile
@@ -75,9 +76,9 @@ class UserLogicTests {
 
         val sut = DbProfileServiceUserLogic(mockUserRepo, mockProfileService, mock())
 
-        assertThatThrownBy { sut.addUser(TEST_EMAIL, "testpassword") }
+        TranslationAssert.assertThatThrownBy { sut.addUser(TEST_EMAIL, "testpassword") }
                 .isInstanceOf(UserException::class.java)
-                .hasMessageContaining("User already exists")
+                .hasTranslatedMessage("User already exists.")
     }
 
     @Test
@@ -100,9 +101,9 @@ class UserLogicTests {
 
         val sut = DbProfileServiceUserLogic(mockUserRepo, mockProfileService, mock())
 
-        assertThatThrownBy { sut.removeUser(TEST_EMAIL) }
+        TranslationAssert.assertThatThrownBy { sut.removeUser(TEST_EMAIL) }
                 .isInstanceOf(UserException::class.java)
-                .hasMessageContaining("User does not exist")
+                .hasTranslatedMessage("User does not exist.")
     }
 
     @Test

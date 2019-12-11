@@ -48,7 +48,7 @@ class JSONValidator {
                     .isNotNull()
         }
         if (errorTrace != null) {
-            val actualErrorTrace = error["trace"].asText()
+            val actualErrorTrace = error["trace"].first().asText()
             val regex = Regex(errorTrace)
             assertThat(regex.matchEntire(actualErrorTrace))
                     .withFailMessage("Expected $actualErrorTrace to match $errorTrace")

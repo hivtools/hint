@@ -31,7 +31,8 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
     private val expectedSuccessResponse = "{\"errors\":[],\"status\":\"success\",\"data\":true}"
 
     private fun expectedErrorResponse(errorMessage: String): String {
-        return "{\"data\":{},\"status\":\"failure\",\"errors\":[{\"error\":\"OTHER_ERROR\",\"detail\":\"$errorMessage\"}]}"
+        return "{\"data\":{},\"status\":\"failure\"," +
+                "\"errors\":[{\"error\":\"OTHER_ERROR\",\"detail\":\"$errorMessage\"}]}"
     }
 
     @AfterEach
@@ -85,7 +86,7 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
                 HttpEntity(map, headers))
 
         assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(entity.body).isEqualTo(expectedErrorResponse("Token is not valid"))
+        assertThat(entity.body).isEqualTo(expectedErrorResponse("Token is not valid."))
     }
 
     @Test

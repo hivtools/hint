@@ -1,8 +1,8 @@
 package org.imperial.mrc.hint.database
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.exceptions.UserException
+import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.logic.UserLogic
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -42,9 +42,9 @@ class UserLogicTests {
     @Test
     fun `emails without @ signs are invalid`() {
 
-        Assertions.assertThatThrownBy { sut.addUser("email", "testpassword") }
+        TranslationAssert.assertThatThrownBy { sut.addUser("email", "testpassword") }
                 .isInstanceOf(UserException::class.java)
-                .hasMessageContaining("Please provide a valid email address")
+                .hasTranslatedMessage("Please provide a valid email address.")
     }
 
     @Test
@@ -67,9 +67,9 @@ class UserLogicTests {
     fun `cannot add same user twice`() {
         sut.addUser(TEST_EMAIL, "testpassword")
 
-        Assertions.assertThatThrownBy { sut.addUser(TEST_EMAIL, "testpassword") }
+        TranslationAssert.assertThatThrownBy { sut.addUser(TEST_EMAIL, "testpassword") }
                 .isInstanceOf(UserException::class.java)
-                .hasMessageContaining("User already exists")
+                .hasTranslatedMessage("User already exists.")
 
     }
 
@@ -77,18 +77,17 @@ class UserLogicTests {
     fun `cannot add same user twice with differently cased domain`() {
         sut.addUser("test@test.com", "testpassword")
 
-        Assertions.assertThatThrownBy { sut.addUser("test@TEST.com", "testpassword") }
+        TranslationAssert.assertThatThrownBy { sut.addUser("test@TEST.com", "testpassword") }
                 .isInstanceOf(UserException::class.java)
-                .hasMessageContaining("User already exists")
+                .hasTranslatedMessage("User already exists.")
 
     }
 
     @Test
     fun `cannot remove nonexistent user`() {
-        Assertions.assertThatThrownBy { sut.removeUser("notaperson.@email.com") }
+        TranslationAssert.assertThatThrownBy { sut.removeUser("notaperson@email.com") }
                 .isInstanceOf(UserException::class.java)
-                .hasMessageContaining("User does not exist")
-
+                .hasTranslatedMessage("User does not exist.")
     }
 
     @Test
@@ -102,12 +101,12 @@ class UserLogicTests {
         sut.addUser("test@test.com", "testpassword")
         assertThat(sut.getUser("test@TEST.com")!!.username).isEqualTo(TEST_EMAIL)
     }
-    
+
     @Test
     fun `throws error if trying to get user with invalid email`() {
-        Assertions.assertThatThrownBy { sut.getUser("email") }
+        TranslationAssert.assertThatThrownBy { sut.getUser("email") }
                 .isInstanceOf(UserException::class.java)
-                .hasMessageContaining("Please provide a valid email address")
+                .hasTranslatedMessage("Please provide a valid email address.")
     }
 
 }

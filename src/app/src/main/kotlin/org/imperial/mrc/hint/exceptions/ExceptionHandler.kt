@@ -79,7 +79,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         val originalMessage = if (!e.message.isNullOrEmpty()) {
             listOf(e.message!!)
         } else {
-            listOf()
+            null
         }
         return ErrorDetail(status, message, originalMessage)
                 .toResponseEntity()

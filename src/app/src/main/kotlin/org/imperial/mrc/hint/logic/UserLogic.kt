@@ -55,7 +55,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
 
         val emailArray = email.split("@")
         if (emailArray.count() == 1) {
-            throw UserException("Please provide a valid email address")
+            throw UserException("invalidEmail")
         }
 
         val caseInsensitiveDomainRegex = Regex("(?-i)${emailArray[0]}@(?i)${emailArray[1]}")
