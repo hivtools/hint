@@ -71,7 +71,7 @@ describe("Load actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "LoadFailed",
-            payload: "The file contents are corrupted."
+            payload: {detail: "The file contents are corrupted."}
         });
 
         //should not hand on to updateState action
