@@ -27,23 +27,25 @@ export const mutations: MutationTree<RootState> = {
 
         const maxValidStep = action.payload;
 
-        Object.assign(state, {
+        //We treat the final group of steps 4-6 together - all rely on modelRun and its result. If we're calling Reset
+        //at all we assume that these steps will be invalidated but earlier steps may be retainable
+        const resetState: RootState = {
             version: state.version,
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
             surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramDataState() : state.surveyAndProgram,
             modelOptions: maxValidStep < 3 ? initialModelOptionsState() : state.modelOptions,
-            modelOutput: maxValidStep <= 6 ? initialModelOutputState() :  state.modelOutput,
-            modelRun: maxValidStep <= 6 ? initialModelRunState() :  state.modelRun,
-            plottingSelections: maxValidStep <= 6 ? initialPlottingSelectionsState() : state.plottingSelections,
+            modelOutput: initialModelOutputState(),
+            modelRun: initialModelRunState(),
+            plottingSelections: initialPlottingSelectionsState(),
             filteredData: state.filteredData,
             stepper: state.stepper,
             load: state.load,
             errors: state.errors
-        });
+        };
+        Object.assign(state, resetState);
 
-        //THIS IS A BIT MESSY - WE'RE ASSUMING THE MAX WE CAN GO HERE IS 4, BUT NOT ABOVE
-        const maxAccessibleStep = maxValidStep < 4 ? maxValidStep : 4;
+        const maxAccessibleStep = maxValidStep < 4 ? maxValidStep  : 4; //might be 0
         if (state.stepper.activeStep > maxAccessibleStep) {
             state.stepper.activeStep = maxAccessibleStep;
         }
