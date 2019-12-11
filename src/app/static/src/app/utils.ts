@@ -1,16 +1,17 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
 import {Dict} from "./types";
-import {Response, Error} from "./generated";
+import {Error, Response} from "./generated";
 
 export type ComputedWithType<T> = () => T;
 
-export const mapStateProp = <S, T>(namespace: string, func: (s: S) => T): ComputedWithType<T> => {
-    return (mapState<S>(namespace, {prop: (state) => func(state)}) as Dict<ComputedWithType<T>>)["prop"]
+export const mapStateProp = <S, T>(namespace: string | null, func: (s: S) => T): ComputedWithType<T> => {
+    return namespace && (mapState<S>(namespace, {prop: (state) => func(state)}) as Dict<ComputedWithType<T>>)["prop"]
+        || (mapState<S>({prop: (state) => func(state)}) as Dict<ComputedWithType<T>>)["prop"]
 };
 
-export const mapStatePropByName = <T>(namespace: string, name: string): ComputedWithType<T> => {
-    return mapState(namespace, [name])[name]
+export const mapStatePropByName = <T>(namespace: string | null, name: string): ComputedWithType<T> => {
+    return (namespace && mapState(namespace, [name])[name]) || mapState([name])[name]
 };
 
 export const mapStateProps = <S, K extends string>(namespace: string,
@@ -28,8 +29,8 @@ export const mapGettersByNames = <K extends string>(namespace: string, names: st
     return mapGetters(namespace, names) as R
 };
 
-export const mapActionByName = <T>(namespace: string, name: string): ActionMethod => {
-    return mapActions(namespace, [name])[name]
+export const mapActionByName = <T>(namespace: string | null, name: string): ActionMethod => {
+    return (!!namespace && mapActions(namespace, [name])[name]) || mapActions([name])[name]
 };
 
 export const mapActionsByNames = <K extends string>(namespace: string, names: string[]) => {
@@ -74,7 +75,7 @@ export function isHINTResponse(object: any): object is Response {
 
 export const freezer = {
 
-    deepFreeze : (data: any): any => {
+    deepFreeze: (data: any): any => {
         if (Array.isArray(data)) {
             return Object.freeze(data.map(d => freezer.deepFreeze(d)))
         }
@@ -98,8 +99,7 @@ export function stripNamespace(name: string) {
     const nameArray = name.split("/");
     if (nameArray.length == 1) {
         return ["root", name];
-    }
-    else {
+    } else {
         return nameArray;
     }
 }

@@ -11,7 +11,6 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 
 const localVue = createLocalVue();
-Vue.use(Vuex);
 
 describe("Baseline upload component", () => {
 

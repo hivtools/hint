@@ -1,5 +1,4 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
-import Vue from 'vue';
 import Vuex from 'vuex';
 import SurveyAndProgram from "../../../app/components/surveyAndProgram/SurveyAndProgram.vue";
 import FileUpload from "../../../app/components/FileUpload.vue";
@@ -10,7 +9,6 @@ import {mockError, mockFilteredDataState, mockSurveyAndProgramState} from "../..
 export function testUploadComponent(name: string, position: number) {
 
     const localVue = createLocalVue();
-    Vue.use(Vuex);
 
     let actions: jest.Mocked<SurveyAndProgramActions>;
     let mutations = {};
