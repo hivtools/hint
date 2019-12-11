@@ -1,9 +1,11 @@
 import axios, {AxiosRequestConfig} from 'axios';
 import {Service} from 'axios-middleware';
+import {Language} from "../../app/store/translations/locales";
 
 const FormData = require("form-data");
-
 const service = new Service(axios);
+
+export const rootState = {language: Language.en};
 
 export const login = async () => {
     const formData = new FormData();
