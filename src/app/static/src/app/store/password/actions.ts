@@ -13,11 +13,11 @@ export interface ResetPasswordActionParams {
 }
 
 export interface PasswordActions {
-    requestResetLink: (store: ActionContext<PasswordState, RootState>, email: string) => void
-    resetPassword: (store: ActionContext<PasswordState, RootState>, payload: ResetPasswordActionParams) => void
+    requestResetLink: (store: ActionContext<PasswordState, PasswordState>, email: string) => void
+    resetPassword: (store: ActionContext<PasswordState, PasswordState>, payload: ResetPasswordActionParams) => void
 }
 
-export const actions: ActionTree<PasswordState, RootState> & PasswordActions = {
+export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions = {
 
     async requestResetLink(context, email) {
         await api<PasswordActionTypes, PasswordActionErrorTypes>(context)
