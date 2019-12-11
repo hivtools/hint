@@ -1,6 +1,7 @@
-import {mockAxios, mockError, mockFailure, mockSuccess} from "../mocks";
+import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/password/actions";
 
+const rootState = mockRootState();
 describe("Password actions", () => {
 
     beforeEach(() => {
@@ -20,7 +21,7 @@ describe("Password actions", () => {
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        await actions.requestResetLink({commit} as any, "test@email.com");
+        await actions.requestResetLink({commit, rootState} as any, "test@email.com");
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ResetLinkRequested",
@@ -34,7 +35,7 @@ describe("Password actions", () => {
             .reply(500, mockFailure("test error"));
 
         const commit = jest.fn();
-        await actions.requestResetLink({commit} as any, "test@email.com");
+        await actions.requestResetLink({commit, rootState} as any, "test@email.com");
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "RequestResetLinkError",
@@ -48,7 +49,7 @@ describe("Password actions", () => {
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        await actions.resetPassword({commit} as any, {"token": "testToken", "password": "new_password"});
+        await actions.resetPassword({commit, rootState} as any, {"token": "testToken", "password": "new_password"});
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ResetPassword",
@@ -62,7 +63,7 @@ describe("Password actions", () => {
             .reply(500, mockFailure("test error"));
 
         const commit = jest.fn();
-        await actions.resetPassword({commit} as any, {"token": "testToken", "password": "new_password"});
+        await actions.resetPassword({commit, rootState} as any, {"token": "testToken", "password": "new_password"});
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ResetPasswordError",

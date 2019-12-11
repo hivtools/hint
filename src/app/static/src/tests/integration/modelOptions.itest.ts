@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/modelOptions/actions";
-import {login} from "./integrationTest";
+import {login, rootState} from "./integrationTest";
 import {isDynamicFormMeta} from "../../app/components/forms/dynamicFormChecker";
 import {actions as baselineActions} from "../../app/store/baseline/actions";
 import {actions as surveyActions} from "../../app/store/surveyAndProgram/actions";
@@ -18,18 +18,18 @@ describe("model options actions integration", () => {
         let formData = new FormData();
         formData.append('file', file);
 
-        await baselineActions.uploadShape({commit, dispatch} as any, formData);
+        await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
 
         file = fs.createReadStream("../testdata/survey.csv");
         formData = new FormData();
         formData.append('file', file);
 
-        await surveyActions.uploadSurvey({commit, dispatch} as any, formData);
+        await surveyActions.uploadSurvey({commit, dispatch, rootState} as any, formData);
     });
 
     it("can get valid model options", async () => {
         const commit = jest.fn();
-        await actions.fetchModelRunOptions({commit} as any);
+        await actions.fetchModelRunOptions({commit, rootState} as any);
         expect(commit.mock.calls[1][0]["type"]).toBe("ModelOptionsFetched");
         const payload = commit.mock.calls[1][0]["payload"];
         expect(isDynamicFormMeta(payload)).toBe(true);
