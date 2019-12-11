@@ -23,13 +23,13 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                            private val appProperties: AppProperties)
     : ResponseEntityExceptionHandler() {
 
-    override fun handleExceptionInternal(e: java.lang.Exception,
+    override fun handleExceptionInternal(e: Exception,
                                          @Nullable body: Any?,
                                          headers: HttpHeaders,
                                          status: HttpStatus,
                                          request: WebRequest): ResponseEntity<Any> {
         logger.error(e.message)
-        return translatedError(e.message ?: "unexpectedError", status, request)
+        return unexpectedError(e, status, request)
     }
 
     @ExceptionHandler(HintException::class)
@@ -47,29 +47,42 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     @ExceptionHandler(PSQLException::class)
     protected fun handlePSQLException(e: PSQLException, request: WebRequest): ResponseEntity<Any> {
         logger.error(e.message)
-        return translatedError("unexpectedError", HttpStatus.INTERNAL_SERVER_ERROR, request)
+        return unexpectedError(e, HttpStatus.INTERNAL_SERVER_ERROR, request)
     }
 
     private fun translatedError(key: String, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
         val language = request.getHeader("Accept-Language") ?: "en"
         val resources = ResourceBundle.getBundle("MessageBundle", Locale(language))
 
-        var message = if (resources.containsKey(key)) {
+        val message = if (resources.containsKey(key)) {
             resources.getString(key)
         } else {
             key
         }
-        if (key == "unexpectedError") {
-            val formatter = MessageFormat("")
-            formatter.applyPattern(message)
-            val messageArguments = arrayOf(
-                    appProperties.applicationTitle,
-                    errorCodeGenerator.newCode(),
-                    appProperties.supportEmail
-            )
-            message = formatter.format(messageArguments)
-        }
+
         return ErrorDetail(status, message).toResponseEntity()
+    }
+
+    private fun unexpectedError(e: Exception, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+        val locale = Locale(request.getHeader("Accept-Language") ?: "en")
+        val resources = ResourceBundle.getBundle("MessageBundle", locale)
+
+        var message = resources.getString("unexpectedError")
+        val formatter = MessageFormat(message, locale)
+        val messageArguments = arrayOf(
+                appProperties.applicationTitle,
+                errorCodeGenerator.newCode(),
+                appProperties.supportEmail
+        )
+        message = formatter.format(messageArguments)
+
+        val trace = if (!e.message.isNullOrEmpty()) {
+            listOf(e.message!!)
+        } else {
+            listOf()
+        }
+        return ErrorDetail(status, message, trace)
+                .toResponseEntity()
     }
 
 }

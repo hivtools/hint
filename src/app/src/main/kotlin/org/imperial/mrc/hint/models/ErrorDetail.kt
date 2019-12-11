@@ -4,7 +4,9 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 
-class ErrorDetail(private val httpStatus: HttpStatus, val detail: String) {
+class ErrorDetail(private val httpStatus: HttpStatus,
+                  val detail: String,
+                  val trace: List<String> = listOf()) {
 
     val error = "OTHER_ERROR"
     fun toResponseEntity() = ResponseEntity

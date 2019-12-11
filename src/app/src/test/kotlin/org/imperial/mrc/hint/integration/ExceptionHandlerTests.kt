@@ -8,6 +8,7 @@ import org.imperial.mrc.hint.exceptions.ErrorCodeGenerator
 import org.imperial.mrc.hint.exceptions.HintExceptionHandler
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.helpers.tmpUploadDirectory
+import org.imperial.mrc.hint.helpers.unexpectedErrorRegex
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
@@ -22,13 +23,18 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.context.request.WebRequest
 import java.io.File
 
-class ExceptionHandlerTests() : SecureIntegrationTests() {
+class ExceptionHandlerTests : SecureIntegrationTests() {
+
+    private val mockException = mock<HttpMessageNotWritableException>()
 
     @Test
     fun `route not found errors are correctly formatted`() {
         val entity = testRestTemplate.getForEntity("/nonsense/route/", String::class.java)
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        JSONValidator().validateError(entity.body!!, "OTHER_ERROR", "No handler found for GET /nonsense/route/", false)
+        JSONValidator().validateError(entity.body!!,
+                "OTHER_ERROR",
+                unexpectedErrorRegex,
+                "No handler found for GET /nonsense/route/")
     }
 
     @ParameterizedTest
@@ -49,8 +55,8 @@ class ExceptionHandlerTests() : SecureIntegrationTests() {
                 entity,
                 HttpStatus.BAD_REQUEST,
                 "OTHER_ERROR",
-                "Required request part 'file' is not present",
-                false)
+                unexpectedErrorRegex,
+                "Required request part 'file' is not present")
     }
 
     @Test
@@ -63,10 +69,10 @@ class ExceptionHandlerTests() : SecureIntegrationTests() {
             on { supportEmail } doReturn "support@email.com"
         }
         val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
-        val result = sut.handleException(mock<HttpMessageNotWritableException>(), mock())
+        val result = sut.handleException(mockException, mock())
         JSONValidator().validateError(result!!.body!!.toString(),
                 "OTHER_ERROR",
-                "Unexpected error. If you see this message while you are using AppTitle at a workshop, " +
+                "An unexpected error occurred. If you see this message while you are using AppTitle at a workshop, " +
                         "please contact your workshop technical support and show them this code: 1234. " +
                         "Otherwise please contact support at support@email.com and quote this code: 1234")
     }
@@ -84,10 +90,10 @@ class ExceptionHandlerTests() : SecureIntegrationTests() {
             on { getHeader("Accept-Language") } doReturn "fr"
         }
         val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
-        val result = sut.handleException(mock<HttpMessageNotWritableException>(), mockRequest)
+        val result = sut.handleException(mockException, mockRequest)
         JSONValidator().validateError(result!!.body!!.toString(),
                 "OTHER_ERROR",
-                "Unexpected error. If you see this message while you are using AppTitle at a workshop, " +
+                "Une erreur inattendue s'est produite. If you see this message while you are using AppTitle at a workshop, " +
                         "please contact your workshop technical support and show them this code: 1234. " +
                         "Otherwise please contact support at support@email.com and quote this code: 1234")
     }
@@ -105,10 +111,10 @@ class ExceptionHandlerTests() : SecureIntegrationTests() {
             on { getHeader("Accept-Language") } doReturn "de"
         }
         val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
-        val result = sut.handleException(mock<HttpMessageNotWritableException>(), mockRequest)
+        val result = sut.handleException(mockException, mockRequest)
         JSONValidator().validateError(result!!.body!!.toString(),
                 "OTHER_ERROR",
-                "Unexpected error. If you see this message while you are using AppTitle at a workshop, " +
+                "An unexpected error occurred. If you see this message while you are using AppTitle at a workshop, " +
                         "please contact your workshop technical support and show them this code: 1234. " +
                         "Otherwise please contact support at support@email.com and quote this code: 1234")
     }
