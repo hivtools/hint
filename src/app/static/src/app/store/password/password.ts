@@ -1,6 +1,8 @@
 import {Error} from "../../generated";
+import {TranslatableState} from "../../root";
+import {Language} from "../translations/locales";
 
-export interface PasswordState {
+export interface PasswordState extends TranslatableState {
     resetLinkRequested: boolean
     requestResetLinkError: Error | null
     passwordWasReset: boolean
@@ -8,6 +10,7 @@ export interface PasswordState {
 }
 
 export const initialPasswordState: PasswordState = {
+    language: Language.en,
     resetLinkRequested: false,
     requestResetLinkError: null,
     passwordWasReset: false,

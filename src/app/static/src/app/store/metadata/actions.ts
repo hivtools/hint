@@ -12,8 +12,8 @@ export interface MetadataActions {
 
 export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
 
-    async getPlottingMetadata({commit}, iso3) {
-        await api<MetadataActionTypes, MetadataErrorActionTypes>(commit)
+    async getPlottingMetadata(context, iso3) {
+        await api<MetadataActionTypes, MetadataErrorActionTypes>(context)
             .withSuccess("PlottingMetadataFetched")
             .withError("PlottingMetadataError")
             .get(`/meta/plotting/${iso3}`);

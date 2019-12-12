@@ -1,4 +1,4 @@
-import {mockAxios, mockBaselineState, mockError, mockFailure} from "./mocks";
+import {mockAxios, mockBaselineState, mockError, mockFailure, mockRootState} from "./mocks";
 import {ActionContext, MutationTree} from "vuex";
 import {PayloadWithType} from "../app/types";
 import i18next from "i18next";
@@ -23,7 +23,8 @@ export function testUploadErrorCommitted(url: string,
         const commit = jest.fn();
         const state = mockBaselineState();
         const dispatch = jest.fn();
-        await action({commit, state, dispatch} as any, new FormData());
+        const rootState = mockRootState();
+        await action({commit, state, dispatch, rootState} as any, new FormData());
 
         // first call to clear the data
         expect(commit.mock.calls[0][0]).toStrictEqual({

@@ -11,9 +11,10 @@ export interface ModelOptionsActions {
 
 export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsActions = {
 
-    async fetchModelRunOptions({commit}) {
+    async fetchModelRunOptions(context) {
+        const {commit} = context;
         commit(ModelOptionsMutation.FetchingModelOptions);
-        const response = await api<ModelOptionsMutation, ModelOptionsMutation>(commit)
+        const response = await api<ModelOptionsMutation, ModelOptionsMutation>(context)
             .withSuccess(ModelOptionsMutation.ModelOptionsFetched)
             .get<DynamicFormMeta>("/model/options/");
 

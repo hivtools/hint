@@ -12,7 +12,6 @@
         </drop-down>
         <modal :open="hasError">
             <h4>Load Error</h4>
-            <p>Failed to load state.</p>
             <p>{{loadError}}</p>
             <template v-slot:footer>
                 <button type="button"
@@ -78,7 +77,7 @@
         computed: {
             ...mapStateProps<LoadState, keyof LoadComputed>("load", {
                 hasError: state => state.loadingState == LoadingState.LoadFailed,
-                loadError: state => state.loadError
+                loadError: state => state.loadError && state.loadError.detail
             }),
             baselineFiles: mapStateProp<BaselineState, BaselineFiles>("baseline", state => {
                 return {

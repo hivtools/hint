@@ -50,9 +50,15 @@ describe("root actions", () => {
         };
 
         await actions.validate(mockContext as any);
+
         expect(mockContext.dispatch).toHaveBeenCalled();
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 1});
         expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetFilteredDataSelections"});
+
+        expect(mockContext.commit.mock.calls[2][0]).toStrictEqual({
+            type: "load/LoadFailed",
+            payload: {detail: "There was a problem loading your data. Some data may have been invalid. Please contact support if this issue persists."}
+        });
     });
 
     it("resets state if a step following current step is not valid", async () => {

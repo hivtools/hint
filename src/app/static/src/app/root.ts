@@ -27,9 +27,11 @@ import {
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 import {Language} from "./store/translations/locales";
 
+export interface TranslatableState {
+    language: Language
+}
 
-export interface RootState {
-    language: Language,
+export interface RootState extends TranslatableState {
     version: string;
     baseline: BaselineState,
     metadata: MetadataState,

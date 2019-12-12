@@ -1,10 +1,11 @@
 import {
     mockAxios, mockError,
-    mockFailure,
+    mockFailure, mockRootState,
     mockSuccess
 } from "../mocks";
 import {actions} from "../../app/store/metadata/actions";
 
+const rootState = mockRootState();
 describe("Metadata actions", () => {
 
     beforeEach(() => {
@@ -23,7 +24,7 @@ describe("Metadata actions", () => {
             .reply(200, mockSuccess("TEST DATA"));
 
         const commit = jest.fn();
-        await actions.getPlottingMetadata({commit} as any, "Malawi");
+        await actions.getPlottingMetadata({commit, rootState} as any, "Malawi");
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PlottingMetadataFetched", payload: "TEST DATA"});
     });
@@ -41,7 +42,7 @@ describe("Metadata actions", () => {
             .reply(statusCode, mockFailure("Test Error"));
 
         const commit = jest.fn();
-        await actions.getPlottingMetadata({commit} as any, "Malawi");
+        await actions.getPlottingMetadata({commit, rootState} as any, "Malawi");
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PlottingMetadataError", payload: mockError("Test Error")});
     }

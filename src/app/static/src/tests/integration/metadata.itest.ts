@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/metadata/actions";
-import {login} from "./integrationTest";
+import {login, rootState} from "./integrationTest";
 import {PlottingMetadataResponse} from "../../app/generated";
 
 describe("Metadata actions", () => {
@@ -11,7 +11,7 @@ describe("Metadata actions", () => {
     it("can get plotting metadata", async () => {
         const commit = jest.fn();
 
-        await actions.getPlottingMetadata({commit} as any, "MWI");
+        await actions.getPlottingMetadata({commit, rootState} as any, "MWI");
         expect(commit.mock.calls[0][0]["type"]).toBe("PlottingMetadataFetched");
 
         const payload = commit.mock.calls[0][0]["payload"] as PlottingMetadataResponse;

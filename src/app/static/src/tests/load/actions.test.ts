@@ -4,7 +4,7 @@ import {LoadingState} from "../../app/store/load/load";
 import {addCheckSum} from "../../app/utils";
 import {localStorageManager} from "../../app/localStorageManager";
 
-const FormData = require("form-data");
+const rootState = mockRootState();
 
 describe("Load actions", () => {
 
@@ -20,7 +20,7 @@ describe("Load actions", () => {
 
     it("load reads blob and dispatches setFiles action", (done) => {
         const dispatch = jest.fn();
-        actions.load({dispatch} as any, new File(["Test File Contents"], "testFile"));
+        actions.load({dispatch, rootState} as any, new File(["Test File Contents"], "testFile"));
 
         const interval = setInterval(()=> {
             if (dispatch.mock.calls.length > 0) {
@@ -34,7 +34,7 @@ describe("Load actions", () => {
 
     it("clears loading state", async () => {
         const commit = jest.fn();
-        await actions.clearLoadState({commit} as any);
+        await actions.clearLoadState({commit, rootState} as any);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "LoadStateCleared", payload: null});
     });
 
@@ -47,7 +47,7 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
         const dispatch = jest.fn();
         const fileContents = addCheckSum('{"files": "TEST FILES", "state": "TEST STATE"}');
-        await actions.setFiles({commit, state, dispatch} as any, fileContents);
+        await actions.setFiles({commit, state, dispatch, rootState} as any, fileContents);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "UpdatingState", payload: {}});
@@ -66,12 +66,12 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.NotLoading});
         const dispatch = jest.fn();
         const fileContents = '["badchecksum", {"files": "TEST FILES", "state": "TEST STATE"}]';
-        await actions.setFiles({commit, state, dispatch} as any, fileContents);
+        await actions.setFiles({commit, state, dispatch, rootState} as any, fileContents);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "LoadFailed",
-            payload: "The file contents are corrupted."
+            payload: {detail: "The file contents are corrupted."}
         });
 
         //should not hand on to updateState action
@@ -87,7 +87,7 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.NotLoading});
         const dispatch = jest.fn();
         const fileContents = addCheckSum('{"files": "TEST FILES", "state": "TEST STATE"}');
-        await actions.setFiles({commit, state, dispatch} as any, fileContents);
+        await actions.setFiles({commit, state, dispatch, rootState} as any, fileContents);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "LoadFailed", payload: mockError("Test error")});
@@ -105,7 +105,7 @@ describe("Load actions", () => {
         window.location = {reload: mockLocationReload} as any;
 
         const testState = mockRootState();
-        await actions.updateStoreState({} as any, testState);
+        await actions.updateStoreState({rootState} as any, testState);
 
         expect(mockSaveToLocalStorage.mock.calls[0][0]).toBe(testState);
         expect(mockLocationReload.mock.calls.length).toBe(1);
