@@ -25,20 +25,24 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         reader.readAsText(file);
     },
 
-    async setFiles({commit, dispatch, state}, savedFileContents) {
+    async setFiles(context, savedFileContents) {
+        const {commit, dispatch, state} = context;
         commit({type: "SettingFiles", payload: null});
 
         const objectContents = verifyCheckSum(savedFileContents);
 
         if (!objectContents) {
-            commit({type: "LoadFailed", payload: "The file contents are corrupted."});
+            commit({
+                type: "LoadFailed",
+                payload: {detail: "The file contents are corrupted."}
+            });
             return;
         }
 
         const files = objectContents.files;
         const savedState = objectContents.state;
 
-        await api<LoadActionTypes, LoadErrorActionTypes>(commit)
+        await api<LoadActionTypes, LoadErrorActionTypes>(context)
             .withSuccess("UpdatingState")
             .withError("LoadFailed")
             .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)

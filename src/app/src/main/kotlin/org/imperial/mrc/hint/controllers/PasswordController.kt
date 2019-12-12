@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.HintException
@@ -20,7 +20,7 @@ class TokenException(message: String) : HintException(message, HttpStatus.BAD_RE
 @Controller
 @Validated
 @RequestMapping("/password")
-class PasswordController(private val userRepository: UserRepository,
+class PasswordController(private val userLogic: UserLogic,
                          private val oneTimeTokenManager: OneTimeTokenManager,
                          private val emailManager: EmailManager) {
 
@@ -32,7 +32,7 @@ class PasswordController(private val userRepository: UserRepository,
     @PostMapping("/request-reset-link")
     @ResponseBody
     fun requestResetLink(@RequestParam("email") email: String): String {
-        val user = userRepository.getUser(email)
+        val user = userLogic.getUser(email)
 
         if (user != null) {
             emailManager.sendPasswordEmail(email, user.username, PasswordEmailTemplate.ResetPassword())
@@ -54,7 +54,7 @@ class PasswordController(private val userRepository: UserRepository,
                           @RequestParam("password") @Size(min = 6, message = "Password must be at least 6 characters long")
                           password: String): String {
         val user = oneTimeTokenManager.validateToken(token) ?: throw TokenException("Token is not valid")
-        userRepository.updateUserPassword(user, password)
+        userLogic.updateUserPassword(user, password)
         return EmptySuccessResponse.toJsonString()
     }
 }

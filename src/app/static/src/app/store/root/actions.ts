@@ -1,9 +1,12 @@
 import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
 import {StepDescription} from "../stepper/stepper";
+import {RootMutation} from "./mutations";
+import i18next from 'i18next';
 
 export interface RootActions {
     validate: (store: ActionContext<RootState, RootState>) => void;
+    changeLanguage: (store: ActionContext<RootState, RootState>, lang: string) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -22,6 +25,17 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
                 dispatch("surveyAndProgram/deleteAll")
             ]);
             commit({type: "Reset"});
+            commit({
+                type: "load/LoadFailed",
+                payload: {
+                    detail: "There was a problem loading your data. Some data may have been invalid. Please contact support if this issue persists."
+                }
+            });
         }
+    },
+
+    async changeLanguage({commit}, lang) {
+        await i18next.changeLanguage(lang);
+        commit({type: RootMutation.ChangeLanguage, payload: lang})
     }
 };

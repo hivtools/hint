@@ -1,11 +1,12 @@
 import {actions, makeCancelRunRequest} from "../../app/store/modelRun/actions";
-import {login} from "./integrationTest";
+import {login, rootState} from "./integrationTest";
 import {ModelSubmitResponse} from "../../app/generated";
 import {RootState} from "../../app/root";
 import {ModelRunState} from "../../app/store/modelRun/modelRun";
-import {mockModelStatusResponse} from "../mocks";
 import {api} from "../../app/apiService";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
+import {Language} from "../../app/store/translations/locales";
+import {mockRootState} from "../mocks";
 
 describe("Model run actions", () => {
 
@@ -14,6 +15,7 @@ describe("Model run actions", () => {
         await login();
         const commit = jest.fn();
         const mockState = {
+            language: Language.en,
             modelOptions: {
                 options: {},
                 version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"}
@@ -26,6 +28,7 @@ describe("Model run actions", () => {
     it("can trigger model run", async () => {
         const commit = jest.fn();
         const mockState = {
+            language: Language.en,
             modelOptions: {
                 options: {},
                 version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"}
@@ -40,7 +43,7 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const mockState = {status: {done: true}} as ModelRunState;
 
-        actions.poll({commit, state: mockState, dispatch: jest.fn()} as any, runId);
+        actions.poll({commit, state: mockState, dispatch: jest.fn(), rootState} as any, runId);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingForStatusStarted");
         const pollingInterval = (commit.mock.calls[0][0]["payload"]);
 
@@ -64,7 +67,7 @@ describe("Model run actions", () => {
                 id: "1234"
             }
         } as ModelRunState;
-        await actions.getResult({commit, state: mockState} as any);
+        await actions.getResult({commit, state: mockState, rootState} as any);
 
         // passing an invalid run id so this will return an error
         // but the expected error message confirms
@@ -87,13 +90,15 @@ describe("Model run actions", () => {
 
     it ("makeCancelRunRequest makes call to API", async () => {
         const commit = jest.fn();
-        const mockState = {
+        const state = {
             modelRunId: "1234"
         } as ModelRunState;
+        const rootState = mockRootState();
 
-        const apiService = api<ModelRunMutation, ModelRunMutation>(commit)
+        const apiService = api<ModelRunMutation, ModelRunMutation>({commit, state, rootState} as any)
                             .withError("ExpectedPostFailure" as ModelRunMutation);
-        await makeCancelRunRequest(apiService, mockState);
+
+        await makeCancelRunRequest(apiService, state);
         expect(commit.mock.calls[0][0]["type"]).toBe("ExpectedPostFailure");
         expect(commit.mock.calls[0][0]["payload"]["error"]).toBe("FAILED_TO_CANCEL");
     });

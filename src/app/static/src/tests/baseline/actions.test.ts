@@ -2,16 +2,17 @@ import {
     mockAxios,
     mockBaselineState, mockError,
     mockFailure,
-    mockPopulationResponse,
+    mockPopulationResponse, mockRootState,
     mockShapeResponse,
     mockSuccess,
     mockValidateBaselineResponse
 } from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
-import {expectEqualsFrozen, testUploadErrorCommitted} from "../actionTestHelpers";
+import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 
 const FormData = require("form-data");
+const rootState = mockRootState();
 
 describe("Baseline actions", () => {
 
@@ -33,7 +34,8 @@ describe("Baseline actions", () => {
         const commit = jest.fn();
         const state = mockBaselineState({iso3: "MWI"});
         const dispatch = jest.fn();
-        await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
+
+        await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: BaselineMutation.PJNZUpdated, payload: null});
 
@@ -62,7 +64,7 @@ describe("Baseline actions", () => {
         const commit = jest.fn();
         const state = mockBaselineState({pjnzError: mockError("test error")});
         const dispatch = jest.fn();
-        await actions.uploadPJNZ({commit, state, dispatch} as any, new FormData());
+        await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, new FormData());
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
@@ -81,7 +83,7 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.uploadShape({commit, dispatch} as any, new FormData());
+        await actions.uploadShape({commit, dispatch, rootState} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: BaselineMutation.ShapeUpdated,
@@ -108,7 +110,7 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.uploadPopulation({commit, dispatch} as any, new FormData());
+        await actions.uploadPopulation({commit, dispatch, rootState} as any, new FormData());
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: BaselineMutation.PopulationUpdated,
@@ -144,7 +146,7 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.getBaselineData({commit, dispatch} as any);
+        await actions.getBaselineData({commit, dispatch, rootState} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
         expect(calls).toContain(BaselineMutation.PJNZUpdated);
@@ -163,7 +165,7 @@ describe("Baseline actions", () => {
             .reply(200, mockSuccess(mockValidateResponse));
 
         const commit = jest.fn();
-        await actions.validate({commit} as any);
+        await actions.validate({commit, rootState} as any);
 
         //commits to Validating first
         expect(commit.mock.calls[0][0]).toStrictEqual({
@@ -183,7 +185,7 @@ describe("Baseline actions", () => {
             .reply(400, mockFailure("Baseline is inconsistent"));
 
         const commit = jest.fn();
-        await actions.validate({commit} as any);
+        await actions.validate({commit, rootState} as any);
 
         //commits to Validating first
         expect(commit.mock.calls[0][0]).toStrictEqual({
@@ -211,7 +213,7 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.getBaselineData({commit, dispatch} as any);
+        await actions.getBaselineData({commit, dispatch, rootState} as any);
 
         expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.Ready);
@@ -224,7 +226,7 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.deletePJNZ({commit, dispatch} as any);
+        await actions.deletePJNZ({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
@@ -237,7 +239,7 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.deleteShape({commit, dispatch} as any);
+        await actions.deleteShape({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
@@ -250,7 +252,7 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.deletePopulation({commit, dispatch} as any);
+        await actions.deletePopulation({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
@@ -266,7 +268,7 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.deleteAll({commit, dispatch} as any);
+        await actions.deleteAll({commit, dispatch, rootState} as any);
         expect(mockAxios.history["delete"].length).toBe(3)
     });
 

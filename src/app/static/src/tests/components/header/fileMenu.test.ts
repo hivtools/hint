@@ -1,10 +1,9 @@
 import {mount, shallowMount} from "@vue/test-utils";
-import UserHeader from "../../app/components/UserHeader.vue";
 import Vuex from "vuex";
 import {
     mockAncResponse,
     mockBaselineState, mockError, mockFile,
-    mockLoadState,
+    mockLoadState, mockMetadataState,
     mockModelRunState,
     mockPJNZResponse,
     mockPopulationResponse,
@@ -12,17 +11,16 @@ import {
     mockShapeResponse,
     mockSurveyAndProgramState,
     mockSurveyResponse
-} from "../mocks";
-import Vue from "vue";
-import Modal from "../../app/components/Modal.vue";
-import {LoadingState} from "../../app/store/load/load";
+} from "../../mocks";
+import Modal from "../../../app/components/Modal.vue";
+import {LoadingState} from "../../../app/store/load/load";
+import FileMenu from "../../../app/components/header/FileMenu.vue";
 
-Vue.use(Vuex);
 // jsdom has only implemented navigate up to hashes, hence appending a hash here to the base url
 const mockCreateObjectUrl = jest.fn(() => "http://localhost#1234");
 window.URL.createObjectURL = mockCreateObjectUrl;
 
-describe("user header", () => {
+describe("File menu", () => {
 
     const storeModules = {
         baseline: {
@@ -48,6 +46,10 @@ describe("user header", () => {
         load: {
             namespaced: true,
             state: mockLoadState()
+        },
+        metadata: {
+            namespaced: true,
+            state: mockMetadataState()
         }
     };
 
@@ -60,39 +62,8 @@ describe("user header", () => {
         });
     };
 
-    it("toggles dropdown on click", () => {
-        const wrapper = shallowMount(UserHeader,
-            {
-                store: createStore()
-            });
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
-    });
-
-    it("closes dropdown on blur", () => {
-        const wrapper = shallowMount(UserHeader,
-            {
-                store: createStore()
-            });
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        wrapper.find(".dropdown-toggle").trigger("blur");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
-    });
-
-    it("contains logout link", () => {
-        const wrapper = shallowMount(UserHeader,
-            {
-                store: createStore()
-            });
-        expect(wrapper.find("a[href='/logout']")).toBeDefined();
-    });
-
     it("downloads file", (done) => {
-        const wrapper = shallowMount(UserHeader,
+        const wrapper = mount(FileMenu,
             {
                 propsData: {title: "naomi"},
                 store: createStore()
@@ -110,7 +81,11 @@ describe("user header", () => {
         expect((hiddenLink.attributes("download") as string).match(re)).toBeDefined();
 
         const expectedJson = JSON.stringify({
-            state: {modelRun: mockModelRunState()}, files: {
+            state: {
+                modelRun: mockModelRunState(),
+                metadata: mockMetadataState()
+            },
+            files: {
                 pjnz: {hash: "2csv", filename: "2.csv"},
                 population: {hash: "1csv", filename: "1.csv"},
                 shape: {hash: "3csv", filename: "3.csv"},
@@ -133,7 +108,7 @@ describe("user header", () => {
     });
 
     it ("opens file dialog on click load", (done) => {
-        const wrapper = shallowMount(UserHeader,
+        const wrapper = mount(FileMenu,
             {
                 store: createStore()
             });
@@ -154,7 +129,7 @@ describe("user header", () => {
     it("invokes load action when file selected from dialog", () => {
         const mockLoadAction = jest.fn();
 
-        const wrapper = shallowMount(UserHeader,
+        const wrapper = mount(FileMenu,
             {
                 store: createStore({
                     load: {
@@ -183,7 +158,7 @@ describe("user header", () => {
     });
 
     it("does not open modal if no load error", () => {
-        const wrapper = shallowMount(UserHeader,
+        const wrapper = shallowMount(FileMenu,
             {
                 store: createStore()
             });
@@ -192,7 +167,7 @@ describe("user header", () => {
     });
 
     it("opens modal if load error", () => {
-        const wrapper = shallowMount(UserHeader,
+        const wrapper = shallowMount(FileMenu,
             {
                 store: createStore({
                     load: {
@@ -207,13 +182,13 @@ describe("user header", () => {
 
         const modal = wrapper.find(Modal);
         expect(modal.attributes("open")).toEqual("true");
-        expect(modal.text()).toContain("test error");
+        expect(modal.find("p").text()).toEqual("test error");
     });
 
 
     it("modal can be dismissed", () => {
         const clearErrorMock = jest.fn();
-        const wrapper = mount(UserHeader,
+        const wrapper = mount(FileMenu,
             {
                 store: createStore({
                     load: {
@@ -234,11 +209,4 @@ describe("user header", () => {
         expect(clearErrorMock.mock.calls.length).toBe(1);
     });
 
-    it("contains bug report link", () => {
-        const wrapper = shallowMount(UserHeader,
-            {
-                store: createStore()
-            });
-        expect(wrapper.find("a[href='https://forms.gle/QxCT1b4ScLqKPg6a7']")).toBeDefined();
-    });
 });

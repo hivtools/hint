@@ -14,18 +14,20 @@ export interface ModelRunActions {
 
 export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
-    async run({commit, rootState}) {
+    async run(context) {
+        const {commit, rootState} = context;
         const options = rootState.modelOptions.options;
         const version = rootState.modelOptions.version;
-        await api<ModelRunMutation, ModelRunMutation>(commit)
+        await api<ModelRunMutation, ModelRunMutation>(context)
             .withSuccess(ModelRunMutation.ModelRunStarted)
             .withError(ModelRunMutation.ModelRunError)
             .postAndReturn<ModelSubmitResponse>("/model/run/", {options, version})
     },
 
-    poll({commit, state, dispatch}, runId) {
+    poll(context, runId) {
+        const {commit, dispatch, state} = context;
         const id = setInterval(() => {
-            api<ModelRunMutation, ModelRunMutation>(commit)
+            api<ModelRunMutation, ModelRunMutation>(context)
                 .withSuccess(ModelRunMutation.RunStatusUpdated)
                 .withError(ModelRunMutation.RunStatusError)
                 .get<ModelStatusResponse>(`/model/status/${runId}`)
@@ -39,9 +41,10 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
         commit({type: "PollingForStatusStarted", payload: id})
     },
 
-    async getResult({commit, state}) {
+    async getResult(context) {
+        const {commit, state} = context;
         if (state.status.done) {
-            await api<ModelRunMutation, ModelRunMutation>(commit)
+            await api<ModelRunMutation, ModelRunMutation>(context)
                 .withSuccess(ModelRunMutation.RunResultFetched)
                 .withError(ModelRunMutation.RunResultError)
                 .freezeResponse()
@@ -65,9 +68,10 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
         commit({type: "Ready", payload: true});
     },
 
-    async cancelRun({commit, state}) {
+    async cancelRun(context) {
+        const {commit, state} = context;
         commit({type: "RunCancelled", payload: null});
-        const apiService = api<ModelRunMutation, ModelRunMutation>(commit)
+        const apiService = api<ModelRunMutation, ModelRunMutation>(context)
                     .ignoreErrors();
 
         await makeCancelRunRequest(apiService, state)

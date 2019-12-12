@@ -1,6 +1,6 @@
 import {actions} from "../../app/store/load/actions";
 import {addCheckSum} from "../../app/utils";
-import {login} from "./integrationTest";
+import {login, rootState} from "./integrationTest";
 import {actions as baselineActions} from "../../app/store/baseline/actions";
 import {ShapeResponse} from "../../app/generated";
 
@@ -16,7 +16,7 @@ describe("load actions", () => {
         const file = fs.createReadStream("../testdata/malawi.geojson");
         const formData = new FormData();
         formData.append('file', file);
-        await baselineActions.uploadShape({commit, dispatch: jest.fn()} as any, formData);
+        await baselineActions.uploadShape({commit, dispatch: jest.fn(), rootState} as any, formData);
         shape = (commit.mock.calls[1][0]["payload"] as ShapeResponse);
     });
 
@@ -27,7 +27,7 @@ describe("load actions", () => {
             state: {}
         });
         const fakeFileContents = addCheckSum(fakeState);
-        await actions.setFiles({commit, dispatch: jest.fn(), state: {}} as any, fakeFileContents);
+        await actions.setFiles({commit, dispatch: jest.fn(), state: {}, rootState} as any, fakeFileContents);
 
         expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
         expect(commit.mock.calls[1][0].type).toBe("UpdatingState");

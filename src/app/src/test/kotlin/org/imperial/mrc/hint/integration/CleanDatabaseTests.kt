@@ -1,9 +1,8 @@
 package org.imperial.mrc.hint.integration
 
 import org.jooq.Table
-import org.imperial.mrc.hint.db.DbProfileServiceUserRepository
+import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic
 import org.imperial.mrc.hint.db.Tables
-import org.imperial.mrc.hint.db.Tables.SESSION_FILE
 import org.imperial.mrc.hint.helpers.tmpUploadDirectory
 import org.jooq.DSLContext
 import org.junit.jupiter.api.AfterEach
@@ -20,7 +19,7 @@ abstract class CleanDatabaseTests
     protected lateinit var dsl: DSLContext
 
     @Autowired
-    private lateinit var userRepo: DbProfileServiceUserRepository
+    private lateinit var userRepo: DbProfileServiceUserLogic
 
     @AfterEach
     fun tearDown() {

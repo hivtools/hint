@@ -8,8 +8,10 @@ import {
     mockSuccess
 } from "../mocks";
 import {actions} from "../../app/store/modelRun/actions";
-import {ModelResultResponse, ModelStatusResponse} from "../../app/generated";
-import {expectEqualsFrozen} from "../actionTestHelpers";
+import {ModelStatusResponse} from "../../app/generated";
+import {expectEqualsFrozen} from "../testHelpers";
+
+const rootState = mockRootState();
 
 describe("Model run actions", () => {
 
@@ -46,7 +48,7 @@ describe("Model run actions", () => {
             .reply(200, mockSuccess({id: "12345"}));
 
         const commit = jest.fn();
-        await actions.run({commit, rootState: mockRootState()} as any);
+        await actions.run({commit, rootState} as any);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ModelRunStarted",
             payload: {id: "12345"}
@@ -65,7 +67,7 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
-        actions.poll({commit, state, dispatch} as any, "1234");
+        actions.poll({commit, state, dispatch, rootState} as any, "1234");
 
         setInterval(() => {
             expect(dispatch.mock.calls[0][0]).toStrictEqual("getResult");
@@ -85,7 +87,7 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
-        actions.poll({commit, state, dispatch} as any, "1234");
+        actions.poll({commit, state, dispatch, rootState} as any, "1234");
 
         setInterval(() => {
             expect(dispatch.mock.calls.length).toEqual(0);
@@ -103,7 +105,7 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const state = mockModelRunState();
 
-        actions.poll({commit, state} as any, "1234");
+        actions.poll({commit, state, rootState} as any, "1234");
 
         setTimeout(() => {
             expect(commit.mock.calls[0][0].type).toBe("PollingForStatusStarted");
@@ -124,7 +126,7 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const state = mockModelRunState();
 
-        actions.poll({commit, state} as any, "1234");
+        actions.poll({commit, state, rootState} as any, "1234");
 
         setTimeout(() => {
             expect(commit.mock.calls[0][0].type).toBe("PollingForStatusStarted");
@@ -145,7 +147,7 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const state = mockModelRunState({modelRunId: "1234", status: {done: true} as ModelStatusResponse});
 
-        await actions.getResult({commit, state} as any);
+        await actions.getResult({commit, state, rootState} as any);
 
         expectEqualsFrozen(commit.mock.calls[0][0], {
             type: "RunResultFetched",
@@ -181,7 +183,7 @@ describe("Model run actions", () => {
             result: testResult as any
         });
 
-        await actions.getResult({commit, state} as any);
+        await actions.getResult({commit, state, rootState} as any);
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "plottingSelections/updateBarchartSelections",
@@ -201,7 +203,7 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const state = mockModelRunState({modelRunId: "1234", status: {done: true, id: "1234"} as ModelStatusResponse});
 
-        await actions.getResult({commit, state} as any);
+        await actions.getResult({commit, state, rootState} as any);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "RunResultError",
@@ -220,7 +222,7 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const state = mockModelRunState({modelRunId: "1234", status: {done: false, id: "1234"} as ModelStatusResponse});
 
-        await actions.getResult({commit, state} as any);
+        await actions.getResult({commit, state, rootState} as any);
 
         expect(mockAxios.history.get.length).toBe(0);
         expect(commit.mock.calls[0][0]).toStrictEqual({
