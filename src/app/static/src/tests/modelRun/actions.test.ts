@@ -235,7 +235,7 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         const state = mockModelRunState({modelRunId: "123"});
 
-        await actions.cancelRun({commit, state} as any);
+        await actions.cancelRun({commit, state, rootState} as any);
 
         expect(mockAxios.history.post.length).toBe(1);
         expect(mockAxios.history.post[0].url).toBe("/model/cancel/123");

@@ -70,14 +70,16 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
     async cancelRun(context) {
         const {commit, state} = context;
+        const modelRunId = state.modelRunId;
+
         commit({type: "RunCancelled", payload: null});
         const apiService = api<ModelRunMutation, ModelRunMutation>(context)
                     .ignoreErrors();
 
-        await makeCancelRunRequest(apiService, state)
+        await makeCancelRunRequest(apiService,modelRunId)
     }
 };
 
-export async function makeCancelRunRequest(api: APIService<ModelRunMutation, ModelRunMutation>, state: ModelRunState){
-    return await api.postAndReturn<null>(`/model/cancel/${state.modelRunId}`);
+export async function makeCancelRunRequest(api: APIService<ModelRunMutation, ModelRunMutation>, modelRunId: string){
+    return await api.postAndReturn<null>(`/model/cancel/${modelRunId}`);
 }
