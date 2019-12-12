@@ -1,17 +1,19 @@
 <template>
     <div style="flex:auto">
         <drop-down text="File">
-            <a class="dropdown-item" v-on:mousedown="save">Save
+            <a class="dropdown-item" v-on:mousedown="save">
+                <translated text-key="save"></translated>
                 <download-icon size="20" class="icon"></download-icon>
             </a>
             <a style="display:none" ref="save"></a>
-            <a class="dropdown-item" ref="load" href="#" v-on:mousedown="$refs.loadFile.click()">Load
+            <a class="dropdown-item" ref="load" href="#" v-on:mousedown="$refs.loadFile.click()">
+                <translated text-key="load"></translated>
                 <upload-icon size="20" class="icon"></upload-icon>
             </a>
             <input type="file" style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
         </drop-down>
         <modal :open="hasError">
-            <h4>Load Error</h4>
+            <h4> <translated text-key="loadError"></translated></h4>
             <p>{{loadError}}</p>
             <template v-slot:footer>
                 <button type="button"
@@ -19,7 +21,7 @@
                         data-dismiss="modal"
                         aria-label="Close"
                         @click="clearLoadError">
-                    OK
+                    <translated text-key="ok"></translated>
                 </button>
             </template>
         </modal>

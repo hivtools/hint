@@ -1,26 +1,31 @@
 <template>
     <div class="card reset-password-form mx-auto mt-5">
         <div class="card-body">
-            <h3 class="card-title">Forgotten your password?</h3>
+            <h3 class="card-title">
+                <translated text-key="forgottenPassword"></translated>
+            </h3>
             <p>
-                If you've forgotten your password, enter your email address to request a link which you can use
-                to create a new password.
+                <translated text-key="forgottenPasswordHelp"></translated>
             </p>
             <form ref="forgotPasswordForm" class="needs-validation" novalidate>
                 <div class="form-group">
-                    <input type="email" class="form-control" name="email" id="email" placeholder="Email address"
+                    <input type="email" class="form-control" name="email" id="email"
+                           v-translate:placeholder="'email'"
                            v-model="email" required>
-                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                    <div class="invalid-feedback">
+                        <translated text-key="emailValidation"></translated>
+                    </div>
                 </div>
-
                 <div class="text-center">
-                    <input class="btn btn-red" type="submit" value="Request password reset email"
-                           v-on:click="handleRequestResetLink">
+                    <button class="btn btn-red" type="submit"
+                            v-on:click="handleRequestResetLink">
+                        <translated text-key="requestReset"></translated>
+                    </button>
                 </div>
             </form>
             <error-alert v-if="hasError" :error="error"></error-alert>
             <div v-if="resetLinkRequested" class="alert alert-success mt-4" role="alert">
-                Thank you. If we have an account registered for this email address, you wil receive a password reset link.
+                <translated text-key="resetLinkRequested"></translated>
             </div>
         </div>
     </div>
@@ -39,17 +44,17 @@
                 email: ""
             };
         },
-        computed: mapState<PasswordState>( {
+        computed: mapState<PasswordState>({
             error: state => state.requestResetLinkError,
-            hasError:  state => !!state.requestResetLinkError,
+            hasError: state => !!state.requestResetLinkError,
             resetLinkRequested: state => state.resetLinkRequested
         }),
-       components: {
+        components: {
             ErrorAlert
         },
         methods: {
             ...mapActions({requestResetLink: 'requestResetLink'}),
-            handleRequestResetLink: function(event: Event){
+            handleRequestResetLink: function (event: Event) {
                 event.preventDefault();
                 const form = this.$refs.forgotPasswordForm as HTMLFieldSetElement;
                 if (form.checkValidity()) {

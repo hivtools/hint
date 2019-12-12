@@ -23,7 +23,6 @@
     import Vue from "vue";
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
-    import Translated from "../Translated.vue";
 
     interface Props {
         title: string,
@@ -37,8 +36,7 @@
         },
         components: {
             FileMenu,
-            LanguageMenu,
-            Translated
+            LanguageMenu
         }
     })
 </script>

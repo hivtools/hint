@@ -2,14 +2,17 @@
     <div>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
-            <h2 id="loading-message">Loading options</h2>
+            <h2 id="loading-message">
+                <translated text-key="loadingOptions"></translated>
+            </h2>
         </div>
         <dynamic-form v-if="!loading"
                       v-model="modelOptions"
-                      submit-text="Validate"
+                      :submit-text="validateText"
                       v-on:mousedown.native="confirmEditing"
                       @submit="validate"></dynamic-form>
-        <h4 v-if="valid" class="mt-3">Options are valid
+        <h4 v-if="valid" class="mt-3">
+            <translated text-key="optionsValid"></translated>
             <tick color="#e31837" width="20px"></tick>
         </h4>
         <reset-confirmation :continue-editing="continueEditing"
@@ -26,11 +29,14 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 
-    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
     import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
     import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
     import ResetConfirmation from "../ResetConfirmation.vue";
     import {StepDescription} from "../../store/stepper/stepper";
+    import i18next from "i18next";
+    import {RootState} from "../../root";
+    import {Language} from "../../store/translations/locales";
 
     interface Methods {
         fetchOptions: () => void
@@ -48,9 +54,11 @@
         valid: boolean
         editsRequireConfirmation: boolean
         laterCompleteSteps: StepDescription[]
+        lang: Language
     }
 
     interface Data {
+        validateText: string,
         showConfirmation: boolean
     }
 
@@ -59,11 +67,13 @@
     export default Vue.extend<Data, Methods, Computed, {}>({
         data() {
             return {
+                validateText: i18next.t("validate"),
                 showConfirmation: false
             }
         },
         name: "ModelOptions",
         computed: {
+            lang: mapStateProp(null, (state: RootState) => state.language),
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
@@ -103,6 +113,11 @@
             LoadingSpinner,
             Tick,
             ResetConfirmation
+        },
+        watch: {
+            lang() {
+                this.validateText = i18next.t("validate");
+            }
         },
         mounted() {
             this.fetchOptions();

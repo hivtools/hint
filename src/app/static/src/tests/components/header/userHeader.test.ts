@@ -1,9 +1,7 @@
 import {shallowMount} from "@vue/test-utils";
 import UserHeader from "../../../app/components/header/UserHeader.vue";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
-import Translated from "../../../app/components/Translated.vue";
 import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
-import i18next from "i18next";
 import {expectTranslatedText} from "../../testHelpers";
 
 // jsdom has only implemented navigate up to hashes, hence appending a hash here to the base url

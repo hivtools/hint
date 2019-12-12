@@ -11,7 +11,11 @@ import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Tick from "../../../app/components/Tick.vue";
 import {ModelOptionsActions} from "../../../app/store/modelOptions/actions";
-import {RootState} from "../../../app/root";
+import {emptyState, RootState} from "../../../app/root";
+import {expectTranslatedText} from "../../testHelpers";
+import {Language} from "../../../app/store/translations/locales";
+import {actions} from "../../../app/store/root/actions";
+import {mutations} from "../../../app/store/root/mutations";
 
 const localVue = createLocalVue();
 
@@ -33,14 +37,17 @@ describe("Model options component", () => {
     };
 
     const createStore = (props: Partial<ModelOptionsState>,
-                         mutations: MutationTree<ModelOptionsState> = mockMutations,
-                         actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) => new Vuex.Store({
+                         modelOptionsMutations: MutationTree<ModelOptionsState> = mockMutations,
+                         modelOptionsActions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) => new Vuex.Store({
+        state: emptyState(),
+        actions,
+        mutations,
         modules: {
             modelOptions: {
                 namespaced: true,
                 state: mockModelOptionsState(props),
-                mutations,
-                actions
+                mutations: modelOptionsMutations,
+                actions: modelOptionsActions
             },
             stepper: {
                 namespaced: true,
@@ -56,20 +63,28 @@ describe("Model options component", () => {
         expect(rendered.findAll(LoadingSpinner).length).toBe(0);
     });
 
+    it("passes translated submitText to dynamic form", async () => {
+        const store = createStore({optionsFormMeta: {controlSections: []}});
+        const rendered = mount(ModelOptions, {store});
+        expect(rendered.find(DynamicForm).props("submitText")).toBe("Validate");
+        await store.dispatch("changeLanguage", Language.fr);
+        expect(rendered.find(DynamicForm).props("submitText")).toBe("Valider");
+    });
+
     it("displays loading spinner while fetching is true", () => {
         const store = createStore({fetching: true});
         const rendered = shallowMount(ModelOptions, {store});
         expect(rendered.findAll(DynamicForm).length).toBe(0);
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expectTranslatedText(rendered.find("#loading-message"), "Loading options");
     });
 
     it("displays tick and message if valid is true", () => {
         const store = createStore({valid: true});
         const rendered = shallowMount(ModelOptions, {store});
-        expect(rendered.find("h4").text()).toBe("Options are valid");
+        expectTranslatedText(rendered.find("h4"), "Options are valid");
         expect(rendered.findAll(Tick).length).toBe(1);
     });
-
 
     it("does not display tick or message if valid is false", () => {
         const store = createStore({valid: false});

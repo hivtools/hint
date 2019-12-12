@@ -11,7 +11,10 @@
                                  :existingFileName="pjnz.existingFileName"
                                  accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
                                  name="pjnz">
-                        <label v-if="country"><strong>Country</strong>: {{country}}</label>
+                        <label v-if="country"><strong>
+                            <translated text-key="country"></translated>
+                        </strong>: {{country}}
+                        </label>
                     </file-upload>
                     <file-upload label="Shape file"
                                  :valid="shape.valid"
@@ -34,7 +37,7 @@
                 </form>
                 <div v-if="validating" id="baseline-validating">
                     <loading-spinner size="xs"></loading-spinner>
-                    Validating...
+                    <translated text-key="validating"></translated>
                 </div>
                 <error-alert v-if="hasBaselineError" :error="baselineError"></error-alert>
             </div>

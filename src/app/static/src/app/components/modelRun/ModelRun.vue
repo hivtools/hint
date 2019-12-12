@@ -2,9 +2,11 @@
     <div>
         <button class="btn btn-red btn-lg"
                 v-on:click="run"
-                :disabled="running">Run model
+                :disabled="running">
+            <translated text-key="runModel"></translated>
         </button>
-        <h4 v-if="complete" class="mt-3" id="model-run-complete">Model run complete
+        <h4 v-if="complete" class="mt-3" id="model-run-complete">
+            <translated text-key="runComplete"></translated>
             <tick color="#e31837" width="20px"></tick>
         </h4>
         <modal :open="running">
@@ -12,7 +14,7 @@
                           :key="phase.name"
                           :phase="phase"></progress-bar>
             <div class="text-center" v-if="phases.length == 0">
-                <h4>Initialising model run</h4>
+                <h4><translated text-key="initialisingRun"></translated></h4>
                 <loading-spinner size="sm"></loading-spinner>
             </div>
         </modal>

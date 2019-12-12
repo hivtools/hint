@@ -1,13 +1,15 @@
 <template>
    <div class="row">
        <div class="col-sm-12">
-           <h4>Export model outputs for Spectrum</h4>
+           <h4><translated text-key="exportOutputs"></translated></h4>
            <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>
-               Export <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+               <translated text-key="export"></translated>
+               <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
            </a>
-           <h4 class="mt-4">Download summary</h4>
+           <h4 class="mt-4"><translated text-key="downloadSummary"></translated></h4>
            <a class="btn btn-red btn-lg my-3" :href=summaryUrl>
-               Download <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+               <translated text-key="download"></translated>
+               <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
            </a>
        </div>
    </div>

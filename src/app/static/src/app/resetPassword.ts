@@ -5,6 +5,7 @@ import Vuex from "vuex";
 import {initialPasswordState, PasswordState} from "./store/password/password";
 import {actions} from './store/password/actions';
 import {mutations} from './store/password/mutations';
+import init from "./store/translations/init";
 
 Vue.use(Vuex);
 
@@ -15,6 +16,7 @@ const passwordStoreOptions: StoreOptions<PasswordState> = {
 };
 
 const store = new Vuex.Store<PasswordState>(passwordStoreOptions);
+init(store);
 
 export const resetPasswordApp = new Vue({
     el: "#app",
