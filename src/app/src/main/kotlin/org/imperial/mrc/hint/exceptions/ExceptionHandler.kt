@@ -77,7 +77,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         )
         message = formatter.format(messageArguments)
 
-        val trace = if (!originalMessage.isNullOrEmpty()) {
+        val trace = if (originalMessage != null) {
             listOf(originalMessage)
         } else {
             null
