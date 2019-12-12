@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus
 class TranslationTests : SecureIntegrationTests() {
 
     @Test
-    fun `POST returns translated error message when accept language is fr`() {
+    fun `returns translated error message when accept language is fr`() {
         authorize()
         testRestTemplate.getForEntity<String>("/")
         val headers = HttpHeaders()
@@ -26,22 +26,5 @@ class TranslationTests : SecureIntegrationTests() {
                 HttpStatus.BAD_REQUEST,
                 "INVALID_FILE",
                 "Le ficheier doit être d'un type PJNZ, zip, mais reçu geojson,geojson,geojson")
-    }
-
-    @Test
-    fun `GET returns translated error message when accept language is fr`() {
-        authorize()
-        testRestTemplate.getForEntity<String>("/")
-        val headers = HttpHeaders()
-        headers.set("Accept-Language", "fr")
-        val responseEntity = testRestTemplate.exchange<String>("/model/result/nonsense",
-                HttpMethod.GET,
-                HttpEntity<String>(headers))
-
-        assertSecureWithError(IsAuthorized.TRUE,
-                responseEntity,
-                HttpStatus.BAD_REQUEST,
-                "FAILED_TO_RETRIEVE_RESULT",
-                "Something in french")
     }
 }
