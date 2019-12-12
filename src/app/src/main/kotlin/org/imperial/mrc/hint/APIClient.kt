@@ -10,7 +10,10 @@ import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.pac4j.core.context.WebContext
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
+import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
+
 
 interface APIClient {
     fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String>
@@ -31,6 +34,14 @@ class HintrAPIClient(
         private val objectMapper: ObjectMapper) : APIClient {
 
     private val baseUrl = appProperties.apiUrl
+
+    fun getAcceptLanguage(): String {
+        val requestAttributes = RequestContextHolder.getRequestAttributes()
+        if (requestAttributes is ServletRequestAttributes) {
+            return requestAttributes.request.getHeader("Accept-Language")?: "en"
+        }
+        return "en"
+    }
 
     override fun validateBaselineIndividual(file: SessionFileWithPath,
                                             type: FileType): ResponseEntity<String> {
@@ -90,6 +101,7 @@ class HintrAPIClient(
 
     fun get(url: String): ResponseEntity<String> {
         return "$baseUrl/$url".httpGet()
+                .header("Accept-Language" to getAcceptLanguage())
                 .timeout(60000)
                 .timeoutRead(60000)
                 .response()
@@ -101,6 +113,7 @@ class HintrAPIClient(
         return "$baseUrl/$url".httpPost()
                 .timeout(60000)
                 .timeoutRead(60000)
+                .header("Accept-Language" to getAcceptLanguage())
                 .header("Content-Type" to "application/json")
                 .body(json)
                 .response()
