@@ -35,7 +35,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     }
 
     @ExceptionHandler(PSQLException::class)
-    protected fun handlePSQLException(e: PSQLException, request: WebRequest): ResponseEntity<Any> {
+    fun handlePSQLException(e: PSQLException, request: WebRequest): ResponseEntity<Any> {
         logger.error(e.message)
         // for security reasons we should not return arbitrary db errors to the frontend
         // so do not pass the original error message here
@@ -43,9 +43,9 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     }
     
     @ExceptionHandler(HintException::class)
-    protected fun handleHintException(e: HintException, request: WebRequest): ResponseEntity<Any> {
+    fun handleHintException(e: HintException, request: WebRequest): ResponseEntity<Any> {
         logger.error(e.message)
-        return translatedError(e.message!!, e.httpStatus, request)
+        return translatedError(e.key, e.httpStatus, request)
     }
 
     private fun getBundle (request: WebRequest): ResourceBundle {

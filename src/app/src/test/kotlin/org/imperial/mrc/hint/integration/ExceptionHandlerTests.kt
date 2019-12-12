@@ -3,15 +3,20 @@ package org.imperial.mrc.hint.integration
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.exceptions.ErrorCodeGenerator
+import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.exceptions.HintExceptionHandler
+import org.imperial.mrc.hint.exceptions.RandomErrorCodeGenerator
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.helpers.tmpUploadDirectory
 import org.imperial.mrc.hint.helpers.unexpectedErrorRegex
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.postgresql.util.PSQLException
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpEntity
@@ -118,4 +123,24 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
                         "please contact your workshop technical support and show them this code: 1234. " +
                         "Otherwise please contact support at support@email.com and quote this code: 1234")
     }
+
+    @Test
+    fun `translated error message falls back to key if no value is present`() {
+        val sut = HintExceptionHandler(mock(), mock())
+        val result = sut.handleHintException(HintException("badKey"), mock())
+        JSONValidator().validateError(result.body!!.toString(),
+                "OTHER_ERROR",
+                "badKey")
+    }
+
+    @Test
+    fun `does not include original message from psql exceptions`() {
+        val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
+        val result = sut.handlePSQLException(PSQLException("some message", mock()), mock())
+        JSONValidator().validateError(result.body!!.toString(),
+                "OTHER_ERROR",
+                unexpectedErrorRegex)
+        assertThat(result.body!!.toString()).doesNotContain("trace")
+    }
+
 }
