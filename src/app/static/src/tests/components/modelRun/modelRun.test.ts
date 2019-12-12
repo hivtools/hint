@@ -19,6 +19,7 @@ import {ModelStatusResponse} from "../../../app/generated";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
+import {expectTranslatedText} from "../../testHelpers";
 
 const localVue = createLocalVue();
 
@@ -62,6 +63,7 @@ describe("Model run component", () => {
 
         const store = createStore();
         const wrapper = shallowMount(ModelRun, {store, localVue});
+        expectTranslatedText(wrapper.find("button"), "Run model");
         wrapper.find("button").trigger("click");
 
         setTimeout(() => {
@@ -151,7 +153,7 @@ describe("Model run component", () => {
 
         const wrapper = mount(ModelRun, {store, localVue});
         expect(wrapper.find(Modal).props().open).toBe(true);
-        expect(wrapper.find(Modal).find("h4").text()).toBe("Initialising model run");
+        expectTranslatedText(wrapper.find(Modal), "Initialising model run");
         expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.find(Modal).findAll(ProgressBar).length).toBe(0);
     });
@@ -236,7 +238,7 @@ describe("Model run component", () => {
             status: {id: "1234", success: true, done: true} as ModelStatusResponse
         });
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.find("#model-run-complete").text()).toBe("Model run complete");
+        expectTranslatedText(wrapper.find("#model-run-complete"), "Model run complete");
         expect(wrapper.findAll(Tick).length).toBe(1);
     });
 
