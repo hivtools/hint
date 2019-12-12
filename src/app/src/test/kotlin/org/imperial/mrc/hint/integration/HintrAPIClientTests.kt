@@ -77,6 +77,6 @@ class HintrApiClientTests {
     fun `can cancel model run`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.cancelModelRun("1234")
-        assertThat(result.statusCodeValue).isEqualTo(404)
+        assertThat(result.statusCodeValue).isEqualTo(400)
     }
 }

@@ -4,6 +4,8 @@ import {ModelSubmitResponse} from "../../app/generated";
 import {RootState} from "../../app/root";
 import {ModelRunState} from "../../app/store/modelRun/modelRun";
 import {mockModelStatusResponse} from "../mocks";
+import {api} from "../../app/apiService";
+import {ModelRunMutation} from "../../app/store/modelRun/mutations";
 
 describe("Model run actions", () => {
 
@@ -83,14 +85,16 @@ describe("Model run actions", () => {
         expect(commit.mock.calls[0][0]["payload"]).toBeNull();
     });
 
-    it ("makeCancelRunRequest gets response from API", async () => {
-        //TODO: regenerate types when hintr change goes in and expect the actual response type
-        //in the API call rather than null
+    it ("makeCancelRunRequest makes call to API", async () => {
         const commit = jest.fn();
         const mockState = {
             modelRunId: "1234"
         } as ModelRunState;
-        const result = await makeCancelRunRequest(commit, mockState);
-        expect(result).toBeUndefined();
+
+        const apiService = api<ModelRunMutation, ModelRunMutation>(commit)
+                            .withError("ExpectedPostFailure" as ModelRunMutation);
+        await makeCancelRunRequest(apiService, mockState);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ExpectedPostFailure");
+        expect(commit.mock.calls[0][0]["payload"]["error"]).toBe("FAILED_TO_CANCEL");
     });
 });

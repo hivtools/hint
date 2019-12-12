@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.integration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
@@ -44,12 +45,16 @@ class ModelRunTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can cancel run model`(isAuthorized: IsAuthorized) {
-        //TODO: Update this to withSuccess when hintr endpoint is in place
-        val responseEntity = testRestTemplate.postForEntity<String>("/model/cancel/1234")
-        assertSecureWithError(isAuthorized,
-                responseEntity,
-                HttpStatus.NOT_FOUND,
-                "NOT_FOUND", "POST /model/cancel/1234 is not a valid hintr path")
+        var modelRunId = "test"
+        if (isAuthorized == IsAuthorized.TRUE) {
+            val entity = getModelRunEntity(isAuthorized)
+            val runResponseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
+            val bodyJSON = ObjectMapper().readTree(runResponseEntity.body)
+            modelRunId = bodyJSON["data"]["id"].asText()
+        }
+
+        val responseEntity = testRestTemplate.postForEntity<String>("/model/cancel/$modelRunId")
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ModelCancelResponse")
     }
 
 }
