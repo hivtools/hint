@@ -28,7 +28,7 @@
     import MapControl from "../MapControl.vue";
     import {GeoJSON, Layer} from "leaflet";
     import {ChoroplethIndicatorMetadata} from "../../../generated";
-    import {getFeatureIndicators} from "./utils";
+    import {getFeatureIndicators, toIndicatorNamelLookup} from "./utils";
     import {BubbleIndicatorValuesDict, Dict, LevelLabel} from "../../../types";
 
     interface Props {
@@ -40,9 +40,10 @@
 
     interface Data {
         style: any,
+        //TODO: persist these as part of selections
         colorIndicator: string,
         sizeIndicator: string,
-        detail: number //TODO: persist this as part of selections
+        detail: number
     }
 
     interface Methods {
@@ -57,7 +58,8 @@
         featureIndicators: Dict<BubbleIndicatorValuesDict>,
         featuresByLevel: { [k: number]: Feature[] },
         currentFeatures: Feature[],
-        maxLevel: number
+        maxLevel: number,
+        indicatorNameLookup: Dict<string>
     }
 
     const props = {
@@ -135,6 +137,9 @@
             },
             currentFeatures() {
                 return this.featuresByLevel[this.detail]
+            },
+            indicatorNameLookup() {
+                return toIndicatorNamelLookup(this.indicators)
             }
         },
         methods: {
@@ -158,11 +163,12 @@
                 const colorValue = values && values[this.colorIndicator] && values[this.colorIndicator]!!.value;
                 const sizeValue = values && values[this.sizeIndicator] && values[this.sizeIndicator]!!.value;
 
-                //TODO: Use human readable names of indicators
+               const colorIndicatorName = this.indicatorNameLookup[this.colorIndicator];
+               const sizeIndicatorName = this.indicatorNameLookup[this.sizeIndicator];
                return `<div>
                                 <strong>${area_name}</strong>
-                                <br/>${this.colorIndicator}: ${colorValue}
-                                <br/>${this.sizeIndicator}: ${sizeValue}
+                                <br/>${colorIndicatorName}: ${colorValue}
+                                <br/>${sizeIndicatorName}: ${sizeValue}
                             </div>`;
             },
             onDetailChange: function (newVal: number) {

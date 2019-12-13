@@ -3,8 +3,9 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
+    mockBaselineState,
     mockFilteredDataState, mockModelResultResponse,
-    mockModelRunState,
+    mockModelRunState, mockShapeResponse,
 } from "../../mocks";
 import {DataType} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
@@ -18,6 +19,19 @@ const localVue = createLocalVue();
 function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
     return new Vuex.Store({
         modules: {
+            baseline: {
+                namespaced: true,
+                state: mockBaselineState({
+                    shape: mockShapeResponse({
+                        data: {
+                            features: ["TEST FEATURES"] as any
+                        } as any,
+                        filters: {
+                            level_labels: ["TEST LEVEL LABELS"] as any
+                        }
+                    })
+                })
+            },
             filteredData: {
                 namespaced: true,
                 state: mockFilteredDataState(),
@@ -38,7 +52,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                 },
                 getters: {
                     barchartIndicators: jest.fn(),
-                    barchartFilters: jest.fn()
+                    barchartFilters: jest.fn(),
+                    bubblePlotIndicators: jest.fn().mockReturnValue(["TEST BUBBLE INDICATORS"])
                 },
                 mutations: modelOutputMutations
             },
@@ -99,7 +114,11 @@ describe("ModelOutput component", () => {
         expect(wrapper.find(".nav-link.active").text()).toBe("Map");
         expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+
         expect(wrapper.find("#barchart-container").classes()).toEqual(["d-none"]);
+
+        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
+        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
 
         //should invoke mutation
         wrapper.findAll(".nav-link").at(1).trigger("click");
@@ -107,8 +126,23 @@ describe("ModelOutput component", () => {
         expect(wrapper.find(".nav-link.active").text()).toBe("Bar");
         expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
         expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+
         expect(wrapper.find("#barchart-container").classes()).toEqual(["col-md-12"]);
         expect(wrapper.findAll("barchart-stub").length).toBe(1);
+
+        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
+        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
+
+        wrapper.findAll(".nav-link").at(2).trigger("click");
+
+        expect(wrapper.find(".nav-link.active").text()).toBe("Bubble Plot");
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+
+        expect(wrapper.find("#barchart-container").classes()).toEqual(["d-none"]);
+
+        expect(wrapper.findAll("#bubble-plot-container").length).toBe(1);
+        expect(wrapper.findAll("bubble-plot-stub").length).toBe(1);
     });
 
     it("computes chartdata", () => {
@@ -133,5 +167,29 @@ describe("ModelOutput component", () => {
                 age: {id: "a1", label: "0-4"}
             }
         });
+    });
+
+    it("computes bubble plot indicators", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const vm = (wrapper as any).vm;
+
+        expect(vm.bubblePlotIndicators).toStrictEqual(["TEST BUBBLE INDICATORS"]);
+    });
+
+    it("computes features", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const vm = (wrapper as any).vm;
+
+        expect(vm.features).toStrictEqual(["TEST FEATURES"]);
+    });
+
+    it("computes feature levels", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const vm = (wrapper as any).vm;
+
+        expect(vm.featureLevels).toStrictEqual(["TEST LEVEL LABELS"]);
     });
 });

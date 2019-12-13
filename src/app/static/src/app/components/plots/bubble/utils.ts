@@ -1,7 +1,13 @@
-import {BubbleIndicatorValuesDict, Dict, IndicatorValuesDict} from "../../../types";
+import {BubbleIndicatorValuesDict, Dict, Filter, IndicatorValuesDict} from "../../../types";
 import {getColor} from "../../../store/filteredData/utils";
 import {Feature} from "geojson";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
+
+export const toIndicatorNamelLookup = (array: ChoroplethIndicatorMetadata[]) =>
+    array.reduce((obj, current) => {
+        obj[current.indicator] = current.name;
+        return obj
+    }, {} as Dict<string>);
 
 export const getFeatureIndicators = function (data: any[],
                                               selectedFeatures: Feature[],
