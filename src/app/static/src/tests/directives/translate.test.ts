@@ -1,41 +1,66 @@
-import {createLocalVue, mount} from "@vue/test-utils";
+import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import init from "../../app/store/translations/init";
 import {Language} from "../../app/store/translations/locales";
 
 describe("translate directive", () => {
 
-    const TranslateTest = {
+    const TranslateAttributeTest = {
         template: '<input v-translate:value="\'validate\'" />'
+    };
+
+    const TranslateInnerTextTest = {
+        template: '<h4 v-translate>validate</h4>'
     };
 
     const localVue = createLocalVue();
 
-    const store = new Vuex.Store({
-        state: {language: Language.en}
-    }) as any;
+    const createStore = () => {
+        const store = new Vuex.Store({
+            state: {language: Language.en}
+        });
+        init(store);
+        return store as any;
+    };
 
-    localVue.component('translate-test', TranslateTest);
-    init(store);
+    localVue.component('translate-attribute', TranslateAttributeTest);
+    localVue.component('translate-text', TranslateInnerTextTest);
 
     it("initialises the attribute with the translated text", () => {
-        const rendered = mount(TranslateTest, {store, localVue});
+        const store = createStore();
+        const rendered = shallowMount(TranslateAttributeTest, {store, localVue});
         expect((rendered.find("input").element as HTMLInputElement).value).toBe("Validate");
-        rendered.destroy();
     });
 
     it("translates the attribute when the store language changes", () => {
-        const rendered = mount(TranslateTest, {store, localVue});
+        const store = createStore();
+        const rendered = shallowMount(TranslateAttributeTest, {store, localVue});
         expect((rendered.find("input").element as HTMLInputElement).value).toBe("Validate");
         store.state.language = Language.fr;
         expect((rendered.find("input").element as HTMLInputElement).value).toBe("Valider");
-        rendered.destroy();
+    });
+
+    it("initialises inner text with translated text", () => {
+        const store = createStore();
+        const rendered = mount(TranslateInnerTextTest, {store, localVue});
+        expect(rendered.find("h4").text()).toBe("Validate");
+    });
+
+    it("translates inner text when the store language changes", () => {
+        const store = createStore();
+        const rendered = shallowMount(TranslateInnerTextTest, {store, localVue});
+        expect(rendered.find("h4").text()).toBe("Validate");
+        store.state.language = Language.fr;
+        expect(rendered.find("h4").text()).toBe("Valider");
     });
 
     it("unwatches on unbind", () => {
-        const rendered = mount(TranslateTest, {store, localVue});
-        expect((store._watcherVM as any)._watchers.length).toBe(1);
-        rendered.destroy();
+        const store = createStore();
+        const renderedAttribute = shallowMount(TranslateAttributeTest, {store, localVue});
+        const renderedText = shallowMount(TranslateInnerTextTest, {store, localVue});
+        expect((store._watcherVM as any)._watchers.length).toBe(2);
+        renderedAttribute.destroy();
+        renderedText.destroy();
         expect((store._watcherVM as any)._watchers.length).toBe(0);
     });
 
