@@ -129,6 +129,7 @@ const en: Translations = {
 };
 
 const fr: Partial<Translations> = {
+    email: "Adresse e-mail",
     logout: "Déconnexion",
     reportBug: "Envoyer un rapport de bug",
     validate: "Valider"

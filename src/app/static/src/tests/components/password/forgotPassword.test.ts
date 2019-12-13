@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount} from "@vue/test-utils";
+import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
 import ForgotPassword from "../../../app/components/password/ForgotPassword.vue";
 import {PasswordState} from "../../../app/store/password/password";
 import {PasswordActions} from "../../../app/store/password/actions";
@@ -7,6 +7,7 @@ import {mockError, mockPasswordState} from "../../mocks";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {expectTranslatedText} from "../../testHelpers";
 import init from "../../../app/store/translations/init";
+import {Language} from "../../../app/store/translations/locales";
 
 const localVue = createLocalVue();
 
@@ -33,7 +34,6 @@ describe("Forgot password component", () => {
         return shallowMount(ForgotPassword, {store, localVue});
     };
 
-
     it("renders form with no error", () => {
         const store = createStore({
             resetLinkRequested: false,
@@ -47,6 +47,18 @@ describe("Forgot password component", () => {
         expectTranslatedText(wrapper.find("button"), "Request password reset email");
         expect(wrapper.findAll("error-alert-stub").length).toEqual(0);
         expect(wrapper.findAll(".alert-success").length).toEqual(0);
+    });
+
+    it("renders translated placeholder", () => {
+        const store = createStore({
+            resetLinkRequested: false,
+            requestResetLinkError: null
+        });
+
+        const wrapper = mount(ForgotPassword, {store, localVue});
+        expect((wrapper.find("input[type='email']").element as HTMLInputElement).placeholder).toEqual("Email address");
+        store.state.language = Language.fr;
+        expect((wrapper.find("input[type='email']").element as HTMLInputElement).placeholder).toEqual("Adresse e-mail");
     });
 
     it("renders form with error", () => {
@@ -96,7 +108,6 @@ describe("Forgot password component", () => {
             expect(wrapper.find("form").classes()).toContain("was-validated");
             done();
         });
-
     });
 
     it("does not requestLink action if input value is empty", (done) => {
