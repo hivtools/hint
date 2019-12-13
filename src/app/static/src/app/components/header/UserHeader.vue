@@ -6,11 +6,14 @@
                     {{title}}
                 </div>
                 <file-menu :title="title"></file-menu>
-                <a href="https://forms.gle/QxCT1b4ScLqKPg6a7" target="_blank" class="pr-2 mr-2 border-right">
-                    <translated text-key="reportBug"></translated>
+                <a href="https://forms.gle/QxCT1b4ScLqKPg6a7"
+                   target="_blank"
+                   class="pr-2 mr-2 border-right"
+                   v-translate>
+                    reportBug
                 </a>
-                <a href="/logout" class="pr-2 mr-2 border-right">
-                    <translated text-key="logout"></translated>
+                <a href="/logout" class="pr-2 mr-2 border-right" v-translate>
+                    logout
                 </a>
                 <language-menu></language-menu>
             </div>
@@ -23,7 +26,6 @@
     import Vue from "vue";
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
-    import Translated from "../Translated.vue";
 
     interface Props {
         title: string,
@@ -37,8 +39,7 @@
         },
         components: {
             FileMenu,
-            LanguageMenu,
-            Translated
+            LanguageMenu
         }
     })
 </script>

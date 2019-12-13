@@ -16,8 +16,6 @@ export default <S extends TranslatableState>(store: Store<S>) => {
         fallbackLng: Language.en
     });
 
-    Vue.component('translated', Translated);
-
     // usage 1: <input v-translate:attribute="'keyName'">
     // e.g. <input v-translate:placeholder="'email'">
     // usage 2: <div v-translate>keyName</div>

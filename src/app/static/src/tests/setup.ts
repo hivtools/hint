@@ -2,7 +2,6 @@ import i18next from "i18next";
 import Vue from "vue";
 import Vuex from "vuex";
 import {Language, locales} from "../app/store/translations/locales";
-import Translated from "../app/components/Translated.vue";
 
 // create mock element for app to attach to
 const app = document.createElement('div');
@@ -31,4 +30,3 @@ i18next.init({
 });
 
 Vue.use(Vuex);
-Vue.component('translated', Translated);
