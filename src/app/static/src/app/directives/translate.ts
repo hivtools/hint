@@ -3,40 +3,58 @@ import {Store} from "vuex";
 import {TranslatableState} from "../root";
 import {DirectiveOptions} from "vue";
 import {Language} from "../store/translations/locales";
+import {DirectiveBinding} from "vue/types/options";
 
-export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions => ({
-    bind(el, binding, vnode) {
+export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions => {
 
+    function _bind(el: HTMLElement, binding: DirectiveBinding,) {
         const ele = el as any;
+        ele.__lang_unwatch__ = ele.__lang_unwatch__ || {};
 
-        ele.__key = binding.value;
-        ele.__translationAttr = binding.arg;
-
-        ele.__translateText = (lng: Language) => {
-            const attribute = ele.__translationAttr;
-            if (!ele.__key) return;
+        const translateText = (lng: Language) => {
+            const attribute = binding.arg;
+            if (!binding.value) return;
             if (attribute) {
-                el.setAttribute(attribute, i18next.t(ele.__key, {lng}));
+                el.setAttribute(attribute, i18next.t(binding.value, {lng}));
             } else {
-                el.innerText = i18next.t(ele.__key, {lng});
+                el.innerText = i18next.t(binding.value, {lng});
             }
         };
 
-        ele.__translateText(store.state.language);
+        translateText(store.state.language);
 
-        ele.__lang_unwatch__ = store.watch(state => state.language, lng => {
-            ele.__translateText(lng)
-        })
-    },
-
-    update(el, binding) {
-        const ele = el as any;
-        ele.__key = binding.value;
-        ele.__translationAttr = binding.arg;
-        ele.__translateText(store.state.language)
-    },
-
-    unbind(el) {
-        (el as any).__lang_unwatch__ && (el as any).__lang_unwatch__()
+        if (binding.arg) {
+            ele.__lang_unwatch__[binding.arg] = store.watch(state => state.language, lng => {
+                translateText(lng)
+            })
+        } else {
+            ele.__lang_unwatch__["innerText"] = store.watch(state => state.language, lng => {
+                translateText(lng)
+            })
+        }
     }
-});
+
+    return {
+        bind(el, binding) {
+            _bind && _bind(el, binding)
+        },
+        update(el, binding) {
+            const ele = el as any;
+            if (binding.arg) {
+                ele.__lang_unwatch__[binding.arg]()
+            } else {
+                ele.__lang_unwatch__["innerText"]()
+            }
+
+            _bind(el, binding);
+        },
+        unbind(el, binding) {
+            const ele = el as any;
+            if (binding.arg) {
+                ele.__lang_unwatch__[binding.arg]()
+            } else {
+                ele.__lang_unwatch__["innerText"]()
+            }
+        }
+    }
+}
