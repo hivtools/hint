@@ -275,4 +275,24 @@ describe("Model run component", () => {
         expect(errorAlerts.length).toBe(0);
     });
 
+    it("cancel run button invokes action to cancel model run", (done) => {
+
+        const store = createStore({
+            status: mockModelStatusResponse({id: "123", done: false}),
+            modelRunId: "123",
+            statusPollId: 123
+        });
+
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        wrapper.find("#cancel-model-run").trigger("click");
+
+        setTimeout(() => {
+            expect(wrapper.find(Modal).props().open).toBe(false);
+            expect(store.state.modelRun.modelRunId).toBe("");
+            expect(store.state.modelRun.statusPollId).toBe(-1);
+            expect(store.state.modelRun.status).toStrictEqual({});
+            done();
+        });
+    });
+
 });

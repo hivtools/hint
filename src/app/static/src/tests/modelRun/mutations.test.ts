@@ -1,6 +1,5 @@
-import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {ModelRunMutation, mutations} from "../../app/store/modelRun/mutations";
-import {mockError, mockModelResultResponse, mockModelRunState} from "../mocks";
+import {mockError, mockModelResultResponse, mockModelRunState, mockModelStatusResponse} from "../mocks";
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelStatusResponse} from "../../app/generated";
 
@@ -108,5 +107,22 @@ describe("Model run mutations", () => {
         expect(testState.statusPollId).toEqual(999);
         expect(testState.status).toStrictEqual({done: false});
         expect(testState.modelRunId).toStrictEqual("123");
+    });
+
+    it ("cancel run resets state", () => {
+        const testState = mockModelRunState({
+            modelRunId: "123",
+            statusPollId: 1,
+            status: mockModelStatusResponse(),
+            errors: [mockError("testError")],
+            result: mockModelResultResponse()
+        });
+
+        mutations.RunCancelled(testState);
+        expect(testState.modelRunId).toBe("");
+        expect(testState.statusPollId).toBe(-1);
+        expect(testState.status).toStrictEqual({});
+        expect(testState.errors).toStrictEqual([]);
+        expect(testState.result).toBeNull();
     });
 });
