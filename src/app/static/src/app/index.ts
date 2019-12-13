@@ -3,7 +3,8 @@ import {store} from "./main"
 import Stepper from "./components/Stepper.vue";
 import UserHeader from "./components/header/UserHeader.vue";
 import Errors from "./components/Errors.vue";
-import {mapActions} from "vuex";
+import {mapActions, mapState} from "vuex";
+import {RootState} from "./root";
 
 export const app = new Vue({
     el: "#app",
@@ -13,6 +14,9 @@ export const app = new Vue({
         UserHeader,
         Errors
     },
+    computed: mapState<RootState>({
+        language: state => state.language
+    }),
     methods: {
         ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
         ...mapActions({loadSurveyAndProgram: 'surveyAndProgram/getSurveyAndProgramData'}),
