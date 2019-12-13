@@ -1,6 +1,6 @@
 import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
-import init from "../../app/store/translations/init";
+import registerTranslations from "../../app/store/translations/registerTranslations";
 import {Language} from "../../app/store/translations/locales";
 
 describe("translate directive", () => {
@@ -19,7 +19,7 @@ describe("translate directive", () => {
         const store = new Vuex.Store({
             state: {language: Language.en}
         });
-        init(store);
+        registerTranslations(store);
         return store as any;
     };
 

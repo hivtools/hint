@@ -5,9 +5,7 @@ import {PasswordActions} from "../../../app/store/password/actions";
 import Vuex, {Store} from "vuex";
 import {mockError, mockPasswordState} from "../../mocks";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
-import init from "../../../app/store/translations/init";
-import i18next from "i18next";
-import {Language, locales} from "../../../app/store/translations/locales";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 describe("Forgot password component", () => {
 
@@ -25,7 +23,7 @@ describe("Forgot password component", () => {
             mutations: {}
         });
 
-        init(store);
+        registerTranslations(store);
         return store;
     };
 
