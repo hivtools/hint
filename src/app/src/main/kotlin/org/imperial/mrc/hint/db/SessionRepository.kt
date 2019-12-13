@@ -123,7 +123,7 @@ class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
 
             }
         } catch (e: DataIntegrityViolationException) {
-            throw SessionException("Unable to load files for session. Specified files do not exist on the server.")
+            throw SessionException("loadFailed")
         }
     }
 
