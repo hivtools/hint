@@ -5,6 +5,14 @@ import {Language} from "../../app/store/translations/locales";
 
 describe("translate directive", () => {
 
+    beforeAll(() => {
+        console.warn = jest.fn();
+    });
+
+    afterAll(() => {
+        (console.warn as jest.Mock).mockClear();
+    });
+
     const TranslateAttributeTest = {
         template: '<input v-translate:value="\'validate\'" />'
     };
@@ -111,6 +119,17 @@ describe("translate directive", () => {
         expect(input.value).toBe("Valider");
         expect(input.placeholder).toBe("Adresse e-mail");
         expect(input.innerText).toBe("Déconnexion");
+    });
+
+    it("does nothing but warns if binding is invalid", () => {
+        const InvalidBinding = {
+            template: '<h4 v-translate=""></h4>'
+        };
+        const store = createStore();
+        const rendered = shallowMount(InvalidBinding, {store});
+        expect(rendered.find("h4").text()).toBe("");
+        expect((console.warn as jest.Mock).mock.calls[0][0])
+            .toBe("v-translate directive declared without a value");
     });
 
     it("unwatches on unbind", () => {

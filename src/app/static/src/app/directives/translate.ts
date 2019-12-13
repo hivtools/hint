@@ -7,12 +7,15 @@ import {DirectiveBinding} from "vue/types/options";
 
 export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions => {
 
-    function _translateText(lng: Language, el: HTMLElement, binding: DirectiveBinding, vnode: VNode) {
+    function _validateBinding(binding: DirectiveBinding, vnode: VNode): boolean {
         if (!binding.value) {
-            console.warn("v-translate directive on declared without a value", vnode);
-            return;
+            console.warn("v-translate directive declared without a value", vnode);
+            return false;
         }
+        return true;
+    }
 
+    function _translateText(lng: Language, el: HTMLElement, binding: DirectiveBinding) {
         const attribute = binding.arg;
         if (attribute) {
             el.setAttribute(attribute, i18next.t(binding.value, {lng}));
@@ -21,18 +24,18 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
         }
     }
 
-    function _addWatcher(el: HTMLElement, binding: DirectiveBinding, vnode: VNode) {
+    function _addWatcher(el: HTMLElement, binding: DirectiveBinding) {
         const ele = el as any;
         ele.__lang_unwatch__ = ele.__lang_unwatch__ || {};
         if (binding.arg) {
             // this is an attribute binding
             ele.__lang_unwatch__[binding.arg] = store.watch(state => state.language, lng => {
-                _translateText(lng, el, binding, vnode);
+                _translateText(lng, el, binding);
             })
         } else {
             // this is a default, i.e. innerText, binding
             ele.__lang_unwatch__["innerText"] = store.watch(state => state.language, lng => {
-                _translateText(lng, el, binding, vnode);
+                _translateText(lng, el, binding);
             })
         }
     }
@@ -51,17 +54,20 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
 
     return {
         bind(el, binding, vnode: VNode) {
-            _translateText(store.state.language, el, binding, vnode);
-            _addWatcher(el, binding, vnode);
+            if (!_validateBinding(binding, vnode)) return;
+            _translateText(store.state.language, el, binding);
+            _addWatcher(el, binding);
         },
         update(el, binding, vnode) {
+            if (!_validateBinding(binding, vnode)) return;
+
             // first remove the existing watcher for this directive instance
             // since it has the previous value of the binding cached
             _removeWatcher(el, binding);
 
             // now re-add them with the new binding properties
-            _translateText(store.state.language, el, binding, vnode);
-            _addWatcher(el, binding, vnode);
+            _translateText(store.state.language, el, binding);
+            _addWatcher(el, binding);
         },
         unbind(el, binding) {
             _removeWatcher(el, binding);
