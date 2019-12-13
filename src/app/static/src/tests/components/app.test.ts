@@ -1,4 +1,4 @@
-import {mount} from '@vue/test-utils';
+import {mount, shallowMount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {ReadyState, RootState, storeOptions} from "../../app/root";
 import {localStorageManager} from "../../app/localStorageManager";
@@ -57,6 +57,17 @@ describe("App", () => {
             expect(modelRunActions.getResult).toHaveBeenCalled();
             done();
         });
+    });
+
+    it("gets language from state", () => {
+        const store = getStore();
+        let c = app.$options;
+        const rendered = shallowMount({
+            computed: c.computed,
+            template: "<div :class='language'></div>"
+        }, {store});
+
+        expect(rendered.classes()).toContain("en");
     });
 
     it("updates local storage on every mutation", () => {

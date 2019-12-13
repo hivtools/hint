@@ -8,7 +8,7 @@
     <!-- endinject -->
 </head>
 <body>
-<div id="app">
+<div id="app" :class="language">
     <user-header title="${title}"></user-header>
     <stepper></stepper>
     <errors title="${title}"></errors>
