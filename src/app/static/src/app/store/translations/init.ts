@@ -18,7 +18,8 @@ export default <S extends TranslatableState>(store: Store<S>) => {
 
     Vue.component('translated', Translated);
 
-    // usage: v-translate:attribute="'keyName'"
-    // e.g. v-translate:placeholder="'email'"
+    // usage 1: <input v-translate:attribute="'keyName'">
+    // e.g. <input v-translate:placeholder="'email'">
+    // usage 2: <div v-translate>keyName</div>
     Vue.directive('translate', translate(store));
 }
