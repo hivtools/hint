@@ -26,6 +26,7 @@ export interface Translations {
     indicator: string,
     initiialisingRun: string,
     load: string,
+    loadError: string,
     loadingData: string,
     loadingOptions: string,
     logIn: string,
@@ -33,6 +34,7 @@ export interface Translations {
     missingError: string,
     modelOptions: string,
     notUsed: string,
+    ok: string,
     optionsValid: string,
     password: string,
     passwordValidation: string,
@@ -88,6 +90,7 @@ const en: Translations = {
     indicator: "Indicator",
     initiialisingRun: "Initialising model run",
     load: "Load",
+    loadError: "Load Error",
     loadingData: "Loading your data",
     loadingOptions: "Loading options",
     logIn: "Log In",
@@ -95,6 +98,7 @@ const en: Translations = {
     missingError: "API response failed but did not contain any error information. Please contact support.",
     modelOptions: "Model options",
     notUsed: "Not used",
+    ok: "OK",
     optionsValid: "Options are valid",
     password: "Password",
     passwordValidation: "Please enter your password.",
@@ -118,7 +122,7 @@ const en: Translations = {
     username: "Username",
     usernameValidation: "Please enter your username",
     validate: "Validate",
-    validating: "Validating",
+    validating: "Validating...",
     xAxis: "X Axis"
 };
 

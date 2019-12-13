@@ -2,8 +2,11 @@ import {mount, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import {
     mockAncResponse,
-    mockBaselineState, mockError, mockFile,
-    mockLoadState, mockMetadataState,
+    mockBaselineState,
+    mockError,
+    mockFile,
+    mockLoadState,
+    mockMetadataState,
     mockModelRunState,
     mockPJNZResponse,
     mockPopulationResponse,
@@ -15,6 +18,8 @@ import {
 import Modal from "../../../app/components/Modal.vue";
 import {LoadingState} from "../../../app/store/load/load";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {Language} from "../../../app/store/translations/locales";
 
 // jsdom has only implemented navigate up to hashes, hence appending a hash here to the base url
 const mockCreateObjectUrl = jest.fn(() => "http://localhost#1234");
@@ -54,12 +59,15 @@ describe("File menu", () => {
     };
 
     const createStore = (customModules = {}) => {
-        return new Vuex.Store({
+        const store = new Vuex.Store({
+            state: {language: Language.en},
             modules: {
                 ...storeModules,
                 ...customModules
             }
         });
+        registerTranslations(store);
+        return store;
     };
 
     it("downloads file", (done) => {
@@ -73,6 +81,7 @@ describe("File menu", () => {
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         let link = wrapper.findAll(".dropdown-item").at(0);
         link.trigger("mousedown");
+        expect(link.text()).toBe("Save");
 
         const hiddenLink = wrapper.find({ref: "save"});
         expect(hiddenLink.attributes("href")).toBe("http://localhost#1234");
@@ -98,16 +107,17 @@ describe("File menu", () => {
         const actualBlob = (mockCreateObjectUrl as jest.Mock).mock.calls[0][0];
 
         const reader = new FileReader();
-        reader.addEventListener('loadend', function() {
+        reader.addEventListener('loadend', function () {
             const text = reader.result as string;
             const result = JSON.parse(text)[1];
             expect(result).toEqual(expectedJson);
             done();
         });
+
         reader.readAsText(actualBlob);
     });
 
-    it ("opens file dialog on click load", (done) => {
+    it("opens file dialog on click load", (done) => {
         const wrapper = mount(FileMenu,
             {
                 store: createStore()
@@ -116,9 +126,10 @@ describe("File menu", () => {
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         const link = wrapper.findAll(".dropdown-item").at(1);
+        expect(link.text()).toBe("Load");
 
         const input = wrapper.find("input").element as HTMLInputElement;
-        input.addEventListener("click", function(){
+        input.addEventListener("click", function () {
             //file dialog was opened
             done();
         });
@@ -182,6 +193,7 @@ describe("File menu", () => {
 
         const modal = wrapper.find(Modal);
         expect(modal.attributes("open")).toEqual("true");
+        expect(modal.find("h4").text()).toEqual("Load Error");
         expect(modal.find("p").text()).toEqual("test error");
     });
 
@@ -206,6 +218,7 @@ describe("File menu", () => {
 
         const modal = wrapper.find(Modal);
         modal.find(".btn").trigger("click");
+        expect(modal.find(".btn").text()).toBe("OK");
         expect(clearErrorMock.mock.calls.length).toBe(1);
     });
 
