@@ -21,6 +21,10 @@
                 <barchart :chartdata="chartdata" :filters="barchartFilters" :indicators="barchartIndicators"
                           :selections="barchartSelections" v-on:update="updateBarchartSelections({payload: $event})"></barchart>
             </div>
+
+            <div id="bubble-plot-container" :class="selectedTab==='Bubble Plot' ? 'col-md-12' : 'd-none'">
+                <bubble-plot :chartdata="chartdata" :features="features" :indicators="bubblePlotIndicators"></bubble-plot>
+            </div>
         </div>
     </div>
 </template>
@@ -31,22 +35,25 @@
     import Choropleth from "../plots/Choropleth.vue";
     import ChoroplethFilters from "../plots/ChoroplethFilters.vue";
     import Barchart from "../plots/barchart/Barchart.vue";
+    import BubblePlot from "../plots/bubble/BubblePlot.vue";
     import {DataType} from "../../store/filteredData/filteredData";
     import {
         mapActionsByNames,
         mapGettersByNames, mapMutationByName,
         mapMutationsByNames,
-        mapStateProp, mapStatePropByName,
+        mapStateProp, mapStatePropByName, mapStateProps,
     } from "../../utils";
     import {BarchartIndicator, Filter} from "../../types";
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import {BarchartSelections} from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
     import {ModelOutputMutation} from "../../store/modelOutput/mutations";
+    import {Feature} from "geojson";
+    import {BaselineState} from "../../store/baseline/baseline";
 
     const namespace: string = 'filteredData';
 
-    const tabs = ["Map", "Bar"];
+    const tabs = ["Map", "Bar", "Bubble Plot"];
 
     interface Data {
         tabs: string[]
@@ -63,7 +70,8 @@
         barchartIndicators: BarchartIndicator[],
         chartdata: any,
         barchartSelections: BarchartSelections,
-        selectedTab: string
+        selectedTab: string,
+        features: Feature[]
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -81,14 +89,18 @@
             }
         },
         computed: {
-            ...mapGettersByNames("modelOutput", ["barchartFilters", "barchartIndicators"]),
+            ...mapGettersByNames("modelOutput", ["barchartFilters", "barchartIndicators", "bubblePlotIndicators"]),
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
             chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
                 return state.result ? state.result.data : [];
             }),
             barchartSelections() {
                return this.$store.state.plottingSelections.barchart
-            }
+            },
+            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
+                    features: state => state.shape!!.data.features as Feature[]
+                }
+            ),
         },
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["selectDataType"]),
@@ -98,7 +110,8 @@
         components: {
             Choropleth,
             ChoroplethFilters,
-            Barchart
+            Barchart,
+            BubblePlot
         }
     })
 </script>

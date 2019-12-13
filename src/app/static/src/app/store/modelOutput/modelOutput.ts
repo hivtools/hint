@@ -1,7 +1,7 @@
 import {Module} from "vuex";
 import {RootState} from "../../root";
 import {BarchartIndicator, Filter} from "../../types";
-import {FilterOption} from "../../generated";
+import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {localStorageManager} from "../../localStorageManager";
@@ -35,6 +35,10 @@ export const modelOutputGetters = {
         return [
             ...filters
         ];
+    },
+    bubblePlotIndicators: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): ChoroplethIndicatorMetadata[] => {
+        //TODO: Get our own indicators metadata rather than borrowing from the Choropleth
+        return rootGetters['metadata/choroplethIndicatorsMetadata'];
     }
 };
 
