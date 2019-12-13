@@ -35,8 +35,6 @@ describe("Model run actions", () => {
         } as RootState;
         await actions.run({commit, rootState: mockState} as any);
 
-        console.log("CALLS: " + JSON.stringify(commit.mock.calls));
-
         expect(commit.mock.calls[0][0]["type"]).toBe("ModelRunError");
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Trying to run model with old version of options. Update model run options");
     });
@@ -76,18 +74,6 @@ describe("Model run actions", () => {
         // that we're hitting the correct endpoint
         expect(commit.mock.calls[0][0]["type"]).toBe("RunResultError");
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Missing some results");
-    });
-
-   it("can cancel model run", async () => {
-        const commit = jest.fn();
-        const mockState = {
-            modelRunId: "1234"
-        } as ModelRunState;
-
-        await actions.cancelRun({commit, state: mockState, rootState} as any);
-
-        expect(commit.mock.calls[0][0]["type"]).toBe("RunCancelled");
-        expect(commit.mock.calls[0][0]["payload"]).toBeNull();
     });
 
     it ("makeCancelRunRequest makes call to API", async () => {
