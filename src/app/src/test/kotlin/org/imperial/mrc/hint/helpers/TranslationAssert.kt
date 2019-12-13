@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.helpers
 import org.assertj.core.api.AbstractThrowableAssert
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.ThrowableAssert
+import org.imperial.mrc.hint.exceptions.HintException
 import java.util.*
 
 class TranslationAssert(actual: Throwable)
@@ -13,19 +14,21 @@ class TranslationAssert(actual: Throwable)
     }
 
     fun hasTranslatedMessage(expectedMessage: String): TranslationAssert {
-        if (actual.message == null) {
-            failWithMessage("Expected translated message <%s> but exception message was null", expectedMessage)
+        if (!(actual is HintException)) {
+            failWithMessage("Expected HintException")
         }
+        
+        val key = (actual as HintException).key
 
         val resources = ResourceBundle.getBundle("ErrorMessageBundle", Locale("en"))
 
-        if (!resources.containsKey(actual.message!!)) {
-            failWithMessage("Expected key <%s> to be present in ErrorMessageBundle", actual.message)
+        if (!resources.containsKey(key)) {
+            failWithMessage("Expected key <%s> to be present in ErrorMessageBundle", key)
         }
-        val translatedMessage = resources.getString(actual.message!!)
+        val translatedMessage = resources.getString(key)
 
         if (translatedMessage != expectedMessage) {
-            failWithMessage("Expected key <%s> to be translated to <%s> but was <%s>", actual.message, expectedMessage, translatedMessage)
+            failWithMessage("Expected key <%s> to be translated to <%s> but was <%s>", key, expectedMessage, translatedMessage)
         }
 
         return this
