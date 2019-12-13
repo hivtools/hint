@@ -4,7 +4,10 @@
             <div class="col">
                 <ul class="nav nav-tabs col-md-12">
                     <li v-for="tab in tabs" class="nav-item">
-                        <a class="nav-link" :class="selectedTab === tab ? 'active' :  ''" v-on:click="tabSelected(tab)">{{tab}}</a>
+                        <a class="nav-link"
+                           :class="selectedTab === tab ? 'active' :  ''"
+                           v-on:click="tabSelected(tab)">{{tab}}
+                        </a>
                     </li>
                 </ul>
             </div>
