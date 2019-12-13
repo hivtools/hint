@@ -2,7 +2,7 @@
     <l-control position="topright">
         <div style="width: 265px;" class="p-3 map-control">
             <form>
-                <div class="row form-group">
+                <div v-if="showIndicators" class="row form-group">
                     <label class="col-3 col-form-label">
                         Indicator:
                     </label>
@@ -49,7 +49,8 @@
 
     interface Props {
         indicator: string,
-        initialDetail: number
+        initialDetail: number,
+        showIndicators: boolean
     }
 
     interface Option {
@@ -76,7 +77,8 @@
         },
         props: {
             indicator: String,
-            initialDetail: Number
+            initialDetail: Number,
+            showIndicators: Boolean
         },
         data(): Data {
             return {

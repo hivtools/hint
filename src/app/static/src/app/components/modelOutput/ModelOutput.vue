@@ -22,8 +22,9 @@
                           :selections="barchartSelections" v-on:update="updateBarchartSelections({payload: $event})"></barchart>
             </div>
 
-            <div id="bubble-plot-container" :class="selectedTab==='Bubble Plot' ? 'col-md-12' : 'd-none'">
-                <bubble-plot :chartdata="chartdata" :features="features" :indicators="bubblePlotIndicators"></bubble-plot>
+            <div v-if="selectedTab==='Bubble Plot'" id="bubble-plot-container" class="col-md-12">
+                <bubble-plot :chartdata="chartdata" :features="features" :featureLevels="featureLevels"
+                             :indicators="bubblePlotIndicators"></bubble-plot>
             </div>
         </div>
     </div>
@@ -43,7 +44,7 @@
         mapMutationsByNames,
         mapStateProp, mapStatePropByName, mapStateProps,
     } from "../../utils";
-    import {BarchartIndicator, Filter} from "../../types";
+    import {BarchartIndicator, Filter, LevelLabel} from "../../types";
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import {BarchartSelections} from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
@@ -71,7 +72,8 @@
         chartdata: any,
         barchartSelections: BarchartSelections,
         selectedTab: string,
-        features: Feature[]
+        features: Feature[],
+        featureLevels: LevelLabel[]
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -98,7 +100,8 @@
                return this.$store.state.plottingSelections.barchart
             },
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
-                    features: state => state.shape!!.data.features as Feature[]
+                    features: state => state.shape!!.data.features as Feature[],
+                    featureLevels: state => state.shape!!.filters.level_labels || []
                 }
             ),
         },

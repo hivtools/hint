@@ -19,7 +19,7 @@ export const getFeatureIndicators = function (data: any[],
     for (const row of data) {
 
         //TODO: exclude rows based on filters
-       /* if (getters.excludeRow(row, selectedRegionFilters)) {
+       /* if (excludeRow(row, selectedRegionFilters)) {
             continue;
         }*/
 

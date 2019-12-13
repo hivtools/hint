@@ -10,6 +10,7 @@
         <map-control :initialDetail=detail
                      @indicator-changed="onIndicatorChange"
                      @detail-changed="onDetailChange"
+                     :show-indicators="true"
                      :indicator="indicator"></map-control>
         <map-legend :metadata="indicatorMetadata"></map-legend>
     </l-map>
