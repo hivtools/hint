@@ -1,15 +1,15 @@
-import {ActionContext, ActionTree} from "vuex";
+import {ActionContext, ActionTree, Commit} from "vuex";
 import {ModelRunState} from "./modelRun";
 import {RootState} from "../../root";
-import {api} from "../../apiService";
+import {api, APIService} from "../../apiService";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {ModelRunMutation} from "./mutations";
-import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
 
 export interface ModelRunActions {
     run: (store: ActionContext<ModelRunState, RootState>) => void
     poll: (store: ActionContext<ModelRunState, RootState>, runId: string) => void
     getResult: (store: ActionContext<ModelRunState, RootState>) => void
+    cancelRun: (store: ActionContext<ModelRunState, RootState>) => void
 }
 
 export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
@@ -66,5 +66,20 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
                 });
         }
         commit({type: "Ready", payload: true});
+    },
+
+    async cancelRun(context) {
+        const {commit, state} = context;
+        const modelRunId = state.modelRunId;
+
+        commit({type: "RunCancelled", payload: null});
+        const apiService = api<ModelRunMutation, ModelRunMutation>(context)
+                    .ignoreErrors();
+
+        await makeCancelRunRequest(apiService,modelRunId)
     }
 };
+
+export async function makeCancelRunRequest(api: APIService<ModelRunMutation, ModelRunMutation>, modelRunId: string){
+    return await api.postAndReturn<null>(`/model/cancel/${modelRunId}`);
+}

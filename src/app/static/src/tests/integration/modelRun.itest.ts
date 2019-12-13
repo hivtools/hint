@@ -1,8 +1,10 @@
-import {actions} from "../../app/store/modelRun/actions";
+import {actions, makeCancelRunRequest} from "../../app/store/modelRun/actions";
 import {login, rootState} from "./integrationTest";
 import {ModelSubmitResponse} from "../../app/generated";
 import {RootState} from "../../app/root";
 import {ModelRunState} from "../../app/store/modelRun/modelRun";
+import {api} from "../../app/apiService";
+import {ModelRunMutation} from "../../app/store/modelRun/mutations";
 import {Language} from "../../app/store/translations/locales";
 
 describe("Model run actions", () => {
@@ -32,6 +34,7 @@ describe("Model run actions", () => {
             }
         } as RootState;
         await actions.run({commit, rootState: mockState} as any);
+
         expect(commit.mock.calls[0][0]["type"]).toBe("ModelRunError");
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Trying to run model with old version of options. Update model run options");
     });
@@ -73,4 +76,14 @@ describe("Model run actions", () => {
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Missing some results");
     });
 
+    it ("makeCancelRunRequest makes call to API", async () => {
+        const commit = jest.fn();
+
+        const apiService = api<ModelRunMutation, ModelRunMutation>({commit, rootState} as any)
+                            .withError("ExpectedPostFailure" as ModelRunMutation);
+
+        await makeCancelRunRequest(apiService, "1234");
+        expect(commit.mock.calls[0][0]["type"]).toBe("ExpectedPostFailure");
+        expect(commit.mock.calls[0][0]["payload"]["error"]).toBe("FAILED_TO_CANCEL");
+    });
 });

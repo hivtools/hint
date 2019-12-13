@@ -1,10 +1,15 @@
 import {MutationTree} from "vuex";
-import {emptyState, RootState} from "../../root";
+import {RootState} from "../../root";
 import {DataType} from "../filteredData/filteredData";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
 import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
+import {initialLoadState, LoadState} from "../load/load";
+import {initialMetadataState} from "../metadata/metadata";
+import {initialSurveyAndProgramDataState} from "../surveyAndProgram/surveyAndProgram";
+import {initialErrorsState} from "../errors/errors";
+import {initialBaselineState} from "../baseline/baseline";
 import {PayloadWithType} from "../../types";
 import {Language} from "../translations/locales";
 
@@ -17,9 +22,33 @@ export enum RootMutation {
 }
 
 export const mutations: MutationTree<RootState> = {
-    [RootMutation.Reset](state: RootState) {
+    [RootMutation.Reset](state: RootState, action: PayloadWithType<number>) {
 
-        Object.assign(state, emptyState());
+        const maxValidStep = action.payload;
+
+        //We treat the final group of steps 4-6 together - all rely on modelRun and its result. If we're calling Reset
+        //at all we assume that these steps will be invalidated but earlier steps may be retainable
+        const resetState: RootState = {
+            version: state.version,
+            language: state.language,
+            baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
+            metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
+            surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramDataState() : state.surveyAndProgram,
+            modelOptions: maxValidStep < 3 ? initialModelOptionsState() : state.modelOptions,
+            modelOutput: initialModelOutputState(),
+            modelRun: initialModelRunState(),
+            plottingSelections: initialPlottingSelectionsState(),
+            filteredData: state.filteredData,
+            stepper: state.stepper,
+            load: initialLoadState(),
+            errors: initialErrorsState()
+        };
+        Object.assign(state, resetState);
+
+        const maxAccessibleStep = maxValidStep < 4 ? Math.max(maxValidStep,1) : 4;
+        if (state.stepper.activeStep > maxAccessibleStep) {
+            state.stepper.activeStep = maxAccessibleStep;
+        }
 
         state.surveyAndProgram.ready = true;
         state.baseline.ready = true;

@@ -1,5 +1,5 @@
 import {MutationTree} from "vuex";
-import {maxPollErrors, ModelRunState} from "./modelRun";
+import {initialModelRunState, maxPollErrors, ModelRunState} from "./modelRun";
 import {PayloadWithType} from "../../types";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse, Error} from "../../generated";
 
@@ -11,6 +11,7 @@ export enum ModelRunMutation {
     RunResultFetched = "RunResultFetched",
     RunResultError = "RunResultError",
     RunStatusError = "RunStatusError",
+    RunCancelled = "RunCancelled",
     Ready = "Ready"
 }
 
@@ -61,6 +62,12 @@ export const mutations: MutationTree<ModelRunState> = {
             });
         }
     },
+
+    [ModelRunMutation.RunCancelled](state: ModelRunState) {
+        stopPolling(state);
+        Object.assign(state, initialModelRunState());
+        state.ready = true;
+    }
 };
 
 const stopPolling = (state: ModelRunState) => {
