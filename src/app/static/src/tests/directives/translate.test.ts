@@ -9,8 +9,17 @@ describe("translate directive", () => {
         template: '<input v-translate:value="\'validate\'" />'
     };
 
-    const TranslateInnerTextTest = {
-        template: '<h4 v-translate>validate</h4>'
+    const TranslateInnerTextTestStatic = {
+        template: '<h4 v-translate="\'validate\'"></h4>'
+    };
+
+    const TranslateInnerTextTestDynamic = {
+        template: '<h4 v-translate="text"></h4>',
+        data() {
+            return {
+                text: "validate"
+            }
+        }
     };
 
     const localVue = createLocalVue();
@@ -24,7 +33,7 @@ describe("translate directive", () => {
     };
 
     localVue.component('translate-attribute', TranslateAttributeTest);
-    localVue.component('translate-text', TranslateInnerTextTest);
+    localVue.component('translate-text', TranslateInnerTextTestDynamic);
 
     it("initialises the attribute with the translated text", () => {
         const store = createStore();
@@ -42,22 +51,57 @@ describe("translate directive", () => {
 
     it("initialises inner text with translated text", () => {
         const store = createStore();
-        const rendered = mount(TranslateInnerTextTest, {store, localVue});
-        expect(rendered.find("h4").text()).toBe("Validate");
+        const renderedStatic = mount(TranslateInnerTextTestStatic, {store, localVue});
+        expect(renderedStatic.find("h4").text()).toBe("Validate");
+
+        const renderedDynamic = mount(TranslateInnerTextTestDynamic, {store, localVue});
+        expect(renderedDynamic.find("h4").text()).toBe("Validate");
     });
 
-    it("translates inner text when the store language changes", () => {
+    it("translates static inner text when the store language changes", () => {
         const store = createStore();
-        const rendered = shallowMount(TranslateInnerTextTest, {store, localVue});
+        const rendered = shallowMount(TranslateInnerTextTestStatic, {store, localVue});
         expect(rendered.find("h4").text()).toBe("Validate");
         store.state.language = Language.fr;
         expect(rendered.find("h4").text()).toBe("Valider");
     });
 
+    it("translates dynamic inner text when the store language changes", () => {
+        const store = createStore();
+        const rendered = shallowMount(TranslateInnerTextTestDynamic, {store, localVue});
+        expect(rendered.find("h4").text()).toBe("Validate");
+        store.state.language = Language.fr;
+        expect(rendered.find("h4").text()).toBe("Valider");
+    });
+
+    it("updates dynamic inner text when the key changes", () => {
+        const store = createStore();
+        const rendered = shallowMount(TranslateInnerTextTestDynamic, {store, localVue});
+        expect(rendered.find("h4").text()).toBe("Validate");
+        rendered.setData({
+            text: "email"
+        });
+        expect(rendered.find("h4").text()).toBe("Email address");
+    });
+
+    it("can update language and key in any order", () => {
+        const store = createStore();
+        const rendered = shallowMount(TranslateInnerTextTestDynamic, {store, localVue});
+        expect(rendered.find("h4").text()).toBe("Validate");
+        store.state.language = Language.fr;
+        expect(rendered.find("h4").text()).toBe("Valider");
+        rendered.setData({
+            text: "email"
+        });
+        expect(rendered.find("h4").text()).toBe("Adresse e-mail");
+        store.state.language = Language.en;
+        expect(rendered.find("h4").text()).toBe("Email address");
+    });
+
     it("unwatches on unbind", () => {
         const store = createStore();
         const renderedAttribute = shallowMount(TranslateAttributeTest, {store, localVue});
-        const renderedText = shallowMount(TranslateInnerTextTest, {store, localVue});
+        const renderedText = shallowMount(TranslateInnerTextTestDynamic, {store, localVue});
         expect((store._watcherVM as any)._watchers.length).toBe(2);
         renderedAttribute.destroy();
         renderedText.destroy();
