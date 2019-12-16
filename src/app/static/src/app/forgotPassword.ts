@@ -1,5 +1,5 @@
 import Vue from "vue";
-import {mapActions, StoreOptions} from "vuex";
+import {StoreOptions} from "vuex";
 import ForgotPassword from "./components/password/ForgotPassword.vue";
 import Vuex from "vuex";
 import {initialPasswordState, PasswordState} from "./store/password/password";
@@ -11,8 +11,8 @@ Vue.use(Vuex);
 
 const passwordStoreOptions: StoreOptions<PasswordState> = {
     state: initialPasswordState,
-    actions: actions,
-    mutations: mutations
+    actions,
+    mutations
 };
 
 const store = new Vuex.Store<PasswordState>(passwordStoreOptions);
@@ -24,9 +24,5 @@ export const forgotPasswordnApp = new Vue({
     components: {
         ForgotPassword
     },
-    render: h => h(ForgotPassword),
-    methods: {
-        ...mapActions({requestResetLink: 'password/requestResetLink'})
-    }
-
+    render: h => h(ForgotPassword)
 });

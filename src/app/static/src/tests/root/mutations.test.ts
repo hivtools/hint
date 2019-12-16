@@ -27,6 +27,7 @@ import {initialMetadataState} from "../../app/store/metadata/metadata";
 import {initialModelOutputState} from "../../app/store/modelOutput/modelOutput";
 import {initialLoadState} from "../../app/store/load/load";
 import {initialErrorsState} from "../../app/store/errors/errors";
+import {LanguageMutation} from "../../app/store/language/mutations";
 
 describe("Root mutations", () => {
 
@@ -206,7 +207,7 @@ describe("Root mutations", () => {
 
     it("can change language", () => {
         const state = mockRootState();
-        mutations[RootMutation.ChangeLanguage](state, {payload: "fr"});
+        mutations[LanguageMutation.ChangeLanguage](state, {payload: "fr"});
         expect(state.language).toBe("fr");
     });
 });

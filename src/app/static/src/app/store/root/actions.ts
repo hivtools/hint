@@ -2,11 +2,11 @@ import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
 import {StepDescription} from "../stepper/stepper";
 import {RootMutation} from "./mutations";
-import i18next from 'i18next';
+import {LanguageActions} from "../language/language";
+import {changeLanguage} from "../language/actions";
 
-export interface RootActions {
+export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
-    changeLanguage: (store: ActionContext<RootState, RootState>, lang: string) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -26,10 +26,10 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
 
             const promises = [];
 
-            if (maxValidStep < 1){
+            if (maxValidStep < 1) {
                 promises.push(dispatch("baseline/deleteAll"));
             }
-            if (maxValidStep < 2){
+            if (maxValidStep < 2) {
                 promises.push(dispatch("surveyAndProgram/deleteAll"));
             }
 
@@ -49,8 +49,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         }
     },
 
-    async changeLanguage({commit}, lang) {
-        await i18next.changeLanguage(lang);
-        commit({type: RootMutation.ChangeLanguage, payload: lang})
+    async changeLanguage(context, payload) {
+        await changeLanguage<RootState>(context, payload)
     }
 };

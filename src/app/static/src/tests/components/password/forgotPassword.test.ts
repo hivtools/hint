@@ -6,6 +6,7 @@ import Vuex, {Store} from "vuex";
 import {mockError, mockPasswordState} from "../../mocks";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import LoggedOutHeader from "../../../app/components/header/LoggedOutHeader.vue";
 
 describe("Forgot password component", () => {
 
@@ -28,13 +29,14 @@ describe("Forgot password component", () => {
     };
 
     const createSut = (store: Store<PasswordState>) => {
-        return shallowMount(ForgotPassword, {store});
+        return shallowMount(ForgotPassword, {store, propsData: {title: "Naomi"}});
     };
 
     it("renders form with no error", () => {
         const store = createStore({
             resetLinkRequested: false,
-            requestResetLinkError: null});
+            requestResetLinkError: null
+        });
 
         const wrapper = createSut(store);
 
@@ -50,7 +52,8 @@ describe("Forgot password component", () => {
         const error = mockError("test error");
         const store = createStore({
             resetLinkRequested: false,
-            requestResetLinkError: error});
+            requestResetLinkError: error
+        });
 
         const wrapper = createSut(store);
 
@@ -65,7 +68,8 @@ describe("Forgot password component", () => {
     it("renders form with request success message", () => {
         const store = createStore({
             resetLinkRequested: true,
-            requestResetLinkError: null});
+            requestResetLinkError: null
+        });
 
         const wrapper = createSut(store);
 
@@ -123,5 +127,11 @@ describe("Forgot password component", () => {
             done();
         });
 
+    });
+
+    it("passes title to logged out header", () => {
+        const store = createStore();
+        const wrapper = createSut(store);
+        expect(wrapper.find(LoggedOutHeader).props("title")).toBe("Naomi")
     });
 });

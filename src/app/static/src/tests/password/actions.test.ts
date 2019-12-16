@@ -1,5 +1,8 @@
 import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/password/actions";
+import {RootMutation} from "../../app/store/root/mutations";
+import {Language} from "../../app/store/translations/locales";
+import {LanguageMutation} from "../../app/store/language/mutations";
 
 const rootState = mockRootState();
 describe("Password actions", () => {
@@ -69,6 +72,15 @@ describe("Password actions", () => {
             type: "ResetPasswordError",
             payload: mockError("test error")
         });
+    });
+
+    it("changes language", async () => {
+        const commit = jest.fn();
+        await actions.changeLanguage({commit} as any, Language.fr);
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: LanguageMutation.ChangeLanguage,
+            payload: "fr"
+        })
     });
 
 });
