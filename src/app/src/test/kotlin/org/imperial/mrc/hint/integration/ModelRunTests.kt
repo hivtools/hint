@@ -23,7 +23,7 @@ class ModelRunTests : SecureIntegrationTests() {
         assertSecureWithError(isAuthorized,
                 responseEntity,
                 HttpStatus.BAD_REQUEST,
-                "FAILED_TO_RETRIEVE_RESULT", "Missing some results")
+                "FAILED_TO_RETRIEVE_RESULT", "Failed to fetch result")
     }
 
     @ParameterizedTest
