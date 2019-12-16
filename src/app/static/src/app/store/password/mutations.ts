@@ -6,7 +6,7 @@ import {Error} from "../../generated";
 type PasswordMutation = Mutation<PasswordState>
 
 export interface PasswordMutations {
-    ResetLinkRequested:PasswordMutation
+    ResetLinkRequested: PasswordMutation
     RequestResetLinkError: PasswordMutation
     ResetPassword: PasswordMutation
     ResetPasswordError: PasswordMutation
@@ -29,7 +29,7 @@ export const mutations: MutationTree<PasswordState> & PasswordMutations = {
     },
 
     ResetPasswordError(state: PasswordState, action: PayloadWithType<Error>) {
-        state.passwordWasReset= false;
+        state.passwordWasReset = false;
         state.resetPasswordError = action.payload;
     }
 };

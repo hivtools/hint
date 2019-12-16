@@ -1,17 +1,17 @@
-import {MutationTree} from "vuex";
+import {Mutation, MutationTree} from "vuex";
 import {RootState} from "../../root";
 import {DataType} from "../filteredData/filteredData";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
 import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
-import {initialLoadState, LoadState} from "../load/load";
+import {initialLoadState} from "../load/load";
 import {initialMetadataState} from "../metadata/metadata";
 import {initialSurveyAndProgramDataState} from "../surveyAndProgram/surveyAndProgram";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
 import {PayloadWithType} from "../../types";
-import {Language} from "../translations/locales";
+import {mutations as languageMutations} from "../language/mutations";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -94,8 +94,5 @@ export const mutations: MutationTree<RootState> = {
         Object.assign(state.plottingSelections, initialPlottingSelectionsState());
     },
 
-    [RootMutation.ChangeLanguage](state: RootState, action: PayloadWithType<Language>) {
-        state.language = action.payload
-    }
-
+    ...languageMutations
 };

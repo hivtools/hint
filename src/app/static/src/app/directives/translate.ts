@@ -20,7 +20,7 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
         if (attribute) {
             el.setAttribute(attribute, i18next.t(binding.value, {lng}));
         } else {
-            el.innerText = i18next.t(binding.value, {lng});
+            el.innerHTML = i18next.t(binding.value, {lng});
         }
     }
 
@@ -34,7 +34,7 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
             })
         } else {
             // this is a default, i.e. innerText, binding
-            ele.__lang_unwatch__["innerText"] = store.watch(state => state.language, lng => {
+            ele.__lang_unwatch__["innerHTML"] = store.watch(state => state.language, lng => {
                 _translateText(lng, el, binding);
             })
         }
@@ -48,7 +48,7 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
             ele.__lang_unwatch__[binding.arg]()
         } else {
             // this is a default, i.e. innerText, binding
-            ele.__lang_unwatch__["innerText"]()
+            ele.__lang_unwatch__["innerHTML"]()
         }
     }
 

@@ -3,32 +3,35 @@ var webpack = require('webpack');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const minimalLoaderRules = [
+    {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+            loaders: {
+                // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
+                // the "scss" and "sass" values for the lang attribute to the right configs here.
+                // other preprocessors should work out of the box, no loader config like this necessary.
+                'scss': 'vue-style-loader!css-loader!sass-loader',
+                'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
+            }
+            // other vue-loader options go here
+        }
+    },
+    {
+        test: /\.tsx?$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/,
+        options: {
+            appendTsSuffixTo: [/\.vue$/],
+        }
+    }];
+
 const commonConfig = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     module: {
         rules: [
-            {
-                test: /\.vue$/,
-                loader: 'vue-loader',
-                options: {
-                    loaders: {
-                        // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
-                        // the "scss" and "sass" values for the lang attribute to the right configs here.
-                        // other preprocessors should work out of the box, no loader config like this necessary.
-                        'scss': 'vue-style-loader!css-loader!sass-loader',
-                        'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
-                    }
-                    // other vue-loader options go here
-                }
-            },
-            {
-                test: /\.tsx?$/,
-                loader: 'ts-loader',
-                exclude: /node_modules/,
-                options: {
-                    appendTsSuffixTo: [/\.vue$/],
-                }
-            },
+            ...minimalLoaderRules,
             {
                 test: /\.(png|jpg|gif|svg)$/,
                 loader: 'file-loader',
@@ -73,7 +76,8 @@ const commonConfig = {
     ]
 };
 
-const appConfig = {...commonConfig,
+const appConfig = {
+    ...commonConfig,
     entry: './src/app/index.ts',
     output: {
         path: path.resolve(__dirname, './public'),
@@ -89,7 +93,8 @@ const appConfig = {...commonConfig,
     ]
 };
 
-const forgotPasswordAppConfig = {...commonConfig,
+const forgotPasswordAppConfig = {
+    ...commonConfig,
     entry: './src/app/forgotPassword.ts',
     output: {
         path: path.resolve(__dirname, './public'),
@@ -105,7 +110,8 @@ const forgotPasswordAppConfig = {...commonConfig,
     ]
 };
 
-const resetPasswordAppConfig =  {...commonConfig,
+const resetPasswordAppConfig = {
+    ...commonConfig,
     entry: './src/app/resetPassword.ts',
     output: {
         path: path.resolve(__dirname, './public'),
@@ -121,11 +127,42 @@ const resetPasswordAppConfig =  {...commonConfig,
     ]
 };
 
-module.exports = [appConfig, forgotPasswordAppConfig, resetPasswordAppConfig];
+const loginAppConfig = {
+    ...commonConfig,
+    module: {
+        rules: [
+            ...minimalLoaderRules,
+            {
+                test: /\.ftl$/,
+                use: [
+                    {
+                        loader: 'html-loader',
+                        options: {
+                            attrs: false
+                        }
+                    }
+                ]
+            }]
+    },
+    entry: './src/app/login.ts',
+    output: {
+        path: path.resolve(__dirname, './public'),
+        publicPath: '/public/',
+        filename: 'js/login.js'
+    },
+    plugins: [...commonConfig.plugins,
+        new HtmlWebpackPlugin({
+            hash: true,
+            template: 'public/login.ftl',
+            filename: 'login.ftl'
+        })
+    ]
+};
+
+module.exports = [appConfig, forgotPasswordAppConfig, resetPasswordAppConfig, loginAppConfig];
 
 if (process.env.NODE_ENV === 'production') {
-    module.exports.forEach((moduleExport) =>
-    {
+    module.exports.forEach((moduleExport) => {
         moduleExport.devtool = '#source-map';
         // http://vue-loader.vuejs.org/en/workflow/production.html
         moduleExport.plugins = (moduleExport.plugins || []).concat([

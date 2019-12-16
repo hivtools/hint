@@ -2,7 +2,6 @@ import {ActionContext, ActionTree} from "vuex";
 import {PasswordState} from "./password";
 import {api} from "../../apiService";
 import qs from "qs";
-import {RootState} from "../../root";
 
 export type PasswordActionTypes = "ResetLinkRequested" | "ResetPassword"
 export type PasswordActionErrorTypes = "RequestResetLinkError" | "ResetPasswordError"
