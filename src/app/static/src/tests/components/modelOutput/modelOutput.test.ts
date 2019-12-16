@@ -1,5 +1,4 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
-import Vue from 'vue';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
@@ -9,15 +8,17 @@ import {
 } from "../../mocks";
 import {DataType} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
-import {mutations as filteredDataMutations}  from "../../../app/store/filteredData/mutations";
-import {mutations as modelOutputMutations}  from "../../../app/store/modelOutput/mutations";
+import {mutations as filteredDataMutations} from "../../../app/store/filteredData/mutations";
+import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
 import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {emptyState} from "../../../app/root";
 
 const localVue = createLocalVue();
-;
 
 function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
-    return new Vuex.Store({
+    const store = new Vuex.Store({
+        state: emptyState(),
         modules: {
             baseline: {
                 namespaced: true,
@@ -73,6 +74,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
             }
         }
     });
+    registerTranslations(store);
+    return store;
 }
 
 describe("ModelOutput component", () => {
@@ -91,7 +94,7 @@ describe("ModelOutput component", () => {
         expect(store.state.filteredData.selectedDataType).toBe(DataType.Output);
     });
 
-    it ("if no selected tab in state, defaults to select Map tab", () => {
+    it("if no selected tab in state, defaults to select Map tab", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
@@ -99,8 +102,8 @@ describe("ModelOutput component", () => {
         expect(activeTab.text()).toBe("Map");
     });
 
-    it ("gets selected tab from state", () => {
-        const store = getStore({selectedTab: "Bar"});
+    it("gets selected tab from state", () => {
+        const store = getStore({selectedTab: "bar"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
         const activeTab = wrapper.find("a.active");

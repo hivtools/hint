@@ -1,30 +1,30 @@
 <template>
     <div class="card reset-password-form mx-auto mt-5">
         <div class="card-body">
-            <h3 class="card-title">Enter a new password</h3>
+            <h3 class="card-title" v-translate="'enterPassword'"></h3>
             <div v-if="!passwordWasReset" >
                 <form ref="resetPasswordForm" class="needs-validation" novalidate>
                     <div class="form-group">
-                        <input type="password" class="form-control" name="password" id="email" placeholder="New password"
+                        <input type="password" class="form-control"
+                               name="password"
+                               id="email"
+                               v-translate:placeholder="'newPassword'"
                                v-model="password" pattern=".{6,}" required>
-                        <div class="invalid-feedback">Please enter a new password with at least 6 characters.</div>
+                        <div class="invalid-feedback" v-translate="'invalidPassword'"></div>
                     </div>
 
                     <div class="text-center">
-                        <input class="btn btn-red" type="submit" value="Update password"
+                        <input class="btn btn-red" type="submit" v-translate:value="'updatePassword'"
                                v-on:click="handleResetPassword">
                     </div>
                 </form>
                 <div v-if="hasError">
                     <error-alert :error="error"></error-alert>
-                    <div id="request-new-link">
-                        This password reset link is not valid. It may have expired or already been used.
-                        Please request another link <a href="/password/forgot-password">here</a>.
+                    <div id="request-new-link" v-translate="'resetTokenInvalid'">
                     </div>
                 </div>
             </div>
-            <div v-if="passwordWasReset" id="password-was-reset">
-                Thank you, your password has been updated. Click <a href="/">here</a> to login.
+            <div v-if="passwordWasReset" id="password-was-reset" v-translate="'passwordWasReset'">
             </div>
         </div>
     </div>
