@@ -3,16 +3,23 @@ import {localStorageManager} from "../../localStorageManager";
 import {Module} from "vuex";
 import {RootState} from "../../root";
 import {mutations} from "./mutations";
+import {Dict} from "../../types";
 
 export interface PlottingSelectionsState {
-    barchart: BarchartSelections
+    barchart: BarchartSelections,
+    bubble: BubblePlotSelections
 }
 
 export interface BarchartSelections {
     indicatorId: string,
     xAxisId: string,
     disaggregateById: string,
-    selectedFilterOptions:  { [key: string]: FilterOption[] }
+    selectedFilterOptions:  Dict<FilterOption[]>
+}
+
+export interface BubblePlotSelections {
+    //TODO: add indicators
+    selectedFilterOptions: Dict<FilterOption[]>
 }
 
 export const initialBarchartSelections = (): BarchartSelections => {
@@ -24,9 +31,16 @@ export const initialBarchartSelections = (): BarchartSelections => {
     }
 };
 
+export const initialBubblePlotSelections = (): BubblePlotSelections => {
+    return {
+        selectedFilterOptions: {}
+    };
+};
+
 export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
     return {
-        barchart: initialBarchartSelections()
+        barchart: initialBarchartSelections(),
+        bubble: initialBubblePlotSelections()
     }
 };
 
