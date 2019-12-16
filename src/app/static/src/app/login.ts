@@ -11,8 +11,8 @@ Vue.use(Vuex);
 
 const loginStoreOptions: StoreOptions<TranslatableState> = {
     state: {language: Language.en},
-    actions: {...languageActions()},
-    mutations: {...languageMutations}
+    actions: languageActions(),
+    mutations: languageMutations
 };
 
 const store = new Vuex.Store<TranslatableState>(loginStoreOptions);
