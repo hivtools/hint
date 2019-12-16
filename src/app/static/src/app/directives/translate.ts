@@ -33,8 +33,8 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
                 _translateText(lng, el, binding);
             })
         } else {
-            // this is a default, i.e. innerText, binding
-            ele.__lang_unwatch__["innerText"] = store.watch(state => state.language, lng => {
+            // this is a default, i.e. innerHTML, binding
+            ele.__lang_unwatch__["innerHTML"] = store.watch(state => state.language, lng => {
                 _translateText(lng, el, binding);
             })
         }
@@ -47,8 +47,8 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
             // this is an attribute binding
             ele.__lang_unwatch__[binding.arg]()
         } else {
-            // this is a default, i.e. innerText, binding
-            ele.__lang_unwatch__["innerText"]()
+            // this is a default, i.e. innerHTML, binding
+            ele.__lang_unwatch__["innerHTML"]()
         }
     }
 
