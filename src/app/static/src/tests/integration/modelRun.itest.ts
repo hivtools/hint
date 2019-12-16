@@ -73,7 +73,7 @@ describe("Model run actions", () => {
         // but the expected error message confirms
         // that we're hitting the correct endpoint
         expect(commit.mock.calls[0][0]["type"]).toBe("RunResultError");
-        expect(commit.mock.calls[0][0]["payload"].detail).toBe("Missing some results");
+        expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
     });
 
     it ("makeCancelRunRequest makes call to API", async () => {
