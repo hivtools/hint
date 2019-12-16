@@ -28,7 +28,7 @@
     import MapControl from "../MapControl.vue";
     import {GeoJSON, Layer} from "leaflet";
     import {ChoroplethIndicatorMetadata} from "../../../generated";
-    import {getFeatureIndicators, toIndicatorNamelLookup} from "./utils";
+    import {getFeatureIndicators, toIndicatorNameLookup} from "./utils";
     import {BubbleIndicatorValuesDict, Dict, LevelLabel} from "../../../types";
 
     interface Props {
@@ -139,7 +139,7 @@
                 return this.featuresByLevel[this.detail]
             },
             indicatorNameLookup() {
-                return toIndicatorNamelLookup(this.indicators)
+                return toIndicatorNameLookup(this.indicators)
             }
         },
         methods: {
@@ -151,7 +151,7 @@
                 }
             },
             getRadius: function(feature: Feature) {
-                return this.featureIndicators[feature.properties!!.area_id][this.sizeIndicator].size;
+                return this.featureIndicators[feature.properties!!.area_id][this.sizeIndicator].radius;
             },
             getColor: function(feature: Feature) {
                 return this.featureIndicators[feature.properties!!.area_id][this.colorIndicator].color;

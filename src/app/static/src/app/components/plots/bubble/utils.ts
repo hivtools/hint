@@ -3,7 +3,7 @@ import {getColor} from "../../../store/filteredData/utils";
 import {Feature} from "geojson";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 
-export const toIndicatorNamelLookup = (array: ChoroplethIndicatorMetadata[]) =>
+export const toIndicatorNameLookup = (array: ChoroplethIndicatorMetadata[]) =>
     array.reduce((obj, current) => {
         obj[current.indicator] = current.name;
         return obj
@@ -59,7 +59,7 @@ export const getFeatureIndicators = function (data: any[],
             regionValues[indicator] = {
                 value: value,
                 color: getColor(value, metadata), //TODO: put this function. shared with Choropleth, in a more generic place
-                size: getRadius(value, metadata.min, metadata.max, minArea, maxArea)
+                radius: getRadius(value, metadata.min, metadata.max, minArea, maxArea)
             }
         }
     }
