@@ -9,11 +9,9 @@
                 <a href="https://forms.gle/QxCT1b4ScLqKPg6a7"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
-                   v-translate>
-                    reportBug
+                   v-translate="'reportBug'">
                 </a>
-                <a href="/logout" class="pr-2 mr-2 border-right" v-translate>
-                    logout
+                <a href="/logout" class="pr-2 mr-2 border-right" v-translate="'logout'">
                 </a>
                 <language-menu></language-menu>
             </div>
