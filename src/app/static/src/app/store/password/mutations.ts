@@ -2,6 +2,7 @@ import {PasswordState} from "./password";
 import {Mutation, MutationTree} from "vuex";
 import {PayloadWithType} from "../../types";
 import {Error} from "../../generated";
+import {mutations as languageMutations} from "../language/mutations";
 
 type PasswordMutation = Mutation<PasswordState>
 
@@ -31,5 +32,7 @@ export const mutations: MutationTree<PasswordState> & PasswordMutations = {
     ResetPasswordError(state: PasswordState, action: PayloadWithType<Error>) {
         state.passwordWasReset = false;
         state.resetPasswordError = action.payload;
-    }
+    },
+
+    ...languageMutations
 };

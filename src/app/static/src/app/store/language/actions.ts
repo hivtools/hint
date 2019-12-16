@@ -3,7 +3,7 @@ import i18next from "i18next";
 import {TranslatableState} from "../../root";
 import {LanguageMutation} from "./mutations";
 
-interface LanguageActions<T extends TranslatableState> {
+export interface LanguageActions<T extends TranslatableState> {
     changeLanguage: (store: ActionContext<T, T>, lang: string) => void;
 }
 

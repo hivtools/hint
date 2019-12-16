@@ -7,15 +7,13 @@ import {actions} from './store/password/actions';
 import {mutations} from './store/password/mutations';
 import registerTranslations from "./store/translations/registerTranslations";
 import LoggedOutHeader from "./components/header/LoggedOutHeader.vue";
-import {actions as languageActions} from './store/language/actions';
-import {mutations as languageMutations} from './store/language/mutations';
 
 Vue.use(Vuex);
 
 const passwordStoreOptions: StoreOptions<PasswordState> = {
     state: initialPasswordState,
-    actions: {...actions, ...languageActions()},
-    mutations: {...mutations, ...languageMutations}
+    actions: actions,
+    mutations: mutations
 };
 
 const store = new Vuex.Store<PasswordState>(passwordStoreOptions);

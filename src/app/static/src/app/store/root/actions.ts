@@ -2,11 +2,10 @@ import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
 import {StepDescription} from "../stepper/stepper";
 import {RootMutation} from "./mutations";
-import {actions as languageActions} from "../language/actions";
+import {actions as languageActions, LanguageActions} from "../language/actions";
 
-export interface RootActions {
+export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
-    changeLanguage: (store: ActionContext<RootState, RootState>, lang: string) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
