@@ -1,7 +1,8 @@
 import {createLocalVue, mount, shallowMount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {
-    mockAxios, mockError,
+    mockAxios,
+    mockError,
     mockModelOptionsState,
     mockModelResultResponse,
     mockModelRunState,
@@ -11,7 +12,7 @@ import {
 import {actions} from "../../../app/store/modelRun/actions";
 import {mutations} from "../../../app/store/modelRun/mutations";
 import {modelRunGetters, ModelRunState} from "../../../app/store/modelRun/modelRun";
-import {RootState} from "../../../app/root";
+import {emptyState, RootState} from "../../../app/root";
 import ModelRun from "../../../app/components/modelRun/ModelRun.vue";
 import Modal from "../../../app/components/Modal.vue";
 import Tick from "../../../app/components/Tick.vue";
@@ -19,13 +20,15 @@ import {ModelStatusResponse} from "../../../app/generated";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 const localVue = createLocalVue();
 
 describe("Model run component", () => {
 
     const createStore = (state: Partial<ModelRunState> = {}, testActions: any = actions): Store<RootState> => {
-        return new Vuex.Store({
+        const store = new Vuex.Store({
+            state: emptyState(),
             modules: {
                 modelRun: {
                     namespaced: true,
@@ -39,6 +42,8 @@ describe("Model run component", () => {
                 }
             }
         });
+        registerTranslations(store);
+        return store;
     };
 
     const mockStatus = mockModelStatusResponse();
@@ -62,7 +67,9 @@ describe("Model run component", () => {
 
         const store = createStore();
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        wrapper.find("button").trigger("click");
+        const button = wrapper.find("button");
+        expect(button.text()).toBe("Run model");
+        button.trigger("click");
 
         setTimeout(() => {
             expect(wrapper.find("button").attributes().disabled).toBe("disabled");
@@ -258,7 +265,7 @@ describe("Model run component", () => {
 
     it("displays error alerts for errors", () => {
         const firstError = mockError("first error");
-        const secondError =  mockError("second error");
+        const secondError = mockError("second error");
         const store = createStore({errors: [firstError, secondError]});
         const wrapper = shallowMount(ModelRun, {store, localVue});
 

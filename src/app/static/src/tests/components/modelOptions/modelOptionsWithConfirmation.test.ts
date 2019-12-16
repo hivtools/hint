@@ -10,6 +10,7 @@ import {RootState} from "../../../app/root";
 import {mockModelOptionsState} from "../../mocks";
 import DynamicForm from "../../../app/components/forms/DynamicForm.vue";
 import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 describe("Model options component when edit confirmation is required", () => {
 
@@ -32,20 +33,24 @@ describe("Model options component when edit confirmation is required", () => {
 
     const createStore = (props: Partial<ModelOptionsState>,
                          mutations: MutationTree<ModelOptionsState> = mockMutations,
-                         actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) => new Vuex.Store({
-        modules: {
-            modelOptions: {
-                namespaced: true,
-                state: mockModelOptionsState(props),
-                mutations,
-                actions
-            },
-            stepper: {
-                namespaced: true,
-                getters: mockGetters
+                         actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) =>{
+        const store = new Vuex.Store({
+            modules: {
+                modelOptions: {
+                    namespaced: true,
+                    state: mockModelOptionsState(props),
+                    mutations,
+                    actions
+                },
+                stepper: {
+                    namespaced: true,
+                    getters: mockGetters
+                }
             }
-        }
-    });
+        });
+        registerTranslations(store);
+        return store;
+    };
 
     const store = createStore({
         valid: true,

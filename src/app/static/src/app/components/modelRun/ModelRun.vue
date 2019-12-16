@@ -2,9 +2,10 @@
     <div>
         <button class="btn btn-red btn-lg"
                 v-on:click="run"
-                :disabled="running">Run model
+                :disabled="running"
+                v-translate="'runModel'">
         </button>
-        <h4 v-if="complete" class="mt-3" id="model-run-complete">Model run complete
+        <h4 v-if="complete" class="mt-3" id="model-run-complete" v-translate="'runComplete'">
             <tick color="#e31837" width="20px"></tick>
         </h4>
         <modal :open="running">
@@ -12,12 +13,12 @@
                           :key="phase.name"
                           :phase="phase"></progress-bar>
             <div class="text-center" v-if="phases.length == 0">
-                <h4>Initialising model run</h4>
+                <h4 v-translate="'initialisingRun'"></h4>
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <div>
                 <button class="btn btn-red float-right" id="cancel-model-run"
-                        v-on:click="cancelRun">Cancel run
+                        v-on:click="cancelRun" v-translate="'cancelRun'">
                 </button>
             </div>
         </modal>
@@ -71,7 +72,7 @@
                 errors: state => state.errors,
                 phases: state => {
                     const progress = state.status.progress || [];
-                    return progress.map((item, index) => ({...item, name: `${index+1}. ${item.name}`}))
+                    return progress.map((item, index) => ({...item, name: `${index + 1}. ${item.name}`}))
                 }
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
