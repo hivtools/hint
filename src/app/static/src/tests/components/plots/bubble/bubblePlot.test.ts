@@ -2,7 +2,7 @@ import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
 import Vue from 'vue';
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
 import {LGeoJson, LCircleMarker, LTooltip} from "vue2-leaflet";
-import {getRadius} from "../../../../app/components/plots/bubble/utils";
+import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
 import {getColor} from "../../../../app/store/filteredData/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 
@@ -89,5 +89,48 @@ describe("BubblePlot component", () => {
 
         expect(wrapper.find(MapControl).props().initialDetail).toEqual(4);
         expect(wrapper.find(MapControl).props().showIndicators).toEqual(false);
+    });
+
+    it("computes featureIndicators", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+
+        expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
+            [propsData.features[1] as any, propsData.features[2] as any],
+            propsData.indicators,
+            10,
+            10000));
+    });
+
+    it("computes featuresByLevel", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+
+        expect(vm.featuresByLevel).toStrictEqual({
+            3: [propsData.features[0]],
+            4: [propsData.features[1], propsData.features[2]]
+        });
+    });
+
+    it("computes maxLevel", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.maxLevel).toBe(4);
+    });
+
+    it("computes currentFeatures", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+
+        expect(vm.currentFeatures).toStrictEqual([propsData.features[1], propsData.features[2]]);
+    });
+
+    it("computes indicatorNameLookup", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.indicatorNameLookup).toStrictEqual({
+            plhiv: "PLHIV",
+            prevalence: "Prevalence"
+        });
     });
 });
