@@ -2,14 +2,14 @@
     <div>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
-            <h2 id="loading-message" v-translate>loadingOptions</h2>
+            <h2 id="loading-message" v-translate="'loadingOptions'"></h2>
         </div>
         <dynamic-form v-if="!loading"
                       v-model="modelOptions"
                       submit-text="Validate"
                       v-on:mousedown.native="confirmEditing"
                       @submit="validate"></dynamic-form>
-        <h4 v-if="valid" class="mt-3" v-translate>optionsValid
+        <h4 v-if="valid" class="mt-3" v-translate="'optionsValid'">
             <tick color="#e31837" width="20px"></tick>
         </h4>
         <reset-confirmation :continue-editing="continueEditing"

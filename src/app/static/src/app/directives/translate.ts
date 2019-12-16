@@ -9,7 +9,7 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
 
     function _validateBinding(binding: DirectiveBinding, vnode: VNode): boolean {
         if (!binding.value) {
-            console.warn("v-translate directive declared without a value", vnode);
+            console.warn("v-translate directive declared without a value", {tag: vnode.tag, data: vnode.data});
             return false;
         }
         return true;

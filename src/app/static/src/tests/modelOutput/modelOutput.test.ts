@@ -1,4 +1,4 @@
-import {initialModelOutputState, modelOutputGetters} from "../../app/store/modelOutput/modelOutput";
+import {modelOutputGetters} from "../../app/store/modelOutput/modelOutput";
 import {
     mockBaselineState, mockModelOutputState,
     mockModelResultResponse,

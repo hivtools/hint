@@ -3,6 +3,7 @@ export interface Translations {
     ANC: string,
     area: string,
     ART: string,
+    bar: string,
     back: string,
     browse: string,
     chooseFile: string,
@@ -31,6 +32,7 @@ export interface Translations {
     loadingOptions: string,
     logIn: string,
     logout: string,
+    map: string,
     missingError: string,
     modelOptions: string,
     notUsed: string,
@@ -67,6 +69,7 @@ const en: Translations = {
     ANC: "ANC",
     area: "Area",
     ART: "ART",
+    bar: "Bar",
     back: "back",
     browse: "Browse",
     chooseFile: "Choose a file",
@@ -95,6 +98,7 @@ const en: Translations = {
     loadingOptions: "Loading options",
     logIn: "Log In",
     logout: "Logout",
+    map: "Map",
     missingError: "API response failed but did not contain any error information. Please contact support.",
     modelOptions: "Model options",
     notUsed: "Not used",
@@ -127,6 +131,7 @@ const en: Translations = {
 };
 
 const fr: Partial<Translations> = {
+    country: "Pays",
     email: "Adresse e-mail",
     logout: "Déconnexion",
     reportBug: "Envoyer un rapport de bug",
