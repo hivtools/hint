@@ -15,7 +15,8 @@ describe("Forgot password component", () => {
     const createStore = (passwordState?: Partial<PasswordState>) => {
         actions = {
             requestResetLink: jest.fn(),
-            resetPassword: jest.fn()
+            resetPassword: jest.fn(),
+            changeLanguage: jest.fn()
         };
 
         const store = new Vuex.Store({
