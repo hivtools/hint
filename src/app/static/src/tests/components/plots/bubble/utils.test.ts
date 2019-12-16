@@ -87,6 +87,32 @@ describe("Bubble plot utils", () => {
         expect(result).toStrictEqual(expectedFeatureIndicators);
     });
 
+    it("can get feature indicators from partial rows", () => {
+        const partialData = [
+            {area_id: "MWI_1_1", prevalence: 0.5},
+            {area_id: "MWI_1_2", plhiv: 14},
+        ];
+
+        const result = getFeatureIndicators(partialData, selectedFeatures as any, indicators, minRadius, maxRadius);
+
+        expect(result).toStrictEqual({
+            MWI_1_1: {
+                prevalence: {
+                    value: 0.5,
+                    color: getColor(0.5, indicators[1]),
+                    radius: getRadius(0.5, 0, 0.8, minArea, maxArea)
+                }
+            },
+            MWI_1_2: {
+                plhiv: {
+                    value: 14,
+                    color: getColor(14, indicators[0]),
+                    radius: getRadius(14, 1, 100, minArea, maxArea)
+                }
+            }
+        });
+    });
+
     it("can get indicator name lookup", () => {
         expect(toIndicatorNameLookup(indicators)).toStrictEqual({
             plhiv: "PLHIV",
