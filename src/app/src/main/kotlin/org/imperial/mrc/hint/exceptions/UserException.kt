@@ -1,3 +1,5 @@
 package org.imperial.mrc.hint.exceptions
 
-class UserException(message: String): HintException(message)
+import org.springframework.http.HttpStatus
+
+class UserException(key: String): HintException(key, HttpStatus.BAD_REQUEST)

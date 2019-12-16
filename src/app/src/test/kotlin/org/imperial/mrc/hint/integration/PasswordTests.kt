@@ -1,11 +1,9 @@
 package org.imperial.mrc.hint.integration
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.emails.WriteToDiskEmailManager
 import org.imperial.mrc.hint.helpers.AuthInterceptor
-import org.imperial.mrc.hint.helpers.errorMessageRegex
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -33,7 +31,8 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
     private val expectedSuccessResponse = "{\"errors\":[],\"status\":\"success\",\"data\":true}"
 
     private fun expectedErrorResponse(errorMessage: String): String {
-        return "{\"data\":{},\"status\":\"failure\",\"errors\":[{\"error\":\"OTHER_ERROR\",\"detail\":\"$errorMessage\"}]}"
+        return "{\"data\":{},\"status\":\"failure\"," +
+                "\"errors\":[{\"error\":\"OTHER_ERROR\",\"detail\":\"$errorMessage\"}]}"
     }
 
     @AfterEach
@@ -87,7 +86,7 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
                 HttpEntity(map, headers))
 
         assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(entity.body).isEqualTo(expectedErrorResponse("Token is not valid"))
+        assertThat(entity.body).isEqualTo(expectedErrorResponse("Token is not valid."))
     }
 
     @Test
@@ -104,8 +103,8 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
 
         val entity = restTemplate.postForEntity<String>("/password/reset-password/",
                 HttpEntity(map, headers))
-        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        Assertions.assertThat(entity.body).isEqualTo(expectedErrorResponse("postResetPassword.password: Password must be at least 6 characters long"))
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(entity.body).isEqualTo(expectedErrorResponse("Password must be at least 6 characters long."))
     }
 
     private fun getTokenFromEmailText(emailText: String): String {

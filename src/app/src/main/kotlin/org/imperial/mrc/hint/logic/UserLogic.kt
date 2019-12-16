@@ -26,11 +26,11 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
     override fun addUser(email: String, password: String?) {
 
         if (!email.contains("@")) {
-            throw UserException("Please provide a valid email address")
+            throw UserException("invalidEmail")
         }
 
         if (getUser(email) != null) {
-            throw UserException("User already exists")
+            throw UserException("userExists")
         }
 
         val profile = DbProfile()
@@ -47,7 +47,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
     }
 
     override fun removeUser(email: String) {
-        val user = getUser(email) ?: throw UserException("User does not exist")
+        val user = getUser(email) ?: throw UserException("userDoesNotExist")
         profileService.removeById(user.id)
     }
 
@@ -55,7 +55,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
 
         val emailArray = email.split("@")
         if (emailArray.count() == 1) {
-            throw UserException("Please provide a valid email address")
+            throw UserException("invalidEmail")
         }
 
         val caseInsensitiveDomainRegex = Regex("(?-i)${emailArray[0]}@(?i)${emailArray[1]}")
