@@ -89,4 +89,13 @@ describe("modelOutput module", () => {
         expect(result[1]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[0]);
         expect(result[2]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[1]);
     });
+
+    it("gets bubble plot indicators", async () => {
+        const testRootGetters = {
+            "metadata/choroplethIndicatorsMetadata": ["TEST INDICATORS"]
+        };
+
+        const result = modelOutputGetters.bubblePlotIndicators(mockModelOutputState(), null, rootState, testRootGetters);
+        expect(result).toStrictEqual(["TEST INDICATORS"]);
+    });
 });
