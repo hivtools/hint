@@ -4,6 +4,7 @@ import {PasswordState} from "../../../app/store/password/password";
 import {PasswordActions} from "../../../app/store/password/actions";
 import Vuex, {Store} from "vuex";
 import {mockError, mockPasswordState} from "../../mocks";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 const localVue = createLocalVue();
 
@@ -17,12 +18,14 @@ describe("Reset password component", () => {
             resetPassword: jest.fn()
         };
 
-        return new Vuex.Store({
+        const store = new Vuex.Store({
             state: mockPasswordState(passwordState),
             actions: {...actions},
             mutations: {},
             getters: {}
         });
+        registerTranslations(store);
+        return store;
     };
 
     const createSut = (store: Store<PasswordState>) => {

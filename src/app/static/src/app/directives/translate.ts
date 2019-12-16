@@ -20,7 +20,7 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
         if (attribute) {
             el.setAttribute(attribute, i18next.t(binding.value, {lng}));
         } else {
-            el.innerText = i18next.t(binding.value, {lng});
+            el.innerHTML = i18next.t(binding.value, {lng});
         }
     }
 
