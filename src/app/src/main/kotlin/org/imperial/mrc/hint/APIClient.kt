@@ -5,6 +5,7 @@ import com.github.kittinunf.fuel.Fuel.head
 import com.github.kittinunf.fuel.httpDownload
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.fuel.core.Request
 import org.imperial.mrc.hint.models.ModelRunOptions
 import org.imperial.mrc.hint.models.SessionFileWithPath
 import org.springframework.http.ResponseEntity
@@ -22,6 +23,7 @@ interface APIClient {
     fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
     fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
     fun getModelRunOptions(files: Map<String, SessionFileWithPath>): ResponseEntity<String>
+    fun cancelModelRun(id: String): ResponseEntity<String>
 }
 
 @Component
@@ -82,15 +84,22 @@ class HintrAPIClient(
 
     override fun validateBaselineCombined(files: Map<String, SessionFileWithPath?>): ResponseEntity<String> {
         val json = objectMapper.writeValueAsString(
-           files.mapValues{ it.value?.path }
+                files.mapValues { it.value?.path }
         )
         return postJson("validate/baseline-combined", json)
     }
 
+    override fun cancelModelRun(id: String): ResponseEntity<String> {
+        return "$baseUrl/model/cancel/${id}".httpPost()
+                .addTimeouts()
+                .response()
+                .second
+                .asResponseEntity()
+    }
+
     fun get(url: String): ResponseEntity<String> {
         return "$baseUrl/$url".httpGet()
-                .timeout(60000)
-                .timeoutRead(60000)
+                .addTimeouts()
                 .response()
                 .second
                 .asResponseEntity()
@@ -98,13 +107,17 @@ class HintrAPIClient(
 
     private fun postJson(url: String, json: String): ResponseEntity<String> {
         return "$baseUrl/$url".httpPost()
-                .timeout(60000)
-                .timeoutRead(60000)
+                .addTimeouts()
                 .header("Content-Type" to "application/json")
                 .body(json)
                 .response()
                 .second
                 .asResponseEntity()
+    }
+
+    private fun Request.addTimeouts(): Request {
+        return this.timeout(60000)
+                .timeoutRead(60000)
     }
 
     override fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody> {

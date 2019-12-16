@@ -1,12 +1,11 @@
-import {createLocalVue, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import ForgotPassword from "../../../app/components/password/ForgotPassword.vue";
 import {PasswordState} from "../../../app/store/password/password";
 import {PasswordActions} from "../../../app/store/password/actions";
 import Vuex, {Store} from "vuex";
 import {mockError, mockPasswordState} from "../../mocks";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
-
-const localVue = createLocalVue();
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 describe("Forgot password component", () => {
 
@@ -18,17 +17,19 @@ describe("Forgot password component", () => {
             resetPassword: jest.fn()
         };
 
-        return new Vuex.Store({
+        const store = new Vuex.Store({
             state: mockPasswordState(passwordState),
             actions: {...actions},
             mutations: {}
         });
+
+        registerTranslations(store);
+        return store;
     };
 
     const createSut = (store: Store<PasswordState>) => {
-        return shallowMount(ForgotPassword, {store, localVue});
+        return shallowMount(ForgotPassword, {store});
     };
-
 
     it("renders form with no error", () => {
         const store = createStore({
@@ -39,13 +40,14 @@ describe("Forgot password component", () => {
 
         expect(wrapper.find("h3").text()).toEqual("Forgotten your password?");
         expect((wrapper.find("input[type='email']").element as HTMLInputElement).value).toEqual("");
+        expect((wrapper.find("input[type='email']").element as HTMLInputElement).placeholder).toEqual("Email address");
         expect((wrapper.find("input[type='submit']").element as HTMLInputElement).value).toEqual("Request password reset email");
         expect(wrapper.findAll("error-alert-stub").length).toEqual(0);
         expect(wrapper.findAll(".alert-success").length).toEqual(0);
     });
 
     it("renders form with error", () => {
-        const error = mockError("test error")
+        const error = mockError("test error");
         const store = createStore({
             resetLinkRequested: false,
             requestResetLinkError: error});

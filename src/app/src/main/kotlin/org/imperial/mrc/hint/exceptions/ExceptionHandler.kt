@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.exceptions
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.postgresql.util.PSQLException
-import org.slf4j.LoggerFactory
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
@@ -14,48 +13,77 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
-import javax.servlet.http.HttpServletRequest
+import java.text.MessageFormat
+import java.util.*
 import javax.validation.ConstraintViolationException
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
-                           private val appProperties: AppProperties) : ResponseEntityExceptionHandler() {
+                           private val appProperties: AppProperties)
+    : ResponseEntityExceptionHandler() {
 
-    override fun handleExceptionInternal(e: java.lang.Exception,
+    override fun handleExceptionInternal(e: Exception,
                                          @Nullable body: Any?,
                                          headers: HttpHeaders,
                                          status: HttpStatus,
                                          request: WebRequest): ResponseEntity<Any> {
         logger.error(e.message)
-        return ErrorDetail(status, (e.message ?: "Something went wrong").appendErrorCodeInstructions()).toResponseEntity()
-    }
-
-    @ExceptionHandler(HintException::class)
-    protected fun handleHintException(e: HintException): ResponseEntity<Any> {
-        logger.error(e.message)
-        return ErrorDetail(e.httpStatus, e.message!!).toResponseEntity()
-    }
-
-    @ExceptionHandler(ConstraintViolationException::class)
-    protected fun handleConstraintViolationException(e: ConstraintViolationException, request: HttpServletRequest): ResponseEntity<Any> {
-        logger.error(e.message)
-        return ErrorDetail(HttpStatus.BAD_REQUEST, e.message!!).toResponseEntity()
+        // this handles standard Spring MVC exceptions which do not contain
+        // sensitive info so we return the original error message here
+        return unexpectedError(status, request, e.message)
     }
 
     @ExceptionHandler(PSQLException::class)
-    protected fun handlePSQLException(e: PSQLException, request: HttpServletRequest): ResponseEntity<Any> {
+    fun handlePSQLException(e: PSQLException, request: WebRequest): ResponseEntity<Any> {
         logger.error(e.message)
-        return ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.".appendErrorCodeInstructions())
-                .toResponseEntity()
+        // for security reasons we should not return arbitrary db errors to the frontend
+        // so do not pass the original error message here
+        return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
+    }
+    
+    @ExceptionHandler(HintException::class)
+    fun handleHintException(e: HintException, request: WebRequest): ResponseEntity<Any> {
+        logger.error(e.message)
+        return translatedError(e.key, e.httpStatus, request)
     }
 
-    private fun String.appendErrorCodeInstructions(): String {
-        val code = errorCodeGenerator.newCode()
-        val fullStopIfNeeded =  if (this.endsWith('.')) ""  else "."
-        return "$this$fullStopIfNeeded If you see this message while you are using ${appProperties.applicationTitle} at" +
-                " a workshop, please contact your workshop technical support and show them this code: $code. " +
-                "Otherwise please contact support at ${appProperties.supportEmail} and quote this code: $code"
+    private fun getBundle (request: WebRequest): ResourceBundle {
+        val language = request.getHeader("Accept-Language") ?: "en"
+        return ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
+    }
+
+    private fun translatedError(key: String, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+        val resourceBundle = getBundle(request)
+        val message = if (resourceBundle.containsKey(key)) {
+            resourceBundle.getString(key)
+        } else {
+            key
+        }
+        return ErrorDetail(status, message).toResponseEntity()
+    }
+
+    private fun unexpectedError(status: HttpStatus,
+                                request: WebRequest,
+                                originalMessage: String? = null): ResponseEntity<Any> {
+
+        val resourceBundle = getBundle(request)
+        var message = resourceBundle.getString("unexpectedError")
+        val formatter = MessageFormat(message, resourceBundle.locale)
+        val messageArguments = arrayOf(
+                appProperties.applicationTitle,
+                errorCodeGenerator.newCode(),
+                appProperties.supportEmail
+        )
+        message = formatter.format(messageArguments)
+
+        val trace = if (originalMessage != null) {
+            listOf(originalMessage)
+        } else {
+            null
+        }
+        return ErrorDetail(status, message, trace)
+                .toResponseEntity()
     }
 
 }

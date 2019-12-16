@@ -41,6 +41,7 @@ export interface Translations {
     remove: string,
     reportBug: string,
     requestReset: string,
+    resetLinkRequested: string,
     reviewOutput: string,
     runComplete: string,
     runModel: string,
@@ -102,6 +103,7 @@ const en: Translations = {
     remove: "remove",
     reportBug: "Report a bug",
     requestReset: "Request password reset email",
+    resetLinkRequested: "Thank you. If we have an account registered for this email address, you wil receive a password reset link.",
     reviewOutput: "Review output",
     runComplete: "Model run complete",
     runModel: "Run model",
@@ -121,8 +123,10 @@ const en: Translations = {
 };
 
 const fr: Partial<Translations> = {
+    email: "Adresse e-mail",
     logout: "Déconnexion",
-    reportBug: "Envoyer un rapport de bug"
+    reportBug: "Envoyer un rapport de bug",
+    validate: "Valider"
 };
 
 export const locales = {

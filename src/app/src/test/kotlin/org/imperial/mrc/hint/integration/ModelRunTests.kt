@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.integration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
@@ -39,6 +40,21 @@ class ModelRunTests : SecureIntegrationTests() {
         val entity = getModelRunEntity(isAuthorized)
         val responseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
         assertSecureWithSuccess(isAuthorized, responseEntity, "ModelSubmitResponse")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can cancel run model`(isAuthorized: IsAuthorized) {
+        var modelRunId = "test"
+        if (isAuthorized == IsAuthorized.TRUE) {
+            val entity = getModelRunEntity(isAuthorized)
+            val runResponseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
+            val bodyJSON = ObjectMapper().readTree(runResponseEntity.body)
+            modelRunId = bodyJSON["data"]["id"].asText()
+        }
+
+        val responseEntity = testRestTemplate.postForEntity<String>("/model/cancel/$modelRunId")
+        assertSecureWithSuccess(isAuthorized, responseEntity, "ModelCancelResponse")
     }
 
 }

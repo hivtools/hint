@@ -70,6 +70,12 @@ a {
   text-align: center;
 }
 
+.fr {
+  .custom-file-label::after {
+    content: "Parcourir" !important;
+  }
+}
+
 .lds-spin.xs {
   margin-top: -15px;
 }
