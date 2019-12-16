@@ -12,15 +12,27 @@ const propsData = {
     features: [
         {
             "type": "Feature",
-            "properties": {"iso3": "MWI", "area_id": "MWI_3_1", "area_name": "North", "area_level": 3, "center_x": 35.7082, "center_y": -15.2046}
+            "properties": {"iso3": "MWI", "area_id": "MWI_3_1", "area_name": "North", "area_level": 3, "center_x": 35.7082, "center_y": -15.2046},
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
+            }
         },
         {
             "type": "Feature",
-            "properties": {"iso3": "MWI", "area_id": "MWI_4_1", "area_name": "North West", "area_level": 4, "center_x": 35.7083, "center_y": -15.2047}
+            "properties": {"iso3": "MWI", "area_id": "MWI_4_1", "area_name": "North West", "area_level": 4, "center_x": 35.7083, "center_y": -15.2047},
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
+            }
         },
         {
             "type": "Feature",
-            "properties": {"iso3": "MWI", "area_id": "MWI_4_2", "area_name": "North East", "area_level": 4, "center_x": 35.7084, "center_y": -15.2048}
+            "properties": {"iso3": "MWI", "area_id": "MWI_4_2", "area_name": "North East", "area_level": 4, "center_x": 35.7084, "center_y": -15.2048},
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
+            }
         }
     ],
     featureLevels: [
@@ -133,4 +145,29 @@ describe("BubblePlot component", () => {
             prevalence: "Prevalence"
         });
     });
+
+    it("updateBounds updates bounds of map from features geojson", () => {
+        const wrapper = getWrapper();
+        const mockMapFitBounds = jest.fn();
+
+        const vm = wrapper.vm as any;
+        vm.$refs.map = {
+            fitBounds: mockMapFitBounds
+        };
+
+        //NB we're not updating to selected features yet, just to current level
+        vm.updateBounds();
+        expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
+            [
+                {_northEast: {lat: -15.2047, lng: 35.7117}, _southWest: {lat: -15.2117, lng: 35.7083}},
+                {_northEast: {lat: -15.2047, lng: 35.7117}, _southWest: {lat: -15.2117, lng: 35.7083}}
+         ]);
+    });
+
+    it("updates detail", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        vm.onDetailChange(3);
+        expect(vm.detail).toBe(3);
+    })
 });

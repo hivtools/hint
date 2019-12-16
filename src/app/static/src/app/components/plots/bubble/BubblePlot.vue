@@ -144,9 +144,10 @@
         },
         methods: {
             updateBounds: function() {
+                //NB This will be very inefficient until we filter to selected feature
                 const map = this.$refs.map as LMap;
                 if (map && map.fitBounds) {
-                    map.fitBounds(this.features.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
+                    map.fitBounds(this.currentFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                 }
             },
             getRadius: function(feature: Feature) {
