@@ -17,6 +17,11 @@
                 <h4><translated text-key="initialisingRun"></translated></h4>
                 <loading-spinner size="sm"></loading-spinner>
             </div>
+            <div>
+                <button class="btn btn-red float-right" id="cancel-model-run"
+                        v-on:click="cancelRun">Cancel run
+                </button>
+            </div>
         </modal>
         <div class="mt-3">
             <error-alert v-for="(error, index) in errors" :key="index" :error="error"></error-alert>
@@ -53,6 +58,7 @@
     interface Methods {
         run: () => void;
         poll: (runId: string) => void;
+        cancelRun: () => void;
         runModelWithParams: () => void;
     }
 
@@ -73,7 +79,7 @@
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll"])
+            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll", "cancelRun"])
         },
         watch: {
             runId: function (newVal) {

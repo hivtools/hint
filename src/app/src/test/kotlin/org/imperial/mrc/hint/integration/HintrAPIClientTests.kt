@@ -72,4 +72,11 @@ class HintrApiClientTests {
 
         JSONValidator().validateSuccess(metadataResult.body!!, "PlottingMetadataResponse")
     }
+
+    @Test
+    fun `can cancel model run`() {
+        val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.cancelModelRun("1234")
+        assertThat(result.statusCodeValue).isEqualTo(400)
+    }
 }

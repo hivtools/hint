@@ -111,13 +111,13 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                               httpStatus: HttpStatus,
                               errorCode: String,
                               errorDetail: String? = null,
-                              errorStartsWith: Boolean = false) {
+                              errorTrace: String? = null) {
 
         when (isAuthorized) {
             IsAuthorized.TRUE -> {
                 Assertions.assertThat(responseEntity.headers.contentType!!.toString()).isEqualTo("application/json")
                 Assertions.assertThat(responseEntity.statusCode).isEqualTo(httpStatus)
-                JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail, errorStartsWith)
+                JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail, errorTrace)
             }
             IsAuthorized.FALSE -> {
                 assertUnauthorized(responseEntity)

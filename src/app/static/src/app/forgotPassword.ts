@@ -4,7 +4,7 @@ import ForgotPassword from "./components/password/ForgotPassword.vue";
 import {initialPasswordState, PasswordState} from "./store/password/password";
 import {actions} from './store/password/actions';
 import {mutations} from './store/password/mutations';
-import init from "./store/translations/init";
+import registerTranslations from "./store/translations/registerTranslations";
 
 Vue.use(Vuex);
 
@@ -15,7 +15,7 @@ const passwordStoreOptions: StoreOptions<PasswordState> = {
 };
 
 const store = new Vuex.Store<PasswordState>(passwordStoreOptions);
-init(store);
+registerTranslations(store);
 
 export const forgotPasswordApp = new Vue({
     el: "#app",

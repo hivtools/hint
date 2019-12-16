@@ -10,6 +10,7 @@ import org.imperial.mrc.hint.controllers.DiseaseController
 import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.exceptions.HintException
+import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -70,8 +71,9 @@ class DiseaseControllerTests: HintrControllerTests() {
         val mockApiClient = getMockAPIClient(FileType.Survey)
         val sut = DiseaseController(mock(), mockApiClient, mock(), mock())
 
-        val exception = assertThrows<HintException> { sut.uploadSurvey(mockFile) }
-        assertThat(exception.httpStatus).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(exception.message).isEqualTo("You must upload a shape file before uploading survey or programme data")
+        TranslationAssert.assertThatThrownBy { sut.uploadSurvey(mockFile) }
+                .isInstanceOf(HintException::class.java)
+                .matches{ (it as HintException).httpStatus == HttpStatus.BAD_REQUEST }
+                .hasTranslatedMessage("You must upload a shape file before uploading survey or programme data.")
     }
 }

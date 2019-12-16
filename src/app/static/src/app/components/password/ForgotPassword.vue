@@ -1,31 +1,30 @@
 <template>
     <div class="card reset-password-form mx-auto mt-5">
         <div class="card-body">
-            <h3 class="card-title">
-                <translated text-key="forgottenPassword"></translated>
+            <h3 class="card-title" v-translate="'forgottenPassword'">
             </h3>
-            <p>
-                <translated text-key="forgottenPasswordHelp"></translated>
+            <p v-translate="'forgottenPasswordHelp'">
             </p>
             <form ref="forgotPasswordForm" class="needs-validation" novalidate>
                 <div class="form-group">
                     <input type="email" class="form-control" name="email" id="email"
                            v-translate:placeholder="'email'"
                            v-model="email" required>
-                    <div class="invalid-feedback">
-                        <translated text-key="emailValidation"></translated>
+                    <div class="invalid-feedback" v-translate="'emailValidation'">
                     </div>
                 </div>
                 <div class="text-center">
-                    <button class="btn btn-red" type="submit"
-                            v-on:click="handleRequestResetLink">
-                        <translated text-key="requestReset"></translated>
-                    </button>
+                    <input class="btn btn-red"
+                           type="submit"
+                           v-translate:value="'requestReset'"
+                           v-on:click="handleRequestResetLink"/>
                 </div>
             </form>
             <error-alert v-if="hasError" :error="error"></error-alert>
-            <div v-if="resetLinkRequested" class="alert alert-success mt-4" role="alert">
-                <translated text-key="resetLinkRequested"></translated>
+            <div v-if="resetLinkRequested"
+                 class="alert alert-success mt-4"
+                 role="alert"
+                 v-translate="'resetLinkRequested'">
             </div>
         </div>
     </div>
@@ -64,6 +63,5 @@
             }
         }
     });
-
 
 </script>
