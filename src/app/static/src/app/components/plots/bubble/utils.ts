@@ -22,12 +22,12 @@ export const getFeatureIndicators = function (data: any[],
     const minArea = Math.PI * Math.pow(minRadius, 2);
     const maxArea = Math.PI * Math.pow(maxRadius, 2);
 
-    for (const row of data) {
 
+    for (const row of data) {
         //TODO: exclude rows based on filters
-       /* if (excludeRow(row, selectedRegionFilters)) {
-            continue;
-        }*/
+        //if (excludeRow(row, selectedRegionFilters)) {
+        //    continue;
+        //}
 
         const areaId: string = row.area_id;
 

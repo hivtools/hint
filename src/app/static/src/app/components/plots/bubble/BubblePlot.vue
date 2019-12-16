@@ -112,7 +112,7 @@
                 );
             },
             featuresByLevel() {
-                //TODO: this is shared with choropleth, could move into utils file
+                //TODO: this is shared with choropleth, could move into utils file or Mixin
                 const result = {} as any;
                 this.featureLevels.forEach((l: any) => {
                     if (l.display) {
@@ -130,7 +130,7 @@
                 return result;
             },
             maxLevel() {
-                //TODO: this is shared with choropleth, could move into utils file
+                //TODO: this is shared with choropleth, could move into utils file or Mixin
                 const levelNums: number[] = Object.keys(this.featuresByLevel).map(k => parseInt(k));
 
                 return Math.max(...levelNums);
