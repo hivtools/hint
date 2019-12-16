@@ -1,9 +1,6 @@
 import {mockAxios, mockBaselineState, mockError, mockFailure, mockRootState} from "./mocks";
 import {ActionContext, MutationTree} from "vuex";
 import {PayloadWithType} from "../app/types";
-import i18next from "i18next";
-import {Wrapper} from "@vue/test-utils";
-import Translated from "../app/components/Translated.vue";
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
     expect(Object.isFrozen(args["payload"])).toBe(true);
@@ -53,9 +50,4 @@ export function expectAllMutationsDefined(mutationDefinitions: any, mutationTree
     if (missing.length > 0) {
         throw Error(`The following mutations were declared but not defined: ${missing.join(",")}`)
     }
-}
-
-export function expectTranslatedText(wrapper: Wrapper<any>, expected: string) {
-    const text = wrapper.find(Translated).props("textKey");
-    expect(i18next.t(text)).toBe(expected);
 }
