@@ -16,6 +16,7 @@ import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
+import java.util.*
 import javax.sql.DataSource
 import kotlin.system.exitProcess
 
@@ -46,7 +47,8 @@ fun main(args: Array<String>) {
 
         println(result)
     } catch (e: Exception) {
-        System.err.println(e.message)
+        val resources = ResourceBundle.getBundle("ErrorMessageBundle", Locale("en"))
+        System.err.println(resources.getString(e.message!!))
         exitProcess(1)
     } finally {
         dataSource.connection.close()

@@ -8,6 +8,7 @@ import org.imperial.mrc.hint.controllers.TokenException
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
+import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
@@ -100,9 +101,9 @@ class PasswordControllerTests {
 
         val sut = PasswordController(mockUserRepo, mockTokenMan, mockEmailManager)
 
-        assertThatThrownBy { sut.postResetPassword("testToken", "testPassword") }
+        TranslationAssert.assertThatThrownBy { sut.postResetPassword("testToken", "testPassword") }
                 .isInstanceOf(TokenException::class.java)
-                .hasMessage("Token is not valid")
+                .hasTranslatedMessage("Token is not valid.")
 
         verify(mockTokenMan).validateToken("testToken")
         verify(mockUserRepo, never()).updateUserPassword(any(), any())

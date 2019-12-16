@@ -1,13 +1,13 @@
 package org.imperial.mrc.hint.database
 
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.db.Tables.SESSION_FILE
-import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.db.tables.UserSession.USER_SESSION
 import org.imperial.mrc.hint.exceptions.SessionException
+import org.imperial.mrc.hint.helpers.TranslationAssert
+import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.models.SessionFile
 import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
@@ -226,12 +226,12 @@ class SessionRepositoryTests {
         setUpSession()
         setUpHashAndSessionFile("pjnz_hash", "pjnz_file", sessionId, "pjnz")
 
-        assertThatThrownBy {
+        TranslationAssert.assertThatThrownBy {
             sut.setFilesForSession(sessionId, mapOf(
                     "shape" to SessionFile("bad_hash", "bad_file")))
         }
                 .isInstanceOf(SessionException::class.java)
-                .hasMessage("Unable to load files for session. Specified files do not exist on the server.")
+                .hasTranslatedMessage("Unable to load files for session. Specified files do not exist on the server.")
 
         val records = dsl.selectFrom(SESSION_FILE)
                 .orderBy(SESSION_FILE.SESSION)

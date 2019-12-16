@@ -1,19 +1,16 @@
 <template>
     <div class="card reset-password-form mx-auto mt-5">
         <div class="card-body">
-            <h3 class="card-title" v-translate>
-                forgottenPassword
+            <h3 class="card-title" v-translate="'forgottenPassword'">
             </h3>
-            <p v-translate>
-                forgottenPasswordHelp
+            <p v-translate="'forgottenPasswordHelp'">
             </p>
             <form ref="forgotPasswordForm" class="needs-validation" novalidate>
                 <div class="form-group">
                     <input type="email" class="form-control" name="email" id="email"
                            v-translate:placeholder="'email'"
                            v-model="email" required>
-                    <div class="invalid-feedback" v-translate>
-                        emailValidation
+                    <div class="invalid-feedback" v-translate="'emailValidation'">
                     </div>
                 </div>
                 <div class="text-center">
@@ -27,8 +24,7 @@
             <div v-if="resetLinkRequested"
                  class="alert alert-success mt-4"
                  role="alert"
-                 v-translate>
-                resetLinkRequested
+                 v-translate="'resetLinkRequested'">
             </div>
         </div>
     </div>

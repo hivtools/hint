@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.isNull
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
+import org.assertj.core.api.Assert
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.db.DbConfig
@@ -76,7 +77,7 @@ class AppTests {
 
         Assertions.assertThatThrownBy { sut.addUser(mapOf("<email>" to TEST_EMAIL, "<password>" to "testpassword")) }
                 .isInstanceOf(UserException::class.java)
-                .hasMessageContaining("User already exists")
+                .hasMessageContaining("userExists")
 
     }
 
@@ -84,7 +85,7 @@ class AppTests {
     fun `cannot remove nonexistent user`() {
         Assertions.assertThatThrownBy { sut.removeUser(mapOf("<email>" to "notaperson.@email.com")) }
                 .isInstanceOf(UserException::class.java)
-                .hasMessageContaining("User does not exist")
+                .hasMessageContaining("userDoesNotExist")
 
     }
 }

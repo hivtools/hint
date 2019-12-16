@@ -84,7 +84,7 @@ class HintrAPIClient(
 
     override fun validateBaselineCombined(files: Map<String, SessionFileWithPath?>): ResponseEntity<String> {
         val json = objectMapper.writeValueAsString(
-           files.mapValues{ it.value?.path }
+                files.mapValues { it.value?.path }
         )
         return postJson("validate/baseline-combined", json)
     }

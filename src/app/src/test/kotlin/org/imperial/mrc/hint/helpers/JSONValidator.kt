@@ -9,13 +9,13 @@ import org.leadpony.justify.api.JsonSchema
 import org.leadpony.justify.api.JsonValidationService
 import org.leadpony.justify.api.Problem
 import org.leadpony.justify.api.ProblemHandler
+import java.io.BufferedReader
 import java.io.File
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URL
 import javax.json.stream.JsonParsingException
-import java.io.InputStreamReader
-import java.io.BufferedReader
-import java.net.HttpURLConnection
 
 
 class JSONValidator {
@@ -30,8 +30,10 @@ class JSONValidator {
 
     private val responseSchema = getSchema("Response")
 
-    fun validateError(response: String, expectedErrorCode: String, expectedErrorMessage: String? = null,
-                      expectErrorCodeInstructions: Boolean = false) {
+    fun validateError(response: String,
+                      expectedErrorCode: String,
+                      expectedErrorMessage: String? = null,
+                      errorTrace: String? = null) {
         assertValidates(response, responseSchema, "Response")
         val error = objectMapper.readValue<JsonNode>(response)["errors"].first()
         val status = objectMapper.readValue<JsonNode>(response)["status"].textValue()
@@ -39,14 +41,18 @@ class JSONValidator {
         assertThat(status).isEqualTo("failure")
         assertThat(error["error"].asText()).isEqualTo(expectedErrorCode)
         if (expectedErrorMessage != null) {
-            val actualError = error["detail"].asText()
-            if (expectErrorCodeInstructions) {
-                assertThat(actualError).startsWith(expectedErrorMessage)
-                assertThat(errorMessageRegex.matchEntire(actualError)).isNotNull()
-            }
-            else {
-                assertThat(actualError).isEqualTo(expectedErrorMessage)
-            }
+            val actualErrorDetail = error["detail"].asText()
+            val regex = Regex(expectedErrorMessage)
+            assertThat(regex.matchEntire(actualErrorDetail))
+                    .withFailMessage("Expected $actualErrorDetail to match $expectedErrorMessage")
+                    .isNotNull()
+        }
+        if (errorTrace != null) {
+            val actualErrorTrace = error["trace"].first().asText()
+            val regex = Regex(errorTrace)
+            assertThat(regex.matchEntire(actualErrorTrace))
+                    .withFailMessage("Expected $actualErrorTrace to match $errorTrace")
+                    .isNotNull()
         }
     }
 
