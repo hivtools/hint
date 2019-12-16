@@ -1,23 +1,30 @@
 import {shallowMount} from "@vue/test-utils";
 import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
 import Vuex from "vuex";
+import registerTranslations from "../../app/store/translations/registerTranslations";
+import {emptyState} from "../../app/root";
 
-const createStore = (mockGetters: any) => new Vuex.Store({
-    modules: {
-        stepper: {
-            namespaced: true,
-            getters: mockGetters
+const createStore = (mockGetters: any) => {
+    const store = new Vuex.Store({
+        state: emptyState(),
+        modules: {
+            stepper: {
+                namespaced: true,
+                getters: mockGetters
+            }
         }
-    }
-});
+    });
+    registerTranslations(store);
+    return store;
+};
 
 describe("Reset confirmation modal", () => {
 
     it("returns later complete steps", () => {
         const mockGetters = {
-            laterCompleteSteps: () => [{number: 2, text: "Upload survey and programme data"},
-                {number: 3, text: "Model options"},
-                {number: 4, text: "Run model"}]
+            laterCompleteSteps: () => [{number: 2, textKey: "uploadSurvey"},
+                {number: 3, textKey: "modelOptions"},
+                {number: 4, textKey: "runModel"}]
         };
         const rendered = shallowMount(ResetConfirmation, {store: createStore(mockGetters)});
         expect(rendered.find("p").text())

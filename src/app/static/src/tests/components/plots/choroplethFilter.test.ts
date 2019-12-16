@@ -10,8 +10,9 @@ import {
 import {mockFilteredDataState} from "../../mocks";
 import {getters} from "../../../app/store/filteredData/getters";
 import {actions as filterActions} from "../../../app/store/filteredData/actions";
-import {RootState} from "../../../app/root";
+import {emptyState, RootState} from "../../../app/root";
 import {mutations} from "../../../app/store/filteredData/mutations";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 const localVue = createLocalVue();
 
@@ -500,6 +501,7 @@ describe("ChoroplethFilters component", () => {
                         mockActions: ActionTree<FilteredDataState, RootState> = {}) => {
 
         const store = new Vuex.Store({
+            state: emptyState(),
             modules: {
                 filteredData: {
                     namespaced: true,
@@ -513,6 +515,7 @@ describe("ChoroplethFilters component", () => {
                 }
             }
         });
+        registerTranslations(store);
         return shallowMount(ChoroplethFilters, {localVue, store});
     };
 

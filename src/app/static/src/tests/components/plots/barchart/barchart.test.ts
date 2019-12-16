@@ -1,9 +1,17 @@
 import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
+import Vuex from "vuex";
 import {data, filters} from "./utils.test";
 import Barchart from "../../../../app/components/plots/barchart/Barchart.vue";
 import Vue from 'vue';
+import {emptyState} from "../../../../app/root";
+import registerTranslations from "../../../../app/store/translations/registerTranslations";
 
 const localVue = createLocalVue();
+
+const store = new Vuex.Store({
+    state: emptyState()
+});
+registerTranslations(store);
 
 const propsData = {
   chartdata: data,
@@ -48,7 +56,7 @@ const uninitializedSelections = {
 };
 
 const getWrapper  = () => {
-  return shallowMount(Barchart, {propsData, localVue});
+  return shallowMount(Barchart, {propsData, localVue, store});
 };
 
 const confirmFormGroup = (wrapper: Wrapper<Barchart>, elementId: string, label: string) => {
