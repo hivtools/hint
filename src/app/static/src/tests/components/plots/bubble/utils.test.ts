@@ -29,32 +29,32 @@ describe("Bubble plot utils", () => {
 
     const minRadius = 10;
     const maxRadius = 1000;
-    const minArea = Math.PI * (minRadius * minRadius);
-    const maxArea = Math.PI * (maxRadius * maxRadius);
+    //const minArea = Math.PI * (minRadius * minRadius);
+    //const maxArea = Math.PI * (maxRadius * maxRadius);
 
     const expectedFeatureIndicators = {
         MWI_1_1: {
             plhiv: {
                 value: 12,
                 color: getColor(12, indicators[0]),
-                radius: getRadius(12, 1, 100, minArea, maxArea)
+                radius: getRadius(12, 1, 100, minRadius, maxRadius)
             },
             prevalence: {
                 value: 0.5,
                 color: getColor(0.5, indicators[1]),
-                radius: getRadius(0.5, 0, 0.8, minArea, maxArea)
+                radius: getRadius(0.5, 0, 0.8, minRadius, maxRadius)
             }
         },
         MWI_1_2: {
             plhiv: {
                 value: 14,
                 color: getColor(14, indicators[0]),
-                radius: getRadius(14, 1, 100, minArea, maxArea)
+                radius: getRadius(14, 1, 100, minRadius, maxRadius)
             },
             prevalence: {
                 value: 0.6,
                 color: getColor(0.6, indicators[1]),
-                radius: getRadius(0.6, 0, 0.8, minArea, maxArea)
+                radius: getRadius(0.6, 0, 0.8, minRadius, maxRadius)
             }
         }
     };
@@ -124,14 +124,14 @@ describe("Bubble plot utils", () => {
                 prevalence: {
                     value: 0.5,
                     color: getColor(0.5, indicators[1]),
-                    radius: getRadius(0.5, 0, 0.8, minArea, maxArea)
+                    radius: getRadius(0.5, 0, 0.8, minRadius, maxRadius)
                 }
             },
             MWI_1_2: {
                 plhiv: {
                     value: 14,
                     color: getColor(14, indicators[0]),
-                    radius: getRadius(14, 1, 100, minArea, maxArea)
+                    radius: getRadius(14, 1, 100, minRadius, maxRadius)
                 }
             }
         });
@@ -144,23 +144,36 @@ describe("Bubble plot utils", () => {
         });
     });
 
+
+    const radiusToArea = (r: number) => {return Math.PI * r *r};
     const areaToRadius = (x: number) => {return Math.sqrt(x/Math.PI)};
+    const minArea = radiusToArea(5);
+    const maxArea = radiusToArea(10);
     it ("can get radius", () => {
-        expect(getRadius(1, 1, 10, 5, 10)).toBe(areaToRadius(5));
-        expect(getRadius(10, 1, 10, 5, 10)).toBe(areaToRadius(10));
-        expect(getRadius(5, 1, 10, 5, 10)).toBe(areaToRadius(5 + (4/9 * 5)));
+        expect(getRadius(1, 1, 10, 5, 10)).toBe(5);
+        expect(getRadius(10, 1, 10, 5, 10)).toBe(10);
+
+        const expectedArea = minArea + ((4/9) * (maxArea - minArea));
+        const expectedRadius = areaToRadius(expectedArea);
+        expect(getRadius(5, 1, 10, 5, 10)).toBeCloseTo(expectedRadius, 5);
     });
 
     it("can get radius where min value is 0", () => {
-        expect(getRadius(0, 0, 10, 5, 10)).toBe(areaToRadius(5));
-        expect(getRadius(10, 0, 10, 5, 10)).toBe(areaToRadius(10));
-        expect(getRadius(5, 0, 10, 5, 10)).toBe(areaToRadius(7.5));
+        expect(getRadius(0, 0, 10, 5, 10)).toBe(5);
+        expect(getRadius(10, 0, 10, 5, 10)).toBe(10);
+
+        const expectedArea = minArea + (0.5 * (maxArea - minArea));
+        const expectedRadius = areaToRadius(expectedArea);
+        expect(getRadius(5, 0, 10, 5, 10)).toBeCloseTo(expectedRadius, 5);
     });
 
     it ("can get radius where min area is 0", () => {
-        expect(getRadius(0, 0, 10, 0, 10)).toBe(areaToRadius(0));
-        expect(getRadius(10, 0, 10, 0, 10)).toBe(areaToRadius(10));
-        expect(getRadius(5, 0, 10, 0, 10)).toBe(areaToRadius(5));
+        expect(getRadius(0, 0, 10, 0, 10)).toBe(0);
+        expect(getRadius(10, 0, 10, 0, 10)).toBe(10);
+
+        const expectedArea = 0.5 * maxArea;
+        const expectedRadius = areaToRadius(expectedArea);
+        expect(getRadius(5, 0, 10, 0, 10)).toBeCloseTo(expectedRadius, 5);
     });
 
 });

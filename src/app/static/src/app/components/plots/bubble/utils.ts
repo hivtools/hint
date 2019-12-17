@@ -74,8 +74,8 @@ export const getFeatureIndicators = function (data: any[],
 
     const selectedAreaIds = selectedFeatures.map(f => f.properties!!.area_id);
 
-    const minArea = Math.PI * Math.pow(minRadius, 2);
-    const maxArea = Math.PI * Math.pow(maxRadius, 2);
+    //const minArea = Math.PI * Math.pow(minRadius, 2);
+    //const maxArea = Math.PI * Math.pow(maxRadius, 2);
 
     const result = {} as Dict<BubbleIndicatorValuesDict>;
     iterateDataValues(data, indicatorsMeta, selectedAreaIds,
@@ -90,16 +90,17 @@ export const getFeatureIndicators = function (data: any[],
         regionValues[indicator] = {
            value: value,
            color: getColor(value, indicatorMeta), //TODO: put this function. shared with Choropleth, in a more generic place
-           radius: getRadius(value, indicatorRanges[indicator].min, indicatorRanges[indicator].max, minArea, maxArea)
+           radius: getRadius(value, indicatorRanges[indicator].min, indicatorRanges[indicator].max, minRadius, maxRadius)
         }
     });
 
     return result;
 };
 
-export const getRadius = function(value: number, minValue: number, maxValue: number, minArea: number, maxArea: number){
+export const getRadius = function(value: number, minValue: number, maxValue: number, minRadius: number, maxRadius: number){
     //where is value on a scale of 0-1 between minValue and maxValue
     const scalePoint = (value - minValue) / (maxValue - minValue);
-    const area = minArea + (scalePoint * (maxArea - minArea));
-    return  Math.sqrt(area/Math.PI);
+
+    return Math.sqrt(Math.pow(minRadius, 2) + (scalePoint * (Math.pow(maxRadius, 2) - Math.pow(minRadius, 2))));
 };
+
