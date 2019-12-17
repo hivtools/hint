@@ -1,6 +1,6 @@
 <template>
     <div v-if="hasFilters">
-        <h4 v-translate="'Filters'"></h4>
+        <h4 v-translate="'filters'"></h4>
         <div class="py-2">
             <filter-select label="Area"
                            :multiple="true"

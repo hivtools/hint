@@ -24,6 +24,11 @@ describe("ChoroplethFilters component", () => {
         }
     };
 
+    it("renders title", () => {
+        const wrapper = getWrapper();
+        expect(wrapper.find("h4").text()).toBe("Filters");
+    });
+
     it("computes sexFilters", () => {
         const stateSexFilterOptions = [
             {id: "s1", label: "female"},
