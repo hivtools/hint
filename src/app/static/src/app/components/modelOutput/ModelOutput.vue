@@ -29,7 +29,8 @@
             <div v-if="selectedTab==='bubble'" id="bubble-plot-container" class="col-md-12">
                 <bubble-plot :chartdata="chartdata" :features="features" :featureLevels="featureLevels"
                              :filters="bubblePlotFilters" :indicators="bubblePlotIndicators"
-                             :selections="bubblePlotSelections"></bubble-plot>
+                             :selections="bubblePlotSelections"
+                             v-on:update="updateBubblePlotSelections({payload: $event})"></bubble-plot>
             </div>
         </div>
     </div>
@@ -76,6 +77,7 @@
         selectDataType: (dataType: DataType) => void,
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: BarchartSelections) => void
+        updateBubblePlotSelections: (data: BubblePlotSelections) => void
     }
 
     interface Computed {
@@ -124,7 +126,7 @@
         },
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["selectDataType"]),
-            ...mapMutationsByNames<keyof Methods>("plottingSelections", ["updateBarchartSelections"]),
+            ...mapMutationsByNames<keyof Methods>("plottingSelections", ["updateBarchartSelections", "updateBubblePlotSelections"]),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected)
         },
         components: {

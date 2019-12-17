@@ -1,13 +1,14 @@
 <template>
     <div class="row">
-        <h3>Filters</h3>
-        <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
-            <filter-select :value="getSelectedFilterOptions(filter.id)"
-                           :is-disaggregate-by="false"
-                           :is-x-axis="false"
-                           :label="filter.label"
-                           :options="filter.options"
-                           @input="onFilterChange(filter.id, $event)"></filter-select>
+        <div class="col-md-3">
+            <h4 v-translate="'filters'"></h4>
+            <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
+                <filter-select :value="getSelectedFilterValues(filter.id)"
+                               :multiple="false"
+                               :label="filter.label"
+                               :options="filter.options"
+                               @select="onFilterSelect(filter, $event)"></filter-select>
+            </div>
         </div>
         <div id="chart" class="col-md-9">
             <l-map ref="map" style="height: 800px; width: 100%">
@@ -38,6 +39,7 @@
     import {Feature} from "geojson";
     import {LGeoJson, LMap, LCircleMarker, LTooltip} from "vue2-leaflet";
     import MapControl from "../MapControl.vue";
+    import FilterSelect from "../FilterSelect.vue";
     import {GeoJSON, Layer} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
     import {getFeatureIndicators, toIndicatorNameLookup} from "./utils";
@@ -65,11 +67,14 @@
         getRadius: (feature: Feature) => number,
         getColor: (feature: Feature) => string,
         getTooltip: (feature: Feature) => string,
+        getSelectedFilterValues: (filterId: string) => string[],
         onDetailChange: (newVal: number) => void,
-        onFilterChange: (filterId: any, selectedOptions: any) => void
+        onFilterSelect: (filter: Filter, selectedValues: FilterOption[]) => void,
+        changeSelections: (newSelections: Partial<BubblePlotSelections>) => void
     }
 
     interface Computed {
+        initialised: boolean,
         featureIndicators: Dict<BubbleIndicatorValuesDict>,
         featuresByLevel: { [k: number]: Feature[] },
         currentFeatures: Feature[],
@@ -105,7 +110,8 @@
             LGeoJson,
             LCircleMarker,
             LTooltip,
-            MapControl
+            MapControl,
+            FilterSelect
         },
         props: props,
         data(): Data {
@@ -122,6 +128,10 @@
             }
         },
         computed: {
+            initialised() {
+                const unsetFilters = this.filters.filter((f:Filter) => !this.selections.selectedFilterOptions[f.id]);
+                return unsetFilters.length == 0 && this.selections.detail > -1;
+            },
             featureIndicators() {
                 return getFeatureIndicators(
                     this.chartdata,
@@ -164,10 +174,12 @@
         },
         methods: {
             updateBounds: function() {
-                //NB This will be very inefficient until we filter to selected feature
-                const map = this.$refs.map as LMap;
-                if (map && map.fitBounds) {
-                    map.fitBounds(this.currentFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
+                if (this.initialised) {
+                    //NB This will be very inefficient until we filter to selected feature
+                    const map = this.$refs.map as LMap;
+                    if (map && map.fitBounds) {
+                        map.fitBounds(this.currentFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
+                    }
                 }
             },
             getRadius: function(feature: Feature) {
@@ -192,33 +204,46 @@
                                 <br/>${sizeIndicatorName}: ${sizeValue}
                             </div>`;
             },
+            getSelectedFilterValues(filterId: string) {
+                return (this.selections.selectedFilterOptions[filterId] || []).map(o => o.id);
+            },
             onDetailChange: function (newVal: number) {
-                //TODO: emit selections changed event rather than mutating
-                this.selections.detail = newVal;
+                this.changeSelections({...this.selections, detail: newVal});
             },
-            onFilterChange(filterId: any, selectedOptions: any) {
-                console.log("Bubble chart filter changed: " + filterId + " " + JSON.stringify(selectedOptions));
-                //TODO: update filters
-                //const newSelectedFilterOptions = {...this.selections.selectedFilterOptions};
-                //newSelectedFilterOptions[filterId] = selectedOptions;
-                //this.changeSelections({...this.selections, selectedFilterOptions: newSelectedFilterOptions});
+            onFilterSelect(filter: Filter, selectedOptions: FilterOption[]) {
+                const newSelectedFilterOptions = {...this.selections.selectedFilterOptions};
+                newSelectedFilterOptions[filter.id] = selectedOptions;
+
+                this.changeSelections({...this.selections, selectedFilterOptions: newSelectedFilterOptions});
             },
+            changeSelections(newSelections: Partial<BubblePlotSelections>) {
+                this.$emit("update", newSelections)
+            },
+        },
+        watch:
+        {
+            initialised: function(newVal: boolean) {
+                this.updateBounds();
+            }
         },
         mounted() {
             this.updateBounds();
         },
         created() {
+
+            console.log(JSON.stringify(this.filters));
+
             //If selections have not been initialised, refresh them
-            // TODO: and emit changed events
             if (this.selections.detail < 0) {
-                this.selections.detail = this.maxLevel;
+                this.onDetailChange(this.maxLevel);
             }
 
             if (Object.keys(this.selections.selectedFilterOptions).length < 1) {
-                this.selections.selectedFilterOptions = this.filters.reduce((obj: any, current: Filter) => {
+                const defaultSelected = this.filters.reduce((obj: any, current: Filter) => {
                     obj[current.id] = [current.options[0]];
                     return obj;
                 }, {} as Dict<FilterOption[]>);
+                this.changeSelections({selectedFilterOptions: defaultSelected});
             }
         },
     });
