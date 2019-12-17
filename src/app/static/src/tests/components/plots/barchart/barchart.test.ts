@@ -60,14 +60,16 @@ const getWrapper  = () => {
 };
 
 const confirmFormGroup = (wrapper: Wrapper<Barchart>, elementId: string, label: string) => {
-    const fg = wrapper.find("#indicator-fg");
-    expect(fg.find("label").text()).toBe("Indicator");
+    const fg = wrapper.find(elementId);
+    expect(fg.find("label").text()).toBe(label);
     expect(fg.findAll("treeselect-stub").length).toBe(1);
 };
 
 describe("Barchart component", () => {
     it("renders as expected", () => {
         const wrapper = getWrapper();
+
+        expect(wrapper.find("h3").text()).toBe("Filters");
 
         confirmFormGroup(wrapper, "#indicator-fg", "Indicator");
         confirmFormGroup(wrapper, "#x-axis-fg", "X Axis");
