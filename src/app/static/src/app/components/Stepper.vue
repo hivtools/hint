@@ -5,7 +5,7 @@
                 <step :key="step.number"
                       :active="isActive(step.number)"
                       :number="step.number"
-                      :text="step.text"
+                      :text-key="step.textKey"
                       :enabled="isEnabled(step.number)"
                       :complete="isComplete(step.number)"
                       @jump="jump">
@@ -20,18 +20,20 @@
             <div class="col">
                 <a href="#" id="back"
                    v-on:click="back"
-                   class="text-uppercase font-weight-bold"
-                   :class="{'disabled': activeStep === 1}">back&nbsp;</a>/
+                   class="text-uppercase font-weight-bold pr-1"
+                   :class="{'disabled': activeStep === 1}"
+                   v-translate="'back'"></a>/
                 <a href="#" id="continue"
                    v-on:click="next"
                    class="text-uppercase font-weight-bold"
-                   :class="{'disabled': !isComplete(activeStep)}">continue</a>
+                   :class="{'disabled': !isComplete(activeStep)}"
+                   v-translate="'continue'"></a>
             </div>
         </div>
         <hr/>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
-            <h2 id="loading-message">Loading your data</h2>
+            <h2 id="loading-message" v-translate="'loadingData'"></h2>
         </div>
         <div v-if="!loading" class="content">
             <div class="pt-4">
@@ -62,10 +64,6 @@
     import ModelOptions from "./modelOptions/ModelOptions.vue";
 
     import { mapGettersByNames, mapStateProps} from "../utils";
-
-    type CompleteStatus = {
-        [key: number]: boolean
-    }
 
     interface ComputedState {
         activeStep: number,

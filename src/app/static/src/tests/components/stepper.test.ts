@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount, Wrapper} from '@vue/test-utils';
+import {createLocalVue, shallowMount, Wrapper, mount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
@@ -32,6 +32,7 @@ import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata"
 import {ModelStatusResponse} from "../../app/generated";
 import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
+import registerTranslations from "../../app/store/translations/registerTranslations";
 
 const localVue = createLocalVue();
 
@@ -43,7 +44,7 @@ describe("Stepper component", () => {
                        stepperState?: Partial<StepperState>,
                        loadState?: Partial<LoadState>) => {
 
-        return new Vuex.Store({
+        const store =  new Vuex.Store({
             actions: rootActions,
             mutations: rootMutations,
             modules: {
@@ -88,7 +89,9 @@ describe("Stepper component", () => {
                     mutations: loadMutations
                 }
             }
-        })
+        });
+        registerTranslations(store);
+        return store;
     };
 
     const completedBaselineState = {
@@ -139,41 +142,41 @@ describe("Stepper component", () => {
 
     it("renders steps", () => {
         const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = mount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
 
         expect(wrapper.findAll(Step).length).toBe(6);
-        expect(steps.at(0).props().text).toBe("Upload baseline data");
+        expect(steps.at(0).find(".text-center").text()).toBe("Upload baseline data");
         expect(steps.at(0).props().active).toBe(true);
         expect(steps.at(0).props().number).toBe(1);
         expect(steps.at(0).props().complete).toBe(false);
         expect(steps.at(0).props().enabled).toBe(true);
 
-        expect(steps.at(1).props().text).toBe("Upload survey and programme data");
+        expect(steps.at(1).find(".text-center").text()).toBe("Upload survey and programme data");
         expect(steps.at(1).props().active).toBe(false);
         expect(steps.at(1).props().number).toBe(2);
         expect(steps.at(1).props().complete).toBe(false);
         expect(steps.at(1).props().enabled).toBe(false);
 
-        expect(steps.at(2).props().text).toBe("Model options");
+        expect(steps.at(2).find(".text-center").text()).toBe("Model options");
         expect(steps.at(2).props().active).toBe(false);
         expect(steps.at(2).props().number).toBe(3);
         expect(steps.at(2).props().complete).toBe(false);
         expect(steps.at(2).props().enabled).toBe(false);
 
-        expect(steps.at(3).props().text).toBe("Run model");
+        expect(steps.at(3).find(".text-center").text()).toBe("Run model");
         expect(steps.at(3).props().active).toBe(false);
         expect(steps.at(3).props().number).toBe(4);
         expect(steps.at(3).props().complete).toBe(false);
         expect(steps.at(3).props().enabled).toBe(false);
 
-        expect(steps.at(4).props().text).toBe("Review output");
+        expect(steps.at(4).find(".text-center").text()).toBe("Review output");
         expect(steps.at(4).props().active).toBe(false);
         expect(steps.at(4).props().number).toBe(5);
         expect(steps.at(4).props().complete).toBe(false);
         expect(steps.at(4).props().enabled).toBe(false);
 
-        expect(steps.at(5).props().text).toBe("Download results");
+        expect(steps.at(5).find(".text-center").text()).toBe("Download results");
         expect(steps.at(5).props().active).toBe(false);
         expect(steps.at(5).props().number).toBe(6);
         expect(steps.at(5).props().complete).toBe(false);

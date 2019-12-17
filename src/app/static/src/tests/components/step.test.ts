@@ -1,26 +1,33 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
+import Vuex from "vuex";
 import Vue from 'vue';
 import Step from "../../app/components/Step.vue";
+import {emptyState} from "../../app/root";
+import registerTranslations from "../../app/store/translations/registerTranslations";
 
 const localVue = createLocalVue();
 
 describe("Step component", () => {
 
+    const store = new Vuex.Store({state: emptyState()});
+    registerTranslations(store);
+
     it("renders step", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
-                text: "Test text"
+                textKey: "uploadBaseline"
             }
         });
 
-        expect(wrapper.find("div").text()).toBe("Test text");
+        expect(wrapper.find("div").text()).toBe("Upload baseline data");
     });
 
     it("renders enabled step", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
+                textKey: "uploadBaseline",
                 enabled: true
             }
         });
@@ -32,6 +39,7 @@ describe("Step component", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
+                textKey: "uploadBaseline",
                 active: true,
                 enabled: true
             }
@@ -45,6 +53,7 @@ describe("Step component", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
+                textKey: "uploadBaseline",
                 active: false
             }
         });
@@ -57,6 +66,7 @@ describe("Step component", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
+                textKey: "uploadBaseline",
                 enabled: true,
                 number: 2
             }
@@ -75,6 +85,7 @@ describe("Step component", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
+                textKey: "uploadBaseline",
                 enabled: true,
                 complete: true
             }
@@ -88,6 +99,7 @@ describe("Step component", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
+                textKey: "uploadBaseline",
                 enabled: false
             }
         });

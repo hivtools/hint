@@ -28,7 +28,7 @@ describe("Model options component when edit confirmation is required", () => {
 
     const mockGetters = {
         editsRequireConfirmation: () => true,
-        laterCompleteSteps: () => [{number: 4, text: "Run model"}]
+        laterCompleteSteps: () => [{number: 4, textKey: "runModel"}]
     };
 
     const createStore = (props: Partial<ModelOptionsState>,

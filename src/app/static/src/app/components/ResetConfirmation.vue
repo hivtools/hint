@@ -1,21 +1,23 @@
 <template>
     <modal :open="open">
-        <h4>Have you saved your work?</h4>
-        <p>Changing this will result in the following steps being discarded:</p>
+        <h4 v-translate="'haveYouSaved'"></h4>
+        <p v-translate="'discardWarning'"></p>
         <ul>
-            <li v-for="step in formattedSteps">{{step}}</li>
+            <li v-for="step in laterCompleteSteps">
+                Step {{step.number}}: <span v-translate="step.textKey"></span>
+            </li>
         </ul>
-        <p>You may want to save your work before continuing.</p>
+        <p v-translate="'savePrompt'"></p>
         <template v-slot:footer>
             <button type="button"
                     class="btn btn-white"
-                    @click="continueEditing">
-                Discard these steps and keep editing
+                    @click="continueEditing"
+                    v-translate="'discardSteps'">
             </button>
             <button type="button"
                     class="btn btn-red"
-                    @click="cancelEditing">
-                Cancel editing so I can save my work
+                    @click="cancelEditing"
+                    v-translate="'cancelEdit'">
             </button>
         </template>
     </modal>
@@ -29,7 +31,6 @@
 
     interface Computed {
         laterCompleteSteps: StepDescription[]
-        formattedSteps: string[]
     }
 
     interface Props {
@@ -41,16 +42,9 @@
     export default Vue.extend<{}, {}, Computed, any>({
         props: ["open", "continueEditing", "cancelEditing"],
         computed: {
-            laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
-            formattedSteps() {
-                return this.laterCompleteSteps.map(formatStep)
-            }
+            laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps")
         },
         components: {Modal}
     });
-
-    const formatStep = (step: StepDescription) => {
-        return `Step ${step.number}: ${step.text}`
-    };
 
 </script>
