@@ -13,6 +13,8 @@ import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/
 import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
+import {login} from "../../integration/integrationTest";
+import {inactiveFeatures} from "../../../app/main";
 
 const localVue = createLocalVue();
 
@@ -79,6 +81,10 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
 }
 
 describe("ModelOutput component", () => {
+    beforeAll(async () => {
+        inactiveFeatures.splice(0, inactiveFeatures.length);
+    });
+
     it("renders choropleth and choropleth filters", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {localVue, store});
@@ -111,6 +117,7 @@ describe("ModelOutput component", () => {
     });
 
     it("can change tabs", () => {
+
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {store, localVue});
 

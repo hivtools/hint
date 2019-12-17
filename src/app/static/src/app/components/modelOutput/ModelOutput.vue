@@ -57,11 +57,9 @@
     import {Feature} from "geojson";
     import {BaselineState} from "../../store/baseline/baseline";
     import {Translations} from "../../store/translations/locales";
+    import {inactiveFeatures} from "../../main";
 
     const namespace: string = 'filteredData';
-
-    const tabs: (keyof Translations)[] = ["map", "bar", "bubble"];
-
 
     interface Data {
         tabs: string[]
@@ -89,10 +87,16 @@
             this.selectDataType(DataType.Output);
 
             if (!this.selectedTab) {
-                this.tabSelected(tabs[0]);
+                this.tabSelected(this.tabs[0]);
             }
         },
         data: () => {
+            const tabs: (keyof Translations)[] = ["map", "bar"];
+
+            if (!inactiveFeatures.includes("BubblePlot")) {
+                tabs.push("bubble");
+            }
+
             return {
                 tabs: tabs
             }
