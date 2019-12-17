@@ -40,13 +40,13 @@
             <div>
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)">Survey</a>
+                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)" v-translate="'survey'"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)">ART</a>
+                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)" v-translate="'ART'">ART</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)">ANC</a>
+                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)" v-translate="'ANC'">ANC</a>
                     </li>
                 </ul>
                 <choropleth></choropleth>

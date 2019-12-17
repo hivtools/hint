@@ -3,8 +3,7 @@
         <div style="width: 265px;" class="p-3 map-control">
             <form>
                 <div class="row form-group">
-                    <label class="col-3 col-form-label">
-                        Indicator:
+                    <label class="col-3 col-form-label" v-translate="'indicator'">
                     </label>
                     <div class="col">
                         <tree-select :value="indicator"
@@ -16,8 +15,7 @@
                     </div>
                 </div>
                 <div class="row form-group">
-                    <label class="col-3 col-form-label">
-                        Detail:
+                    <label class="col-3 col-form-label" v-translate="'detail'">
                     </label>
                     <div class="col">
                         <tree-select v-model="detail"

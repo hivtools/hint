@@ -1,10 +1,9 @@
-
 <template>
     <div>
         <div v-if="initialised" class="row">
             <div class="col-md-3">
                 <div id="indicator-fg" class="form-group">
-                    <label class="font-weight-bold">Indicator</label>
+                    <label class="font-weight-bold" v-translate="'indicator'"></label>
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="indicators"
@@ -12,21 +11,21 @@
                                 :normalizer="normalizeIndicators"></treeselect>
                 </div>
                 <div id="x-axis-fg" class="form-group">
-                    <label class="font-weight-bold">X Axis</label>
+                    <label class="font-weight-bold" v-translate="'xAxis'"></label>
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="filtersAsOptions"
                                 v-model="xAxisId"></treeselect>
                 </div>
                 <div id="disagg-fg" class="form-group">
-                    <label class="font-weight-bold">Disaggregate by</label>
+                    <label class="font-weight-bold" v-translate="'disaggBy'"></label>
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="filtersAsOptions"
                                 v-model="disaggregateById"></treeselect>
                 </div>
                 <hr/>
-                <h3>Filters</h3>
+                <h3 v-translate="'filters'"></h3>
                 <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
                     <filter-select :value="getSelectedFilterOptions(filter.id)"
                                    :is-disaggregate-by="filter.id === selections.disaggregateById"
@@ -37,7 +36,10 @@
                 </div>
             </div>
             <div v-if="!!xAxisLabel" id="chart" class="col-md-9">
-                <chartjs-bar :chartdata="processedOutputData" :xLabel="xAxisLabel" :yLabel="indicatorLabel" style="width: 100%; height: 100%;"></chartjs-bar>
+                <chartjs-bar :chartdata="processedOutputData"
+                             :xLabel="xAxisLabel"
+                             :yLabel="indicatorLabel"
+                             style="width: 100%; height: 100%;"></chartjs-bar>
             </div>
         </div>
     </div>

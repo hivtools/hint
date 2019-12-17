@@ -4,7 +4,7 @@
                 :disabled="!enabled"
                 v-on:click="$emit('jump', number)">{{number}}
         </button>
-        <div class="text-center mt-3">{{text}}</div>
+        <div class="text-center mt-3" v-translate="textKey"></div>
     </div>
 </template>
 
@@ -14,7 +14,7 @@
     import Tick from "./Tick.vue";
 
     export default Vue.extend({
-        props: ["active", "number", "text", "enabled", "complete"],
+        props: ["active", "number", "textKey", "enabled", "complete"],
         components: {Tick}
     })
 
