@@ -19,7 +19,8 @@ export interface BarchartSelections {
 
 export interface BubblePlotSelections {
     //TODO: add indicators
-    selectedFilterOptions: Dict<FilterOption[]>
+    selectedFilterOptions: Dict<FilterOption[]>,
+    detail: number
 }
 
 export const initialBarchartSelections = (): BarchartSelections => {
@@ -33,7 +34,8 @@ export const initialBarchartSelections = (): BarchartSelections => {
 
 export const initialBubblePlotSelections = (): BubblePlotSelections => {
     return {
-        selectedFilterOptions: {}
+        selectedFilterOptions: {},
+        detail: -1
     };
 };
 

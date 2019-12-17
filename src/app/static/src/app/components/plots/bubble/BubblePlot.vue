@@ -1,23 +1,35 @@
 <template>
-    <div>
-        <l-map ref="map" style="height: 800px; width: 100%">
-            <template v-for="feature in currentFeatures">
-                <l-geo-json ref=""
-                            :geojson="feature"
-                            :optionsStyle="style">
-                </l-geo-json>
-                <l-circle-marker :lat-lng="[feature.properties.center_y, feature.properties.center_x]"
-                          :radius="getRadius(feature)"
-                          :fill-opacity="1"
-                          :color="getColor(feature)"
-                          :fill-color="getColor(feature)">
-                    <l-tooltip :content="getTooltip(feature)"/>
-                </l-circle-marker>
-            </template>
-            <map-control :initialDetail=detail
-                         :show-indicators="false"
-                         @detail-changed="onDetailChange"></map-control>
-        </l-map>
+    <div class="row">
+        <h3>Filters</h3>
+        <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
+            <filter-select :value="getSelectedFilterOptions(filter.id)"
+                           :is-disaggregate-by="false"
+                           :is-x-axis="false"
+                           :label="filter.label"
+                           :options="filter.options"
+                           @input="onFilterChange(filter.id, $event)"></filter-select>
+        </div>
+        <div id="chart" class="col-md-9">
+            <l-map ref="map" style="height: 800px; width: 100%">
+                <template v-for="feature in currentFeatures">
+                    <l-geo-json ref=""
+                                :geojson="feature"
+                                :optionsStyle="style">
+                    </l-geo-json>
+                    <l-circle-marker :lat-lng="[feature.properties.center_y, feature.properties.center_x]"
+                              :radius="getRadius(feature)"
+                              :fill-opacity="0.75"
+                              :opacity="0.75"
+                              :color="getColor(feature)"
+                              :fill-color="getColor(feature)">
+                        <l-tooltip :content="getTooltip(feature)"/>
+                    </l-circle-marker>
+                </template>
+                <map-control :initialDetail=selections.detail
+                             :show-indicators="false"
+                             @detail-changed="onDetailChange"></map-control>
+            </l-map>
+        </div>
     </div>
 </template>
 
@@ -27,23 +39,25 @@
     import {LGeoJson, LMap, LCircleMarker, LTooltip} from "vue2-leaflet";
     import MapControl from "../MapControl.vue";
     import {GeoJSON, Layer} from "leaflet";
-    import {ChoroplethIndicatorMetadata} from "../../../generated";
+    import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
     import {getFeatureIndicators, toIndicatorNameLookup} from "./utils";
-    import {BubbleIndicatorValuesDict, Dict, LevelLabel} from "../../../types";
+    import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel} from "../../../types";
+    import {BubblePlotSelections} from "../../../store/plottingSelections/plottingSelections";
 
     interface Props {
         features: Feature[],
         featureLevels: LevelLabel[]
         indicators: ChoroplethIndicatorMetadata[],
-        chartdata: any[]
+        chartdata: any[],
+        filters: Filter[],
+        selections: BubblePlotSelections
     }
 
     interface Data {
         style: any,
         //TODO: persist these as part of selections
         colorIndicator: string,
-        sizeIndicator: string,
-        detail: number
+        sizeIndicator: string
     }
 
     interface Methods {
@@ -51,7 +65,8 @@
         getRadius: (feature: Feature) => number,
         getColor: (feature: Feature) => string,
         getTooltip: (feature: Feature) => string,
-        onDetailChange: (newVal: number) => void
+        onDetailChange: (newVal: number) => void,
+        onFilterChange: (filterId: any, selectedOptions: any) => void
     }
 
     interface Computed {
@@ -74,6 +89,12 @@
         },
         chartdata: {
             type: Array
+        },
+        filters: {
+            type: Array
+        },
+        selections: {
+            type: Object
         }
     };
 
@@ -97,8 +118,7 @@
                 },
                 //TODO: initialise these from metadata
                 colorIndicator: "prevalence",
-                sizeIndicator: "plhiv",
-                detail: 0
+                sizeIndicator: "plhiv"
             }
         },
         computed: {
@@ -136,7 +156,7 @@
                 return Math.max(...levelNums);
             },
             currentFeatures() {
-                return this.featuresByLevel[this.detail]
+                return this.featuresByLevel[this.selections.detail]
             },
             indicatorNameLookup() {
                 return toIndicatorNameLookup(this.indicators)
@@ -173,14 +193,33 @@
                             </div>`;
             },
             onDetailChange: function (newVal: number) {
-                this.detail = newVal
+                //TODO: emit selections changed event rather than mutating
+                this.selections.detail = newVal;
+            },
+            onFilterChange(filterId: any, selectedOptions: any) {
+                console.log("Bubble chart filter changed: " + filterId + " " + JSON.stringify(selectedOptions));
+                //TODO: update filters
+                //const newSelectedFilterOptions = {...this.selections.selectedFilterOptions};
+                //newSelectedFilterOptions[filterId] = selectedOptions;
+                //this.changeSelections({...this.selections, selectedFilterOptions: newSelectedFilterOptions});
             },
         },
         mounted() {
             this.updateBounds();
         },
         created() {
-            this.detail = this.maxLevel;
+            //If selections have not been initialised, refresh them
+            // TODO: and emit changed events
+            if (this.selections.detail < 0) {
+                this.selections.detail = this.maxLevel;
+            }
+
+            if (Object.keys(this.selections.selectedFilterOptions).length < 1) {
+                this.selections.selectedFilterOptions = this.filters.reduce((obj: any, current: Filter) => {
+                    obj[current.id] = [current.options[0]];
+                    return obj;
+                }, {} as Dict<FilterOption[]>);
+            }
         },
     });
 </script>
