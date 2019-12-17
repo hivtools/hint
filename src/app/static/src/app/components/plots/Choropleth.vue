@@ -171,9 +171,7 @@
         data(): Data {
             return {
                 style: {
-                    weight: 1,
-                    fillOpacity: 1.0,
-                    color: 'grey'
+                    className: "geojson"
                 },
                 indicator: "",
                 detail: 0

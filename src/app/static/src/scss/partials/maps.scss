@@ -67,3 +67,14 @@
     }
   }
 }
+
+.geojson {
+  stroke-width: 1;
+  fill-opacity: 1.0;
+  stroke: grey;
+}
+
+.geojson-grey {
+  @extend .geojson;
+  fill: rgb(200,200,200);
+}

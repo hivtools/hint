@@ -28,8 +28,8 @@
     import MapControl from "../MapControl.vue";
     import {GeoJSON, Layer} from "leaflet";
     import {ChoroplethIndicatorMetadata} from "../../../generated";
-    import {getFeatureIndicators, toIndicatorNameLookup} from "./utils";
-    import {BubbleIndicatorValuesDict, Dict, LevelLabel} from "../../../types";
+    import {getFeatureIndicators, getIndicatorRanges, toIndicatorNameLookup} from "./utils";
+    import {BubbleIndicatorValuesDict, Dict, LevelLabel, NumericRange} from "../../../types";
 
     interface Props {
         features: Feature[],
@@ -55,6 +55,7 @@
     }
 
     interface Computed {
+        indicatorRanges: Dict<NumericRange>,
         featureIndicators: Dict<BubbleIndicatorValuesDict>,
         featuresByLevel: { [k: number]: Feature[] },
         currentFeatures: Feature[],
@@ -90,10 +91,7 @@
         data(): Data {
             return {
                 style: {
-                    weight: 1,
-                    fillOpacity: 1.0,
-                    color: 'grey',
-                    fillColor: 'rgb(200,200,200)'
+                    className: "geojson-grey"
                 },
                 //TODO: initialise these from metadata
                 colorIndicator: "prevalence",
@@ -102,13 +100,17 @@
             }
         },
         computed: {
+            indicatorRanges() {
+              return getIndicatorRanges(this.chartdata, this.indicators)
+            },
             featureIndicators() {
                 return getFeatureIndicators(
                     this.chartdata,
                     this.currentFeatures,
                     this.indicators,
-                    10, //min radius in pixels (TODO: should come from metadata)
-                    10000 //max radius
+                    this.indicatorRanges,
+                    10, //min radius in pixels
+                    60 //max radius in pixels
                 );
             },
             featuresByLevel() {
