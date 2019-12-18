@@ -10,6 +10,7 @@
         <map-control :initialDetail=detail
                      @indicator-changed="onIndicatorChange"
                      @detail-changed="onDetailChange"
+                     :show-indicators="true"
                      :indicator="indicator"></map-control>
         <map-legend :metadata="indicatorMetadata"></map-legend>
     </l-map>
@@ -170,9 +171,7 @@
         data(): Data {
             return {
                 style: {
-                    weight: 1,
-                    fillOpacity: 1.0,
-                    color: 'grey'
+                    className: "geojson"
                 },
                 indicator: "",
                 detail: 0

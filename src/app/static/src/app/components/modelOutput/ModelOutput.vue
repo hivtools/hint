@@ -25,6 +25,11 @@
                           :selections="barchartSelections"
                           v-on:update="updateBarchartSelections({payload: $event})"></barchart>
             </div>
+
+            <div v-if="selectedTab==='bubble'" id="bubble-plot-container" class="col-md-12">
+                <bubble-plot :chartdata="chartdata" :features="features" :featureLevels="featureLevels"
+                             :indicators="bubblePlotIndicators"></bubble-plot>
+            </div>
         </div>
     </div>
 </template>
@@ -35,24 +40,26 @@
     import Choropleth from "../plots/Choropleth.vue";
     import ChoroplethFilters from "../plots/ChoroplethFilters.vue";
     import Barchart from "../plots/barchart/Barchart.vue";
+    import BubblePlot from "../plots/bubble/BubblePlot.vue";
     import {DataType} from "../../store/filteredData/filteredData";
     import {
         mapActionsByNames,
         mapGettersByNames,
         mapMutationByName,
         mapMutationsByNames,
-        mapStateProp
+        mapStateProp, mapStatePropByName, mapStateProps,
     } from "../../utils";
-    import {BarchartIndicator, Filter} from "../../types";
+    import {BarchartIndicator, Filter, LevelLabel} from "../../types";
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import {BarchartSelections} from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
     import {ModelOutputMutation} from "../../store/modelOutput/mutations";
+    import {Feature} from "geojson";
+    import {BaselineState} from "../../store/baseline/baseline";
     import {Translations} from "../../store/translations/locales";
+    import {inactiveFeatures} from "../../main";
 
     const namespace: string = 'filteredData';
-
-    const tabs: (keyof Translations)[] = ["map", "bar"];
 
     interface Data {
         tabs: string[]
@@ -69,7 +76,9 @@
         barchartIndicators: BarchartIndicator[],
         chartdata: any,
         barchartSelections: BarchartSelections,
-        selectedTab: string
+        selectedTab: string,
+        features: Feature[],
+        featureLevels: LevelLabel[]
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -78,23 +87,34 @@
             this.selectDataType(DataType.Output);
 
             if (!this.selectedTab) {
-                this.tabSelected(tabs[0]);
+                this.tabSelected(this.tabs[0]);
             }
         },
         data: () => {
+            const tabs: (keyof Translations)[] = ["map", "bar"];
+
+            if (!inactiveFeatures.includes("BubblePlot")) {
+                tabs.push("bubble");
+            }
+
             return {
                 tabs: tabs
             }
         },
         computed: {
-            ...mapGettersByNames("modelOutput", ["barchartFilters", "barchartIndicators"]),
+            ...mapGettersByNames("modelOutput", ["barchartFilters", "barchartIndicators", "bubblePlotIndicators"]),
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
             chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
                 return state.result ? state.result.data : [];
             }),
             barchartSelections() {
-                return this.$store.state.plottingSelections.barchart
-            }
+               return this.$store.state.plottingSelections.barchart
+            },
+            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
+                    features: state => state.shape!!.data.features as Feature[],
+                    featureLevels: state => state.shape!!.filters.level_labels || []
+                }
+            ),
         },
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["selectDataType"]),
@@ -104,7 +124,8 @@
         components: {
             Choropleth,
             ChoroplethFilters,
-            Barchart
+            Barchart,
+            BubblePlot
         }
     })
 </script>

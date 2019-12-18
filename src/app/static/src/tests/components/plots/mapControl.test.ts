@@ -11,6 +11,10 @@ const localVue = createLocalVue();
 
 describe("Map control component", () => {
 
+    const propsData = {
+        showIndicators: true
+    };
+
     const getStore = (choroplethIndicatorsMetadata?: any, selectedDataType: DataType = DataType.Survey) => {
 
         if (!choroplethIndicatorsMetadata) {
@@ -65,7 +69,7 @@ describe("Map control component", () => {
 
     it("renders tree selects with expected properties", () => {
         const store = getStore();
-        const wrapper = shallowMount(MapControl, {store, localVue});
+        const wrapper = shallowMount(MapControl, {store, localVue, propsData});
 
         expect(wrapper.findAll(TreeSelect).at(0).props("searchable")).toBe(false);
         expect(wrapper.findAll(TreeSelect).at(0).props("multiple")).toBe(false);
@@ -78,7 +82,7 @@ describe("Map control component", () => {
 
     it("renders indicator options", () => {
         const store = getStore();
-        const wrapper = shallowMount(MapControl, {store, localVue});
+        const wrapper = shallowMount(MapControl, {store, localVue, propsData});
 
         expect(wrapper.findAll(TreeSelect).at(0).props("options"))
             .toStrictEqual([{id: "art_coverage", label: "ART coverage"},
@@ -87,7 +91,7 @@ describe("Map control component", () => {
 
     it("renders detail options", () => {
         const store = getStore();
-        const wrapper = shallowMount(MapControl, {store, localVue});
+        const wrapper = shallowMount(MapControl, {store, localVue, propsData});
 
         expect(wrapper.findAll(TreeSelect).at(1).props("options"))
             .toStrictEqual([{id: 4, label: "Admin Level 4"},
@@ -96,14 +100,14 @@ describe("Map control component", () => {
 
     it("emits indicator-changed event with indicator", () => {
         const store = getStore();
-        const wrapper = shallowMount(MapControl, {store, localVue});
+        const wrapper = shallowMount(MapControl, {store, localVue, propsData});
         wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "art_coverage");
         expect(wrapper.emitted("indicator-changed")[0][0]).toBe("art_coverage");
     });
 
     it("emits detail-changed event with detail", () => {
         const store = getStore();
-        const wrapper = shallowMount(MapControl, {store, localVue});
+        const wrapper = shallowMount(MapControl, {store, localVue, propsData});
         wrapper.findAll(TreeSelect).at(1).vm.$emit("input", 3);
         expect(wrapper.emitted("detail-changed")[0][0]).toBe(3);
     });

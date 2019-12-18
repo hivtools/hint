@@ -15,6 +15,10 @@ export interface IndicatorValues {
     color: string
 }
 
+export interface BubbleIndicatorValues extends IndicatorValues {
+    radius: number;
+}
+
 export interface LevelLabel {
     id: number;
     area_level_label: string;
@@ -24,6 +28,8 @@ export interface LevelLabel {
 export type Dict<V> = { [k: string]: V }
 
 export type IndicatorValuesDict= Dict<IndicatorValues>;
+
+export type BubbleIndicatorValuesDict = Dict<BubbleIndicatorValues>;
 
 export interface LocalSessionFile {
     hash: string
@@ -45,4 +51,9 @@ export interface Filter {
     column_id: string,
     label: string,
     options: FilterOption[]
+}
+
+export interface NumericRange {
+    min: number,
+    max: number
 }

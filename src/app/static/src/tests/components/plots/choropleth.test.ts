@@ -434,5 +434,12 @@ describe("Choropleth component", () => {
         expect(result).toStrictEqual([fakeFeatures[0]]);
     });
 
+    it("show indicators in MapControl", () => {
+        const testStore = getTestStore();
+        const wrapper = shallowMount(Choropleth, {store: testStore, localVue});
+        const mapControl = wrapper.find(MapControl);
+        expect(mapControl.props().showIndicators).toBe(true);
+    });
+
 });
 
