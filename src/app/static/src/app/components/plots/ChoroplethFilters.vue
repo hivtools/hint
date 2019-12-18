@@ -39,7 +39,7 @@
                            :options="ageFilters.available"
                            :value="ageFilters.selected"
                            :disabled="ageFilters.disabled"
-                           @select="selectAge"></filter-select>
+                           @input="selectAge"></filter-select>
         </div>
 
         <div class="py-2" v-if="!isOutput">

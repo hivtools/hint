@@ -301,9 +301,6 @@
             this.updateBounds();
         },
         created() {
-
-            console.log(JSON.stringify(this.filters));
-
             //If selections have not been initialised, refresh them
             if (this.selections.detail < 0) {
                 this.onDetailChange(this.maxLevel);
