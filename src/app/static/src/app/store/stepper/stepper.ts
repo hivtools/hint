@@ -7,7 +7,7 @@ import {localStorageManager} from "../../localStorageManager";
 
 export interface StepDescription {
     number: number,
-    text: string
+    textKey: string
 }
 
 export interface StepperState {
@@ -22,27 +22,27 @@ export const initialStepperState = (): StepperState => {
         steps: [
             {
                 number: 1,
-                text: "Upload baseline data"
+                textKey: "uploadBaseline"
             },
             {
                 number: 2,
-                text: "Upload survey and programme data"
+                textKey: "uploadSurvey"
             },
             {
                 number: 3,
-                text: "Model options"
+                textKey: "modelOptions"
             },
             {
                 number: 4,
-                text: "Run model"
+                textKey: "runModel"
             },
             {
                 number: 5,
-                text: "Review output"
+                textKey: "reviewOutput"
             },
             {
                 number: 6,
-                text: "Download results"
+                textKey: "downloadResults"
             }]
     }
 };

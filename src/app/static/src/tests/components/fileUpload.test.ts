@@ -6,6 +6,8 @@ import FileUpload from "../../app/components/FileUpload.vue";
 import {mockError, mockFile} from "../mocks";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
+import {emptyState} from "../../app/root";
+import registerTranslations from "../../app/store/translations/registerTranslations";
 
 describe("File upload component", () => {
 
@@ -14,14 +16,19 @@ describe("File upload component", () => {
         laterCompleteSteps: () => [{number: 4, text: "Run model"}]
     };
 
-    const createStore = () => new Vuex.Store({
-        modules: {
-            stepper: {
-                namespaced: true,
-                getters: mockGetters
+    const createStore = () => {
+        const store = new Vuex.Store({
+            state: emptyState(),
+            modules: {
+                stepper: {
+                    namespaced: true,
+                    getters: mockGetters
+                }
             }
-        }
-    });
+        });
+        registerTranslations(store);
+        return store;
+    };
 
     const createSut = (props?: any, slots?: Slots) => {
         return shallowMount(FileUpload, {

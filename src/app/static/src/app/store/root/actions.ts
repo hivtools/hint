@@ -43,7 +43,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             commit({
                 type: "load/LoadFailed",
                 payload: {
-                    detail: "There was a problem loading your data. Some data may have been invalid. Please contact support if this issue persists."
+                    detail: i18next.t("loadFailedErrorDetail")
                 }
             });
         }
