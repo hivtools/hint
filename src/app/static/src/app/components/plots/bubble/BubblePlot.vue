@@ -5,7 +5,7 @@
             <div class="form-group">
                 <filter-select :label="areaFilter.label"
                                :multiple="true"
-                               :options="areaFilter.options"
+                               :options="areaFilterOptions"
                                :value="getSelectedFilterValues('area')"
                                @select="onFilterSelect(areaFilter, $event)">
                 </filter-select>
@@ -91,7 +91,8 @@
         maxLevel: number,
         indicatorNameLookup: Dict<string>,
         areaFilter: Filter,
-        nonAreaFilters: Filter[]
+        nonAreaFilters: Filter[],
+        areaFilterOptions: FilterOption[]
 
     }
 
@@ -139,7 +140,7 @@
         },
         computed: {
             initialised() {
-                const unsetFilters = this.filters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
+                const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1;
             },
             indicatorRanges() {
@@ -192,6 +193,9 @@
             },
             nonAreaFilters() {
                 return this.filters.filter((f: Filter) => f.id != "area");
+            },
+            areaFilterOptions() {
+                return (this.areaFilter.options[0] as any).children;
             }
         },
         methods: {
@@ -261,7 +265,7 @@
             }
 
             if (Object.keys(this.selections.selectedFilterOptions).length < 1) {
-                const defaultSelected = this.filters.reduce((obj: any, current: Filter) => {
+                const defaultSelected = this.nonAreaFilters.reduce((obj: any, current: Filter) => {
                     obj[current.id] = [current.options[0]];
                     return obj;
                 }, {} as Dict<FilterOption[]>);
