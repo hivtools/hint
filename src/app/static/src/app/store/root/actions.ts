@@ -4,6 +4,7 @@ import {StepDescription} from "../stepper/stepper";
 import {RootMutation} from "./mutations";
 import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
+import i18next from "i18next";
 
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
