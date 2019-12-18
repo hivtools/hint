@@ -2,7 +2,15 @@
     <div class="row">
         <div class="col-md-3">
             <h4 v-translate="'filters'"></h4>
-            <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
+            <div class="form-group">
+                <filter-select :label="areaFilter.label"
+                               :multiple="true"
+                               :options="areaFilter.options"
+                               :value="getSelectedFilterValues('area')"
+                               @select="onFilterSelect(areaFilter, $event)">
+                </filter-select>
+            </div>
+            <div :id="'filter-' + filter.id" v-for="filter in nonAreaFilters" class="form-group">
                 <filter-select :value="getSelectedFilterValues(filter.id)"
                                :multiple="false"
                                :label="filter.label"
@@ -70,7 +78,7 @@
         getTooltip: (feature: Feature) => string,
         getSelectedFilterValues: (filterId: string) => string[],
         onDetailChange: (newVal: number) => void,
-        onFilterSelect: (filter: Filter, selectedValues: FilterOption[]) => void,
+        onFilterSelect: (filter: Filter, selectedOptions: FilterOption[]) => void,
         changeSelections: (newSelections: Partial<BubblePlotSelections>) => void
     }
 
@@ -81,7 +89,10 @@
         featuresByLevel: { [k: number]: Feature[] },
         currentFeatures: Feature[],
         maxLevel: number,
-        indicatorNameLookup: Dict<string>
+        indicatorNameLookup: Dict<string>,
+        areaFilter: Filter,
+        nonAreaFilters: Filter[]
+
     }
 
     const props = {
@@ -140,7 +151,7 @@
                     this.currentFeatures,
                     this.indicators,
                     this.indicatorRanges,
-                    this.filters,
+                    this.nonAreaFilters,
                     this.selections.selectedFilterOptions,
                     10, //min radius in pixels
                     100 //max radius in pixels
@@ -175,6 +186,12 @@
             },
             indicatorNameLookup() {
                 return toIndicatorNameLookup(this.indicators)
+            },
+            areaFilter() {
+                return this.filters.find((f:Filter) => f.id =="area")!!;
+            },
+            nonAreaFilters() {
+                return this.filters.filter((f: Filter) => f.id != "area");
             }
         },
         methods: {
