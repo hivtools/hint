@@ -25,7 +25,7 @@
                                 :geojson="feature"
                                 :optionsStyle="style">
                     </l-geo-json>
-                    <l-circle-marker :lat-lng="[feature.properties.center_y, feature.properties.center_x]"
+                    <l-circle-marker v-if="showBubble(feature)" :lat-lng="[feature.properties.center_y, feature.properties.center_x]"
                               :radius="getRadius(feature)"
                               :fill-opacity="0.75"
                               :opacity="0.75"
@@ -49,10 +49,11 @@
     import MapControl from "../MapControl.vue";
     import FilterSelect from "../FilterSelect.vue";
     import {GeoJSON, Layer} from "leaflet";
-    import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
+    import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {BubblePlotSelections} from "../../../store/plottingSelections/plottingSelections";
     import {getFeatureIndicators, getIndicatorRanges, toIndicatorNameLookup} from "./utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
+    import {flattenOptions, flattenToIdSet} from "../../../utils";
 
 
     interface Props {
@@ -61,7 +62,8 @@
         indicators: ChoroplethIndicatorMetadata[],
         chartdata: any[],
         filters: Filter[],
-        selections: BubblePlotSelections
+        selections: BubblePlotSelections,
+        areaFilterId: string
     }
 
     interface Data {
@@ -73,13 +75,15 @@
 
     interface Methods {
         updateBounds: () => void,
+        showBubble: (feature: Feature) => boolean,
         getRadius: (feature: Feature) => number,
         getColor: (feature: Feature) => string,
         getTooltip: (feature: Feature) => string,
         getSelectedFilterValues: (filterId: string) => string[],
         onDetailChange: (newVal: number) => void,
         onFilterSelect: (filter: Filter, selectedOptions: FilterOption[]) => void,
-        changeSelections: (newSelections: Partial<BubblePlotSelections>) => void
+        changeSelections: (newSelections: Partial<BubblePlotSelections>) => void,
+        getFeatureFromAreaId: (id: string) => Feature
     }
 
     interface Computed {
@@ -92,8 +96,13 @@
         indicatorNameLookup: Dict<string>,
         areaFilter: Filter,
         nonAreaFilters: Filter[],
-        areaFilterOptions: FilterOption[]
-
+        areaFilterOptions: FilterOption[],
+        selectedAreaFilterOptions: FilterOption[],
+        flattenedAreas: Dict<NestedFilterOption>,
+        allSelectedAreaIds: string[],
+        selectedAreaFeatures: Feature[],
+        countryFilterOption: FilterOption,
+        countryFeature: Feature
     }
 
     const props = {
@@ -114,6 +123,9 @@
         },
         selections: {
             type: Object
+        },
+        areaFilterId: {
+            type: String
         }
     };
 
@@ -149,7 +161,7 @@
             featureIndicators() {
                 return getFeatureIndicators(
                     this.chartdata,
-                    this.currentFeatures,
+                    this.allSelectedAreaIds,
                     this.indicators,
                     this.indicatorRanges,
                     this.nonAreaFilters,
@@ -189,24 +201,51 @@
                 return toIndicatorNameLookup(this.indicators)
             },
             areaFilter() {
-                return this.filters.find((f:Filter) => f.id =="area")!!;
+                return this.filters.find((f:Filter) => f.id == this.areaFilterId)!!;
             },
             nonAreaFilters() {
-                return this.filters.filter((f: Filter) => f.id != "area");
+                return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
             },
             areaFilterOptions() {
-                return (this.areaFilter.options[0] as any).children;
-            }
+                return (this.countryFilterOption as any).children;
+            },
+            selectedAreaFilterOptions() {
+                const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
+                return selectedOptions && selectedOptions.length > 0 ? selectedOptions : [this.countryFilterOption];
+            },
+            flattenedAreas() {
+                return flattenOptions(this.areaFilter.options);
+            },
+            allSelectedAreaIds() {
+                //TODO: could just get intersection with current Features ie current level
+                return Array.from(flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas));
+            },
+            selectedAreaFeatures(): Feature[] {
+                if (this.selectedAreaFilterOptions && this.selectedAreaFilterOptions.length > 0) {
+                    return this.selectedAreaFilterOptions.map(o => this.getFeatureFromAreaId(o.id)!!);
+                } else if (this.countryFeature) {
+                    return [this.countryFeature];
+                }
+                return [];
+            },
+            countryFilterOption(): FilterOption {
+                return this.areaFilter.options[0]
+            },
+            countryFeature(): Feature {
+                return this.getFeatureFromAreaId(this.countryFilterOption.id)!!;
+            },
         },
         methods: {
             updateBounds: function() {
                 if (this.initialised) {
-                    //NB This will be very inefficient until we filter to selected feature
                     const map = this.$refs.map as LMap;
                     if (map && map.fitBounds) {
-                        map.fitBounds(this.currentFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
+                        map.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                     }
                 }
+            },
+            showBubble(feature: Feature) {
+                return !!this.featureIndicators[feature.properties!!.area_id];
             },
             getRadius: function(feature: Feature) {
                 return this.featureIndicators[feature.properties!!.area_id][this.sizeIndicator].radius;
@@ -245,10 +284,16 @@
             changeSelections(newSelections: Partial<BubblePlotSelections>) {
                 this.$emit("update", newSelections)
             },
+            getFeatureFromAreaId(areaId: string): Feature {
+                return this.features.find((f: Feature) => f.properties!!.area_id == areaId)!!;
+            }
         },
         watch:
         {
             initialised: function(newVal: boolean) {
+                this.updateBounds();
+            },
+            selectedAreaFeatures: function (newVal) {
                 this.updateBounds();
             }
         },

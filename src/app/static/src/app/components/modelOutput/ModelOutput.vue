@@ -30,6 +30,7 @@
                 <bubble-plot :chartdata="chartdata" :features="features" :featureLevels="featureLevels"
                              :filters="bubblePlotFilters" :indicators="bubblePlotIndicators"
                              :selections="bubblePlotSelections"
+                             area-filter-id="area"
                              v-on:update="updateBubblePlotSelections({payload: $event})"></bubble-plot>
             </div>
         </div>

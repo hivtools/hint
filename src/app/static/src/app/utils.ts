@@ -1,7 +1,7 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
 import {Dict} from "./types";
-import {Error, Response} from "./generated";
+import {Error, NestedFilterOption, Response} from "./generated";
 
 export type ComputedWithType<T> = () => T;
 
@@ -103,3 +103,51 @@ export function stripNamespace(name: string) {
         return nameArray;
     }
 }
+
+const flattenToIdArray = (filterOption: NestedFilterOption): string[] => {
+    let result: string[] = [];
+    result.push(filterOption.id);
+    if (filterOption.children) {
+        filterOption.children.forEach(o =>
+            result = [
+                ...result,
+                ...flattenToIdArray(o as NestedFilterOption)
+            ]);
+
+    }
+    return result;
+};
+
+export const flattenToIdSet = (ids: string[], lookup: Dict<NestedFilterOption>): Set<string> => {
+    let result: string[] = [];
+    ids.forEach(r =>
+        result = [
+            ...result,
+            ...flattenToIdArray(lookup[r])
+        ]);
+    return new Set(result);
+};
+
+export const flattenOptions = (filterOptions: NestedFilterOption[]): { [k: string]: NestedFilterOption } => {
+    let result = {};
+    filterOptions.forEach(r =>
+        result = {
+            ...result,
+            ...flattenOption(r)
+        });
+    return result;
+};
+
+const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => {
+    let result = {} as any;
+    result[filterOption.id] = filterOption;
+    if (filterOption.children) {
+        filterOption.children.forEach(o =>
+            result = {
+                ...result,
+                ...flattenOption(o as NestedFilterOption)
+            });
+
+    }
+    return result;
+};

@@ -2,7 +2,8 @@ import {RootState} from "../../root";
 import {DataType, FilteredDataState} from "./filteredData";
 import {FilterOption, SurveyDataRow} from "../../generated";
 import {Dict, Filter, IndicatorValuesDict} from "../../types";
-import {flattenToIdSet, getColor, getUnfilteredData, sexFilterOptions} from "./utils";
+import {getColor, getUnfilteredData, sexFilterOptions} from "./utils";
+import {flattenToIdSet} from "../../utils";
 
 export const getters = {
     selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState): Dict<FilterOption[] | undefined> | null => {

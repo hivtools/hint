@@ -9,7 +9,7 @@ import {
     Error
 } from "../../generated";
 import {PayloadWithType} from "../../types";
-import {flattenOptions} from "../filteredData/utils";
+import {flattenOptions} from "../../utils";
 import {ReadyState} from "../../root";
 
 export enum BaselineMutation {

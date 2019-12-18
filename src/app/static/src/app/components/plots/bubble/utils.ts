@@ -79,15 +79,13 @@ export const getIndicatorRanges = function(data: any,
 };
 
 export const getFeatureIndicators = function (data: any[],
-                                              selectedFeatures: Feature[],
+                                              selectedAreaIds: string[],
                                               indicatorsMeta: ChoroplethIndicatorMetadata[],
                                               indicatorRanges: Dict<NumericRange>,
                                               filters: Filter[],
                                               selectedFilterValues: Dict<FilterOption[]>,
                                               minRadius: number,
                                               maxRadius: number): Dict<BubbleIndicatorValuesDict> {
-
-    const selectedAreaIds = selectedFeatures.map(f => f.properties!!.area_id);
 
     const result = {} as Dict<BubbleIndicatorValuesDict>;
     iterateDataValues(data, indicatorsMeta, selectedAreaIds, filters, selectedFilterValues,
