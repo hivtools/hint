@@ -74,9 +74,6 @@ export const getFeatureIndicators = function (data: any[],
 
     const selectedAreaIds = selectedFeatures.map(f => f.properties!!.area_id);
 
-    //const minArea = Math.PI * Math.pow(minRadius, 2);
-    //const maxArea = Math.PI * Math.pow(maxRadius, 2);
-
     const result = {} as Dict<BubbleIndicatorValuesDict>;
     iterateDataValues(data, indicatorsMeta, selectedAreaIds,
         (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
