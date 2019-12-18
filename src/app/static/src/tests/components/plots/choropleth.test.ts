@@ -12,6 +12,8 @@ import {
     FilterType
 } from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {emptyState} from "../../../app/root";
 
 const localVue = createLocalVue();
 
@@ -82,7 +84,8 @@ describe("Choropleth component", () => {
     };
 
     function getTestStore(filteredDataProps?: Partial<FilteredDataState>) {
-        return new Vuex.Store({
+        const store = new Vuex.Store({
+            state: emptyState(),
             modules: {
                 baseline: {
                     namespaced: true,
@@ -124,6 +127,8 @@ describe("Choropleth component", () => {
                 metadata: testMetadataModule
             }
         });
+        registerTranslations(store);
+        return store;
     }
 
     const store = getTestStore();

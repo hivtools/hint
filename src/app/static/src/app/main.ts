@@ -7,3 +7,5 @@ Vue.use(Vuex);
 
 export const store = new Vuex.Store<RootState>(storeOptions);
 registerTranslations(store);
+
+export const inactiveFeatures: string[] = ["BubblePlot"];

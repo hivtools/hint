@@ -52,3 +52,8 @@ export interface Filter {
     label: string,
     options: FilterOption[]
 }
+
+export interface NumericRange {
+    min: number,
+    max: number
+}

@@ -1,7 +1,8 @@
-import {BubbleIndicatorValuesDict, Dict, Filter, IndicatorValuesDict} from "../../../types";
+import {BubbleIndicatorValuesDict, Dict, Filter, IndicatorValuesDict, NumericRange} from "../../../types";
 import {getColor} from "../../../store/filteredData/utils";
 import {Feature} from "geojson";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
+import Choropleth from "../Choropleth.vue";
 
 export const toIndicatorNameLookup = (array: ChoroplethIndicatorMetadata[]) =>
     array.reduce((obj, current) => {
@@ -9,19 +10,12 @@ export const toIndicatorNameLookup = (array: ChoroplethIndicatorMetadata[]) =>
         return obj
     }, {} as Dict<string>);
 
-export const getFeatureIndicators = function (data: any[],
-                                              selectedFeatures: Feature[],
-                                              indicatorsMeta: ChoroplethIndicatorMetadata[],
-                                              minRadius: number,
-                                              maxRadius: number): Dict<BubbleIndicatorValuesDict> {
-
-    const result = {} as Dict<BubbleIndicatorValuesDict>;
-
-    const selectedAreaIds = selectedFeatures.map(f => f.properties!!.area_id);
-
-    const minArea = Math.PI * Math.pow(minRadius, 2);
-    const maxArea = Math.PI * Math.pow(maxRadius, 2);
-
+const iterateDataValues = function(
+    data: any,
+    indicatorsMeta: ChoroplethIndicatorMetadata[],
+    selectedAreaIds: string[] | null,
+    func: (areaId: string,
+           indicatorMeta: ChoroplethIndicatorMetadata, value: number) => void) {
 
     for (const row of data) {
         //TODO: exclude rows based on filters
@@ -31,13 +25,11 @@ export const getFeatureIndicators = function (data: any[],
 
         const areaId: string = row.area_id;
 
-        if (!selectedAreaIds.includes(areaId)) {
+        if (selectedAreaIds && !selectedAreaIds.includes(areaId)) {
             continue;
         }
 
         for (const metadata of indicatorsMeta) {
-
-            const indicator = metadata.indicator;
 
             if (metadata.indicator_column && metadata.indicator_value != row[metadata.indicator_column]) {
                 //This data is in long format, and the indicator column's value does not match that for this indicator
@@ -51,28 +43,61 @@ export const getFeatureIndicators = function (data: any[],
 
             const value = row[metadata.value_column];
 
-            if (!result[areaId]) {
-                result[areaId] = {} as BubbleIndicatorValuesDict;
-            }
-
-            const regionValues = result[areaId];
-            regionValues[indicator] = {
-                value: value,
-                color: getColor(value, metadata), //TODO: put this function. shared with Choropleth, in a more generic place
-                radius: getRadius(value, metadata.min, metadata.max, minArea, maxArea)
-            }
+            func(areaId, metadata, value);
         }
     }
+};
+
+export const getIndicatorRanges = function(data: any,
+                                           indicatorsMeta: ChoroplethIndicatorMetadata[]): Dict<NumericRange>{
+    const result = {} as Dict<NumericRange>;
+    iterateDataValues(data, indicatorsMeta, null,
+        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
+            const indicator = indicatorMeta.indicator;
+            if (!result[indicator]) {
+                result[indicator] = {min: value, max: value};
+            } else {
+                result[indicator].min = Math.min(result[indicator].min, value);
+                result[indicator].max = Math.max(result[indicator].max, value);
+            }
+        });
 
     return result;
 };
 
-export const getRadius = function(value: number, minValue: number, maxValue: number, minArea: number, maxArea: number){
-    value = Math.min(maxValue, value);
-    value = Math.max(minValue, value);
+export const getFeatureIndicators = function (data: any[],
+                                              selectedFeatures: Feature[],
+                                              indicatorsMeta: ChoroplethIndicatorMetadata[],
+                                              indicatorRanges: Dict<NumericRange>,
+                                              minRadius: number,
+                                              maxRadius: number): Dict<BubbleIndicatorValuesDict> {
 
+    const selectedAreaIds = selectedFeatures.map(f => f.properties!!.area_id);
+
+    const result = {} as Dict<BubbleIndicatorValuesDict>;
+    iterateDataValues(data, indicatorsMeta, selectedAreaIds,
+        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
+        if (!result[areaId]) {
+               result[areaId] = {} as BubbleIndicatorValuesDict;
+        }
+
+        const indicator = indicatorMeta.indicator;
+
+        const regionValues = result[areaId];
+        regionValues[indicator] = {
+           value: value,
+           color: getColor(value, indicatorMeta), //TODO: put this function. shared with Choropleth, in a more generic place
+           radius: getRadius(value, indicatorRanges[indicator].min, indicatorRanges[indicator].max, minRadius, maxRadius)
+        }
+    });
+
+    return result;
+};
+
+export const getRadius = function(value: number, minValue: number, maxValue: number, minRadius: number, maxRadius: number){
     //where is value on a scale of 0-1 between minValue and maxValue
     const scalePoint = (value - minValue) / (maxValue - minValue);
-    const area = minArea + (scalePoint * (maxArea - minArea));
-    return  Math.sqrt(area/Math.PI);
+
+    return Math.sqrt(Math.pow(minRadius, 2) + (scalePoint * (Math.pow(maxRadius, 2) - Math.pow(minRadius, 2))));
 };
+
