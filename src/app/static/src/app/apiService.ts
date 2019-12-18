@@ -3,7 +3,8 @@ import {ErrorsMutation} from "./store/errors/mutations";
 import {ActionContext, Commit} from "vuex";
 import {freezer, isHINTResponse} from "./utils";
 import {Error, Response} from "./generated";
-import {RootState, TranslatableState} from "./root";
+import {TranslatableState} from "./root";
+import i18next from "i18next";
 
 declare var appUrl: string;
 
@@ -46,7 +47,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     static getFirstErrorFromFailure = (failure: Response) => {
         if (failure.errors.length == 0) {
-            return APIService.createError("API response failed but did not contain any error information. Please contact support.");
+            return APIService.createError("apiMissingError");
         }
         return failure.errors[0];
     };
@@ -54,7 +55,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     static createError(detail: string) {
         return {
             error: "MALFORMED_RESPONSE",
-            detail
+            detail: i18next.t(detail)
         }
     }
 
@@ -112,7 +113,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
                 status: "failure",
                 errors: [{
                     error: "SESSION_TIMEOUT",
-                    detail: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing."
+                    detail: i18next.t("sessionExpired")
                 }
                 ],
                 data: {}
@@ -120,7 +121,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
 
         if (!isHINTResponse(failure)) {
-            this._commitError(APIService.createError("Could not parse API response. Please contact support."));
+            this._commitError(APIService.createError("apiCouldNotParseError"));
         } else if (this._onError) {
             this._onError(failure);
         } else {

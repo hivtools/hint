@@ -4,22 +4,26 @@
             <div class="col">
                 <ul class="nav nav-tabs col-md-12">
                     <li v-for="tab in tabs" class="nav-item">
-                        <a class="nav-link" :class="selectedTab === tab ? 'active' :  ''" v-on:click="tabSelected(tab)">{{tab}}</a>
+                        <a class="nav-link"
+                           :class="selectedTab === tab ? 'active' :  ''"
+                           v-on:click="tabSelected(tab)" v-translate="tab">
+                        </a>
                     </li>
                 </ul>
             </div>
         </div>
         <div class="row mt-2">
-            <div v-if="selectedTab==='Map'" class="col-md-3">
+            <div v-if="selectedTab==='map'" class="col-md-3">
                 <choropleth-filters></choropleth-filters>
             </div>
-            <div v-if="selectedTab==='Map'" class="col-md-9">
+            <div v-if="selectedTab==='map'" class="col-md-9">
                 <choropleth></choropleth>
             </div>
 
-            <div id="barchart-container" :class="selectedTab==='Bar' ? 'col-md-12' : 'd-none'">
+            <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
                 <barchart :chartdata="chartdata" :filters="barchartFilters" :indicators="barchartIndicators"
-                          :selections="barchartSelections" v-on:update="updateBarchartSelections({payload: $event})"></barchart>
+                          :selections="barchartSelections"
+                          v-on:update="updateBarchartSelections({payload: $event})"></barchart>
             </div>
         </div>
     </div>
@@ -34,19 +38,21 @@
     import {DataType} from "../../store/filteredData/filteredData";
     import {
         mapActionsByNames,
-        mapGettersByNames, mapMutationByName,
+        mapGettersByNames,
+        mapMutationByName,
         mapMutationsByNames,
-        mapStateProp, mapStatePropByName,
+        mapStateProp
     } from "../../utils";
     import {BarchartIndicator, Filter} from "../../types";
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import {BarchartSelections} from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
     import {ModelOutputMutation} from "../../store/modelOutput/mutations";
+    import {Translations} from "../../store/translations/locales";
 
     const namespace: string = 'filteredData';
 
-    const tabs = ["Map", "Bar"];
+    const tabs: (keyof Translations)[] = ["map", "bar"];
 
     interface Data {
         tabs: string[]
@@ -69,7 +75,7 @@
     export default Vue.extend<Data, Methods, Computed, {}>({
         name: "ModelOutput",
         created() {
-            this.selectDataType(DataType.Output)
+            this.selectDataType(DataType.Output);
 
             if (!this.selectedTab) {
                 this.tabSelected(tabs[0]);
@@ -87,7 +93,7 @@
                 return state.result ? state.result.data : [];
             }),
             barchartSelections() {
-               return this.$store.state.plottingSelections.barchart
+                return this.$store.state.plottingSelections.barchart
             }
         },
         methods: {

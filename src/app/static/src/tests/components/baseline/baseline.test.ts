@@ -9,6 +9,7 @@ import FileUpload from "../../../app/components/FileUpload.vue";
 import {MetadataState} from "../../../app/store/metadata/metadata";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 const localVue = createLocalVue();
 
@@ -31,7 +32,7 @@ describe("Baseline upload component", () => {
             validate: jest.fn()
         };
 
-        return new Vuex.Store({
+        const store = new Vuex.Store({
             modules: {
                 baseline: {
                     namespaced: true,
@@ -44,7 +45,10 @@ describe("Baseline upload component", () => {
                     state: mockMetadataState(metadataState)
                 }
             }
-        })
+        });
+
+        registerTranslations(store);
+        return store;
     };
 
     it("pjnz upload accepts pjnz or zip files", () => {

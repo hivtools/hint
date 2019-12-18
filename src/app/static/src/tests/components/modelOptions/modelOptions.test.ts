@@ -12,8 +12,7 @@ import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Tick from "../../../app/components/Tick.vue";
 import {ModelOptionsActions} from "../../../app/store/modelOptions/actions";
 import {RootState} from "../../../app/root";
-
-const localVue = createLocalVue();
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 describe("Model options component", () => {
 
@@ -29,25 +28,29 @@ describe("Model options component", () => {
 
     const mockGetters = {
         editsRequireConfirmation: () => false,
-        laterCompleteSteps: () => [{number: 4, text: "Run model"}]
+        laterCompleteSteps: () => [{number: 4, textKey: "runModel"}]
     };
 
     const createStore = (props: Partial<ModelOptionsState>,
                          mutations: MutationTree<ModelOptionsState> = mockMutations,
-                         actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) => new Vuex.Store({
-        modules: {
-            modelOptions: {
-                namespaced: true,
-                state: mockModelOptionsState(props),
-                mutations,
-                actions
-            },
-            stepper: {
-                namespaced: true,
-                getters: mockGetters
+                         actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) => {
+        const store = new Vuex.Store({
+            modules: {
+                modelOptions: {
+                    namespaced: true,
+                    state: mockModelOptionsState(props),
+                    mutations,
+                    actions
+                },
+                stepper: {
+                    namespaced: true,
+                    getters: mockGetters
+                }
             }
-        }
-    });
+        });
+        registerTranslations(store);
+        return store;
+    };
 
     it("displays dynamic form when fetching is false", () => {
         const store = createStore({optionsFormMeta: {controlSections: []}});
@@ -61,6 +64,7 @@ describe("Model options component", () => {
         const rendered = shallowMount(ModelOptions, {store});
         expect(rendered.findAll(DynamicForm).length).toBe(0);
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.find("#loading-message").text()).toBe("Loading options");
     });
 
     it("displays tick and message if valid is true", () => {
@@ -122,7 +126,7 @@ describe("Model options component", () => {
             });
 
         const rendered = shallowMount(ModelOptions, {
-            store, localVue
+            store
         });
         rendered.find(DynamicForm).vm.$emit("submit");
         expect(validateMock.mock.calls.length).toBe(1);
@@ -132,7 +136,7 @@ describe("Model options component", () => {
         const fetchMock = jest.fn();
         const store = createStore({}, mockMutations, {fetchModelRunOptions: fetchMock});
         shallowMount(ModelOptions, {
-            store, localVue
+            store
         });
         expect(fetchMock.mock.calls.length).toBe(1);
     });

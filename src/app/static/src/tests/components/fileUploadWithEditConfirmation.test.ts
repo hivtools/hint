@@ -3,22 +3,29 @@ import {mount, Slots, Wrapper} from '@vue/test-utils';
 import FileUpload from "../../app/components/FileUpload.vue";
 import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
 import {mockFile} from "../mocks";
+import {emptyState} from "../../app/root";
+import registerTranslations from "../../app/store/translations/registerTranslations";
 
 describe("File upload component", () => {
 
     const mockGetters = {
         editsRequireConfirmation: () => true,
-        laterCompleteSteps: () => [{number: 4, text: "Run model"}]
+        laterCompleteSteps: () => [{number: 4, textKey: "runModel"}]
     };
 
-    const createStore = () => new Vuex.Store({
-        modules: {
-            stepper: {
-                namespaced: true,
-                getters: mockGetters
+    const createStore = () => {
+        const store = new Vuex.Store({
+            state: emptyState(),
+            modules: {
+                stepper: {
+                    namespaced: true,
+                    getters: mockGetters
+                }
             }
-        }
-    });
+        });
+        registerTranslations(store);
+        return store;
+    };
 
     const createSut = (props?: any, slots?: Slots) => {
         return mount(FileUpload, {

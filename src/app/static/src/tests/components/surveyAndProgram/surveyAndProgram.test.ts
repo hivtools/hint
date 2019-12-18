@@ -14,6 +14,8 @@ import {SurveyAndProgramDataState} from "../../../app/store/surveyAndProgram/sur
 import {DataType, FilteredDataState} from "../../../app/store/filteredData/filteredData";
 import {actions} from "../../../app/store/filteredData/actions";
 import {mutations} from "../../../app/store/filteredData/mutations";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {emptyState} from "../../../app/root";
 
 const localVue = createLocalVue();
 
@@ -25,7 +27,8 @@ describe("Survey and programme component", () => {
 
     const createStore = (surveyAndProgramState: Partial<SurveyAndProgramDataState> = {},
                          filteredDataState: Partial<FilteredDataState> = {selectedDataType: DataType.Survey}) => {
-        return new Vuex.Store({
+        const store = new Vuex.Store({
+            state: emptyState(),
             modules: {
                 surveyAndProgram: {
                     namespaced: true,
@@ -39,24 +42,12 @@ describe("Survey and programme component", () => {
                 }
             }
         });
+        registerTranslations(store);
+        return store;
     };
 
     it("renders filters and map if there is a selected data type", () => {
-        const store = new Vuex.Store({
-            modules: {
-                surveyAndProgram: {
-                    namespaced: true,
-                    state: mockSurveyAndProgramState(),
-
-                },
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState({selectedDataType: DataType.Survey})
-
-                }
-            }
-        });
-
+        const store = createStore({}, {selectedDataType: DataType.Survey});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
         expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
@@ -64,20 +55,7 @@ describe("Survey and programme component", () => {
     });
 
     it("does not render filters and map if there is no selected data type", () => {
-        const store = new Vuex.Store({
-            modules: {
-                surveyAndProgram: {
-                    namespaced: true,
-                    state: mockSurveyAndProgramState(),
-
-                },
-                filteredData: {
-                    namespaced: true,
-                    state: mockFilteredDataState({selectedDataType: null})
-                }
-            }
-        });
-
+        const store = createStore({}, {selectedDataType: null});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
         expect(wrapper.findAll("filters-stub").length).toBe(0);

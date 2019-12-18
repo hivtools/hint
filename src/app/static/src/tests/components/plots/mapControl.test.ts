@@ -4,6 +4,8 @@ import TreeSelect from '@riophae/vue-treeselect'
 import Vuex from "vuex";
 import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../../mocks";
 import {DataType} from "../../../app/store/filteredData/filteredData";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {emptyState} from "../../../app/root";
 
 const localVue = createLocalVue();
 
@@ -24,7 +26,8 @@ describe("Map control component", () => {
             ]
         }
 
-        return new Vuex.Store({
+        const store = new Vuex.Store({
+            state: emptyState(),
             modules: {
                 baseline: {
                     namespaced: true,
@@ -56,6 +59,8 @@ describe("Map control component", () => {
                 }
             }
         });
+        registerTranslations(store);
+        return store;
     };
 
     it("renders tree selects with expected properties", () => {
