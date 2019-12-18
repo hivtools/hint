@@ -5,7 +5,7 @@ const html = fs.readFileSync(path.resolve(__dirname, '../../../../templates/forg
 document.documentElement.innerHTML = html.toString();
 document.getElementById("app")!!.setAttribute("title", "AppTitle");
 
-import {forgotPasswordApp} from "../../../app/forgotPassword";
+import {forgotPasswordApp} from "../../app/forgotPassword";
 
 describe('forgot password page', function () {
 

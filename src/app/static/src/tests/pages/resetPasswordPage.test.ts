@@ -6,7 +6,7 @@ document.documentElement.innerHTML = html.toString();
 document.getElementById("app")!!.setAttribute("title", "AppTitle");
 document.getElementById("app")!!.setAttribute("token", "faketoken");
 
-import {resetPasswordApp} from "../../../app/resetPassword";
+import {resetPasswordApp} from "../../app/resetPassword";
 
 describe('reset password page', function () {
 
