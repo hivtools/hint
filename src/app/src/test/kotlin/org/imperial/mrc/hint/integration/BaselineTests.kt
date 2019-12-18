@@ -1,6 +1,5 @@
 package org.imperial.mrc.hint.integration
 
-import com.nhaarman.mockito_kotlin.isA
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.helpers.getTestEntity
