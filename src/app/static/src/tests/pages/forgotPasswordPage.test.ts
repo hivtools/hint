@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const html = fs.readFileSync(path.resolve(__dirname, '../../../../templates/forgot-password.ftl'), 'utf8');
+const html = fs.readFileSync(path.resolve(__dirname, '../../../templates/forgot-password.ftl'), 'utf8');
 
 document.documentElement.innerHTML = html.toString();
 document.getElementById("app")!!.setAttribute("title", "AppTitle");
