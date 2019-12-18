@@ -11,14 +11,13 @@ import {initialSurveyAndProgramDataState} from "../surveyAndProgram/surveyAndPro
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
 import {PayloadWithType} from "../../types";
-import {Language} from "../translations/locales";
+import {mutations as languageMutations} from "../language/mutations";
 
 export enum RootMutation {
     Reset = "Reset",
     ResetFilteredDataSelections = "ResetFilteredDataSelections",
     ResetOptions = "ResetOptions",
-    ResetOutputs = "ResetOutputs",
-    ChangeLanguage = "ChangeLanguage"
+    ResetOutputs = "ResetOutputs"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -94,8 +93,6 @@ export const mutations: MutationTree<RootState> = {
         Object.assign(state.plottingSelections, initialPlottingSelectionsState());
     },
 
-    [RootMutation.ChangeLanguage](state: RootState, action: PayloadWithType<Language>) {
-        state.language = action.payload
-    }
+    ...languageMutations
 
 };

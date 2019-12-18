@@ -5,6 +5,7 @@ import {PasswordActions} from "../../../app/store/password/actions";
 import Vuex, {Store} from "vuex";
 import {mockError, mockPasswordState} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import LoggedOutHeader from "../../../app/components/header/LoggedOutHeader.vue";
 
 const localVue = createLocalVue();
 
@@ -15,7 +16,8 @@ describe("Reset password component", () => {
     const createStore = (passwordState?: Partial<PasswordState>) => {
         actions = {
             requestResetLink: jest.fn(),
-            resetPassword: jest.fn()
+            resetPassword: jest.fn(),
+            changeLanguage: jest.fn()
         };
 
         const store = new Vuex.Store({
@@ -30,7 +32,8 @@ describe("Reset password component", () => {
 
     const createSut = (store: Store<PasswordState>) => {
         return shallowMount(ResetPassword, {store, localVue, propsData: {
-                token: "testToken"
+                token: "testToken",
+                title: "Naomi"
             }});
     };
 
@@ -128,6 +131,11 @@ describe("Reset password component", () => {
             expect(wrapper.find("form").classes()).toContain("was-validated");
             done();
         });
+    });
 
+    it("passes title to logged out header", () => {
+        const store = createStore();
+        const wrapper = createSut(store);
+        expect(wrapper.find(LoggedOutHeader).props("title")).toBe("Naomi")
     });
 });

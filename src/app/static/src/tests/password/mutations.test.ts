@@ -1,6 +1,7 @@
 import {mutations} from "../../app/store/password/mutations";
 import {initialPasswordState} from "../../app/store/password/password";
-import {mockError} from "../mocks";
+import {mockError, mockPasswordState} from "../mocks";
+import {LanguageMutation} from "../../app/store/language/mutations";
 
 describe("Password mutations", () => {
 
@@ -13,7 +14,7 @@ describe("Password mutations", () => {
     });
 
     it("sets error on RequestResetLinkError", () => {
-        const error = mockError("test error")
+        const error = mockError("test error");
         const testState = {...initialPasswordState};
         mutations.RequestResetLinkError(testState, {payload: error});
         expect(testState.resetLinkRequested).toBe(false);
@@ -37,4 +38,11 @@ describe("Password mutations", () => {
         expect(testState.resetPasswordError).toBe(error);
     });
 
+    it("can change language", () => {
+        const state = mockPasswordState();
+        mutations[LanguageMutation.ChangeLanguage](state, {payload: "fr"});
+        expect(state.language).toBe("fr");
+    });
+
 });
+

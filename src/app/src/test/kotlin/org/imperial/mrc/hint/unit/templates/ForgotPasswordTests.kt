@@ -12,9 +12,11 @@ class ForgotPasswordTests {
 
     @Test
     fun `renders as expected`() {
-        val doc = ForgotPasswordTests.template.jsoupDocFor(ConcurrentModel())
+        val model = ConcurrentModel()
+        model["title"] = "AppTitle"
+        val doc = template.jsoupDocFor(model)
 
-        Assertions.assertThat(doc.select("title").text()).isEqualTo("Forgot password")
+        Assertions.assertThat(doc.select("title").text()).isEqualTo("AppTitle: Forgot password")
         Assertions.assertThat(doc.select("#app").count()).isEqualTo(1)
     }
 }

@@ -1,6 +1,7 @@
 import {actions} from "../../app/store/root/actions";
 import {mockStepperState} from "../mocks";
-import {RootMutation} from "../../app/store/root/mutations";
+import {Language} from "../../app/store/translations/locales";
+import {LanguageMutation} from "../../app/store/language/mutations";
 
 describe("root actions", () => {
 
@@ -176,9 +177,9 @@ describe("root actions", () => {
 
     it("changes language", async () => {
         const commit = jest.fn();
-        await actions.changeLanguage({commit} as any, "fr");
+        await actions.changeLanguage({commit} as any, Language.fr);
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: RootMutation.ChangeLanguage,
+            type: LanguageMutation.ChangeLanguage,
             payload: "fr"
         })
     });

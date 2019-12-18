@@ -6,10 +6,6 @@ import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 
-// jsdom has only implemented navigate up to hashes, hence appending a hash here to the base url
-const mockCreateObjectUrl = jest.fn(() => "http://localhost#1234");
-window.URL.createObjectURL = mockCreateObjectUrl;
-
 describe("user header", () => {
 
     const store = new Vuex.Store({

@@ -1,7 +1,6 @@
 import Vue from "vue";
-import {mapActions, StoreOptions} from "vuex";
+import Vuex, {mapActions, StoreOptions} from "vuex";
 import ResetPassword from "./components/password/ResetPassword.vue";
-import Vuex from "vuex";
 import {initialPasswordState, PasswordState} from "./store/password/password";
 import {actions} from './store/password/actions';
 import {mutations} from './store/password/mutations';
@@ -21,17 +20,17 @@ registerTranslations(store);
 export const resetPasswordApp = new Vue({
     el: "#app",
     store,
-    props: ["token"],
+    props: ["token", "title"],
     components: {
         ResetPassword
     },
-    render: function(h) {
+    render: function (h) {
         return h(ResetPassword,
             {
-                props: {"token": this.$el.getAttribute("token")}
+                props: {
+                    "token": this.$el.getAttribute("token"),
+                    "title": this.$el.getAttribute("title")
+                }
             });
-    },
-    methods: {
-        ...mapActions({resetPassword: 'password/resetPassword'})
     }
 });
