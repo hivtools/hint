@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.unit.controllers
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.controllers.PasswordController
 import org.imperial.mrc.hint.controllers.TokenException
 import org.imperial.mrc.hint.logic.UserLogic
@@ -28,11 +29,16 @@ class PasswordControllerTests {
 
     val expectedSuccessResponse = "{\"errors\":[],\"status\":\"success\",\"data\":true}"
 
+    private val mockProps = mock<AppProperties> {
+        on {applicationTitle} doReturn "AppTitle"
+    }
     @Test
     fun `forgotPassword returns expected template name`() {
-        val sut = PasswordController(mockUserRepo, mock(), mockEmailManager)
-        val result = sut.forgotPassword()
+        val sut = PasswordController(mockProps, mockUserRepo, mock(), mockEmailManager)
+        val model = ConcurrentModel()
+        val result = sut.forgotPassword(model)
         assertThat(result).isEqualTo("forgot-password")
+        assertThat(model["title"]).isEqualTo("AppTitle")
     }
 
     @Test
@@ -41,7 +47,7 @@ class PasswordControllerTests {
             on { generateOnetimeSetPasswordToken(mockUser.username) } doReturn "testToken"
         }
 
-        val sut = PasswordController(mockUserRepo, mockTokenMan, mockEmailManager)
+        val sut = PasswordController(mockProps, mockUserRepo, mockTokenMan, mockEmailManager)
 
         val result = sut.requestResetLink("test.user@test.com")
 
@@ -58,7 +64,7 @@ class PasswordControllerTests {
             on { generateOnetimeSetPasswordToken(mockUser.username) } doReturn "token"
         }
 
-        val sut = PasswordController(mockUserRepo, mockTokenMan, mockEmailManager)
+        val sut = PasswordController(mockProps, mockUserRepo, mockTokenMan, mockEmailManager)
 
         val result = sut.requestResetLink("nonexistent@test.com")
 
@@ -68,11 +74,12 @@ class PasswordControllerTests {
 
     @Test
     fun `getResetPassword returns expected template and model`() {
-        val sut = PasswordController(mockUserRepo, mock(), mockEmailManager)
+        val sut = PasswordController(mockProps, mockUserRepo, mock(), mockEmailManager)
         val model = ConcurrentModel()
         val result = sut.getResetPassword("testToken", model)
         assertThat(result).isEqualTo("reset-password")
         assertThat(model["token"]).isEqualTo("testToken")
+        assertThat(model["title"]).isEqualTo("AppTitle")
     }
 
     @Test
@@ -83,7 +90,7 @@ class PasswordControllerTests {
             on { validateToken("testToken") } doReturn mockProfile
         }
 
-        val sut = PasswordController(mockUserRepo, mockTokenMan, mockEmailManager)
+        val sut = PasswordController(mockProps, mockUserRepo, mockTokenMan, mockEmailManager)
 
         val result = sut.postResetPassword("testToken", "testPassword")
 
@@ -99,7 +106,7 @@ class PasswordControllerTests {
             on { validateToken("testToken") } doReturn (null as CommonProfile?)
         }
 
-        val sut = PasswordController(mockUserRepo, mockTokenMan, mockEmailManager)
+        val sut = PasswordController(mockProps, mockUserRepo, mockTokenMan, mockEmailManager)
 
         TranslationAssert.assertThatThrownBy { sut.postResetPassword("testToken", "testPassword") }
                 .isInstanceOf(TokenException::class.java)
