@@ -5,11 +5,20 @@ import {LGeoJson, LCircleMarker, LTooltip} from "vue2-leaflet";
 import {getFeatureIndicators, getIndicatorRanges, getRadius} from "../../../../app/components/plots/bubble/utils";
 import {getColor} from "../../../../app/store/filteredData/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
+import {initialBubblePlotSelections} from "../../../../app/store/plottingSelections/plottingSelections";
 
 const localVue = createLocalVue();
 
 const propsData = {
     features: [
+        {
+            "type": "Feature",
+            "properties": {"iso3": "MWI", "area_id": "MWI", "area_name": "Malawi", "area_level": 0, "center_x": 35.7082, "center_y": -15.2046},
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [[[[35.7, -15.2], [35.8, -15.1], [35.9, -15.3]]]]
+            }
+        },
         {
             "type": "Feature",
             "properties": {"iso3": "MWI", "area_id": "MWI_3_1", "area_name": "North", "area_level": 3, "center_x": 35.7082, "center_y": -15.2046},
@@ -36,18 +45,19 @@ const propsData = {
         }
     ],
     featureLevels: [
+        {id: 0, display: true, area_level_label: "Country"},
         {id: 3, display: true, area_level_label: "Admin Level 3"},
         {id: 4, display: true, area_level_label: "Admin Level 4"}
     ],
     chartdata: [
         {
-            area_id: "MWI_3_1", plhiv: 1, prevalence: 0.01
+            area_id: "MWI_3_1", plhiv: 1, prevalence: 0.01, age: "0:15"
         },
         {
-            area_id: "MWI_4_1", plhiv: 10, prevalence: 0.1
+            area_id: "MWI_4_1", plhiv: 10, prevalence: 0.1, age: "0:15"
         },
         {
-            area_id: "MWI_4_2", plhiv: 20, prevalence: 0.2
+            area_id: "MWI_4_2", plhiv: 20, prevalence: 0.2, age: "0:15"
         },
     ],
     indicators: [
@@ -57,7 +67,25 @@ const propsData = {
         {
             indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 0.8, colour: "interpolateGreys", invert_scale: false
         }
-    ]
+    ],
+    areaFilterId: "area",
+    filters: [
+        { id: "area", label: "Area", column_id: "area_id",
+            options: [{id: "MWI", label: "Malawi", children: [
+                    {id: "MWI_3_1", label: "3.1"},
+                    {id: "MWI_4_1", label: "4.1"},
+                    {id: "MWI_4_2", label: "4.2"}
+                ]}
+             ]},
+        { id: "age", label: "Age", column_id: "age", options: [{id: "0:15", label:"0-15"}, {id: "15:30", label: "15-30"}]}
+    ],
+    selections: {
+        detail: 4,
+        selectedFilterOptions: {
+                            age: [{id: "0:15", label:"0-15"}],
+                            area: []
+        }
+    }
 };
 
 const getWrapper  = () => {
@@ -69,8 +97,8 @@ describe("BubblePlot component", () => {
         const wrapper = getWrapper();
         const geoJsons = wrapper.findAll(LGeoJson);
         expect(geoJsons.length).toBe(2);
-        expect(geoJsons.at(0).props().geojson).toBe(propsData.features[1]);
-        expect(geoJsons.at(1).props().geojson).toBe(propsData.features[2]);
+        expect(geoJsons.at(0).props().geojson).toBe(propsData.features[2]);
+        expect(geoJsons.at(1).props().geojson).toBe(propsData.features[3]);
 
         //These are hardcoded in the component
         const minRadius = 10;
@@ -79,7 +107,7 @@ describe("BubblePlot component", () => {
         const circles = wrapper.findAll(LCircleMarker);
         expect(circles.length).toBe(2);
         expect(circles.at(0).props().latLng).toEqual([-15.2047, 35.7083]);
-        expect(circles.at(0).props().radius).toEqual(getRadius(10, 1, 20, 10, 60));
+        expect(circles.at(0).props().radius).toEqual(getRadius(10, 1, 20, 10, 100));
         expect(circles.at(0).find(LTooltip).props().content).toEqual(`<div>
                             <strong>North West</strong>
                             <br/>Prevalence: 0.1
@@ -90,7 +118,7 @@ describe("BubblePlot component", () => {
         expect(circles.at(0).props().fillColor).toEqual(color);
 
         expect(circles.at(1).props().latLng).toEqual([-15.2048, 35.7084]);
-        expect(circles.at(1).props().radius).toEqual(getRadius(20, 1, 20, 10, 60));
+        expect(circles.at(1).props().radius).toEqual(getRadius(20, 1, 20, 10, 100));
         expect(circles.at(1).find(LTooltip).props().content).toEqual(`<div>
                             <strong>North East</strong>
                             <br/>Prevalence: 0.2
@@ -116,11 +144,13 @@ describe("BubblePlot component", () => {
         const vm = wrapper.vm as any;
 
         expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
-            [propsData.features[1] as any, propsData.features[2] as any],
+            ["MWI_4_1", "MWI_4_2"],
             propsData.indicators,
             getIndicatorRanges(propsData.chartdata, propsData.indicators),
+            [propsData.filters[1]],
+            propsData.selections.selectedFilterOptions,
             10,
-            60));
+            100));
     });
 
     it("computes featuresByLevel", () => {
@@ -128,8 +158,9 @@ describe("BubblePlot component", () => {
         const vm = wrapper.vm as any;
 
         expect(vm.featuresByLevel).toStrictEqual({
-            3: [propsData.features[0]],
-            4: [propsData.features[1], propsData.features[2]]
+            0: [propsData.features[0]],
+            3: [propsData.features[1]],
+            4: [propsData.features[2], propsData.features[3]]
         });
     });
 
@@ -143,7 +174,7 @@ describe("BubblePlot component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
 
-        expect(vm.currentFeatures).toStrictEqual([propsData.features[1], propsData.features[2]]);
+        expect(vm.currentFeatures).toStrictEqual([propsData.features[2], propsData.features[3]]);
     });
 
     it("computes indicatorNameLookup", () => {
@@ -155,6 +186,27 @@ describe("BubblePlot component", () => {
         });
     });
 
+    it("computed flattenedAreas", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.flattenedAreas).toStrictEqual({
+            "MWI": {id: "MWI", label: "Malawi", children: [
+                    {id: "MWI_3_1", label: "3.1"},
+                    {id: "MWI_4_1", label: "4.1"},
+                    {id: "MWI_4_2", label: "4.2"}
+                ]},
+            "MWI_3_1": {id: "MWI_3_1", label: "3.1"},
+            "MWI_4_1": {id: "MWI_4_1", label: "4.1"},
+            "MWI_4_2": {id: "MWI_4_2", label: "4.2"}
+        });
+    });
+
+    it("computes allSelectedAreaIds", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.allSelectedAreaIds).toStrictEqual(["MWI_4_1", "MWI_4_2"]);
+    });
+
     it("updateBounds updates bounds of map from features geojson", () => {
         const wrapper = getWrapper();
         const mockMapFitBounds = jest.fn();
@@ -164,19 +216,16 @@ describe("BubblePlot component", () => {
             fitBounds: mockMapFitBounds
         };
 
-        //NB we're not updating to selected features yet, just to current level
         vm.updateBounds();
         expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
-            [
-                {_northEast: {lat: -15.2047, lng: 35.7117}, _southWest: {lat: -15.2117, lng: 35.7083}},
-                {_northEast: {lat: -15.2047, lng: 35.7117}, _southWest: {lat: -15.2117, lng: 35.7083}}
-         ]);
+            [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
     });
 
     it("updates detail", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         vm.onDetailChange(3);
-        expect(vm.detail).toBe(3);
+
+        expect(wrapper.emitted("update")[0][0].detail).toStrictEqual(3);
     })
 });

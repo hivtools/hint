@@ -217,8 +217,9 @@
                 return flattenOptions(this.areaFilter.options);
             },
             allSelectedAreaIds() {
-                //TODO: could just get intersection with current Features ie current level
-                return Array.from(flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas));
+                //get intersection of selected areas and current Features(ie current level)
+                const selectedAreaIds = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+                return this.currentFeatures.map((f: Feature) => f.properties!!.area_id).filter((s: string) => selectedAreaIds.has(s))
             },
             selectedAreaFeatures(): Feature[] {
                 if (this.selectedAreaFilterOptions && this.selectedAreaFilterOptions.length > 0) {

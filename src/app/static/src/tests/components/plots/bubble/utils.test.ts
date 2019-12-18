@@ -22,15 +22,10 @@ describe("Bubble plot utils", () => {
         prevalence: {min: 0, max: 0.8}
     };
 
-    const selectedFeatures = [
-        {properties: {area_id: "MWI_1_1"}},
-        {properties: {area_id: "MWI_1_2"}}
-    ];
+    const selectedFeatureIds = ["MWI_1_1", "MWI_1_2"];
 
     const minRadius = 10;
     const maxRadius = 1000;
-    //const minArea = Math.PI * (minRadius * minRadius);
-    //const maxArea = Math.PI * (maxRadius * maxRadius);
 
     const expectedFeatureIndicators = {
         MWI_1_1: {
@@ -81,7 +76,8 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 16} //should not be included, not in selectedFeatures
         ];
 
-        const result = getFeatureIndicators(data, selectedFeatures as any, indicators, indicatorRanges, minRadius, maxRadius);
+        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, indicatorRanges, [], {},
+                                            minRadius, maxRadius);
 
         expect(result).toStrictEqual(expectedFeatureIndicators);
     });
@@ -106,8 +102,8 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_3", indicator: "plhiv", value: 14} //should not be included, not in selectedFeatures
         ];
 
-        const result = getFeatureIndicators(data, selectedFeatures as any, longIndicators, indicatorRanges, minRadius, maxRadius);
-
+        const result = getFeatureIndicators(data, selectedFeatureIds, longIndicators, indicatorRanges,[],{},
+                                            minRadius, maxRadius);
         expect(result).toStrictEqual(expectedFeatureIndicators);
     });
 
@@ -117,7 +113,8 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_2", plhiv: 14},
         ];
 
-        const result = getFeatureIndicators(partialData, selectedFeatures as any, indicators, indicatorRanges, minRadius, maxRadius);
+        const result = getFeatureIndicators(partialData, selectedFeatureIds, indicators, indicatorRanges, [], {},
+                                            minRadius, maxRadius);
 
         expect(result).toStrictEqual({
             MWI_1_1: {
