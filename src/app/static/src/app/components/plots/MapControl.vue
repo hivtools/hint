@@ -3,7 +3,7 @@
         <div style="width: 265px;" class="p-3 map-control">
             <form>
                 <div v-if="showIndicators" class="row form-group">
-                    <label class="col-3 col-form-label" v-translate="'indicator'">r
+                    <label class="col-3 col-form-label" v-translate="'indicator'">
                     </label>
                     <div class="col">
                         <tree-select :value="indicator"
