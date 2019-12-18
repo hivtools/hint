@@ -17,35 +17,36 @@ export const modelOutputGetters = {
         return rootState.modelRun.result!!.plottingMetadata.barchart.indicators;
     },
     barchartFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
-        return outputPlotFilters(rootState);
+        let filters = outputPlotFilters(rootState);
+        const area = filters.find((f: any) => f.id == "area");
+        if (area && area.use_shape_regions) {
+            const regions: FilterOption[] = rootState.baseline.shape!!.filters!!.regions ?
+                [rootState.baseline.shape!!.filters!!.regions] : [];
+
+            //remove old, frozen area filter, add new one with regions from shape
+            filters = [
+                {...area, options: regions},
+                ...filters.filter((f: any) => f.id != "area")
+            ];
+        }
+
+        return [
+            ...filters
+        ];
     },
     bubblePlotIndicators: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): ChoroplethIndicatorMetadata[] => {
         //TODO: Get our own indicators metadata rather than borrowing from the Choropleth
         return rootGetters['metadata/choroplethIndicatorsMetadata'];
     },
     bubblePlotFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): Filter[] => {
-        return outputPlotFilters(rootState);
+        let filters =  outputPlotFilters(rootState);
+        //Do not include area in filters
+        return filters.filter((f: Filter) => f.id != "area");
     }
 };
 
 const outputPlotFilters = (rootState: RootState) => {
-    let filters = [...rootState.modelRun.result!!.plottingMetadata.barchart.filters];
-
-    const area = filters.find((f: any) => f.id == "area");
-    if (area && area.use_shape_regions) {
-        const regions: FilterOption[] = rootState.baseline.shape!!.filters!!.regions ?
-            [rootState.baseline.shape!!.filters!!.regions] : [];
-
-        //remove old, frozen area filter, add new one with regions from shape
-        filters = [
-            {...area, options: regions},
-            ...filters.filter((f: any) => f.id != "area")
-        ];
-    }
-
-    return [
-        ...filters
-    ];
+    return [...rootState.modelRun.result!!.plottingMetadata.barchart.filters];
 };
 
 export const initialModelOutputState = (): ModelOutputState => {

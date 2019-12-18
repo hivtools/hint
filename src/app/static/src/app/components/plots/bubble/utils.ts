@@ -1,7 +1,7 @@
 import {BubbleIndicatorValuesDict, Dict, Filter, IndicatorValuesDict, NumericRange} from "../../../types";
 import {getColor} from "../../../store/filteredData/utils";
 import {Feature} from "geojson";
-import {ChoroplethIndicatorMetadata} from "../../../generated";
+import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
 import Choropleth from "../Choropleth.vue";
 
 export const toIndicatorNameLookup = (array: ChoroplethIndicatorMetadata[]) =>
@@ -14,14 +14,15 @@ const iterateDataValues = function(
     data: any,
     indicatorsMeta: ChoroplethIndicatorMetadata[],
     selectedAreaIds: string[] | null,
+    filters: Filter[] | null,
+    selectedFilterValues: Dict<FilterOption[]> | null,
     func: (areaId: string,
            indicatorMeta: ChoroplethIndicatorMetadata, value: number) => void) {
 
     for (const row of data) {
-        //TODO: exclude rows based on filters
-        //if (excludeRow(row, selectedRegionFilters)) {
-        //    continue;
-        //}
+        if (filters && selectedFilterValues && excludeRow(row, filters, selectedFilterValues)) {
+            continue;
+        }
 
         const areaId: string = row.area_id;
 
@@ -48,10 +49,22 @@ const iterateDataValues = function(
     }
 };
 
+const excludeRow = function(row: any, filters: Filter[], selectedFilterValues: Dict<FilterOption[]>){
+    let excludeRow = false;
+    for (const filter of filters) {
+        const filterValues = selectedFilterValues[filter.id].map(n => n.id);
+        if (filterValues.indexOf(row[filter.column_id].toString()) < 0) {
+            excludeRow = true;
+            break;
+        }
+    }
+    return excludeRow;
+};
+
 export const getIndicatorRanges = function(data: any,
                                            indicatorsMeta: ChoroplethIndicatorMetadata[]): Dict<NumericRange>{
     const result = {} as Dict<NumericRange>;
-    iterateDataValues(data, indicatorsMeta, null,
+    iterateDataValues(data, indicatorsMeta, null, null, null,
         (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
             const indicator = indicatorMeta.indicator;
             if (!result[indicator]) {
@@ -69,13 +82,15 @@ export const getFeatureIndicators = function (data: any[],
                                               selectedFeatures: Feature[],
                                               indicatorsMeta: ChoroplethIndicatorMetadata[],
                                               indicatorRanges: Dict<NumericRange>,
+                                              filters: Filter[],
+                                              selectedFilterValues: Dict<FilterOption[]>,
                                               minRadius: number,
                                               maxRadius: number): Dict<BubbleIndicatorValuesDict> {
 
     const selectedAreaIds = selectedFeatures.map(f => f.properties!!.area_id);
 
     const result = {} as Dict<BubbleIndicatorValuesDict>;
-    iterateDataValues(data, indicatorsMeta, selectedAreaIds,
+    iterateDataValues(data, indicatorsMeta, selectedAreaIds, filters, selectedFilterValues,
         (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
         if (!result[areaId]) {
                result[areaId] = {} as BubbleIndicatorValuesDict;

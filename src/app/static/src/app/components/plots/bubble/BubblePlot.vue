@@ -140,6 +140,8 @@
                     this.currentFeatures,
                     this.indicators,
                     this.indicatorRanges,
+                    this.filters,
+                    this.selections.selectedFilterOptions,
                     10, //min radius in pixels
                     100 //max radius in pixels
                 );
