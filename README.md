@@ -8,6 +8,7 @@
 Requirements:
 * Docker
 * npm
+* openjdk 8
 
 1. Clone this repo
 1. Run `npm install` from `src/app/static`
