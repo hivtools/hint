@@ -18,12 +18,18 @@ and [hintr](https://github.com/mrc-ide/hintr) and add a test user with username 
 1. Run `npm run build` from `src/app/static` to compile front-end dependencies.
 1. Run app from your IDE or by `cd src && ./gradlew :app:bootRun` to serve the app on port 8080
 
-For more information about developing the front-end see [src/app/static/README](src/app/static/README)
+For more information about developing the front-end see [src/app/static/README](https://github.com/mrc-ide/hint/blob/master/src/app/static/README.md)
+
+### Testing
+
+Ensure dependencies are running and then execute tests on the command line or through IntelliJ
+1. `./scripts/run-development-dependencies.sh`
+1. `./src/gradlew -p src app::test`
 
 ### Database Interface
 
 If the database schema has changed, you can regenerate the database interface code (in /src/databaseInterface)
-by running `./gradlew :generateDatabaseInterface:run` from the `src` folder while the database container is running.
+by running `./src/gradlew -p src :generateDatabaseInterface:run` while the database container is running.
 
 ### Distribution
 A docker image containing the app is created by running `./scripts/build-app.sh`. This is run as part of 
