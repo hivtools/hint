@@ -107,6 +107,31 @@ describe("Bubble plot utils", () => {
         expect(result).toStrictEqual(expectedFeatureIndicators);
     });
 
+    it("can exclude rows based on filters", () => {
+        const filters = [
+            {id: "age", label: "Age", column_id: "age", options: []},
+            {id: "sex", label: "Sex", column_id: "sex", options: []}
+        ];
+
+        const selectedFilterValues = {
+            age: [{id: "0:15", label: "0-15"}, {id: "15:30", label: "15-30"}],
+            sex: [{id: "female", label: "Female"}]
+        };
+
+        const data = [
+            {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 12, sex: "female", age: "0:15"},
+            {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14, sex: "female", age: "15:30"},
+            {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 16, sex: "female", age: "0:15"}, //not included: not in selectedFeatures
+            {area_id: "MWI_1_1", prevalence: 0.1, plhiv: 18, sex: "male", age: "0:15"}, //not included: no sex filter match
+            {area_id: "MWI_1_1", prevalence: 0.2, plhiv: 20, sex: "female", age: "30:45"}, //not included: no age filter match
+        ];
+
+        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, indicatorRanges, filters,
+            selectedFilterValues, minRadius, maxRadius);
+
+        expect(result).toStrictEqual(expectedFeatureIndicators);
+    });
+
     it("can get feature indicators from partial rows", () => {
         const partialData = [
             {area_id: "MWI_1_1", prevalence: 0.5},

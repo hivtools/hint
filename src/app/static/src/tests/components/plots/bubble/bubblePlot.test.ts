@@ -1,15 +1,20 @@
-import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
-import Vue from 'vue';
+import {createLocalVue, shallowMount} from "@vue/test-utils";
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
 import {LGeoJson, LCircleMarker, LTooltip} from "vue2-leaflet";
 import {getFeatureIndicators, getIndicatorRanges, getRadius} from "../../../../app/components/plots/bubble/utils";
 import {getColor} from "../../../../app/store/filteredData/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
-import {initialBubblePlotSelections} from "../../../../app/store/plottingSelections/plottingSelections";
 import FilterSelect from "../../../../app/components/plots/FilterSelect.vue";
 import {NestedFilterOption} from "../../../../app/generated";
+import registerTranslations from "../../../../app/store/translations/registerTranslations";
+import Vuex from "vuex";
+import {emptyState} from "../../../../app/root";
 
 const localVue = createLocalVue();
+const store = new Vuex.Store({
+    state: emptyState()
+});
+registerTranslations(store);
 
 const propsData = {
     features: [
@@ -254,11 +259,7 @@ describe("BubblePlot component", () => {
         const uninitialisableWrapper = getWrapper({
             selections: {
                 detail: -1,
-                selectedFilterOptions: {
-                    age: [],
-                    sex: [],
-                    area: []
-                }
+                selectedFilterOptions: {}
             },
             filters: [
                 propsData.filters[0], //area
@@ -398,5 +399,29 @@ describe("BubblePlot component", () => {
         vm.onDetailChange(3);
 
         expect(wrapper.emitted("update")[0][0].detail).toStrictEqual(3);
-    })
+    });
+
+    it("updates bounds when becomes initialises", () => {
+        const mockUpdateBounds = jest.fn();
+        const wrapper = getWrapper({ //this cannot initialise
+            features: [...propsData.features],
+            featureLevels: [...propsData.featureLevels],
+            chartdata: [...propsData.chartdata],
+            indicators: [...propsData.indicators],
+            selections: {
+                detail: -1,
+                selectedFilterOptions: {}
+            },
+            filters: [
+                propsData.filters[0], //area
+                { id: "age", label: "Age", column_id: "age", options: []},
+                { id: "sex", label: "Sex", column_id: "sex", options: []}
+            ],
+        });
+        const vm = wrapper.vm as any;
+        vm.updateBounds = mockUpdateBounds;
+
+        wrapper.setProps(propsData); //This should initialise and trigger the watcher
+        expect(mockUpdateBounds.mock.calls.length).toBeGreaterThan(0);
+    });
 });

@@ -73,7 +73,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                             age: {id: "a1", label: "0-4"}
                         }
                     },
-                    bubble: ["TEST BUBBLE SELECTIONS"] as any
+                    bubble: {test: "TEST BUBBLE SELECTIONS"} as any
                 }
             }
         }
@@ -194,7 +194,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const vm = (wrapper as any).vm;
 
-        expect(vm.bubblePlotSelections).toStrictEqual(["TEST BUBBLE SELECTIONS"]);
+        expect(vm.bubblePlotSelections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
     });
 
     it("computes bubble plot filters", () => {
