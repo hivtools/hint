@@ -1,8 +1,6 @@
-import {BubbleIndicatorValuesDict, Dict, Filter, IndicatorValuesDict, NumericRange} from "../../../types";
+import {BubbleIndicatorValuesDict, Dict, Filter, NumericRange} from "../../../types";
 import {getColor} from "../../../store/filteredData/utils";
-import {Feature} from "geojson";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
-import Choropleth from "../Choropleth.vue";
 
 export const toIndicatorNameLookup = (array: ChoroplethIndicatorMetadata[]) =>
     array.reduce((obj, current) => {

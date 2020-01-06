@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-3">
             <h4 v-translate="'filters'"></h4>
-            <div class="form-group">
+            <div id="area-filter" class="form-group">
                 <filter-select :label="areaFilter.label"
                                :multiple="true"
                                :options="areaFilterOptions"
@@ -309,7 +309,7 @@
 
             if (Object.keys(this.selections.selectedFilterOptions).length < 1) {
                 const defaultSelected = this.nonAreaFilters.reduce((obj: any, current: Filter) => {
-                    obj[current.id] = [current.options[0]];
+                    obj[current.id] = current.options.length > 0 ? [current.options[0]] : [];
                     return obj;
                 }, {} as Dict<FilterOption[]>);
                 this.changeSelections({selectedFilterOptions: defaultSelected});

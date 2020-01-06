@@ -6,6 +6,8 @@ import {getFeatureIndicators, getIndicatorRanges, getRadius} from "../../../../a
 import {getColor} from "../../../../app/store/filteredData/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 import {initialBubblePlotSelections} from "../../../../app/store/plottingSelections/plottingSelections";
+import FilterSelect from "../../../../app/components/plots/FilterSelect.vue";
+import {NestedFilterOption} from "../../../../app/generated";
 
 const localVue = createLocalVue();
 
@@ -51,13 +53,13 @@ const propsData = {
     ],
     chartdata: [
         {
-            area_id: "MWI_3_1", plhiv: 1, prevalence: 0.01, age: "0:15"
+            area_id: "MWI_3_1", plhiv: 1, prevalence: 0.01, age: "0:15", sex: "female"
         },
         {
-            area_id: "MWI_4_1", plhiv: 10, prevalence: 0.1, age: "0:15"
+            area_id: "MWI_4_1", plhiv: 10, prevalence: 0.1, age: "0:15", sex: "female"
         },
         {
-            area_id: "MWI_4_2", plhiv: 20, prevalence: 0.2, age: "0:15"
+            area_id: "MWI_4_2", plhiv: 20, prevalence: 0.2, age: "0:15", sex: "female"
         },
     ],
     indicators: [
@@ -77,23 +79,26 @@ const propsData = {
                     {id: "MWI_4_2", label: "4.2"}
                 ]}
              ]},
-        { id: "age", label: "Age", column_id: "age", options: [{id: "0:15", label:"0-15"}, {id: "15:30", label: "15-30"}]}
+        { id: "age", label: "Age", column_id: "age", options: [{id: "0:15", label:"0-15"}, {id: "15:30", label: "15-30"}]},
+        { id: "sex", label: "Sex", column_id: "sex", options: [{id: "female", label:"Female"}, {id: "male", label: "Male"}]}
     ],
     selections: {
         detail: 4,
         selectedFilterOptions: {
                             age: [{id: "0:15", label:"0-15"}],
+                            sex: [{id: "female", label:"Female"}],
                             area: []
         }
     }
 };
 
-const getWrapper  = () => {
-    return shallowMount(BubblePlot, {propsData, localVue});
+const getWrapper  = (customPropsData: any = {}) => {
+
+    return shallowMount(BubblePlot, {propsData: {...propsData, ...customPropsData}, localVue});
 };
 
 describe("BubblePlot component", () => {
-    it("renders as expected", () => {
+    it("renders plot as expected", () => {
         const wrapper = getWrapper();
         const geoJsons = wrapper.findAll(LGeoJson);
         expect(geoJsons.length).toBe(2);
@@ -130,6 +135,40 @@ describe("BubblePlot component", () => {
 
         expect(wrapper.find(MapControl).props().initialDetail).toEqual(4);
         expect(wrapper.find(MapControl).props().showIndicators).toEqual(false);
+    });
+
+    it("renders area filter", () => {
+        const wrapper = getWrapper();
+        const areaFilterDiv = wrapper.find("#area-filter");
+        expect(areaFilterDiv.classes()[0]).toBe("form-group");
+
+        const areaFilter = areaFilterDiv.find(FilterSelect);
+        expect(areaFilter.props().label).toBe("Area");
+        expect(areaFilter.props().multiple).toBe(true);
+        expect(areaFilter.props().options).toStrictEqual([{id: "MWI_3_1", label: "3.1"},
+            {id: "MWI_4_1", label: "4.1"},
+            {id: "MWI_4_2", label: "4.2"}]);
+        expect(areaFilter.props().value).toEqual([]);
+    });
+
+    it("renders non-area filters", () => {
+        const wrapper = getWrapper();
+
+        const ageFilterDiv = wrapper.find("#filter-age");
+        expect(ageFilterDiv.classes()[0]).toBe("form-group");
+        const ageFilter = ageFilterDiv.find(FilterSelect);
+        expect(ageFilter.props().value).toStrictEqual(["0:15"]);
+        expect(ageFilter.props().multiple).toBe(false);
+        expect(ageFilter.props().label).toBe("Age");
+        expect(ageFilter.props().options).toStrictEqual( [{id: "0:15", label:"0-15"}, {id: "15:30", label: "15-30"}]);
+
+        const sexFilterDiv = wrapper.find("#filter-sex");
+        expect(sexFilterDiv.classes()[0]).toBe("form-group");
+        const sexFilter = sexFilterDiv.find(FilterSelect);
+        expect(sexFilter.props().value).toStrictEqual(["female"]);
+        expect(sexFilter.props().multiple).toBe(false);
+        expect(sexFilter.props().label).toBe("Sex");
+        expect(sexFilter.props().options).toStrictEqual( [{id: "female", label:"Female"}, {id: "male", label: "Male"}]);
     });
 
     it("computes indicatorRanges", () => {
@@ -207,6 +246,89 @@ describe("BubblePlot component", () => {
         expect(vm.allSelectedAreaIds).toStrictEqual(["MWI_4_1", "MWI_4_2"]);
     });
 
+    it("computes initialised", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.initialised).toBe(true);
+
+        const uninitialisableWrapper = getWrapper({
+            selections: {
+                detail: -1,
+                selectedFilterOptions: {
+                    age: [],
+                    sex: [],
+                    area: []
+                }
+            },
+            filters: [
+                propsData.filters[0], //area
+                { id: "age", label: "Age", column_id: "age", options: []},
+                { id: "sex", label: "Sex", column_id: "sex", options: []}
+            ],
+        });
+
+        expect((uninitialisableWrapper.vm as any).initialised).toBe(false);
+    });
+
+    it("computes areaFilter", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).areaFilter).toBe(propsData.filters[0]);
+    });
+
+    it("computes nonAreaFilters", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).nonAreaFilters).toStrictEqual([propsData.filters[1], propsData.filters[2]]);
+    });
+
+    it("computes areaFilterOptions", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).areaFilterOptions).toBe((propsData.filters[0].options[0] as NestedFilterOption).children);
+    });
+
+    it("computes selectedAreaFilterOptions", () => {
+        const wrapper = getWrapper({
+            selections: {
+                detail: 4,
+                selectedFilterOptions: {
+                    ...propsData.selections.selectedFilterOptions,
+                    area: [{id: "MWI_4_2", label: "4.2"}]
+                }
+            }
+        });
+
+        expect((wrapper.vm as any).selectedAreaFilterOptions).toStrictEqual([{id: "MWI_4_2", label: "4.2"}]);
+    });
+
+    it("computes selectedAreaFeatures where a feature is selected", () => {
+        const wrapper = getWrapper({
+            selections: {
+                detail: 4,
+                selectedFilterOptions: {
+                    ...propsData.selections.selectedFilterOptions,
+                    area: [{id: "MWI_4_2", label: "4.2"}]
+                }
+            }
+        });
+
+        expect((wrapper.vm as any).selectedAreaFeatures).toStrictEqual([propsData.features[3]]);
+    });
+
+    it("computes selectedAreaFeatures where no feature is selected", () => {
+       //defaults to country level
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).selectedAreaFeatures).toStrictEqual([propsData.features[0]]);
+    });
+
+    it("computes countryFilterOption", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).countryFilterOption).toBe(propsData.filters[0].options[0]);
+    });
+
+    it("computes countryFeature", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).countryFeature).toBe(propsData.features[0]);
+    });
+
     it("updateBounds updates bounds of map from features geojson", () => {
         const wrapper = getWrapper();
         const mockMapFitBounds = jest.fn();
@@ -219,6 +341,49 @@ describe("BubblePlot component", () => {
         vm.updateBounds();
         expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
+    });
+
+    it("showBubble returns true for included features only", () => {
+        const wrapper = getWrapper({
+            selections: {
+                detail: 4,
+                selectedFilterOptions: {
+                    ...propsData.selections.selectedFilterOptions,
+                    area: [{id: "MWI_4_2", label: "4.2"}]
+                }
+            }
+        });
+
+        const vm = wrapper.vm as any;
+        expect(vm.showBubble(propsData.features[3])).toBe(true);
+        expect(vm.showBubble(propsData.features[2])).toBe(false);
+    });
+
+    it("can getSelectedFilterValues", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).getSelectedFilterValues("age")).toStrictEqual(["0:15"]);
+    });
+
+    /*it("initialises from empty selections and emits update", () => {
+        const wrapper = getWrapper({selections: {
+                detail: -1,
+                selectedFilterOptions: { age: [], sex: [],area: []}
+            }});
+
+        expect(wrapper.emitted("update")[0][0]).toStrictEqual({edatil: });
+    });*/
+
+    it("onFilterSelect updates filter value", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        vm.onFilterSelect(propsData.filters[1], [{id: "15:30", label: "15-30"}]);
+        const updates = wrapper.emitted("update");
+        expect(updates[updates.length - 1][0]).toStrictEqual({...propsData.selections,
+                selectedFilterOptions: {
+                    ...propsData.selections.selectedFilterOptions,
+                    age: [{id: "15:30", label:"15-30"}],
+                }
+         });
     });
 
     it("updates detail", () => {
