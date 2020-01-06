@@ -274,13 +274,13 @@
                 return (this.selections.selectedFilterOptions[filterId] || []).map(o => o.id);
             },
             onDetailChange: function (newVal: number) {
-                this.changeSelections({...this.selections, detail: newVal});
+                this.changeSelections({detail: newVal});
             },
             onFilterSelect(filter: Filter, selectedOptions: FilterOption[]) {
                 const newSelectedFilterOptions = {...this.selections.selectedFilterOptions};
                 newSelectedFilterOptions[filter.id] = selectedOptions;
 
-                this.changeSelections({...this.selections, selectedFilterOptions: newSelectedFilterOptions});
+                this.changeSelections({selectedFilterOptions: newSelectedFilterOptions});
             },
             changeSelections(newSelections: Partial<BubblePlotSelections>) {
                 this.$emit("update", newSelections)

@@ -364,21 +364,27 @@ describe("BubblePlot component", () => {
         expect((wrapper.vm as any).getSelectedFilterValues("age")).toStrictEqual(["0:15"]);
     });
 
-    /*it("initialises from empty selections and emits update", () => {
+    it("initialises from empty selections and emits updates", () => {
         const wrapper = getWrapper({selections: {
                 detail: -1,
-                selectedFilterOptions: { age: [], sex: [],area: []}
+                selectedFilterOptions: {}
             }});
 
-        expect(wrapper.emitted("update")[0][0]).toStrictEqual({edatil: });
-    });*/
+        expect(wrapper.emitted("update")[0][0]).toStrictEqual({detail: 4});
+        expect(wrapper.emitted("update")[1][0]).toStrictEqual({
+            selectedFilterOptions: {
+                age: [{id: "0:15", label: "0-15"}],
+                sex: [{id: "female", label: "Female"}]
+            }
+        });
+    });
 
     it("onFilterSelect updates filter value", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         vm.onFilterSelect(propsData.filters[1], [{id: "15:30", label: "15-30"}]);
         const updates = wrapper.emitted("update");
-        expect(updates[updates.length - 1][0]).toStrictEqual({...propsData.selections,
+        expect(updates[updates.length - 1][0]).toStrictEqual({
                 selectedFilterOptions: {
                     ...propsData.selections.selectedFilterOptions,
                     age: [{id: "15:30", label:"15-30"}],

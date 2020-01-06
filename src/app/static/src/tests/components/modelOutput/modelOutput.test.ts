@@ -56,7 +56,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                 getters: {
                     barchartIndicators: jest.fn(),
                     barchartFilters: jest.fn(),
-                    bubblePlotIndicators: jest.fn().mockReturnValue(["TEST BUBBLE INDICATORS"])
+                    bubblePlotIndicators: jest.fn().mockReturnValue(["TEST BUBBLE INDICATORS"]),
+                    bubblePlotFilters: jest.fn().mockReturnValue(["TEST BUBBLE FILTERS"])
                 },
                 mutations: modelOutputMutations
             },
@@ -71,7 +72,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                             region: {id: "r1", label: "region 1"},
                             age: {id: "a1", label: "0-4"}
                         }
-                    }
+                    },
+                    bubble: ["TEST BUBBLE SELECTIONS"] as any
                 }
             }
         }
@@ -185,6 +187,22 @@ describe("ModelOutput component", () => {
         const vm = (wrapper as any).vm;
 
         expect(vm.bubblePlotIndicators).toStrictEqual(["TEST BUBBLE INDICATORS"]);
+    });
+
+    it("computes bubble plot selections", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const vm = (wrapper as any).vm;
+
+        expect(vm.bubblePlotSelections).toStrictEqual(["TEST BUBBLE SELECTIONS"]);
+    });
+
+    it("computes bubble plot filters", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const vm = (wrapper as any).vm;
+
+        expect(vm.bubblePlotFilters).toStrictEqual(["TEST BUBBLE FILTERS"]);
     });
 
     it("computes features", () => {
