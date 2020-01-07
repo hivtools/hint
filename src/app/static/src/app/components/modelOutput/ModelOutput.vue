@@ -28,7 +28,10 @@
 
             <div v-if="selectedTab==='bubble'" id="bubble-plot-container" class="col-md-12">
                 <bubble-plot :chartdata="chartdata" :features="features" :featureLevels="featureLevels"
-                             :indicators="bubblePlotIndicators"></bubble-plot>
+                             :filters="bubblePlotFilters" :indicators="bubblePlotIndicators"
+                             :selections="bubblePlotSelections"
+                             area-filter-id="area"
+                             v-on:update="updateBubblePlotSelections({payload: $event})"></bubble-plot>
             </div>
         </div>
     </div>
@@ -51,7 +54,11 @@
     } from "../../utils";
     import {BarchartIndicator, Filter, LevelLabel} from "../../types";
     import {ModelRunState} from "../../store/modelRun/modelRun";
-    import {BarchartSelections} from "../../store/plottingSelections/plottingSelections";
+    import {
+        BarchartSelections,
+        BubblePlotSelections,
+        PlottingSelectionsState
+    } from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
     import {ModelOutputMutation} from "../../store/modelOutput/mutations";
     import {Feature} from "geojson";
@@ -69,13 +76,16 @@
         selectDataType: (dataType: DataType) => void,
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: BarchartSelections) => void
+        updateBubblePlotSelections: (data: BubblePlotSelections) => void
     }
 
     interface Computed {
         barchartFilters: Filter[],
+        bubblePlotFilters: Filter[],
         barchartIndicators: BarchartIndicator[],
         chartdata: any,
         barchartSelections: BarchartSelections,
+        bubblePlotSelections: BubblePlotSelections,
         selectedTab: string,
         features: Feature[],
         featureLevels: LevelLabel[]
@@ -102,14 +112,17 @@
             }
         },
         computed: {
-            ...mapGettersByNames("modelOutput", ["barchartFilters", "barchartIndicators", "bubblePlotIndicators"]),
+            ...mapGettersByNames("modelOutput", [
+                "barchartFilters", "barchartIndicators",
+                "bubblePlotFilters", "bubblePlotIndicators"]),
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
             chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
                 return state.result ? state.result.data : [];
             }),
-            barchartSelections() {
-               return this.$store.state.plottingSelections.barchart
-            },
+            ...mapStateProps<PlottingSelectionsState, keyof Computed>("plottingSelections", {
+                barchartSelections: state => state.barchart,
+                bubblePlotSelections: state => state.bubble
+            }),
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                     features: state => state.shape!!.data.features as Feature[],
                     featureLevels: state => state.shape!!.filters.level_labels || []
@@ -118,7 +131,7 @@
         },
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["selectDataType"]),
-            ...mapMutationsByNames<keyof Methods>("plottingSelections", ["updateBarchartSelections"]),
+            ...mapMutationsByNames<keyof Methods>("plottingSelections", ["updateBarchartSelections", "updateBubblePlotSelections"]),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected)
         },
         components: {

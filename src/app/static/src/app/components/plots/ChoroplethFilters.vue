@@ -7,7 +7,7 @@
                            :options="regionFilters.available"
                            :value="regionFilters.selected"
                            :disabled="regionFilters.disabled"
-                           @select="selectRegion"></filter-select>
+                           @input="selectRegion"></filter-select>
         </div>
         <div class="py-2" v-if="!isOutput">
             <filter-select label="Year"
@@ -15,7 +15,7 @@
                            :options="yearFilters.available"
                            :value="yearFilters.selected"
                            :disabled="yearFilters.disabled"
-                           @select="selectYear"></filter-select>
+                           @input="selectYear"></filter-select>
         </div>
         <div class="py-2" id="quarter-filter" v-if="isOutput">
             <filter-select label="Period"
@@ -23,7 +23,7 @@
                            :options="quarterFilters.available"
                            :value="quarterFilters.selected"
                            :disabled="quarterFilters.disabled"
-                           @select="selectQuarter"></filter-select>
+                           @input="selectQuarter"></filter-select>
         </div>
         <div class="py-2">
             <filter-select label="Sex"
@@ -31,7 +31,7 @@
                            :options="sexFilters.available"
                            :value="sexFilters.selected"
                            :disabled="sexFilters.disabled"
-                           @select="selectSex"></filter-select>
+                           @input="selectSex"></filter-select>
         </div>
         <div class="py-2">
             <filter-select label="Age"
@@ -39,7 +39,7 @@
                            :options="ageFilters.available"
                            :value="ageFilters.selected"
                            :disabled="ageFilters.disabled"
-                           @select="selectAge"></filter-select>
+                           @input="selectAge"></filter-select>
         </div>
 
         <div class="py-2" v-if="!isOutput">
@@ -48,7 +48,7 @@
                            :options="surveyFilters.available"
                            :value="surveyFilters.selected"
                            :disabled="surveyFilters.disabled"
-                           @select="selectSurvey"></filter-select>
+                           @input="selectSurvey"></filter-select>
         </div>
     </div>
 </template>
