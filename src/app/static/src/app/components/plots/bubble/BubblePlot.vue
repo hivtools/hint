@@ -106,9 +106,11 @@
             featureIndicators() {
                 return getFeatureIndicators(
                     this.chartdata,
-                    this.currentFeatures,
+                    this.currentFeatures.map((f: Feature) => f.properties!!.area_id),
                     this.indicators,
                     this.indicatorRanges,
+                    [], //TODO: pass filters
+                    {}, //TODO: pass selections
                     10, //min radius in pixels
                     60 //max radius in pixels
                 );
