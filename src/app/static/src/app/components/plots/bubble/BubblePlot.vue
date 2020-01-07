@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-3">
             <div id="color-indicator" class="form-group">
-                <label class="font-weight-bold" v-translate="'color-indicator'"></label>
+                <label class="font-weight-bold" v-translate="'colorIndicator'"></label>
                 <treeselect :multiple=false
                             :clearable="false"
                             :options="indicators"
@@ -12,7 +12,7 @@
                 </treeselect>
             </div>
             <div id="size-indicator" class="form-group">
-                <label class="font-weight-bold" v-translate="'size-indicator'"></label>
+                <label class="font-weight-bold" v-translate="'sizeIndicator'"></label>
                 <treeselect :multiple=false
                             :clearable="false"
                             :options="indicators"

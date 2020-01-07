@@ -31,6 +31,8 @@ describe("Plotting selections mutations", () => {
         };
         mutations.updateBubblePlotSelections(testState, {payload: newBubbleSelections});
         expect(testState.bubble).toStrictEqual({
+            colorIndicatorId: "",
+            sizeIndicatorId: "",
             detail: -1,
             selectedFilterOptions: { testFilter: [{id: "1", label: "one"}]}
         });
