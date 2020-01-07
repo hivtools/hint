@@ -89,9 +89,6 @@
 
     interface Data {
         style: any,
-        //TODO: persist these as part of selections
-        colorIndicator: string,
-        sizeIndicator: string
     }
 
     interface Methods {
@@ -169,16 +166,14 @@
             return {
                 style: {
                     className: "geojson-grey"
-                },
-                //TODO: initialise these from metadata
-                colorIndicator: "prevalence",
-                sizeIndicator: "plhiv"
+                }
             }
         },
         computed: {
             initialised() {
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
-                return unsetFilters.length == 0 && this.selections.detail > -1 && !!this.selections.indicatorId;
+                return unsetFilters.length == 0 && this.selections.detail > -1 &&
+                    !!this.selections.colorIndicatorId && !!this.selections.sizeIndicatorId;
             },
             indicatorRanges() {
                 return getIndicatorRanges(this.chartdata, this.indicators)
@@ -191,7 +186,7 @@
                     this.indicatorRanges,
                     this.nonAreaFilters,
                     this.selections.selectedFilterOptions,
-                    this.selections.indicatorId,
+                    [this.selections.colorIndicatorId, this.selections.sizeIndicatorId],
                     10, //min radius in pixels
                     100 //max radius in pixels
                 );
@@ -276,21 +271,23 @@
                 return !!this.featureIndicators[feature.properties!!.area_id];
             },
             getRadius: function(feature: Feature) {
-                return this.featureIndicators[feature.properties!!.area_id][this.sizeIndicator].radius;
+                return this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId].radius;
             },
             getColor: function(feature: Feature) {
-                return this.featureIndicators[feature.properties!!.area_id][this.colorIndicator].color;
+                return this.featureIndicators[feature.properties!!.area_id][this.selections.colorIndicatorId].color;
             },
             getTooltip: function(feature: Feature) {
                 const area_id = feature.properties && feature.properties["area_id"];
                 const area_name = feature.properties && feature.properties["area_name"];
 
                 const values = this.featureIndicators[area_id];
-                const colorValue = values && values[this.colorIndicator] && values[this.colorIndicator]!!.value;
-                const sizeValue = values && values[this.sizeIndicator] && values[this.sizeIndicator]!!.value;
+                const colorIndicator = this.selections.colorIndicatorId;
+                const sizeIndicator = this.selections.sizeIndicatorId;
+                const colorValue = values && values[colorIndicator] && values[colorIndicator]!!.value;
+                const sizeValue = values && values[sizeIndicator] && values[sizeIndicator]!!.value;
 
-                const colorIndicatorName = this.indicatorNameLookup[this.colorIndicator];
-                const sizeIndicatorName = this.indicatorNameLookup[this.sizeIndicator];
+                const colorIndicatorName = this.indicatorNameLookup[colorIndicator];
+                const sizeIndicatorName = this.indicatorNameLookup[sizeIndicator];
                 return `<div>
                                 <strong>${area_name}</strong>
                                 <br/>${colorIndicatorName}: ${colorValue}
@@ -344,10 +341,12 @@
             }
 
             if (!this.selections.colorIndicatorId) {
-                this.changeSelections({colorIndicatorId: this.indicators[0].indicator});
+                const colorIndicator = this.indicatorNameLookup.prevalence ? "prevalence" : this.indicators[0].indicator;
+                this.changeSelections({colorIndicatorId: colorIndicator});
             }
             if (!this.selections.sizeIndicatorId) {
-                this.changeSelections({sizeIndicatorId: this.indicators[0].indicator});
+                const sizeIndicator = this.indicatorNameLookup.plhiv ? "plhiv" : this.indicators[0].indicator;
+                this.changeSelections({sizeIndicatorId: sizeIndicator});
             }
 
             if (Object.keys(this.selections.selectedFilterOptions).length < 1) {

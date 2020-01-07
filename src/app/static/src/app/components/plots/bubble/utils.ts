@@ -82,6 +82,7 @@ export const getFeatureIndicators = function (data: any[],
                                               indicatorRanges: Dict<NumericRange>,
                                               filters: Filter[],
                                               selectedFilterValues: Dict<FilterOption[]>,
+                                              selectedIndicatorIds: string[],
                                               minRadius: number,
                                               maxRadius: number): Dict<BubbleIndicatorValuesDict> {
 
@@ -94,11 +95,13 @@ export const getFeatureIndicators = function (data: any[],
 
             const indicator = indicatorMeta.indicator;
 
-            const regionValues = result[areaId];
-            regionValues[indicator] = {
-                value: value,
-                color: getColor(value, indicatorMeta), //TODO: put this function. shared with Choropleth, in a more generic place
-                radius: getRadius(value, indicatorRanges[indicator].min, indicatorRanges[indicator].max, minRadius, maxRadius)
+            if (selectedIndicatorIds.includes(indicator)) {
+                const regionValues = result[areaId];
+                regionValues[indicator] = {
+                    value: value,
+                    color: getColor(value, indicatorMeta), //TODO: put this function. shared with Choropleth, in a more generic place
+                    radius: getRadius(value, indicatorRanges[indicator].min, indicatorRanges[indicator].max, minRadius, maxRadius)
+                }
             }
         });
 
