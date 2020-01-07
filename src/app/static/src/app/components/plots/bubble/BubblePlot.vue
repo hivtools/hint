@@ -1,6 +1,26 @@
 <template>
     <div class="row">
         <div class="col-md-3">
+            <div id="color-indicator" class="form-group">
+                <label class="font-weight-bold" v-translate="'color-indicator'"></label>
+                <treeselect :multiple=false
+                            :clearable="false"
+                            :options="indicators"
+                            v-model="selections.colorIndicatorId"
+                            :normalizer="normalizeIndicators"
+                            @input="onColorIndicatorSelect($event)">
+                </treeselect>
+            </div>
+            <div id="size-indicator" class="form-group">
+                <label class="font-weight-bold" v-translate="'size-indicator'"></label>
+                <treeselect :multiple=false
+                            :clearable="false"
+                            :options="indicators"
+                            v-model="selections.sizeIndicatorId"
+                            :normalizer="normalizeIndicators"
+                            @input="onSizeIndicatorSelect($event)">
+                </treeselect>
+            </div>
             <h4 v-translate="'filters'"></h4>
             <div id="area-filter" class="form-group">
                 <filter-select :label="areaFilter.label"
@@ -26,11 +46,11 @@
                                 :optionsStyle="style">
                     </l-geo-json>
                     <l-circle-marker v-if="showBubble(feature)" :lat-lng="[feature.properties.center_y, feature.properties.center_x]"
-                              :radius="getRadius(feature)"
-                              :fill-opacity="0.75"
-                              :opacity="0.75"
-                              :color="getColor(feature)"
-                              :fill-color="getColor(feature)">
+                                     :radius="getRadius(feature)"
+                                     :fill-opacity="0.75"
+                                     :opacity="0.75"
+                                     :color="getColor(feature)"
+                                     :fill-color="getColor(feature)">
                         <l-tooltip :content="getTooltip(feature)"/>
                     </l-circle-marker>
                 </template>
@@ -44,6 +64,7 @@
 
 <script lang="ts">
     import Vue from "vue";
+    import Treeselect from '@riophae/vue-treeselect';
     import {Feature} from "geojson";
     import {LGeoJson, LMap, LCircleMarker, LTooltip} from "vue2-leaflet";
     import MapControl from "../MapControl.vue";
@@ -82,8 +103,11 @@
         getSelectedFilterValues: (filterId: string) => string[],
         onDetailChange: (newVal: number) => void,
         onFilterSelect: (filter: Filter, selectedOptions: FilterOption[]) => void,
+        onColorIndicatorSelect: (newValue: string) => void,
+        onSizeIndicatorSelect: (newValue: string) => void,
         changeSelections: (newSelections: Partial<BubblePlotSelections>) => void,
-        getFeatureFromAreaId: (id: string) => Feature
+        getFeatureFromAreaId: (id: string) => Feature,
+        normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any
     }
 
     interface Computed {
@@ -137,7 +161,8 @@
             LCircleMarker,
             LTooltip,
             MapControl,
-            FilterSelect
+            FilterSelect,
+            Treeselect
         },
         props: props,
         data(): Data {
@@ -153,10 +178,10 @@
         computed: {
             initialised() {
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
-                return unsetFilters.length == 0 && this.selections.detail > -1;
+                return unsetFilters.length == 0 && this.selections.detail > -1 && !!this.selections.indicatorId;
             },
             indicatorRanges() {
-              return getIndicatorRanges(this.chartdata, this.indicators)
+                return getIndicatorRanges(this.chartdata, this.indicators)
             },
             featureIndicators() {
                 return getFeatureIndicators(
@@ -166,6 +191,7 @@
                     this.indicatorRanges,
                     this.nonAreaFilters,
                     this.selections.selectedFilterOptions,
+                    this.selections.indicatorId,
                     10, //min radius in pixels
                     100 //max radius in pixels
                 );
@@ -214,7 +240,7 @@
                 if (selectedOptions && selectedOptions.length > 0) {
                     return selectedOptions
                 }
-               return this.countryFilterOption ? [this.countryFilterOption] : [];
+                return this.countryFilterOption ? [this.countryFilterOption] : [];
             },
             flattenedAreas() {
                 return flattenOptions(this.areaFilter.options);
@@ -263,9 +289,9 @@
                 const colorValue = values && values[this.colorIndicator] && values[this.colorIndicator]!!.value;
                 const sizeValue = values && values[this.sizeIndicator] && values[this.sizeIndicator]!!.value;
 
-               const colorIndicatorName = this.indicatorNameLookup[this.colorIndicator];
-               const sizeIndicatorName = this.indicatorNameLookup[this.sizeIndicator];
-               return `<div>
+                const colorIndicatorName = this.indicatorNameLookup[this.colorIndicator];
+                const sizeIndicatorName = this.indicatorNameLookup[this.sizeIndicator];
+                return `<div>
                                 <strong>${area_name}</strong>
                                 <br/>${colorIndicatorName}: ${colorValue}
                                 <br/>${sizeIndicatorName}: ${sizeValue}
@@ -283,22 +309,31 @@
 
                 this.changeSelections({selectedFilterOptions: newSelectedFilterOptions});
             },
+            onColorIndicatorSelect(newValue: string){
+                this.changeSelections({colorIndicatorId: newValue});
+            },
+            onSizeIndicatorSelect(newValue: string){
+                this.changeSelections({sizeIndicatorId: newValue});
+            },
             changeSelections(newSelections: Partial<BubblePlotSelections>) {
                 this.$emit("update", newSelections)
             },
             getFeatureFromAreaId(areaId: string): Feature {
                 return this.features.find((f: Feature) => f.properties!!.area_id == areaId)!!;
+            },
+            normalizeIndicators(node: ChoroplethIndicatorMetadata) {
+                return {id: node.indicator, label: node.name};
             }
         },
         watch:
-        {
-            initialised: function(newVal: boolean) {
-                this.updateBounds();
+            {
+                initialised: function(newVal: boolean) {
+                    this.updateBounds();
+                },
+                selectedAreaFeatures: function (newVal) {
+                    this.updateBounds();
+                }
             },
-            selectedAreaFeatures: function (newVal) {
-                this.updateBounds();
-            }
-        },
         mounted() {
             this.updateBounds();
         },
@@ -306,6 +341,14 @@
             //If selections have not been initialised, refresh them
             if (this.selections.detail < 0) {
                 this.onDetailChange(this.maxLevel);
+            }
+
+            if (!this.selections.colorIndicatorId) {
+                this.changeSelections({colorIndicatorId: this.indicators[0].indicator});
+            }
+
+            if (!this.selections.sizeIndicatorId) {
+                this.changeSelections({sizeIndicatorId: this.indicators[0].indicator});
             }
 
             if (Object.keys(this.selections.selectedFilterOptions).length < 1) {
