@@ -100,7 +100,7 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
                 "OTHER_ERROR",
                 "Une erreur inattendue s'est produite. Si vous voyez ce message pendant que vous utilisez AppTitle dans un atelier, " +
                         "veuillez contacter le support technique de votre atelier et leur indiquer ce code : 1234. " +
-                        " Sinon, veuillez contacter le support à support@email.com et citer ce code : 1234")
+                        "Sinon, veuillez contacter le support à support@email.com et citer ce code : 1234")
     }
 
     @Test
