@@ -102,7 +102,7 @@
         allSelectedAreaIds: string[],
         selectedAreaFeatures: Feature[],
         countryFilterOption: FilterOption,
-        countryFeature: Feature
+        countryFeature: Feature | null
     }
 
     const props = {
@@ -207,11 +207,14 @@
                 return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
             },
             areaFilterOptions() {
-                return (this.countryFilterOption as any).children;
+                return this.countryFilterOption ? (this.countryFilterOption as any).children : [];
             },
             selectedAreaFilterOptions() {
                 const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
-                return (selectedOptions && selectedOptions.length > 0) ? selectedOptions : [this.countryFilterOption];
+                if (selectedOptions && selectedOptions.length > 0) {
+                    return selectedOptions
+                }
+               return this.countryFilterOption ? [this.countryFilterOption] : [];
             },
             flattenedAreas() {
                 return flattenOptions(this.areaFilter.options);
@@ -232,8 +235,8 @@
             countryFilterOption(): FilterOption {
                 return this.areaFilter.options[0]
             },
-            countryFeature(): Feature {
-                return this.getFeatureFromAreaId(this.countryFilterOption.id)!!;
+            countryFeature(): Feature | null {
+                return this.countryFilterOption ? this.getFeatureFromAreaId(this.countryFilterOption.id)!! : null;
             },
         },
         methods: {

@@ -39,7 +39,7 @@
     }
 
     interface Data {
-        selected: any
+        selectedOptions: any
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -56,7 +56,7 @@
             const flatOptions = Object.values(flattenOptions(this.options));
             const selected = flatOptions.filter((o: FilterOption) => idArray.includes(o.id));
             return {
-                selected: selected
+                selectedOptions: selected
             }
         },
         computed: {
@@ -75,15 +75,15 @@
             },
             select(node: FilterOption) {
                 if (!this.multiple) {
-                    this.selected = [node]
+                    this.selectedOptions = [node]
                 } else {
-                    this.selected.push(node);
+                    this.selectedOptions.push(node);
                 }
-                this.$emit("select", this.selected);
+                this.$emit("select", this.selectedOptions);
             },
             deselect(node: FilterOption) {
-                this.selected = this.selected.filter((n: any) => n.id != node.id);
-                this.$emit("select", this.selected);
+                this.selectedOptions = this.selectedOptions.filter((n: any) => n.id != node.id);
+                this.$emit("select", this.selectedOptions);
             }
         },
         components: {Treeselect}

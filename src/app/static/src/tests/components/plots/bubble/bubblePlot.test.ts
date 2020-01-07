@@ -320,6 +320,13 @@ describe("BubblePlot component", () => {
         expect((wrapper.vm as any).selectedAreaFeatures).toStrictEqual([propsData.features[0]]);
     });
 
+    it("computes empty selectedAreaFeatures with empty area options", () => {
+        const wrapper = getWrapper({
+            filters: [{ id: "area", label: "Area", column_id: "area_id",options: []}, propsData.filters[1], propsData.filters[2]]
+        });
+        expect((wrapper.vm as any).selectedAreaFeatures).toStrictEqual([]);
+    });
+
     it("computes countryFilterOption", () => {
         const wrapper = getWrapper();
         expect((wrapper.vm as any).countryFilterOption).toBe(propsData.filters[0].options[0]);
