@@ -227,8 +227,6 @@
             selectedAreaFeatures(): Feature[] {
                 if (this.selectedAreaFilterOptions && this.selectedAreaFilterOptions.length > 0) {
                     return this.selectedAreaFilterOptions.map(o => this.getFeatureFromAreaId(o.id)!!);
-                } else if (this.countryFeature) {
-                    return [this.countryFeature];
                 }
                 return [];
             },
