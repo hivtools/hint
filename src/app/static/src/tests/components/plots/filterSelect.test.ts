@@ -6,7 +6,7 @@ describe("FilterSelect component", () => {
     const testOptions = [{id: "1", label: "one"}, {id: "2", label: "two"}];
 
     it ("renders label", () => {
-        const wrapper = shallowMount(FilterSelect, {propsData: {label: "testLabel"}});
+        const wrapper = shallowMount(FilterSelect, {propsData: {label: "testLabel", options: []}});
 
         expect(wrapper.find("label").text()).toBe("testLabel");
     });
@@ -83,8 +83,7 @@ describe("FilterSelect component", () => {
     });
 
     it("emits select even when deselect", ()=> {
-        const wrapper = shallowMount(FilterSelect, {propsData: { options: testOptions, multiple: true,
-                value: [{id: "1", label: "one"}, {id: "2", label: "two"}]}});
+        const wrapper = shallowMount(FilterSelect, {propsData: { options: testOptions, multiple: true, value: ["1", "2"]}});
 
         wrapper.findAll(TreeSelect).at(0).vm.$emit("deselect", {id: "1", label: "one"});
         expect(wrapper.emitted("select")[0][0]).toStrictEqual([{id: "2", label: "two"}]);

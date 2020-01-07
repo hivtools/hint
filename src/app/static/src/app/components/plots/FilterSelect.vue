@@ -17,6 +17,7 @@
     import Vue from "vue";
     import Treeselect from '@riophae/vue-treeselect';
     import {FilterOption, NestedFilterOption} from "../../generated";
+    import {flattenOptions} from "../../utils";
 
     interface Methods {
         input: (value: string[]) => void
@@ -51,8 +52,11 @@
             value: [Array, String]
         },
         data() {
+            const idArray =  Array.isArray(this.value) ? this.value : [this.value];
+            const flatOptions = Object.values(flattenOptions(this.options));
+            const selected = flatOptions.filter((o: FilterOption) => idArray.includes(o.id));
             return {
-                selected: this.value
+                selected: selected
             }
         },
         computed: {

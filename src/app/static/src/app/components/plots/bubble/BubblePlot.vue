@@ -211,7 +211,7 @@
             },
             selectedAreaFilterOptions() {
                 const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
-                return selectedOptions && selectedOptions.length > 0 ? selectedOptions : [this.countryFilterOption];
+                return (selectedOptions && selectedOptions.length > 0) ? selectedOptions : [this.countryFilterOption];
             },
             flattenedAreas() {
                 return flattenOptions(this.areaFilter.options);
