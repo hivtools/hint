@@ -15,6 +15,7 @@
     import {ChoroplethIndicatorMetadata} from "../../../generated";
     import Vue from "vue";
     import {LControl} from "vue2-leaflet";
+    import {getRadius} from "./utils";
 
     interface Circle {
         x: number
@@ -64,11 +65,12 @@
                     return {x: x,  y: y, radius: r, text: text, textX: x, textY: y-r}
                 };
 
-                //TODO: add interpolated values
-                return [
-                    circleFromRadius(this.minRadius, this.metadata.min),
-                    circleFromRadius(this.maxRadius, this.metadata.max)
-                ]
+                const steps = [0, 0.25, 0.5, 0.75, 1];
+                return steps.map((s: number) => {
+                    const value = this.metadata.min + (s * (this.metadata.max - this.metadata.min));
+                    const r = getRadius(value, this.metadata.min, this.metadata.max, this.minRadius, this.maxRadius);
+                    return circleFromRadius(r, value)
+                });
             }
         }
     });
