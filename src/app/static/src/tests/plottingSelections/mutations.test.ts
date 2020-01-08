@@ -23,4 +23,16 @@ describe("Plotting selections mutations", () => {
             }
         });
     });
+
+    it("updates bubble plot selections", () => {
+        const testState = mockPlottingSelections();
+        const newBubbleSelections = {
+            selectedFilterOptions: { testFilter: [{id: "1", label: "one"}]}
+        };
+        mutations.updateBubblePlotSelections(testState, {payload: newBubbleSelections});
+        expect(testState.bubble).toStrictEqual({
+            detail: -1,
+            selectedFilterOptions: { testFilter: [{id: "1", label: "one"}]}
+        });
+    });
 });

@@ -116,9 +116,11 @@ describe("BubblePlot component", () => {
         const vm = wrapper.vm as any;
 
         expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
-            [propsData.features[1] as any, propsData.features[2] as any],
+            ["MWI_4_1", "MWI_4_2"],
             propsData.indicators,
             getIndicatorRanges(propsData.chartdata, propsData.indicators),
+            [],
+            {},
             10,
             60));
     });

@@ -15,7 +15,7 @@ import {
     mockSurveyFilters,
     mockSurveyResponse
 } from "../mocks";
-import {flattenOptions, getUnfilteredData} from "../../app/store/filteredData/utils";
+import {flattenOptions} from "../../app/utils";
 
 export function testGetters(state: FilteredDataState) {
     return {excludeRow: getters.excludeRow(state)};
