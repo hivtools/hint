@@ -415,6 +415,26 @@ describe("BubblePlot component", () => {
         });
     });
 
+    it("onColorIndicatorSelect updates color indicator", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        vm.onColorIndicatorSelect("newIndicator");
+        const updates = wrapper.emitted("update");
+        expect(updates[updates.length - 1][0]).toStrictEqual({
+            colorIndicatorId: "newIndicator"
+        });
+    });
+
+    it("onSizeIndicatorSelect updates color indicator", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        vm.onSizeIndicatorSelect("newIndicator");
+        const updates = wrapper.emitted("update");
+        expect(updates[updates.length - 1][0]).toStrictEqual({
+            sizeIndicatorId: "newIndicator"
+        });
+    });
+
     it("updates detail", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
@@ -445,5 +465,12 @@ describe("BubblePlot component", () => {
 
         wrapper.setProps(propsData); //This should initialise and trigger the watcher
         expect(mockUpdateBounds.mock.calls.length).toBeGreaterThan(0);
+    });
+
+    it("normalizeIndicators converts indicator metadata for treeselect", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        const result = vm.normalizeIndicators(propsData.indicators[0]);
+        expect(result).toStrictEqual({id: "plhiv", label: "PLHIV"});
     });
 });
