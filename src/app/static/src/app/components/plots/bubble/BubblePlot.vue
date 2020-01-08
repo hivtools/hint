@@ -268,7 +268,9 @@
                 }
             },
             showBubble(feature: Feature) {
-                return !!this.featureIndicators[feature.properties!!.area_id];
+                return !!this.featureIndicators[feature.properties!!.area_id] &&
+                    !!this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId] &&
+                    !!this.featureIndicators[feature.properties!!.area_id][this.selections.colorIndicatorId];
             },
             getRadius: function(feature: Feature) {
                 return this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId].radius;

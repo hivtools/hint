@@ -380,6 +380,26 @@ describe("BubblePlot component", () => {
         expect(vm.showBubble(propsData.features[2])).toBe(false);
     });
 
+    it("showBubble returns true only if featureIndicators include both color and size indicator values", () => {
+        let wrapper = getWrapper();
+        let vm = wrapper.vm as any;
+        expect(vm.showBubble(propsData.features[2])).toBe(true);
+        expect(vm.showBubble(propsData.features[3])).toBe(true);
+
+        wrapper = getWrapper({chartdata: [
+            {
+                area_id: "MWI_4_1", prevalence: 0.1, age: "0:15", sex: "female"
+            },
+            {
+                area_id: "MWI_4_2", plhiv: 20, age: "0:15", sex: "female"
+            },
+        ]});
+        vm = wrapper.vm as any;
+
+        expect(vm.showBubble(propsData.features[2])).toBe(false);
+        expect(vm.showBubble(propsData.features[3])).toBe(false);
+    });
+
     it("can getSelectedFilterValues", () => {
         const wrapper = getWrapper();
         expect((wrapper.vm as any).getSelectedFilterValues("age")).toStrictEqual(["0:15"]);
