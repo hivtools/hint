@@ -120,7 +120,6 @@
         areaFilterOptions: FilterOption[],
         selectedAreaFilterOptions: FilterOption[],
         flattenedAreas: Dict<NestedFilterOption>,
-        allSelectedAreaIds: string[],
         selectedAreaFeatures: Feature[],
         countryFilterOption: FilterOption,
         countryFeature: Feature | null
@@ -179,9 +178,10 @@
                 return getIndicatorRanges(this.chartdata, this.indicators)
             },
             featureIndicators() {
+                const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
                 return getFeatureIndicators(
                     this.chartdata,
-                    this.allSelectedAreaIds,
+                    Array.from(selectedAreaIdSet),
                     this.indicators,
                     this.indicatorRanges,
                     this.nonAreaFilters,
@@ -239,11 +239,6 @@
             },
             flattenedAreas() {
                 return flattenOptions(this.areaFilter.options);
-            },
-            allSelectedAreaIds() {
-                //get intersection of selected areas and current Features(ie current level)
-                const selectedAreaIds = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
-                return this.currentFeatures.map((f: Feature) => f.properties!!.area_id).filter((s: string) => selectedAreaIds.has(s))
             },
             selectedAreaFeatures(): Feature[] {
                 if (this.selectedAreaFilterOptions && this.selectedAreaFilterOptions.length > 0) {
