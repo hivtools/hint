@@ -11,6 +11,7 @@ import Vuex from "vuex";
 import Treeselect from '@riophae/vue-treeselect';
 import {emptyState} from "../../../../app/root";
 import {Vue} from "vue/types/vue";
+import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -188,6 +189,12 @@ describe("BubblePlot component", () => {
         expectIndicatorSelect(wrapper, "size-indicator", "plhiv");
     });
 
+    it("renders color legend", () => {
+        const wrapper = getWrapper();
+        const legend = wrapper.find(MapLegend);
+        expect(legend.props().metadata).toBe(propsData.indicators[1]);
+    });
+
     it("computes indicatorRanges", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
@@ -348,6 +355,11 @@ describe("BubblePlot component", () => {
     it("computes countryFeature", () => {
         const wrapper = getWrapper();
         expect((wrapper.vm as any).countryFeature).toBe(propsData.features[0]);
+    });
+
+    it("computes colorIndicator", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).colorIndicator).toBe(propsData.indicators[1]);
     });
 
     it("updateBounds updates bounds of map from features geojson", () => {
