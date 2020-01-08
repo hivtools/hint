@@ -2,7 +2,7 @@
     <div class="row">
         <div :class="hasSelectedDataType ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
             <form>
-                <file-upload label="Survey"
+                <file-upload label="survey"
                              :valid="survey.valid"
                              :error="survey.error"
                              :upload="uploadSurvey"

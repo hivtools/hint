@@ -6,7 +6,7 @@
                   v-tooltip="formControl.helpText">
                 <help-circle-icon></help-circle-icon>
             </span>
-            <span v-if="formControl.required" class="small">(required)</span>
+            <span v-if="formControl.required" class="small">(<span v-translate="'required'"></span>)</span>
         </label>
         <component :is="dynamicComponent"
                    v-model="formControlLocal"></component>

@@ -3,7 +3,7 @@
             v-model="value"
             :name="formControl.name"
             :required="formControl.required">
-        <option value>Select...</option>
+        <option value v-translate="'select'"></option>
         <option v-for="opt in formControl.options"
                 :key="opt.id"
                 :value="opt.id">

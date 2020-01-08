@@ -3,7 +3,8 @@
         <tree-select :multiple="true"
                      :clearable="false"
                      v-model="value"
-                     :options="formControl.options"></tree-select>
+                     :options="formControl.options"
+                     :placeholder="placeholder"></tree-select>
         <input type="hidden" :value="formControl.value" :name="formControl.name"/>
     </div>
 </template>
@@ -12,6 +13,10 @@
     import Vue from "vue";
     import {MultiSelectControl} from "./types";
     import TreeSelect from '@riophae/vue-treeselect';
+    import {mapStateProp} from "../../utils";
+    import {RootState} from "../../root";
+    import {Language} from "../../store/translations/locales";
+    import i18next from "i18next";
 
     interface Props {
         formControl: MultiSelectControl
@@ -19,6 +24,8 @@
 
     interface Computed {
         value: string[]
+        currentLanguage: Language
+        placeholder: string
     }
 
     export default Vue.extend<{}, {}, Computed, Props>({
@@ -33,6 +40,11 @@
             }
         },
         computed: {
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language),
+            placeholder() {
+                return i18next.t("select", this.currentLanguage)
+            },
             value: {
                 get() {
                     if (Array.isArray(this.formControl.value)) {

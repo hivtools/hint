@@ -10,7 +10,7 @@
                      @select="select"
                      @deselect="deselect"></tree-select>
         <span v-if="isXAxisOrDisagg" class="text-muted">
-                        <small>{{badge}}</small>
+                        <small v-translate="badge"></small>
                     </span>
     </div>
 </template>
@@ -78,9 +78,9 @@
             },
             badge() {
                 if (this.isXAxis) {
-                    return ("x axis");
+                    return ("xAxis");
                 } else {
-                    return "disaggregate by"
+                    return "disaggBy"
                 }
             }
         },

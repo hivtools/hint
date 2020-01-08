@@ -4,7 +4,7 @@
             <span v-if="helpText" class="icon-small" v-tooltip="helpText">
                     <help-circle-icon></help-circle-icon>
                 </span>
-            <span v-if="required" class="small">(required)</span>
+            <span v-if="required" class="small">(<span v-translate="'required'"></span>)</span>
         </label>
         <dynamic-form-control v-for="(control, index) in controlGroup.controls"
                               :key="control.name"

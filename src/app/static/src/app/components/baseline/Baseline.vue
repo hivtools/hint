@@ -13,7 +13,7 @@
                                  name="pjnz">
                         <label v-if="country"><strong v-translate="'country'"></strong>: {{country}}</label>
                     </file-upload>
-                    <file-upload label="Shape file"
+                    <file-upload label="shape"
                                  :valid="shape.valid"
                                  :error="shape.error"
                                  :upload="uploadShape"
@@ -22,7 +22,7 @@
                                  accept="geojson,.geojson,GEOJSON,.GEOJSON"
                                  name="shape">
                     </file-upload>
-                    <file-upload label="Population"
+                    <file-upload label="population"
                                  :valid="population.valid"
                                  :error="population.error"
                                  :upload="uploadPopulation"
