@@ -57,6 +57,7 @@
                 <map-control :initialDetail=selections.detail
                              :show-indicators="false"
                              @detail-changed="onDetailChange"></map-control>
+                <map-legend :metadata="colorIndicator"></map-legend>
             </l-map>
         </div>
     </div>
@@ -68,8 +69,9 @@
     import {Feature} from "geojson";
     import {LGeoJson, LMap, LCircleMarker, LTooltip} from "vue2-leaflet";
     import MapControl from "../MapControl.vue";
+    import MapLegend from "../MapLegend.vue";
     import FilterSelect from "../FilterSelect.vue";
-    import {GeoJSON, Layer} from "leaflet";
+    import {GeoJSON} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {BubblePlotSelections} from "../../../store/plottingSelections/plottingSelections";
     import {getFeatureIndicators, getIndicatorRanges, toIndicatorNameLookup} from "./utils";
@@ -123,7 +125,8 @@
         allSelectedAreaIds: string[],
         selectedAreaFeatures: Feature[],
         countryFilterOption: FilterOption,
-        countryFeature: Feature | null
+        countryFeature: Feature | null,
+        colorIndicator: ChoroplethIndicatorMetadata
     }
 
     const props = {
@@ -158,6 +161,7 @@
             LCircleMarker,
             LTooltip,
             MapControl,
+            MapLegend,
             FilterSelect,
             Treeselect
         },
@@ -257,6 +261,9 @@
             countryFeature(): Feature | null {
                 return this.countryFilterOption ? this.getFeatureFromAreaId(this.countryFilterOption.id)!! : null;
             },
+            colorIndicator(): ChoroplethIndicatorMetadata {
+                return this.indicators.find(i => i.indicator == this.selections.colorIndicatorId)!!;
+            }
         },
         methods: {
             updateBounds: function() {
