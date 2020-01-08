@@ -188,7 +188,7 @@ describe("BubblePlot component", () => {
         const vm = wrapper.vm as any;
 
         expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
-            ["MWI_4_1", "MWI_4_2"],
+            ["MWI_3_1", "MWI_4_1", "MWI_4_2"],
             propsData.indicators,
             getIndicatorRanges(propsData.chartdata, propsData.indicators),
             [propsData.filters[1]],
@@ -243,12 +243,6 @@ describe("BubblePlot component", () => {
             "MWI_4_1": {id: "MWI_4_1", label: "4.1"},
             "MWI_4_2": {id: "MWI_4_2", label: "4.2"}
         });
-    });
-
-    it("computes allSelectedAreaIds", () => {
-        const wrapper = getWrapper();
-        const vm = wrapper.vm as any;
-        expect(vm.allSelectedAreaIds).toStrictEqual(["MWI_4_1", "MWI_4_2"]);
     });
 
     it("computes initialised", () => {
