@@ -7,7 +7,9 @@
                     :value=treeselectValue
                     :disabled=disabled
                     :placeholder=placeholder
-                    @input="select"></treeselect>
+                    @input="input"
+                    @select="select"
+                    @deselect="deselect"></treeselect>
     </div>
 </template>
 
@@ -18,9 +20,13 @@
     import {mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
+    import {FilterOption, NestedFilterOption} from "../../generated";
+    import {flattenOptions} from "../../utils";
 
     interface Methods {
-        select: (value: string[]) => void
+        input: (value: string[]) => void
+        select: (node: FilterOption) => void
+        deselect: (node: FilterOption) => void
     }
 
     interface Computed {
@@ -37,7 +43,11 @@
         value: string[] | string
     }
 
-    export default Vue.extend<{}, Methods, Computed, Props>({
+    interface Data {
+        selectedOptions: any
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "FilterSelect",
         props: {
             multiple: Boolean,
@@ -45,6 +55,14 @@
             disabled: Boolean,
             options: Array,
             value: [Array, String]
+        },
+        data() {
+            const idArray =  Array.isArray(this.value) ? this.value : [this.value];
+            const flatOptions = Object.values(flattenOptions(this.options));
+            const selected = flatOptions.filter((o: FilterOption) => idArray.includes(o.id));
+            return {
+                selectedOptions: selected
+            }
         },
         computed: {
             treeselectValue() {
@@ -58,11 +76,23 @@
             }
         },
         methods: {
-            select(value: string[]) {
-                if (!this.disabled) {
-                    this.$emit("select", value);
+            input(value: string[]) {
+                if (!this.disabled && value != this.value) {
+                    this.$emit("input", value);
                 }
             },
+            select(node: FilterOption) {
+                if (!this.multiple) {
+                    this.selectedOptions = [node]
+                } else {
+                    this.selectedOptions.push(node);
+                }
+                this.$emit("select", this.selectedOptions);
+            },
+            deselect(node: FilterOption) {
+                this.selectedOptions = this.selectedOptions.filter((n: any) => n.id != node.id);
+                this.$emit("select", this.selectedOptions);
+            }
         },
         components: {Treeselect}
     });

@@ -6,6 +6,7 @@ import {
     mockRootState,
     mockShapeResponse
 } from "../mocks";
+import {Filter} from "../../app/types";
 
 
 describe("modelOutput module", () => {
@@ -73,21 +74,10 @@ describe("modelOutput module", () => {
         expect(result).toBe(modelRunResponse.plottingMetadata.barchart.indicators);
     });
 
-    it("gets barchart filters", async () => {
 
+    it("gets barchart filters", async () => {
         const result = modelOutputGetters.barchartFilters(mockModelOutputState(), null, rootState);
-        expect(result.length).toEqual(3);
-        expect(result[0]).toStrictEqual({
-            id: "area",
-            column_id: "area_id",
-            label: "Area",
-            use_shape_regions: true,
-            options: [
-                {id: "id1", label: "label 1", children: []}
-            ]
-        });
-        expect(result[1]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[0]);
-        expect(result[2]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[1]);
+        expectOutputPlotFilters(result);
     });
 
     it("gets bubble plot indicators", async () => {
@@ -98,4 +88,24 @@ describe("modelOutput module", () => {
         const result = modelOutputGetters.bubblePlotIndicators(mockModelOutputState(), null, rootState, testRootGetters);
         expect(result).toStrictEqual(["TEST INDICATORS"]);
     });
+
+    it("gets bubble plot filters", async () => {
+        const result = modelOutputGetters.bubblePlotFilters(mockModelOutputState(), null, rootState, null);
+        expectOutputPlotFilters(result);
+    });
+
+    const expectOutputPlotFilters = (filters: Filter[]) => {
+        expect(filters.length).toEqual(3);
+        expect(filters[0]).toStrictEqual({
+            id: "area",
+            column_id: "area_id",
+            label: "Area",
+            use_shape_regions: true,
+            options: [
+                {id: "id1", label: "label 1", children: []}
+            ]
+        });
+        expect(filters[1]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[0]);
+        expect(filters[2]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[1]);
+    }
 });
