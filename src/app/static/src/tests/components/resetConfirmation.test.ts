@@ -1,4 +1,4 @@
-import {mount, shallowMount} from "@vue/test-utils";
+import {mount} from "@vue/test-utils";
 import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
 import Vuex from "vuex";
 import registerTranslations from "../../app/store/translations/registerTranslations";
@@ -26,7 +26,13 @@ describe("Reset confirmation modal", () => {
                 {number: 3, textKey: "modelOptions"},
                 {number: 4, textKey: "runModel"}]
         };
-        const rendered = mount(ResetConfirmation, {store: createStore(mockGetters)});
+        const rendered = mount(ResetConfirmation, {
+            propsData: {
+                continueEditing: jest.fn(),
+                cancelEditing: jest.fn()
+            },
+            store: createStore(mockGetters)
+        });
 
         expect(rendered.find("h4").text()).toBe("Have you saved your work?");
         expect(rendered.find("p").text())

@@ -5,7 +5,9 @@
         <dynamic-form-control-group v-for="(group, index) in controlSection.controlGroups"
                                     :key="index"
                                     :control-group="group"
-                                    @change="change($event, index)"></dynamic-form-control-group>
+                                    @change="change($event, index)"
+                                    :required-text="requiredText"
+                                    :select-text="selectText"></dynamic-form-control-group>
     </div>
 </template>
 
@@ -13,13 +15,13 @@
 
     import Vue from "vue";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
-    import {DynamicControlGroup, DynamicControlSection} from "./types";
+    import {DynamicControlGroup, DynamicControlSection, SharedDynamicFormProps} from "./types";
 
     interface Methods {
         change: (newVal: DynamicControlGroup, index: number) => void
     }
 
-    interface Props {
+    interface Props extends SharedDynamicFormProps {
         controlSection: DynamicControlSection
     }
 
@@ -28,6 +30,12 @@
         props: {
             controlSection: {
                 type: Object
+            },
+            selectText: {
+                type: String, default: "Select..."
+            },
+            requiredText: {
+                type: String, default: "required"
             }
         },
         model: {

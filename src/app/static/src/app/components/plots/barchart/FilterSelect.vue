@@ -10,7 +10,7 @@
                      @select="select"
                      @deselect="deselect"></tree-select>
         <span v-if="isXAxisOrDisagg" class="text-muted">
-                        <small v-translate="badge"></small>
+                        <small>{{badge}}</small>
                     </span>
     </div>
 </template>
@@ -27,6 +27,8 @@
         isDisaggregateBy: boolean
         value: any[]
         label: string
+        xAxisText: string
+        disaggByText: string
     }
 
     const props = {
@@ -35,7 +37,15 @@
         isXAxis: Boolean,
         isDisaggregateBy: Boolean,
         value: Array,
-        label: String
+        label: String,
+        xAxisText: {
+            type: String,
+            default: "X Axis"
+        },
+        disaggByText: {
+            type: String,
+            default: "Disaggregate by"
+        }
     };
 
     interface Data {
@@ -78,25 +88,25 @@
             },
             badge() {
                 if (this.isXAxis) {
-                    return ("xAxis");
+                    return this.xAxisText.toLowerCase()
                 } else {
-                    return "disaggBy"
+                    return this.disaggByText.toLowerCase()
                 }
             }
         },
         watch: {
-          isXAxisOrDisagg() {
-              if (!this.isXAxisOrDisagg) {
-                  //When we go from multi-select to single-select, update 'selected'
-                  if (this.selected.length > 1) {
-                      this.selected = [this.selected[0]];
-                  }
-                  if (this.selected.length == 0){
-                      this.selected.push(this.options[0]);
-                  }
-                  this.$emit("input", this.selected);
-              }
-          }
+            isXAxisOrDisagg() {
+                if (!this.isXAxisOrDisagg) {
+                    //When we go from multi-select to single-select, update 'selected'
+                    if (this.selected.length > 1) {
+                        this.selected = [this.selected[0]];
+                    }
+                    if (this.selected.length == 0) {
+                        this.selected.push(this.options[0]);
+                    }
+                    this.$emit("input", this.selected);
+                }
+            }
         },
         components: {
             TreeSelect

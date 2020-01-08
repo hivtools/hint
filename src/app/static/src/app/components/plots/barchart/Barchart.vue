@@ -3,7 +3,7 @@
         <div v-if="initialised" class="row">
             <div class="col-md-3">
                 <div id="indicator-fg" class="form-group">
-                    <label class="font-weight-bold" v-translate="'indicator'"></label>
+                    <label class="font-weight-bold">{{indicatorText}}</label>
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="indicators"
@@ -11,27 +11,29 @@
                                 :normalizer="normalizeIndicators"></treeselect>
                 </div>
                 <div id="x-axis-fg" class="form-group">
-                    <label class="font-weight-bold" v-translate="'xAxis'"></label>
+                    <label class="font-weight-bold">{{xAxisText}}</label>
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="filtersAsOptions"
                                 v-model="xAxisId"></treeselect>
                 </div>
                 <div id="disagg-fg" class="form-group">
-                    <label class="font-weight-bold" v-translate="'disaggBy'"></label>
+                    <label class="font-weight-bold">{{disaggByText}}</label>
                     <treeselect :multiple=false
                                 :clearable="false"
                                 :options="filtersAsOptions"
                                 v-model="disaggregateById"></treeselect>
                 </div>
                 <hr/>
-                <h3 v-translate="'filters'"></h3>
+                <h3>{{filtersText}}</h3>
                 <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
                     <filter-select :value="getSelectedFilterOptions(filter.id)"
                                    :is-disaggregate-by="filter.id === selections.disaggregateById"
                                    :is-x-axis="filter.id === selections.xAxisId"
                                    :label="filter.label"
                                    :options="filter.options"
+                                   :x-axis-text="xAxisText"
+                                   :disagg-by-text="disaggByText"
                                    @input="changeFilter(filter.id, $event)"></filter-select>
                 </div>
             </div>
@@ -97,6 +99,22 @@
         },
         selections: {
             type: Object
+        },
+        indicatorText: {
+            type: String,
+            default: "Indicator"
+        },
+        xAxisText: {
+            type: String,
+            default: "X Axis"
+        },
+        disaggByText: {
+            type: String,
+            default: "Disaggregate by"
+        },
+        filtersText: {
+            type: String,
+            default: "Filters"
         }
     };
 

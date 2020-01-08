@@ -4,28 +4,23 @@
                      :clearable="false"
                      v-model="value"
                      :options="formControl.options"
-                     :placeholder="placeholder"></tree-select>
+                     :placeholder="selectText"></tree-select>
         <input type="hidden" :value="formControl.value" :name="formControl.name"/>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {MultiSelectControl} from "./types";
+    import {MultiSelectControl, SharedDynamicFormProps} from "./types";
     import TreeSelect from '@riophae/vue-treeselect';
-    import {mapStateProp} from "../../utils";
-    import {RootState} from "../../root";
-    import {Language} from "../../store/translations/locales";
-    import i18next from "i18next";
 
-    interface Props {
+    interface Props extends SharedDynamicFormProps {
         formControl: MultiSelectControl
+        selectText: string
     }
 
     interface Computed {
         value: string[]
-        currentLanguage: Language
-        placeholder: string
     }
 
     export default Vue.extend<{}, {}, Computed, Props>({
@@ -35,16 +30,15 @@
             event: "change"
         },
         props: {
-            formControl: {
-                type: Object
-            }
+            selectText: {
+                type: String, default: "Select..."
+            },
+            requiredText: {
+                type: String, default: "required"
+            },
+            formControl: Object
         },
         computed: {
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
-            placeholder() {
-                return i18next.t("select", this.currentLanguage)
-            },
             value: {
                 get() {
                     if (Array.isArray(this.formControl.value)) {

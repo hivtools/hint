@@ -1,23 +1,35 @@
 import {shallowMount} from '@vue/test-utils';
 import FilterSelect from "../../../app/components/plots/FilterSelect.vue";
 import TreeSelect from '@riophae/vue-treeselect';
+import Vuex from "vuex";
+import {emptyState} from "../../../app/root";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 describe("FilterSelect component", () => {
     const testOptions = [{id: "1", label: "one"}, {id: "2", label: "two"}];
 
-    it ("renders label", () => {
-        const wrapper = shallowMount(FilterSelect, {propsData: {label: "testLabel"}});
+    const store = new Vuex.Store({
+        state: emptyState()
+    });
+    registerTranslations(store);
+
+    it("renders label", () => {
+        const wrapper = shallowMount(FilterSelect, {store, propsData: {label: "testLabel"}});
 
         expect(wrapper.find("label").text()).toBe("testLabel");
     });
 
-    it ("renders TreeSelect", () => {
-        const wrapper = shallowMount(FilterSelect, {propsData:
+    it("renders TreeSelect", () => {
+        const wrapper = shallowMount(FilterSelect, {
+            store,
+            propsData:
                 {
+                    label: "label",
                     options: testOptions,
                     value: "2",
                     disabled: false
-                }});
+                }
+        });
 
         const treeSelect = wrapper.find(TreeSelect);
         expect(treeSelect.props("value")).toBe("2");
@@ -31,13 +43,17 @@ describe("FilterSelect component", () => {
         expect(label.classes().indexOf("disabled-label")).toBe(-1);
     });
 
-    it ("renders TreeSelect with null value and placeholder if disabled", () => {
-        const wrapper = shallowMount(FilterSelect, {propsData:
+    it("renders TreeSelect with null value and placeholder if disabled", () => {
+        const wrapper = shallowMount(FilterSelect, {
+            store,
+            propsData:
                 {
+                    label: "label",
                     options: testOptions,
                     value: "2",
                     disabled: true
-                }});
+                }
+        });
 
         const treeSelect = wrapper.find(TreeSelect);
         expect(treeSelect.props("value")).toBeNull();
@@ -53,13 +69,13 @@ describe("FilterSelect component", () => {
     });
 
     it("emits indicator-changed event with indicator", () => {
-        const wrapper = shallowMount(FilterSelect, {propsData: { options: testOptions}});
+        const wrapper = shallowMount(FilterSelect, {store, propsData: {label: "label", options: testOptions}});
         wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "2");
         expect(wrapper.emitted("select")[0][0]).toBe("2");
     });
 
     it("does not emit indicator-changed event if disabled", () => {
-        const wrapper = shallowMount(FilterSelect, {propsData: { options: testOptions, disabled: true}});
+        const wrapper = shallowMount(FilterSelect, {store, propsData: {label: "label", options: testOptions, disabled: true}});
         wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "2");
         expect(wrapper.emitted("select")).toBeUndefined();
     });
