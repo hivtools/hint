@@ -58,6 +58,7 @@
                              :show-indicators="false"
                              @detail-changed="onDetailChange"></map-control>
                 <map-legend :metadata="colorIndicator"></map-legend>
+                <size-legend :metadata="sizeIndicator" :max-radius="maxRadius" :min-radius="minRadius"></size-legend>
             </l-map>
         </div>
     </div>
@@ -77,6 +78,7 @@
     import {getFeatureIndicators, getIndicatorRanges, toIndicatorNameLookup} from "./utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
+    import SizeLegend from "./SizeLegend.vue";
 
 
     interface Props {
@@ -91,6 +93,8 @@
 
     interface Data {
         style: any,
+        maxRadius: number,
+        minRadius: number
     }
 
     interface Methods {
@@ -126,7 +130,8 @@
         selectedAreaFeatures: Feature[],
         countryFilterOption: FilterOption,
         countryFeature: Feature | null,
-        colorIndicator: ChoroplethIndicatorMetadata
+        colorIndicator: ChoroplethIndicatorMetadata,
+        sizeIndicator: ChoroplethIndicatorMetadata
     }
 
     const props = {
@@ -162,6 +167,7 @@
             LTooltip,
             MapControl,
             MapLegend,
+            SizeLegend,
             FilterSelect,
             Treeselect
         },
@@ -169,8 +175,10 @@
         data(): Data {
             return {
                 style: {
-                    className: "geojson-grey"
-                }
+                    className: "geojson-grey",
+                },
+                maxRadius: 70,
+                minRadius: 10
             }
         },
         computed: {
@@ -191,8 +199,8 @@
                     this.nonAreaFilters,
                     this.selections.selectedFilterOptions,
                     [this.selections.colorIndicatorId, this.selections.sizeIndicatorId],
-                    10, //min radius in pixels
-                    100 //max radius in pixels
+                    this.minRadius,
+                    this.maxRadius
                 );
             },
             featuresByLevel() {
@@ -263,6 +271,9 @@
             },
             colorIndicator(): ChoroplethIndicatorMetadata {
                 return this.indicators.find(i => i.indicator == this.selections.colorIndicatorId)!!;
+            },
+            sizeIndicator(): ChoroplethIndicatorMetadata {
+                return this.indicators.find(i => i.indicator == this.selections.sizeIndicatorId)!!;
             }
         },
         methods: {
