@@ -27,15 +27,15 @@ const expectedCircles = () => {
     result.push({x: 111,  y: 220, radius: 10, text: "<1.18", textX: 111, textY: 210});
 
     let r = getRadius(26, 1, 101, 10, 110);
-    result.push({x: 111,  y: 230-r, radius: r, text: "26.00", textX: 111, textY: 230-(2*r)});
+    result.push({x: 111,  y: 230-r, radius: r, text: "26", textX: 111, textY: 230-(2*r)});
 
     r = getRadius(51, 1, 101, 10, 110);
-    result.push({x: 111,  y: 230-r, radius: r, text: "51.00", textX: 111, textY: 230-(2*r)});
+    result.push({x: 111,  y: 230-r, radius: r, text: "51", textX: 111, textY: 230-(2*r)});
 
     r = getRadius(76, 1, 101, 10, 110);
-    result.push({x: 111,  y: 230-r, radius: r, text: "76.00", textX: 111, textY: 230-(2*r)});
+    result.push({x: 111,  y: 230-r, radius: r, text: "76", textX: 111, textY: 230-(2*r)});
 
-    result.push({x: 111,  y: 120, radius: 110, text: "101.00", textX: 111, textY: 10});
+    result.push({x: 111,  y: 120, radius: 110, text: "101", textX: 111, textY: 10});
 
     return result;
 };
@@ -109,5 +109,20 @@ describe("SizeLegend component", () => {
         const zeroText = wrapper.findAll("text").at(0);
         expect(zeroText.text()).toBe("0");
 
+    });
+
+    it("renders large numbers as expected", () => {
+        const wrapper =  shallowMount(SizeLegend, {propsData: {
+                minRadius: 10,
+                maxRadius: 100,
+                indicatorRange: {min: 2000, max: 10000}
+            }
+        });
+
+        const firstText = wrapper.findAll("text").at(0);
+        expect(firstText.text()).toBe("<2k");
+
+        const lastText = wrapper.findAll("text").at(4);
+        expect(lastText.text()).toBe("10k");
     });
 });

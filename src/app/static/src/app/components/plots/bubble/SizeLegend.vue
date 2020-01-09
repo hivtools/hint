@@ -62,7 +62,7 @@
                 const circleFromRadius = (r: number, value: number, under: boolean = false) => {
                     const y = this.height - r;
 
-                    let text = value > 1000 ? numeral(value).format("0a") : +(value.toFixed(2));
+                    let text = value > 1000 ? numeral(value).format("0a") : (+value.toFixed(2)).toString();
                     if (under && text != "0"){
                         text  = "<" + text;
                     }
