@@ -12,6 +12,7 @@ import Treeselect from '@riophae/vue-treeselect';
 import {emptyState} from "../../../../app/root";
 import {Vue} from "vue/types/vue";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
+import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -193,6 +194,14 @@ describe("BubblePlot component", () => {
         const wrapper = getWrapper();
         const legend = wrapper.find(MapLegend);
         expect(legend.props().metadata).toBe(propsData.indicators[1]);
+    });
+
+    it("renders size legend", () => {
+        const wrapper = getWrapper();
+        const sizeLegend  = wrapper.find(SizeLegend);
+        expect(sizeLegend.props().indicatorRange).toStrictEqual({min: 1, max: 20});
+        expect(sizeLegend.props().minRadius).toBe(10);
+        expect(sizeLegend.props().maxRadius).toBe(70);
     });
 
     it("computes indicatorRanges", () => {

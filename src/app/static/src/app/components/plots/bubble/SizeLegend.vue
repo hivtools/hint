@@ -16,7 +16,6 @@
     import {LControl} from "vue2-leaflet";
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
-    import {circle} from "leaflet";
 
     interface Circle {
         x: number
@@ -42,7 +41,7 @@
     const numeral = require('numeral');
 
     export default Vue.extend<{}, {}, Computed, Props>({
-        name: "MapLegend",
+        name: "SizeLegend",
         props: {
             "indicatorRange": Object,
             "minRadius": Number,
@@ -60,28 +59,25 @@
             },
             circles: function() {
                 const x = this.width / 2;
-                const circleFromRadius = (r: number, value: number, andUnder: boolean = false) => {
+                const circleFromRadius = (r: number, value: number, under: boolean = false) => {
                     const y = this.height - r;
 
-                    let text = value > 1000 ? numeral(value).format("0a") : value.toFixed(2);
-                    if (text == "0.00"){
-                        text = "0"
-                    }
-                    else if (andUnder) {
-                        text += " and under";
+                    let text = value > 1000 ? numeral(value).format("0a") : +(value.toFixed(2));
+                    if (under && text != "0"){
+                        text  = "<" + text;
                     }
 
                     return {x: x,  y: y, radius: r, text: text, textX: x, textY: y-r}
                 };
 
                 //We treat the minimum circle differently, since the smallest radius is actually likely to cover quite
-                //a wide range of low outliers, so we show the maximum possible value of these with ' and under'
-                const ceilingMinRadius = this.minRadius + 0.99999;
-                const valueScalePoint = (Math.pow(ceilingMinRadius,2) - Math.pow(this.minRadius,2))/
+                //a wide range of low outliers, so we show the value for the next pixel up and prefix with '<'
+                const nextMinRadius = this.minRadius + 1;
+                const valueScalePoint = (Math.pow(nextMinRadius,2) - Math.pow(this.minRadius,2))/
                                             (Math.pow(this.maxRadius, 2) - Math.pow(this.minRadius, 2));
-                const ceilingMinValue = (valueScalePoint * (this.indicatorRange.max - this.indicatorRange.min))
+                const nextValue = (valueScalePoint * (this.indicatorRange.max - this.indicatorRange.min))
                                             + this.indicatorRange.min;
-                const minCircle = circleFromRadius(this.minRadius, ceilingMinValue, true);
+                const minCircle = circleFromRadius(this.minRadius, nextValue, true);
 
                 const steps = [0.25, 0.5, 0.75, 1];
                 const nonMinCircles =  steps.map((s: number) => {
