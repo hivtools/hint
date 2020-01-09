@@ -58,7 +58,7 @@
                              :show-indicators="false"
                              @detail-changed="onDetailChange"></map-control>
                 <map-legend :metadata="colorIndicator"></map-legend>
-                <size-legend :metadata="sizeIndicator" :max-radius="maxRadius" :min-radius="minRadius"></size-legend>
+                <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius"></size-legend>
             </l-map>
         </div>
     </div>
@@ -130,7 +130,7 @@
         countryFilterOption: FilterOption,
         countryFeature: Feature | null,
         colorIndicator: ChoroplethIndicatorMetadata,
-        sizeIndicator: ChoroplethIndicatorMetadata
+        sizeRange: NumericRange
     }
 
     const props = {
@@ -267,8 +267,8 @@
             colorIndicator(): ChoroplethIndicatorMetadata {
                 return this.indicators.find(i => i.indicator == this.selections.colorIndicatorId)!!;
             },
-            sizeIndicator(): ChoroplethIndicatorMetadata {
-                return this.indicators.find(i => i.indicator == this.selections.sizeIndicatorId)!!;
+            sizeRange(): NumericRange {
+                return this.indicatorRanges[this.selections.sizeIndicatorId];
             }
         },
         methods: {
