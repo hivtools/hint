@@ -1,9 +1,7 @@
 import {DataType, FilteredDataState} from "./filteredData";
 import {RootState} from "../../root";
-import {ChoroplethIndicatorMetadata, NestedFilterOption} from "../../generated";
 
 import * as d3ScaleChromatic from "d3-scale-chromatic";
-import {Dict} from "../../types";
 
 export const sexFilterOptions = [
     {id: "both", label: "both"},
@@ -18,34 +16,6 @@ export const roundToContext = function (value: number, context: number) {
     const roundingNum = Math.pow(10, maxDecPl + 1);
 
     return Math.round(value * roundingNum) / roundingNum;
-};
-
-export const colorFunctionFromName = function (name: string) {
-    let result = (d3ScaleChromatic as any)[name];
-    if (!result) {
-        //This is trying to be defensive against typos in metadata...
-        console.warn(`Unknown color function: ${name}`);
-        result = d3ScaleChromatic.interpolateWarm;
-    }
-    return result;
-};
-
-export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata) => {
-    const max = metadata.max;
-    const min = metadata.min;
-    const colorFunction = colorFunctionFromName(metadata.colour);
-
-    let rangeNum = (max && (max != min)) ? //Avoid dividing by zero if only one value...
-        max - (min || 0) :
-        1;
-
-    let colorValue = (value - min) / rangeNum;
-
-    if (metadata.invert_scale) {
-        colorValue = 1 - colorValue;
-    }
-
-    return colorFunction(colorValue);
 };
 
 export const getUnfilteredData = (state: FilteredDataState, rootState: RootState) => {

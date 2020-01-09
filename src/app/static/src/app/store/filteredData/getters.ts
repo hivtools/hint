@@ -2,7 +2,8 @@ import {RootState} from "../../root";
 import {DataType, FilteredDataState} from "./filteredData";
 import {FilterOption, SurveyDataRow} from "../../generated";
 import {Dict, Filter, IndicatorValuesDict} from "../../types";
-import {getColor, getUnfilteredData, sexFilterOptions} from "./utils";
+import {getUnfilteredData, sexFilterOptions} from "./utils";
+import {getColor} from "../../components/plots/utils";
 import {flattenToIdSet} from "../../utils";
 
 export const getters = {

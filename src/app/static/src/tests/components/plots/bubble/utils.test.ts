@@ -4,7 +4,7 @@ import {
     getRadius,
     toIndicatorNameLookup
 } from "../../../../app/components/plots/bubble/utils";
-import {getColor} from "../../../../app/store/filteredData/utils";
+import {getColor} from "../../../../app/components/plots/utils";
 
 describe("Bubble plot utils", () => {
 
@@ -43,12 +43,12 @@ describe("Bubble plot utils", () => {
         MWI_1_2: {
             plhiv: {
                 value: 14,
-                color: getColor(14, indicators[0]),
+                color: getColor(14,indicators[0]),
                 radius: getRadius(14, 1, 100, minRadius, maxRadius)
             },
             prevalence: {
                 value: 0.6,
-                color: getColor(0.6, indicators[1]),
+                color: getColor(0.6,indicators[1]),
                 radius: getRadius(0.6, 0, 0.8, minRadius, maxRadius)
             }
         }
