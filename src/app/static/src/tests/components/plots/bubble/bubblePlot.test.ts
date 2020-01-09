@@ -1,8 +1,8 @@
-import {BaseWrapper, createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
+import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
 import {LGeoJson, LCircleMarker, LTooltip} from "vue2-leaflet";
 import {getFeatureIndicators, getIndicatorRanges, getRadius} from "../../../../app/components/plots/bubble/utils";
-import {getColor} from "../../../../app/store/filteredData/utils";
+import {getColor} from "../../../../app/components/plots/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 import FilterSelect from "../../../../app/components/plots/FilterSelect.vue";
 import {FilterOption, NestedFilterOption} from "../../../../app/generated";
@@ -11,6 +11,7 @@ import Vuex from "vuex";
 import Treeselect from '@riophae/vue-treeselect';
 import {emptyState} from "../../../../app/root";
 import {Vue} from "vue/types/vue";
+import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -147,7 +148,8 @@ describe("BubblePlot component", () => {
                             <br/>Prevalence: 0.1
                             <br/>PLHIV: 10
                         </div>`);
-        let color = getColor(0.1, propsData.indicators[1]);
+        const meta = propsData.indicators[1];
+        let color = getColor(0.1, meta);
         expect(circles.at(0).props().color).toEqual(color);
         expect(circles.at(0).props().fillColor).toEqual(color);
 
@@ -158,7 +160,7 @@ describe("BubblePlot component", () => {
                             <br/>Prevalence: 0.2
                             <br/>PLHIV: 20
                         </div>`);
-        color = getColor(0.2, propsData.indicators[1]);
+        color = getColor(0.2, meta);
         expect(circles.at(1).props().color).toEqual(color);
         expect(circles.at(1).props().fillColor).toEqual(color);
 
@@ -186,6 +188,12 @@ describe("BubblePlot component", () => {
         const wrapper = getWrapper();
         expectIndicatorSelect(wrapper, "color-indicator", "prevalence");
         expectIndicatorSelect(wrapper, "size-indicator", "plhiv");
+    });
+
+    it("renders color legend", () => {
+        const wrapper = getWrapper();
+        const legend = wrapper.find(MapLegend);
+        expect(legend.props().metadata).toBe(propsData.indicators[1]);
     });
 
     it("computes indicatorRanges", () => {
@@ -342,6 +350,11 @@ describe("BubblePlot component", () => {
     it("computes countryFeature", () => {
         const wrapper = getWrapper();
         expect((wrapper.vm as any).countryFeature).toBe(propsData.features[0]);
+    });
+
+    it("computes colorIndicator", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).colorIndicator).toBe(propsData.indicators[1]);
     });
 
     it("updateBounds updates bounds of map from features geojson", () => {

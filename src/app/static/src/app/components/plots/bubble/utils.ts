@@ -1,5 +1,5 @@
 import {BubbleIndicatorValuesDict, Dict, Filter, NumericRange} from "../../../types";
-import {getColor} from "../../../store/filteredData/utils";
+import {getColor} from "../utils";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
 
 export const toIndicatorNameLookup = (array: ChoroplethIndicatorMetadata[]) =>
@@ -94,13 +94,14 @@ export const getFeatureIndicators = function (data: any[],
             }
 
             const indicator = indicatorMeta.indicator;
+            const indicatorRange = indicatorRanges[indicator];
 
             if (selectedIndicatorIds.includes(indicator)) {
                 const regionValues = result[areaId];
                 regionValues[indicator] = {
                     value: value,
-                    color: getColor(value, indicatorMeta), //TODO: put this function. shared with Choropleth, in a more generic place
-                    radius: getRadius(value, indicatorRanges[indicator].min, indicatorRanges[indicator].max, minRadius, maxRadius)
+                    color: getColor(value, indicatorMeta),
+                    radius: getRadius(value, indicatorRange.min, indicatorRange.max, minRadius, maxRadius)
                 }
             }
         });
