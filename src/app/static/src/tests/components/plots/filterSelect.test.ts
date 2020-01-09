@@ -7,14 +7,14 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 
 describe("FilterSelect component", () => {
     const testOptions = [{id: "1", label: "one"}, {id: "2", label: "two"}];
-  
+
     const store = new Vuex.Store({
         state: emptyState()
     });
     registerTranslations(store);
 
     it("renders label", () => {
-        const wrapper = shallowMount(FilterSelect, {store, propsData: {label: "testLabel"}});
+        const wrapper = shallowMount(FilterSelect, {store, propsData: {options: testOptions, label: "testLabel"}});
         expect(wrapper.find("label").text()).toBe("testLabel");
     });
 
@@ -74,13 +74,19 @@ describe("FilterSelect component", () => {
     });
 
     it("does not emit input event if disabled", () => {
-        const wrapper = shallowMount(FilterSelect, {store, propsData: {label: "label", options: testOptions, disabled: true}});
+        const wrapper = shallowMount(FilterSelect, {
+            store,
+            propsData: {label: "label", options: testOptions, disabled: true}
+        });
         wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "2");
         expect(wrapper.emitted("input")).toBeUndefined();
     });
 
     it("emits select event with added value when multi-select", () => {
-        const wrapper = shallowMount(FilterSelect, {propsData: { options: testOptions, multiple: true, value: []}});
+        const wrapper = shallowMount(FilterSelect, {
+            store,
+            propsData: {label: "Label", options: testOptions, multiple: true, value: []}
+        });
         wrapper.findAll(TreeSelect).at(0).vm.$emit("select", {id: "1", label: "one"});
         expect(wrapper.emitted("select")[0][0]).toStrictEqual([{id: "1", label: "one"}]);
 
@@ -89,7 +95,10 @@ describe("FilterSelect component", () => {
     });
 
     it("emits select event with replaced value when not multi-select", () => {
-        const wrapper = shallowMount(FilterSelect, {propsData: { options: testOptions, multiple: false}});
+        const wrapper = shallowMount(FilterSelect, {
+            store,
+            propsData: {label: "Label", options: testOptions, multiple: false}
+        });
         wrapper.findAll(TreeSelect).at(0).vm.$emit("select", {id: "1", label: "one"});
         expect(wrapper.emitted("select")[0][0]).toStrictEqual([{id: "1", label: "one"}]);
 
@@ -97,8 +106,11 @@ describe("FilterSelect component", () => {
         expect(wrapper.emitted("select")[1][0]).toStrictEqual([{id: "2", label: "two"}]);
     });
 
-    it("emits select even when deselect", ()=> {
-        const wrapper = shallowMount(FilterSelect, {propsData: { options: testOptions, multiple: true, value: ["1", "2"]}});
+    it("emits select even when deselect", () => {
+        const wrapper = shallowMount(FilterSelect, {
+            store,
+            propsData: {label: "Label", options: testOptions, multiple: true, value: ["1", "2"]}
+        });
 
         wrapper.findAll(TreeSelect).at(0).vm.$emit("deselect", {id: "1", label: "one"});
         expect(wrapper.emitted("select")[0][0]).toStrictEqual([{id: "2", label: "two"}]);

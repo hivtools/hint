@@ -20,7 +20,7 @@
     import {mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
-    import {FilterOption, NestedFilterOption} from "../../generated";
+    import {FilterOption} from "../../generated";
     import {flattenOptions} from "../../utils";
 
     interface Methods {
