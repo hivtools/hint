@@ -13,11 +13,14 @@
 <script lang="ts">
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
-    import {colorFunctionFromName, roundToContext} from "../../store/filteredData/utils";
+    import {roundToContext} from "../../store/filteredData/utils";
+    import {colorFunctionFromName} from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
+    import {NumericRange} from "../../types";
     var numeral = require('numeral');
     interface Props {
-        metadata: ChoroplethIndicatorMetadata
+        metadata: ChoroplethIndicatorMetadata,
+        range: NumericRange
     }
 
     interface Level {
@@ -32,7 +35,8 @@
     export default Vue.extend<{}, {}, Computed, Props>({
         name: "MapLegend",
         props: {
-            "metadata": Object
+            "metadata": Object,
+            "range": Object
         },
         components: {
             LControl
@@ -40,8 +44,9 @@
         computed: {
             levels: function () {
                 if (this.metadata) {
-                    const max = this.metadata.max;
-                    const min = this.metadata.min;
+                    //Use custom range if provided, otherwise use metadata range
+                    const max = this.range ? this.range.max : this.metadata.max;
+                    const min = this.range ? this.range.min : this.metadata.min;
                     const colorFunction = colorFunctionFromName(this.metadata.colour);
                     const step = (max - min) / 5;
 
