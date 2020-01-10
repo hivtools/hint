@@ -1,6 +1,6 @@
 <template>
     <div style="flex:auto">
-        <drop-down text="File">
+        <drop-down text="file">
             <a class="dropdown-item" v-on:mousedown="save">
                 <span v-translate="'save'"></span>
                 <download-icon size="20" class="icon"></download-icon>

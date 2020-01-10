@@ -118,7 +118,7 @@ describe("translate directive", () => {
         input = (rendered.find("input").element as HTMLInputElement);
         expect(input.value).toBe("Valider");
         expect(input.placeholder).toBe("Adresse e-mail");
-        expect(input.innerText).toBe("Déconnexion");
+        expect(input.innerText).toBe("Fermer une session");
     });
 
     it("does nothing but warns if binding is invalid", () => {

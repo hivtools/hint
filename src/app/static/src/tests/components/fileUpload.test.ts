@@ -35,7 +35,7 @@ describe("File upload component", () => {
             store: createStore(),
             propsData: {
                 error: null,
-                label: "",
+                label: "PJNZ",
                 valid: true,
                 upload: jest.fn(),
                 deleteFile: jest.fn(),

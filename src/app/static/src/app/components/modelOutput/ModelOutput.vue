@@ -23,6 +23,10 @@
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
                 <barchart :chartdata="chartdata" :filters="barchartFilters" :indicators="barchartIndicators"
                           :selections="barchartSelections"
+                          :x-axis-text="xAxisText"
+                          :disagg-by-text="disaggByText"
+                          :indicator-text="indicatorText"
+                          :filters-text="filtersText"
                           v-on:update="updateBarchartSelections({payload: $event})"></barchart>
             </div>
 
@@ -38,7 +42,7 @@
 </template>
 
 <script lang="ts">
-
+    import i18next from "i18next";
     import Vue from "vue";
     import Choropleth from "../plots/Choropleth.vue";
     import ChoroplethFilters from "../plots/ChoroplethFilters.vue";
@@ -50,7 +54,8 @@
         mapGettersByNames,
         mapMutationByName,
         mapMutationsByNames,
-        mapStateProp, mapStatePropByName, mapStateProps,
+        mapStateProp,
+        mapStateProps,
     } from "../../utils";
     import {BarchartIndicator, Filter, LevelLabel} from "../../types";
     import {ModelRunState} from "../../store/modelRun/modelRun";
@@ -63,8 +68,9 @@
     import {ModelOutputMutation} from "../../store/modelOutput/mutations";
     import {Feature} from "geojson";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {Translations} from "../../store/translations/locales";
+    import {Language, Translations} from "../../store/translations/locales";
     import {inactiveFeatures} from "../../main";
+    import {RootState} from "../../root";
 
     const namespace: string = 'filteredData';
 
@@ -89,6 +95,11 @@
         selectedTab: string,
         features: Feature[],
         featureLevels: LevelLabel[]
+        currentLanguage: Language,
+        xAxisText: string
+        disaggByText: string
+        indicatorText: string
+        filtersText: string
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -119,6 +130,9 @@
             chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
                 return state.result ? state.result.data : [];
             }),
+            barchartSelections() {
+                return this.$store.state.plottingSelections.barchart
+            },
             ...mapStateProps<PlottingSelectionsState, keyof Computed>("plottingSelections", {
                 barchartSelections: state => state.barchart,
                 bubblePlotSelections: state => state.bubble
@@ -128,6 +142,20 @@
                     featureLevels: state => state.shape!!.filters.level_labels || []
                 }
             ),
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language),
+            xAxisText() {
+                return i18next.t("xAxis", this.currentLanguage)
+            },
+            disaggByText() {
+                return i18next.t("disaggBy", this.currentLanguage)
+            },
+            indicatorText() {
+                return i18next.t("indicator", this.currentLanguage)
+            },
+            filtersText() {
+                return i18next.t("filters", this.currentLanguage)
+            }
         },
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["selectDataType"]),

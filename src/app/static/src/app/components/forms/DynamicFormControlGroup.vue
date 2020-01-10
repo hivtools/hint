@@ -4,19 +4,21 @@
             <span v-if="helpText" class="icon-small" v-tooltip="helpText">
                     <help-circle-icon></help-circle-icon>
                 </span>
-            <span v-if="required" class="small">(required)</span>
+            <span v-if="required" class="small">({{requiredText}})</span>
         </label>
         <dynamic-form-control v-for="(control, index) in controlGroup.controls"
                               :key="control.name"
                               :form-control="control"
                               @change="change($event, index)"
-                              :col-width="colWidth"></dynamic-form-control>
+                              :col-width="colWidth"
+                              :select-text="selectText"
+                              :required-text="requiredText"></dynamic-form-control>
     </b-row>
 </template>
 <script lang="ts">
     import Vue from "vue";
     import {BCol, BRow} from "bootstrap-vue";
-    import {Control, DynamicControlGroup} from "./types";
+    import {Control, DynamicControlGroup, SharedDynamicFormProps} from "./types";
     import DynamicFormControl from "./DynamicFormControl.vue";
     import {VTooltip} from 'v-tooltip';
     import {HelpCircleIcon} from "vue-feather-icons";
@@ -33,14 +35,20 @@
         helpText: string | undefined
     }
 
-    interface Props {
+    interface Props extends SharedDynamicFormProps {
         controlGroup: DynamicControlGroup
     }
 
     export default Vue.extend<{}, Methods, Computed, Props>({
         name: "DynamicFormControlGroup",
         props: {
-            controlGroup: Object
+            controlGroup: Object,
+            selectText: {
+                type: String, default: "Select..."
+            },
+            requiredText: {
+                type: String, default: "required"
+            }
         },
         model: {
             prop: "controlGroup",

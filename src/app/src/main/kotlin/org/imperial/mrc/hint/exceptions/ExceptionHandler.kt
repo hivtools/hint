@@ -15,7 +15,6 @@ import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import java.text.MessageFormat
 import java.util.*
-import javax.validation.ConstraintViolationException
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -56,7 +55,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     private fun translatedError(key: String, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
         val resourceBundle = getBundle(request)
         val message = if (resourceBundle.containsKey(key)) {
-            resourceBundle.getString(key)
+            resourceBundle.getUTF8String(key)
         } else {
             key
         }
@@ -68,8 +67,8 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                                 originalMessage: String? = null): ResponseEntity<Any> {
 
         val resourceBundle = getBundle(request)
-        var message = resourceBundle.getString("unexpectedError")
-        val formatter = MessageFormat(message, resourceBundle.locale)
+        var message = resourceBundle.getUTF8String("unexpectedError")
+        val formatter = MessageFormat(message)
         val messageArguments = arrayOf(
                 appProperties.applicationTitle,
                 errorCodeGenerator.newCode(),
@@ -86,4 +85,11 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                 .toResponseEntity()
     }
 
+}
+
+// resource bundles are encoded with ISO-8859-1
+fun ResourceBundle.getUTF8String(key: String): String {
+    return this.getString(key)
+            .toByteArray(Charsets.ISO_8859_1)
+            .toString(Charsets.UTF_8)
 }

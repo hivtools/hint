@@ -8,7 +8,9 @@
                       v-model="modelOptions"
                       submit-text="Validate"
                       v-on:mousedown.native="confirmEditing"
-                      @submit="validate"></dynamic-form>
+                      @submit="validate"
+                      :required-text="requiredText"
+                      :select-text="selectText"></dynamic-form>
         <h4 v-if="valid" class="mt-3" v-translate="'optionsValid'">
             <tick color="#e31837" width="20px"></tick>
         </h4>
@@ -21,16 +23,20 @@
 </template>
 <script lang="ts">
     import Vue from "vue";
+    import i18next from "i18next";
+
     import DynamicForm from "../forms/DynamicForm.vue";
     import {DynamicFormData, DynamicFormMeta} from "../forms/types";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 
-    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
     import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
     import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
     import ResetConfirmation from "../ResetConfirmation.vue";
     import {StepDescription} from "../../store/stepper/stepper";
+    import {RootState} from "../../root";
+    import {Language} from "../../store/translations/locales";
 
     interface Methods {
         fetchOptions: () => void
@@ -48,6 +54,9 @@
         valid: boolean
         editsRequireConfirmation: boolean
         laterCompleteSteps: StepDescription[]
+        currentLanguage: Language
+        selectText: string
+        requiredText: string
     }
 
     interface Data {
@@ -64,6 +73,14 @@
         },
         name: "ModelOptions",
         computed: {
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language),
+            selectText() {
+                return i18next.t("select", this.currentLanguage)
+            },
+            requiredText() {
+                return i18next.t("required", this.currentLanguage)
+            },
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {

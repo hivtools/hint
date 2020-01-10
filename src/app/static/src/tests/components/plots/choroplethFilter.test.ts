@@ -484,21 +484,21 @@ describe("ChoroplethFilters component", () => {
         const wrapper = getWrapper({selectedDataType: DataType.Survey});
         const filters = wrapper.findAll("filter-select-stub");
         expect(filters.length).toBe(5);
-        expect(filters.at(0).attributes("label")).toBe("Area");
-        expect(filters.at(1).attributes("label")).toBe("Year");
-        expect(filters.at(2).attributes("label")).toBe("Sex");
-        expect(filters.at(3).attributes("label")).toBe("Age");
-        expect(filters.at(4).attributes("label")).toBe("Survey");
+        expect(filters.at(0).attributes("label")).toBe("area");
+        expect(filters.at(1).attributes("label")).toBe("year");
+        expect(filters.at(2).attributes("label")).toBe("sex");
+        expect(filters.at(3).attributes("label")).toBe("age");
+        expect(filters.at(4).attributes("label")).toBe("survey");
     });
 
     it("renders filters in correct order for output data type", () => {
         const wrapper = getWrapper({selectedDataType: DataType.Output});
         const filters = wrapper.findAll("filter-select-stub");
         expect(filters.length).toBe(4);
-        expect(filters.at(0).attributes("label")).toBe("Area");
-        expect(filters.at(1).attributes("label")).toBe("Period");
-        expect(filters.at(2).attributes("label")).toBe("Sex");
-        expect(filters.at(3).attributes("label")).toBe("Age");
+        expect(filters.at(0).attributes("label")).toBe("area");
+        expect(filters.at(1).attributes("label")).toBe("period");
+        expect(filters.at(2).attributes("label")).toBe("sex");
+        expect(filters.at(3).attributes("label")).toBe("age");
     });
 
     const getWrapper = (state?: Partial<FilteredDataState>,

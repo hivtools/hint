@@ -2,7 +2,7 @@
     <div v-if="hasFilters">
         <h4 v-translate="'filters'"></h4>
         <div class="py-2">
-            <filter-select label="Area"
+            <filter-select label="area"
                            :multiple="true"
                            :options="regionFilters.available"
                            :value="regionFilters.selected"
@@ -10,7 +10,7 @@
                            @input="selectRegion"></filter-select>
         </div>
         <div class="py-2" v-if="!isOutput">
-            <filter-select label="Year"
+            <filter-select label="year"
                            :multiple="false"
                            :options="yearFilters.available"
                            :value="yearFilters.selected"
@@ -18,7 +18,7 @@
                            @input="selectYear"></filter-select>
         </div>
         <div class="py-2" id="quarter-filter" v-if="isOutput">
-            <filter-select label="Period"
+            <filter-select label="period"
                            :multiple="false"
                            :options="quarterFilters.available"
                            :value="quarterFilters.selected"
@@ -26,7 +26,7 @@
                            @input="selectQuarter"></filter-select>
         </div>
         <div class="py-2">
-            <filter-select label="Sex"
+            <filter-select label="sex"
                            :multiple="false"
                            :options="sexFilters.available"
                            :value="sexFilters.selected"
@@ -34,7 +34,7 @@
                            @input="selectSex"></filter-select>
         </div>
         <div class="py-2">
-            <filter-select label="Age"
+            <filter-select label="age"
                            :multiple="false"
                            :options="ageFilters.available"
                            :value="ageFilters.selected"
@@ -43,7 +43,7 @@
         </div>
 
         <div class="py-2" v-if="!isOutput">
-            <filter-select label="Survey"
+            <filter-select label="survey"
                            :multiple="false"
                            :options="surveyFilters.available"
                            :value="surveyFilters.selected"

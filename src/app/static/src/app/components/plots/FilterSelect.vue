@@ -1,6 +1,6 @@
 <template>
     <div>
-        <label :class="'font-weight-bold' + (disabled ? ' disabled-label' : '')">{{label}}</label>
+        <label :class="'font-weight-bold' + (disabled ? ' disabled-label' : '')" v-translate="label"></label>
         <treeselect id="survey-filters" :multiple=multiple
                     :clearable="false"
                     :options=options
@@ -14,9 +14,13 @@
 </template>
 
 <script lang="ts">
+    import i18next from "i18next";
     import Vue from "vue";
     import Treeselect from '@riophae/vue-treeselect';
-    import {FilterOption, NestedFilterOption} from "../../generated";
+    import {mapStateProp} from "../../utils";
+    import {RootState} from "../../root";
+    import {Language} from "../../store/translations/locales";
+    import {FilterOption} from "../../generated";
     import {flattenOptions} from "../../utils";
 
     interface Methods {
@@ -27,6 +31,7 @@
 
     interface Computed {
         treeselectValue: string[] | string | null
+        currentLanguage: Language
         placeholder: string
     }
 
@@ -63,8 +68,11 @@
             treeselectValue() {
                 return this.disabled ? null : this.value;
             },
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language),
             placeholder() {
-                return this.disabled ? "Not used" : "Select...";
+                const key = this.disabled ? "notUsed" : "select";
+                return i18next.t(key, this.currentLanguage)
             }
         },
         methods: {

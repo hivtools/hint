@@ -1,12 +1,13 @@
 <template>
     <div class="form-group">
-        <label class="font-weight-bold">{{label}}</label>
+        <label class="font-weight-bold" v-translate="label"></label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
         <a v-if="showRemove" class="small float-right" href="#" v-on:click="handleFileDelete" v-translate="'remove'"></a>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <slot></slot>
         <div class="custom-file">
             <input type="file"
+                   title=""
                    class="custom-file-input"
                    :ref="name"
                    :id="name"

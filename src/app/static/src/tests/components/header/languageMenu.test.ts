@@ -6,15 +6,18 @@ import {actions} from "../../../app/store/root/actions";
 import {mutations} from "../../../app/store/root/mutations";
 import {Language} from "../../../app/store/translations/locales";
 import DropDown from "../../../app/components/header/DropDown.vue";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 describe("Language menu", () => {
 
     const createStore = () => {
-        return new Vuex.Store({
+        const store = new Vuex.Store({
             state: emptyState(),
             actions: actions,
             mutations: mutations
         });
+        registerTranslations(store);
+        return store;
     };
 
     it("displays current language", () => {

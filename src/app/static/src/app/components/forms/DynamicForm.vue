@@ -3,7 +3,9 @@
         <dynamic-form-control-section v-for="(section, index) in formMeta.controlSections"
                                       :key="index"
                                       :control-section="section"
-                                      @change="change($event, index)">
+                                      @change="change($event, index)"
+                                      :select-text="selectText"
+                                      :required-text="requiredText">
         </dynamic-form-control-section>
         <button v-if="includeSubmitButton"
                 class="btn"
@@ -20,9 +22,16 @@
     import {BForm} from "bootstrap-vue";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import DynamicFormControlSection from "./DynamicFormControlSection.vue";
-    import {Control, DynamicControl, DynamicControlSection, DynamicFormData, DynamicFormMeta} from "./types";
+    import {
+        Control,
+        DynamicControl,
+        DynamicControlSection,
+        DynamicFormData,
+        DynamicFormMeta,
+        SharedDynamicFormProps
+    } from "./types";
 
-    interface Props {
+    interface Props extends SharedDynamicFormProps {
         formMeta: DynamicFormMeta,
         includeSubmitButton: boolean
         submitText: string
@@ -55,6 +64,14 @@
         },
         formMeta: {
             type: Object
+        },
+        selectText: {
+            type: String,
+            default: "Select..."
+        },
+        requiredText: {
+            type: String,
+            default: "required"
         }
     };
 

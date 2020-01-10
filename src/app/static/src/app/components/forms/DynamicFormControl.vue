@@ -6,9 +6,10 @@
                   v-tooltip="formControl.helpText">
                 <help-circle-icon></help-circle-icon>
             </span>
-            <span v-if="formControl.required" class="small">(required)</span>
+            <span v-if="formControl.required" class="small">({{requiredText}})</span>
         </label>
         <component :is="dynamicComponent"
+                   :select-text="selectText"
                    v-model="formControlLocal"></component>
     </b-col>
 </template>
@@ -18,7 +19,7 @@
     import {BCol} from "bootstrap-vue";
     import DynamicFormMultiSelect from "./DynamicFormMultiSelect.vue";
     import DynamicFormSelect from "./DynamicFormSelect.vue";
-    import {DynamicControl} from "./types";
+    import {DynamicControl, SharedDynamicFormProps} from "./types";
     import DynamicFormNumberInput from "./DynamicFormNumberInput.vue";
     import {VTooltip} from 'v-tooltip'
     import {HelpCircleIcon} from "vue-feather-icons";
@@ -30,7 +31,7 @@
         formControlLocal: DynamicControl
     }
 
-    interface Props {
+    interface Props extends SharedDynamicFormProps {
         formControl: DynamicControl,
         colWidth: string
     }
@@ -43,7 +44,13 @@
         },
         props: {
             formControl: Object,
-            colWidth: String
+            colWidth: String,
+            selectText: {
+                type: String, default: "Select..."
+            },
+            requiredText: {
+                type: String, default: "required"
+            }
         },
         computed: {
             formControlLocal: {

@@ -3,8 +3,8 @@
         <a href="#"
            class="dropdown-toggle"
            v-on:blur="close"
-           v-on:click="toggle">
-            {{text}}
+           v-on:click="toggle"
+           v-translate="text">
         </a>
         <div class="dropdown-menu" :class="show && 'show'">
             <slot></slot>

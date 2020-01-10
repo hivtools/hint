@@ -3,18 +3,20 @@
         <tree-select :multiple="true"
                      :clearable="false"
                      v-model="value"
-                     :options="formControl.options"></tree-select>
+                     :options="formControl.options"
+                     :placeholder="selectText"></tree-select>
         <input type="hidden" :value="formControl.value" :name="formControl.name"/>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {MultiSelectControl} from "./types";
+    import {MultiSelectControl, SharedDynamicFormProps} from "./types";
     import TreeSelect from '@riophae/vue-treeselect';
 
-    interface Props {
+    interface Props extends SharedDynamicFormProps {
         formControl: MultiSelectControl
+        selectText: string
     }
 
     interface Computed {
@@ -28,9 +30,13 @@
             event: "change"
         },
         props: {
-            formControl: {
-                type: Object
-            }
+            selectText: {
+                type: String, default: "Select..."
+            },
+            requiredText: {
+                type: String, default: "required"
+            },
+            formControl: Object
         },
         computed: {
             value: {
