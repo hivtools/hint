@@ -22,16 +22,16 @@ const expectCirclesEqual = (actual: any, expected: any) => {
 
 const expectedCircles = () => {
     const result = [];
-    result.push({y: 220, radius: 10, text: "<1.18", textY: 210});
+    result.push({y: 220, radius: 10, text: "<1.175", textY: 210});
 
-    let r = getRadius(26, 1, 101, 10, 110);
-    result.push({y: 230-r, radius: r, text: "26", textY: 230-(2*r)});
+    let r = getRadius(11, 1, 101, 10, 110);
+    result.push({y: 230-r, radius: r, text: "11", textY: 230-(2*r)});
+
+    r = getRadius(26, 1, 101, 10, 110);
+    result.push({y: 230-r, radius: r, text: "26",textY: 230-(2*r)});
 
     r = getRadius(51, 1, 101, 10, 110);
-    result.push({y: 230-r, radius: r, text: "51",textY: 230-(2*r)});
-
-    r = getRadius(76, 1, 101, 10, 110);
-    result.push({y: 230-r, radius: r, text: "76", textY: 230-(2*r)});
+    result.push({y: 230-r, radius: r, text: "51", textY: 230-(2*r)});
 
     result.push({y: 120, radius: 110, text: "101",textY: 10});
 
@@ -39,6 +39,12 @@ const expectedCircles = () => {
 };
 
 describe("SizeLegend component", () => {
+
+    it("has expected steps", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.steps).toStrictEqual([0.1, 0.25, 0.5, 1]);
+    });
 
     it("computes width", () => {
         const wrapper = getWrapper();
@@ -107,7 +113,7 @@ describe("SizeLegend component", () => {
         const wrapper =  shallowMount(SizeLegend, {propsData: {
                 minRadius: 10,
                 maxRadius: 110,
-                indicatorRange: {min: 0, max: 1}
+                indicatorRange: {min: 0, max: 0.1}
             }
         });
         const zeroText = wrapper.findAll("text").at(0);
@@ -124,9 +130,9 @@ describe("SizeLegend component", () => {
         });
 
         const firstText = wrapper.findAll("text").at(0);
-        expect(firstText.text()).toBe("<2k");
+        expect(firstText.text()).toBe("<2.0k");
 
         const lastText = wrapper.findAll("text").at(4);
-        expect(lastText.text()).toBe("10k");
+        expect(lastText.text()).toBe("10.0k");
     });
 });

@@ -24,6 +24,10 @@
         textY: number
     }
 
+    interface Data {
+        steps: number[]
+    }
+
     interface Props {
         indicatorRange: NumericRange,
         minRadius: number,
@@ -38,12 +42,14 @@
     }
 
     interface Methods {
-        circleFromRadius: (r: number, value: number, under: boolean) => Circle
+        circleFromRadius: (r: number, value: number, under: boolean) => Circle,
+        valueScalePointFromRadius: (r: number) => number
+        valueFromValueScalePoint: (valueScalePoint: number) => number
     }
 
     const numeral = require('numeral');
 
-    export default Vue.extend<{}, Methods, Computed, Props>({
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "SizeLegend",
         props: {
             "indicatorRange": Object,
@@ -52,6 +58,11 @@
         },
         components: {
             LControl
+        },
+        data: function() {
+            return {
+                steps: [0.1,  0.25, 0.5, 1]
+            }
         },
         computed: {
             width: function() {
@@ -67,14 +78,11 @@
                 //We treat the minimum circle differently, since the smallest radius is actually likely to cover quite
                 //a wide range of low outliers, so we show the value for the next pixel up and prefix with '<'
                 const nextMinRadius = this.minRadius + 1;
-                const valueScalePoint = (Math.pow(nextMinRadius,2) - Math.pow(this.minRadius,2))/
-                                            (Math.pow(this.maxRadius, 2) - Math.pow(this.minRadius, 2));
-                const nextValue = (valueScalePoint * (this.indicatorRange.max - this.indicatorRange.min))
-                                            + this.indicatorRange.min;
+                const valueScalePoint = this.valueScalePointFromRadius(nextMinRadius);
+                const nextValue = this.valueFromValueScalePoint(valueScalePoint);
                 const minCircle = this.circleFromRadius(this.minRadius, nextValue, true);
 
-                const steps = [0.25, 0.5, 0.75, 1];
-                const nonMinCircles =  steps.map((s: number) => {
+                const nonMinCircles =  this.steps.map((s: number) => {
                     const value = this.indicatorRange.min + (s * (this.indicatorRange.max - this.indicatorRange.min));
                     const r = getRadius(value, this.indicatorRange.min, this.indicatorRange.max, this.minRadius, this.maxRadius);
                     return this.circleFromRadius(r, value, false)
@@ -87,12 +95,20 @@
             circleFromRadius: function(r: number, value: number, under: boolean = false){
                 const y = this.height - r;
 
-                let text = value > 1000 ? numeral(value).format("0a") : (+value.toFixed(2)).toString();
+                let text = value > 1000 ? numeral(value).format("0.0a") : (+value.toFixed(3)).toString();
                 if (under && text != "0"){
                     text  = "<" + text;
                 }
 
                 return {y: y, radius: r, text: text, textY: y-r}
+            },
+            valueScalePointFromRadius: function(r: number) {
+                return (Math.pow(r, 2) - Math.pow(this.minRadius, 2))/
+                            (Math.pow(this.maxRadius, 2) - Math.pow(this.minRadius, 2));
+            },
+            valueFromValueScalePoint: function(valueScalePoint: number) {
+                return (valueScalePoint * (this.indicatorRange.max - this.indicatorRange.min))
+                            + this.indicatorRange.min;
             }
         }
     });
