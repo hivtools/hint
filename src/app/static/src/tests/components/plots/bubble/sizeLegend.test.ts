@@ -14,28 +14,26 @@ const getWrapper  = () => {
 };
 
 const expectCirclesEqual = (actual: any, expected: any) => {
-    expect(Math.round(actual.x)).toBe(Math.round(expected.x));
     expect(Math.round(actual.y)).toBe(Math.round(expected.y));
     expect(Math.round(actual.radius)).toBe(Math.round(expected.radius));
     expect(actual.text).toBe(expected.text);
-    expect(Math.round(actual.textX)).toBe(Math.round(expected.textX));
     expect(Math.round(actual.textY)).toBe(Math.round(expected.textY));
 };
 
 const expectedCircles = () => {
     const result = [];
-    result.push({x: 111,  y: 220, radius: 10, text: "<1.18", textX: 111, textY: 210});
+    result.push({y: 220, radius: 10, text: "<1.18", textY: 210});
 
     let r = getRadius(26, 1, 101, 10, 110);
-    result.push({x: 111,  y: 230-r, radius: r, text: "26", textX: 111, textY: 230-(2*r)});
+    result.push({y: 230-r, radius: r, text: "26", textY: 230-(2*r)});
 
     r = getRadius(51, 1, 101, 10, 110);
-    result.push({x: 111,  y: 230-r, radius: r, text: "51", textX: 111, textY: 230-(2*r)});
+    result.push({y: 230-r, radius: r, text: "51",textY: 230-(2*r)});
 
     r = getRadius(76, 1, 101, 10, 110);
-    result.push({x: 111,  y: 230-r, radius: r, text: "76", textX: 111, textY: 230-(2*r)});
+    result.push({y: 230-r, radius: r, text: "76", textY: 230-(2*r)});
 
-    result.push({x: 111,  y: 120, radius: 110, text: "101", textX: 111, textY: 10});
+    result.push({y: 120, radius: 110, text: "101",textY: 10});
 
     return result;
 };
@@ -52,6 +50,12 @@ describe("SizeLegend component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         expect(vm.height).toBe(230);
+    });
+
+    it("computed midX", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.midX).toBe(111);
     });
 
     it("computes circles", () => {
@@ -88,12 +92,12 @@ describe("SizeLegend component", () => {
             expect(circle.attributes()["stroke-width"]).toBe("1");
             expect(circle.attributes()["fill-opacity"]).toBe("0");
             expect(parseFloat(circle.attributes().r)).toBeCloseTo(circleData.radius);
-            expect(parseFloat(circle.attributes().cx)).toBeCloseTo(circleData.x);
+            expect(parseFloat(circle.attributes().cx)).toBe(111);
             expect(parseFloat(circle.attributes().cy)).toBeCloseTo(circleData.y);
 
             const text = texts.at(index);
             expect(text.attributes()["text-anchor"]).toBe("middle");
-            expect(parseFloat(text.attributes().x)).toBeCloseTo(circleData.textX);
+            expect(parseFloat(text.attributes().x)).toBe(111);
             expect(parseFloat(text.attributes().y)).toBeCloseTo(circleData.textY);
             expect(text.text()).toBe(circleData.text);
         });
