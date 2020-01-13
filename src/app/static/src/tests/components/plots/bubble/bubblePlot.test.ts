@@ -12,6 +12,7 @@ import Treeselect from '@riophae/vue-treeselect';
 import {emptyState} from "../../../../app/root";
 import {Vue} from "vue/types/vue";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
+import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -142,7 +143,7 @@ describe("BubblePlot component", () => {
         const circles = wrapper.findAll(LCircleMarker);
         expect(circles.length).toBe(2);
         expect(circles.at(0).props().latLng).toEqual([-15.2047, 35.7083]);
-        expect(circles.at(0).props().radius).toEqual(getRadius(10, 1, 20, 10, 100));
+        expect(circles.at(0).props().radius).toEqual(getRadius(10, 1, 20, 10, 70));
         expect(circles.at(0).find(LTooltip).props().content).toEqual(`<div>
                             <strong>North West</strong>
                             <br/>Prevalence: 0.1
@@ -154,7 +155,7 @@ describe("BubblePlot component", () => {
         expect(circles.at(0).props().fillColor).toEqual(color);
 
         expect(circles.at(1).props().latLng).toEqual([-15.2048, 35.7084]);
-        expect(circles.at(1).props().radius).toEqual(getRadius(20, 1, 20, 10, 100));
+        expect(circles.at(1).props().radius).toEqual(getRadius(20, 1, 20, 10, 70));
         expect(circles.at(1).find(LTooltip).props().content).toEqual(`<div>
                             <strong>North East</strong>
                             <br/>Prevalence: 0.2
@@ -196,6 +197,14 @@ describe("BubblePlot component", () => {
         expect(legend.props().metadata).toBe(propsData.indicators[1]);
     });
 
+    it("renders size legend", () => {
+        const wrapper = getWrapper();
+        const sizeLegend  = wrapper.find(SizeLegend);
+        expect(sizeLegend.props().indicatorRange).toStrictEqual({min: 1, max: 20});
+        expect(sizeLegend.props().minRadius).toBe(10);
+        expect(sizeLegend.props().maxRadius).toBe(70);
+    });
+
     it("computes indicatorRanges", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
@@ -215,7 +224,7 @@ describe("BubblePlot component", () => {
             propsData.selections.selectedFilterOptions,
             ["prevalence", "plhiv"],
             10,
-            100));
+            70));
     });
 
     it("computes featuresByLevel", () => {
