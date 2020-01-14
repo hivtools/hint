@@ -11,6 +11,11 @@
                    class="pr-2 mr-2 border-right"
                    v-translate="'reportBug'">
                 </a>
+                <a :href="'public/resources/help-guide-' + currentLanguage + '.pdf'"
+                   target="_blank"
+                   class="pr-2 mr-2 border-right"
+                   v-translate="'help'">
+                </a>
                 <a href="/logout" class="pr-2 mr-2 border-right" v-translate="'logout'">
                 </a>
                 <language-menu></language-menu>
@@ -24,13 +29,23 @@
     import Vue from "vue";
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
+    import {mapStateProp} from "../../utils";
+    import {RootState} from "../../root";
 
     interface Props {
         title: string,
         user: string
     }
 
-    export default Vue.extend<{}, {}, {}, Props>({
+    interface Computed {
+        currentLanguage: string
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
+        computed: {
+            currentLanguage: mapStateProp<RootState, string>(null,
+                (state: RootState) => state.language.toUpperCase())
+        },
         props: {
             title: String,
             user: String
