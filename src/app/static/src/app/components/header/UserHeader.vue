@@ -11,7 +11,7 @@
                    class="pr-2 mr-2 border-right"
                    v-translate="'reportBug'">
                 </a>
-                <a :href="'public/resources/help-guide-' + currentLanguage + '.pdf'"
+                <a :href="'public/resources/' + helpFilename"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
                    v-translate="'help'">
@@ -29,6 +29,7 @@
     import Vue from "vue";
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
+    import {Language} from "../../store/translations/locales";
     import {mapStateProp} from "../../utils";
     import {RootState} from "../../root";
 
@@ -38,13 +39,21 @@
     }
 
     interface Computed {
-        currentLanguage: string
+        helpFilename: string
     }
 
     export default Vue.extend<{}, {}, Computed, Props>({
         computed: {
-            currentLanguage: mapStateProp<RootState, string>(null,
-                (state: RootState) => state.language.toUpperCase())
+            helpFilename: mapStateProp<RootState, string>(null,
+                (state: RootState) => {
+                    var filename = "";
+                    if (state.language == Language.en) {
+                        filename = "Naomi-basic-instructions.pdf";
+                    } else if (state.language == Language.fr) {
+                        filename = "Naomi-instructions-de-base.pdf";
+                    }
+                    return filename;
+                })
         },
         props: {
             title: String,

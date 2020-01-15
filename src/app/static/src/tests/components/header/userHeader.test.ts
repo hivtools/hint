@@ -41,8 +41,10 @@ describe("user header", () => {
     it("computes language", () => {
         const wrapper = shallowMount(UserHeader, {localVue, store});
         const vm = (wrapper as any).vm;
-        const result = vm.currentLanguage;
-        expect(result).toStrictEqual("EN");
+        expect(vm.helpFilename).toStrictEqual("Naomi-basic-instructions.pdf");
+
+        store.state.language = Language.fr
+        expect(vm.helpFilename).toStrictEqual("Naomi-instructions-de-base.pdf")
     });
 
     it("contains help document link", () => {
@@ -51,9 +53,9 @@ describe("user header", () => {
         });
         registerTranslations(store);
         const wrapper = shallowMount(UserHeader, {store});
-        expect(wrapper.find("a[href='public/resources/help-guide-EN.pdf']").text()).toBe("Help");
+        expect(wrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Help");
 
         store.state.language = Language.fr
-        expect(wrapper.find("a[href='public/resources/help-guide-FR.pdf']").text()).toBe("Aide");
+        expect(wrapper.find("a[href='public/resources/Naomi-instructions-de-base.pdf']").text()).toBe("Aide");
     })
 });
