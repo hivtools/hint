@@ -9,6 +9,14 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 
 const localVue = createLocalVue();
 
+const createFrenchStore = () => {
+    const frStore = new Vuex.Store({
+        state: {language: Language.fr}
+    });
+    registerTranslations(frStore);
+    return frStore;
+};
+
 describe("user header", () => {
 
     const store = new Vuex.Store({
@@ -43,19 +51,20 @@ describe("user header", () => {
         const vm = (wrapper as any).vm;
         expect(vm.helpFilename).toStrictEqual("Naomi-basic-instructions.pdf");
 
-        store.state.language = Language.fr
-        expect(vm.helpFilename).toStrictEqual("Naomi-instructions-de-base.pdf")
+        const frStore = createFrenchStore();
+        const frWrapper = shallowMount(UserHeader, {localVue, store: frStore});
+        const frVm = (frWrapper as any).vm;
+        expect(frVm.helpFilename).toStrictEqual("Naomi-instructions-de-base.pdf")
     });
 
     it("contains help document link", () => {
-        const store = new Vuex.Store({
-            state: {language: Language.en}
-        });
+        // Reset translations
         registerTranslations(store);
         const wrapper = shallowMount(UserHeader, {store});
         expect(wrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Help");
 
-        store.state.language = Language.fr
-        expect(wrapper.find("a[href='public/resources/Naomi-instructions-de-base.pdf']").text()).toBe("Aide");
+        const frStore = createFrenchStore();
+        const frWrapper = shallowMount(UserHeader, {store: frStore});
+        expect(frWrapper.find("a[href='public/resources/Naomi-instructions-de-base.pdf']").text()).toBe("Aide");
     })
 });
