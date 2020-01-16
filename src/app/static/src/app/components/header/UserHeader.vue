@@ -11,6 +11,11 @@
                    class="pr-2 mr-2 border-right"
                    v-translate="'reportBug'">
                 </a>
+                <a :href="'public/resources/' + helpFilename"
+                   target="_blank"
+                   class="pr-2 mr-2 border-right"
+                   v-translate="'help'">
+                </a>
                 <a href="/logout" class="pr-2 mr-2 border-right" v-translate="'logout'">
                 </a>
                 <language-menu></language-menu>
@@ -24,13 +29,30 @@
     import Vue from "vue";
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
+    import {Language} from "../../store/translations/locales";
+    import {mapStateProp} from "../../utils";
+    import {RootState} from "../../root";
 
     interface Props {
         title: string,
         user: string
     }
 
-    export default Vue.extend<{}, {}, {}, Props>({
+    interface Computed {
+        helpFilename: string
+    }
+
+    export default Vue.extend<{}, {}, Computed, Props>({
+        computed: {
+            helpFilename: mapStateProp<RootState, string>(null,
+                (state: RootState) => {
+                    let filename = "Naomi-basic-instructions.pdf";
+                    if (state.language == Language.fr) {
+                        filename = "Naomi-instructions-de-base.pdf";
+                    }
+                    return filename;
+                })
+        },
         props: {
             title: String,
             user: String
