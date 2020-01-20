@@ -147,7 +147,6 @@ export interface ChoroplethMetadata {
 export interface Data {
   placeholder?: boolean;
 }
-export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -155,6 +154,7 @@ export interface Error {
   trace?: string[];
   [k: string]: any;
 }
+export type ErrorCode = string;
 export type FileName = string;
 export type FilePath = string | null;
 export interface Filter {
@@ -184,6 +184,7 @@ export interface LevelLabels {
   area_level_label: string;
   display: boolean;
 }
+export type ModelCancelResponse = null;
 export interface ModelOptionsValidate {
   valid: true;
 }
@@ -497,7 +498,7 @@ export interface Response {
   status: "success" | "failure";
   data: {
     [k: string]: any;
-  };
+  } | null;
   errors: {
     error: string;
     detail: string | null;
@@ -534,7 +535,7 @@ export interface GeoJSONObject {
 export interface SurveyDataRow {
   indicator: string;
   survey_id: string;
-  survey_year: number;
+  survey_year?: number;
   area_id: string;
   sex: string;
   age_group: string;
@@ -563,7 +564,7 @@ export interface SurveyFilters {
 export type SurveyResponseData = {
   indicator: string;
   survey_id: string;
-  survey_year: number;
+  survey_year?: number;
   area_id: string;
   sex: string;
   age_group: string;
@@ -715,7 +716,7 @@ export interface SurveyResponse {
   data: {
     indicator: string;
     survey_id: string;
-    survey_year: number;
+    survey_year?: number;
     area_id: string;
     sex: string;
     age_group: string;
