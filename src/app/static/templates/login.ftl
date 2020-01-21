@@ -27,7 +27,7 @@
         <div class="card-body">
             <form id="login-form" method="post" action="/callback" class="needs-validation" novalidate onsubmit="validate(event);">
                 <div class="form-group">
-                    <label for="user-id">Username</label>
+                    <label for="user-id">Username (email address)</label>
                     <input type="text" size="20" class="form-control" name="username" id="user-id" value="${username}" required>
                     <div id="userid-feedback" class="invalid-feedback">Please enter your username.</div>
                 </div>

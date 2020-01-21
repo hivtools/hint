@@ -22,7 +22,7 @@ class LoginTests
 
         assertThat(doc.select("form").attr("onsubmit")).isEqualTo("validate(event);")
 
-        assertThat(doc.select("form label[for='user-id']").text()).isEqualTo("Username")
+        assertThat(doc.select("form label[for='user-id']").text()).isEqualTo("Username (email address)")
         assertThat(doc.select("form #user-id").attr("value")).isEqualTo("test user")
         assertThat(doc.select("form #user-id").attr("type")).isEqualTo("text")
         assertThat(doc.select("form #userid-feedback").hasClass("invalid-feedback")).isTrue()
@@ -50,7 +50,7 @@ class LoginTests
         model["title"] = "test title"
         val doc = template.jsoupDocFor(model)
 
-        assertThat(doc.select("form label[for='user-id']").text()).isEqualTo("Username")
+        assertThat(doc.select("form label[for='user-id']").text()).isEqualTo("Username (email address)")
         assertThat(doc.select("form #user-id").attr("value")).isEqualTo("")
 
         assertThat(doc.select("form label[for='pw-id']").text()).isEqualTo("Password")
