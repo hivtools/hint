@@ -11,6 +11,11 @@
                    class="pr-2 mr-2 border-right"
                    v-translate="'reportBug'">
                 </a>
+                <a :href="'https://mrc-ide.github.io/naomi-troubleshooting/' + troubleFilename"
+                   target="_blank"
+                   class="pr-2 mr-2 border-right"
+                   v-translate="'troubleshooting'">
+                </a>
                 <a :href="'public/resources/' + helpFilename"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
@@ -39,7 +44,8 @@
     }
 
     interface Computed {
-        helpFilename: string
+        helpFilename: string,
+        troubleFilename: string
     }
 
     export default Vue.extend<{}, {}, Computed, Props>({
@@ -49,6 +55,14 @@
                     let filename = "Naomi-basic-instructions.pdf";
                     if (state.language == Language.fr) {
                         filename = "Naomi-instructions-de-base.pdf";
+                    }
+                    return filename;
+                }),
+            troubleFilename: mapStateProp<RootState, string>(null,
+                (state: RootState) => {
+                    let filename = "index-en.html";
+                    if (state.language == Language.fr) {
+                        filename = "index-fr.html";
                     }
                     return filename;
                 })

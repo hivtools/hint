@@ -50,21 +50,25 @@ describe("user header", () => {
         const wrapper = shallowMount(UserHeader, {localVue, store});
         const vm = (wrapper as any).vm;
         expect(vm.helpFilename).toStrictEqual("Naomi-basic-instructions.pdf");
+        expect(vm.troubleFilename).toStrictEqual("index-en.html");
 
         const frStore = createFrenchStore();
         const frWrapper = shallowMount(UserHeader, {localVue, store: frStore});
         const frVm = (frWrapper as any).vm;
-        expect(frVm.helpFilename).toStrictEqual("Naomi-instructions-de-base.pdf")
+        expect(frVm.helpFilename).toStrictEqual("Naomi-instructions-de-base.pdf");
+        expect(frVm.troubleFilename).toStrictEqual("index-fr.html");
     });
 
-    it("contains help document link", () => {
+    it("contains help document links", () => {
         // Reset translations
         registerTranslations(store);
         const wrapper = shallowMount(UserHeader, {store});
         expect(wrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Help");
+        expect(wrapper.find("a[href='https://mrc-ide.github.io/naomi-troubleshooting/index-en.html']").text()).toBe("Troubleshooting");
 
         const frStore = createFrenchStore();
         const frWrapper = shallowMount(UserHeader, {store: frStore});
         expect(frWrapper.find("a[href='public/resources/Naomi-instructions-de-base.pdf']").text()).toBe("Aide");
+        expect(frWrapper.find("a[href='https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html']").text()).toBe("Dépannage");
     })
 });
