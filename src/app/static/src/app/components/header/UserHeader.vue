@@ -11,6 +11,11 @@
                    class="pr-2 mr-2 border-right"
                    v-translate="'reportBug'">
                 </a>
+                <a href="https://mrc-ide.github.io/naomi-troubleshooting"
+                   target="_blank"
+                   class="pr-2 mr-2 border-right"
+                   v-translate="'troubleshooting'">
+                </a>
                 <a :href="'public/resources/' + helpFilename"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
