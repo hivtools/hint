@@ -71,8 +71,12 @@ a {
 }
 
 .fr {
-  .custom-file-label::after {
+  .custom-file-label:not(.uploading)::after {
     content: "Parcourir" !important;
+  }
+
+  .custom-file-label.uploading::after {
+    width: 90px;
   }
 }
 
