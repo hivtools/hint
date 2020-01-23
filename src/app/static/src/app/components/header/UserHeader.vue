@@ -44,7 +44,8 @@
     }
 
     interface Computed {
-        helpFilename: string
+        helpFilename: string,
+        troubleFilename: string
     }
 
     export default Vue.extend<{}, {}, Computed, Props>({
