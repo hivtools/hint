@@ -28,7 +28,7 @@ export interface BubblePlotSelections {
 }
 
 export interface ChoroplethSelections {
-    colorIndicatorId: string,
+    indicatorId: string,
     selectedFilterOptions: Dict<FilterOption[]>,
     detail: number
 }
@@ -53,7 +53,7 @@ export const initialBubblePlotSelections = (): BubblePlotSelections => {
 
 export const initialChorplethSelections = (): ChoroplethSelections => {
     return {
-        colorIndicatorId: "",
+        indicatorId: "",
         selectedFilterOptions: {},
         detail: -1
     };

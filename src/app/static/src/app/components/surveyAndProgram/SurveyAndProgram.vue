@@ -128,7 +128,7 @@
                 uploadSurvey: 'surveyAndProgram/uploadSurvey',
                 uploadProgram: 'surveyAndProgram/uploadProgram',
                 uploadANC: 'surveyAndProgram/uploadANC',
-                selectTab: 'filteredData/selectDataType',
+                selectTab: 'surveyAndProgram/selectDataType',
                 deleteSurvey: 'surveyAndProgram/deleteSurvey',
                 deleteProgram: 'surveyAndProgram/deleteProgram',
                 deleteANC: 'surveyAndProgram/deleteANC',

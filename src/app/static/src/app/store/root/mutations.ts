@@ -14,7 +14,7 @@ import {mutations as languageMutations} from "../language/mutations";
 
 export enum RootMutation {
     Reset = "Reset",
-    ResetSelectedDataType = "ResetFilteredDataSelections",
+    ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs"
 }
@@ -86,7 +86,8 @@ export const mutations: MutationTree<RootState> = {
         Object.assign(state.modelRun, initialModelRunState());
         state.modelRun.ready = true;
         Object.assign(state.modelOutput, initialModelOutputState());
-        Object.assign(state.plottingSelections, initialPlottingSelectionsState());
+        const sapSelections = state.plottingSelections.sapChoropleth;
+        Object.assign(state.plottingSelections, {...initialPlottingSelectionsState(), sapChoropleth: sapSelections});
     },
 
     ...languageMutations

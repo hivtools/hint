@@ -60,15 +60,16 @@ export const getters = {
             options: filters.year || []
         });
 
-        if (state.selectedDataType in [DataType.Survey, DataType.Program])
-        {
-            result.push({
-                id: "sex",
-                column_id: "sex",
-                label: "sex",
-                options: sexFilterOptions
-            });
-        }
+        const sexFilterOptionsForType =
+            state.selectedDataType == DataType.Survey || state.selectedDataType == DataType.Program ? sexFilterOptions : [];
+
+        result.push({
+            id: "sex",
+            column_id: "sex",
+            label: "sex",
+            options: sexFilterOptionsForType
+        });
+
 
         result.push({
             id: "age",
