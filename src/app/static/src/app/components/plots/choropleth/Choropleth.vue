@@ -59,7 +59,7 @@
     import {getFeatureIndicators} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
-    import {getIndicatorRanges} from "../bubble/utils";
+    import {getIndicatorRanges} from "../utils";
 
 
     interface Props {

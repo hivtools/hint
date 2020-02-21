@@ -34,6 +34,23 @@ export const colorFunctionFromName = function (name: string) {
     return result;
 };
 
+export const getIndicatorRanges = function(data: any,
+                                           indicatorsMeta: ChoroplethIndicatorMetadata[]): Dict<NumericRange>{
+    const result = {} as Dict<NumericRange>;
+    iterateDataValues(data, indicatorsMeta, null, null, null,
+        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
+            const indicator = indicatorMeta.indicator;
+            if (!result[indicator]) {
+                result[indicator] = {min: value, max: value};
+            } else {
+                result[indicator].min = Math.min(result[indicator].min, value);
+                result[indicator].max = Math.max(result[indicator].max, value);
+            }
+        });
+
+    return result;
+};
+
 export const iterateDataValues = function(
     data: any,
     indicatorsMeta: ChoroplethIndicatorMetadata[],

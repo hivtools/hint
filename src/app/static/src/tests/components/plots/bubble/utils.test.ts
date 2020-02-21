@@ -1,8 +1,6 @@
 import {
     getFeatureIndicators,
-    getIndicatorRanges,
-    getRadius,
-    toIndicatorNameLookup
+    getRadius
 } from "../../../../app/components/plots/bubble/utils";
 import {getColor} from "../../../../app/components/plots/utils";
 
@@ -53,21 +51,6 @@ describe("Bubble plot utils", () => {
             }
         }
     };
-
-    it("can get indicator ranges", () => {
-        const data = [
-            {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 15},
-            {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14},
-            {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 13}
-        ];
-
-        const result = getIndicatorRanges(data, indicators);
-
-        expect(result).toStrictEqual({
-            plhiv: {min: 13, max: 15},
-            prevalence: {min: 0.5, max: 0.7}
-        });
-    });
 
     it("can get feature indicators from wide format data", () => {
         const data = [
@@ -159,14 +142,6 @@ describe("Bubble plot utils", () => {
             }
         });
     });
-
-    it("can get indicator name lookup", () => {
-        expect(toIndicatorNameLookup(indicators)).toStrictEqual({
-            plhiv: "PLHIV",
-            prevalence: "Prevalence"
-        });
-    });
-
 
     const radiusToArea = (r: number) => {return Math.PI * r *r};
     const areaToRadius = (x: number) => {return Math.sqrt(x/Math.PI)};

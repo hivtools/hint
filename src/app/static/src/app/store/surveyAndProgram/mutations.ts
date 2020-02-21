@@ -23,6 +23,7 @@ export const SurveyAndProgramUpdates = [
 
 export const mutations: MutationTree<SurveyAndProgramState> = {
     [SurveyAndProgramMutation.SelectedDataTypeUpdated](state: SurveyAndProgramState, action: PayloadWithType<DataType>) {
+        //alert("updating with action: " + JSON.stringify(action));
         state.selectedDataType = action.payload;
     },
 

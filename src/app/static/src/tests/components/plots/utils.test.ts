@@ -1,5 +1,19 @@
-import {colorFunctionFromName, getColor} from "../../../app/components/plots/utils";
+import {
+    colorFunctionFromName,
+    getColor,
+    getIndicatorRanges,
+    toIndicatorNameLookup
+} from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
+
+const indicators = [
+    {
+        indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:0, colour: "interpolateGreys", invert_scale: false
+    },
+    {
+        indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+    }
+];
 
 it("colorFunctionFromName returns color function", () => {
     const result = colorFunctionFromName("interpolateMagma");
@@ -39,6 +53,21 @@ it("getColor avoids dividing by zero if min equals max", () => {
     expect(result).toEqual("rgb(255, 255, 255)");
 });
 
+it("can get indicator ranges", () => {
+    const data = [
+        {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 15},
+        {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14},
+        {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 13}
+    ];
+
+    const result = getIndicatorRanges(data, indicators);
+
+    expect(result).toStrictEqual({
+        plhiv: {min: 13, max: 15},
+        prevalence: {min: 0.5, max: 0.7}
+    });
+});
+
 it("getColor can invert color function", () => {
     const result = getColor(0, {
         min: 0,
@@ -75,4 +104,19 @@ it("getColor can use custom min and max", () => {
     }, 0, 1);
 
     expect(result).toEqual("rgb(151, 151, 151)");
+});
+
+it("can get indicator name lookup", () => {
+    const indicators = [
+        {
+            indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:0, colour: "interpolateGreys", invert_scale: false
+        },
+        {
+            indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        }
+    ];
+    expect(toIndicatorNameLookup(indicators)).toStrictEqual({
+        plhiv: "PLHIV",
+        prevalence: "Prevalence"
+    });
 });

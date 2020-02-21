@@ -75,8 +75,8 @@
     import {GeoJSON} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {BubblePlotSelections} from "../../../store/plottingSelections/plottingSelections";
-    import {getFeatureIndicators, getIndicatorRanges} from "./utils";
-    import {toIndicatorNameLookup} from "../utils";
+    import {getFeatureIndicators} from "./utils";
+    import {toIndicatorNameLookup, getIndicatorRanges} from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";

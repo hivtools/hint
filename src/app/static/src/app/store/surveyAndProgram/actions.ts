@@ -24,9 +24,9 @@ function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
 export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndProgramActions = {
 
     //TODO: this probbaly doesn't need to be an action ,could be direct mutation
-    selectDataType(store, payload) {
+    /*selectDataType(store, payload) {
         store.commit({type: "SelectedDataTypeUpdated", payload: payload})
-    },
+    },*/
 
     async uploadSurvey(context, formData) {
         const {commit} = context;
