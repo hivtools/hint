@@ -1,5 +1,5 @@
-import {actions} from "../../app/store/filteredData/actions";
-import {DataType, FilterType} from "../../app/store/filteredData/filteredData";
+import {actions} from "../../app/store/surveyAndProgramData/actions";
+import {DataType, FilterType} from "../../app/store/surveyAndProgramData/filteredData";
 
 describe("filteredData actions", () => {
 

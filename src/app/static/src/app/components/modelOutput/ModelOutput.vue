@@ -14,10 +14,7 @@
         </div>
         <div class="row mt-2">
             <div v-if="selectedTab==='map'" class="col-md-3">
-                <choropleth-filters></choropleth-filters>
-            </div>
-            <div v-if="selectedTab==='map'" class="col-md-9">
-                <choropleth></choropleth>
+                This is where the new choropleth will go!
             </div>
 
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
@@ -44,11 +41,9 @@
 <script lang="ts">
     import i18next from "i18next";
     import Vue from "vue";
-    import Choropleth from "../plots/Choropleth.vue";
-    import ChoroplethFilters from "../plots/ChoroplethFilters.vue";
+    import Choropleth from "../plots/choropleth/Choropleth.vue";
     import Barchart from "../plots/barchart/Barchart.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
-    import {DataType} from "../../store/filteredData/filteredData";
     import {
         mapActionsByNames,
         mapGettersByNames,
@@ -79,7 +74,6 @@
     }
 
     interface Methods {
-        selectDataType: (dataType: DataType) => void,
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: BarchartSelections) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
@@ -105,8 +99,6 @@
     export default Vue.extend<Data, Methods, Computed, {}>({
         name: "ModelOutput",
         created() {
-            this.selectDataType(DataType.Output);
-
             if (!this.selectedTab) {
                 this.tabSelected(this.tabs[0]);
             }
@@ -158,13 +150,10 @@
             }
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(namespace, ["selectDataType"]),
             ...mapMutationsByNames<keyof Methods>("plottingSelections", ["updateBarchartSelections", "updateBubblePlotSelections"]),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected)
         },
         components: {
-            Choropleth,
-            ChoroplethFilters,
             Barchart,
             BubblePlot
         }

@@ -1,5 +1,5 @@
 import {Module} from "vuex";
-import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
+import {DataType, FilteredDataState, initialFilteredDataState} from "../../app/store/surveyAndProgramData/filteredData";
 import {RootState} from "../../app/root";
 import {
     mockAncResponse, mockFilteredDataState,
@@ -10,7 +10,7 @@ import {
     mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../mocks";
-import {getUnfilteredData} from "../../app/store/filteredData/utils";
+import {getUnfilteredData} from "../../app/store/surveyAndProgramData/utils";
 
 describe("filtered data utils", () => {
 

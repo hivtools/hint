@@ -1,4 +1,4 @@
-import {roundToContext} from "../../app/store/filteredData/utils";
+import {roundToContext} from "../../app/store/surveyAndProgramData/utils";
 
 describe("FilteredData getters", () => {
     it ("round to context rounds values to 1 more decimal place than the context where context is integer", () => {

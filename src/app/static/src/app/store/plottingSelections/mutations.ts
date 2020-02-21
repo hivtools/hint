@@ -1,12 +1,18 @@
 import {Mutation, MutationTree} from 'vuex';
-import {PlottingSelectionsState, BarchartSelections, BubblePlotSelections} from "./plottingSelections";
+import {
+    PlottingSelectionsState,
+    BarchartSelections,
+    BubblePlotSelections,
+    ChoroplethSelections
+} from "./plottingSelections";
 import {PayloadWithType} from "../../types";
 
 type PlottingSelectionsMutation = Mutation<PlottingSelectionsState>
 
 export interface PlottingSelectionsMutations {
     updateBarchartSelections: PlottingSelectionsMutation,
-    updateBubblePlotSelections: PlottingSelectionsMutation
+    updateBubblePlotSelections: PlottingSelectionsMutation,
+    updateSAPChoroplethSelections: PlottingSelectionsMutation
 }
 
 export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectionsMutations = {
@@ -15,5 +21,8 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
     },
     updateBubblePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {
         state.bubble = {...state.bubble, ...action.payload};
+    },
+    updateSAPChoroplethSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<ChoroplethSelections>>) {
+        state.sapChoropleth = {...state.sapChoropleth, ...action.payload}
     }
 };

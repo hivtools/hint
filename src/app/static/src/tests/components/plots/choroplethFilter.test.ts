@@ -6,12 +6,12 @@ import {
     FilteredDataState,
     FilterType,
     initialSelectedChoroplethFilters
-} from "../../../app/store/filteredData/filteredData";
+} from "../../../app/store/surveyAndProgramData/filteredData";
 import {mockFilteredDataState} from "../../mocks";
-import {getters} from "../../../app/store/filteredData/getters";
-import {actions as filterActions} from "../../../app/store/filteredData/actions";
+import {getters} from "../../../app/store/surveyAndProgramData/getters";
+import {actions as filterActions} from "../../../app/store/surveyAndProgramData/actions";
 import {emptyState, RootState} from "../../../app/root";
-import {mutations} from "../../../app/store/filteredData/mutations";
+import {mutations} from "../../../app/store/surveyAndProgramData/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 const localVue = createLocalVue();

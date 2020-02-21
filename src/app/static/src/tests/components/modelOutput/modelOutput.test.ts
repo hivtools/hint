@@ -6,9 +6,9 @@ import {
     mockFilteredDataState, mockModelResultResponse,
     mockModelRunState, mockShapeResponse,
 } from "../../mocks";
-import {DataType} from "../../../app/store/filteredData/filteredData";
-import {actions} from "../../../app/store/filteredData/actions";
-import {mutations as filteredDataMutations} from "../../../app/store/filteredData/mutations";
+import {DataType} from "../../../app/store/surveyAndProgramData/filteredData";
+import {actions} from "../../../app/store/surveyAndProgramData/actions";
+import {mutations as filteredDataMutations} from "../../../app/store/surveyAndProgramData/mutations";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
 import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 import registerTranslations from "../../../app/store/translations/registerTranslations";

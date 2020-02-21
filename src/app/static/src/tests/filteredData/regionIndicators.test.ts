@@ -1,4 +1,4 @@
-import {DataType} from "../../app/store/filteredData/filteredData";
+import {DataType} from "../../app/store/surveyAndProgramData/filteredData";
 import {
     mockBaselineState,
     mockFilteredDataState,

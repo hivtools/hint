@@ -1,13 +1,6 @@
-import {DataType, FilteredDataState} from "./filteredData";
 import {RootState} from "../../root";
 
 import * as d3ScaleChromatic from "d3-scale-chromatic";
-
-export const sexFilterOptions = [
-    {id: "both", label: "both"},
-    {id: "female", label: "female"},
-    {id: "male", label: "male"}
-];
 
 export const roundToContext = function (value: number, context: number) {
     //Rounds the value to one more decimal place than is present in the 'context'
@@ -18,7 +11,7 @@ export const roundToContext = function (value: number, context: number) {
     return Math.round(value * roundingNum) / roundingNum;
 };
 
-export const getUnfilteredData = (state: FilteredDataState, rootState: RootState) => {
+/*export const getUnfilteredData = (state: FilteredDataState, rootState: RootState) => {
     const sapState = rootState.surveyAndProgram;
     switch (state.selectedDataType) {
         case (DataType.ANC):
@@ -32,5 +25,5 @@ export const getUnfilteredData = (state: FilteredDataState, rootState: RootState
         default:
             return null;
     }
-};
+};*/
 

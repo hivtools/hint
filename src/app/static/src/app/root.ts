@@ -1,11 +1,10 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
 import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
-import {filteredData, FilteredDataState, initialFilteredDataState} from "./store/filteredData/filteredData";
 import {
-    initialSurveyAndProgramDataState,
+    initialSurveyAndProgramState,
     surveyAndProgram,
-    SurveyAndProgramDataState,
+    SurveyAndProgramState,
 } from "./store/surveyAndProgram/surveyAndProgram";
 import {initialModelRunState, modelRun, ModelRunState} from "./store/modelRun/modelRun";
 import {initialStepperState, stepper, StepperState} from "./store/stepper/stepper";
@@ -35,8 +34,7 @@ export interface RootState extends TranslatableState {
     version: string;
     baseline: BaselineState,
     metadata: MetadataState,
-    surveyAndProgram: SurveyAndProgramDataState,
-    filteredData: FilteredDataState,
+    surveyAndProgram: SurveyAndProgramState,
     modelOptions: ModelOptionsState
     modelRun: ModelRunState,
     modelOutput: ModelOutputState,
@@ -67,14 +65,14 @@ const resetState = (store: Store<RootState>) => {
             const type = stripNamespace(mutation.type);
 
             if (type[0] =="baseline" && BaselineUpdates.includes(type[1] as BaselineMutation)) {
-                store.commit(RootMutation.ResetFilteredDataSelections);
+                store.commit(RootMutation.ResetSelectedDataType);
                 store.commit(RootMutation.ResetOptions);
                 store.commit(RootMutation.ResetOutputs);
             }
 
             if (type[0] == "surveyAndProgram" && SurveyAndProgramUpdates.includes(type[1] as SurveyAndProgramMutation)) {
 
-                store.commit(RootMutation.ResetFilteredDataSelections);
+                store.commit(RootMutation.ResetSelectedDataType);
                 store.commit(RootMutation.ResetOptions);
                 store.commit(RootMutation.ResetOutputs);
             }
@@ -92,8 +90,7 @@ export const emptyState = (): RootState => {
         version: '0.0.0',
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
-        surveyAndProgram: initialSurveyAndProgramDataState(),
-        filteredData: initialFilteredDataState(),
+        surveyAndProgram: initialSurveyAndProgramState(),
         modelOptions: initialModelOptionsState(),
         modelOutput: initialModelOutputState(),
         modelRun: initialModelRunState(),
@@ -110,7 +107,6 @@ export const storeOptions: StoreOptions<RootState> = {
         baseline,
         metadata,
         surveyAndProgram,
-        filteredData,
         modelOptions,
         modelRun,
         modelOutput,

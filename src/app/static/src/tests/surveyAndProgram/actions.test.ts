@@ -9,7 +9,7 @@ import {
     mockSurveyResponse
 } from "../mocks";
 
-import {DataType} from "../../app/store/filteredData/filteredData";
+import {DataType} from "../../app/store/surveyAndProgramData/filteredData";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {expectEqualsFrozen} from "../testHelpers";
 

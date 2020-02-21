@@ -1,10 +1,10 @@
-import {mutations} from "../../app/store/filteredData/mutations";
+import {mutations} from "../../app/store/surveyAndProgramData/mutations";
 import {
     DataType,
     FilterType,
     initialFilteredDataState,
     SelectedChoroplethFilters
-} from "../../app/store/filteredData/filteredData";
+} from "../../app/store/surveyAndProgramData/filteredData";
 import {mockFilteredDataState} from "../mocks";
 
 describe("FilteredData mutations", () => {

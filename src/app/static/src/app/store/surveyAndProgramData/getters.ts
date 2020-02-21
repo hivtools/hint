@@ -1,13 +1,13 @@
 import {RootState} from "../../root";
-import {DataType, FilteredDataState} from "./filteredData";
+//import {DataType, SurveyAndProgramDataState} from "./surveyAndData";
 import {FilterOption, SurveyDataRow} from "../../generated";
 import {Dict, Filter, IndicatorValuesDict} from "../../types";
-import {getUnfilteredData, sexFilterOptions} from "./utils";
+//import {getUnfilteredData, sexFilterOptions} from "./utils";
 import {getColor} from "../../components/plots/utils";
 import {flattenToIdSet} from "../../utils";
 
-export const getters = {
-    selectedDataFilterOptions: (state: FilteredDataState, getters: any, rootState: RootState): Dict<FilterOption[] | undefined> | null => {
+export const getters = {};
+    /*selectedDataFilterOptions: (state: SurveyAndProgramDataState, getters: any, rootState: RootState): Dict<FilterOption[] | undefined> | null => {
         const sapState = rootState.surveyAndProgram;
         const modelRunState = rootState.modelRun;
         const regions = rootState.baseline.regionFilters;
@@ -56,8 +56,8 @@ export const getters = {
             default:
                 return null;
         }
-    },
-    regionIndicators: function (state: FilteredDataState, getters: any, rootState: RootState, rootGetters: any): Dict<IndicatorValuesDict> {
+    },*/
+    /*regionIndicators: function (state: SurveyAndProgramDataState, getters: any, rootState: RootState, rootGetters: any): Dict<IndicatorValuesDict> {
 
         const data = getUnfilteredData(state, rootState);
         if (!data || (state.selectedDataType == null)) {
@@ -107,8 +107,8 @@ export const getters = {
         }
 
         return result;
-    },
-    excludeRow: function (state: FilteredDataState):
+    },*/
+    /*excludeRow: function (state: SurveyAndProgramDataState):
         (row: any, selectedRegions: Set<string>) => boolean {
         const dataType = state.selectedDataType!!;
         const selectedFilters = state.selectedChoroplethFilters;
@@ -141,10 +141,10 @@ export const getters = {
 
             return false;
         }
-    }
-};
+    }*/
 
-export const flattenedSelectedRegionFilters = (state: FilteredDataState, rootState: RootState): Set<string> => {
+
+/*export const flattenedSelectedRegionFilters = (state: SurveyAndProgramDataState, rootState: RootState): Set<string> => {
     const selectedRegions = state.selectedChoroplethFilters.regions ? state.selectedChoroplethFilters.regions : [];
     return flattenToIdSet(selectedRegions, rootState.baseline.flattenedRegionFilters);
-};
+};*/

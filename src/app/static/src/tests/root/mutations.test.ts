@@ -17,7 +17,7 @@ import {
     mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../mocks";
-import {DataType, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
+import {DataType, initialFilteredDataState} from "../../app/store/surveyAndProgramData/filteredData";
 import {RootState} from "../../app/root";
 import {
     BarchartSelections,

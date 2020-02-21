@@ -1,5 +1,5 @@
 import {metadataGetters} from "../../app/store/metadata/metadata"
-import {DataType} from "../../app/store/filteredData/filteredData";
+import {DataType} from "../../app/store/surveyAndProgramData/filteredData";
 import {mockFilteredDataState, mockMetadataState, mockPlottingMetadataResponse, mockRootState} from "../mocks";
 
 const testIndicators = [

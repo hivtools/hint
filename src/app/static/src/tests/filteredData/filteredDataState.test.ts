@@ -6,9 +6,9 @@ localStorageManager.saveState({
     }
 } as any);
 
-import {DataType, filteredData, FilteredDataState} from "../../app/store/filteredData/filteredData";
+import {DataType, surveyAndProgramData, FilteredDataState} from "../../app/store/surveyAndProgramData/filteredData";
 
 it("loads initial state from local storage", () => {
-    const state = filteredData.state as FilteredDataState;
+    const state = surveyAndProgramData.state as FilteredDataState;
     expect(state.selectedDataType).toBe(DataType.ANC);
 });

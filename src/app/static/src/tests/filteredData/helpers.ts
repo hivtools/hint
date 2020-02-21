@@ -1,6 +1,6 @@
 import {ChoroplethIndicatorMetadata} from "../../app/generated";
 import {RootState} from "../../app/root";
-import {getters} from "../../app/store/filteredData/getters";
+import {getters} from "../../app/store/surveyAndProgramData/getters";
 
 export function testIndicatorMetadata(indicator: string,
                                       value_column: string,

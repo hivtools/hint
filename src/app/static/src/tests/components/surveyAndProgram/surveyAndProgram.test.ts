@@ -11,9 +11,9 @@ import {
     mockSurveyResponse
 } from "../../mocks";
 import {SurveyAndProgramDataState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import {DataType, FilteredDataState} from "../../../app/store/filteredData/filteredData";
-import {actions} from "../../../app/store/filteredData/actions";
-import {mutations} from "../../../app/store/filteredData/mutations";
+import {DataType, FilteredDataState} from "../../../app/store/surveyAndProgramData/filteredData";
+import {actions} from "../../../app/store/surveyAndProgramData/actions";
+import {mutations} from "../../../app/store/surveyAndProgramData/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 

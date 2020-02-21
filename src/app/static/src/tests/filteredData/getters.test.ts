@@ -1,6 +1,6 @@
-import {flattenedSelectedRegionFilters, getters} from "../../app/store/filteredData/getters"
+import {flattenedSelectedRegionFilters, getters} from "../../app/store/surveyAndProgramData/getters"
 import {Module} from "vuex";
-import {DataType, FilteredDataState} from "../../app/store/filteredData/filteredData";
+import {DataType, FilteredDataState} from "../../app/store/surveyAndProgramData/filteredData";
 import {RootState} from "../../app/root";
 import {
     mockAncResponse,

@@ -1,28 +1,32 @@
 import {ActionContext, ActionTree, Commit} from 'vuex';
 import {RootState} from "../../root";
-import {DataType} from "../filteredData/filteredData";
-import {SurveyAndProgramDataState} from "./surveyAndProgram";
+import {SurveyAndProgramState, DataType} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 
 export interface SurveyAndProgramActions {
-    uploadSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
-    uploadProgram: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void,
-    uploadANC: (store: ActionContext<SurveyAndProgramDataState, RootState>, formData: FormData) => void
-    getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void;
-    deleteSurvey: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
-    deleteProgram: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
-    deleteANC: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
-    deleteAll: (store: ActionContext<SurveyAndProgramDataState, RootState>) => void
+    uploadSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
+    uploadProgram: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
+    uploadANC: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void
+    getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, RootState>) => void;
+    deleteSurvey: (store: ActionContext<SurveyAndProgramState, RootState>) => void
+    deleteProgram: (store: ActionContext<SurveyAndProgramState, RootState>) => void
+    deleteANC: (store: ActionContext<SurveyAndProgramState, RootState>) => void
+    deleteAll: (store: ActionContext<SurveyAndProgramState, RootState>) => void
 }
 
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
-    commit("filteredData/SelectedDataTypeUpdated",
+    commit("surveyAndProgram/SelectedDataTypeUpdated",
         {type: "SelectedDataTypeUpdated", payload: dataType}, {root: true})
 }
 
-export const actions: ActionTree<SurveyAndProgramDataState, RootState> & SurveyAndProgramActions = {
+export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndProgramActions = {
+
+    //TODO: this probbaly doesn't need to be an action ,could be direct mutation
+    selectDataType(store, payload) {
+        store.commit({type: "SelectedDataTypeUpdated", payload: payload})
+    },
 
     async uploadSurvey(context, formData) {
         const {commit} = context;

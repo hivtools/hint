@@ -6,7 +6,7 @@ import {
     mockSurveyAndProgramState
 } from "../mocks";
 import {interpolateGreys} from "d3-scale-chromatic";
-import {DataType} from "../../app/store/filteredData/filteredData";
+import {DataType} from "../../app/store/surveyAndProgramData/filteredData";
 import {getResult, testIndicatorMetadata} from "./helpers";
 import {ProgrammeDataRow} from "../../app/generated";
 

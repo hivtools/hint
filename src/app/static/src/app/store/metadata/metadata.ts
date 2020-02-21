@@ -4,7 +4,7 @@ import {mutations} from './mutations';
 import {RootState} from "../../root";
 import {ChoroplethIndicatorMetadata, PlottingMetadataResponse, Error} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
-import {DataType} from "../filteredData/filteredData";
+import {DataType} from "../surveyAndProgram/surveyAndProgram";
 
 export interface MetadataState {
     plottingMetadataError: Error | null
@@ -29,7 +29,7 @@ export const metadataGetters = {
             return [];
         }
 
-        const selectedDataType = rootState.filteredData.selectedDataType;
+        const selectedDataType = rootState.surveyAndProgram.selectedDataType;
 
         let metadataForType = null;
         switch (selectedDataType) {
@@ -42,9 +42,10 @@ export const metadataGetters = {
             case (DataType.Survey):
                 metadataForType = plottingMetadata.survey;
                 break;
-            case (DataType.Output):
+           //TODO: How will we do this for Output? Make two separate getters for sap choro ind metadata and output sap choro in metadata!
+           /* case (DataType.Output):
                 metadataForType = plottingMetadata.output;
-                break;
+                break;*/
         }
 
         return (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];

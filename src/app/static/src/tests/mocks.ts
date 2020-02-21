@@ -23,7 +23,7 @@ import {
     ValidateBaselineResponse,
     Error
 } from "../app/generated";
-import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
+import {FilteredDataState, initialFilteredDataState} from "../app/store/surveyAndProgramData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";

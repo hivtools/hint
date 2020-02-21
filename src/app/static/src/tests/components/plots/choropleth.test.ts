@@ -5,13 +5,13 @@ import Vuex from "vuex";
 import {mockBaselineState, mockFilteredDataState, mockMetadataState, mockShapeResponse} from "../../mocks";
 import {LGeoJson} from 'vue2-leaflet';
 import MapControl from "../../../app/components/plots/MapControl.vue";
-import {mutations} from "../../../app/store/filteredData/mutations";
+import {mutations} from "../../../app/store/surveyAndProgramData/mutations";
 import {
     DataType,
     FilteredDataState,
     FilterType
-} from "../../../app/store/filteredData/filteredData";
-import {actions} from "../../../app/store/filteredData/actions";
+} from "../../../app/store/surveyAndProgramData/filteredData";
+import {actions} from "../../../app/store/surveyAndProgramData/actions";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 
