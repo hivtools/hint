@@ -93,3 +93,12 @@ export const toIndicatorNameLookup = (array: ChoroplethIndicatorMetadata[]) =>
         obj[current.indicator] = current.name;
         return obj
     }, {} as Dict<string>);
+
+export const roundToContext = function (value: number, context: number) {
+    //Rounds the value to one more decimal place than is present in the 'context'
+    const maxFraction = context.toString().split(".");
+    const maxDecPl = maxFraction.length > 1 ? maxFraction[1].length : 0;
+    const roundingNum = Math.pow(10, maxDecPl + 1);
+
+    return Math.round(value * roundingNum) / roundingNum;
+};

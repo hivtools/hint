@@ -33,6 +33,7 @@
                 <map-control :initialDetail=selections.detail
                              :indicator=selections.indicatorId
                              :show-indicators="true"
+                             :indicators-metadata="indicators"
                              @detail-changed="onDetailChange"
                              @indicator-changed="onIndicatorChange"></map-control>
                 <map-legend :metadata="colorIndicator"></map-legend>
@@ -355,5 +356,8 @@
                     }
                 }
             },
+        mounted(){
+            this.initialise();
+        }
     });
 </script>

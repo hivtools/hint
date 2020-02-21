@@ -13,6 +13,7 @@ export interface PlottingSelectionsMutations {
     updateBarchartSelections: PlottingSelectionsMutation,
     updateBubblePlotSelections: PlottingSelectionsMutation,
     updateSAPChoroplethSelections: PlottingSelectionsMutation
+    updateOutputChoroplethSelections: PlottingSelectionsMutation
 }
 
 export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectionsMutations = {
@@ -24,5 +25,8 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
     },
     updateSAPChoroplethSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<ChoroplethSelections>>) {
         state.sapChoropleth = {...state.sapChoropleth, ...action.payload}
+    },
+    updateOutputChoroplethSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<ChoroplethSelections>>) {
+        state.outputChoropleth = {...state.outputChoropleth, ...action.payload}
     }
 };

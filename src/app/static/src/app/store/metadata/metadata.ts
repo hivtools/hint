@@ -42,18 +42,18 @@ export const metadataGetters = {
             case (DataType.Survey):
                 metadataForType = plottingMetadata.survey;
                 break;
-           //TODO: How will we do this for Output? Make two separate getters for sap choro ind metadata and output sap choro in metadata!
-           /* case (DataType.Output):
-                metadataForType = plottingMetadata.output;
-                break;*/
         }
 
         return (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
     },
-    choroplethIndicators: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
+    outputIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
+        return (state.plottingMetadata && state.plottingMetadata.output.choropleth &&
+            state.plottingMetadata.output.choropleth.indicators) || [];
+    },
+    /*choroplethIndicators: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
         const metadata = getters.choroplethIndicatorsMetadata;
         return metadata.map((i: ChoroplethIndicatorMetadata) => i.indicator);
-    }
+    }*/
 };
 
 const namespaced: boolean = true;

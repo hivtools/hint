@@ -48,7 +48,8 @@
     interface Props {
         indicator: string,
         initialDetail: number,
-        showIndicators: boolean
+        showIndicators: boolean,
+        indicatorsMetadata: ChoroplethIndicatorMetadata[]
     }
 
     interface Option {
@@ -59,8 +60,7 @@
     interface Computed {
         detailOptions: Option[]
         indicatorOptions: Option[]
-        choroplethIndicatorsMetadata: ChoroplethIndicatorMetadata[],
-        choroplethIndicators: string[]
+        indicators: string[]
     }
 
     interface Methods {
@@ -76,7 +76,8 @@
         props: {
             indicator: String,
             initialDetail: Number,
-            showIndicators: Boolean
+            showIndicators: Boolean,
+            indicatorsMetadata: Array
         },
         data(): Data {
             return {
@@ -85,10 +86,9 @@
             }
         },
         computed: {
-            choroplethIndicatorsMetadata:
-                mapGetterByName<ChoroplethIndicatorMetadata[]>("metadata", "choroplethIndicatorsMetadata"),
-            choroplethIndicators:
-                mapGetterByName<string[]>("metadata", "choroplethIndicators"),
+            indicators: function() {
+                return this.indicatorsMetadata.map((i: ChoroplethIndicatorMetadata) => i.indicator);
+            },
             detailOptions: mapStateProp<BaselineState, Option[]>("baseline", state => {
                 let levels: LevelLabel[] = [];
                 if (state.shape && state.shape.filters && state.shape.filters.level_labels) {
@@ -100,8 +100,7 @@
                 });
             }),
             indicatorOptions: function() {
-                const indicators = this.choroplethIndicatorsMetadata;
-                return indicators.map((i: ChoroplethIndicatorMetadata) => { return {id: i.indicator, label: i.name}; });
+                return this.indicatorsMetadata.map((i: ChoroplethIndicatorMetadata) => { return {id: i.indicator, label: i.name}; });
             }
         },
         methods: {

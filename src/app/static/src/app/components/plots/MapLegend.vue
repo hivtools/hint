@@ -13,7 +13,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
-    import {roundToContext} from "../../store/surveyAndProgramData/utils";
+    import {roundToContext} from "./utils";
     import {colorFunctionFromName} from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {NumericRange} from "../../types";
