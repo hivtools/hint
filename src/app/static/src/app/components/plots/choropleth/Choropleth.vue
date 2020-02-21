@@ -346,8 +346,11 @@
             {
                 hideControls: function(newVal: boolean) {
                     if (!newVal) {
-                        this.initialise();
-                        this.updateBounds();
+                        if (!this.initialised) {
+                            this.initialise();
+                        } else {
+                            this.$nextTick(() => { this.updateBounds() });
+                        }
                     }
                 },
                 filters: function() {
