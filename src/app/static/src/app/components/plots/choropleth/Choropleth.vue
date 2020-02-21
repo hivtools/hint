@@ -22,11 +22,12 @@
                 </div>
             </div>
         </div>
-        <div id="chart" class="col-md-9" v-if="!hideControls">
+        <div id="chart" class="col-md-9 pr-0" v-if="!hideControls">
             <l-map ref="map" style="height: 800px; width: 100%">
                 <template v-for="feature in currentFeatures">
                     <l-geo-json ref=""
                                 :geojson="feature"
+                                :options="options"
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">
                     </l-geo-json>
                 </template>
@@ -47,6 +48,7 @@
     import Treeselect from '@riophae/vue-treeselect';
     import {Feature} from "geojson";
     import {LGeoJson, LMap, LTooltip} from "vue2-leaflet";
+    import {Layer} from "leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import FilterSelect from "../FilterSelect.vue";
@@ -79,7 +81,6 @@
         updateBounds: () => void,
         showColor: (feature: Feature) => boolean,
         getColor: (feature: Feature) => string,
-        getTooltip: (feature: Feature) => string,
         getSelectedFilterValues: (filterId: string) => string[],
         onDetailChange: (newVal: number) => void,
         onIndicatorChange: (newVal: string) => void,
@@ -106,7 +107,8 @@
         selectedAreaFeatures: Feature[],
         countryFilterOption: FilterOption,
         countryFeature: Feature | null,
-        colorIndicator: ChoroplethIndicatorMetadata
+        colorIndicator: ChoroplethIndicatorMetadata,
+        options: L.GeoJSONOptions
     }
 
     const props = {
@@ -237,7 +239,30 @@
             },
             colorIndicator(): ChoroplethIndicatorMetadata {
                 return this.indicators.find(i => i.indicator == this.selections.indicatorId)!!;
-            }
+            },
+            options() {
+                if (!this.selections.indicatorId){
+                    return {};
+                }
+
+                const indicator = this.selections.indicatorId;
+                const featureIndicators = this.featureIndicators;
+                return {
+                    onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
+                        const area_id = feature.properties && feature.properties["area_id"];
+                        const area_name = feature.properties && feature.properties["area_name"];
+
+                        const values = featureIndicators[area_id];
+                        const value = values && values[indicator] && values[indicator]!!.value;
+
+                        const stringVal =  (value || value === 0) ? value.toString() : "";
+                        layer.bindTooltip(`<div>
+                                <strong>${area_name}</strong>
+                                <br/>${stringVal}
+                            </div>`);
+                    }
+                }
+            },
         },
         methods: {
             updateBounds: function() {
@@ -261,20 +286,6 @@
                     //so unselected regions are still distinguishable
                     return "rgb(200,200,200)";
                 }
-            },
-            getTooltip: function(feature: Feature) {
-                const area_id = feature.properties && feature.properties["area_id"];
-                const area_name = feature.properties && feature.properties["area_name"];
-
-                const values = this.featureIndicators[area_id];
-                const colorIndicator = this.selections.indicatorId;
-                const colorValue = values && values[colorIndicator] && values[colorIndicator]!!.value;
-
-                return `<div>
-                                <strong>${area_name}</strong>
-                                <br/>${colorValue}
-                            </div>`;
-
             },
             getSelectedFilterValues(filterId: string) {
                 return (this.selections.selectedFilterOptions[filterId] || []).map(o => o.id);
@@ -336,6 +347,7 @@
                 hideControls: function(newVal: boolean) {
                     if (!newVal) {
                         this.initialise();
+                        this.updateBounds();
                     }
                 },
                 filters: function() {

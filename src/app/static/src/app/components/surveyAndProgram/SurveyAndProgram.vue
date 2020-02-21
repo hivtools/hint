@@ -2,7 +2,7 @@
     <div>
         <div class="row">
             <div class="col-md-3"></div>
-            <div v-if="hasSelectedDataType" class="col-md-9 sap-filters">
+            <div v-if="hasSelectedDataType" class="col-md-9 pl-3 sap-filters">
                 <div>
 
                     <ul class="nav nav-tabs">
@@ -30,7 +30,7 @@
                         :hide-controls="!hasSelectedDataType"
                         area-filter-id="area"
                         v-on:update="updateChoroplethSelections({payload: $event})"
-                        class="col-md-12">
+                        class="col-md-12 pr-0">
 
                 <div class="upload-section">
                     <form>

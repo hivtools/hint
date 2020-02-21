@@ -16,7 +16,6 @@ export enum SurveyAndProgramMutation {
 }
 
 export const SurveyAndProgramUpdates = [
-    SurveyAndProgramMutation.SelectedDataTypeUpdated,
     SurveyAndProgramMutation.SurveyUpdated,
     SurveyAndProgramMutation.ProgramUpdated,
     SurveyAndProgramMutation.ANCUpdated
