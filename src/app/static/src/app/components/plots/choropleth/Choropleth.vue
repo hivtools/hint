@@ -160,6 +160,9 @@
         },
         computed: {
             initialised() {
+                if (!this.filters || this.filters.length == 0) {
+                    return false;
+                }
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
                     !!this.selections.indicatorId;
@@ -326,8 +329,9 @@
 
                     const existingFilterSels = this.selections.selectedFilterOptions;
                     const refreshSelected = this.nonAreaFilters.reduce((obj: any, current: Filter) => {
+                        const currentOptionIds = current.options.map(o => o.id);
                         let newSels = existingFilterSels[current.id] ?
-                                existingFilterSels[current.id].filter(o => current.options.indexOf(o) > -1) : [];
+                                existingFilterSels[current.id].filter(o => currentOptionIds.indexOf(o.id) > -1) : [];
 
                         if (newSels.length == 0) {
                             newSels = current.options.length > 0 ? [current.options[0]] : [];
@@ -371,9 +375,6 @@
                         this.updateBounds();
                     }
                 }
-            },
-        mounted(){
-            this.initialise();
-        }
+            }
     });
 </script>

@@ -2,7 +2,7 @@
     <div>
         <div class="row">
             <div class="col-md-3"></div>
-            <div v-if="hasSelectedDataType" class="col-md-9 pl-3 sap-filters">
+            <div v-if="showChoropleth" class="col-md-9 pl-3 sap-filters">
                 <div>
 
                     <ul class="nav nav-tabs">
@@ -27,7 +27,7 @@
                         :feature-levels="featureLevels"
                         :indicators="choroplethIndicatorsMetadata"
                         :selections="plottingSelections"
-                        :hide-controls="!hasSelectedDataType"
+                        :hide-controls="!showChoropleth"
                         area-filter-id="area"
                         v-on:update="updateChoroplethSelections({payload: $event})"
                         class="col-md-12 pr-0">
@@ -86,7 +86,7 @@
         name: "SurveyAndProgram",
         computed: {
             ...mapState<RootState>({
-                hasSelectedDataType: ({surveyAndProgram}) => {
+                showChoropleth: ({surveyAndProgram, baseline}) => {
                     return surveyAndProgram.selectedDataType != null;
                 },
                 selectedDataType: ({surveyAndProgram}) => {

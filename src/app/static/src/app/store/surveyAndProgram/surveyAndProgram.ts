@@ -4,6 +4,7 @@ import {mutations} from './mutations';
 import {ReadyState, RootState} from "../../root";
 import {AncResponse, ProgrammeResponse, SurveyResponse, Error} from "../../generated";
 import {getters} from "./getters";
+import {localStorageManager} from "../../localStorageManager";
 
 export enum DataType { ANC, Program, Survey}
 
@@ -32,12 +33,14 @@ export const initialSurveyAndProgramState = (): SurveyAndProgramState => {
 
 const namespaced: boolean = true;
 
+const existingState = localStorageManager.getState();
 export const surveyAndProgram: Module<SurveyAndProgramState, RootState> = {
     namespaced,
-    state: initialSurveyAndProgramState(),
+    state: {...initialSurveyAndProgramState(), ...existingState && existingState.surveyAndProgram},
     getters,
     actions,
     mutations
 };
+
 
 
