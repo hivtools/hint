@@ -2,8 +2,8 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import MapControl from "../../../app/components/plots/MapControl.vue";
 import TreeSelect from '@riophae/vue-treeselect'
 import Vuex from "vuex";
-import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../../mocks";
-import {DataType} from "../../../app/store/surveyAndProgramData/filteredData";
+import {mockBaselineState, mockShapeResponse, mockSurveyAndProgramState} from "../../mocks";
+import {DataType} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 
@@ -48,9 +48,9 @@ describe("Map control component", () => {
                         }
                     )
                 },
-                filteredData: {
+                surveyAndProgram: {
                     namespaced: true,
-                    state: mockFilteredDataState({selectedDataType: selectedDataType})
+                    state: mockSurveyAndProgramState({selectedDataType: selectedDataType})
                 },
                 metadata: {
                     namespaced: true,

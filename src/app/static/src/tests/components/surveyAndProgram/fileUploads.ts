@@ -2,9 +2,9 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import SurveyAndProgram from "../../../app/components/surveyAndProgram/SurveyAndProgram.vue";
 import FileUpload from "../../../app/components/FileUpload.vue";
-import {SurveyAndProgramDataState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
+import {SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
-import {mockError, mockFilteredDataState, mockSurveyAndProgramState} from "../../mocks";
+import {mockBaselineState, mockError, mockPlottingSelections, mockSurveyAndProgramState} from "../../mocks";
 
 export function testUploadComponent(name: string, position: number) {
 
@@ -15,7 +15,7 @@ export function testUploadComponent(name: string, position: number) {
     let expectedUploadAction: any;
     let expectedDeleteAction: any;
 
-    const createSut = (state?: Partial<SurveyAndProgramDataState>) => {
+    const createSut = (state?: Partial<SurveyAndProgramState>) => {
 
         actions = {
             uploadSurvey: jest.fn(),
@@ -25,7 +25,8 @@ export function testUploadComponent(name: string, position: number) {
             deleteProgram: jest.fn(),
             deleteANC: jest.fn(),
             deleteAll: jest.fn(),
-            getSurveyAndProgramData: jest.fn()
+            getSurveyAndProgramData: jest.fn(),
+            selectDataType: jest.fn()
         };
 
         switch (name) {
@@ -51,9 +52,13 @@ export function testUploadComponent(name: string, position: number) {
                     actions: {...actions},
                     mutations: {...mutations}
                 },
-                filteredData: {
+                baseline: {
                     namespaced: true,
-                    state: mockFilteredDataState()
+                    state: mockBaselineState()
+                },
+                plottingSelections: {
+                    namespaced: true,
+                    state: mockPlottingSelections()
                 }
             }
         })

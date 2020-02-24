@@ -1,20 +1,15 @@
-import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
+import {createLocalVue, shallowMount} from "@vue/test-utils";
 import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
-import {LGeoJson, LCircleMarker, LTooltip} from "vue2-leaflet";
+import {LGeoJson} from "vue2-leaflet";
 import {getFeatureIndicators} from "../../../../app/components/plots/choropleth/utils";
 import {getIndicatorRanges} from "../../../../app/components/plots/utils";
-import {getColor} from "../../../../app/components/plots/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
-import {FilterOption, NestedFilterOption} from "../../../../app/generated";
+import {NestedFilterOption} from "../../../../app/generated";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
-import Treeselect from '@riophae/vue-treeselect';
 import {emptyState} from "../../../../app/root";
-import {Vue} from "vue/types/vue";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
-import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {expectFilter, testData} from "../testHelpers";
-import {mockBaselineState, mockFilteredDataState, mockShapeResponse} from "../../../mocks";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -58,7 +53,8 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         expectFilter(wrapper, "area-filter", [], "Area", true,[{id: "MWI_3_1", label: "3.1"},
             {id: "MWI_4_1", label: "4.1"},
-            {id: "MWI_4_2", label: "4.2"}]);
+            {id: "MWI_4_2", label: "4.2"},
+            {id: "MWI_4_3", label: "4.3"}]);
     });
 
     it("renders non-area filters", () => {
@@ -88,12 +84,12 @@ describe("Choropleth component", () => {
         const vm = wrapper.vm as any;
 
         expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
-            ["MWI_3_1", "MWI_4_1", "MWI_4_2"],
+            ["MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"],
             propsData.indicators,
             getIndicatorRanges(propsData.chartdata, propsData.indicators),
             [propsData.filters[1]],
             propsData.selections.selectedFilterOptions,
-            ["prevalence", "plhiv"]
+            ["prevalence"]
         ));
     });
 
@@ -103,7 +99,7 @@ describe("Choropleth component", () => {
 
         expect(vm.featuresByLevel).toStrictEqual({
             0: [propsData.features[0]],
-            3: [propsData.features[1]],
+            3: [propsData.features[1], propsData.features[4]],
             4: [propsData.features[2], propsData.features[3]]
         });
     });
@@ -137,11 +133,13 @@ describe("Choropleth component", () => {
             "MWI": {id: "MWI", label: "Malawi", children: [
                     {id: "MWI_3_1", label: "3.1"},
                     {id: "MWI_4_1", label: "4.1"},
-                    {id: "MWI_4_2", label: "4.2"}
+                    {id: "MWI_4_2", label: "4.2"},
+                    {id: "MWI_4_3", label: "4.3"}
                 ]},
             "MWI_3_1": {id: "MWI_3_1", label: "3.1"},
             "MWI_4_1": {id: "MWI_4_1", label: "4.1"},
-            "MWI_4_2": {id: "MWI_4_2", label: "4.2"}
+            "MWI_4_2": {id: "MWI_4_2", label: "4.2"},
+            "MWI_4_3": {id: "MWI_4_3", label: "4.3"}
         });
     });
 
@@ -231,11 +229,6 @@ describe("Choropleth component", () => {
         expect((wrapper.vm as any).countryFeature).toBe(propsData.features[0]);
     });
 
-    it("computes indicator", () => {
-        const wrapper = getWrapper();
-        expect((wrapper.vm as any).indicator).toBe(propsData.indicators[1]);
-    });
-
     it("updateBounds updates bounds of map from features geojson", () => {
         const wrapper = getWrapper();
         const mockMapFitBounds = jest.fn();
@@ -258,15 +251,17 @@ describe("Choropleth component", () => {
     it("initialises from empty selections and emits updates", () => {
         const wrapper = getWrapper({selections: {
                 detail: -1,
+                indicatorId: null,
                 selectedFilterOptions: {}
             }});
 
         expect(wrapper.emitted("update")[0][0]).toStrictEqual({detail: 4});
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({indicatorId: "prevalence"});
-        expect(wrapper.emitted("update")[3][0]).toStrictEqual({
+        expect(wrapper.emitted("update")[2][0]).toStrictEqual({
             selectedFilterOptions: {
                 age: [{id: "0:15", label: "0-15"}],
-                sex: [{id: "female", label: "Female"}]
+                sex: [{id: "female", label: "Female"}],
+                area: undefined
             }
         });
     });
@@ -284,10 +279,10 @@ describe("Choropleth component", () => {
         });
     });
 
-    it("onIndicatorSelect updates indicator", () => {
+    it("onIndicatorChange updates indicator", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
-        vm.onColorIndicatorSelect("newIndicator");
+        vm.onIndicatorChange("newIndicator");
         const updates = wrapper.emitted("update");
         expect(updates[updates.length - 1][0]).toStrictEqual({
             indicatorId: "newIndicator"
@@ -296,10 +291,12 @@ describe("Choropleth component", () => {
 
     it("updates detail", () => {
         const wrapper = getWrapper();
+        const emittedCount = wrapper.emitted.length;
+
         const vm = wrapper.vm as any;
         vm.onDetailChange(3);
 
-        expect(wrapper.emitted("update")[0][0].detail).toStrictEqual(3);
+        expect(wrapper.emitted("update")[emittedCount][0].detail).toStrictEqual(3);
     });
 
     it("updates bounds when becomes initialises", () => {
@@ -346,7 +343,7 @@ describe("Choropleth component", () => {
 
         const mockFeature = {
             properties: {
-                area_id: "area_1",
+                area_id: "MWI_3_1",
                 area_name: "Area 1"
             }
         };
@@ -354,12 +351,12 @@ describe("Choropleth component", () => {
         onEachFeatureFunction(mockFeature, mockLayer);
         expect(mockLayer.bindTooltip.mock.calls[0][0]).toEqual(`<div>
                             <strong>Area 1</strong>
-                            <br/>1
+                            <br/>0.01
                         </div>`);
 
         const mockZeroValueFeature = {
             properties: {
-                area_id: "area_2",
+                area_id: "MWI_4_3",
                 area_name: "Area 2"
             }
         };

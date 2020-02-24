@@ -255,7 +255,7 @@
                         const values = featureIndicators[area_id];
                         const value = values && values[indicator] && values[indicator]!!.value;
 
-                        const stringVal =  (value || value === 0) ? value.toString() : "";
+                        const stringVal = (value || value === 0) ? value.toString() : "";
                         layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${stringVal}
@@ -319,8 +319,8 @@
                     }
 
                     if (!this.selections.indicatorId || !this.indicators.some(i => i.indicator == this.selections.indicatorId)) {
-                        const colorIndicator = this.indicatorNameLookup.prevalence ? "prevalence" : this.indicators[0].indicator;
-                        this.changeSelections({indicatorId: colorIndicator});
+                        const indicator = this.indicatorNameLookup.prevalence ? "prevalence" : this.indicators[0].indicator;
+                        this.changeSelections({indicatorId: indicator});
                     }
 
                     const existingFilterSels = this.selections.selectedFilterOptions;

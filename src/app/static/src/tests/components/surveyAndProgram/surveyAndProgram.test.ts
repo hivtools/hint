@@ -5,15 +5,16 @@ import Vuex from 'vuex';
 import SurveyAndProgram from "../../../app/components/surveyAndProgram/SurveyAndProgram.vue";
 import {
     mockAncResponse,
+    mockBaselineState,
     mockProgramResponse,
     mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../../mocks";
-import {SurveyAndProgramState, DataType} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import {actions} from "../../../app/store/surveyAndProgram/actions";
-import {mutations} from "../../../app/store/surveyAndProgram/mutations";
+import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
+import {actions} from "../../../app/store/surveyAndProgram/actions";
+import {mutations} from "../../../app/store/surveyAndProgram/mutations";
 
 const localVue = createLocalVue();
 
@@ -29,7 +30,13 @@ describe("Survey and programme component", () => {
             modules: {
                 surveyAndProgram: {
                     namespaced: true,
-                    state: mockSurveyAndProgramState(surveyAndProgramState)
+                    state: mockSurveyAndProgramState(surveyAndProgramState),
+                    mutations: mutations,
+                    actions: actions
+                },
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState()
                 }
             }
         });
@@ -37,18 +44,18 @@ describe("Survey and programme component", () => {
         return store;
     };
 
-    it("renders choropleth if there is a selected data type", () => {
+    it("show choropleth controls if there is a selected data type", () => {
         const store = createStore({selectedDataType: DataType.Survey});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+        expect(wrapper.find("choropleth-stub").props().hideControls).toBe(false);
     });
 
-    it("does not render choropleth if there is no selected data type", () => {
+    it("hides choropleth controls if there is no selected data type", () => {
         const store = createStore({selectedDataType: null});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+        expect(wrapper.find("choropleth-stub").props().hideControls).toBe(true);
     });
 
     it("tabs are disabled if no data is present", () => {
@@ -58,15 +65,15 @@ describe("Survey and programme component", () => {
     });
 
     it("survey tab is enabled when survey data is present", () => {
-        expectTabEnabled({survey: mockSurveyResponse()}, "Survey", 0);
+        expectTabEnabled({survey: mockSurveyResponse(), selectedDataType: DataType.Survey}, "Survey", 0);
     });
 
     it("programme (ART) tab is enabled when programme data is present", () => {
-        expectTabEnabled({program: mockProgramResponse()}, "ART", 1);
+        expectTabEnabled({program: mockProgramResponse(), selectedDataType: DataType.Survey}, "ART", 1);
     });
 
     it("ANC tab is enabled when ANC data is present", () => {
-        expectTabEnabled({anc: mockAncResponse()}, "ANC", 2);
+        expectTabEnabled({anc: mockAncResponse(), selectedDataType: DataType.Survey}, "ANC", 2);
     });
 
     function expectTabEnabled(state: Partial<SurveyAndProgramState>, name: string, index: number) {

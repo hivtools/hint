@@ -3,12 +3,12 @@ import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
     mockBaselineState,
-    mockFilteredDataState, mockModelResultResponse,
+    mockModelResultResponse,
     mockModelRunState, mockShapeResponse,
 } from "../../mocks";
-import {DataType} from "../../../app/store/surveyAndProgramData/filteredData";
-import {actions} from "../../../app/store/surveyAndProgramData/actions";
-import {mutations as filteredDataMutations} from "../../../app/store/surveyAndProgramData/mutations";
+import {DataType} from "../../../app/store/surveyAndProgram/surveyAndProgram";
+import {actions} from "../../../app/store/surveyAndProgram/actions";
+import {mutations as filteredDataMutations} from "../../../app/store/surveyAndProgram/mutations";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
 import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
@@ -34,12 +34,6 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                         }
                     })
                 })
-            },
-            filteredData: {
-                namespaced: true,
-                state: mockFilteredDataState(),
-                actions: actions,
-                mutations: filteredDataMutations
             },
             modelRun: {
                 namespaced: true,
@@ -91,15 +85,7 @@ describe("ModelOutput component", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
-    });
-
-    it("sets selectedDataType to Output", () => {
-        const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
-
-        expect(store.state.filteredData.selectedDataType).toBe(DataType.Output);
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
@@ -124,7 +110,6 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
 
         expect(wrapper.find(".nav-link.active").text()).toBe("Map");
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
 
         expect(wrapper.find("#barchart-container").classes()).toEqual(["d-none"]);

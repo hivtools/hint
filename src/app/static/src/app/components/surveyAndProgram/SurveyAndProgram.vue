@@ -116,8 +116,8 @@
                         "active": surveyAndProgram.selectedDataType == DataType.Survey
                     }
                 } as PartialFileUploadProps),
-                features: ({baseline}) => baseline.shape!!.data.features as Feature[],
-                featureLevels: ({baseline}) => baseline.shape!!.filters.level_labels || [],
+                features: ({baseline}) => baseline.shape ? baseline.shape.data.features : [] as Feature[],
+                featureLevels: ({baseline}) => baseline.shape ? baseline.shape.filters.level_labels : [],
                 plottingSelections: ({plottingSelections}) => plottingSelections.sapChoropleth
             }),
             ...mapGetters(namespace, ["data", "filters"]),
@@ -132,6 +132,7 @@
                 deleteSurvey: 'surveyAndProgram/deleteSurvey',
                 deleteProgram: 'surveyAndProgram/deleteProgram',
                 deleteANC: 'surveyAndProgram/deleteANC',
+                updateChoroplethSelections: 'surveyAndProgram/'
             }),
             ...mapMutations({
                 updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections"

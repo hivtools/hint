@@ -1,6 +1,11 @@
 import {metadataGetters} from "../../app/store/metadata/metadata"
-import {DataType} from "../../app/store/surveyAndProgramData/filteredData";
-import {mockFilteredDataState, mockMetadataState, mockPlottingMetadataResponse, mockRootState} from "../mocks";
+import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {
+    mockMetadataState,
+    mockPlottingMetadataResponse,
+    mockRootState,
+    mockSurveyAndProgramState
+} from "../mocks";
 
 const testIndicators = [
     {indicator: "art_coverage", name: "ART Coverage"},
@@ -25,15 +30,12 @@ function testGetsChoroplethIndicatorsMetadataForDataType(dataType: DataType) {
         case(DataType.Program):
             metadataProps = {programme: testChoroMetadata};
             break;
-        case(DataType.Output):
-            metadataProps = {output: testChoroMetadata};
-            break;
     }
 
     const metadataState =  mockMetadataState(
         {plottingMetadata: mockPlottingMetadataResponse(metadataProps)});
 
-    const rootState = mockRootState({filteredData: mockFilteredDataState({selectedDataType: dataType})});
+    const rootState = mockRootState({surveyAndProgram: mockSurveyAndProgramState({selectedDataType: dataType})});
 
     const result = metadataGetters.choroplethIndicatorsMetadata(metadataState, null, rootState, null);
 
@@ -54,10 +56,6 @@ describe("Metadata regionIndicator getter", () => {
         testGetsChoroplethIndicatorsMetadataForDataType(DataType.Survey);
     });
 
-    it("gets choropleth indicators metadata for output", () => {
-        testGetsChoroplethIndicatorsMetadataForDataType(DataType.Output);
-    });
-
     it ("gets empty choropleth indicators when there is no metadata", () => {
         const metadataState =  mockMetadataState(
             {plottingMetadata: null});
@@ -68,14 +66,20 @@ describe("Metadata regionIndicator getter", () => {
     });
 
     it("gets choropleth indicators", () => {
-        const testGetters = {
-            choroplethIndicatorsMetadata: testIndicators
+
+        const rootState = mockRootState({surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.ANC})});
+
+        const testMetadata = {
+            anc: testChoroMetadata,
+            survey: {},
+            programme: {},
+            output: {},
         };
 
-        const rootState = mockRootState({filteredData: mockFilteredDataState({selectedDataType: DataType.ANC})});
+        const result = metadataGetters.choroplethIndicatorsMetadata(mockMetadataState(
+            {plottingMetadata: testMetadata}
+        ), null, rootState, null);
 
-        const result = metadataGetters.choroplethIndicators(mockMetadataState(), testGetters, rootState, null);
-
-        expect(result).toStrictEqual(["art_coverage", "prevalence"]);
+        expect(result).toStrictEqual(testIndicators);
     });
 });

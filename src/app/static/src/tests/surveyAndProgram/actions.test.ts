@@ -4,14 +4,14 @@ import {
     mockAxios,
     mockError,
     mockFailure,
-    mockProgramResponse, mockRootState,
+    mockProgramResponse,
+    mockRootState,
     mockSuccess,
     mockSurveyResponse
 } from "../mocks";
-
-import {DataType} from "../../app/store/surveyAndProgramData/filteredData";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {expectEqualsFrozen} from "../testHelpers";
+import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 
 const FormData = require("form-data");
 const rootState = mockRootState();
@@ -254,6 +254,14 @@ describe("Survey and programme actions", () => {
             SurveyAndProgramMutation.SurveyUpdated,
             SurveyAndProgramMutation.ProgramUpdated,
             SurveyAndProgramMutation.ANCUpdated]);
+    });
+
+    it ("selects data type", () => {
+        const commit = jest.fn();
+        actions.selectDataType({commit} as any, DataType.ANC);
+        expect(commit).toBeCalledTimes(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SelectedDataTypeUpdated);
+        expect(commit.mock.calls[0][0]["payload"]).toBe(DataType.ANC);
     });
 
 });

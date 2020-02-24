@@ -41,7 +41,7 @@ export const getters = {
 
         //TODO: Replace this knowledge of Choropleth filters with metadata
 
-        if (rootState.baseline) {
+        if (rootState.baseline.shape) {
             result.push({
                 id: "area",
                 column_id: "area_id",

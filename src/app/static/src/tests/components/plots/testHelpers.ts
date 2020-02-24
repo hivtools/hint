@@ -36,6 +36,14 @@ export const testData = {
                 "type": "MultiPolygon",
                 "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
             }
+        },
+        {
+            "type": "Feature",
+            "properties": {"iso3": "MWI", "area_id": "MWI_4_3", "area_name": "North North East", "area_level": 3, "center_x": 35.7084, "center_y": -15.2048},
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [[[[35.7083, -15.2047], [35.7117, -15.2066], [35.7108, -15.2117]]]]
+            }
         }
     ],
     featureLevels: [
@@ -53,6 +61,9 @@ export const testData = {
         {
             area_id: "MWI_4_2", plhiv: 20, prevalence: 0.2, age: "0:15", sex: "female"
         },
+        {
+            area_id: "MWI_4_3", plhiv: 20, prevalence: 0, age: "0:15", sex: "female"
+        }
     ],
     indicators: [
         {
@@ -68,7 +79,8 @@ export const testData = {
             options: [{id: "MWI", label: "Malawi", children: [
                     {id: "MWI_3_1", label: "3.1"},
                     {id: "MWI_4_1", label: "4.1"},
-                    {id: "MWI_4_2", label: "4.2"}
+                    {id: "MWI_4_2", label: "4.2"},
+                    {id: "MWI_4_3", label: "4.3"}
                 ]}
             ]},
         { id: "age", label: "Age", column_id: "age", options: [{id: "0:15", label:"0-15"}, {id: "15:30", label: "15-30"}]},

@@ -2,10 +2,9 @@ import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
 import {LGeoJson, LCircleMarker, LTooltip} from "vue2-leaflet";
 import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
-import {getColor} from "../../../../app/components/plots/utils";
+import {getColor, getIndicatorRanges} from "../../../../app/components/plots/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
-import FilterSelect from "../../../../app/components/plots/FilterSelect.vue";
-import {FilterOption, NestedFilterOption} from "../../../../app/generated";
+import {NestedFilterOption} from "../../../../app/generated";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
 import Treeselect from '@riophae/vue-treeselect';
@@ -95,7 +94,8 @@ describe("BubblePlot component", () => {
         const wrapper = getWrapper();
         expectFilter(wrapper, "area-filter", [], "Area", true,[{id: "MWI_3_1", label: "3.1"},
             {id: "MWI_4_1", label: "4.1"},
-            {id: "MWI_4_2", label: "4.2"}]);
+            {id: "MWI_4_2", label: "4.2"},
+            {id: "MWI_4_3", label: "4.3"}]);
     });
 
     it("renders non-area filters", () => {
@@ -139,7 +139,7 @@ describe("BubblePlot component", () => {
         const vm = wrapper.vm as any;
 
         expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
-            ["MWI_3_1", "MWI_4_1", "MWI_4_2"],
+            ["MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"],
             propsData.indicators,
             getIndicatorRanges(propsData.chartdata, propsData.indicators),
             [propsData.filters[1]],
@@ -155,7 +155,7 @@ describe("BubblePlot component", () => {
 
         expect(vm.featuresByLevel).toStrictEqual({
             0: [propsData.features[0]],
-            3: [propsData.features[1]],
+            3: [propsData.features[1], propsData.features[4]],
             4: [propsData.features[2], propsData.features[3]]
         });
     });
@@ -189,11 +189,13 @@ describe("BubblePlot component", () => {
             "MWI": {id: "MWI", label: "Malawi", children: [
                     {id: "MWI_3_1", label: "3.1"},
                     {id: "MWI_4_1", label: "4.1"},
-                    {id: "MWI_4_2", label: "4.2"}
+                    {id: "MWI_4_2", label: "4.2"},
+                    {id: "MWI_4_3", label: "4.3"}
                 ]},
             "MWI_3_1": {id: "MWI_3_1", label: "3.1"},
             "MWI_4_1": {id: "MWI_4_1", label: "4.1"},
-            "MWI_4_2": {id: "MWI_4_2", label: "4.2"}
+            "MWI_4_2": {id: "MWI_4_2", label: "4.2"},
+            "MWI_4_3": {id: "MWI_4_3", label: "4.3"}
         });
     });
 

@@ -1,6 +1,6 @@
 import {
     mockError,
-    mockFilteredDataState, mockMetadataState,
+    mockMetadataState,
     mockModelOptionsState,
     mockModelOutputState,
     mockModelRunState, mockPlottingSelections,
@@ -17,7 +17,6 @@ describe("LocalStorageManager", () => {
             }),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
-            filteredData: mockFilteredDataState(),
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections()
@@ -28,7 +27,6 @@ describe("LocalStorageManager", () => {
                 modelRun: mockModelRunState(),
                 modelOptions: mockModelOptionsState(),
                 modelOutput: mockModelOutputState(),
-                filteredData: mockFilteredDataState(),
                 stepper: mockStepperState(),
                 metadata: mockMetadataState(),
                 plottingSelections: mockPlottingSelections()

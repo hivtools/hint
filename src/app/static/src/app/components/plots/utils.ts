@@ -78,7 +78,7 @@ export const iterateDataValues = function(
                 continue;
             }
 
-            if (!row[metadata.value_column]) {
+            if (!row[metadata.value_column] && row[metadata.value_column] !== 0) {
                 //No value for this indicator in this row
                 continue;
             }

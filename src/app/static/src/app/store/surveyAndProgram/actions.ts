@@ -14,6 +14,7 @@ export interface SurveyAndProgramActions {
     deleteProgram: (store: ActionContext<SurveyAndProgramState, RootState>) => void
     deleteANC: (store: ActionContext<SurveyAndProgramState, RootState>) => void
     deleteAll: (store: ActionContext<SurveyAndProgramState, RootState>) => void
+    selectDataType: (store: ActionContext<SurveyAndProgramState, RootState>, payload: DataType) => void
 }
 
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
@@ -22,11 +23,10 @@ function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
 }
 
 export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndProgramActions = {
-
-    //TODO: this probbaly doesn't need to be an action ,could be direct mutation
-    /*selectDataType(store, payload) {
-        store.commit({type: "SelectedDataTypeUpdated", payload: payload})
-    },*/
+    selectDataType(context, payload) {
+        const {commit} = context;
+        commitSelectedDataTypeUpdated(commit, payload);
+    },
 
     async uploadSurvey(context, formData) {
         const {commit} = context;
