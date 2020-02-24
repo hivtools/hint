@@ -375,6 +375,9 @@
                         this.updateBounds();
                     }
                 }
-            }
+            },
+        mounted(){
+            this.initialise();
+        }
     });
 </script>

@@ -92,7 +92,8 @@ describe("File menu", () => {
         const expectedJson = JSON.stringify({
             state: {
                 modelRun: mockModelRunState(),
-                metadata: mockMetadataState()
+                metadata: mockMetadataState(),
+                surveyAndProgram: {selectedDataType: null}
             },
             files: {
                 pjnz: {hash: "2csv", filename: "2.csv"},

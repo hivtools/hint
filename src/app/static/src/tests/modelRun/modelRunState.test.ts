@@ -7,7 +7,8 @@ localStorageManager.saveState({
         errors: [],
         statusPollId: -1,
         ready: true
-    }
+    },
+    surveyAndProgram: {}
 } as any);
 
 import {modelRun, ModelRunState} from "../../app/store/modelRun/modelRun";

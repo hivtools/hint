@@ -10,6 +10,7 @@ import Vuex from "vuex";
 import {emptyState} from "../../../../app/root";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import {expectFilter, testData} from "../testHelpers";
+import Vue from "vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -255,6 +256,7 @@ describe("Choropleth component", () => {
                 selectedFilterOptions: {}
             }});
 
+        const updates = wrapper.emitted("update");
         expect(wrapper.emitted("update")[0][0]).toStrictEqual({detail: 4});
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({indicatorId: "prevalence"});
         expect(wrapper.emitted("update")[2][0]).toStrictEqual({
@@ -291,12 +293,15 @@ describe("Choropleth component", () => {
 
     it("updates detail", () => {
         const wrapper = getWrapper();
-        const emittedCount = wrapper.emitted.length;
 
         const vm = wrapper.vm as any;
         vm.onDetailChange(3);
 
-        expect(wrapper.emitted("update")[emittedCount][0].detail).toStrictEqual(3);
+        const updates = wrapper.emitted("update");
+        expect(updates[updates.length - 1][0]).toStrictEqual({
+            detail: 3
+        });
+
     });
 
     it("updates bounds when becomes initialises", () => {
