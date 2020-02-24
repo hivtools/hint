@@ -96,7 +96,7 @@ describe("modelOutput module", () => {
 
     it("gets choropleth indicators", async () => {
         const testRootGetters = {
-            "metadata/outpuIndicatorsMetadata": ["TEST INDICATORS"]
+            "metadata/outputIndicatorsMetadata": ["TEST INDICATORS"]
         };
 
         const result = modelOutputGetters.choroplethIndicators(mockModelOutputState(), null, rootState, testRootGetters);

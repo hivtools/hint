@@ -54,7 +54,7 @@ describe("root actions", () => {
 
         expect(mockContext.dispatch).toHaveBeenCalled();
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 1});
-        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetFilteredDataSelections"});
+        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetSelectedDataType"});
 
         expect(mockContext.commit.mock.calls[2][0]).toStrictEqual({
             type: "load/LoadFailed",
@@ -84,7 +84,7 @@ describe("root actions", () => {
         expect(mockContext.dispatch).toHaveBeenCalled();
 
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 1});
-        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetFilteredDataSelections"});
+        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetSelectedDataType"});
     });
 
     it("does not reset state if later steps than current are complete and incomplete, but all are valid", async () => {

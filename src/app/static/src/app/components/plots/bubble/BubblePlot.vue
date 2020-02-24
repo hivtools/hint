@@ -56,6 +56,7 @@
                 </template>
                 <map-control :initialDetail=selections.detail
                              :show-indicators="false"
+                             :level-labels="featureLevels"
                              @detail-changed="onDetailChange"></map-control>
                 <map-legend :metadata="colorIndicator"></map-legend>
                 <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius"></size-legend>

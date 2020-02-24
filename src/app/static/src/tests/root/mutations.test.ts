@@ -128,7 +128,7 @@ describe("Root mutations", () => {
             })
         });
 
-        mutations.ResetFilteredDataSelections(state);
+        mutations.ResetSelectedDataType(state);
         expect(state.surveyAndProgram.selectedDataType).toBe(null);
     });
 

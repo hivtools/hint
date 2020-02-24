@@ -1,75 +1,31 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import MapControl from "../../../app/components/plots/MapControl.vue";
-import TreeSelect from '@riophae/vue-treeselect'
-import Vuex from "vuex";
-import {mockBaselineState, mockShapeResponse, mockSurveyAndProgramState} from "../../mocks";
-import {DataType} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {emptyState} from "../../../app/root";
+import TreeSelect from '@riophae/vue-treeselect';
 
 const localVue = createLocalVue();
 
 describe("Map control component", () => {
 
     const propsData = {
-        showIndicators: true
-    };
-
-    const getStore = (choroplethIndicatorsMetadata?: any, selectedDataType: DataType = DataType.Survey) => {
-
-        if (!choroplethIndicatorsMetadata) {
-            choroplethIndicatorsMetadata = [
-                {
-                    indicator: "art_coverage",
-                    name: "ART coverage"
-                },
-                {
-                    indicator: "prevalence",
-                    name: "Prevalence"
-                }
-            ]
-        }
-
-        const store = new Vuex.Store({
-            state: emptyState(),
-            modules: {
-                baseline: {
-                    namespaced: true,
-                    state: mockBaselineState(
-                        {
-                            shape: mockShapeResponse({
-                                filters: {
-                                    level_labels: [
-                                        {id: 4, display: true, area_level_label: "Admin Level 4"},
-                                        {id: 5, display: true, area_level_label: "Admin Level 5"}
-                                    ]
-                                }
-                            })
-                        }
-                    )
-                },
-                surveyAndProgram: {
-                    namespaced: true,
-                    state: mockSurveyAndProgramState({selectedDataType: selectedDataType})
-                },
-                metadata: {
-                    namespaced: true,
-                    getters: {
-                        choroplethIndicatorsMetadata: () => {
-                            return choroplethIndicatorsMetadata
-
-                        }
-                    }
-                }
+        showIndicators: true,
+        levelLabels: [
+            {id: 4, display: true, area_level_label: "Admin Level 4"},
+            {id: 5, display: true, area_level_label: "Admin Level 5"}
+        ],
+        indicatorsMetadata: [
+            {
+                indicator: "art_coverage",
+                name: "ART coverage"
+            },
+            {
+                indicator: "prevalence",
+                name: "Prevalence"
             }
-        });
-        registerTranslations(store);
-        return store;
+        ]
     };
 
     it("renders tree selects with expected properties", () => {
-        const store = getStore();
-        const wrapper = shallowMount(MapControl, {store, localVue, propsData});
+        const wrapper = shallowMount(MapControl, {localVue, propsData});
 
         expect(wrapper.findAll(TreeSelect).at(0).props("searchable")).toBe(false);
         expect(wrapper.findAll(TreeSelect).at(0).props("multiple")).toBe(false);
@@ -81,8 +37,7 @@ describe("Map control component", () => {
     });
 
     it("renders indicator options", () => {
-        const store = getStore();
-        const wrapper = shallowMount(MapControl, {store, localVue, propsData});
+        const wrapper = shallowMount(MapControl, {localVue, propsData});
 
         expect(wrapper.findAll(TreeSelect).at(0).props("options"))
             .toStrictEqual([{id: "art_coverage", label: "ART coverage"},
@@ -90,8 +45,7 @@ describe("Map control component", () => {
     });
 
     it("renders detail options", () => {
-        const store = getStore();
-        const wrapper = shallowMount(MapControl, {store, localVue, propsData});
+        const wrapper = shallowMount(MapControl, {localVue, propsData});
 
         expect(wrapper.findAll(TreeSelect).at(1).props("options"))
             .toStrictEqual([{id: 4, label: "Admin Level 4"},
@@ -99,15 +53,13 @@ describe("Map control component", () => {
     });
 
     it("emits indicator-changed event with indicator", () => {
-        const store = getStore();
-        const wrapper = shallowMount(MapControl, {store, localVue, propsData});
+        const wrapper = shallowMount(MapControl, {localVue, propsData});
         wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "art_coverage");
         expect(wrapper.emitted("indicator-changed")[0][0]).toBe("art_coverage");
     });
 
     it("emits detail-changed event with detail", () => {
-        const store = getStore();
-        const wrapper = shallowMount(MapControl, {store, localVue, propsData});
+        const wrapper = shallowMount(MapControl, {localVue, propsData});
         wrapper.findAll(TreeSelect).at(1).vm.$emit("input", 3);
         expect(wrapper.emitted("detail-changed")[0][0]).toBe(3);
     });

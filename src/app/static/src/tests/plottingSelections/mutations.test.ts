@@ -45,7 +45,7 @@ describe("Plotting selections mutations", () => {
         };
         mutations.updateSAPChoroplethSelections(testState, {payload: newChoroSelections});
         expect(testState.sapChoropleth).toStrictEqual({
-            colorIndicatorId: "",
+            indicatorId: "",
             detail: -1,
             selectedFilterOptions: { testFilter: [{id: "1", label: "one"}]}
         });
@@ -57,8 +57,8 @@ describe("Plotting selections mutations", () => {
             detail: 2
         };
         mutations.updateOutputChoroplethSelections(testState, {payload: newChoroSelections});
-        expect(testState.sapChoropleth).toStrictEqual({
-            colorIndicatorId: "",
+        expect(testState.outputChoropleth).toStrictEqual({
+            indicatorId: "",
             detail: 2,
             selectedFilterOptions: {}
         });

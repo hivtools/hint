@@ -47,7 +47,7 @@ describe("Survey and programme actions", () => {
         });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[2][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
+        expect(commit.mock.calls[2][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
         expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
     });
 
@@ -91,7 +91,7 @@ describe("Survey and programme actions", () => {
         });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[2][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
+        expect(commit.mock.calls[2][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
         expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
     });
 
@@ -136,7 +136,7 @@ describe("Survey and programme actions", () => {
         });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[2][0]).toStrictEqual("filteredData/SelectedDataTypeUpdated");
+        expect(commit.mock.calls[2][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
         expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.ANC});
     });
 
@@ -260,8 +260,9 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         actions.selectDataType({commit} as any, DataType.ANC);
         expect(commit).toBeCalledTimes(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SelectedDataTypeUpdated);
-        expect(commit.mock.calls[0][0]["payload"]).toBe(DataType.ANC);
+        expect(commit.mock.calls[0][0]).toEqual("surveyAndProgram/SelectedDataTypeUpdated");
+        expect(commit.mock.calls[0][1]["type"]).toBe(SurveyAndProgramMutation.SelectedDataTypeUpdated);
+        expect(commit.mock.calls[0][1]["payload"]).toBe(DataType.ANC);
     });
 
 });

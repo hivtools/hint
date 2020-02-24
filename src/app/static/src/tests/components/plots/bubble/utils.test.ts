@@ -92,8 +92,8 @@ describe("Bubble plot utils", () => {
 
     it("can exclude rows based on filters", () => {
         const filters = [
-            {id: "age", label: "Age", column_id: "age", options: []},
-            {id: "sex", label: "Sex", column_id: "sex", options: []}
+            {id: "age", label: "Age", column_id: "age", options: [{id: "0:15", label: "0-15"}, {id: "15:30", label: "15-30"}]},
+            {id: "sex", label: "Sex", column_id: "sex", options: [{id: "female", label: "F"}, {id: "male", label: "M"}]}
         ];
 
         const selectedFilterValues = {
@@ -107,7 +107,7 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 16, sex: "female", age: "0:15"}, //not included: not in selectedFeatures
             {area_id: "MWI_1_1", prevalence: 0.1, plhiv: 18, sex: "male", age: "0:15"}, //not included: no sex filter match
             {area_id: "MWI_1_1", prevalence: 0.2, plhiv: 20, sex: "female", age: "30:45"}, //not included: no age filter match
-        ];["prevalence", "plhiv"]
+        ];
 
         const result = getFeatureIndicators(data, selectedFeatureIds, indicators, indicatorRanges, filters,
             selectedFilterValues, ["prevalence", "plhiv"], minRadius, maxRadius);

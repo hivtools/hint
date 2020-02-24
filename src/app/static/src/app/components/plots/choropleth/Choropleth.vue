@@ -35,6 +35,7 @@
                              :indicator=selections.indicatorId
                              :show-indicators="true"
                              :indicators-metadata="indicators"
+                             :level-labels="featureLevels"
                              @detail-changed="onDetailChange"
                              @indicator-changed="onIndicatorChange"></map-control>
                 <map-legend :metadata="colorIndicator"></map-legend>
@@ -69,7 +70,7 @@
         chartdata: any[],
         filters: Filter[],
         selections: ChoroplethSelections,
-        areaFilterId: string
+        areaFilterId: string,
         hideControls: boolean
     }
 
@@ -262,7 +263,7 @@
                             </div>`);
                     }
                 }
-            },
+            }
         },
         methods: {
             updateBounds: function() {
