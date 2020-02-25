@@ -3,6 +3,9 @@ import {localStorageManager} from "../../app/localStorageManager";
 localStorageManager.saveState({
     stepper: {
         activeStep: 4
+    },
+    surveyAndProgram: {
+        selectedDataType: null
     }
 } as any);
 

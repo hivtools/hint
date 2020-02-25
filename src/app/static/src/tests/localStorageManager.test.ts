@@ -1,26 +1,29 @@
 import {
     mockError,
-    mockFilteredDataState, mockMetadataState,
+    mockMetadataState,
     mockModelOptionsState,
     mockModelOutputState,
-    mockModelRunState, mockPlottingSelections,
-    mockStepperState
+    mockModelRunState,
+    mockPlottingSelections,
+    mockStepperState,
+    mockSurveyAndProgramState
 } from "./mocks";
 import {serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
+import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
 
 describe("LocalStorageManager", () => {
-    it("serialiseState removes errors", async () => {
+    it("serialiseState removes errors, saves selected data type", async () => {
         const mockRoot = {
             modelRun: mockModelRunState({
                 errors: [mockError("modelRunError1"), mockError("modelRunError2")]
             }),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
-            filteredData: mockFilteredDataState(),
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
-            plottingSelections: mockPlottingSelections()
+            plottingSelections: mockPlottingSelections(),
+            surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey})
         } as RootState;
 
         const result = serialiseState(mockRoot);
@@ -28,10 +31,10 @@ describe("LocalStorageManager", () => {
                 modelRun: mockModelRunState(),
                 modelOptions: mockModelOptionsState(),
                 modelOutput: mockModelOutputState(),
-                filteredData: mockFilteredDataState(),
                 stepper: mockStepperState(),
                 metadata: mockMetadataState(),
-                plottingSelections: mockPlottingSelections()
+                plottingSelections: mockPlottingSelections(),
+                surveyAndProgram: {selectedDataType: DataType.Survey}
             });
     });
 });

@@ -3,8 +3,13 @@ import {actions} from './actions';
 import {mutations} from './mutations';
 import {ReadyState, RootState} from "../../root";
 import {AncResponse, ProgrammeResponse, SurveyResponse, Error} from "../../generated";
+import {getters} from "./getters";
+import {localStorageManager} from "../../localStorageManager";
 
-export interface SurveyAndProgramDataState extends ReadyState {
+export enum DataType { ANC, Program, Survey}
+
+export interface SurveyAndProgramState extends ReadyState {
+    selectedDataType: DataType | null
     survey: SurveyResponse | null
     surveyError: Error | null
     program: ProgrammeResponse | null
@@ -13,8 +18,9 @@ export interface SurveyAndProgramDataState extends ReadyState {
     ancError: Error | null
 }
 
-export const initialSurveyAndProgramDataState = (): SurveyAndProgramDataState => {
+export const initialSurveyAndProgramState = (): SurveyAndProgramState => {
     return {
+        selectedDataType: null,
         survey: null,
         surveyError: null,
         program: null,
@@ -25,20 +31,16 @@ export const initialSurveyAndProgramDataState = (): SurveyAndProgramDataState =>
     }
 };
 
-export const surveyAndProgramGetters = {
-    complete: (state: SurveyAndProgramDataState) => {
-        return !!state.survey && !state.programError && !state.ancError
-    }
-};
-
 const namespaced: boolean = true;
 
-export const surveyAndProgram: Module<SurveyAndProgramDataState, RootState> = {
+const existingState = localStorageManager.getState();
+export const surveyAndProgram: Module<SurveyAndProgramState, RootState> = {
     namespaced,
-    state: initialSurveyAndProgramDataState(),
-    getters: surveyAndProgramGetters,
+    state: {...initialSurveyAndProgramState(), ...existingState && existingState.surveyAndProgram},
+    getters,
     actions,
     mutations
 };
+
 
 

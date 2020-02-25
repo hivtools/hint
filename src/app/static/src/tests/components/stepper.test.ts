@@ -13,7 +13,8 @@ import {
     mockShapeResponse, mockStepperState,
     mockSurveyAndProgramState, mockValidateBaselineResponse
 } from "../mocks";
-import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {getters as surveyAndProgramGetters} from "../../app/store/surveyAndProgram/getters";
 import {mutations} from '../../app/store/baseline/mutations';
 import {mutations as surveyAndProgramMutations} from '../../app/store/surveyAndProgram/mutations';
 import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations';
@@ -38,7 +39,7 @@ const localVue = createLocalVue();
 
 describe("Stepper component", () => {
     const createSut = (baselineState?: Partial<BaselineState>,
-                       surveyAndProgramState?: Partial<SurveyAndProgramDataState>,
+                       surveyAndProgramState?: Partial<SurveyAndProgramState>,
                        metadataState?: Partial<MetadataState>,
                        modelRunState?: Partial<ModelRunState>,
                        stepperState?: Partial<StepperState>,

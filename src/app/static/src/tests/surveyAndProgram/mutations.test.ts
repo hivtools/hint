@@ -1,4 +1,5 @@
-import {SurveyAndProgramDataState, surveyAndProgramGetters} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {DataType, SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {getters as surveyAndProgramGetters} from "../../app/store/surveyAndProgram/getters";
 import {mutations, SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {mockError, mockRootState, mockSurveyAndProgramState, mockSurveyResponse} from "../mocks";
 
@@ -71,11 +72,11 @@ describe("Survey and programme mutations", () => {
     });
 
     it("is complete once survey file is present", () => {
-        const testStore: Module<SurveyAndProgramDataState, RootState> = {
+        const testStore: Module<SurveyAndProgramState, RootState> = {
             state: mockSurveyAndProgramState(),
             getters: surveyAndProgramGetters
         };
-        const testState = testStore.state as SurveyAndProgramDataState;
+        const testState = testStore.state as SurveyAndProgramState;
         const testRootState = mockRootState({surveyAndProgram: testState});
 
         const complete = testStore.getters!!.complete;
@@ -91,5 +92,12 @@ describe("Survey and programme mutations", () => {
         mutations.Ready(testState);
         expect(testState.ready).toBe(true);
     });
+
+    it("sets selected DataType", () => {
+        const testState = mockSurveyAndProgramState({selectedDataType: DataType.Survey});
+        mutations[SurveyAndProgramMutation.SelectedDataTypeUpdated](testState, {payload: DataType.Program});
+        expect(testState.selectedDataType).toBe(DataType.Program);
+    });
+
 
 });

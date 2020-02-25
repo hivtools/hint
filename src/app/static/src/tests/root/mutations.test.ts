@@ -6,7 +6,7 @@ import {
     mockAncResponse,
     mockBaselineState,
     mockError, mockErrorsState,
-    mockFilteredDataState, mockLoadState,
+    mockLoadState,
     mockMetadataState,
     mockModelOptionsState,
     mockModelOutputState,
@@ -17,7 +17,7 @@ import {
     mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../mocks";
-import {DataType, initialFilteredDataState} from "../../app/store/filteredData/filteredData";
+import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../app/root";
 import {
     BarchartSelections,
@@ -40,7 +40,6 @@ describe("Root mutations", () => {
             modelOutput: mockModelOutputState({selectedTab: "Barchart"}),
             modelRun: mockModelRunState({modelRunId: "123"}),
             plottingSelections: mockPlottingSelections({barchart: {indicatorId: "Test Indicator"} as BarchartSelections}),
-            filteredData: mockFilteredDataState({selectedDataType: DataType.Output}),
             stepper: mockStepperState({activeStep: 6}),
             load: mockLoadState({loadError: mockError("Test Load Error")}),
             errors: mockErrorsState({errors: [mockError("Test Error")]})
@@ -63,9 +62,6 @@ describe("Root mutations", () => {
         expect(state.plottingSelections).toStrictEqual(initialPlottingSelectionsState());
         expect(state.load).toStrictEqual(initialLoadState());
         expect(state.errors).toStrictEqual(initialErrorsState());
-
-        //FilteredData is never reset - it is possibly modified in a separate mutations
-        expect(state.filteredData).toStrictEqual(popState.filteredData);
 
         //we skip stepper state this needs to be tested separately, activeStep may have been modified
     };
@@ -127,50 +123,39 @@ describe("Root mutations", () => {
     it("sets selected data type to null if no valid type available", () => {
 
         const state = mockRootState({
-            filteredData: mockFilteredDataState({
+            surveyAndProgram: mockSurveyAndProgramState({
                 selectedDataType: DataType.ANC
             })
         });
 
-        mutations.ResetFilteredDataSelections(state);
-        expect(state.filteredData.selectedDataType).toBe(null);
+        mutations.ResetSelectedDataType(state);
+        expect(state.surveyAndProgram.selectedDataType).toBe(null);
     });
 
     it("sets selected data type to available type if there is one", () => {
 
         const state = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState({
-                survey: mockSurveyResponse()
-            }),
-            filteredData: mockFilteredDataState({
+                survey: mockSurveyResponse(),
                 selectedDataType: DataType.ANC
             })
         });
 
-        mutations.ResetFilteredDataSelections(state);
-        expect(state.filteredData.selectedDataType).toBe(DataType.Survey);
+        mutations.ResetSelectedDataType(state);
+        expect(state.surveyAndProgram.selectedDataType).toBe(DataType.Survey);
     });
 
     it("leaves selected data type as is if valid", () => {
 
         const state = mockRootState({
             surveyAndProgram: mockSurveyAndProgramState({
-                anc: mockAncResponse()
-            }),
-            filteredData: mockFilteredDataState({
+                anc: mockAncResponse(),
                 selectedDataType: DataType.ANC
             })
         });
 
-        // simulate mutations
-        state.filteredData.selectedChoroplethFilters.age = "1";
-        state.filteredData.selectedChoroplethFilters.year = "1";
-        state.filteredData.selectedChoroplethFilters.survey = "1";
-        state.filteredData.selectedChoroplethFilters.sex = "1";
-        state.filteredData.selectedChoroplethFilters.regions = ["1"];
-
-        mutations.ResetFilteredDataSelections(state);
-        expect(state.filteredData.selectedDataType).toBe(DataType.ANC);
+        mutations.ResetSelectedDataType(state);
+        expect(state.surveyAndProgram.selectedDataType).toBe(DataType.ANC);
     });
 
     it("can reset model options state", () => {
@@ -191,18 +176,18 @@ describe("Root mutations", () => {
         });
 
         state.plottingSelections.barchart.xAxisId = "test";
+        state.plottingSelections.outputChoropleth.detail = 4;
+
+        //This should not be reset
+        state.plottingSelections.sapChoropleth.detail = 2;
 
         mutations.ResetOutputs(state);
         expect(state.modelRun).toStrictEqual({...initialModelRunState(), ready: true});
         expect(state.modelOutput.selectedTab).toBe("");
 
-        expect(state.filteredData.selectedChoroplethFilters.year).toBe("");
-        expect(state.filteredData.selectedChoroplethFilters.age).toBe("");
-        expect(state.filteredData.selectedChoroplethFilters.sex).toBe("");
-        expect(state.filteredData.selectedChoroplethFilters.survey).toBe("");
-        expect(state.filteredData.selectedChoroplethFilters.regions).toStrictEqual([]);
-
         expect(state.plottingSelections.barchart.xAxisId).toBe("");
+        expect(state.plottingSelections.outputChoropleth.detail).toBe(-1);
+        expect(state.plottingSelections.sapChoropleth.detail).toBe(2);
     });
 
     it("can change language", () => {

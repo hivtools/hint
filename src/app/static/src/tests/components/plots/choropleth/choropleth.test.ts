@@ -1,18 +1,17 @@
-import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
-import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
-import {LGeoJson, LCircleMarker, LTooltip} from "vue2-leaflet";
-import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
-import {getColor, getIndicatorRanges} from "../../../../app/components/plots/utils";
+import {createLocalVue, shallowMount} from "@vue/test-utils";
+import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
+import {LGeoJson} from "vue2-leaflet";
+import {getFeatureIndicators} from "../../../../app/components/plots/choropleth/utils";
+import {getIndicatorRanges} from "../../../../app/components/plots/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 import {NestedFilterOption} from "../../../../app/generated";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
-import Treeselect from '@riophae/vue-treeselect';
 import {emptyState} from "../../../../app/root";
-import {Vue} from "vue/types/vue";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
-import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
-import {testData, expectFilter} from "../testHelpers"
+import {expectFilter, testData} from "../testHelpers";
+import Vue from "vue";
+import FilterSelect from "../../../../app/components/plots/FilterSelect.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -23,8 +22,7 @@ registerTranslations(store);
 const propsData = {
     ...testData,
     selections: {
-        colorIndicatorId: "prevalence",
-        sizeIndicatorId: "plhiv",
+        indicatorId: "prevalence",
         detail: 4,
         selectedFilterOptions: {
             age: [{id: "0:15", label:"0-15"}],
@@ -36,20 +34,10 @@ const propsData = {
 
 const getWrapper  = (customPropsData: any = {}) => {
 
-    return shallowMount(BubblePlot, {propsData: {...propsData, ...customPropsData}, localVue});
+    return shallowMount(Choropleth, {propsData: {...propsData, ...customPropsData}, localVue});
 };
 
-export const expectIndicatorSelect = (wrapper: Wrapper<Vue>, divId: string, value: string) => {
-    const indDiv = wrapper.find("#" + divId);
-    expect(indDiv.classes()[0]).toBe("form-group");
-    const indSelect = indDiv.find(Treeselect);
-    expect(indSelect.props().multiple).toBe(false);
-    expect(indSelect.props().clearable).toBe(false);
-    expect(indSelect.props().options).toStrictEqual(propsData.indicators);
-    expect(indSelect.props().value).toBe(value);
-};
-
-describe("BubblePlot component", () => {
+describe("Choropleth component", () => {
     it("renders plot as expected", () => {
         const wrapper = getWrapper();
         const geoJsons = wrapper.findAll(LGeoJson);
@@ -57,37 +45,10 @@ describe("BubblePlot component", () => {
         expect(geoJsons.at(0).props().geojson).toBe(propsData.features[2]);
         expect(geoJsons.at(1).props().geojson).toBe(propsData.features[3]);
 
-        //These are hardcoded in the component
-        const minRadius = 10;
-        const maxRadius = 60;
-
-        const circles = wrapper.findAll(LCircleMarker);
-        expect(circles.length).toBe(2);
-        expect(circles.at(0).props().latLng).toEqual([-15.2047, 35.7083]);
-        expect(circles.at(0).props().radius).toEqual(getRadius(10, 1, 20, 10, 70));
-        expect(circles.at(0).find(LTooltip).props().content).toEqual(`<div>
-                            <strong>North West</strong>
-                            <br/>Prevalence: 0.1
-                            <br/>PLHIV: 10
-                        </div>`);
-        const meta = propsData.indicators[1];
-        let color = getColor(0.1, meta);
-        expect(circles.at(0).props().color).toEqual(color);
-        expect(circles.at(0).props().fillColor).toEqual(color);
-
-        expect(circles.at(1).props().latLng).toEqual([-15.2048, 35.7084]);
-        expect(circles.at(1).props().radius).toEqual(getRadius(20, 1, 20, 10, 70));
-        expect(circles.at(1).find(LTooltip).props().content).toEqual(`<div>
-                            <strong>North East</strong>
-                            <br/>Prevalence: 0.2
-                            <br/>PLHIV: 20
-                        </div>`);
-        color = getColor(0.2, meta);
-        expect(circles.at(1).props().color).toEqual(color);
-        expect(circles.at(1).props().fillColor).toEqual(color);
-
         expect(wrapper.find(MapControl).props().initialDetail).toEqual(4);
-        expect(wrapper.find(MapControl).props().showIndicators).toEqual(false);
+        expect(wrapper.find(MapControl).props().showIndicators).toEqual(true);
+        expect(wrapper.find(MapControl).props().indicator).toEqual("prevalence");
+        expect(wrapper.find(MapControl).props().indicatorsMetadata).toEqual(testData.indicators);
     });
 
     it("renders area filter", () => {
@@ -107,24 +68,10 @@ describe("BubblePlot component", () => {
             [{id: "female", label:"Female"}, {id: "male", label: "Male"}]);
     });
 
-    it("renders indicators", () => {
-        const wrapper = getWrapper();
-        expectIndicatorSelect(wrapper, "color-indicator", "prevalence");
-        expectIndicatorSelect(wrapper, "size-indicator", "plhiv");
-    });
-
     it("renders color legend", () => {
         const wrapper = getWrapper();
         const legend = wrapper.find(MapLegend);
         expect(legend.props().metadata).toBe(propsData.indicators[1]);
-    });
-
-    it("renders size legend", () => {
-        const wrapper = getWrapper();
-        const sizeLegend  = wrapper.find(SizeLegend);
-        expect(sizeLegend.props().indicatorRange).toStrictEqual({min: 1, max: 20});
-        expect(sizeLegend.props().minRadius).toBe(10);
-        expect(sizeLegend.props().maxRadius).toBe(70);
     });
 
     it("computes indicatorRanges", () => {
@@ -144,9 +91,8 @@ describe("BubblePlot component", () => {
             getIndicatorRanges(propsData.chartdata, propsData.indicators),
             [propsData.filters[1]],
             propsData.selections.selectedFilterOptions,
-            ["prevalence", "plhiv"],
-            10,
-            70));
+            ["prevalence"]
+        ));
     });
 
     it("computes featuresByLevel", () => {
@@ -219,6 +165,22 @@ describe("BubblePlot component", () => {
         expect((uninitialisableWrapper.vm as any).initialised).toBe(false);
     });
 
+    it("computes initialised to false if no filters present", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.initialised).toBe(true);
+
+        const uninitialisableWrapper = getWrapper({
+            selections: {
+                detail: 2,
+                selectedFilterOptions: {}
+            },
+            filters: []
+        });
+
+        expect((uninitialisableWrapper.vm as any).initialised).toBe(false);
+    });
+
     it("computes areaFilter", () => {
         const wrapper = getWrapper();
         expect((wrapper.vm as any).areaFilter).toBe(propsData.filters[0]);
@@ -285,11 +247,6 @@ describe("BubblePlot component", () => {
         expect((wrapper.vm as any).countryFeature).toBe(propsData.features[0]);
     });
 
-    it("computes colorIndicator", () => {
-        const wrapper = getWrapper();
-        expect((wrapper.vm as any).colorIndicator).toBe(propsData.indicators[1]);
-    });
-
     it("updateBounds updates bounds of map from features geojson", () => {
         const wrapper = getWrapper();
         const mockMapFitBounds = jest.fn();
@@ -304,42 +261,6 @@ describe("BubblePlot component", () => {
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
     });
 
-    it("showBubble returns true for included features only", () => {
-        const wrapper = getWrapper({
-            selections: {
-                ...propsData.selections,
-                selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
-                    area: [{id: "MWI_4_2", label: "4.2"}]
-                }
-            }
-        });
-
-        const vm = wrapper.vm as any;
-        expect(vm.showBubble(propsData.features[3])).toBe(true);
-        expect(vm.showBubble(propsData.features[2])).toBe(false);
-    });
-
-    it("showBubble returns true only if featureIndicators include both color and size indicator values", () => {
-        let wrapper = getWrapper();
-        let vm = wrapper.vm as any;
-        expect(vm.showBubble(propsData.features[2])).toBe(true);
-        expect(vm.showBubble(propsData.features[3])).toBe(true);
-
-        wrapper = getWrapper({chartdata: [
-            {
-                area_id: "MWI_4_1", prevalence: 0.1, age: "0:15", sex: "female"
-            },
-            {
-                area_id: "MWI_4_2", plhiv: 20, age: "0:15", sex: "female"
-            },
-        ]});
-        vm = wrapper.vm as any;
-
-        expect(vm.showBubble(propsData.features[2])).toBe(false);
-        expect(vm.showBubble(propsData.features[3])).toBe(false);
-    });
-
     it("can getSelectedFilterValues", () => {
         const wrapper = getWrapper();
         expect((wrapper.vm as any).getSelectedFilterValues("age")).toStrictEqual(["0:15"]);
@@ -348,16 +269,18 @@ describe("BubblePlot component", () => {
     it("initialises from empty selections and emits updates", () => {
         const wrapper = getWrapper({selections: {
                 detail: -1,
+                indicatorId: null,
                 selectedFilterOptions: {}
             }});
 
+        const updates = wrapper.emitted("update");
         expect(wrapper.emitted("update")[0][0]).toStrictEqual({detail: 4});
-        expect(wrapper.emitted("update")[1][0]).toStrictEqual({colorIndicatorId: "prevalence"});
-        expect(wrapper.emitted("update")[2][0]).toStrictEqual({sizeIndicatorId: "plhiv"});
-        expect(wrapper.emitted("update")[3][0]).toStrictEqual({
+        expect(wrapper.emitted("update")[1][0]).toStrictEqual({indicatorId: "prevalence"});
+        expect(wrapper.emitted("update")[2][0]).toStrictEqual({
             selectedFilterOptions: {
                 age: [{id: "0:15", label: "0-15"}],
-                sex: [{id: "female", label: "Female"}]
+                sex: [{id: "female", label: "Female"}],
+                area: undefined
             }
         });
     });
@@ -375,32 +298,27 @@ describe("BubblePlot component", () => {
         });
     });
 
-    it("onColorIndicatorSelect updates color indicator", () => {
+    it("onIndicatorChange updates indicator", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
-        vm.onColorIndicatorSelect("newIndicator");
+        vm.onIndicatorChange("newIndicator");
         const updates = wrapper.emitted("update");
         expect(updates[updates.length - 1][0]).toStrictEqual({
-            colorIndicatorId: "newIndicator"
-        });
-    });
-
-    it("onSizeIndicatorSelect updates color indicator", () => {
-        const wrapper = getWrapper();
-        const vm = wrapper.vm as any;
-        vm.onSizeIndicatorSelect("newIndicator");
-        const updates = wrapper.emitted("update");
-        expect(updates[updates.length - 1][0]).toStrictEqual({
-            sizeIndicatorId: "newIndicator"
+            indicatorId: "newIndicator"
         });
     });
 
     it("updates detail", () => {
         const wrapper = getWrapper();
+
         const vm = wrapper.vm as any;
         vm.onDetailChange(3);
 
-        expect(wrapper.emitted("update")[0][0].detail).toStrictEqual(3);
+        const updates = wrapper.emitted("update");
+        expect(updates[updates.length - 1][0]).toStrictEqual({
+            detail: 3
+        });
+
     });
 
     it("updates bounds when becomes initialises", () => {
@@ -433,4 +351,52 @@ describe("BubblePlot component", () => {
         const result = vm.normalizeIndicators(propsData.indicators[0]);
         expect(result).toStrictEqual({id: "plhiv", label: "PLHIV"});
     });
+
+    it("options onEachFeature returns function which generates correct tooltips", () => {
+
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        const options = vm.options;
+        const onEachFeatureFunction = options.onEachFeature;
+
+        const mockLayer = {
+            bindTooltip: jest.fn()
+        };
+
+        const mockFeature = {
+            properties: {
+                area_id: "MWI_3_1",
+                area_name: "Area 1"
+            }
+        };
+
+        onEachFeatureFunction(mockFeature, mockLayer);
+        expect(mockLayer.bindTooltip.mock.calls[0][0]).toEqual(`<div>
+                            <strong>Area 1</strong>
+                            <br/>0.01
+                        </div>`);
+
+        const mockZeroValueFeature = {
+            properties: {
+                area_id: "MWI_4_3",
+                area_name: "Area 2"
+            }
+        };
+
+        onEachFeatureFunction(mockZeroValueFeature, mockLayer);
+        expect(mockLayer.bindTooltip.mock.calls[1][0]).toEqual(`<div>
+                            <strong>Area 2</strong>
+                            <br/>0
+                        </div>`);
+
+    });
+
+    it("hides controls", () => {
+        const wrapper = getWrapper({hideControls: true});
+        expect(wrapper.findAll("#chart").length).toBe(0);
+        expect(wrapper.findAll(LGeoJson).length).toBe(0);
+        expect(wrapper.findAll(MapControl).length).toBe(0);
+        expect(wrapper.findAll(FilterSelect).length).toBe(0);
+    });
+
 });

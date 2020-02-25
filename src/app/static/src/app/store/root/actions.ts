@@ -39,7 +39,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             }
 
             commit({type: RootMutation.Reset, payload: maxValidStep});
-            commit({type: RootMutation.ResetFilteredDataSelections});
+            commit({type: RootMutation.ResetSelectedDataType});
 
             commit({
                 type: "load/LoadFailed",

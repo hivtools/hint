@@ -7,7 +7,9 @@ import {Dict} from "../../types";
 
 export interface PlottingSelectionsState {
     barchart: BarchartSelections,
-    bubble: BubblePlotSelections
+    bubble: BubblePlotSelections,
+    sapChoropleth: ChoroplethSelections,
+    outputChoropleth: ChoroplethSelections
 }
 
 export interface BarchartSelections {
@@ -21,6 +23,12 @@ export interface BarchartSelections {
 export interface BubblePlotSelections {
     colorIndicatorId: string,
     sizeIndicatorId: string,
+    selectedFilterOptions: Dict<FilterOption[]>,
+    detail: number
+}
+
+export interface ChoroplethSelections {
+    indicatorId: string,
     selectedFilterOptions: Dict<FilterOption[]>,
     detail: number
 }
@@ -43,10 +51,20 @@ export const initialBubblePlotSelections = (): BubblePlotSelections => {
     };
 };
 
+export const initialChorplethSelections = (): ChoroplethSelections => {
+    return {
+        indicatorId: "",
+        selectedFilterOptions: {},
+        detail: -1
+    };
+};
+
 export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
     return {
         barchart: initialBarchartSelections(),
-        bubble: initialBubblePlotSelections()
+        bubble: initialBubblePlotSelections(),
+        sapChoropleth: initialChorplethSelections(),
+        outputChoropleth: initialChorplethSelections()
     }
 };
 
@@ -58,4 +76,5 @@ export const plottingSelections: Module<PlottingSelectionsState, RootState> = {
     state: {...initialPlottingSelectionsState(), ...existingState && existingState.plottingSelections},
     mutations
 };
+
 

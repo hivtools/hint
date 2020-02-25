@@ -1,8 +1,6 @@
 import {
     getFeatureIndicators,
-    getIndicatorRanges,
-    getRadius,
-    toIndicatorNameLookup
+    getRadius
 } from "../../../../app/components/plots/bubble/utils";
 import {getColor} from "../../../../app/components/plots/utils";
 
@@ -54,21 +52,6 @@ describe("Bubble plot utils", () => {
         }
     };
 
-    it("can get indicator ranges", () => {
-        const data = [
-            {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 15},
-            {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14},
-            {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 13}
-        ];
-
-        const result = getIndicatorRanges(data, indicators);
-
-        expect(result).toStrictEqual({
-            plhiv: {min: 13, max: 15},
-            prevalence: {min: 0.5, max: 0.7}
-        });
-    });
-
     it("can get feature indicators from wide format data", () => {
         const data = [
             {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 12},
@@ -109,8 +92,9 @@ describe("Bubble plot utils", () => {
 
     it("can exclude rows based on filters", () => {
         const filters = [
-            {id: "age", label: "Age", column_id: "age", options: []},
-            {id: "sex", label: "Sex", column_id: "sex", options: []}
+            {id: "age", label: "Age", column_id: "age", options: [{id: "0:15", label: "0-15"}, {id: "15:30", label: "15-30"}]},
+            {id: "sex", label: "Sex", column_id: "sex", options: [{id: "female", label: "F"}, {id: "male", label: "M"}]},
+            {id: "survey", label: "Survey", column_id: "survey_id", options: []}//should not exclude for filters with no options
         ];
 
         const selectedFilterValues = {
@@ -124,7 +108,7 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 16, sex: "female", age: "0:15"}, //not included: not in selectedFeatures
             {area_id: "MWI_1_1", prevalence: 0.1, plhiv: 18, sex: "male", age: "0:15"}, //not included: no sex filter match
             {area_id: "MWI_1_1", prevalence: 0.2, plhiv: 20, sex: "female", age: "30:45"}, //not included: no age filter match
-        ];["prevalence", "plhiv"]
+        ];
 
         const result = getFeatureIndicators(data, selectedFeatureIds, indicators, indicatorRanges, filters,
             selectedFilterValues, ["prevalence", "plhiv"], minRadius, maxRadius);
@@ -159,14 +143,6 @@ describe("Bubble plot utils", () => {
             }
         });
     });
-
-    it("can get indicator name lookup", () => {
-        expect(toIndicatorNameLookup(indicators)).toStrictEqual({
-            plhiv: "PLHIV",
-            prevalence: "Prevalence"
-        });
-    });
-
 
     const radiusToArea = (r: number) => {return Math.PI * r *r};
     const areaToRadius = (x: number) => {return Math.sqrt(x/Math.PI)};

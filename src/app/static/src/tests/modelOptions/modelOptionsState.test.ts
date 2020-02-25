@@ -3,7 +3,8 @@ import {localStorageManager} from "../../app/localStorageManager";
 localStorageManager.saveState({
     modelOptions: {
         options: "TEST"
-    }
+    },
+    surveyAndProgram: {}
 } as any);
 
 import {modelOptions, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";

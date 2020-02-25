@@ -82,7 +82,7 @@ describe("modelOutput module", () => {
 
     it("gets bubble plot indicators", async () => {
         const testRootGetters = {
-            "metadata/choroplethIndicatorsMetadata": ["TEST INDICATORS"]
+            "metadata/outputIndicatorsMetadata": ["TEST INDICATORS"]
         };
 
         const result = modelOutputGetters.bubblePlotIndicators(mockModelOutputState(), null, rootState, testRootGetters);
@@ -91,6 +91,20 @@ describe("modelOutput module", () => {
 
     it("gets bubble plot filters", async () => {
         const result = modelOutputGetters.bubblePlotFilters(mockModelOutputState(), null, rootState, null);
+        expectOutputPlotFilters(result);
+    });
+
+    it("gets choropleth indicators", async () => {
+        const testRootGetters = {
+            "metadata/outputIndicatorsMetadata": ["TEST INDICATORS"]
+        };
+
+        const result = modelOutputGetters.choroplethIndicators(mockModelOutputState(), null, rootState, testRootGetters);
+        expect(result).toStrictEqual(["TEST INDICATORS"]);
+    });
+
+    it("gets choropleth filters", async () => {
+        const result = modelOutputGetters.choroplethFilters(mockModelOutputState(), null, rootState, null);
         expectOutputPlotFilters(result);
     });
 

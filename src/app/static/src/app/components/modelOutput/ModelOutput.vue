@@ -13,11 +13,15 @@
             </div>
         </div>
         <div class="row mt-2">
-            <div v-if="selectedTab==='map'" class="col-md-3">
-                <choropleth-filters></choropleth-filters>
-            </div>
-            <div v-if="selectedTab==='map'" class="col-md-9">
-                <choropleth></choropleth>
+            <div v-if="selectedTab==='map'" id="choropleth-container" class="col-md-12">
+                <choropleth :chartdata="chartdata"
+                            :filters="choroplethFilters"
+                            :features="features"
+                            :feature-levels="featureLevels"
+                            :indicators="choroplethIndicators"
+                            :selections="choroplethSelections"
+                            area-filter-id="area"
+                            v-on:update="updateOutputChoroplethSelections({payload: $event})"></choropleth>
             </div>
 
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
@@ -44,11 +48,9 @@
 <script lang="ts">
     import i18next from "i18next";
     import Vue from "vue";
-    import Choropleth from "../plots/Choropleth.vue";
-    import ChoroplethFilters from "../plots/ChoroplethFilters.vue";
+    import Choropleth from "../plots/choropleth/Choropleth.vue";
     import Barchart from "../plots/barchart/Barchart.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
-    import {DataType} from "../../store/filteredData/filteredData";
     import {
         mapActionsByNames,
         mapGettersByNames,
@@ -61,7 +63,7 @@
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import {
         BarchartSelections,
-        BubblePlotSelections,
+        BubblePlotSelections, ChoroplethSelections,
         PlottingSelectionsState
     } from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
@@ -79,7 +81,6 @@
     }
 
     interface Methods {
-        selectDataType: (dataType: DataType) => void,
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: BarchartSelections) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
@@ -88,10 +89,12 @@
     interface Computed {
         barchartFilters: Filter[],
         bubblePlotFilters: Filter[],
+        choroplethFilters: Filter[],
         barchartIndicators: BarchartIndicator[],
         chartdata: any,
         barchartSelections: BarchartSelections,
         bubblePlotSelections: BubblePlotSelections,
+        choroplethSelections: ChoroplethSelections,
         selectedTab: string,
         features: Feature[],
         featureLevels: LevelLabel[]
@@ -105,8 +108,6 @@
     export default Vue.extend<Data, Methods, Computed, {}>({
         name: "ModelOutput",
         created() {
-            this.selectDataType(DataType.Output);
-
             if (!this.selectedTab) {
                 this.tabSelected(this.tabs[0]);
             }
@@ -125,7 +126,8 @@
         computed: {
             ...mapGettersByNames("modelOutput", [
                 "barchartFilters", "barchartIndicators",
-                "bubblePlotFilters", "bubblePlotIndicators"]),
+                "bubblePlotFilters", "bubblePlotIndicators",
+                "choroplethFilters", "choroplethIndicators"]),
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
             chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
                 return state.result ? state.result.data : [];
@@ -135,7 +137,8 @@
             },
             ...mapStateProps<PlottingSelectionsState, keyof Computed>("plottingSelections", {
                 barchartSelections: state => state.barchart,
-                bubblePlotSelections: state => state.bubble
+                bubblePlotSelections: state => state.bubble,
+                choroplethSelections: state => state.outputChoropleth
             }),
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                     features: state => state.shape!!.data.features as Feature[],
@@ -158,15 +161,14 @@
             }
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(namespace, ["selectDataType"]),
-            ...mapMutationsByNames<keyof Methods>("plottingSelections", ["updateBarchartSelections", "updateBubblePlotSelections"]),
+            ...mapMutationsByNames<keyof Methods>("plottingSelections",
+                ["updateBarchartSelections", "updateBubblePlotSelections", "updateOutputChoroplethSelections"]),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected)
         },
         components: {
-            Choropleth,
-            ChoroplethFilters,
             Barchart,
-            BubblePlot
+            BubblePlot,
+            Choropleth
         }
     })
 </script>

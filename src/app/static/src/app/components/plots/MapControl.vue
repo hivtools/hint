@@ -35,9 +35,7 @@
     import Vue from "vue";
     import TreeSelect from '@riophae/vue-treeselect'
     import {LControl} from 'vue2-leaflet';
-    import {BaselineState} from "../../store/baseline/baseline";
     import {ChoroplethIndicatorMetadata} from "../../generated";
-    import {mapGetterByName, mapStateProp} from "../../utils";
     import {LevelLabel} from "../../types";
 
     interface Data {
@@ -48,7 +46,9 @@
     interface Props {
         indicator: string,
         initialDetail: number,
-        showIndicators: boolean
+        showIndicators: boolean,
+        indicatorsMetadata: ChoroplethIndicatorMetadata[],
+        levelLabels: LevelLabel[]
     }
 
     interface Option {
@@ -59,8 +59,6 @@
     interface Computed {
         detailOptions: Option[]
         indicatorOptions: Option[]
-        choroplethIndicatorsMetadata: ChoroplethIndicatorMetadata[],
-        choroplethIndicators: string[]
     }
 
     interface Methods {
@@ -76,7 +74,9 @@
         props: {
             indicator: String,
             initialDetail: Number,
-            showIndicators: Boolean
+            showIndicators: Boolean,
+            indicatorsMetadata: Array,
+            levelLabels: Array
         },
         data(): Data {
             return {
@@ -85,23 +85,13 @@
             }
         },
         computed: {
-            choroplethIndicatorsMetadata:
-                mapGetterByName<ChoroplethIndicatorMetadata[]>("metadata", "choroplethIndicatorsMetadata"),
-            choroplethIndicators:
-                mapGetterByName<string[]>("metadata", "choroplethIndicators"),
-            detailOptions: mapStateProp<BaselineState, Option[]>("baseline", state => {
-                let levels: LevelLabel[] = [];
-                if (state.shape && state.shape.filters && state.shape.filters.level_labels) {
-                    levels = state.shape.filters.level_labels;
-                }
-
-                return levels.filter(l => l.display).map(l => {
-                    return {id: l.id, label: l.area_level_label}
-                });
-            }),
+            detailOptions: function(){
+               return this.levelLabels.filter(l => l.display).map(l => {
+                        return {id: l.id, label: l.area_level_label}
+                    });
+            },
             indicatorOptions: function() {
-                const indicators = this.choroplethIndicatorsMetadata;
-                return indicators.map((i: ChoroplethIndicatorMetadata) => { return {id: i.indicator, label: i.name}; });
+                return this.indicatorsMetadata.map((i: ChoroplethIndicatorMetadata) => { return {id: i.indicator, label: i.name}; });
             }
         },
         methods: {

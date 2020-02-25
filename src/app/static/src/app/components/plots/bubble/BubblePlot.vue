@@ -56,6 +56,7 @@
                 </template>
                 <map-control :initialDetail=selections.detail
                              :show-indicators="false"
+                             :level-labels="featureLevels"
                              @detail-changed="onDetailChange"></map-control>
                 <map-legend :metadata="colorIndicator"></map-legend>
                 <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius"></size-legend>
@@ -75,7 +76,8 @@
     import {GeoJSON} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {BubblePlotSelections} from "../../../store/plottingSelections/plottingSelections";
-    import {getFeatureIndicators, getIndicatorRanges, toIndicatorNameLookup} from "./utils";
+    import {getFeatureIndicators} from "./utils";
+    import {toIndicatorNameLookup, getIndicatorRanges} from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";

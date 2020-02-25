@@ -1,21 +1,20 @@
 import {MutationTree} from "vuex";
 import {RootState} from "../../root";
-import {DataType} from "../filteredData/filteredData";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
 import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
 import {initialLoadState, LoadState} from "../load/load";
 import {initialMetadataState} from "../metadata/metadata";
-import {initialSurveyAndProgramDataState} from "../surveyAndProgram/surveyAndProgram";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
+import {initialSurveyAndProgramState, DataType} from "../surveyAndProgram/surveyAndProgram";
 import {PayloadWithType} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 
 export enum RootMutation {
     Reset = "Reset",
-    ResetFilteredDataSelections = "ResetFilteredDataSelections",
+    ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs"
 }
@@ -32,12 +31,11 @@ export const mutations: MutationTree<RootState> = {
             language: state.language,
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
-            surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramDataState() : state.surveyAndProgram,
+            surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramState() : state.surveyAndProgram,
             modelOptions: maxValidStep < 3 ? initialModelOptionsState() : state.modelOptions,
             modelOutput: initialModelOutputState(),
             modelRun: initialModelRunState(),
             plottingSelections: initialPlottingSelectionsState(),
-            filteredData: state.filteredData,
             stepper: state.stepper,
             load: initialLoadState(),
             errors: initialErrorsState()
@@ -54,7 +52,8 @@ export const mutations: MutationTree<RootState> = {
         state.modelRun.ready = true;
     },
 
-    [RootMutation.ResetFilteredDataSelections](state: RootState) {
+    [RootMutation.ResetSelectedDataType](state: RootState) {
+        //TODO: Should this move to SAP since we're removing output from DataType?
         const dataAvailable = (dataType: DataType | null) => {
             if (dataType == null) {
                 return true
@@ -62,8 +61,6 @@ export const mutations: MutationTree<RootState> = {
             switch (dataType) {
                 case DataType.ANC:
                     return !!state.surveyAndProgram.anc;
-                case DataType.Output:
-                    return !!state.modelRun.result;
                 case DataType.Program:
                     return !!state.surveyAndProgram.program;
                 case DataType.Survey:
@@ -71,14 +68,13 @@ export const mutations: MutationTree<RootState> = {
             }
         };
 
-        // only update filtered data state if the selected type is no longer valid
-        if (!dataAvailable(state.filteredData.selectedDataType)) {
+        if (!dataAvailable(state.surveyAndProgram.selectedDataType)) {
 
             const availableData: number[] = Object.keys(DataType)
                 .filter(k => !isNaN(Number(k)) && dataAvailable(Number(k)))
                 .map(k => Number(k));
 
-            state.filteredData.selectedDataType = availableData.length > 0 ? availableData[0] : null;
+            state.surveyAndProgram.selectedDataType = availableData.length > 0 ? availableData[0] : null;
         }
     },
 
@@ -90,7 +86,8 @@ export const mutations: MutationTree<RootState> = {
         Object.assign(state.modelRun, initialModelRunState());
         state.modelRun.ready = true;
         Object.assign(state.modelOutput, initialModelOutputState());
-        Object.assign(state.plottingSelections, initialPlottingSelectionsState());
+        const sapSelections = state.plottingSelections.sapChoropleth;
+        Object.assign(state.plottingSelections, {...initialPlottingSelectionsState(), sapChoropleth: sapSelections});
     },
 
     ...languageMutations

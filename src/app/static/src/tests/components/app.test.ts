@@ -83,7 +83,7 @@ describe("App", () => {
         const spy = jest.spyOn(store, "commit");
         store.commit(prefixNamespace("baseline", BaselineMutation.PJNZUpdated), {payload: null});
 
-        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetFilteredDataSelections);
+        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetSelectedDataType);
         expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetOptions);
         expect(spy.mock.calls[3][0]).toBe(RootMutation.ResetOutputs);
 
@@ -96,7 +96,7 @@ describe("App", () => {
         const spy = jest.spyOn(store, "commit");
         store.commit(prefixNamespace("surveyAndProgram", SurveyAndProgramMutation.SurveyUpdated), {payload: null});
 
-        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetFilteredDataSelections);
+        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetSelectedDataType);
         expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetOptions);
         expect(spy.mock.calls[3][0]).toBe(RootMutation.ResetOutputs);
 

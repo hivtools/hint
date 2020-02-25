@@ -32,7 +32,7 @@
     import {serialiseState} from "../../localStorageManager";
     import {BaselineState} from "../../store/baseline/baseline";
     import {LoadingState, LoadState} from "../../store/load/load";
-    import {SurveyAndProgramDataState} from "../../store/surveyAndProgram/surveyAndProgram";
+    import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import {LocalSessionFile} from "../../types";
     import {addCheckSum, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
@@ -87,7 +87,7 @@
                     shape: localSessionFile(state.shape)
                 }
             }),
-            surveyAndProgramFiles: mapStateProp<SurveyAndProgramDataState, SurveyAndProgramFiles>("surveyAndProgram", state => {
+            surveyAndProgramFiles: mapStateProp<SurveyAndProgramState, SurveyAndProgramFiles>("surveyAndProgram", state => {
                 return {
                     survey: localSessionFile(state.survey),
                     programme: localSessionFile(state.program),

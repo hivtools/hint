@@ -5,17 +5,16 @@ import Vuex from 'vuex';
 import SurveyAndProgram from "../../../app/components/surveyAndProgram/SurveyAndProgram.vue";
 import {
     mockAncResponse,
-    mockFilteredDataState,
+    mockBaselineState,
     mockProgramResponse,
     mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../../mocks";
-import {SurveyAndProgramDataState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import {DataType, FilteredDataState} from "../../../app/store/filteredData/filteredData";
-import {actions} from "../../../app/store/filteredData/actions";
-import {mutations} from "../../../app/store/filteredData/mutations";
+import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
+import {actions} from "../../../app/store/surveyAndProgram/actions";
+import {mutations} from "../../../app/store/surveyAndProgram/mutations";
 
 const localVue = createLocalVue();
 
@@ -25,20 +24,19 @@ describe("Survey and programme component", () => {
     testUploadComponent("program", 1);
     testUploadComponent("anc", 2);
 
-    const createStore = (surveyAndProgramState: Partial<SurveyAndProgramDataState> = {},
-                         filteredDataState: Partial<FilteredDataState> = {selectedDataType: DataType.Survey}) => {
+    const createStore = (surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey}) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
                 surveyAndProgram: {
                     namespaced: true,
-                    state: mockSurveyAndProgramState(surveyAndProgramState)
+                    state: mockSurveyAndProgramState(surveyAndProgramState),
+                    mutations: mutations,
+                    actions: actions
                 },
-                filteredData: {
+                baseline: {
                     namespaced: true,
-                    state: mockFilteredDataState(filteredDataState),
-                    actions: actions,
-                    mutations: mutations
+                    state: mockBaselineState()
                 }
             }
         });
@@ -46,27 +44,18 @@ describe("Survey and programme component", () => {
         return store;
     };
 
-    it("renders filters and map if there is a selected data type", () => {
-        const store = createStore({}, {selectedDataType: DataType.Survey});
+    it("show choropleth controls if there is a selected data type", () => {
+        const store = createStore({selectedDataType: DataType.Survey});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
-        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+        expect(wrapper.find("choropleth-stub").props().hideControls).toBe(false);
     });
 
-    it("does not render filters and map if there is no selected data type", () => {
-        const store = createStore({}, {selectedDataType: null});
+    it("hides choropleth controls if there is no selected data type", () => {
+        const store = createStore({selectedDataType: null});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        expect(wrapper.findAll("filters-stub").length).toBe(0);
-        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
-    });
-
-    it("renders filters", () => {
-        const wrapper = shallowMount(SurveyAndProgram, {
-            store: createStore(),
-            localVue});
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
+        expect(wrapper.find("choropleth-stub").props().hideControls).toBe(true);
     });
 
     it("tabs are disabled if no data is present", () => {
@@ -76,18 +65,18 @@ describe("Survey and programme component", () => {
     });
 
     it("survey tab is enabled when survey data is present", () => {
-        expectTabEnabled({survey: mockSurveyResponse()}, "Survey", 0);
+        expectTabEnabled({survey: mockSurveyResponse(), selectedDataType: DataType.Survey}, "Survey", 0);
     });
 
     it("programme (ART) tab is enabled when programme data is present", () => {
-        expectTabEnabled({program: mockProgramResponse()}, "ART", 1);
+        expectTabEnabled({program: mockProgramResponse(), selectedDataType: DataType.Survey}, "ART", 1);
     });
 
     it("ANC tab is enabled when ANC data is present", () => {
-        expectTabEnabled({anc: mockAncResponse()}, "ANC", 2);
+        expectTabEnabled({anc: mockAncResponse(), selectedDataType: DataType.Survey}, "ANC", 2);
     });
 
-    function expectTabEnabled(state: Partial<SurveyAndProgramDataState>, name: string, index: number) {
+    function expectTabEnabled(state: Partial<SurveyAndProgramState>, name: string, index: number) {
         const store = createStore(state);
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         expect(wrapper.findAll(".nav-link").at(index).classes()).not.toContain("disabled");
@@ -100,9 +89,7 @@ describe("Survey and programme component", () => {
             {
                 anc: mockAncResponse(),
                 survey: mockSurveyResponse(),
-                program: mockProgramResponse()
-            },
-            {
+                program: mockProgramResponse(),
                 selectedDataType: DataType.Program
             });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
@@ -120,28 +107,6 @@ describe("Survey and programme component", () => {
         Vue.nextTick();
         expect(wrapper.find(".nav-link.active").text()).toBe("ART");
 
-
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
-        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
-    });
-
-    it("updated selectedDataType from Output", () => {
-        const filteredDataState = {selectedDataType: DataType.Output};
-        const store = createStore(
-            {
-                anc: mockAncResponse(),
-                survey: mockSurveyResponse(),
-                program: mockProgramResponse()
-            },
-            filteredDataState);
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-
-        const vm = (wrapper as any).vm;
-        expect(vm.selectedDataType).toBe(DataType.Survey);
-
-        expect(wrapper.find(".nav-link.active").text()).toBe("Survey");
-
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(1);
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
     });
 

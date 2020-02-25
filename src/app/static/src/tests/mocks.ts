@@ -3,9 +3,9 @@ import axios from "axios";
 import {BaselineState, initialBaselineState} from "../app/store/baseline/baseline";
 import {initialPasswordState, PasswordState} from "../app/store/password/password";
 import {
-    initialSurveyAndProgramDataState,
-    SurveyAndProgramDataState
-} from "../app/store/surveyAndProgram/surveyAndProgram";
+    initialSurveyAndProgramState,
+    SurveyAndProgramState
+} from "../app/store/surveyAndProgram/surveyAndProgram"
 
 import {
     AncResponse,
@@ -23,7 +23,6 @@ import {
     ValidateBaselineResponse,
     Error
 } from "../app/generated";
-import {FilteredDataState, initialFilteredDataState} from "../app/store/filteredData/filteredData";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
@@ -50,9 +49,9 @@ export const mockBaselineState = (props?: Partial<BaselineState>): BaselineState
     }
 };
 
-export const mockSurveyAndProgramState = (props?: Partial<SurveyAndProgramDataState>): SurveyAndProgramDataState => {
+export const mockSurveyAndProgramState = (props?: Partial<SurveyAndProgramState>): SurveyAndProgramState => {
     return {
-        ...initialSurveyAndProgramDataState(),
+        ...initialSurveyAndProgramState(),
         ...props
     }
 };
@@ -82,13 +81,6 @@ export const mockStepperState = (props?: Partial<StepperState>): StepperState =>
 export const mockErrorsState = (props?: Partial<ErrorsState>): ErrorsState => {
     return {
         ...initialErrorsState(),
-        ...props
-    }
-};
-
-export const mockFilteredDataState = (props?: Partial<FilteredDataState>): FilteredDataState => {
-    return {
-        ...initialFilteredDataState(),
         ...props
     }
 };
