@@ -2,9 +2,8 @@
     <div>
         <div class="row">
             <div class="col-md-3"></div>
-            <div v-if="showChoropleth" class="col-md-9 pl-3 sap-filters">
+            <div v-if="showChoropleth" class="col-md-9 sap-filters">
                 <div>
-
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
                             <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)" v-translate="'survey'"></a>
@@ -25,7 +24,7 @@
                         :filters="filters"
                         :features="features"
                         :feature-levels="featureLevels"
-                        :indicators="choroplethIndicatorsMetadata"
+                        :indicators="sapIndicatorsMetadata"
                         :selections="plottingSelections"
                         :hide-controls="!showChoropleth"
                         area-filter-id="area"
@@ -118,7 +117,7 @@
                 plottingSelections: ({plottingSelections}) => plottingSelections.sapChoropleth
             }),
             ...mapGetters(namespace, ["data", "filters"]),
-            ...mapGetters("metadata", ["choroplethIndicatorsMetadata"])
+            ...mapGetters("metadata", ["sapIndicatorsMetadata"])
         },
         methods: {
             ...mapActions({
