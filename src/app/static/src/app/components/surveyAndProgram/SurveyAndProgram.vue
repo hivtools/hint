@@ -89,9 +89,6 @@
                 showChoropleth: ({surveyAndProgram, baseline}) => {
                     return surveyAndProgram.selectedDataType != null;
                 },
-                selectedDataType: ({surveyAndProgram}) => {
-                    return surveyAndProgram.selectedDataType;
-                },
                 anc: ({surveyAndProgram}) => ({
                     valid: !!surveyAndProgram.anc,
                     error: surveyAndProgram.ancError,

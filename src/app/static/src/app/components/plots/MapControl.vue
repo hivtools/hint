@@ -59,7 +59,6 @@
     interface Computed {
         detailOptions: Option[]
         indicatorOptions: Option[]
-        indicators: string[]
     }
 
     interface Methods {
@@ -86,9 +85,6 @@
             }
         },
         computed: {
-            indicators: function() {
-                return this.indicatorsMetadata.map((i: ChoroplethIndicatorMetadata) => i.indicator);
-            },
             detailOptions: function(){
                return this.levelLabels.filter(l => l.display).map(l => {
                         return {id: l.id, label: l.area_level_label}

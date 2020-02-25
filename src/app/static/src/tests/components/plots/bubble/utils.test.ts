@@ -93,7 +93,8 @@ describe("Bubble plot utils", () => {
     it("can exclude rows based on filters", () => {
         const filters = [
             {id: "age", label: "Age", column_id: "age", options: [{id: "0:15", label: "0-15"}, {id: "15:30", label: "15-30"}]},
-            {id: "sex", label: "Sex", column_id: "sex", options: [{id: "female", label: "F"}, {id: "male", label: "M"}]}
+            {id: "sex", label: "Sex", column_id: "sex", options: [{id: "female", label: "F"}, {id: "male", label: "M"}]},
+            {id: "survey", label: "Survey", column_id: "survey_id", options: []}//should not exclude for filters with no options
         ];
 
         const selectedFilterValues = {

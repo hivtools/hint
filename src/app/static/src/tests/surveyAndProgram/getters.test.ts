@@ -1,31 +1,53 @@
-import {
-    DataType,
-    SurveyAndProgramState
-} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {DataType, SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {getters} from "../../app/store/surveyAndProgram/getters";
-import {
-    mockAncResponse,
-    mockError,
-    mockProgramResponse,
-    mockSurveyAndProgramState,
-    mockSurveyResponse
-} from "../mocks";
+import {mockAncResponse, mockError, mockProgramResponse, mockSurveyAndProgramState, mockSurveyResponse} from "../mocks";
 
 describe("survey and program getters", () => {
 
     const getTestState = function(values: Partial<SurveyAndProgramState> = {}) {
         return mockSurveyAndProgramState(
             {
-                survey: mockSurveyResponse(
-                    {data: "SURVEY" as any}
-                ),
-                program: mockProgramResponse(
-                    {data: "PROGRAM" as any}
-                ),
-                anc: mockAncResponse(
-                    {data: "ANC" as any}
-                ),
+                survey: mockSurveyResponse({
+                        data: "SURVEY" as any,
+                        filters: {year: ["Survey year"], age: ["Survey age"], surveys: ["Survey survey"]} as any
+                    }),
+                program: mockProgramResponse({
+                    data: "PROGRAM" as any,
+                    filters: {year: ["Program year"], age: ["Program age"]} as any
+                }),
+                anc: mockAncResponse({
+                    data: "ANC" as any,
+                    filters: {year: ["ANC year"], age: ["ANC age"]} as any
+                }),
                ...values});
+    };
+
+    const testRootState = {
+        baseline: {
+            shape: {
+                filters: {
+                    regions: "REGION OPTIONS"
+}
+            }
+        }
+    };
+
+    const testExpectedFilters = function(dataType: DataType, shouldIncludeSexOptions: boolean) {
+        const testState = getTestState({selectedDataType: dataType});
+
+        const filters = getters.filters(testState, null, testRootState as any);
+        expect(filters.length).toBe(5);
+        expect(filters[0]).toStrictEqual({id: "area", column_id: "area_id", label: "area", options: ["REGION OPTIONS"]});
+        expect(filters[1]).toStrictEqual({id: "year", column_id: "year", label: "year", options: [`${DataType[dataType]} year`]});
+
+        const sexFilterOptions = shouldIncludeSexOptions ?
+             [{id: "both", label: "both"},{id: "female", label: "female"},{id: "male", label: "male"}] : [];
+        expect(filters[2]).toStrictEqual({id: "sex", column_id: "sex", label: "sex", options: sexFilterOptions});
+
+        expect(filters[3]).toStrictEqual({id: "age", column_id: "age_group", label: "age", options: [`${DataType[dataType]} age`]});
+
+        const surveyOptions = dataType == DataType.Survey ? [`Survey survey`] : [];
+        expect(filters[4]).toStrictEqual({id: "survey", column_id: "survey_id", label: "survey", options: surveyOptions});
     };
 
     it("gets data when selectedDataType is Survey", () => {
@@ -49,7 +71,7 @@ describe("survey and program getters", () => {
         expect(data).toStrictEqual("ANC");
     });
 
-    it("gets unfilteredData when selectedDataType is unknown", () => {
+    it("gets data when selectedDataType is unknown", () => {
         const testState = getTestState({selectedDataType: 99 as DataType});
 
         const data = getters.data(testState);
@@ -80,6 +102,24 @@ describe("survey and program getters", () => {
         }))).toBe(true);
     });
 
+    it("gets filters when selectedDataType is null", () => {
+        const testState = getTestState({selectedDataType: null});
+
+        const filters = getters.filters(testState, null, testRootState as any);
+        expect(filters).toStrictEqual([]);
+    });
+
+    it("gets filters when selectedDataType is Survey", () => {
+        testExpectedFilters(DataType.Survey, true);
+    });
+
+    it("gets filters when selectedDataType is Program", () => {
+        testExpectedFilters(DataType.Program, true);
+    });
+
+    it("gets filters when selectedDataType is ANC", () => {
+        testExpectedFilters(DataType.ANC, false);
+    });
 
 
 });

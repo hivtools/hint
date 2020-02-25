@@ -52,6 +52,8 @@ describe("Map control component", () => {
                              {id: 5, label: "Admin Level 5"}]);
     });
 
+
+
     it("emits indicator-changed event with indicator", () => {
         const wrapper = shallowMount(MapControl, {localVue, propsData});
         wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "art_coverage");

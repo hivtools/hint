@@ -13,7 +13,7 @@ import {RootState} from "../app/root";
 import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
 
 describe("LocalStorageManager", () => {
-    it("serialiseState removes errors", async () => {
+    it("serialiseState removes errors, saves selected data type", async () => {
         const mockRoot = {
             modelRun: mockModelRunState({
                 errors: [mockError("modelRunError1"), mockError("modelRunError2")]
