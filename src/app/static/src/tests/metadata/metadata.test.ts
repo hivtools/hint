@@ -18,7 +18,7 @@ const testChoroMetadata = {
     }
 } as any;
 
-function testGetsChoroplethIndicatorsMetadataForDataType(dataType: DataType) {
+function testGetsSAPIndicatorsMetadataForDataType(dataType: DataType) {
     let metadataProps = null as any;
     switch(dataType) {
         case(DataType.ANC):
@@ -37,35 +37,35 @@ function testGetsChoroplethIndicatorsMetadataForDataType(dataType: DataType) {
 
     const rootState = mockRootState({surveyAndProgram: mockSurveyAndProgramState({selectedDataType: dataType})});
 
-    const result = metadataGetters.choroplethIndicatorsMetadata(metadataState, null, rootState, null);
+    const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, rootState, null);
 
     expect(result).toStrictEqual(testIndicators);
 }
 
-describe("Metadata regionIndicator getter", () => {
+describe("Metadata ", () => {
 
-    it("gets choropleth indicators metadata for anc", () => {
-        testGetsChoroplethIndicatorsMetadataForDataType(DataType.ANC);
+    it("gets SAP indicators metadata for anc", () => {
+        testGetsSAPIndicatorsMetadataForDataType(DataType.ANC);
     });
 
-    it("gets choropleth indicators metadata for programme", () => {
-        testGetsChoroplethIndicatorsMetadataForDataType(DataType.Program);
+    it("gets SAP indicators metadata for programme", () => {
+        testGetsSAPIndicatorsMetadataForDataType(DataType.Program);
     });
 
-    it("gets choropleth indicators metadata for survey", () => {
-        testGetsChoroplethIndicatorsMetadataForDataType(DataType.Survey);
+    it("gets SAP indicators metadata for survey", () => {
+        testGetsSAPIndicatorsMetadataForDataType(DataType.Survey);
     });
 
-    it ("gets empty choropleth indicators when there is no metadata", () => {
+    it ("gets empty SAP indicators when there is no metadata", () => {
         const metadataState =  mockMetadataState(
             {plottingMetadata: null});
 
-        const result = metadataGetters.choroplethIndicatorsMetadata(metadataState, null, mockRootState(), null);
+        const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, mockRootState(), null);
 
         expect(result).toEqual([]);
     });
 
-    it("gets choropleth indicators", () => {
+    it("gets SAP choropleth indicators", () => {
 
         const rootState = mockRootState({surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.ANC})});
 
@@ -76,10 +76,24 @@ describe("Metadata regionIndicator getter", () => {
             output: {},
         };
 
-        const result = metadataGetters.choroplethIndicatorsMetadata(mockMetadataState(
+        const result = metadataGetters.sapIndicatorsMetadata(mockMetadataState(
             {plottingMetadata: testMetadata}
         ), null, rootState, null);
 
         expect(result).toStrictEqual(testIndicators);
+    });
+
+    it("gets outputIndicators", () => {
+        const metadataState =  mockMetadataState(
+            {plottingMetadata: mockPlottingMetadataResponse({
+                    output: {
+                        choropleth: {
+                            indicators: ["TEST OUTPUT INDICATOR"] as any
+                        }
+                    }
+                })});
+
+        const result = metadataGetters.outputIndicatorsMetadata(metadataState, null, {} as any, null);
+        expect(result).toStrictEqual(["TEST OUTPUT INDICATOR"]);
     });
 });

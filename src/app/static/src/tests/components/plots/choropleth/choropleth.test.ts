@@ -11,6 +11,7 @@ import {emptyState} from "../../../../app/root";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import {expectFilter, testData} from "../testHelpers";
 import Vue from "vue";
+import FilterSelect from "../../../../app/components/plots/FilterSelect.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -159,6 +160,22 @@ describe("Choropleth component", () => {
                 { id: "age", label: "Age", column_id: "age", options: []},
                 { id: "sex", label: "Sex", column_id: "sex", options: []}
             ],
+        });
+
+        expect((uninitialisableWrapper.vm as any).initialised).toBe(false);
+    });
+
+    it("computes initialised to false if no filters present", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.initialised).toBe(true);
+
+        const uninitialisableWrapper = getWrapper({
+            selections: {
+                detail: 2,
+                selectedFilterOptions: {}
+            },
+            filters: []
         });
 
         expect((uninitialisableWrapper.vm as any).initialised).toBe(false);
@@ -372,6 +389,14 @@ describe("Choropleth component", () => {
                             <br/>0
                         </div>`);
 
+    });
+
+    it("hides controls", () => {
+        const wrapper = getWrapper({hideControls: true});
+        expect(wrapper.findAll("#chart").length).toBe(0);
+        expect(wrapper.findAll(LGeoJson).length).toBe(0);
+        expect(wrapper.findAll(MapControl).length).toBe(0);
+        expect(wrapper.findAll(FilterSelect).length).toBe(0);
     });
 
 });

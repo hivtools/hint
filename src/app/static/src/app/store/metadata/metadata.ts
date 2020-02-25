@@ -22,7 +22,7 @@ export const metadataGetters = {
     complete: (state: MetadataState) => {
         return !!state.plottingMetadata
     },
-    choroplethIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
+    sapIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
         const plottingMetadata = state.plottingMetadata;
 
         if (!plottingMetadata) {
@@ -49,11 +49,7 @@ export const metadataGetters = {
     outputIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
         return (state.plottingMetadata && state.plottingMetadata.output.choropleth &&
             state.plottingMetadata.output.choropleth.indicators) || [];
-    },
-    /*choroplethIndicators: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
-        const metadata = getters.choroplethIndicatorsMetadata;
-        return metadata.map((i: ChoroplethIndicatorMetadata) => i.indicator);
-    }*/
+    }
 };
 
 const namespaced: boolean = true;

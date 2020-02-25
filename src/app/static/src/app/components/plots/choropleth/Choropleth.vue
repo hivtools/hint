@@ -2,7 +2,7 @@
     <div class="row">
         <div :class="hideControls ? 'col-sm-6 col-md-8' : 'col-md-3'">
             <slot></slot>
-            <div v-if="!hideControls">
+            <div v-if="initialised && !hideControls">
                 <h4 v-translate="'filters'"></h4>
                 <div id="area-filter" class="form-group">
                     <filter-select :label="areaFilter.label"
@@ -22,7 +22,7 @@
                 </div>
             </div>
         </div>
-        <div id="chart" class="col-md-9 pr-0" v-if="!hideControls">
+        <div id="chart" class="col-md-9 pr-0" v-if="initialised && !hideControls">
             <l-map ref="map" style="height: 800px; width: 100%">
                 <template v-for="feature in currentFeatures">
                     <l-geo-json ref=""
@@ -245,10 +245,6 @@
                 return this.indicators.find(i => i.indicator == this.selections.indicatorId)!!;
             },
             options() {
-                if (!this.selections.indicatorId){
-                    return {};
-                }
-
                 const indicator = this.selections.indicatorId;
                 const featureIndicators = this.featureIndicators;
                 return {
