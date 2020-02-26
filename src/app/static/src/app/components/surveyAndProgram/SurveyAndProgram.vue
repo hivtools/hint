@@ -1,68 +1,62 @@
 <template>
     <div>
         <div class="row">
-            <div class="col-md-3"></div>
-            <div v-if="showChoropleth" class="col-md-9 sap-filters">
-                <div>
-                    <ul class="nav nav-tabs">
-                        <li class="nav-item">
-                            <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)" v-translate="'survey'"></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)" v-translate="'ART'">ART</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)" v-translate="'ANC'">ANC</a>
-                        </li>
-                    </ul>
-
-                </div>
+            <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
+                <form>
+                    <file-upload label="survey"
+                                 :valid="survey.valid"
+                                 :error="survey.error"
+                                 :upload="uploadSurvey"
+                                 :delete-file="deleteSurvey"
+                                 :existingFileName="survey.existingFileName"
+                                 accept="csv,.csv"
+                                 name="survey">
+                    </file-upload>
+                    <file-upload label="ART"
+                                 :valid="programme.valid"
+                                 :error="programme.error"
+                                 :upload="uploadProgram"
+                                 :delete-file="deleteProgram"
+                                 :existingFileName="programme.existingFileName"
+                                 accept="csv,.csv"
+                                 name="program">
+                    </file-upload>
+                    <file-upload label="ANC"
+                                 :valid="anc.valid"
+                                 :error="anc.error"
+                                 :upload="uploadANC"
+                                 :delete-file="deleteANC"
+                                 :existingFileName="anc.existingFileName"
+                                 accept="csv,.csv"
+                                 name="anc">
+                    </file-upload>
+                </form>
+                <!-- CHORO FILTERS WILL GO HERE  v-if="showChoropleth" -->
             </div>
         </div>
-        <div class="row">
-            <choropleth :chartdata="data"
-                        :filters="filters"
-                        :features="features"
-                        :feature-levels="featureLevels"
-                        :indicators="sapIndicatorsMetadata"
-                        :selections="plottingSelections"
-                        :hide-controls="!showChoropleth"
-                        area-filter-id="area"
-                        v-on:update="updateChoroplethSelections({payload: $event})"
-                        class="col-md-12 pr-0">
-
-                <div class="upload-section">
-                    <form>
-                        <file-upload label="survey"
-                                     :valid="survey.valid"
-                                     :error="survey.error"
-                                     :upload="uploadSurvey"
-                                     :delete-file="deleteSurvey"
-                                     :existingFileName="survey.existingFileName"
-                                     accept="csv,.csv"
-                                     name="survey">
-                        </file-upload>
-                        <file-upload label="ART"
-                                     :valid="programme.valid"
-                                     :error="programme.error"
-                                     :upload="uploadProgram"
-                                     :delete-file="deleteProgram"
-                                     :existingFileName="programme.existingFileName"
-                                     accept="csv,.csv"
-                                     name="program">
-                        </file-upload>
-                        <file-upload label="ANC"
-                                     :valid="anc.valid"
-                                     :error="anc.error"
-                                     :upload="uploadANC"
-                                     :delete-file="deleteANC"
-                                     :existingFileName="anc.existingFileName"
-                                     accept="csv,.csv"
-                                     name="anc">
-                        </file-upload>
-                    </form>
-                </div>
-            </choropleth>
+        <div v-if="showChoropleth" class="col-md-9 pl-3 sap-filters">
+            <div>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)" v-translate="'survey'"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)" v-translate="'ART'">ART</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)" v-translate="'ANC'">ANC</a>
+                    </li>
+                </ul>
+                <choropleth :chartdata="data"
+                            :filters="filters"
+                            :features="features"
+                            :feature-levels="featureLevels"
+                            :indicators="sapIndicatorsMetadata"
+                            :selections="plottingSelections"
+                            :hide-controls="!showChoropleth"
+                            area-filter-id="area"
+                            v-on:update="updateChoroplethSelections({payload: $event})"></choropleth>
+            </div>
         </div>
     </div>
 </template>
@@ -77,7 +71,6 @@
     import {RootState} from "../../root";
     import {DataType} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
-    import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
 
     const namespace: string = 'surveyAndProgram';
 

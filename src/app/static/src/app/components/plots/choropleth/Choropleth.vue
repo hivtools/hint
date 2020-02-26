@@ -1,27 +1,10 @@
 <template>
     <div class="row">
-        <div :class="hideControls ? 'col-sm-6 col-md-8' : 'col-md-3'">
-            <slot></slot>
-            <div v-if="initialised && !hideControls">
-                <h4 v-translate="'filters'"></h4>
-                <div id="area-filter" class="form-group">
-                    <filter-select :label="areaFilter.label"
-                                   :multiple="true"
-                                   :options="areaFilterOptions"
-                                   :value="getSelectedFilterValues('area')"
-                                   @select="onFilterSelect(areaFilter, $event)">
-                    </filter-select>
-                </div>
-                <div :id="'filter-' + filter.id" v-for="filter in nonAreaFilters" class="form-group">
-                    <filter-select :value="getSelectedFilterValues(filter.id)"
-                                   :multiple="false"
-                                   :label="filter.label"
-                                   :options="filter.options"
-                                   :disabled="filter.options.length==0"
-                                   @select="onFilterSelect(filter, $event)"></filter-select>
-                </div>
-            </div>
-        </div>
+        <filters
+                :filters="filtersToDisplay"
+                :selectedFilterOptions="selections.selectedFilterOptions"
+                :selectMultipleFilterIds="[areaFilterId]"
+                @update="onFilterSelectionsChange"></filters>
         <div id="chart" class="col-md-9 pr-0" v-if="initialised && !hideControls">
             <l-map ref="map" style="height: 800px; width: 100%">
                 <template v-for="feature in currentFeatures">
@@ -52,7 +35,7 @@
     import {Layer} from "leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
-    import FilterSelect from "../FilterSelect.vue";
+    import Filters from "../Filters.vue";
     import {GeoJSON} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {ChoroplethSelections} from "../../../store/plottingSelections/plottingSelections";
@@ -61,7 +44,7 @@
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import {getIndicatorRanges} from "../utils";
-
+    import {replaceAreaFilterOptionsWithCountryChildren} from "../utils";
 
     interface Props {
         features: Feature[],
@@ -82,10 +65,10 @@
         updateBounds: () => void,
         showColor: (feature: Feature) => boolean,
         getColor: (feature: Feature) => string,
-        getSelectedFilterValues: (filterId: string) => string[],
+        //getSelectedFilterValues: (filterId: string) => string[],
         onDetailChange: (newVal: number) => void,
         onIndicatorChange: (newVal: string) => void,
-        onFilterSelect: (filter: Filter, selectedOptions: FilterOption[]) => void,
+        onFilterSelectionsChange: (newSelections: Dict<FilterOption[]>) => void,
         changeSelections: (newSelections: Partial<ChoroplethSelections>) => void,
         getFeatureFromAreaId: (id: string) => Feature,
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any
@@ -102,7 +85,7 @@
         indicatorNameLookup: Dict<string>,
         areaFilter: Filter,
         nonAreaFilters: Filter[],
-        areaFilterOptions: FilterOption[],
+        //areaFilterOptions: FilterOption[],
         selectedAreaFilterOptions: FilterOption[],
         flattenedAreas: Dict<NestedFilterOption>,
         selectedAreaFeatures: Feature[],
@@ -110,6 +93,7 @@
         countryFeature: Feature | null,
         colorIndicator: ChoroplethIndicatorMetadata,
         options: L.GeoJSONOptions
+        filtersToDisplay: Filter[]
     }
 
     const props = {
@@ -147,7 +131,7 @@
             LTooltip,
             MapControl,
             MapLegend,
-            FilterSelect,
+            Filters,
             Treeselect
         },
         props: props,
@@ -216,9 +200,9 @@
             nonAreaFilters() {
                 return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
             },
-            areaFilterOptions() {
+            /*areaFilterOptions() {
                 return this.countryFilterOption ? (this.countryFilterOption as any).children : [];
-            },
+            },*/
             selectedAreaFilterOptions() {
                 const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
                 if (selectedOptions && selectedOptions.length > 0) {
@@ -243,6 +227,9 @@
             },
             colorIndicator(): ChoroplethIndicatorMetadata {
                 return this.indicators.find(i => i.indicator == this.selections.indicatorId)!!;
+            },
+            filtersToDisplay(): Filter[] {
+                return replaceAreaFilterOptionsWithCountryChildren(this.filters, this.areaFilterId)
             },
             options() {
                 const indicator = this.selections.indicatorId;
@@ -287,20 +274,17 @@
                     return "rgb(200,200,200)";
                 }
             },
-            getSelectedFilterValues(filterId: string) {
+            /*getSelectedFilterValues(filterId: string) {
                 return (this.selections.selectedFilterOptions[filterId] || []).map(o => o.id);
-            },
+            },*/
             onDetailChange: function (newVal: number) {
                 this.changeSelections({detail: newVal});
             },
             onIndicatorChange: function(newVal: string) {
                 this.changeSelections({indicatorId: newVal});
             },
-            onFilterSelect(filter: Filter, selectedOptions: FilterOption[]) {
-                const newSelectedFilterOptions = {...this.selections.selectedFilterOptions};
-                newSelectedFilterOptions[filter.id] = selectedOptions;
-
-                this.changeSelections({selectedFilterOptions: newSelectedFilterOptions});
+            onFilterSelectionsChange(newSelections: Dict<FilterOption[]>) {
+                this.changeSelections({selectedFilterOptions: newSelections});
             },
             changeSelections(newSelections: Partial<ChoroplethSelections>) {
                 this.$emit("update", newSelections)
