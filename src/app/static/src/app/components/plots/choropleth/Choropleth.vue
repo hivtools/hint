@@ -1,11 +1,11 @@
 <template>
     <div class="row">
-        <filters
+        <filters v-if="includeFilters"
                 :filters="filtersToDisplay"
                 :selectedFilterOptions="selections.selectedFilterOptions"
                 :selectMultipleFilterIds="[areaFilterId]"
                 @update="onFilterSelectionsChange"></filters>
-        <div id="chart" class="col-md-9 pr-0" v-if="initialised && !hideControls">
+        <div id="chart" class="col-md-9 pr-0">
             <l-map ref="map" style="height: 800px; width: 100%">
                 <template v-for="feature in currentFeatures">
                     <l-geo-json ref=""
@@ -54,7 +54,7 @@
         filters: Filter[],
         selections: ChoroplethSelections,
         areaFilterId: string,
-        hideControls: boolean
+        includeFilters: boolean
     }
 
     interface Data {
@@ -62,17 +62,16 @@
     }
 
     interface Methods {
+        initialise: () => void,
         updateBounds: () => void,
         showColor: (feature: Feature) => boolean,
         getColor: (feature: Feature) => string,
-        //getSelectedFilterValues: (filterId: string) => string[],
         onDetailChange: (newVal: number) => void,
         onIndicatorChange: (newVal: string) => void,
         onFilterSelectionsChange: (newSelections: Dict<FilterOption[]>) => void,
         changeSelections: (newSelections: Partial<ChoroplethSelections>) => void,
         getFeatureFromAreaId: (id: string) => Feature,
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any
-        initialise: () => void
     }
 
     interface Computed {
@@ -85,7 +84,6 @@
         indicatorNameLookup: Dict<string>,
         areaFilter: Filter,
         nonAreaFilters: Filter[],
-        //areaFilterOptions: FilterOption[],
         selectedAreaFilterOptions: FilterOption[],
         flattenedAreas: Dict<NestedFilterOption>,
         selectedAreaFeatures: Feature[],
@@ -118,7 +116,7 @@
         areaFilterId: {
             type: String
         },
-        hideControls: {
+        includeFilters: {
             type: Boolean
         }
     };
@@ -144,9 +142,6 @@
         },
         computed: {
             initialised() {
-                if (!this.filters || this.filters.length == 0) {
-                    return false;
-                }
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
                     !!this.selections.indicatorId;
@@ -200,9 +195,6 @@
             nonAreaFilters() {
                 return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
             },
-            /*areaFilterOptions() {
-                return this.countryFilterOption ? (this.countryFilterOption as any).children : [];
-            },*/
             selectedAreaFilterOptions() {
                 const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
                 if (selectedOptions && selectedOptions.length > 0) {
@@ -252,10 +244,40 @@
             }
         },
         methods: {
+            initialise: function() {
+                if (this.selections.detail < 0) {
+                    this.onDetailChange(this.maxLevel);
+                }
+
+                if (!this.selections.indicatorId || !this.indicators.some(i => i.indicator == this.selections.indicatorId)) {
+                    const indicator = this.indicatorNameLookup.prevalence ? "prevalence" : this.indicators[0].indicator;
+                    this.changeSelections({indicatorId: indicator});
+                }
+
+                const existingFilterSels = this.selections.selectedFilterOptions;
+                const refreshSelected = this.nonAreaFilters.reduce((obj: any, current: Filter) => {
+                    const currentOptionIds = current.options.map(o => o.id);
+                    let newSels = existingFilterSels[current.id] ?
+                        existingFilterSels[current.id].filter(o => currentOptionIds.indexOf(o.id) > -1) : [];
+
+                    if (newSels.length == 0) {
+                        newSels = current.options.length > 0 ? [current.options[0]] : [];
+                    }
+
+                    obj[current.id] = newSels;
+                    return obj;
+                }, {} as Dict<FilterOption[]>);
+                //assume area filters remain valid
+                refreshSelected[this.areaFilterId] = this.selections.selectedFilterOptions[this.areaFilterId];
+
+                this.changeSelections({selectedFilterOptions: refreshSelected});
+            },
             updateBounds: function() {
-                const map = this.$refs.map as LMap;
-                if (map && map.fitBounds) {
-                    map.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
+                if (this.initialised) {
+                    const map = this.$refs.map as LMap;
+                    if (map && map.fitBounds) {
+                        map.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
+                    }
                 }
             },
             showColor(feature: Feature) {
@@ -274,9 +296,6 @@
                     return "rgb(200,200,200)";
                 }
             },
-            /*getSelectedFilterValues(filterId: string) {
-                return (this.selections.selectedFilterOptions[filterId] || []).map(o => o.id);
-            },*/
             onDetailChange: function (newVal: number) {
                 this.changeSelections({detail: newVal});
             },
@@ -294,49 +313,15 @@
             },
             normalizeIndicators(node: ChoroplethIndicatorMetadata) {
                 return {id: node.indicator, label: node.name};
-            },
-            initialise() {
-                if (!this.hideControls)
-                {
-                    if (this.selections.detail < 0) {
-                        this.onDetailChange(this.maxLevel);
-                    }
-
-                    if (!this.selections.indicatorId || !this.indicators.some(i => i.indicator == this.selections.indicatorId)) {
-                        const indicator = this.indicatorNameLookup.prevalence ? "prevalence" : this.indicators[0].indicator;
-                        this.changeSelections({indicatorId: indicator});
-                    }
-
-                    const existingFilterSels = this.selections.selectedFilterOptions;
-                    const refreshSelected = this.nonAreaFilters.reduce((obj: any, current: Filter) => {
-                        const currentOptionIds = current.options.map(o => o.id);
-                        let newSels = existingFilterSels[current.id] ?
-                                existingFilterSels[current.id].filter(o => currentOptionIds.indexOf(o.id) > -1) : [];
-
-                        if (newSels.length == 0) {
-                            newSels = current.options.length > 0 ? [current.options[0]] : [];
-                        }
-
-                        obj[current.id] = newSels;
-                        return obj;
-                    }, {} as Dict<FilterOption[]>);
-                    //assume area filters remain valid
-                    refreshSelected[this.areaFilterId] = this.selections.selectedFilterOptions[this.areaFilterId];
-
-                    this.changeSelections({selectedFilterOptions: refreshSelected});
-                }
             }
         },
         watch:
             {
-                hideControls: function(newVal: boolean) {
-                    if (!newVal) {
-                        if (!this.initialised) {
-                            this.initialise();
-                        } else {
-                            this.$nextTick(() => { this.updateBounds() });
-                        }
-                    }
+                initialised: function(newVal: boolean) {
+                    this.updateBounds();
+                },
+                selectedAreaFeatures: function (newVal) {
+                    this.updateBounds();
                 },
                 filters: function() {
                     this.initialise();
@@ -344,20 +329,12 @@
                 indicators: function() {
                     this.initialise();
                 },
-                initialised: function(newVal: boolean) {
-                    if (newVal) {
-                        this.$nextTick(() => { this.updateBounds() });
-                    }
-                },
-                selectedAreaFeatures: function() {
-                    if (this.initialised)
-                    {
-                        this.updateBounds();
-                    }
-                }
             },
-        mounted(){
+        created() {
             this.initialise();
+        },
+        mounted(){
+            this.updateBounds();
         }
     });
 </script>

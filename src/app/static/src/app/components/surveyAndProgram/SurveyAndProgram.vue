@@ -54,6 +54,7 @@
                             :indicators="sapIndicatorsMetadata"
                             :selections="plottingSelections"
                             :hide-controls="!showChoropleth"
+                            :include-filters="true"
                             area-filter-id="area"
                             v-on:update="updateChoroplethSelections({payload: $event})"></choropleth>
             </div>
