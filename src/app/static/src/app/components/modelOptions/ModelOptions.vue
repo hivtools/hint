@@ -25,8 +25,7 @@
     import Vue from "vue";
     import i18next from "i18next";
 
-    import DynamicForm from "../forms/DynamicForm.vue";
-    import {DynamicFormData, DynamicFormMeta} from "../forms/types";
+    import {DynamicFormData, DynamicFormMeta, DynamicForm} from "@reside-ic/vue-dynamic-form";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 
