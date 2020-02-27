@@ -50,6 +50,7 @@ describe("Survey and programme component", () => {
                     state: mockPlottingSelections({sapChoropleth: "TEST SELECTIONS" as any})
                 },
                 metadata: {
+                    namespaced: true,
                     getters: {
                         sapIndicatorsMetadata: () => {return "TEST INDICATORS"}
                     }
@@ -64,16 +65,16 @@ describe("Survey and programme component", () => {
         const store = createStore({selectedDataType: DataType.Survey});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
-        expect(wrapper.findAll("filters-stub").length).toBe(0);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+        expect(wrapper.findAll("filters-stub").length).toBe(1);
     });
 
     it("does not render choropleth controls if there is no selected data type", () => {
         const store = createStore({selectedDataType: null});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
-        expect(wrapper.findAll("filters-stub").length).toBe(1);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+        expect(wrapper.findAll("filters-stub").length).toBe(0);
     });
 
     it("renders choropleth as expected", () => {
@@ -88,9 +89,9 @@ describe("Survey and programme component", () => {
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         const choro = wrapper.find("choropleth-stub");
         expect(choro.props().includeFilters).toBe(false);
-        expect(choro.props().areaFilterId).toBe(false);
+        expect(choro.props().areaFilterId).toBe("area");
         expect(choro.props().chartdata).toBe("TEST DATA");
-        expect(choro.props().filters[0]).toStrictEqual({
+        expect(choro.props().filters[1]).toStrictEqual({
             id: "year",
             column_id: "year",
             label: "year",
@@ -102,6 +103,8 @@ describe("Survey and programme component", () => {
         expect(choro.props().selections).toBe("TEST SELECTIONS");
 
     });
+
+    //TODO: Add test for utils replaceAreaFilterOptionsWithCountryChildren
 
     it("renders filters as expected", () => {
         //TODO!!

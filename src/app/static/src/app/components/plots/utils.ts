@@ -126,7 +126,7 @@ export const replaceAreaFilterOptionsWithCountryChildren = (filters: Filter[], a
     if (areaFilter.length > 0 && areaFilter[0].options && areaFilter[0].options.length > 0) {
         const filter = areaFilter[0];
         const countryOption = filter.options[0];
-        const childOptions = (countryOption as any).children || [];
+        const childOptions = (countryOption && (countryOption as any).children) || [];
         const newFilter = {...filter, options: childOptions};
 
         const idx = result.indexOf(filter);

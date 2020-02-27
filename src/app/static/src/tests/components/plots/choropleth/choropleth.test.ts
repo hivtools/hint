@@ -185,11 +185,6 @@ describe("Choropleth component", () => {
         expect((wrapper.vm as any).nonAreaFilters).toStrictEqual([propsData.filters[1], propsData.filters[2]]);
     });
 
-    it("computes areaFilterOptions", () => {
-        const wrapper = getWrapper();
-        expect((wrapper.vm as any).areaFilterOptions).toBe((propsData.filters[0].options[0] as NestedFilterOption).children);
-    });
-
     it("computes selectedAreaFilterOptions", () => {
         const wrapper = getWrapper({
             selections: {
@@ -277,13 +272,11 @@ describe("Choropleth component", () => {
     it("onFilterSelectionsChange updates filter value", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
-        vm.onFilterSelect({age: [{id: "15:30", label: "15-30"}]});
+        const newSelections = {age: [{id: "15:30", label: "15-30"}]};
+        vm.onFilterSelectionsChange(newSelections);
         const updates = wrapper.emitted("update");
         expect(updates[updates.length - 1][0]).toStrictEqual({
-            selectedFilterOptions: {
-                ...propsData.selections.selectedFilterOptions,
-                age: [{id: "15:30", label:"15-30"}],
-            }
+            selectedFilterOptions: newSelections
         });
     });
 

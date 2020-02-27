@@ -1,5 +1,4 @@
-import Filters from "../../../app/components/plots/Filters";
-import FilterSelect from "../../../app/components/plots/FilterSelect.vue";
+import Filters from "../../../app/components/plots/Filters.vue";
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
@@ -29,10 +28,13 @@ const getWrapper  = (customPropsData: any = {}) => {
 describe("Filters component", () => {
     it("renders multiple values filter", () => {
         const wrapper = getWrapper();
-        expectFilter(wrapper, "area-filter", [], "Area", true,[{id: "MWI_3_1", label: "3.1"},
-            {id: "MWI_4_1", label: "4.1"},
-            {id: "MWI_4_2", label: "4.2"},
-            {id: "MWI_4_3", label: "4.3"}]);
+        expectFilter(wrapper, "filter-area", [], "Area", true,[{id: "MWI", label: "Malawi", children: [
+                {id: "MWI_3_1", label: "3.1"},
+                {id: "MWI_4_1", label: "4.1"},
+                {id: "MWI_4_2", label: "4.2"},
+                {id: "MWI_4_3", label: "4.3"}
+            ] } as any
+        ]);
     });
 
     it("renders single value filters", () => {

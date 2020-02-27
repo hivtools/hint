@@ -86,7 +86,8 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
-        expect(wrapper.find("choropleth-subt").props().includeFilters).toBe(true);
+        expect(wrapper.find("choropleth-stub").props().includeFilters).toBe(true);
+        //TODO: test other props
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
