@@ -10,8 +10,7 @@ import Vuex from "vuex";
 import {emptyState} from "../../../../app/root";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import {expectFilter, testData} from "../testHelpers";
-import Vue from "vue";
-import FilterSelect from "../../../../app/components/plots/FilterSelect.vue";
+import Filters from "../../../../app/components/plots/Filters.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -29,11 +28,11 @@ const propsData = {
             sex: [{id: "female", label:"Female"}],
             area: []
         }
-    }
+    },
+    includeFilters: true
 };
 
 const getWrapper  = (customPropsData: any = {}) => {
-
     return shallowMount(Choropleth, {propsData: {...propsData, ...customPropsData}, localVue});
 };
 
@@ -51,21 +50,16 @@ describe("Choropleth component", () => {
         expect(wrapper.find(MapControl).props().indicatorsMetadata).toEqual(testData.indicators);
     });
 
-    it("renders area filter", () => {
+    it("renders filters", () => {
         const wrapper = getWrapper();
-        expectFilter(wrapper, "area-filter", [], "Area", true,[{id: "MWI_3_1", label: "3.1"},
-            {id: "MWI_4_1", label: "4.1"},
-            {id: "MWI_4_2", label: "4.2"},
-            {id: "MWI_4_3", label: "4.3"}]);
+        expect(wrapper.findAll(Filters).length).toBe(1);
+
+        //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLAY IN FILTERS
     });
 
-    it("renders non-area filters", () => {
-        const wrapper = getWrapper();
-
-        expectFilter(wrapper, "filter-age", ["0:15"], "Age", false,
-            [{id: "0:15", label:"0-15"}, {id: "15:30", label: "15-30"}]);
-        expectFilter(wrapper, "filter-sex", ["female"], "Sex", false,
-            [{id: "female", label:"Female"}, {id: "male", label: "Male"}]);
+    it("does not render filters if includeFilters is false", () => {
+        const wrapper = getWrapper({includeFilters: false});
+        expect(wrapper.findAll(Filters).length).toBe(0);
     });
 
     it("renders color legend", () => {
@@ -261,11 +255,6 @@ describe("Choropleth component", () => {
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
     });
 
-    it("can getSelectedFilterValues", () => {
-        const wrapper = getWrapper();
-        expect((wrapper.vm as any).getSelectedFilterValues("age")).toStrictEqual(["0:15"]);
-    });
-
     it("initialises from empty selections and emits updates", () => {
         const wrapper = getWrapper({selections: {
                 detail: -1,
@@ -285,10 +274,10 @@ describe("Choropleth component", () => {
         });
     });
 
-    it("onFilterSelect updates filter value", () => {
+    it("onFilterSelectionsChange updates filter value", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
-        vm.onFilterSelect(propsData.filters[1], [{id: "15:30", label: "15-30"}]);
+        vm.onFilterSelect({age: [{id: "15:30", label: "15-30"}]});
         const updates = wrapper.emitted("update");
         expect(updates[updates.length - 1][0]).toStrictEqual({
             selectedFilterOptions: {
@@ -389,14 +378,6 @@ describe("Choropleth component", () => {
                             <br/>0
                         </div>`);
 
-    });
-
-    it("hides controls", () => {
-        const wrapper = getWrapper({hideControls: true});
-        expect(wrapper.findAll("#chart").length).toBe(0);
-        expect(wrapper.findAll(LGeoJson).length).toBe(0);
-        expect(wrapper.findAll(MapControl).length).toBe(0);
-        expect(wrapper.findAll(FilterSelect).length).toBe(0);
     });
 
 });
