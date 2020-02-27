@@ -31,32 +31,33 @@
                                  name="anc">
                     </file-upload>
                 </form>
-                <!-- CHORO FILTERS WILL GO HERE  v-if="showChoropleth" -->
+                <filters v-if="showChoropleth"
+                         :filters="filtersToDisplay"
+                         :selectedFilterOptions="plottingSelections.selectedFilterOptions"
+                         :selectMultipleFilterIds="[areaFilterId]"
+                         @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"></filters>
             </div>
-        </div>
-        <div v-if="showChoropleth" class="col-md-9 pl-3 sap-filters">
-            <div>
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)" v-translate="'survey'"></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)" v-translate="'ART'">ART</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)" v-translate="'ANC'">ANC</a>
-                    </li>
-                </ul>
-                <choropleth :chartdata="data"
-                            :filters="filters"
-                            :features="features"
-                            :feature-levels="featureLevels"
-                            :indicators="sapIndicatorsMetadata"
-                            :selections="plottingSelections"
-                            :hide-controls="!showChoropleth"
-                            :include-filters="true"
-                            area-filter-id="area"
-                            v-on:update="updateChoroplethSelections({payload: $event})"></choropleth>
+            <div v-if="showChoropleth" class="col-md-9">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)" v-translate="'survey'"></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)" v-translate="'ART'">ART</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)" v-translate="'ANC'">ANC</a>
+                        </li>
+                    </ul>
+                    <choropleth :chartdata="data"
+                                :filters="filters"
+                                :features="features"
+                                :feature-levels="featureLevels"
+                                :indicators="sapIndicatorsMetadata"
+                                :selections="plottingSelections"
+                                :include-filters="false"
+                                :area-filter-id="areaFilterId"
+                                v-on:update="updateChoroplethSelections({payload: $event})"></choropleth>
             </div>
         </div>
     </div>
@@ -68,16 +69,47 @@
     import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
     import FileUpload from "../FileUpload.vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
-    import {PartialFileUploadProps} from "../../types";
+    import Filters from "../plots/Filters.vue";
+    import {Filter, LevelLabel, PartialFileUploadProps} from "../../types";
     import {RootState} from "../../root";
     import {DataType} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
+    import {replaceAreaFilterOptionsWithCountryChildren} from "../plots/utils";
+    import {Metadata} from "../../generated";
+    import {mapGettersByNames} from "../../utils";
+    import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
 
     const namespace: string = 'surveyAndProgram';
 
-    export default Vue.extend({
+    interface Data {
+        areaFilterId: string
+    }
+
+    interface Computed {
+        filtersToDisplay: Filter[],
+        filters: Filter[],
+        data: any,
+        sapIndicatorsMetadata: Metadata,
+        showChoropleth: boolean,
+        anc: PartialFileUploadProps,
+        programme: PartialFileUploadProps,
+        survey: PartialFileUploadProps,
+        features: Feature[],
+        featureLevels: LevelLabel[],
+        plottingSelections: ChoroplethSelections
+    }
+
+    export default Vue.extend<Data, {}, Computed, {}>({
         name: "SurveyAndProgram",
+        data: () => {
+            return {
+                areaFilterId: "area"
+            };
+        },
         computed: {
+            filtersToDisplay() {
+                return replaceAreaFilterOptionsWithCountryChildren(this.filters, this.areaFilterId);
+            },
             ...mapState<RootState>({
                 showChoropleth: ({surveyAndProgram, baseline}) => {
                     return surveyAndProgram.selectedDataType != null;
@@ -110,8 +142,8 @@
                 featureLevels: ({baseline}) => baseline.shape ? baseline.shape.filters.level_labels : [],
                 plottingSelections: ({plottingSelections}) => plottingSelections.sapChoropleth
             }),
-            ...mapGetters(namespace, ["data", "filters"]),
-            ...mapGetters("metadata", ["sapIndicatorsMetadata"])
+            ...mapGettersByNames(namespace, ["data", "filters"]),
+            ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
         },
         methods: {
             ...mapActions({
@@ -132,7 +164,8 @@
         },
         components: {
             FileUpload,
-            Choropleth
+            Choropleth,
+            Filters
         }
     })
 </script>
