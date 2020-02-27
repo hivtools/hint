@@ -236,6 +236,19 @@ describe("Choropleth component", () => {
         expect((wrapper.vm as any).countryFeature).toBe(propsData.features[0]);
     });
 
+    it("computes filtersToDisplay", () => {
+        const wrapper = getWrapper();
+        const filtersToDisplay = (wrapper.vm as any).filtersToDisplay;
+        expect(filtersToDisplay.length).toBe(3);
+        expect(filtersToDisplay[0]).toStrictEqual({ id: "area", label: "Area", column_id: "area_id",
+            options: [{id: "MWI_3_1", label: "3.1"},
+                    {id: "MWI_4_1", label: "4.1"},
+                    {id: "MWI_4_2", label: "4.2"},
+                    {id: "MWI_4_3", label: "4.3"}]});
+        expect(filtersToDisplay[1]).toBe(testData.filters[1]);
+        expect(filtersToDisplay[2]).toBe(testData.filters[2]);
+    });
+
     it("updateBounds updates bounds of map from features geojson", () => {
         const wrapper = getWrapper();
         const mockMapFitBounds = jest.fn();

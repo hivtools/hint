@@ -153,8 +153,7 @@
                 selectTab: 'surveyAndProgram/selectDataType',
                 deleteSurvey: 'surveyAndProgram/deleteSurvey',
                 deleteProgram: 'surveyAndProgram/deleteProgram',
-                deleteANC: 'surveyAndProgram/deleteANC',
-                updateChoroplethSelections: 'surveyAndProgram/'
+                deleteANC: 'surveyAndProgram/deleteANC'
             }),
             ...mapMutations({
                 updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections"

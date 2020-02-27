@@ -16,7 +16,7 @@ import {emptyState} from "../../../app/root";
 import {actions} from "../../../app/store/surveyAndProgram/actions";
 import {mutations} from "../../../app/store/surveyAndProgram/mutations";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
-import {BaselineState} from "../../../app/store/baseline/baseline";
+import {mutations as selectionsMutations} from "../../../app/store/plottingSelections/mutations";
 
 const localVue = createLocalVue();
 
@@ -42,12 +42,17 @@ describe("Survey and programme component", () => {
                     state: mockBaselineState({
                         shape: {
                             data: {features: "TEST FEATURES" as any} as any,
-                            filters: {level_labels: "TEST LEVEL LABELS"} as any} as any
+                            filters: {
+                                level_labels: "TEST LEVEL LABELS",
+                                regions: {id: "country", children: [{id: "region 1"}, {id: "region 2"}]}
+                            } as any} as any
                     })
                 },
                 plottingSelections: {
                     namespaced: true,
-                    state: mockPlottingSelections({sapChoropleth: "TEST SELECTIONS" as any})
+                    state: mockPlottingSelections({
+                        sapChoropleth: {selectedFilterOptions: "TEST SELECTIONS"} as any}),
+                    mutations: selectionsMutations
                 },
                 metadata: {
                     namespaced: true,
@@ -91,6 +96,12 @@ describe("Survey and programme component", () => {
         expect(choro.props().includeFilters).toBe(false);
         expect(choro.props().areaFilterId).toBe("area");
         expect(choro.props().chartdata).toBe("TEST DATA");
+        expect(choro.props().filters[0]).toStrictEqual({
+            id: "area",
+            column_id: "area_id",
+            label: "area",
+            options: [{id: "country", children: [{id: "region 1"}, {id: "region 2"}]}]
+        });
         expect(choro.props().filters[1]).toStrictEqual({
             id: "year",
             column_id: "year",
@@ -100,22 +111,43 @@ describe("Survey and programme component", () => {
         expect(choro.props().features).toBe("TEST FEATURES");
         expect(choro.props().featureLevels).toBe("TEST LEVEL LABELS");
         expect(choro.props().indicators).toBe("TEST INDICATORS");
-        expect(choro.props().selections).toBe("TEST SELECTIONS");
+        expect(choro.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
 
     });
-
-    //TODO: Add test for utils replaceAreaFilterOptionsWithCountryChildren
 
     it("renders filters as expected", () => {
-        //TODO!!
+        const store = createStore({
+            selectedDataType: DataType.Survey,
+            survey: {
+                "data": "TEST DATA",
+                "filters": {
+                    "year": "TEST YEAR FILTERS"
+                }
+            } as any,});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const filters = wrapper.find("filters-stub");
+        expect(filters.props().filters[0]).toStrictEqual({
+            id: "area",
+            column_id: "area_id",
+            label: "area",
+            options: [{id: "region 1"}, {id: "region 2"}]
+        });
+        expect(filters.props().filters[1]).toStrictEqual({
+            id: "year",
+            column_id: "year",
+            label: "year",
+            options: "TEST YEAR FILTERS"
+        });
+        expect(filters.props().selectedFilterOptions).toBe("TEST SELECTIONS");
+        expect(filters.props().selectMultipleFilterIds).toStrictEqual(["area"]);
     });
 
-    it("updates state when choropleth selections change", () => {
-        //TODO!!
-    });
+    it("updates state when choropleth selections change", async () => {
+        const wrapper = shallowMount(SurveyAndProgram, {store: createStore(), localVue});
+        (wrapper.vm as any).updateChoroplethSelections({payload: {selectedFilterOptions: "NEW TEST SELECTIONS"}});
 
-    it("updates state when filters selections change", () => {
-        //TODO!!
+        await Vue.nextTick();
+        expect((wrapper.vm as any).plottingSelections).toStrictEqual({selectedFilterOptions: "NEW TEST SELECTIONS"});
     });
 
     it("tabs are disabled if no data is present", () => {

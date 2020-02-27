@@ -221,7 +221,7 @@
                 return this.indicators.find(i => i.indicator == this.selections.indicatorId)!!;
             },
             filtersToDisplay(): Filter[] {
-                return replaceAreaFilterOptionsWithCountryChildren(this.filters, this.areaFilterId)
+                return replaceAreaFilterOptionsWithCountryChildren(this.filters, this.areaFilterId);
             },
             options() {
                 const indicator = this.selections.indicatorId;
