@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="model-options">
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingOptions'"></h2>
@@ -11,7 +11,8 @@
                       @submit="validate"
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
-        <h4 v-if="valid" class="mt-3" v-translate="'optionsValid'">
+        <h4 v-if="valid" class="mt-3">
+            <span v-translate="'optionsValid'"></span>
             <tick color="#e31837" width="20px"></tick>
         </h4>
         <reset-confirmation :continue-editing="continueEditing"
@@ -24,8 +25,8 @@
 <script lang="ts">
     import Vue from "vue";
     import i18next from "i18next";
-
     import {DynamicFormData, DynamicFormMeta, DynamicForm} from "@reside-ic/vue-dynamic-form";
+
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 
