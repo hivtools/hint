@@ -6,14 +6,10 @@ import {
     mockModelResultResponse,
     mockModelRunState, mockShapeResponse,
 } from "../../mocks";
-import {DataType} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import {actions} from "../../../app/store/surveyAndProgram/actions";
-import {mutations as filteredDataMutations} from "../../../app/store/surveyAndProgram/mutations";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
 import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
-import {login} from "../../integration/integrationTest";
 import {inactiveFeatures} from "../../../app/main";
 
 const localVue = createLocalVue();
@@ -51,7 +47,9 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                     barchartIndicators: jest.fn(),
                     barchartFilters: jest.fn(),
                     bubblePlotIndicators: jest.fn().mockReturnValue(["TEST BUBBLE INDICATORS"]),
-                    bubblePlotFilters: jest.fn().mockReturnValue(["TEST BUBBLE FILTERS"])
+                    bubblePlotFilters: jest.fn().mockReturnValue(["TEST BUBBLE FILTERS"]),
+                    choroplethFilters: jest.fn().mockReturnValue(["TEST CHORO FILTERS"]),
+                    choroplethIndicators: jest.fn().mockReturnValue(["TEST CHORO INDICATORS"])
                 },
                 mutations: modelOutputMutations
             },
@@ -67,7 +65,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                             age: {id: "a1", label: "0-4"}
                         }
                     },
-                    bubble: {test: "TEST BUBBLE SELECTIONS"} as any
+                    bubble: {test: "TEST BUBBLE SELECTIONS"} as any,
+                    outputChoropleth: {test: "TEST CHORO SELECTIONS"} as any
                 }
             }
         }
@@ -81,13 +80,17 @@ describe("ModelOutput component", () => {
         inactiveFeatures.splice(0, inactiveFeatures.length);
     });
 
-    it("renders choropleth and choropleth filters", () => {
+    it("renders choropleth", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
-        expect(wrapper.find("choropleth-stub").props().includeFilters).toBe(true);
-        //TODO: test other props
+        const choro = wrapper.find("choropleth-stub");
+        expect(choro.props().includeFilters).toBe(true);
+        expect(choro.props().areaFilterId).toBe("area");
+        expect(choro.props().filters).toStrictEqual(["TEST CHORO FILTERS"]);
+        expect(choro.props().selections).toStrictEqual({test: "TEST CHORO SELECTIONS"});
+        expect(choro.props().indicators).toStrictEqual(["TEST CHORO INDICATORS"]);
+
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
