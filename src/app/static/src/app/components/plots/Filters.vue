@@ -3,7 +3,7 @@
         <h4 v-translate="'filters'"></h4>
         <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
             <filter-select :value="getSelectedFilterValues(filter.id)"
-                           :multiple="filterIsMultiple(filter.id)"
+                           :multiple="filter.allowMultiple"
                            :label="filter.label"
                            :options="filter.options"
                            :disabled="filter.options.length==0"
@@ -15,19 +15,17 @@
 <script lang="ts">
     import Vue from "vue";
     import FilterSelect from "./FilterSelect.vue";
-    import {Dict, Filter} from "../../types";
+    import {Dict, DisplayFilter} from "../../types";
     import {FilterOption} from "../../generated";
 
     interface Props {
-        filters: Filter[],
+        filters: DisplayFilter[],
         selectedFilterOptions: Dict<FilterOption[]>,
-        selectMultipleFilterIds: string[]
     }
 
     interface Methods {
-        filterIsMultiple: (filterId: string) => Boolean,
         getSelectedFilterValues: (filterId: string) => string[],
-        onFilterSelect: (filter: Filter, selectedOptions: FilterOption[]) => void
+        onFilterSelect: (filter: DisplayFilter, selectedOptions: FilterOption[]) => void
     }
 
     const props = {
@@ -36,9 +34,6 @@
         },
         selectedFilterOptions: {
             type: Object
-        },
-        selectMultipleFilterIds: {
-            type: Array
         }
     };
 
@@ -47,13 +42,10 @@
         components: {FilterSelect},
         props: props,
         methods: {
-            filterIsMultiple(filterId: string) {
-                return this.selectMultipleFilterIds && this.selectMultipleFilterIds.indexOf(filterId) > -1;
-            },
             getSelectedFilterValues(filterId: string) {
                 return (this.selectedFilterOptions[filterId] || []).map(o => o.id);
             },
-            onFilterSelect(filter: Filter, selectedOptions: FilterOption[]) {
+            onFilterSelect(filter: DisplayFilter, selectedOptions: FilterOption[]) {
                 const newSelectedFilterOptions = {...this.selectedFilterOptions};
                 newSelectedFilterOptions[filter.id] = selectedOptions;
 

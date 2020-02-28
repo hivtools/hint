@@ -100,12 +100,14 @@ describe("Survey and programme component", () => {
             id: "area",
             column_id: "area_id",
             label: "area",
+            allowMultiple: true,
             options: [{id: "country", children: [{id: "region 1"}, {id: "region 2"}]}]
         });
         expect(choro.props().filters[1]).toStrictEqual({
             id: "year",
             column_id: "year",
             label: "year",
+            allowMultiple: false,
             options: "TEST YEAR FILTERS"
         });
         expect(choro.props().features).toBe("TEST FEATURES");
@@ -130,16 +132,17 @@ describe("Survey and programme component", () => {
             id: "area",
             column_id: "area_id",
             label: "area",
+            allowMultiple: true,
             options: [{id: "region 1"}, {id: "region 2"}]
         });
         expect(filters.props().filters[1]).toStrictEqual({
             id: "year",
             column_id: "year",
             label: "year",
+            allowMultiple: false,
             options: "TEST YEAR FILTERS"
         });
         expect(filters.props().selectedFilterOptions).toBe("TEST SELECTIONS");
-        expect(filters.props().selectMultipleFilterIds).toStrictEqual(["area"]);
     });
 
     it("updates state when choropleth selections change", async () => {

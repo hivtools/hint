@@ -3,7 +3,6 @@
         <filters class="col-md-3" v-if="includeFilters"
                 :filters="filtersToDisplay"
                 :selectedFilterOptions="selections.selectedFilterOptions"
-                :selectMultipleFilterIds="[areaFilterId]"
                 @update="onFilterSelectionsChange"></filters>
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
             <l-map ref="map" style="height: 800px; width: 100%">

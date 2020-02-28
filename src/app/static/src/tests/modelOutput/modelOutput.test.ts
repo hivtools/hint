@@ -105,7 +105,19 @@ describe("modelOutput module", () => {
 
     it("gets choropleth filters", async () => {
         const result = modelOutputGetters.choroplethFilters(mockModelOutputState(), null, rootState, null);
-        expectOutputPlotFilters(result);
+        expect(result.length).toEqual(3);
+        expect(result[0]).toStrictEqual({
+            id: "area",
+            column_id: "area_id",
+            label: "Area",
+            use_shape_regions: true,
+            allowMultiple: true,
+            options: [
+                {id: "id1", label: "label 1", children: []}
+            ]
+        });
+        expect(result[1]).toStrictEqual({id: "age", column_id: "age_group_id", label: "Age", allowMultiple: false, options: []});
+        expect(result[2]).toStrictEqual({id: "quarter", column_id: "quarter_id", label: "Quarter", allowMultiple: false, options: []});
     });
 
     const expectOutputPlotFilters = (filters: Filter[]) => {

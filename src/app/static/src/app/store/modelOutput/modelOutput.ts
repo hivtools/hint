@@ -1,6 +1,6 @@
 import {Module} from "vuex";
 import {RootState} from "../../root";
-import {BarchartIndicator, Filter} from "../../types";
+import {BarchartIndicator, Filter, DisplayFilter} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
@@ -27,8 +27,9 @@ export const modelOutputGetters = {
     choroplethIndicators: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): ChoroplethIndicatorMetadata[] => {
         return rootGetters['metadata/outputIndicatorsMetadata'];
     },
-    choroplethFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): Filter[] => {
-        return  outputPlotFilters(rootState);
+    choroplethFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): DisplayFilter[] => {
+        const outputFilters =  outputPlotFilters(rootState) as Filter[];
+        return  outputFilters.map(f => { return {...f, allowMultiple: f.id == "area"}});
     },
 };
 

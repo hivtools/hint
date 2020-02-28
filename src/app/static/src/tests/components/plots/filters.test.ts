@@ -3,7 +3,7 @@ import {createLocalVue, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectFilter, testData} from "./testHelpers";
+import {expectFilter} from "./testHelpers";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -12,7 +12,18 @@ const store = new Vuex.Store({
 registerTranslations(store);
 
 const propsData = {
-    filters: testData.filters,
+    filters: [
+        { id: "area", label: "Area", column_id: "area_id", allowMultiple: true,
+            options: [{id: "MWI", label: "Malawi", children: [
+                    {id: "MWI_3_1", label: "3.1"},
+                    {id: "MWI_4_1", label: "4.1"},
+                    {id: "MWI_4_2", label: "4.2"},
+                    {id: "MWI_4_3", label: "4.3"}
+                ]}
+            ]},
+        { id: "age", label: "Age", column_id: "age", allowMultiple: false, options: [{id: "0:15", label:"0-15"}, {id: "15:30", label: "15-30"}]},
+        { id: "sex", label: "Sex", column_id: "sex", allowMultiple: false, options: [{id: "female", label:"Female"}, {id: "male", label: "Male"}]}
+    ],
     selectedFilterOptions: {
             age: [{id: "0:15", label:"0-15"}],
             sex: [{id: "female", label:"Female"}],

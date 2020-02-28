@@ -34,7 +34,6 @@
                 <filters v-if="showChoropleth"
                          :filters="filtersToDisplay"
                          :selectedFilterOptions="plottingSelections.selectedFilterOptions"
-                         :selectMultipleFilterIds="[areaFilterId]"
                          @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"></filters>
             </div>
             <div v-if="showChoropleth" class="col-md-9">

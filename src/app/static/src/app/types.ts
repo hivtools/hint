@@ -53,6 +53,10 @@ export interface Filter {
     options: FilterOption[]
 }
 
+export interface DisplayFilter extends Filter {
+    allowMultiple: boolean
+}
+
 export interface NumericRange {
     min: number,
     max: number
