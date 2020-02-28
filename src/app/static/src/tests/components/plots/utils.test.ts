@@ -3,7 +3,7 @@ import {
     getColor,
     getIndicatorRanges,
     toIndicatorNameLookup,
-    roundToContext, replaceAreaFilterOptionsWithCountryChildren
+    roundToContext, rootOptionChildren
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 
@@ -138,18 +138,14 @@ it ("round to context does not round value if both values and context are intege
     expect(roundToContext(5, 10)).toBe(5);
 });
 
-it ("replaceAreaFilterOptionsWithCountryChildren returns expected filters", () => {
+it ("rootOptionChildren returns expected filter options", () => {
     const regionOptions = [
         {id: "region1", label: "Region 1"},
         {id: "region2", label: "Region 2"}
     ];
-    const filters = [
-        {id: "nonArea", column_id: "nonAreaId", label: "Non Area", options: [{id: "na1", label: "NA1"}]},
-        {id: "area", columns_id: "areaId", label: "Area", options: [{id: "country", label: "Country", children: regionOptions}]} as any
-    ];
 
-    const result = replaceAreaFilterOptionsWithCountryChildren(filters, "area");
-    expect(result.length).toBe(2);
-    expect(result[0]).toBe(filters[0]);
-    expect(result[1]).toStrictEqual({id: "area", columns_id: "areaId", label: "Area", options: regionOptions});
+    const options = [{id: "country", label: "Country", children:regionOptions }];
+
+    const result = rootOptionChildren(options);
+    expect(result).toStrictEqual(regionOptions);
 });

@@ -120,17 +120,7 @@ export const roundToContext = function (value: number, context: number) {
     return Math.round(value * roundingNum) / roundingNum;
 };
 
-export const replaceAreaFilterOptionsWithCountryChildren = (filters: Filter[], areaFilterId: string) => {
-    const result = [...filters];
-    const areaFilter = result.filter((f: Filter) => f.id == areaFilterId);
-    if (areaFilter.length > 0 && areaFilter[0].options && areaFilter[0].options.length > 0) {
-        const filter = areaFilter[0];
-        const countryOption = filter.options[0];
-        const childOptions = (countryOption && (countryOption as any).children) || [];
-        const newFilter = {...filter, options: childOptions};
-
-        const idx = result.indexOf(filter);
-        result[idx] = newFilter;
-    }
-    return result;
+export const rootOptionChildren = (filterOptions: FilterOption[]) => {
+    const rootOption = filterOptions[0];
+    return (rootOption && (rootOption as any).children) || [];
 };

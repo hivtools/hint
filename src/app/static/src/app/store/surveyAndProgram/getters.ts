@@ -2,6 +2,7 @@ import {SurveyAndProgramState, DataType} from "./surveyAndProgram";
 import {RootState} from "../../root";
 import {DisplayFilter} from "../../types";
 import {FilterOption} from "../../generated";
+import {rootOptionChildren} from "../../components/plots/utils";
 
 function response(state: SurveyAndProgramState){
     switch (state.selectedDataType) {
@@ -46,7 +47,7 @@ export const getters = {
                 id: "area",
                 column_id: "area_id",
                 label: "area",
-                options: [rootState.baseline.shape!!.filters!!.regions as FilterOption],
+                options: rootOptionChildren([rootState.baseline.shape!!.filters!!.regions as FilterOption]),
                 allowMultiple: true
             });
         }

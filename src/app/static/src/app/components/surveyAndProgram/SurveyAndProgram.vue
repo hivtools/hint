@@ -32,7 +32,7 @@
                     </file-upload>
                 </form>
                 <filters v-if="showChoropleth"
-                         :filters="filtersToDisplay"
+                         :filters="filters"
                          :selectedFilterOptions="plottingSelections.selectedFilterOptions"
                          @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"></filters>
             </div>
@@ -73,7 +73,6 @@
     import {RootState} from "../../root";
     import {DataType} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
-    import {replaceAreaFilterOptionsWithCountryChildren} from "../plots/utils";
     import {Metadata} from "../../generated";
     import {mapGettersByNames} from "../../utils";
     import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
@@ -85,7 +84,6 @@
     }
 
     interface Computed {
-        filtersToDisplay: Filter[],
         filters: Filter[],
         data: any,
         sapIndicatorsMetadata: Metadata,
@@ -106,9 +104,6 @@
             };
         },
         computed: {
-            filtersToDisplay() {
-                return replaceAreaFilterOptionsWithCountryChildren(this.filters, this.areaFilterId);
-            },
             ...mapState<RootState>({
                 showChoropleth: ({surveyAndProgram, baseline}) => {
                     return surveyAndProgram.selectedDataType != null;

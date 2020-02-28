@@ -4,6 +4,7 @@ import {BarchartIndicator, Filter, DisplayFilter} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
+import {rootOptionChildren} from "../../components/plots/utils";
 
 const namespaced: boolean = true;
 
@@ -29,7 +30,14 @@ export const modelOutputGetters = {
     },
     choroplethFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): DisplayFilter[] => {
         const outputFilters =  outputPlotFilters(rootState) as Filter[];
-        return  outputFilters.map(f => { return {...f, allowMultiple: f.id == "area"}});
+        const areaId = "area";
+        return  outputFilters.map(f => {
+            return {
+                ...f,
+                allowMultiple: f.id == areaId,
+                options: f.id == areaId ? rootOptionChildren(f.options) : f.options
+            }
+        });
     },
 };
 

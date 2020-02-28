@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <filters class="col-md-3" v-if="includeFilters"
-                :filters="filtersToDisplay"
+                :filters="filters"
                 :selectedFilterOptions="selections.selectedFilterOptions"
                 @update="onFilterSelectionsChange"></filters>
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
@@ -43,7 +43,6 @@
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import {getIndicatorRanges} from "../utils";
-    import {replaceAreaFilterOptionsWithCountryChildren} from "../utils";
 
     interface Props {
         features: Feature[],
@@ -90,7 +89,6 @@
         countryFeature: Feature | null,
         colorIndicator: ChoroplethIndicatorMetadata,
         options: L.GeoJSONOptions
-        filtersToDisplay: Filter[]
     }
 
     const props = {
@@ -218,9 +216,6 @@
             },
             colorIndicator(): ChoroplethIndicatorMetadata {
                 return this.indicators.find(i => i.indicator == this.selections.indicatorId)!!;
-            },
-            filtersToDisplay(): Filter[] {
-                return replaceAreaFilterOptionsWithCountryChildren(this.filters, this.areaFilterId);
             },
             options() {
                 const indicator = this.selections.indicatorId;
