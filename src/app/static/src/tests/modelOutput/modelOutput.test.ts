@@ -57,7 +57,7 @@ describe("modelOutput module", () => {
                     regions: {
                         label: "label 1",
                         id: "id1",
-                        children: []
+                        children: [{id: "child1", label: "child label 1"}]
                     }
                 }
             })
@@ -105,7 +105,17 @@ describe("modelOutput module", () => {
 
     it("gets choropleth filters", async () => {
         const result = modelOutputGetters.choroplethFilters(mockModelOutputState(), null, rootState, null);
-        expectOutputPlotFilters(result);
+        expect(result.length).toEqual(3);
+        expect(result[0]).toStrictEqual({
+            id: "area",
+            column_id: "area_id",
+            label: "Area",
+            use_shape_regions: true,
+            allowMultiple: true,
+            options: [{id: "child1", label: "child label 1"}]
+        });
+        expect(result[1]).toStrictEqual({id: "age", column_id: "age_group_id", label: "Age", allowMultiple: false, options: []});
+        expect(result[2]).toStrictEqual({id: "quarter", column_id: "quarter_id", label: "Quarter", allowMultiple: false, options: []});
     });
 
     const expectOutputPlotFilters = (filters: Filter[]) => {
@@ -116,7 +126,7 @@ describe("modelOutput module", () => {
             label: "Area",
             use_shape_regions: true,
             options: [
-                {id: "id1", label: "label 1", children: []}
+                {id: "id1", label: "label 1", children: [{id: "child1", label: "child label 1"}]}
             ]
         });
         expect(filters[1]).toStrictEqual(modelRunResponse.plottingMetadata.barchart.filters[0]);

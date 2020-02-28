@@ -1,7 +1,7 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
 import {Dict} from "./types";
-import {Error, NestedFilterOption, Response} from "./generated";
+import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 
 export type ComputedWithType<T> = () => T;
 
@@ -150,4 +150,9 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
 
     }
     return result;
+};
+
+export const rootOptionChildren = (filterOptions: FilterOption[]) => {
+    const rootOption = filterOptions[0];
+    return (rootOption && (rootOption as any).children) || [];
 };
