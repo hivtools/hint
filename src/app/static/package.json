@@ -60,6 +60,7 @@
     "typescript": "^3.6.4",
     "v-tooltip": "^2.0.2",
     "vue": "^2.6.10",
+    "vue-class-component": "^7.2.3",
     "vue-feather-icons": "^5.0.0",
     "vue-jest": "^3.0.5",
     "vue-loader": "^15.7.1",

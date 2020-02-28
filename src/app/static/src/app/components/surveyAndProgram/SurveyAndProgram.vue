@@ -75,47 +75,22 @@
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import {PartialFileUploadProps} from "../../types";
     import {RootState} from "../../root";
-    import {DataType} from "../../store/surveyAndProgram/surveyAndProgram";
+    import {DataType, SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
     import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
+    import Component from "vue-class-component";
+    import {HintVue} from "../HintVue";
+    import {SurveyAndProgramMutation} from "../../store/surveyAndProgram/mutations";
+    import {BaselineState} from "../../store/baseline/baseline";
 
     const namespace: string = 'surveyAndProgram';
 
-    export default Vue.extend({
-        name: "SurveyAndProgram",
+    @Component({
+        components: {
+            FileUpload,
+            Choropleth
+        },
         computed: {
-            ...mapState<RootState>({
-                showChoropleth: ({surveyAndProgram, baseline}) => {
-                    return surveyAndProgram.selectedDataType != null;
-                },
-                anc: ({surveyAndProgram}) => ({
-                    valid: !!surveyAndProgram.anc,
-                    error: surveyAndProgram.ancError,
-                    existingFileName: surveyAndProgram.anc && surveyAndProgram.anc.filename,
-                    tabClass: {"disabled": !surveyAndProgram.anc, "active": surveyAndProgram.selectedDataType == DataType.ANC}
-                } as PartialFileUploadProps),
-                programme: ({surveyAndProgram}) => ({
-                    valid: surveyAndProgram.program != null,
-                    error: surveyAndProgram.programError,
-                    existingFileName: surveyAndProgram.program && surveyAndProgram.program.filename,
-                    tabClass: {
-                        "disabled": !surveyAndProgram.program,
-                        "active": surveyAndProgram.selectedDataType == DataType.Program
-                    }
-                } as PartialFileUploadProps),
-                survey: ({surveyAndProgram}) => ({
-                    valid: surveyAndProgram.survey != null,
-                    error: surveyAndProgram.surveyError,
-                    existingFileName: surveyAndProgram.survey && surveyAndProgram.survey.filename,
-                    tabClass: {
-                        "disabled": !surveyAndProgram.survey,
-                        "active": surveyAndProgram.selectedDataType == DataType.Survey
-                    }
-                } as PartialFileUploadProps),
-                features: ({baseline}) => baseline.shape ? baseline.shape.data.features : [] as Feature[],
-                featureLevels: ({baseline}) => baseline.shape ? baseline.shape.filters.level_labels : [],
-                plottingSelections: ({plottingSelections}) => plottingSelections.sapChoropleth
-            }),
             ...mapGetters(namespace, ["data", "filters"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"])
         },
@@ -133,12 +108,60 @@
             ...mapMutations({
                 updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections"
             })
-        },
-        created() {
-        },
-        components: {
-            FileUpload,
-            Choropleth
         }
     })
+   export default class SurveyAndProgram extends HintVue {
+
+        get sap(): SurveyAndProgramState {
+            return this.$store.state.surveyAndProgram;
+        }
+
+        get baseline(): BaselineState {
+            return this.$store.state.baseline;
+        }
+
+        get anc(): PartialFileUploadProps {
+            return {
+                valid: !!this.sap.anc,
+                error: this.sap.ancError,
+                existingFileName: this.sap.anc && this.sap.anc.filename,
+                tabClass: {"disabled": !this.sap.anc, "active": this.sap.selectedDataType == DataType.ANC}
+            }
+        }
+
+        get programme(): PartialFileUploadProps {
+            return {
+                valid: !!this.sap.program,
+                error: this.sap.programError,
+                existingFileName: this.sap.program && this.sap.program.filename,
+                tabClass: {"disabled": !this.sap.program, "active": this.sap.selectedDataType == DataType.Program}
+            }
+        }
+
+        get survey(): PartialFileUploadProps {
+            return {
+                valid: !!this.sap.survey,
+                error: this.sap.surveyError,
+                existingFileName: this.sap.survey && this.sap.survey.filename,
+                tabClass: {"disabled": !this.sap.survey, "active": this.sap.selectedDataType == DataType.Survey}
+            }
+        }
+
+        get showChoropleth() {
+            return this.sap.selectedDataType != null
+        }
+
+        get features() {
+            return this.baseline.shape ? this.baseline.shape.data.features : []
+        }
+
+        get featureLevels() {
+            return this.baseline.shape ? this.baseline.shape.filters.level_labels : []
+        }
+
+        get plottingSelections() {
+            return this.$store.state.plottingSelections.sapChoropleth;
+        }
+
+   }
 </script>

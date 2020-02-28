@@ -32,4 +32,5 @@ describe("Download Results component", () => {
         expect(links.at(0).attributes().href).toEqual("/download/spectrum/testId");
         expect(links.at(1).attributes().href).toEqual("/download/summary/testId");
     });
+
 });

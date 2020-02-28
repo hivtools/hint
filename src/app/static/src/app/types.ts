@@ -7,7 +7,8 @@ export interface PayloadWithType<T> extends Payload {
 export interface PartialFileUploadProps {
     valid: Boolean,
     error: Error | null,
-    existingFileName: string
+    existingFileName: string | null
+    tabClass?: Dict<boolean>
 }
 
 export interface IndicatorValues {
