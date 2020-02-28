@@ -6,15 +6,12 @@ import {
     mockModelResultResponse,
     mockModelRunState, mockShapeResponse,
 } from "../../mocks";
-import {DataType} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import {actions} from "../../../app/store/surveyAndProgram/actions";
-import {mutations as filteredDataMutations} from "../../../app/store/surveyAndProgram/mutations";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
 import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
-import {login} from "../../integration/integrationTest";
 import {inactiveFeatures} from "../../../app/main";
+import {BarChartWithFilters} from "@reside-ic/vue-charts";
 
 const localVue = createLocalVue();
 
@@ -49,7 +46,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                 },
                 getters: {
                     barchartIndicators: jest.fn(),
-                    barchartFilters: jest.fn(),
+                    barchartFilters: jest.fn().mockReturnValue(["TEST BAR FILTERS"]),
                     bubblePlotIndicators: jest.fn().mockReturnValue(["TEST BUBBLE INDICATORS"]),
                     bubblePlotFilters: jest.fn().mockReturnValue(["TEST BUBBLE FILTERS"])
                 },
@@ -125,7 +122,7 @@ describe("ModelOutput component", () => {
         expect(wrapper.findAll("choropleth-stub").length).toBe(0);
 
         expect(wrapper.find("#barchart-container").classes()).toEqual(["col-md-12"]);
-        expect(wrapper.findAll("barchart-stub").length).toBe(1);
+        expect(wrapper.findAll(BarChartWithFilters).length).toBe(1);
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
@@ -163,6 +160,20 @@ describe("ModelOutput component", () => {
                 region: {id: "r1", label: "region 1"},
                 age: {id: "a1", label: "0-4"}
             }
+        });
+    });
+
+    it("computes barchart filters", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const vm = (wrapper as any).vm;
+
+        expect(vm.filterConfig).toStrictEqual({
+            indicatorLabel: "Indicator",
+            xAxisLabel: "X Axis",
+            disaggLabel: "Disaggregate by",
+            filterLabel: "Filters",
+            filters: ["TEST BAR FILTERS"]
         });
     });
 
