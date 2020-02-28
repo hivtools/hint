@@ -101,7 +101,7 @@ describe("Survey and programme component", () => {
             column_id: "area_id",
             label: "area",
             allowMultiple: true,
-            options: [{id: "country", children: [{id: "region 1"}, {id: "region 2"}]}]
+            options: [{id: "region 1"}, {id: "region 2"}]
         });
         expect(choro.props().filters[1]).toStrictEqual({
             id: "year",

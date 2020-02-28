@@ -85,8 +85,6 @@
         selectedAreaFilterOptions: FilterOption[],
         flattenedAreas: Dict<NestedFilterOption>,
         selectedAreaFeatures: Feature[],
-        countryFilterOption: FilterOption,
-        countryFeature: Feature | null,
         colorIndicator: ChoroplethIndicatorMetadata,
         options: L.GeoJSONOptions
     }
@@ -197,22 +195,16 @@
                 if (selectedOptions && selectedOptions.length > 0) {
                     return selectedOptions
                 }
-                return this.countryFilterOption ? [this.countryFilterOption] : [];
+                return this.areaFilter.options; //consider all top level areas to be selected if none are
             },
             flattenedAreas() {
                 return flattenOptions(this.areaFilter.options);
             },
             selectedAreaFeatures(): Feature[] {
-                if (this.initialised && this.selectedAreaFilterOptions && this.selectedAreaFilterOptions.length > 0) {
+                if (this.initialised) {
                     return this.selectedAreaFilterOptions.map(o => this.getFeatureFromAreaId(o.id)!!);
                 }
                 return [];
-            },
-            countryFilterOption(): FilterOption {
-                return this.areaFilter.options[0]
-            },
-            countryFeature(): Feature | null {
-                return this.countryFilterOption ? this.getFeatureFromAreaId(this.countryFilterOption.id)!! : null;
             },
             colorIndicator(): ChoroplethIndicatorMetadata {
                 return this.indicators.find(i => i.indicator == this.selections.indicatorId)!!;
@@ -269,6 +261,7 @@
             updateBounds: function() {
                 if (this.initialised) {
                     const map = this.$refs.map as LMap;
+
                     if (map && map.fitBounds) {
                         map.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                     }

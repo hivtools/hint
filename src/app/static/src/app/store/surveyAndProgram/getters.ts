@@ -2,7 +2,7 @@ import {SurveyAndProgramState, DataType} from "./surveyAndProgram";
 import {RootState} from "../../root";
 import {DisplayFilter} from "../../types";
 import {FilterOption} from "../../generated";
-import {rootOptionChildren} from "../../components/plots/utils";
+import {rootOptionChildren} from "../../utils";
 
 function response(state: SurveyAndProgramState){
     switch (state.selectedDataType) {

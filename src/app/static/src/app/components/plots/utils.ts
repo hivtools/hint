@@ -119,8 +119,3 @@ export const roundToContext = function (value: number, context: number) {
 
     return Math.round(value * roundingNum) / roundingNum;
 };
-
-export const rootOptionChildren = (filterOptions: FilterOption[]) => {
-    const rootOption = filterOptions[0];
-    return (rootOption && (rootOption as any).children) || [];
-};

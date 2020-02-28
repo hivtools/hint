@@ -4,7 +4,7 @@ import {BarchartIndicator, Filter, DisplayFilter} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
-import {rootOptionChildren} from "../../components/plots/utils";
+import {rootOptionChildren} from "../../utils";
 
 const namespaced: boolean = true;
 

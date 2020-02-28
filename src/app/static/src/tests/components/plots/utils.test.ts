@@ -3,7 +3,7 @@ import {
     getColor,
     getIndicatorRanges,
     toIndicatorNameLookup,
-    roundToContext, rootOptionChildren
+    roundToContext
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 
@@ -136,16 +136,4 @@ it ("round to context does not round value if it already has fewer decimal place
 
 it ("round to context does not round value if both values and context are integers", () => {
     expect(roundToContext(5, 10)).toBe(5);
-});
-
-it ("rootOptionChildren returns expected filter options", () => {
-    const regionOptions = [
-        {id: "region1", label: "Region 1"},
-        {id: "region2", label: "Region 2"}
-    ];
-
-    const options = [{id: "country", label: "Country", children:regionOptions }];
-
-    const result = rootOptionChildren(options);
-    expect(result).toStrictEqual(regionOptions);
 });

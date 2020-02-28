@@ -226,16 +226,6 @@ describe("Choropleth component", () => {
         expect((wrapper.vm as any).selectedAreaFeatures).toStrictEqual([]);
     });
 
-    it("computes countryFilterOption", () => {
-        const wrapper = getWrapper();
-        expect((wrapper.vm as any).countryFilterOption).toBe(propsData.filters[0].options[0]);
-    });
-
-    it("computes countryFeature", () => {
-        const wrapper = getWrapper();
-        expect((wrapper.vm as any).countryFeature).toBe(propsData.features[0]);
-    });
-
     it("updateBounds updates bounds of map from features geojson", () => {
         const wrapper = getWrapper();
         const mockMapFitBounds = jest.fn();

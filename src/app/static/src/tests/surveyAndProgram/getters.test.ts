@@ -26,8 +26,8 @@ describe("survey and program getters", () => {
         baseline: {
             shape: {
                 filters: {
-                    regions: "REGION OPTIONS"
-}
+                    regions: {children: ["REGION OPTIONS"]}
+                }
             }
         }
     };
