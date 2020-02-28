@@ -1,12 +1,11 @@
-import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import ModelOptions from "../../../app/components/modelOptions/ModelOptions.vue";
-import DynamicForm from "../../../app/components/forms/DynamicForm.vue";
+import {DynamicForm} from "@reside-ic/vue-dynamic-form";
 import Vue from "vue";
 import Vuex, {ActionTree, MutationTree} from "vuex";
 import {mockModelOptionsState} from "../../mocks";
 import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
-import DynamicFormControlSection from "../../../app/components/forms/DynamicFormControlSection.vue";
-import {DynamicControlSection} from "../../../app/components/forms/types";
+import {DynamicControlSection} from "@reside-ic/vue-dynamic-form";
 import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Tick from "../../../app/components/Tick.vue";
@@ -104,8 +103,7 @@ describe("Model options component", () => {
             controlGroups: []
         };
 
-        rendered.find(DynamicForm).findAll(DynamicFormControlSection).at(0)
-            .vm.$emit("change", newControlSection);
+        rendered.find(DynamicForm).vm.$emit("change", {controlSections: [newControlSection]});
 
         await Vue.nextTick();
         expect(updateMock.mock.calls[0][1]).toStrictEqual({

@@ -1,8 +1,8 @@
 import {actions} from "../../app/store/modelOptions/actions";
 import {login, rootState} from "./integrationTest";
-import {isDynamicFormMeta} from "../../app/components/forms/dynamicFormChecker";
 import {actions as baselineActions} from "../../app/store/baseline/actions";
 import {actions as surveyActions} from "../../app/store/surveyAndProgram/actions";
+import {isDynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 
 const fs = require("fs");
 const FormData = require("form-data");

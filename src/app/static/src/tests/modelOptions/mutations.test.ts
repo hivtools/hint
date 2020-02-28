@@ -1,6 +1,6 @@
 import {mockModelOptionsState} from "../mocks";
 import {ModelOptionsMutation, mutations} from "../../app/store/modelOptions/mutations";
-import {DynamicFormMeta, NumberControl} from "../../app/components/forms/types";
+import {DynamicFormMeta, NumberControl} from "@reside-ic/vue-dynamic-form";
 import {VersionInfo} from "../../app/generated";
 
 describe("Model run options mutations", () => {
