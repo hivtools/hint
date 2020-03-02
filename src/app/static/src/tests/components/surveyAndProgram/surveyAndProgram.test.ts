@@ -5,7 +5,7 @@ import Vuex from 'vuex';
 import SurveyAndProgram from "../../../app/components/surveyAndProgram/SurveyAndProgram.vue";
 import {
     mockAncResponse,
-    mockBaselineState,
+    mockBaselineState, mockPlottingSelections,
     mockProgramResponse,
     mockSurveyAndProgramState,
     mockSurveyResponse
@@ -15,6 +15,8 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {emptyState} from "../../../app/root";
 import {actions} from "../../../app/store/surveyAndProgram/actions";
 import {mutations} from "../../../app/store/surveyAndProgram/mutations";
+import {getters} from "../../../app/store/surveyAndProgram/getters";
+import {mutations as selectionsMutations} from "../../../app/store/plottingSelections/mutations";
 
 const localVue = createLocalVue();
 
@@ -32,11 +34,31 @@ describe("Survey and programme component", () => {
                     namespaced: true,
                     state: mockSurveyAndProgramState(surveyAndProgramState),
                     mutations: mutations,
-                    actions: actions
+                    actions: actions,
+                    getters: getters
                 },
                 baseline: {
                     namespaced: true,
-                    state: mockBaselineState()
+                    state: mockBaselineState({
+                        shape: {
+                            data: {features: "TEST FEATURES" as any} as any,
+                            filters: {
+                                level_labels: "TEST LEVEL LABELS",
+                                regions: {id: "country", children: [{id: "region 1"}, {id: "region 2"}]}
+                            } as any} as any
+                    })
+                },
+                plottingSelections: {
+                    namespaced: true,
+                    state: mockPlottingSelections({
+                        sapChoropleth: {selectedFilterOptions: "TEST SELECTIONS"} as any}),
+                    mutations: selectionsMutations
+                },
+                metadata: {
+                    namespaced: true,
+                    getters: {
+                        sapIndicatorsMetadata: () => {return "TEST INDICATORS"}
+                    }
                 }
             }
         });
@@ -44,18 +66,91 @@ describe("Survey and programme component", () => {
         return store;
     };
 
-    it("show choropleth controls if there is a selected data type", () => {
+    it("renders choropleth controls if there is a selected data type", () => {
         const store = createStore({selectedDataType: DataType.Survey});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        expect(wrapper.find("choropleth-stub").props().hideControls).toBe(false);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+        expect(wrapper.findAll("filters-stub").length).toBe(1);
     });
 
-    it("hides choropleth controls if there is no selected data type", () => {
+    it("does not render choropleth controls if there is no selected data type", () => {
         const store = createStore({selectedDataType: null});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        expect(wrapper.find("choropleth-stub").props().hideControls).toBe(true);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+        expect(wrapper.findAll("filters-stub").length).toBe(0);
+    });
+
+    it("renders choropleth as expected", () => {
+        const store = createStore({
+            selectedDataType: DataType.Survey,
+            survey: {
+                "data": "TEST DATA",
+                "filters": {
+                    "year": "TEST YEAR FILTERS"
+                }
+            } as any,});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const choro = wrapper.find("choropleth-stub");
+        expect(choro.props().includeFilters).toBe(false);
+        expect(choro.props().areaFilterId).toBe("area");
+        expect(choro.props().chartdata).toBe("TEST DATA");
+        expect(choro.props().filters[0]).toStrictEqual({
+            id: "area",
+            column_id: "area_id",
+            label: "area",
+            allowMultiple: true,
+            options: [{id: "region 1"}, {id: "region 2"}]
+        });
+        expect(choro.props().filters[1]).toStrictEqual({
+            id: "year",
+            column_id: "year",
+            label: "year",
+            allowMultiple: false,
+            options: "TEST YEAR FILTERS"
+        });
+        expect(choro.props().features).toBe("TEST FEATURES");
+        expect(choro.props().featureLevels).toBe("TEST LEVEL LABELS");
+        expect(choro.props().indicators).toBe("TEST INDICATORS");
+        expect(choro.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
+
+    });
+
+    it("renders filters as expected", () => {
+        const store = createStore({
+            selectedDataType: DataType.Survey,
+            survey: {
+                "data": "TEST DATA",
+                "filters": {
+                    "year": "TEST YEAR FILTERS"
+                }
+            } as any,});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const filters = wrapper.find("filters-stub");
+        expect(filters.props().filters[0]).toStrictEqual({
+            id: "area",
+            column_id: "area_id",
+            label: "area",
+            allowMultiple: true,
+            options: [{id: "region 1"}, {id: "region 2"}]
+        });
+        expect(filters.props().filters[1]).toStrictEqual({
+            id: "year",
+            column_id: "year",
+            label: "year",
+            allowMultiple: false,
+            options: "TEST YEAR FILTERS"
+        });
+        expect(filters.props().selectedFilterOptions).toBe("TEST SELECTIONS");
+    });
+
+    it("updates state when choropleth selections change", async () => {
+        const wrapper = shallowMount(SurveyAndProgram, {store: createStore(), localVue});
+        (wrapper.vm as any).updateChoroplethSelections({payload: {selectedFilterOptions: "NEW TEST SELECTIONS"}});
+
+        await Vue.nextTick();
+        expect((wrapper.vm as any).plottingSelections).toStrictEqual({selectedFilterOptions: "NEW TEST SELECTIONS"});
     });
 
     it("tabs are disabled if no data is present", () => {

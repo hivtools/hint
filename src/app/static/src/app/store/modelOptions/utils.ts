@@ -1,4 +1,4 @@
-import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "../../components/forms/types";
+import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 
 export const updateForm = (oldForm: DynamicFormMeta, newForm: DynamicFormMeta): DynamicFormMeta => {
     const oldSectionLabels = oldForm.controlSections.map(c => c.label);

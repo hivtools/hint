@@ -20,6 +20,7 @@
                             :feature-levels="featureLevels"
                             :indicators="choroplethIndicators"
                             :selections="choroplethSelections"
+                            :include-filters="true"
                             area-filter-id="area"
                             v-on:update="updateOutputChoroplethSelections({payload: $event})"></choropleth>
             </div>

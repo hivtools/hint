@@ -72,6 +72,7 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
+    "@reside-ic/vue-dynamic-form": "^0.0.5",
     "@types/chart.js": "^2.9.14",
     "@types/geojson": "^7946.0.7",
     "@types/leaflet": "^1.5.5",

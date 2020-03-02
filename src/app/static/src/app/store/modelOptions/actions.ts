@@ -1,7 +1,7 @@
 import {ModelOptionsState} from "./modelOptions";
 import {ActionContext, ActionTree} from "vuex";
-import {DynamicFormMeta} from "../../components/forms/types";
-import {api, ResponseWithType} from "../../apiService";
+import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {api} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelOptionsMutation} from "./mutations";
 

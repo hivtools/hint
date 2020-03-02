@@ -1,5 +1,6 @@
 import {addCheckSum, freezer, verifyCheckSum, flattenOptions, flattenToIdSet} from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
+import {rootOptionChildren} from "../app/utils";
 
 describe("utils", () => {
 
@@ -113,6 +114,18 @@ describe("utils", () => {
 
         const result = flattenToIdSet(["1"], dict);
         expect(result).toStrictEqual(new Set(["1", "2", "3"]));
+    });
+
+    it ("rootOptionChildren returns expected filter options", () => {
+        const regionOptions = [
+            {id: "region1", label: "Region 1"},
+            {id: "region2", label: "Region 2"}
+        ];
+
+        const options = [{id: "country", label: "Country", children:regionOptions }];
+
+        const result = rootOptionChildren(options);
+        expect(result).toStrictEqual(regionOptions);
     });
 
 });

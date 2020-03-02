@@ -1,7 +1,8 @@
 import {SurveyAndProgramState, DataType} from "./surveyAndProgram";
 import {RootState} from "../../root";
-import {Dict, Filter} from "../../types";
+import {DisplayFilter} from "../../types";
 import {FilterOption} from "../../generated";
+import {rootOptionChildren} from "../../utils";
 
 function response(state: SurveyAndProgramState){
     switch (state.selectedDataType) {
@@ -32,8 +33,8 @@ export const getters = {
         return res ? res.data : null;
     },
 
-    filters: (state: SurveyAndProgramState, getters: any, rootState: RootState): Filter[] => {
-        const result = [] as Filter[];
+    filters: (state: SurveyAndProgramState, getters: any, rootState: RootState): DisplayFilter[] => {
+        const result = [] as DisplayFilter[];
 
         if (state.selectedDataType == null) {
             return result;
@@ -46,7 +47,8 @@ export const getters = {
                 id: "area",
                 column_id: "area_id",
                 label: "area",
-                options: [rootState.baseline.shape!!.filters!!.regions as FilterOption]
+                options: rootOptionChildren([rootState.baseline.shape!!.filters!!.regions as FilterOption]),
+                allowMultiple: true
             });
         }
 
@@ -57,7 +59,8 @@ export const getters = {
             id: "year",
             column_id: "year",
             label: "year",
-            options: filters.year || []
+            options: filters.year || [],
+            allowMultiple: false
         });
 
         const sexFilterOptionsForType =
@@ -67,7 +70,8 @@ export const getters = {
             id: "sex",
             column_id: "sex",
             label: "sex",
-            options: sexFilterOptionsForType
+            options: sexFilterOptionsForType,
+            allowMultiple: false
         });
 
 
@@ -75,14 +79,16 @@ export const getters = {
             id: "age",
             column_id: "age_group",
             label: "age",
-            options: filters.age || []
+            options: filters.age || [],
+            allowMultiple: false
         });
 
         result.push({
             id: "survey",
             column_id: "survey_id",
             label: "survey",
-            options: filters.surveys || []
+            options: filters.surveys || [],
+            allowMultiple: false
         });
 
         return result;
