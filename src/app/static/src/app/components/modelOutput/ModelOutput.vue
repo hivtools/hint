@@ -26,13 +26,12 @@
             </div>
 
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
-                <barchart :chartdata="chartdata" :filters="barchartFilters" :indicators="barchartIndicators"
-                          :selections="barchartSelections"
-                          :x-axis-text="xAxisText"
-                          :disagg-by-text="disaggByText"
-                          :indicator-text="indicatorText"
-                          :filters-text="filtersText"
-                          v-on:update="updateBarchartSelections({payload: $event})"></barchart>
+                <bar-chart-with-filters
+                        :chart-data="chartdata"
+                        :filter-config="filterConfig"
+                        :indicators="barchartIndicators"
+                        :selections="barchartSelections"
+                        v-on:update="updateBarchartSelections({payload: $event})"></bar-chart-with-filters>
             </div>
 
             <div v-if="selectedTab==='bubble'" id="bubble-plot-container" class="col-md-12">
@@ -50,21 +49,16 @@
     import i18next from "i18next";
     import Vue from "vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
-    import Barchart from "../plots/barchart/Barchart.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
-    import {
-        mapActionsByNames,
-        mapGettersByNames,
-        mapMutationByName,
-        mapMutationsByNames,
-        mapStateProp,
-        mapStateProps,
-    } from "../../utils";
-    import {BarchartIndicator, Filter, LevelLabel} from "../../types";
+    import {BarchartIndicator, Filter} from "@reside-ic/vue-charts/src/bar/types";
+    import {BarChartWithFilters, FilterConfig} from "@reside-ic/vue-charts";
+
+    import {mapGettersByNames, mapMutationByName, mapMutationsByNames, mapStateProp, mapStateProps,} from "../../utils";
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import {
         BarchartSelections,
-        BubblePlotSelections, ChoroplethSelections,
+        BubblePlotSelections,
+        ChoroplethSelections,
         PlottingSelectionsState
     } from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
@@ -74,6 +68,7 @@
     import {Language, Translations} from "../../store/translations/locales";
     import {inactiveFeatures} from "../../main";
     import {RootState} from "../../root";
+    import {LevelLabel} from "../../types";
 
     const namespace: string = 'filteredData';
 
@@ -100,10 +95,7 @@
         features: Feature[],
         featureLevels: LevelLabel[]
         currentLanguage: Language,
-        xAxisText: string
-        disaggByText: string
-        indicatorText: string
-        filtersText: string
+        filterConfig: FilterConfig
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -148,17 +140,14 @@
             ),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
-            xAxisText() {
-                return i18next.t("xAxis", this.currentLanguage)
-            },
-            disaggByText() {
-                return i18next.t("disaggBy", this.currentLanguage)
-            },
-            indicatorText() {
-                return i18next.t("indicator", this.currentLanguage)
-            },
-            filtersText() {
-                return i18next.t("filters", this.currentLanguage)
+            filterConfig() {
+                return {
+                    filterLabel: i18next.t("filters", this.currentLanguage),
+                    indicatorLabel: i18next.t("indicator", this.currentLanguage),
+                    xAxisLabel: i18next.t("xAxis", this.currentLanguage),
+                    disaggLabel: i18next.t("disaggBy", this.currentLanguage),
+                    filters: this.barchartFilters
+                }
             }
         },
         methods: {
@@ -167,7 +156,7 @@
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected)
         },
         components: {
-            Barchart,
+            BarChartWithFilters,
             BubblePlot,
             Choropleth
         }
