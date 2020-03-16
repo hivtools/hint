@@ -32,7 +32,6 @@ export interface ChoroplethSelections {
     selectedFilterOptions: Dict<FilterOption[]>,
     detail: number
 }
-
 export const initialBarchartSelections = (): BarchartSelections => {
     return {
         indicatorId: "",
