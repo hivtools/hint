@@ -47,7 +47,7 @@
     import {getIndicatorRanges} from "../utils";
     import {
         ColourScaleSelections,
-        ColourScaleSettings
+        ColourScaleSettings, ColourScaleType
     } from "../../../store/colourScales/colourScales";
 
     interface Props {
@@ -158,6 +158,14 @@
             },
             featureIndicators() {
                 const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+
+                let customMin = null;
+                let customMax = null;
+                if (this.indicatorColourScale.type == ColourScaleType.Custom) {
+                    customMin = this.indicatorColourScale.customMin;
+                    customMax = this.indicatorColourScale.customMax;
+                }
+
                 return getFeatureIndicators(
                     this.chartdata,
                     Array.from(selectedAreaIdSet),
@@ -165,7 +173,9 @@
                     this.indicatorRanges,
                     this.nonAreaFilters,
                     this.selections.selectedFilterOptions,
-                    [this.selections.indicatorId]
+                    [this.selections.indicatorId],
+                    customMin,
+                    customMax
                 );
             },
             featuresByLevel() {

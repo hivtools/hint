@@ -9,7 +9,9 @@ export const getFeatureIndicators = function (data: any[],
                                               indicatorRanges: Dict<NumericRange>,
                                               filters: Filter[],
                                               selectedFilterValues: Dict<FilterOption[]>,
-                                              selectedIndicatorIds: string[]): Dict<IndicatorValuesDict> {
+                                              selectedIndicatorIds: string[],
+                                              customMin: number | null,
+                                              customMax: number | null) : Dict<IndicatorValuesDict> {
 
     const result = {} as Dict<IndicatorValuesDict>;
     iterateDataValues(data, indicatorsMeta, selectedAreaIds, filters, selectedFilterValues,
@@ -24,7 +26,7 @@ export const getFeatureIndicators = function (data: any[],
                 const regionValues = result[areaId];
                 regionValues[indicator] = {
                     value: value,
-                    color: getColor(value, indicatorMeta)
+                    color: getColor(value, indicatorMeta, customMin, customMax)
                 }
             }
         });
