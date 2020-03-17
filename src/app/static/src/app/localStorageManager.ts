@@ -19,6 +19,8 @@ export const serialiseState = (rootState: RootState): Partial<RootState> => {
     };
 };
 
+declare const currentUser: string;
+
 export class LocalStorageManager {
 
     saveState = (state: RootState) => {
@@ -31,6 +33,10 @@ export class LocalStorageManager {
     };
 
     getState = () : Partial<RootState> | null => {
+        if (currentUser != window.localStorage.getItem("user")){
+            localStorage.clear();
+            localStorage.setItem("user", currentUser);
+        }
         const item = window.localStorage.getItem(appStateKey);
         if (item) {
             return JSON.parse(item) as Partial<RootState>;

@@ -13,5 +13,8 @@
     <stepper></stepper>
     <errors title="${title}"></errors>
 </div>
+<script>
+    var currentUser = "${user}"
+</script>
 </body>
 </html>

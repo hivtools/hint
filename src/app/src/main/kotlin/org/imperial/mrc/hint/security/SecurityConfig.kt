@@ -41,6 +41,10 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
 
     fun getUserProfile(): CommonProfile {
         val manager = ProfileManager<CommonProfile>(webContext)
-        return manager.getAll(true).single()
+        val profiles = manager.getAll(true)
+        return profiles.singleOrNull() ?: CommonProfile().apply {
+            id = "guest"
+        }
+
     }
 }
