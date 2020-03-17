@@ -3,11 +3,32 @@
   background: white;
 }
 
+.legend-container {
+  display: table-cell;
+}
+
+.legend-element {
+  vertical-align: bottom;
+  display: inline-block;
+}
+
+.legend-element a {
+  color:  $theme-red;
+}
+
 .legend i {
   width: 18px;
   height: 18px;
   float: left;
   margin-right: 8px;
+}
+
+#adjust-scale {
+  width: 4.1rem;
+}
+
+.legend-adjust input[type='number']{
+  width: 4rem;
 }
 
 .vue-treeselect__multi-value-item {

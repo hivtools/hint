@@ -1,11 +1,19 @@
 <template>
     <l-control position="bottomright">
-        <div class="map-control p-3">
-            <div class="legend" v-for="level in levels" v-bind:key="level.val">
-                <i v-bind:style="level.style"></i>
-                <span class="level">{{level.val}}</span>
-                <span class="hidden" style="display: none">{{level.style}}</span>
-                <br/>
+        <div class="legend-container">
+            <map-adjust-scale class="legend-element legend-adjust map-control"
+                              :show="showAdjust" :colour-scale="colourScale" @update="update">
+            </map-adjust-scale>
+            <div class="legend-element map-control p-3">
+                <div class="legend" v-for="level in levels" v-bind:key="level.val">
+                    <i v-bind:style="level.style"></i>
+                    <span class="level">{{level.val}}</span>
+                    <span class="hidden" style="display: none">{{level.style}}</span>
+                    <br/>
+                </div>
+                <div id="adjust-scale">
+                    <a @click="toggleAdjust" href="">{{showAdjust ? "Done" : "Adjust scale"}}</a>
+                </div>
             </div>
         </div>
     </l-control>
@@ -17,10 +25,15 @@
     import {colorFunctionFromName} from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {NumericRange} from "../../types";
+    import {ColourScaleSettings} from "../../store/colourScales/colourScales";
+    import MapAdjustScale from "./MapAdjustScale.vue";
+    import {DomEvent} from "leaflet";
+
     var numeral = require('numeral');
     interface Props {
         metadata: ChoroplethIndicatorMetadata,
         range: NumericRange
+        colourScale: ColourScaleSettings
     }
 
     interface Level {
@@ -28,18 +41,34 @@
         style: Object
     }
 
+    interface Data {
+        showAdjust: Boolean
+    }
+
     interface Computed {
         levels: Level[]
     }
 
-    export default Vue.extend<{}, {}, Computed, Props>({
+    interface Methods {
+        toggleAdjust: (e: Event) => void
+        update: (colourScale: ColourScaleSettings) => void
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "MapLegend",
         props: {
             "metadata": Object,
-            "range": Object
+            "range": Object,
+            "colourScale": Object
         },
         components: {
-            LControl
+            LControl,
+            MapAdjustScale
+        },
+        data(): Data {
+            return {
+                showAdjust: false
+            }
         },
         computed: {
             levels: function () {
@@ -68,6 +97,15 @@
                     });
                 }
                 return [];
+            }
+        },
+        methods: {
+            toggleAdjust: function(e: Event) {
+                e.preventDefault();
+                this.showAdjust = !this.showAdjust;
+            },
+            update: function(colourScale: ColourScaleSettings) {
+                this.$emit("update", colourScale);
             }
         }
     });

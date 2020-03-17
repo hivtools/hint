@@ -25,7 +25,7 @@ import {
 } from "./store/plottingSelections/plottingSelections";
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 import {Language} from "./store/translations/locales";
-import {ColourScalesState, initialColourScaleState} from "./store/colourScales/colourScales";
+import {ColourScalesState, initialColourScalesState, colourScales} from "./store/colourScales/colourScales";
 
 export interface TranslatableState {
     language: Language
@@ -99,7 +99,7 @@ export const emptyState = (): RootState => {
         stepper: initialStepperState(),
         load: initialLoadState(),
         plottingSelections: initialPlottingSelectionsState(),
-        colourScales: initialColourScaleState(),
+        colourScales: initialColourScalesState(),
         errors: initialErrorsState()
     }
 };
@@ -114,6 +114,7 @@ export const storeOptions: StoreOptions<RootState> = {
         modelRun,
         modelOutput,
         plottingSelections,
+        colourScales,
         stepper,
         load,
         errors

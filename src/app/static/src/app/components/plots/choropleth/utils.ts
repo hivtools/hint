@@ -1,6 +1,7 @@
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
 import {IndicatorValuesDict, Dict, Filter, NumericRange} from "../../../types";
 import {getColor, iterateDataValues} from "../utils";
+import {ColourScaleSettings, initialColourScaleSettings} from "../../../store/colourScales/colourScales";
 
 export const getFeatureIndicators = function (data: any[],
                                               selectedAreaIds: string[],
@@ -28,5 +29,14 @@ export const getFeatureIndicators = function (data: any[],
             }
         });
 
+    return result;
+};
+
+export const initialiseColourScaleFromMetadata = function(meta: ChoroplethIndicatorMetadata) {
+    const result = initialColourScaleSettings();
+    if (meta) {
+        result.customMin = meta.min;
+        result.customMax = meta.max;
+    }
     return result;
 };
