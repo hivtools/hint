@@ -33,4 +33,14 @@ describe("ColourScales mutations", () => {
         });
         expect(testState.anc).toBe(colourScales);
     });
+
+    it("UpdateSAPColourScales does nothgin if unknown DataType", () => {
+        const testState = mockColourScales();
+        mutations.UpdateSAPColourScales(testState, {type: "UpdateSAPColourScales",
+            payload: [99 as DataType, colourScales]
+        });
+        expect(testState.survey).toStrictEqual({});
+        expect(testState.program).toStrictEqual({});
+        expect(testState.anc).toStrictEqual({});
+    });
 });

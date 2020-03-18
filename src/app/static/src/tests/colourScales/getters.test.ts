@@ -25,5 +25,9 @@ describe("ColourScales getters", () => {
         rootState.surveyAndProgram.selectedDataType = DataType.ANC;
         const anc = getters.selectedSAPColourScales(state, null, rootState);
         expect(anc).toBe(state.anc);
+
+        rootState.surveyAndProgram.selectedDataType = 99 as DataType;
+        const unknown = getters.selectedSAPColourScales(state, null, rootState);
+        expect(unknown).toStrictEqual({});
     });
 });
