@@ -8,27 +8,27 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                 Default
             </label>
         </div>
-        <div class="form-group">
-            <div class="form-check">
-                <label class="form-check-label">
-                    <input id="type-input-custom" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.Custom"
-                           v-model="colourScale.type" @change="update">
-                    Custom
-                </label>
+
+        <div class="form-check">
+            <label class="form-check-label">
+                <input id="type-input-custom" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.Custom"
+                       v-model="colourScale.type" @change="update">
+                Custom
+            </label>
+        </div>
+        <div class="ml-2">
+            <div class="mt-2">
+                <label for="custom-min-input">Min</label>
+                <input id="custom-min-input" type="number" v-model.number="colourScale.customMin" @change="update"
+                       :disabled="disableCustom">
             </div>
-            <div class="ml-2">
-                <div class="form-group">
-                    <label for="custom-min-input">Min</label>
-                    <input id="custom-min-input" type="number" v-model.number="colourScale.customMin" @change="update"
-                           :disabled="disableCustom">
-                </div>
-                <div class="form-group">
-                    <label for="custom-max-input">Max</label>
-                    <input id="custom-max-input" type="number" v-model.number="colourScale.customMax" @change="update"
-                           :disabled="disableCustom">
-                </div>
+            <div class="mt-2">
+                <label for="custom-max-input">Max</label>
+                <input id="custom-max-input" type="number" v-model.number="colourScale.customMax" @change="update"
+                       :disabled="disableCustom">
             </div>
         </div>
+
     </div>
 </template>
 

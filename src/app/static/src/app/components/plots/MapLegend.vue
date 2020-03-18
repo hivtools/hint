@@ -12,7 +12,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                     <span class="hidden" style="display: none">{{level.style}}</span>
                     <br/>
                 </div>
-                <div id="adjust-scale">
+                <div id="adjust-scale" class="mt-1">
                     <a @click="toggleAdjust" href="">{{showAdjust ? "Done" : "Adjust scale"}}</a>
                 </div>
             </div>
