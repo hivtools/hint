@@ -118,6 +118,7 @@ class HintrAPIClient(
 
     private fun postJson(url: String, json: String): ResponseEntity<String> {
         return "$baseUrl/$url".httpPost()
+                .addTimeouts()
                 .header("Accept-Language" to getAcceptLanguage())
                 .header("Content-Type" to "application/json")
                 .body(json)
