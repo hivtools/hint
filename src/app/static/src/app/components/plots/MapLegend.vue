@@ -1,3 +1,4 @@
+import {ColourScaleType} from "../../store/colourScales/colourScales";
 <template>
     <l-control position="bottomright">
         <div class="legend-container">
@@ -21,18 +22,14 @@
 <script lang="ts">
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
-    import {roundToContext} from "./utils";
-    import {colorFunctionFromName} from "./utils";
+    import {colorFunctionFromName, roundToContext} from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
-    import {NumericRange} from "../../types";
-    import {ColourScaleSettings} from "../../store/colourScales/colourScales";
+    import {ColourScaleSettings, ColourScaleType} from "../../store/colourScales/colourScales";
     import MapAdjustScale from "./MapAdjustScale.vue";
-    import {DomEvent} from "leaflet";
 
     var numeral = require('numeral');
     interface Props {
         metadata: ChoroplethIndicatorMetadata,
-        range: NumericRange
         colourScale: ColourScaleSettings
     }
 
@@ -58,7 +55,6 @@
         name: "MapLegend",
         props: {
             "metadata": Object,
-            "range": Object,
             "colourScale": Object
         },
         components: {
@@ -73,9 +69,10 @@
         computed: {
             levels: function () {
                 if (this.metadata) {
-                    //Use custom range if provided, otherwise use metadata range
-                    const max = this.range ? this.range.max : this.metadata.max;
-                    const min = this.range ? this.range.min : this.metadata.min;
+                    //Use custom scale if selected, otherwise use metadata range
+                    const max = (this.colourScale.type == ColourScaleType.Custom) ? this.colourScale.customMax : this.metadata.max;
+                    const min =  (this.colourScale.type == ColourScaleType.Custom) ? this.colourScale.customMin : this.metadata.min;
+
                     const colorFunction = colorFunctionFromName(this.metadata.colour);
                     const step = (max - min) / 5;
 

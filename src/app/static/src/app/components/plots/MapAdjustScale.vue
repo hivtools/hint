@@ -17,11 +17,11 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
             <div class="ml-2">
                 <div class="form-group">
                     <label for="custom-min-input">Min</label>
-                    <input id="custom-min-input" type="number" v-model="colourScale.customMin" @change="update" :disabled="disableCustom">
+                    <input id="custom-min-input" type="number" v-model.number="colourScale.customMin" @change="update" :disabled="disableCustom">
                 </div>
                 <div class="form-group">
                     <label for="custom-max-input">Max</label>
-                    <input id="custom-max-input" type="number" v-model="colourScale.customMax" @change="update" :disabled="disableCustom">
+                    <input id="custom-max-input" type="number" v-model.number="colourScale.customMax" @change="update" :disabled="disableCustom">
                 </div>
             </div>
         </div>
