@@ -32,15 +32,12 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
         }
     }
 
-    protected fun getModelRunEntity(isAuthorized: IsAuthorized): HttpEntity<String> {
-        val version = if (isAuthorized == IsAuthorized.TRUE) {
-            uploadMinimalFiles()
-            val optionsResponseEntity = testRestTemplate.getForEntity<String>("/model/options/")
-            val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
-            parser.treeToValue<Map<String, String>>(versionJson)
-        } else {
-            mapOf()
-        }
+    protected fun getModelRunEntity(): HttpEntity<String> {
+        uploadMinimalFiles()
+        val optionsResponseEntity = testRestTemplate.getForEntity<String>("/model/options/")
+        val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
+        val version = parser.treeToValue<Map<String, String>>(versionJson)
+
         val modelRunOptions = ModelRunOptions(emptyMap(), version)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON

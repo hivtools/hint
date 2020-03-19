@@ -42,9 +42,8 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
                 "No handler found for GET /nonsense/route/")
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `bad requests are correctly formatted`(isAuthorized: IsAuthorized) {
+    @Test
+    fun `bad requests are correctly formatted`() {
         val testFile = File("$tmpUploadDirectory/whatever.csv")
         testFile.parentFile.mkdirs()
         testFile.createNewFile()
@@ -56,8 +55,7 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
 
         val entity = testRestTemplate.postForEntity<String>("/disease/survey/", badPostEntity)
 
-        assertSecureWithError(isAuthorized,
-                entity,
+        assertError(entity,
                 HttpStatus.BAD_REQUEST,
                 "OTHER_ERROR",
                 unexpectedErrorRegex,

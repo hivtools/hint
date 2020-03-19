@@ -14,6 +14,7 @@ class DiseaseTests : SessionFileTests() {
     @BeforeEach
     fun setup() {
         authorize()
+        testRestTemplate.getForEntity<String>("/")
         testRestTemplate.postForEntity<String>("/baseline/shape/",
                 getTestEntity("malawi.geojson"))
     }

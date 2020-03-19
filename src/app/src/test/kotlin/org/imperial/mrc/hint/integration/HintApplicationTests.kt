@@ -82,6 +82,8 @@ class HintApplicationTests : SecureIntegrationTests() {
 
     @Test
     fun `api responses are gzipped`() {
+        authorize()
+        testRestTemplate.getForEntity<String>("/")
         val postEntity = getTestEntity("malawi.geojson", acceptGzip = true)
         val response = testRestTemplate.exchange<String>("/baseline/shape/", HttpMethod.POST, postEntity)
         assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
