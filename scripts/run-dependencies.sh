@@ -48,5 +48,3 @@ docker run --rm --network=$NETWORK \
 
 HERE=$(dirname "$0")
 "$HERE"/add-test-user.sh
-"$HERE"/add-guest-user.sh
-
