@@ -58,7 +58,7 @@
                                 :area-filter-id="areaFilterId"
                                 :colour-scales="selectedSAPColourScales"
                                 @update="updateChoroplethSelections({payload: $event})"
-                                @updateColourScales="updateColourScales"></choropleth>
+                                @updateColourScales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
             </div>
         </div>
     </div>
@@ -86,6 +86,7 @@
     }
 
     interface Computed {
+        selectedDataType: DataType,
         filters: Filter[],
         data: any,
         sapIndicatorsMetadata: Metadata,
@@ -107,6 +108,9 @@
         },
         computed: {
             ...mapState<RootState>({
+                selectedDataType: ({surveyAndProgram}) => {
+                    return surveyAndProgram.selectedDataType;
+                },
                 showChoropleth: ({surveyAndProgram, baseline}) => {
                     return surveyAndProgram.selectedDataType != null;
                 },
@@ -151,10 +155,10 @@
                 deleteSurvey: 'surveyAndProgram/deleteSurvey',
                 deleteProgram: 'surveyAndProgram/deleteProgram',
                 deleteANC: 'surveyAndProgram/deleteANC',
-                updateColourScales: "colourScales/updateSelectedSAPColourScales"
             }),
             ...mapMutations({
                 updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections",
+                updateSAPColourScales: "colourScales/UpdateSAPColourScales",
             })
         },
         created() {
