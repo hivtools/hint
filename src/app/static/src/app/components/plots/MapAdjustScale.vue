@@ -47,14 +47,18 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
 
     interface Computed {
         disableCustom: Boolean,
-        invalidMsg: String | null //TODO: show this in the UI
+        invalidMsg: String | null
     }
 
     interface Data {
         colourScaleToAdjust: ColourScaleSettings
     }
 
-    export default Vue.extend<Data, {}, Computed, Props>({
+    interface Methods {
+        update: () => void
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "MapAdjustScale",
         props: {
            show: Boolean,
