@@ -12,7 +12,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                     <span class="hidden" style="display: none">{{level.style}}</span>
                     <br/>
                 </div>
-                <div id="adjust-scale" class="mt-1">
+                <div v-if="adjustable" id="adjust-scale" class="mt-1">
                     <a @click="toggleAdjust" href="">{{showAdjust ? "Done" : "Adjust scale"}}</a>
                 </div>
             </div>
@@ -43,7 +43,8 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     }
 
     interface Computed {
-        levels: Level[]
+        levels: Level[],
+        adjustable: Boolean
     }
 
     interface Methods {
@@ -67,11 +68,18 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
             }
         },
         computed: {
+            adjustable: function() {
+                return !!this.colourScale;
+            },
             levels: function () {
                 if (this.metadata) {
                     //Use custom scale if selected, otherwise use metadata range
-                    const max = (this.colourScale.type == ColourScaleType.Custom) ? this.colourScale.customMax : this.metadata.max;
-                    const min =  (this.colourScale.type == ColourScaleType.Custom) ? this.colourScale.customMin : this.metadata.min;
+                    let max = this.metadata.max;
+                    let min =  this.metadata.min;
+                    if (this.adjustable && this.colourScale.type == ColourScaleType.Custom) {
+                        max = this.colourScale.customMax;
+                        min = this.colourScale.customMin;
+                    }
 
                     const colorFunction = colorFunctionFromName(this.metadata.colour);
                     const step = (max - min) / 5;

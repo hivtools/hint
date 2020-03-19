@@ -74,6 +74,21 @@ describe("Map legend component", () => {
         expectIcons(icons);
     });
 
+    it("does not render adjust link if no colour scale", () => {
+        const noScaleWrapper = shallowMount(MapLegend, {
+            propsData: {
+                    metadata: {
+                        max: 10,
+                        min: 0,
+                        colour: "interpolateGreys",
+                        invert_scale: false
+                    },
+                    colourScale: null
+                    }
+                });
+        expect(wrapper.find("#adjust-scales").exists()).toBe(false);
+    });
+
     it("renders icons with colors, with scale inverted", () => {
         const invertedWrapper = shallowMount(MapLegend, {
             propsData: {

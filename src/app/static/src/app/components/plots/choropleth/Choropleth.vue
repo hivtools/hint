@@ -88,7 +88,7 @@
         currentFeatures: Feature[],
         maxLevel: number,
         indicatorNameLookup: Dict<string>,
-        indicatorColourScale: ColourScaleSettings,
+        indicatorColourScale: ColourScaleSettings | null,
         areaFilter: Filter,
         nonAreaFilters: Filter[],
         selectedAreaFilterOptions: FilterOption[],
@@ -161,7 +161,7 @@
 
                 let customMin = null;
                 let customMax = null;
-                if (this.indicatorColourScale.type == ColourScaleType.Custom) {
+                if (this.indicatorColourScale && this.indicatorColourScale.type == ColourScaleType.Custom) {
                     customMin = this.indicatorColourScale.customMin;
                     customMax = this.indicatorColourScale.customMax;
                 }
@@ -231,7 +231,11 @@
             colorIndicator(): ChoroplethIndicatorMetadata {
                 return this.indicators.find(i => i.indicator == this.selections.indicatorId)!!;
             },
-            indicatorColourScale(): ColourScaleSettings {
+            indicatorColourScale(): ColourScaleSettings | null{
+                if (!this.colourScales) {
+                    return null;
+                }
+
                 const current = this.colourScales[this.selections.indicatorId];
                 if (current) {
                     return current
