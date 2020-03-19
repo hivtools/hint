@@ -9,7 +9,7 @@
 </head>
 <body>
 <div id="app" :class="language">
-    <user-header title="${title}"></user-header>
+    <user-header title="${title}" user="${user}"></user-header>
     <stepper></stepper>
     <errors title="${title}"></errors>
 </div>

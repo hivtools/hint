@@ -89,8 +89,22 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                 assertSuccess(responseEntity)
             }
             IsAuthorized.FALSE -> {
-               assertUnauthorized(responseEntity)
+                assertUnauthorized(responseEntity)
             }
+        }
+    }
+
+    fun assertSuccess(responseEntity: ResponseEntity<String>,
+                      schemaName: String?) {
+
+        Assertions.assertThat(responseEntity.headers.contentType!!.toString())
+                .isEqualTo("application/json")
+
+        if (responseEntity.statusCode != HttpStatus.OK) {
+            Assertions.fail<String>("Expected OK response but got error: ${responseEntity.body}")
+        }
+        if (schemaName != null) {
+            JSONValidator().validateSuccess(responseEntity.body!!, schemaName)
         }
     }
 
@@ -123,6 +137,18 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                 assertUnauthorized(responseEntity)
             }
         }
+    }
+
+    fun assertError(responseEntity: ResponseEntity<String>,
+                    httpStatus: HttpStatus,
+                    errorCode: String,
+                    errorDetail: String? = null,
+                    errorTrace: String? = null) {
+
+        Assertions.assertThat(responseEntity.headers.contentType!!.toString()).isEqualTo("application/json")
+        Assertions.assertThat(responseEntity.statusCode).isEqualTo(httpStatus)
+        JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail, errorTrace)
+
     }
 
     enum class IsAuthorized {

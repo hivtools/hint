@@ -25,7 +25,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
 
     override fun addUser(email: String, password: String?) {
 
-        if (!email.contains("@")) {
+        if (!email.contains("@") && email != GUEST_USER) {
             throw UserException("invalidEmail")
         }
 
@@ -53,6 +53,10 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
 
     override fun getUser(email: String): CommonProfile? {
 
+        if (email == GUEST_USER) {
+            return profileService.findById(email)
+        }
+
         val emailArray = email.split("@")
         if (emailArray.count() == 1) {
             throw UserException("invalidEmail")
@@ -75,6 +79,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
     companion object {
 
         const val PASSWORD_LENGTH = 10
+        const val GUEST_USER = "guest"
 
         private fun generateRandomPassword(): String {
             val random = SecureRandom()

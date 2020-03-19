@@ -151,7 +151,7 @@ class BaselineTests : SessionFileTests() {
         testRestTemplate.postForEntity<String>("/baseline/population/", postPopEntity)
 
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/validate/")
-        assertSecureWithSuccess(IsAuthorized.TRUE, responseEntity, "ValidateBaselineResponse")
+        assertSuccess(responseEntity, "ValidateBaselineResponse")
 
         val data = getResponseData(responseEntity)
         assertThat(data["consistent"].asBoolean()).isEqualTo(true)
@@ -172,6 +172,6 @@ class BaselineTests : SessionFileTests() {
         testRestTemplate.postForEntity<String>("/baseline/population/", postPopEntity)
 
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/validate/")
-        assertSecureWithError(IsAuthorized.TRUE, responseEntity, HttpStatus.BAD_REQUEST, "INVALID_BASELINE")
+        assertError(responseEntity, HttpStatus.BAD_REQUEST, "INVALID_BASELINE")
     }
 }
