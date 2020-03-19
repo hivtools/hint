@@ -74,6 +74,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
             levels: function () {
                 if (this.metadata) {
                     //Use custom scale if selected, otherwise use metadata range
+                    //This logic will be removed in mrc-1417 when replaced with externally provided range
                     let max = this.metadata.max;
                     let min =  this.metadata.min;
                     if (this.adjustable && this.colourScale.type == ColourScaleType.Custom) {
