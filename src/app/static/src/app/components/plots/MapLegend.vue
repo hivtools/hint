@@ -26,11 +26,13 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {ColourScaleSettings, ColourScaleType} from "../../store/colourScales/colourScales";
     import MapAdjustScale from "./MapAdjustScale.vue";
+    import {NumericRange} from "../../types";
 
     var numeral = require('numeral');
     interface Props {
         metadata: ChoroplethIndicatorMetadata,
-        colourScale: ColourScaleSettings
+        colourScale: ColourScaleSettings,
+        colourRange: NumericRange
     }
 
     interface Level {
@@ -55,7 +57,8 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         name: "MapLegend",
         props: {
             "metadata": Object,
-            "colourScale": Object
+            "colourScale": Object,
+            "colourRange": Object
         },
         components: {
             LControl,
@@ -70,8 +73,8 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
             levels: function () {
                 if (this.metadata) {
                     //Use custom scale if selected, otherwise use metadata range
-                    const max = (this.colourScale.type == ColourScaleType.Custom) ? this.colourScale.customMax : this.metadata.max;
-                    const min =  (this.colourScale.type == ColourScaleType.Custom) ? this.colourScale.customMin : this.metadata.min;
+                    const max = this.colourRange.max;
+                    const min =  this.colourRange.min;
 
                     const colorFunction = colorFunctionFromName(this.metadata.colour);
                     const step = (max - min) / 5;

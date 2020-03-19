@@ -1,13 +1,13 @@
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
-import {BubbleIndicatorValuesDict, Dict, Filter, NumericRange} from "../../types";
-import {getRadius} from "./bubble/utils";
+import {Dict, Filter, NumericRange} from "../../types";
+import {ColourScaleSelections, ColourScaleType} from "../../store/colourScales/colourScales";
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
-                         customMin: number | null = null, customMax: number | null = null) => {
+                         colourRange: NumericRange) => {
 
-    const min = customMin === null ? metadata.min : customMin;
-    const max = customMax === null ? metadata.max : customMax;
+    const min = colourRange.min;
+    const max = colourRange.max;
 
     const colorFunction = colorFunctionFromName(metadata.colour);
 
@@ -49,6 +49,35 @@ export const getIndicatorRanges = function(data: any,
         });
 
     return result;
+};
+
+export const getColourRanges = function(data: any,
+                                        indicatorsMeta: ChoroplethIndicatorMetadata[],,
+                                        colourScales: ColourScaleSelections) {
+  const result = {} as Dict<NumericRange>;
+  let fullIndicatorRanges = null;
+  for(const meta of indicatorsMeta) {
+        const indicatorId = meta.indicator;
+        const colourScale = colourScales[indicatorId];
+        const colourScaleType = colourScale ? colourScale.type : ColourScaleType.Default;
+        switch(colourScaleType) {
+            case(ColourScaleType.Default):
+                result[indicatorId] = {min: meta.min, max: meta.max};
+                break;
+            case(ColourScaleType.Custom):
+                result[indicatorId] = {min: colourScale.customMin, max: colourScale.customMax};
+                break;
+            case(ColourScaleType.DynamicFull):
+                if (!fullIndicatorRanges) {
+                    fullIndicatorRanges = getIndicatorRanges(data, indicatorsMeta);
+                }
+                result[indicatorId] = {min: fullIndicatorRanges[indicatorId].min, max: fullIndicatorRanges[indicatorId].max};
+                break;
+            default:
+                break;
+        }
+  }
+  return result;
 };
 
 export const iterateDataValues = function(

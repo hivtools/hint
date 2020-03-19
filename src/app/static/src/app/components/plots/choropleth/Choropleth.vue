@@ -22,6 +22,7 @@
                              @indicator-changed="onIndicatorChange"></map-control>
                 <map-legend :metadata="colorIndicator"
                             :colour-scale="indicatorColourScale"
+                            :colour-range="colourRanges[selections.indicatorId]"
                             @update="updateColourScale"></map-legend>
             </l-map>
         </div>
@@ -40,7 +41,7 @@
     import {GeoJSON} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {ChoroplethSelections} from "../../../store/plottingSelections/plottingSelections";
-    import {toIndicatorNameLookup} from "../utils";
+    import {getColourRanges, toIndicatorNameLookup} from "../utils";
     import {getFeatureIndicators, initialiseColourScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
@@ -82,7 +83,7 @@
 
     interface Computed {
         initialised: boolean,
-        indicatorRanges: Dict<NumericRange>,
+        colourRanges: Dict<NumericRange>,
         featureIndicators: Dict<IndicatorValuesDict>,
         featuresByLevel: { [k: number]: Feature[] },
         currentFeatures: Feature[],
@@ -153,8 +154,8 @@
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
                     !!this.selections.indicatorId;
             },
-            indicatorRanges() {
-                return getIndicatorRanges(this.chartdata, this.indicators)
+            colourRanges() {
+                return getColourRanges(this.chartdata, this.indicators, this.colourScales)
             },
             featureIndicators() {
                 const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
@@ -170,12 +171,10 @@
                     this.chartdata,
                     Array.from(selectedAreaIdSet),
                     this.indicators,
-                    this.indicatorRanges,
+                    this.colourRanges,
                     this.nonAreaFilters,
                     this.selections.selectedFilterOptions,
-                    [this.selections.indicatorId],
-                    customMin,
-                    customMax
+                    [this.selections.indicatorId]
                 );
             },
             featuresByLevel() {
