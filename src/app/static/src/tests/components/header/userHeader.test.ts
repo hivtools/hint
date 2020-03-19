@@ -24,10 +24,30 @@ describe("user header", () => {
     });
     registerTranslations(store);
 
-    it("contains logout link", () => {
-        const wrapper = shallowMount(UserHeader, {store});
+    const getWrapper = (user: string = "someone@email.com") => {
+        return shallowMount(UserHeader, {propsData: {user, title: "Naomi"}, store});
+    };
+
+    it("contains logout link if current user is not guest", () => {
+        const wrapper = getWrapper();
         const logoutLink = wrapper.find("a[href='/logout']");
+        const loginLink = wrapper.findAll("a[href='/login']");
         expect(logoutLink.text()).toBe("Logout");
+        expect(loginLink.length).toBe(0);
+    });
+
+    it("contains login info if current user is not guest", () => {
+        const wrapper = getWrapper();
+        const loginInfo = wrapper.find("span");
+        expect(loginInfo.text()).toBe("Logged in as someone@email.com");
+    });
+
+    it("contains login link if user is guest", () => {
+        const wrapper = getWrapper("guest");
+        const logoutLink = wrapper.findAll("a[href='/logout']");
+        const loginLink = wrapper.find("a[href='/login']");
+        expect(loginLink.text()).toBe("Log In");
+        expect(logoutLink.length).toBe(0);
     });
 
     it("renders file menu", () => {
