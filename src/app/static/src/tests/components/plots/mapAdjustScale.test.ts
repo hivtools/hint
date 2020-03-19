@@ -102,12 +102,32 @@ describe("MapAdjustScale component", () => {
         });
 
         wrapper.find("#custom-max-input").setValue("1.5");
-        wrapper.find("#custom-max-input").trigger("change");
+        wrapper.find("#custom-max-input").trigger("keyup");
         expect(wrapper.emitted("update").length).toBe(2);
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({
             type: ColourScaleType.Custom,
             customMin: 0.5,
             customMax: 1.5
         });
+    });
+
+    it("does not emit update event when type is Custom and custom max is not greater than custom min", () => {
+        const wrapper = mount(MapAdjustScale, {propsData: {
+                show: true,
+                colourScale: {
+                    type: ColourScaleType.Custom,
+                    customMin: 0,
+                    customMax: 1
+                }
+            }
+        });
+
+        wrapper.find("#custom-max-input").setValue("0");
+        wrapper.find("#custom-max-input").trigger("change");
+        expect(wrapper.emitted("update")).toBeUndefined();
+
+        //Should emit event when change to default
+        wrapper.find("#type-input-default").trigger("click");
+        expect(wrapper.emitted("update").length).toBe(1);
     });
 });
