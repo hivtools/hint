@@ -48,8 +48,8 @@
             </div>
         </div>
     </div>
-    <div class="center">
-        <span>OR</span>
+    <div class="text-center mt-3">
+        <div class="mb-3">OR</div>
         <a class="btn btn-red" type="submit" href="/">Continue as guest</a>
     </div>
     <div id="partner-logos" class="logos mx-auto mt-5">
