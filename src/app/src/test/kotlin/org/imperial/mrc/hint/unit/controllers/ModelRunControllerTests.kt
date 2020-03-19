@@ -19,13 +19,13 @@ class ModelRunControllerTests {
 
     @Test
     fun `can run`() {
-        val mockHashes = mapOf<String, String>()
-        val mockFileManager = mock<FileManager>{
-            on {getAllHashes()} doReturn mockHashes
+        val mockFiles = mapOf<String, SessionFileWithPath>()
+        val mockFileManager = mock<FileManager> {
+            on { getFiles() } doReturn mockFiles
         }
 
         val mockAPIClient = mock<APIClient> {
-            on {submit(mockHashes, modelRunOptions)} doReturn mockResponse
+            on { submit(mockFiles, modelRunOptions) } doReturn mockResponse
         }
 
         val sut = ModelRunController(mockFileManager, mockAPIClient)
@@ -37,8 +37,8 @@ class ModelRunControllerTests {
     @Test
     fun `can get status`() {
         val mockFileManager = mock<FileManager>()
-        val mockAPIClient = mock<APIClient>{
-            on {getStatus("testId")} doReturn mockResponse
+        val mockAPIClient = mock<APIClient> {
+            on { getStatus("testId") } doReturn mockResponse
         }
 
         val sut = ModelRunController(mockFileManager, mockAPIClient)
@@ -51,7 +51,7 @@ class ModelRunControllerTests {
     fun `can get result`() {
         val mockFileManager = mock<FileManager>()
         val mockAPIClient = mock<APIClient> {
-            on {getResult("testId")} doReturn mockResponse
+            on { getResult("testId") } doReturn mockResponse
         }
         val sut = ModelRunController(mockFileManager, mockAPIClient)
 
@@ -66,8 +66,8 @@ class ModelRunControllerTests {
             on { getFiles(FileType.Shape, FileType.Survey, FileType.Programme, FileType.ANC) } doReturn mockFiles
         }
 
-        val mockAPIClient = mock<APIClient>{
-            on {getModelRunOptions(mockFiles)} doReturn mockResponse
+        val mockAPIClient = mock<APIClient> {
+            on { getModelRunOptions(mockFiles) } doReturn mockResponse
         }
         val sut = ModelRunController(mockFileManager, mockAPIClient)
 
@@ -78,8 +78,8 @@ class ModelRunControllerTests {
     @Test
     fun `can cancel`() {
         val mockFileManager = mock<FileManager>()
-        val mockAPIClient = mock<APIClient>{
-            on {cancelModelRun("testId")} doReturn mockResponse
+        val mockAPIClient = mock<APIClient> {
+            on { cancelModelRun("testId") } doReturn mockResponse
         }
         val sut = ModelRunController(mockFileManager, mockAPIClient)
 
