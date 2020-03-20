@@ -24,6 +24,10 @@ export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
     return colorFunction(colorValue);
 };
 
+export const colourScaleStepFromMetadata = function(meta: ChoroplethIndicatorMetadata) {
+  return (meta.max - meta.min) / 10;
+};
+
 export const colorFunctionFromName = function (name: string) {
     let result = (d3ScaleChromatic as any)[name];
     if (!result) {

@@ -17,22 +17,26 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         </div>
 
         <div class="mt-2 ml-2">
-            <div class="row p-0 mb-2">
-                <label for="custom-min-input" class="col col-form-label col-2">Min</label>
-                <div class="col pt-1">
-                    <input id="custom-min-input" type="number" step="any" v-model.number="colourScaleToAdjust.customMin"
-                           @change="update" @keyup="update" :disabled="disableCustom">
+            <form novalidate>
+                <div class="row p-0 mb-2">
+                    <label for="custom-min-input" class="col col-form-label col-2">Min</label>
+                    <div class="col pt-1">
+                        <input id="custom-min-input" type="number" :step="step" v-model.number="colourScaleToAdjust.customMin"
+                               :max="colourScaleToAdjust.customMax"
+                               @change="update" @keyup="update" :disabled="disableCustom">
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <label class="col col-form-label col-2" for="custom-max-input">Max</label>
-                <div class="col pt-1">
-                    <input id="custom-max-input" type="number" step="any" v-model.number="colourScaleToAdjust.customMax"
-                           @change="update" @keyup="update" :disabled="disableCustom">
+                <div class="row">
+                    <label class="col col-form-label col-2" for="custom-max-input">Max</label>
+                    <div class="col pt-1">
+                        <input id="custom-max-input" type="number" :step="step" v-model.number="colourScaleToAdjust.customMax"
+                               :min="colourScaleToAdjust.customMin"
+                               @change="update" @keyup="update" :disabled="disableCustom">
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
-        <div class="scale-error">{{invalidMsg}}</div>
+        <div class="text-danger">{{invalidMsg}}</div>
     </div>
 </template>
 
@@ -42,7 +46,8 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
 
     interface Props {
         show: Boolean,
-        colourScale: ColourScaleSettings
+        colourScale: ColourScaleSettings,
+        step: number
     }
 
     interface Computed {
@@ -63,6 +68,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         props: {
            show: Boolean,
            colourScale: Object,
+            step: Number
         },
         data(): any {
             return {
