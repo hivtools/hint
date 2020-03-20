@@ -1,7 +1,6 @@
 import {mount, shallowMount} from '@vue/test-utils';
 import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
-import {ColourScaleType} from "../../../app/store/colourScales/colourScales";
-import Vue from "vue";
+import {ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 
 describe("MapAdjustScale component", () => {
 

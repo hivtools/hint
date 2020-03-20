@@ -1,7 +1,7 @@
 import {shallowMount, WrapperArray} from '@vue/test-utils';
 import MapLegend from "../../../app/components/plots/MapLegend.vue";
 import {Vue} from "vue/types/vue";
-import {ColourScaleType} from "../../../app/store/colourScales/colourScales";
+import {ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
 
 describe("Map legend component", () => {

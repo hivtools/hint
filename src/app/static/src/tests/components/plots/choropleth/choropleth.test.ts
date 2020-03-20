@@ -11,7 +11,7 @@ import {emptyState} from "../../../../app/root";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import {expectFilter, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
-import {ColourScaleType} from "../../../../app/store/colourScales/colourScales";
+import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({

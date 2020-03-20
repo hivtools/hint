@@ -5,7 +5,6 @@ import {
     mockModelOutputState,
     mockModelRunState,
     mockPlottingSelections,
-    mockColourScales,
     mockStepperState,
     mockSurveyAndProgramState
 } from "./mocks";
@@ -24,7 +23,6 @@ describe("LocalStorageManager", () => {
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
-            colourScales: mockColourScales(),
             surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey})
         } as RootState;
 
@@ -36,7 +34,6 @@ describe("LocalStorageManager", () => {
                 stepper: mockStepperState(),
                 metadata: mockMetadataState(),
                 plottingSelections: mockPlottingSelections(),
-                colourScales: mockColourScales(),
                 surveyAndProgram: {selectedDataType: DataType.Survey}
             });
     });
