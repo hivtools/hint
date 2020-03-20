@@ -28,28 +28,36 @@ it("colorFunctionFromName returns default color function if named function does 
 
 it("getColor calculates colour string", () => {
     const result = getColor(0.5, {
-        min: 0,
-        max: 1,
-        colour: "interpolateGreys",
-        invert_scale: false,
-        indicator: "test",
-        value_column: "",
-        name: ""
-    });
+            min: 0,
+            max: 1,
+            colour: "interpolateGreys",
+            invert_scale: false,
+            indicator: "test",
+            value_column: "",
+            name: ""
+        },
+        {
+            min: 0,
+            max:1
+        });
 
     expect(result).toEqual("rgb(151, 151, 151)");
 });
 
 it("getColor avoids dividing by zero if min equals max", () => {
     const result = getColor(0.5, {
-        min: 0.5,
-        max: 0.5,
-        colour: "interpolateGreys",
-        invert_scale: false,
-        indicator: "test",
-        value_column: "",
-        name: ""
-    });
+            min: 0.5,
+            max: 0.5,
+            colour: "interpolateGreys",
+            invert_scale: false,
+            indicator: "test",
+            value_column: "",
+            name: ""
+        },
+        {
+            min: 0.5,
+            max: 0.5
+        });
 
     expect(result).toEqual("rgb(255, 255, 255)");
 });
@@ -71,25 +79,27 @@ it("can get indicator ranges", () => {
 
 it("getColor can invert color function", () => {
     const result = getColor(0, {
-        min: 0,
-        max: 1,
-        colour: "interpolateGreys",
-        invert_scale: false,
-        indicator: "test",
-        value_column: "",
-        name: ""
-    });
+            min: 0,
+            max: 1,
+            colour: "interpolateGreys",
+            invert_scale: false,
+            indicator: "test",
+            value_column: "",
+            name: ""
+        },
+        {min: 0, max: 1});
+
     expect(result).toEqual("rgb(255, 255, 255)"); //0 = white in interpolateGreys
 
     const invertedResult = getColor(0, {
-        min: 0,
-        max: 1,
-        colour: "interpolateGreys",
-        invert_scale: true,
-        indicator: "test",
-        value_column: "",
-        name: ""
-    });
+            min: 0,
+            max: 1,
+            colour: "interpolateGreys",
+            invert_scale: true,
+            indicator: "test",
+            value_column: "",
+            name: ""
+        }, {min: 0, max: 1});
     expect(invertedResult).toEqual("rgb(0, 0, 0)");
 });
 
@@ -102,7 +112,7 @@ it("getColor can use custom min and max", () => {
         indicator: "test",
         value_column: "",
         name: ""
-    }, 0, 1);
+    }, {min: 0, max: 1});
 
     expect(result).toEqual("rgb(151, 151, 151)");
 });

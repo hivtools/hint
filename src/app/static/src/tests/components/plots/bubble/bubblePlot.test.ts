@@ -71,7 +71,8 @@ describe("BubblePlot component", () => {
                             <br/>PLHIV: 10
                         </div>`);
         const meta = propsData.indicators[1];
-        let color = getColor(0.1, meta);
+        const colourRange = {min: meta.min, max: meta.max};
+        let color = getColor(0.1, meta, colourRange);
         expect(circles.at(0).props().color).toEqual(color);
         expect(circles.at(0).props().fillColor).toEqual(color);
 
@@ -82,7 +83,7 @@ describe("BubblePlot component", () => {
                             <br/>Prevalence: 0.2
                             <br/>PLHIV: 20
                         </div>`);
-        color = getColor(0.2, meta);
+        color = getColor(0.2, meta, colourRange);
         expect(circles.at(1).props().color).toEqual(color);
         expect(circles.at(1).props().fillColor).toEqual(color);
 

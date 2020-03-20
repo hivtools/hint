@@ -155,7 +155,7 @@
                     !!this.selections.indicatorId;
             },
             colourRanges() {
-                return getColourRanges(this.chartdata, this.indicators, this.colourScales)
+                return getColourRanges(this.chartdata, this.indicators, this.colourScales || {})
             },
             featureIndicators() {
                 const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);

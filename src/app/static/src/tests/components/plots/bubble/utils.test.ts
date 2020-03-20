@@ -8,10 +8,10 @@ describe("Bubble plot utils", () => {
 
     const indicators = [
         {
-            indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:0, colour: "interpolateGreys", invert_scale: false
+            indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:1, colour: "interpolateGreys", invert_scale: false
         },
         {
-            indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+            indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 1, colour: "interpolateGreys", invert_scale: false
         }
     ];
 
@@ -25,28 +25,30 @@ describe("Bubble plot utils", () => {
     const minRadius = 10;
     const maxRadius = 1000;
 
+    const colourRange = {min: 0, max: 1};
+
     const expectedFeatureIndicators = {
         MWI_1_1: {
             plhiv: {
                 value: 12,
-                color: getColor(12, indicators[0]),
+                color: getColor(12, indicators[0], colourRange),
                 radius: getRadius(12, 1, 100, minRadius, maxRadius)
             },
             prevalence: {
                 value: 0.5,
-                color: getColor(0.5, indicators[1]),
+                color: getColor(0.5, indicators[1], colourRange),
                 radius: getRadius(0.5, 0, 0.8, minRadius, maxRadius)
             }
         },
         MWI_1_2: {
             plhiv: {
                 value: 14,
-                color: getColor(14,indicators[0]),
+                color: getColor(14,indicators[0], colourRange),
                 radius: getRadius(14, 1, 100, minRadius, maxRadius)
             },
             prevalence: {
                 value: 0.6,
-                color: getColor(0.6,indicators[1]),
+                color: getColor(0.6,indicators[1], colourRange),
                 radius: getRadius(0.6, 0, 0.8, minRadius, maxRadius)
             }
         }
@@ -130,14 +132,14 @@ describe("Bubble plot utils", () => {
             MWI_1_1: {
                 prevalence: {
                     value: 0.5,
-                    color: getColor(0.5, indicators[1]),
+                    color: getColor(0.5, indicators[1], colourRange),
                     radius: getRadius(0.5, 0, 0.8, minRadius, maxRadius)
                 }
             },
             MWI_1_2: {
                 plhiv: {
                     value: 14,
-                    color: getColor(14, indicators[0]),
+                    color: getColor(14, indicators[0], colourRange),
                     radius: getRadius(14, 1, 100, minRadius, maxRadius)
                 }
             }

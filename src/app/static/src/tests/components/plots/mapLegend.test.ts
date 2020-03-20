@@ -6,6 +6,11 @@ import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
 
 describe("Map legend component", () => {
 
+    const colourRange = {
+        max: 2,
+        min: 1
+    };
+
     const wrapper = shallowMount(MapLegend, {
         propsData: {
             metadata: {
@@ -18,7 +23,8 @@ describe("Map legend component", () => {
                 type: ColourScaleType.Default,
                 customMin: 1.5,
                 customMax: 2.5
-            }
+            },
+            colourRange
         }
     });
 
@@ -51,29 +57,6 @@ describe("Map legend component", () => {
         expectIcons(icons);
     });
 
-    it("renders correctly with custom colour scale", () => {
-        const rangeWrapper = shallowMount(MapLegend,{
-            propsData: {
-                metadata: {
-                    max: 10,
-                    min: 0,
-                    colour: "interpolateGreys",
-                    invert_scale: false
-                },
-                colourScale: {
-                    type: ColourScaleType.Custom,
-                    customMin: 1,
-                    customMax: 2
-                }
-            }
-        });
-
-        const levels = rangeWrapper.findAll(".level");
-        expectLevels(levels);
-        const icons = rangeWrapper.findAll("i");
-        expectIcons(icons);
-    });
-
     it("does not render adjust link if no colour scale", () => {
         const noScaleWrapper = shallowMount(MapLegend, {
             propsData: {
@@ -83,8 +66,9 @@ describe("Map legend component", () => {
                         colour: "interpolateGreys",
                         invert_scale: false
                     },
-                    colourScale: null
-                    }
+                    colourScale: null,
+                    colourRange
+                    },
                 });
         expect(wrapper.find("#adjust-scales").exists()).toBe(false);
     });
@@ -100,7 +84,8 @@ describe("Map legend component", () => {
                 },
                 colourScale: {
                     type: ColourScaleType.Default
-                }
+                },
+                colourRange
             }
         });
 
@@ -135,7 +120,8 @@ describe("Map legend component", () => {
                 },
                 colourScale: {
                     type: ColourScaleType.Default
-                }
+                },
+                colourRange: {max: 60000, min: 1000}
             }
         });
         const levels = wrapper.findAll(".level");
@@ -156,6 +142,7 @@ describe("Map legend component", () => {
                     colour: "interpolateGreys",
                     invert_scale: false
                 },
+                colourRange,
                 colourScale
             }
         });
@@ -184,7 +171,8 @@ describe("Map legend component", () => {
                     colour: "interpolateGreys",
                     invert_scale: false
                 },
-                colourScale: {type: ColourScaleType.Default}
+                colourScale: {type: ColourScaleType.Default},
+                colourRange
             }
         });
 
