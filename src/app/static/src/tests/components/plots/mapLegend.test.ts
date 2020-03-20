@@ -1,7 +1,7 @@
 import {shallowMount, WrapperArray} from '@vue/test-utils';
 import MapLegend from "../../../app/components/plots/MapLegend.vue";
 import {Vue} from "vue/types/vue";
-import {ColourScaleType} from "../../../app/store/colourScales/colourScales";
+import {ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
 
 describe("Map legend component", () => {
@@ -72,6 +72,21 @@ describe("Map legend component", () => {
         expectLevels(levels);
         const icons = rangeWrapper.findAll("i");
         expectIcons(icons);
+    });
+
+    it("does not render adjust link if no colour scale", () => {
+        const noScaleWrapper = shallowMount(MapLegend, {
+            propsData: {
+                    metadata: {
+                        max: 10,
+                        min: 0,
+                        colour: "interpolateGreys",
+                        invert_scale: false
+                    },
+                    colourScale: null
+                    }
+                });
+        expect(wrapper.find("#adjust-scales").exists()).toBe(false);
     });
 
     it("renders icons with colors, with scale inverted", () => {

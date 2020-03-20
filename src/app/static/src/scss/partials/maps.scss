@@ -25,10 +25,21 @@
 
 #adjust-scale {
   width: 4.1rem;
+  text-decoration: underline;
+}
+
+.legend-adjust {
+  height: 174px;
+  width: 146px;
 }
 
 .legend-adjust input[type='number']{
   width: 4rem;
+  outline: none;
+}
+
+.scale-error {
+  color: $theme-red;
 }
 
 .vue-treeselect__multi-value-item {

@@ -1,7 +1,7 @@
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
-import {ColourScaleSelections, ColourScaleType} from "../../store/colourScales/colourScales";
+import {ColourScaleSelections, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
                          colourRange: NumericRange) => {
@@ -52,7 +52,7 @@ export const getIndicatorRanges = function(data: any,
 };
 
 export const getColourRanges = function(data: any,
-                                        indicatorsMeta: ChoroplethIndicatorMetadata[],,
+                                        indicatorsMeta: ChoroplethIndicatorMetadata[],
                                         colourScales: ColourScaleSelections) {
   const result = {} as Dict<NumericRange>;
   let fullIndicatorRanges = null;

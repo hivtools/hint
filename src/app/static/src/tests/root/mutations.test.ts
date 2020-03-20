@@ -1,19 +1,20 @@
-import {mutations, RootMutation} from "../../app/store/root/mutations";
+import {mutations} from "../../app/store/root/mutations";
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 
 import {
     mockAncResponse,
     mockBaselineState,
-    mockError, mockErrorsState,
+    mockError,
+    mockErrorsState,
     mockLoadState,
     mockMetadataState,
     mockModelOptionsState,
     mockModelOutputState,
-    mockPlottingSelections,
-    mockStepperState,
     mockModelRunState,
+    mockPlottingSelections,
     mockRootState,
+    mockStepperState,
     mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../mocks";
@@ -21,6 +22,7 @@ import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../app/root";
 import {
     BarchartSelections,
+    ColourScaleType,
     initialPlottingSelectionsState
 } from "../../app/store/plottingSelections/plottingSelections";
 import {initialMetadataState} from "../../app/store/metadata/metadata";
@@ -178,8 +180,11 @@ describe("Root mutations", () => {
         state.plottingSelections.barchart.xAxisId = "test";
         state.plottingSelections.outputChoropleth.detail = 4;
 
-        //This should not be reset
+        //These should not be reset
         state.plottingSelections.sapChoropleth.detail = 2;
+        state.plottingSelections.colourScales.anc = {
+                testIndicator: {type: ColourScaleType.Custom} as any
+        };
 
         mutations.ResetOutputs(state);
         expect(state.modelRun).toStrictEqual({...initialModelRunState(), ready: true});
@@ -188,6 +193,7 @@ describe("Root mutations", () => {
         expect(state.plottingSelections.barchart.xAxisId).toBe("");
         expect(state.plottingSelections.outputChoropleth.detail).toBe(-1);
         expect(state.plottingSelections.sapChoropleth.detail).toBe(2);
+        expect(state.plottingSelections.colourScales.anc.testIndicator.type).toBe(ColourScaleType.Custom);
     });
 
     it("can change language", () => {

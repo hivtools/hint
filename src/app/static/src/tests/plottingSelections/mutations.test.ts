@@ -1,5 +1,7 @@
 import {mutations} from "../../app/store/plottingSelections/mutations";
-import {mockPlottingSelections} from "../mocks";
+import {mockColourScales, mockPlottingSelections} from "../mocks";
+import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {ColourScaleType} from "../../app/store/plottingSelections/plottingSelections";
 
 describe("Plotting selections mutations", () => {
 
@@ -62,5 +64,45 @@ describe("Plotting selections mutations", () => {
             detail: 2,
             selectedFilterOptions: {}
         });
+    });
+
+    const colourScales = {
+        prevalence: {
+            type: ColourScaleType.Default
+        }
+    };
+
+    it("UpdateSAPColourScales updates colour scales correctly for survey", () => {
+        const testState = mockPlottingSelections();
+        mutations.updateSAPColourScales(testState, {type: "updateSAPColourScales",
+            payload: [DataType.Survey, colourScales]
+        });
+        expect(testState.colourScales.survey).toBe(colourScales);
+    });
+
+    it("UpdateSAPColourScales updates colour scales correctly for program", () => {
+        const testState = mockPlottingSelections();
+        mutations.updateSAPColourScales(testState, {type: "updateSAPColourScales",
+            payload: [DataType.Program, colourScales]
+        });
+        expect(testState.colourScales.program).toBe(colourScales);
+    });
+
+    it("UpdateSAPColourScales updates colour scales correctly for anc", () => {
+        const testState = mockPlottingSelections();
+        mutations.updateSAPColourScales(testState, {type: "updateSAPColourScales",
+            payload: [DataType.ANC, colourScales]
+        });
+        expect(testState.colourScales.anc).toBe(colourScales);
+    });
+
+    it("UpdateSAPColourScales does nothgin if unknown DataType", () => {
+        const testState = mockPlottingSelections();
+        mutations.updateSAPColourScales(testState, {type: "updateSAPColourScales",
+            payload: [99 as DataType, colourScales]
+        });
+        expect(testState.colourScales.survey).toStrictEqual({});
+        expect(testState.colourScales.program).toStrictEqual({});
+        expect(testState.colourScales.anc).toStrictEqual({});
     });
 });

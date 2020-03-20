@@ -11,7 +11,7 @@ import {emptyState} from "../../../../app/root";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import {expectFilter, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
-import {ColourScaleType} from "../../../../app/store/colourScales/colourScales";
+import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -359,6 +359,15 @@ describe("Choropleth component", () => {
                 customMax: 100
             }
         });
+    });
+
+    it("does not attempt to initialise new colour scales when colourScales is null", () => {
+        const wrapper = getWrapper({
+            selections: {...propsData.selections, indicatorId: "plhiv"},
+            colourScales: null
+        });
+
+        expect(wrapper.emitted("updateColourScales")).toBeUndefined();
     });
 
     it("updates bounds when becomes initialises", () => {

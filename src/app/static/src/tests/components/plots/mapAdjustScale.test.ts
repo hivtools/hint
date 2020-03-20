@@ -1,7 +1,6 @@
 import {mount, shallowMount} from '@vue/test-utils';
 import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
-import {ColourScaleType} from "../../../app/store/colourScales/colourScales";
-import Vue from "vue";
+import {ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 
 describe("MapAdjustScale component", () => {
 
@@ -102,12 +101,54 @@ describe("MapAdjustScale component", () => {
         });
 
         wrapper.find("#custom-max-input").setValue("1.5");
-        wrapper.find("#custom-max-input").trigger("change");
+        wrapper.find("#custom-max-input").trigger("keyup");
         expect(wrapper.emitted("update").length).toBe(2);
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({
             type: ColourScaleType.Custom,
             customMin: 0.5,
             customMax: 1.5
         });
+    });
+
+    it("does not emit update event when type is Custom and custom max is not greater than custom min", () => {
+        const wrapper = mount(MapAdjustScale, {propsData: {
+                show: true,
+                colourScale: {
+                    type: ColourScaleType.Custom,
+                    customMin: 0,
+                    customMax: 1
+                }
+            }
+        });
+
+        wrapper.find("#custom-max-input").setValue("0");
+        wrapper.find("#custom-max-input").trigger("change");
+        expect(wrapper.emitted("update")).toBeUndefined();
+
+        //Should emit event when change to default
+        wrapper.find("#type-input-default").trigger("click");
+        expect(wrapper.emitted("update").length).toBe(1);
+    });
+
+    it("updates colourScaleToAdjust when colourScale property changes", () => {
+        const wrapper = mount(MapAdjustScale, {propsData: {
+                show: true,
+                colourScale: {
+                    type: ColourScaleType.Custom,
+                    customMin: 0,
+                    customMax: 1
+                }
+            }
+        });
+
+        const newScale = {
+            type: ColourScaleType.Default,
+            customMin: 1,
+            customMax: 2
+        };
+        wrapper.setProps({colourScale: newScale});
+
+        expect((wrapper.vm as any).colourScaleToAdjust).toStrictEqual(newScale);
+
     });
 });

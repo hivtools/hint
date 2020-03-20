@@ -24,7 +24,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     import {LControl} from 'vue2-leaflet';
     import {colorFunctionFromName, roundToContext} from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
-    import {ColourScaleSettings, ColourScaleType} from "../../store/colourScales/colourScales";
+    import {ColourScaleSettings, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
     import MapAdjustScale from "./MapAdjustScale.vue";
     import {NumericRange} from "../../types";
 
@@ -76,7 +76,6 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
             },
             levels: function () {
                 if (this.metadata) {
-                    //Use custom scale if selected, otherwise use metadata range
                     const max = this.colourRange.max;
                     const min =  this.colourRange.min;
 

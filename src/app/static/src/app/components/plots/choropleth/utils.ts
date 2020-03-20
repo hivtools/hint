@@ -1,7 +1,7 @@
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
 import {IndicatorValuesDict, Dict, Filter, NumericRange} from "../../../types";
 import {getColor, iterateDataValues} from "../utils";
-import {ColourScaleSettings, initialColourScaleSettings} from "../../../store/colourScales/colourScales";
+import {initialColourScaleSettings} from "../../../store/plottingSelections/plottingSelections";
 
 export const getFeatureIndicators = function (data: any[],
                                               selectedAreaIds: string[],
@@ -24,7 +24,7 @@ export const getFeatureIndicators = function (data: any[],
                 const regionValues = result[areaId];
                 regionValues[indicator] = {
                     value: value,
-                    color: getColor(value, indicatorMeta, colourRanges[indicatorId])
+                    color: getColor(value, indicatorMeta, colourRanges[indicator])
                 }
             }
         });
