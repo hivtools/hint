@@ -129,4 +129,26 @@ describe("MapAdjustScale component", () => {
         wrapper.find("#type-input-default").trigger("click");
         expect(wrapper.emitted("update").length).toBe(1);
     });
+
+    it("updates colourScaleToAdjust when colourScale property changes", () => {
+        const wrapper = mount(MapAdjustScale, {propsData: {
+                show: true,
+                colourScale: {
+                    type: ColourScaleType.Custom,
+                    customMin: 0,
+                    customMax: 1
+                }
+            }
+        });
+
+        const newScale = {
+            type: ColourScaleType.Default,
+            customMin: 1,
+            customMax: 2
+        };
+        wrapper.setProps({colourScale: newScale});
+
+        expect((wrapper.vm as any).colourScaleToAdjust).toStrictEqual(newScale);
+
+    });
 });
