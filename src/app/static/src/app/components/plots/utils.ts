@@ -1,7 +1,6 @@
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
-import {BubbleIndicatorValuesDict, Dict, Filter, NumericRange} from "../../types";
-import {getRadius} from "./bubble/utils";
+import {Dict, Filter, NumericRange} from "../../types";
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
                          customMin: number | null = null, customMax: number | null = null) => {
@@ -22,6 +21,10 @@ export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
     }
 
     return colorFunction(colorValue);
+};
+
+export const colourScaleStepFromMetadata = function(meta: ChoroplethIndicatorMetadata) {
+  return (meta.max - meta.min) / 10;
 };
 
 export const colorFunctionFromName = function (name: string) {

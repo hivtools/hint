@@ -17,6 +17,7 @@ describe("MapAdjustScale component", () => {
     it("renders as expected with default scale",  () => {
         const wrapper = mount(MapAdjustScale, {propsData: {
                 show: true,
+                step: 0.1,
                 colourScale: {
                     type: ColourScaleType.Default,
                     customMin: 0,
@@ -34,6 +35,7 @@ describe("MapAdjustScale component", () => {
     it("renders as expected with custom scale", () => {
         const wrapper = mount(MapAdjustScale, {propsData: {
                 show: true,
+                step: 0.1,
                 colourScale: {
                     type: ColourScaleType.Custom,
                     customMin: 0,
@@ -44,15 +46,22 @@ describe("MapAdjustScale component", () => {
 
         expect((wrapper.find("#type-input-default").element as HTMLInputElement).checked).toBe(false);
         expect((wrapper.find("#type-input-custom").element as HTMLInputElement).checked).toBe(true);
+
         expect((wrapper.find("#custom-min-input").element as HTMLInputElement).disabled).toBe(false);
         expect((wrapper.find("#custom-min-input").element as HTMLInputElement).value).toBe("0");
+        expect(wrapper.find("#custom-min-input").attributes("max")).toBe("1");
+        expect(wrapper.find("#custom-min-input").attributes("step")).toBe("0.1");
+
         expect((wrapper.find("#custom-max-input").element as HTMLInputElement).disabled).toBe(false);
         expect((wrapper.find("#custom-max-input").element as HTMLInputElement).value).toBe("1");
+        expect(wrapper.find("#custom-max-input").attributes("min")).toBe("0");
+        expect(wrapper.find("#custom-max-input").attributes("step")).toBe("0.1");
     });
 
     it("emits update event when type changes", () => {
         const wrapper = mount(MapAdjustScale, {propsData: {
                 show: true,
+                step: 0.1,
                 colourScale: {
                     type: ColourScaleType.Default,
                     customMin: 0,
@@ -83,6 +92,7 @@ describe("MapAdjustScale component", () => {
     it("emits update event when custom min or max changes", () => {
         const wrapper = mount(MapAdjustScale, {propsData: {
                 show: true,
+                step: 0.1,
                 colourScale: {
                     type: ColourScaleType.Custom,
                     customMin: 0,
@@ -113,6 +123,7 @@ describe("MapAdjustScale component", () => {
     it("does not emit update event when type is Custom and custom max is not greater than custom min", () => {
         const wrapper = mount(MapAdjustScale, {propsData: {
                 show: true,
+                step: 0.1,
                 colourScale: {
                     type: ColourScaleType.Custom,
                     customMin: 0,
@@ -133,6 +144,7 @@ describe("MapAdjustScale component", () => {
     it("updates colourScaleToAdjust when colourScale property changes", () => {
         const wrapper = mount(MapAdjustScale, {propsData: {
                 show: true,
+                step: 0.1,
                 colourScale: {
                     type: ColourScaleType.Custom,
                     customMin: 0,

@@ -3,7 +3,7 @@ import {
     getColor,
     getIndicatorRanges,
     toIndicatorNameLookup,
-    roundToContext
+    roundToContext, colourScaleStepFromMetadata
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 
@@ -136,4 +136,12 @@ it ("round to context does not round value if it already has fewer decimal place
 
 it ("round to context does not round value if both values and context are integers", () => {
     expect(roundToContext(5, 10)).toBe(5);
+});
+
+it("colourScaleStepFromMetadata returns expected value", () => {
+    const meta = {
+        min: 0,
+        max: 1
+    };
+    expect(colourScaleStepFromMetadata(meta as any)).toBe(0.1);
 });

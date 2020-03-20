@@ -2,7 +2,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
 <template>
     <l-control position="bottomright">
         <div class="legend-container">
-            <map-adjust-scale class="legend-element legend-adjust map-control"
+            <map-adjust-scale class="legend-element legend-adjust map-control" :step="colourScaleStep"
                               :show="showAdjust" :colour-scale="colourScale" @update="update">
             </map-adjust-scale>
             <div class="legend-element map-control p-3">
@@ -22,7 +22,11 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
 <script lang="ts">
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
-    import {colorFunctionFromName, roundToContext} from "./utils";
+    import {
+        colorFunctionFromName,
+        colourScaleStepFromMetadata,
+        roundToContext
+    } from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {ColourScaleSettings, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
     import MapAdjustScale from "./MapAdjustScale.vue";
@@ -44,6 +48,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
 
     interface Computed {
         levels: Level[],
+        colourScaleStep: number,
         adjustable: Boolean
     }
 
@@ -70,6 +75,9 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         computed: {
             adjustable: function() {
                 return !!this.colourScale;
+            },
+            colourScaleStep: function() {
+                return colourScaleStepFromMetadata(this.metadata);
             },
             levels: function () {
                 if (this.metadata) {

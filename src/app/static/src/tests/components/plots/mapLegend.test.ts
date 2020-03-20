@@ -152,7 +152,7 @@ describe("Map legend component", () => {
             propsData: {
                 metadata: {
                     max: 20,
-                    min: 1,
+                    min: 0,
                     colour: "interpolateGreys",
                     invert_scale: false
                 },
@@ -163,6 +163,7 @@ describe("Map legend component", () => {
         const adjust = wrapper.find(MapAdjustScale);
         expect(adjust.props().show).toBe(false);
         expect(adjust.props().colourScale).toBe(colourScale);
+        expect(adjust.props().step).toBe(2);
 
         const showAdjust = wrapper.find("#adjust-scale a");
         showAdjust.trigger("click");
