@@ -6,6 +6,9 @@
                     {{title}}
                 </div>
                 <file-menu :title="title"></file-menu>
+                <span v-if="!isGuest" class="pr-2 mr-2 border-right text-light">
+                    <span v-translate="'loggedInAs'">Logged in as</span> {{user}}
+                </span>
                 <a href="https://forms.gle/QxCT1b4ScLqKPg6a7"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
@@ -21,7 +24,9 @@
                    class="pr-2 mr-2 border-right"
                    v-translate="'help'">
                 </a>
-                <a href="/logout" class="pr-2 mr-2 border-right" v-translate="'logout'">
+                <a v-if="!isGuest" href="/logout" class="pr-2 mr-2 border-right" v-translate="'logout'">
+                </a>
+                <a v-if="isGuest" href="/login" class="pr-2 mr-2 border-right" v-translate="'logIn'">
                 </a>
                 <language-menu></language-menu>
             </div>
@@ -45,7 +50,8 @@
 
     interface Computed {
         helpFilename: string,
-        troubleFilename: string
+        troubleFilename: string,
+        isGuest: boolean
     }
 
     export default Vue.extend<{}, {}, Computed, Props>({
@@ -65,7 +71,10 @@
                         filename = "index-fr.html";
                     }
                     return filename;
-                })
+                }),
+            isGuest() {
+                return this.user == "guest"
+            }
         },
         props: {
             title: String,

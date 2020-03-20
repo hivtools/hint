@@ -65,12 +65,12 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
 
         var entity = restTemplate.postForEntity<String>("/password/reset-password/",
                 HttpEntity(map, headers))
-        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-        Assertions.assertThat(entity.body).isEqualTo(expectedSuccessResponse)
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body).isEqualTo(expectedSuccessResponse)
 
         restTemplate.restTemplate.interceptors.add(AuthInterceptor(restTemplate, "newpassword"))
         entity = restTemplate.getForEntity<String>("/")
-        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
     }
 
     @Test
