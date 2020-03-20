@@ -6,7 +6,9 @@
                     {{title}}
                 </div>
                 <file-menu :title="title"></file-menu>
-                <span v-if="!isGuest" class="pr-2 mr-2 border-right">Logged in as {{user}}</span>
+                <span v-if="!isGuest" class="pr-2 mr-2 border-right text-light">
+                    <span v-translate="'loggedInAs'">Logged in as</span> {{user}}
+                </span>
                 <a href="https://forms.gle/QxCT1b4ScLqKPg6a7"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
