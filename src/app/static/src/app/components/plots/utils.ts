@@ -44,6 +44,7 @@ export const getIndicatorRanges = function(data: any,
     iterateDataValues(data, indicatorsMeta, null, null, null,
         (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
             const indicator = indicatorMeta.indicator;
+
             if (!result[indicator]) {
                 result[indicator] = {min: value, max: value};
             } else {
