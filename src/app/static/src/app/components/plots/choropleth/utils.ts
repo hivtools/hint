@@ -1,7 +1,7 @@
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
 import {IndicatorValuesDict, Dict, Filter, NumericRange} from "../../../types";
 import {getColor, iterateDataValues} from "../utils";
-import {ColourScaleSettings, initialColourScaleSettings} from "../../../store/colourScales/colourScales";
+import {initialColourScaleSettings} from "../../../store/plottingSelections/plottingSelections";
 
 export const getFeatureIndicators = function (data: any[],
                                               selectedAreaIds: string[],

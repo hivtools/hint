@@ -11,7 +11,6 @@ import {initialBaselineState} from "../baseline/baseline";
 import {initialSurveyAndProgramState, DataType} from "../surveyAndProgram/surveyAndProgram";
 import {PayloadWithType} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
-import {initialColourScaleSettings, initialColourScalesState} from "../colourScales/colourScales";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -37,7 +36,6 @@ export const mutations: MutationTree<RootState> = {
             modelOutput: initialModelOutputState(),
             modelRun: initialModelRunState(),
             plottingSelections: initialPlottingSelectionsState(),
-            colourScales: initialColourScalesState(),
             stepper: state.stepper,
             load: initialLoadState(),
             errors: initialErrorsState()
@@ -89,7 +87,12 @@ export const mutations: MutationTree<RootState> = {
         state.modelRun.ready = true;
         Object.assign(state.modelOutput, initialModelOutputState());
         const sapSelections = state.plottingSelections.sapChoropleth;
-        Object.assign(state.plottingSelections, {...initialPlottingSelectionsState(), sapChoropleth: sapSelections});
+        const colourScales = state.plottingSelections.colourScales;
+        Object.assign(state.plottingSelections, {
+            ...initialPlottingSelectionsState(),
+            sapChoropleth: sapSelections,
+            colourScales: colourScales
+        });
     },
 
     ...languageMutations

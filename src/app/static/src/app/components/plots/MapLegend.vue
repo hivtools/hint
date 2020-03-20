@@ -24,7 +24,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     import {LControl} from 'vue2-leaflet';
     import {colorFunctionFromName, roundToContext} from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
-    import {ColourScaleSettings, ColourScaleType} from "../../store/colourScales/colourScales";
+    import {ColourScaleSettings, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
     import MapAdjustScale from "./MapAdjustScale.vue";
 
     var numeral = require('numeral');

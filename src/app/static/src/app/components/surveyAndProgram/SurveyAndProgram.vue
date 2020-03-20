@@ -144,7 +144,7 @@
             }),
             ...mapGettersByNames(namespace, ["data", "filters"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
-            ...mapGetters("colourScales", ["selectedSAPColourScales"])
+            ...mapGetters("plottingSelections", ["selectedSAPColourScales"])
         },
         methods: {
             ...mapActions({
@@ -158,7 +158,7 @@
             }),
             ...mapMutations({
                 updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections",
-                updateSAPColourScales: "colourScales/UpdateSAPColourScales",
+                updateSAPColourScales: "plottingSelections/updateSAPColourScales",
             })
         },
         created() {

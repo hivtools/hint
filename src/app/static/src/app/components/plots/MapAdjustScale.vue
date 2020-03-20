@@ -38,7 +38,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
 
 <script lang="ts">
     import Vue from "vue";
-    import {ColourScaleSettings, ColourScaleType} from "../../store/colourScales/colourScales";
+    import {ColourScaleSettings, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
 
     interface Props {
         show: Boolean,

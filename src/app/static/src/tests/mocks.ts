@@ -32,7 +32,7 @@ import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOpt
 import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
 import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
-import {ColourScalesState, initialColourScalesState} from "../app/store/colourScales/colourScales";
+import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
 
 export const mockAxios = new MockAdapter(axios);
 

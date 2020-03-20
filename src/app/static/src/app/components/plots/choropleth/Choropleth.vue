@@ -48,7 +48,7 @@
     import {
         ColourScaleSelections,
         ColourScaleSettings, ColourScaleType
-    } from "../../../store/colourScales/colourScales";
+    } from "../../../store/plottingSelections/plottingSelections";
 
     interface Props {
         features: Feature[],
