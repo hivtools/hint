@@ -77,7 +77,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                 return !!this.colourScale;
             },
             colourScaleStep: function() {
-                return colourScaleStepFromMetadata(this.metadata);
+                return this.metadata ? colourScaleStepFromMetadata(this.metadata) :1;
             },
             levels: function () {
                 if (this.metadata) {
