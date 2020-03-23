@@ -11,6 +11,7 @@ import {emptyState} from "../../../../app/root";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import {expectFilter, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
+import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -29,7 +30,14 @@ const propsData = {
             area: []
         }
     },
-    includeFilters: true
+    includeFilters: true,
+    colourScales: {
+        prevalence: {
+            type: ColourScaleType.Default,
+            customMin: 1,
+            customMax: 2
+        }
+    }
 };
 
 const getWrapper  = (customPropsData: any = {}) => {
@@ -66,6 +74,7 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         const legend = wrapper.find(MapLegend);
         expect(legend.props().metadata).toBe(propsData.indicators[1]);
+        expect(legend.props().colourScale).toBe(propsData.colourScales.prevalence)
     });
 
     it("computes indicatorRanges", () => {
@@ -85,7 +94,33 @@ describe("Choropleth component", () => {
             getIndicatorRanges(propsData.chartdata, propsData.indicators),
             [propsData.filters[1]],
             propsData.selections.selectedFilterOptions,
-            ["prevalence"]
+            ["prevalence"],
+            null,
+            null
+        ));
+    });
+
+    it("computes featureIndicators when colour scale is custom", () => {
+        const wrapper = getWrapper({
+                colourScales: {
+                    prevalence: {
+                        type: ColourScaleType.Custom,
+                        customMin: 1,
+                        customMax: 2
+                    }
+                }
+        });
+        const vm = wrapper.vm as any;
+
+        expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
+            ["MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"],
+            propsData.indicators,
+            getIndicatorRanges(propsData.chartdata, propsData.indicators),
+            [propsData.filters[1]],
+            propsData.selections.selectedFilterOptions,
+            ["prevalence"],
+            1,
+            2
         ));
     });
 
@@ -293,6 +328,48 @@ describe("Choropleth component", () => {
 
     });
 
+    it("updates colour scales on change in legend", () => {
+        const wrapper = getWrapper();
+
+        const legend = wrapper.find(MapLegend);
+        const newScale = {
+            type: ColourScaleType.Custom,
+            customMin: 5,
+            customMax: 10
+        };
+        legend.vm.$emit("update", newScale);
+
+        expect(wrapper.emitted("updateColourScales").length).toBe(1);
+        expect(wrapper.emitted("updateColourScales")[0][0]).toStrictEqual({
+            prevalence: newScale
+        });
+    });
+
+    it("initialises new colour scales when current indicator has no colour scale yet", () => {
+        const wrapper = getWrapper({
+            selections: {...propsData.selections, indicatorId: "plhiv"}
+        });
+
+        expect(wrapper.emitted("updateColourScales").length).toBe(1);
+        expect(wrapper.emitted("updateColourScales")[0][0]).toStrictEqual({
+            ...propsData.colourScales,
+            plhiv: {
+                type: ColourScaleType.Default,
+                customMin: 1,
+                customMax: 100
+            }
+        });
+    });
+
+    it("does not attempt to initialise new colour scales when colourScales is null", () => {
+        const wrapper = getWrapper({
+            selections: {...propsData.selections, indicatorId: "plhiv"},
+            colourScales: null
+        });
+
+        expect(wrapper.emitted("updateColourScales")).toBeUndefined();
+    });
+
     it("updates bounds when becomes initialises", () => {
         const mockUpdateBounds = jest.fn();
         const wrapper = getWrapper({ //this cannot initialise
@@ -309,6 +386,7 @@ describe("Choropleth component", () => {
                 { id: "age", label: "Age", column_id: "age", options: []},
                 { id: "sex", label: "Sex", column_id: "sex", options: []}
             ],
+            colourScales: {}
         });
         const vm = wrapper.vm as any;
         vm.updateBounds = mockUpdateBounds;

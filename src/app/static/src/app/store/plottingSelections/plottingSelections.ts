@@ -3,13 +3,15 @@ import {localStorageManager} from "../../localStorageManager";
 import {Module} from "vuex";
 import {RootState} from "../../root";
 import {mutations} from "./mutations";
+import {getters} from "./getters";
 import {Dict} from "../../types";
 
 export interface PlottingSelectionsState {
     barchart: BarchartSelections,
     bubble: BubblePlotSelections,
     sapChoropleth: ChoroplethSelections,
-    outputChoropleth: ChoroplethSelections
+    outputChoropleth: ChoroplethSelections,
+    colourScales: ColourScalesState
 }
 
 export interface BarchartSelections {
@@ -31,6 +33,23 @@ export interface ChoroplethSelections {
     indicatorId: string,
     selectedFilterOptions: Dict<FilterOption[]>,
     detail: number
+}
+
+export interface ColourScalesState {
+    survey: ColourScaleSelections,
+    anc: ColourScaleSelections,
+    program: ColourScaleSelections,
+    output: ColourScaleSelections
+}
+
+export enum ColourScaleType {Default, Custom}
+
+export type ColourScaleSelections = Dict<ColourScaleSettings>;
+
+export interface ColourScaleSettings {
+    type: ColourScaleType
+    customMin: number,
+    customMax: number
 }
 
 export const initialBarchartSelections = (): BarchartSelections => {
@@ -59,12 +78,30 @@ export const initialChorplethSelections = (): ChoroplethSelections => {
     };
 };
 
+export const initialColourScaleSettings = (): ColourScaleSettings => {
+    return {
+        type: ColourScaleType.Default,
+        customMin: 0,
+        customMax: 0
+    }
+};
+
+export const initialColourScalesState = (): ColourScalesState => {
+    return {
+        survey: {},
+        anc: {},
+        program: {},
+        output: {}
+    }
+};
+
 export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
     return {
         barchart: initialBarchartSelections(),
         bubble: initialBubblePlotSelections(),
         sapChoropleth: initialChorplethSelections(),
-        outputChoropleth: initialChorplethSelections()
+        outputChoropleth: initialChorplethSelections(),
+        colourScales: initialColourScalesState()
     }
 };
 
@@ -74,7 +111,8 @@ const existingState = localStorageManager.getState();
 export const plottingSelections: Module<PlottingSelectionsState, RootState> = {
     namespaced,
     state: {...initialPlottingSelectionsState(), ...existingState && existingState.plottingSelections},
-    mutations
+    mutations,
+    getters
 };
 
 

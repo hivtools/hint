@@ -17,6 +17,7 @@ import {actions} from "../../../app/store/surveyAndProgram/actions";
 import {mutations} from "../../../app/store/surveyAndProgram/mutations";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {mutations as selectionsMutations} from "../../../app/store/plottingSelections/mutations";
+import {ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 
 const localVue = createLocalVue();
 
@@ -203,6 +204,18 @@ describe("Survey and programme component", () => {
         expect(wrapper.find(".nav-link.active").text()).toBe("ART");
 
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+    });
+
+    it("computes selectedDataType", () => {
+        const store = createStore(
+            {
+                anc: mockAncResponse(),
+                survey: mockSurveyResponse(),
+                program: mockProgramResponse(),
+                selectedDataType: DataType.Program
+            });
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
     });
 
 });

@@ -56,7 +56,9 @@
                                 :selections="plottingSelections"
                                 :include-filters="false"
                                 :area-filter-id="areaFilterId"
-                                v-on:update="updateChoroplethSelections({payload: $event})"></choropleth>
+                                :colour-scales="selectedSAPColourScales"
+                                @update="updateChoroplethSelections({payload: $event})"
+                                @updateColourScales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
             </div>
         </div>
     </div>
@@ -84,6 +86,7 @@
     }
 
     interface Computed {
+        selectedDataType: DataType,
         filters: Filter[],
         data: any,
         sapIndicatorsMetadata: Metadata,
@@ -105,6 +108,9 @@
         },
         computed: {
             ...mapState<RootState>({
+                selectedDataType: ({surveyAndProgram}) => {
+                    return surveyAndProgram.selectedDataType;
+                },
                 showChoropleth: ({surveyAndProgram, baseline}) => {
                     return surveyAndProgram.selectedDataType != null;
                 },
@@ -138,6 +144,7 @@
             }),
             ...mapGettersByNames(namespace, ["data", "filters"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
+            ...mapGetters("plottingSelections", ["selectedSAPColourScales"])
         },
         methods: {
             ...mapActions({
@@ -147,10 +154,11 @@
                 selectTab: 'surveyAndProgram/selectDataType',
                 deleteSurvey: 'surveyAndProgram/deleteSurvey',
                 deleteProgram: 'surveyAndProgram/deleteProgram',
-                deleteANC: 'surveyAndProgram/deleteANC'
+                deleteANC: 'surveyAndProgram/deleteANC',
             }),
             ...mapMutations({
-                updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections"
+                updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections",
+                updateSAPColourScales: "plottingSelections/updateSAPColourScales",
             })
         },
         created() {

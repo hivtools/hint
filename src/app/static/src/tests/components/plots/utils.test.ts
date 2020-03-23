@@ -3,7 +3,7 @@ import {
     getColor,
     getIndicatorRanges,
     toIndicatorNameLookup,
-    roundToContext
+    roundToContext, colourScaleStepFromMetadata
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 
@@ -107,6 +107,79 @@ it("getColor can use custom min and max", () => {
     expect(result).toEqual("rgb(151, 151, 151)");
 });
 
+
+it("getColor can use negative min and zero max", () => {
+    const metadata = {
+        min: 0,
+        max: 2,
+        colour: "interpolateGreys",
+        invert_scale: false,
+        indicator: "test",
+        value_column: "",
+        name: ""
+    };
+    let result = getColor(-0.45, metadata, -0.45, 0);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(0, metadata, -0.45, 0);
+    expect(result).toEqual("rgb(0, 0, 0)");
+    result = getColor(-0.225, metadata, -0.45, 0);
+    expect(result).toEqual("rgb(151, 151, 151)");
+
+    //Test out of range
+    result = getColor(-0.9, metadata, -0.45, 0);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(1, metadata, -0.45, 0);
+    expect(result).toEqual("rgb(0, 0, 0)");
+});
+
+it("getColor can use negative min and positive max", () => {
+    const metadata = {
+        min: 0,
+        max: 2,
+        colour: "interpolateGreys",
+        invert_scale: false,
+        indicator: "test",
+        value_column: "",
+        name: ""
+    };
+    let result = getColor(-10, metadata, -10, 10);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(10, metadata, -10, 10);
+    expect(result).toEqual("rgb(0, 0, 0)");
+    result = getColor(0, metadata, -10, 10);
+    expect(result).toEqual("rgb(151, 151, 151)");
+
+    //Test out of range
+    result = getColor(-10.5, metadata, -10, 10);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(11, metadata, -10, 1);
+    expect(result).toEqual("rgb(0, 0, 0)");
+});
+
+it("getColor can use negative min and negative max", () => {
+    const metadata = {
+        min: 0,
+        max: 2,
+        colour: "interpolateGreys",
+        invert_scale: false,
+        indicator: "test",
+        value_column: "",
+        name: ""
+    };
+    let result = getColor(-10, metadata, -10, -5);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(-5, metadata, -10, -5);
+    expect(result).toEqual("rgb(0, 0, 0)");
+    result = getColor(-7.5, metadata, -10, -5);
+    expect(result).toEqual("rgb(151, 151, 151)");
+
+    //Test out of range
+    result = getColor(-11, metadata, -10, -5);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(0, metadata, -10, -5);
+    expect(result).toEqual("rgb(0, 0, 0)");
+});
+
 it("can get indicator name lookup", () => {
     const indicators = [
         {
@@ -123,17 +196,29 @@ it("can get indicator name lookup", () => {
 });
 
 it ("round to context rounds values to 1 more decimal place than the context where context is integer", () => {
-    expect(roundToContext(0.1234, 1)).toBe(0.1);
+    expect(roundToContext(0.1234, [0, 1])).toBe(0.1);
 });
 
 it ("round to context rounds values to 1 more decimal place than the context where context has fewer decimal places than value", () => {
-    expect(roundToContext(0.1234, 0.1)).toBe(0.12);
+    expect(roundToContext(0.1234, [0, 0.1])).toBe(0.12);
 });
 
 it ("round to context does not round value if it already has fewer decimal places than context", () => {
-    expect(roundToContext(0.1, 0.12)).toBe(0.1);
+    expect(roundToContext(0.1, [0, 0.12])).toBe(0.1);
 });
 
 it ("round to context does not round value if both values and context are integers", () => {
-    expect(roundToContext(5, 10)).toBe(5);
+    expect(roundToContext(5, [0, 10])).toBe(5);
+});
+
+it ("round to context can round when context includes negative", () => {
+    expect(roundToContext(-0.3614, [-0.45, 0])).toBe(-0.361);
+});
+
+it("colourScaleStepFromMetadata returns expected value", () => {
+    const meta = {
+        min: 0,
+        max: 1
+    };
+    expect(colourScaleStepFromMetadata(meta as any)).toBe(0.1);
 });

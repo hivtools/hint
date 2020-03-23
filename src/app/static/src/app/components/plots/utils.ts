@@ -1,7 +1,6 @@
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
-import {BubbleIndicatorValuesDict, Dict, Filter, NumericRange} from "../../types";
-import {getRadius} from "./bubble/utils";
+import {Dict, Filter, NumericRange} from "../../types";
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
                          customMin: number | null = null, customMax: number | null = null) => {
@@ -11,7 +10,7 @@ export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
 
     const colorFunction = colorFunctionFromName(metadata.colour);
 
-    let rangeNum = (max && (max != min)) ? //Avoid dividing by zero if only one value...
+    let rangeNum = ((max !== null) && (max != min)) ? //Avoid dividing by zero if only one value...
         max - (min || 0) :
         1;
 
@@ -22,6 +21,10 @@ export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
     }
 
     return colorFunction(colorValue);
+};
+
+export const colourScaleStepFromMetadata = function(meta: ChoroplethIndicatorMetadata) {
+  return (meta.max - meta.min) / 10;
 };
 
 export const colorFunctionFromName = function (name: string) {
@@ -111,10 +114,15 @@ export const toIndicatorNameLookup = (array: ChoroplethIndicatorMetadata[]) =>
         return obj
     }, {} as Dict<string>);
 
-export const roundToContext = function (value: number, context: number) {
+export const roundToContext = function (value: number, context: number[]) {
     //Rounds the value to one more decimal place than is present in the 'context'
-    const maxFraction = context.toString().split(".");
-    const maxDecPl = maxFraction.length > 1 ? maxFraction[1].length : 0;
+    let maxDecPl = 0;
+    for(const contextValue of context) {
+        const maxFraction = contextValue.toString().split(".");
+        const decPl = maxFraction.length > 1 ? maxFraction[1].length : 0;
+        maxDecPl = Math.max(maxDecPl, decPl);
+    }
+
     const roundingNum = Math.pow(10, maxDecPl + 1);
 
     return Math.round(value * roundingNum) / roundingNum;

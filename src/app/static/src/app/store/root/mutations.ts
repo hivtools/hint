@@ -87,7 +87,12 @@ export const mutations: MutationTree<RootState> = {
         state.modelRun.ready = true;
         Object.assign(state.modelOutput, initialModelOutputState());
         const sapSelections = state.plottingSelections.sapChoropleth;
-        Object.assign(state.plottingSelections, {...initialPlottingSelectionsState(), sapChoropleth: sapSelections});
+        const colourScales = state.plottingSelections.colourScales;
+        Object.assign(state.plottingSelections, {
+            ...initialPlottingSelectionsState(),
+            sapChoropleth: sapSelections,
+            colourScales: colourScales
+        });
     },
 
     ...languageMutations

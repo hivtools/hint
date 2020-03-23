@@ -32,6 +32,7 @@ import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOpt
 import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
 import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
+import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -108,6 +109,13 @@ export const mockModelOutputState = (props?: Partial<ModelOutputState>): ModelOu
 export const mockPlottingSelections = (props?: Partial<PlottingSelectionsState>) => {
     return {
         ...initialPlottingSelectionsState(),
+        ...props
+    }
+};
+
+export const mockColourScales = (props?: Partial<ColourScalesState>) => {
+    return {
+        ...initialColourScalesState(),
         ...props
     }
 };
