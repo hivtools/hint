@@ -155,9 +155,12 @@
                     !!this.selections.indicatorId;
             },
             colourRanges() {
-                //TODO: Make this computed
-                const currentLevelFeatureIds = this.currentFeatures.map(f => f.id);
-                const selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => currentLevelFeatureIds.indexOf(a) > -1);
+                const currentLevelFeatureIds = this.currentFeatures.map(f => f.properties!!["area_id"]);
+                let selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => currentLevelFeatureIds.indexOf(a) > -1);
+                //This will return no intersection if country level selected and no filters - show scale for current level
+                if (selectedCurrentLevelAreaIds.length == 0) {
+                    selectedCurrentLevelAreaIds = [...currentLevelFeatureIds];
+                }
 
                 //Include only selected areas, but at all levels
                 return getColourRanges(
