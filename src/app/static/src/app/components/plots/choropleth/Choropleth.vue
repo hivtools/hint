@@ -86,6 +86,7 @@
         featureIndicators: Dict<IndicatorValuesDict>,
         featuresByLevel: { [k: number]: Feature[] },
         currentFeatures: Feature[],
+        currentLevelFeatureIds: string[],
         maxLevel: number,
         indicatorNameLookup: Dict<string>,
         indicatorColourScale: ColourScaleSettings | null,
@@ -155,14 +156,8 @@
                     !!this.selections.indicatorId;
             },
             colourRanges() {
-                const currentLevelFeatureIds = this.currentFeatures.map(f => f.properties!!["area_id"]);
-                let selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => currentLevelFeatureIds.indexOf(a) > -1);
-                //This will return no intersection if country level selected and no filters - show scale for current level
-                if (selectedCurrentLevelAreaIds.length == 0) {
-                    selectedCurrentLevelAreaIds = [...currentLevelFeatureIds];
-                }
+                let selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
 
-                //Include only selected areas, but at all levels
                 return getColourRanges(
                     this.chartdata,
                     this.indicators,
@@ -174,11 +169,16 @@
             },
             selectedAreaIds() {
                 const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+
+                //Should also ensure include top level (country) included if no filters selected
+                const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
+                if (!selectedOptions || selectedOptions.length == 0) {
+                    this.currentLevelFeatureIds.forEach(id => selectedAreaIdSet.add(id));
+                }
+
                 return Array.from(selectedAreaIdSet);
             },
             featureIndicators() {
-
-
                 let customMin = null;
                 let customMax = null;
                 if (this.indicatorColourScale && this.indicatorColourScale.type == ColourScaleType.Custom) {
@@ -220,6 +220,9 @@
             },
             currentFeatures() {
                 return this.featuresByLevel[this.selections.detail]
+            },
+            currentLevelFeatureIds() {
+                return this.currentFeatures.map(f => f.properties!!["area_id"]);
             },
             indicatorNameLookup() {
                 return toIndicatorNameLookup(this.indicators)
