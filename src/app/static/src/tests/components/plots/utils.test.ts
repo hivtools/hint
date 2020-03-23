@@ -107,6 +107,79 @@ it("getColor can use custom min and max", () => {
     expect(result).toEqual("rgb(151, 151, 151)");
 });
 
+
+it("getColor can use negative min and zero max", () => {
+    const metadata = {
+        min: 0,
+        max: 2,
+        colour: "interpolateGreys",
+        invert_scale: false,
+        indicator: "test",
+        value_column: "",
+        name: ""
+    };
+    let result = getColor(-0.45, metadata, -0.45, 0);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(0, metadata, -0.45, 0);
+    expect(result).toEqual("rgb(0, 0, 0)");
+    result = getColor(-0.225, metadata, -0.45, 0);
+    expect(result).toEqual("rgb(151, 151, 151)");
+
+    //Test out of range
+    result = getColor(-0.9, metadata, -0.45, 0);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(1, metadata, -0.45, 0);
+    expect(result).toEqual("rgb(0, 0, 0)");
+});
+
+it("getColor can use negative min and positive max", () => {
+    const metadata = {
+        min: 0,
+        max: 2,
+        colour: "interpolateGreys",
+        invert_scale: false,
+        indicator: "test",
+        value_column: "",
+        name: ""
+    };
+    let result = getColor(-10, metadata, -10, 10);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(10, metadata, -10, 10);
+    expect(result).toEqual("rgb(0, 0, 0)");
+    result = getColor(0, metadata, -10, 10);
+    expect(result).toEqual("rgb(151, 151, 151)");
+
+    //Test out of range
+    result = getColor(-10.5, metadata, -10, 10);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(11, metadata, -10, 1);
+    expect(result).toEqual("rgb(0, 0, 0)");
+});
+
+it("getColor can use negative min and negative max", () => {
+    const metadata = {
+        min: 0,
+        max: 2,
+        colour: "interpolateGreys",
+        invert_scale: false,
+        indicator: "test",
+        value_column: "",
+        name: ""
+    };
+    let result = getColor(-10, metadata, -10, -5);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(-5, metadata, -10, -5);
+    expect(result).toEqual("rgb(0, 0, 0)");
+    result = getColor(-7.5, metadata, -10, -5);
+    expect(result).toEqual("rgb(151, 151, 151)");
+
+    //Test out of range
+    result = getColor(-11, metadata, -10, -5);
+    expect(result).toEqual("rgb(255, 255, 255)");
+    result = getColor(0, metadata, -10, -5);
+    expect(result).toEqual("rgb(0, 0, 0)");
+});
+
 it("can get indicator name lookup", () => {
     const indicators = [
         {

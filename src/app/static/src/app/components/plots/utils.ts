@@ -10,7 +10,7 @@ export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
 
     const colorFunction = colorFunctionFromName(metadata.colour);
 
-    let rangeNum = (max && (max != min)) ? //Avoid dividing by zero if only one value...
+    let rangeNum = ((max !== null) && (max != min)) ? //Avoid dividing by zero if only one value...
         max - (min || 0) :
         1;
 
