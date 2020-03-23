@@ -50,6 +50,15 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                 </label>
             </div>
         </div>
+        <div class="ml-2">
+            <div class="form-check mt-1">
+                <label class="form-check-label">
+                    <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.DynamicFiltered"
+                           v-model="colourScaleToAdjust.type" @change="update">
+                    Filtered dataset
+                </label>
+            </div>
+        </div>
 
         <div class="text-danger">{{invalidMsg}}</div>
     </div>

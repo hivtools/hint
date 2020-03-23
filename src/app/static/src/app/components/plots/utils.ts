@@ -39,9 +39,12 @@ export const colorFunctionFromName = function (name: string) {
 };
 
 export const getIndicatorRanges = function(data: any,
-                                           indicatorsMeta: ChoroplethIndicatorMetadata[]): Dict<NumericRange>{
+                                           indicatorsMeta: ChoroplethIndicatorMetadata[],
+                                           filters: Filter[] | null = null,
+                                           selectedFilterValues: Dict<FilterOption[]> | null = null,
+                                           selectedAreaIds: string[] | null = null): Dict<NumericRange>{
     const result = {} as Dict<NumericRange>;
-    iterateDataValues(data, indicatorsMeta, null, null, null,
+    iterateDataValues(data, indicatorsMeta, selectedAreaIds, filters, selectedFilterValues,
         (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
             const indicator = indicatorMeta.indicator;
 
@@ -58,9 +61,14 @@ export const getIndicatorRanges = function(data: any,
 
 export const getColourRanges = function(data: any,
                                         indicatorsMeta: ChoroplethIndicatorMetadata[],
-                                        colourScales: ColourScaleSelections) {
+                                        colourScales: ColourScaleSelections,
+                                        filters: Filter[],
+                                        selectedFilterValues: Dict<FilterOption[]>,
+                                        selectedAreaIds: string[]) {
   const result = {} as Dict<NumericRange>;
   let fullIndicatorRanges = null;
+  let filteredIndicatorRanges = null;
+
   for(const meta of indicatorsMeta) {
         const indicatorId = meta.indicator;
         const colourScale = colourScales[indicatorId];
@@ -74,9 +82,15 @@ export const getColourRanges = function(data: any,
                 break;
             case(ColourScaleType.DynamicFull):
                 if (!fullIndicatorRanges) {
-                    fullIndicatorRanges = getIndicatorRanges(data, indicatorsMeta);
+                    fullIndicatorRanges = getIndicatorRanges(data, indicatorsMeta, null, null, null);
                 }
                 result[indicatorId] = {min: fullIndicatorRanges[indicatorId].min, max: fullIndicatorRanges[indicatorId].max};
+                break;
+            case(ColourScaleType.DynamicFiltered):
+                if (!filteredIndicatorRanges) {
+                    filteredIndicatorRanges = getIndicatorRanges(data, indicatorsMeta, filters, selectedFilterValues, selectedAreaIds);
+                }
+                result[indicatorId] = {min: filteredIndicatorRanges[indicatorId].min, max: filteredIndicatorRanges[indicatorId].max};
                 break;
             default:
                 break;

@@ -45,7 +45,6 @@
     import {getFeatureIndicators, initialiseColourScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
-    import {getIndicatorRanges} from "../utils";
     import {
         ColourScaleSelections,
         ColourScaleSettings, ColourScaleType
@@ -95,6 +94,7 @@
         selectedAreaFilterOptions: FilterOption[],
         flattenedAreas: Dict<NestedFilterOption>,
         selectedAreaFeatures: Feature[],
+        selectedAreaIds: string[],
         colorIndicator: ChoroplethIndicatorMetadata,
         options: L.GeoJSONOptions
     }
@@ -155,10 +155,26 @@
                     !!this.selections.indicatorId;
             },
             colourRanges() {
-                return getColourRanges(this.chartdata, this.indicators, this.colourScales || {})
+                //TODO: Make this computed
+                const currentLevelFeatureIds = this.currentFeatures.map(f => f.id);
+                const selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => currentLevelFeatureIds.indexOf(a) > -1);
+
+                //Include only selected areas, but at all levels
+                return getColourRanges(
+                    this.chartdata,
+                    this.indicators,
+                    this.colourScales || {},
+                    this.nonAreaFilters,
+                    this.selections.selectedFilterOptions,
+                    selectedCurrentLevelAreaIds
+                )
+            },
+            selectedAreaIds() {
+                const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+                return Array.from(selectedAreaIdSet);
             },
             featureIndicators() {
-                const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+
 
                 let customMin = null;
                 let customMax = null;
@@ -169,7 +185,7 @@
 
                 return getFeatureIndicators(
                     this.chartdata,
-                    Array.from(selectedAreaIdSet),
+                    this.selectedAreaIds,
                     this.indicators,
                     this.colourRanges,
                     this.nonAreaFilters,

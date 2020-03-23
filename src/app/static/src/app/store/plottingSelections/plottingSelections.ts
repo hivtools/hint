@@ -42,7 +42,7 @@ export interface ColourScalesState {
     output: ColourScaleSelections
 }
 
-export enum ColourScaleType {Default, Custom, DynamicFull}
+export enum ColourScaleType {Default, Custom, DynamicFull, DynamicFiltered}
 
 export type ColourScaleSelections = Dict<ColourScaleSettings>;
 
