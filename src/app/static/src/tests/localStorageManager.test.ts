@@ -8,9 +8,11 @@ import {
     mockStepperState,
     mockSurveyAndProgramState
 } from "./mocks";
-import {serialiseState} from "../app/localStorageManager";
+import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
 import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
+
+declare const currentUser: string; // set in jest config, or on the index page when run for real
 
 describe("LocalStorageManager", () => {
     it("serialiseState removes errors, saves selected data type", async () => {
@@ -27,14 +29,27 @@ describe("LocalStorageManager", () => {
         } as RootState;
 
         const result = serialiseState(mockRoot);
-        expect(result).toStrictEqual( {
-                modelRun: mockModelRunState(),
-                modelOptions: mockModelOptionsState(),
-                modelOutput: mockModelOutputState(),
-                stepper: mockStepperState(),
-                metadata: mockMetadataState(),
-                plottingSelections: mockPlottingSelections(),
-                surveyAndProgram: {selectedDataType: DataType.Survey}
-            });
+        expect(result).toStrictEqual({
+            modelRun: mockModelRunState(),
+            modelOptions: mockModelOptionsState(),
+            modelOutput: mockModelOutputState(),
+            stepper: mockStepperState(),
+            metadata: mockMetadataState(),
+            plottingSelections: mockPlottingSelections(),
+            surveyAndProgram: {selectedDataType: DataType.Survey}
+        });
     });
+
+    it("returns nothing and saves current user if local storage does not match current user", () => {
+        localStorage.setItem("user", currentUser);
+        localStorageManager.savePartialState({errors: {errors: [{error: "test", detail: "test"}]}});
+        let result = localStorageManager.getState();
+        expect(result).not.toBe(null);
+        expect(localStorage.getItem("user")).toBe(currentUser);
+
+        localStorage.setItem("user", "bad-user");
+        result = localStorageManager.getState();
+        expect(result).toBe(null);
+        expect(localStorage.getItem("user")).toBe(currentUser);
+    })
 });

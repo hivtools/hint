@@ -10,10 +10,14 @@ class SessionFileTests : SecureIntegrationTests() {
 
     protected fun assertSessionFileExists(isAuthorized: IsAuthorized, fileType: FileType) {
         if (isAuthorized == IsAuthorized.TRUE) {
-            val records = dsl.selectFrom(Tables.SESSION_FILE)
-                    .where(Tables.SESSION_FILE.TYPE.eq(fileType.toString()))
-            AssertionsForClassTypes.assertThat(records.count()).isEqualTo(1)
+            assertSessionFileExists(fileType)
         }
+    }
+
+    protected fun assertSessionFileExists(fileType: FileType) {
+        val records = dsl.selectFrom(Tables.SESSION_FILE)
+                .where(Tables.SESSION_FILE.TYPE.eq(fileType.toString()))
+        AssertionsForClassTypes.assertThat(records.count()).isEqualTo(1)
     }
 
     protected fun assertSessionFileDoesNotExist(fileType: FileType) {
@@ -24,11 +28,15 @@ class SessionFileTests : SecureIntegrationTests() {
 
     protected fun setUpSessionFileAndGetHash(isAuthorized: IsAuthorized, filename: String, url: String): String {
         return if (isAuthorized == IsAuthorized.TRUE) {
-            val postEntity = getTestEntity(filename)
-            val entity = testRestTemplate.postForEntity<String>(url, postEntity)
-            getResponseData(entity)["hash"].textValue()
+            setUpSessionFileAndGetHash(filename, url)
         } else {
             "hash"
         }
+    }
+
+    protected fun setUpSessionFileAndGetHash(filename: String, url: String): String {
+        val postEntity = getTestEntity(filename)
+        val entity = testRestTemplate.postForEntity<String>(url, postEntity)
+        return getResponseData(entity)["hash"].textValue()
     }
 }

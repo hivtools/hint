@@ -21,8 +21,7 @@ class TranslationTests : SecureIntegrationTests() {
 
         val responseEntity = testRestTemplate.exchange<String>("/baseline/pjnz/", HttpMethod.POST, postEntity)
 
-        assertSecureWithError(IsAuthorized.TRUE,
-                responseEntity,
+        assertError(responseEntity,
                 HttpStatus.BAD_REQUEST,
                 "INVALID_FILE",
                 "Le fichier doit être de type PJNZ, zip, mais il est du type geojson,geojson,geojson.")

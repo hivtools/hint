@@ -3,9 +3,8 @@ package org.imperial.mrc.hint.integration
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.helpers.getTestEntity
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
@@ -14,126 +13,120 @@ import org.springframework.http.HttpStatus
 
 class BaselineTests : SessionFileTests() {
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can get pjnz data`(isAuthorized: IsAuthorized) {
+    @BeforeEach
+    fun setup() {
+        authorize()
+        testRestTemplate.getForEntity<String>("/")
+    }
+
+    @Test
+    fun `can get pjnz data`() {
         val postEntity = getTestEntity("Botswana2018.PJNZ")
         testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/pjnz/")
-        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
+        assertSuccess(responseEntity, "ValidateInputResponse")
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can get shape data`(isAuthorized: IsAuthorized) {
+
+    @Test
+    fun `can get shape data`() {
         val postEntity = getTestEntity("malawi.geojson")
         testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/shape/")
-        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
+        assertSuccess(responseEntity, "ValidateInputResponse")
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can get population data`(isAuthorized: IsAuthorized) {
+
+    @Test
+    fun `can get population data`() {
         val postEntity = getTestEntity("population.csv")
         testRestTemplate.postForEntity<String>("/baseline/population/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/population/")
-        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
+        assertSuccess(responseEntity, "ValidateInputResponse")
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can upload pjnz file`(isAuthorized: IsAuthorized) {
+
+    @Test
+    fun `can upload pjnz file`() {
         val postEntity = getTestEntity("Botswana2018.PJNZ")
         val responseEntity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
-        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
+        assertSuccess(responseEntity, "ValidateInputResponse")
 
-        if (isAuthorized == IsAuthorized.TRUE) {
-            val data = getResponseData(responseEntity)
-            assertThat(data["type"].asText()).isEqualTo("pjnz")
-        }
+        val data = getResponseData(responseEntity)
+        assertThat(data["type"].asText()).isEqualTo("pjnz")
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can upload zip file as pjnz`(isAuthorized: IsAuthorized) {
+
+    @Test
+    fun `can upload zip file as pjnz`() {
         val postEntity = getTestEntity("Botswana2018.zip")
         val responseEntity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
-        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateInputResponse")
+        assertSuccess(responseEntity, "ValidateInputResponse")
 
-        if (isAuthorized == IsAuthorized.TRUE) {
-            val data = getResponseData(responseEntity)
-            assertThat(data["type"].asText()).isEqualTo("pjnz")
-            assertThat(data["filename"].asText()).isEqualTo("Botswana2018.zip")
-        }
+        val data = getResponseData(responseEntity)
+        assertThat(data["type"].asText()).isEqualTo("pjnz")
+        assertThat(data["filename"].asText()).isEqualTo("Botswana2018.zip")
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can upload shape file`(isAuthorized: IsAuthorized) {
+
+    @Test
+    fun `can upload shape file`() {
         val postEntity = getTestEntity("malawi.geojson")
         val entity = testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
-        assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
+        assertSuccess(entity, "ValidateInputResponse")
 
-        if (isAuthorized == IsAuthorized.TRUE) {
-            val data = getResponseData(entity)
-            assertThat(data["type"].asText()).isEqualTo("shape")
-        }
+        val data = getResponseData(entity)
+        assertThat(data["type"].asText()).isEqualTo("shape")
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can upload population file`(isAuthorized: IsAuthorized) {
+
+    @Test
+    fun `can upload population file`() {
         val postEntity = getTestEntity("population.csv")
         val entity = testRestTemplate.postForEntity<String>("/baseline/population/", postEntity)
-        assertSecureWithSuccess(isAuthorized, entity, "ValidateInputResponse")
+        assertSuccess(entity, "ValidateInputResponse")
 
-        if (isAuthorized == IsAuthorized.TRUE) {
-            val data = getResponseData(entity)
-            assertThat(data["type"].asText()).isEqualTo("population")
-        }
+        val data = getResponseData(entity)
+        assertThat(data["type"].asText()).isEqualTo("population")
     }
 
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can delete pjnz data`(isAuthorized: IsAuthorized) {
-        setUpSessionFileAndGetHash(isAuthorized, "Botswana2018.PJNZ", "/baseline/pjnz/")
-        assertSessionFileExists(isAuthorized, FileType.PJNZ)
+    @Test
+    fun `can delete pjnz data`() {
+        setUpSessionFileAndGetHash("Botswana2018.PJNZ", "/baseline/pjnz/")
+        assertSessionFileExists(FileType.PJNZ)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/pjnz/", HttpMethod.DELETE)
-        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+        assertSuccess(responseEntity, null)
         assertSessionFileDoesNotExist(FileType.PJNZ)
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can delete shape data`(isAuthorized: IsAuthorized) {
-        setUpSessionFileAndGetHash(isAuthorized, "malawi.geojson", "/baseline/shape/")
-        assertSessionFileExists(isAuthorized, FileType.Shape)
+
+    @Test
+    fun `can delete shape data`() {
+        setUpSessionFileAndGetHash("malawi.geojson", "/baseline/shape/")
+        assertSessionFileExists(FileType.Shape)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/shape/", HttpMethod.DELETE)
-        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+        assertSuccess(responseEntity, null)
         assertSessionFileDoesNotExist(FileType.Shape)
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can delete population data`(isAuthorized: IsAuthorized) {
-        setUpSessionFileAndGetHash(isAuthorized, "population.csv", "/baseline/population/")
-        assertSessionFileExists(isAuthorized, FileType.Population)
+
+    @Test
+    fun `can delete population data`() {
+        setUpSessionFileAndGetHash("population.csv", "/baseline/population/")
+        assertSessionFileExists(FileType.Population)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/population/", HttpMethod.DELETE)
-        assertSecureWithSuccess(isAuthorized, responseEntity, null)
+        assertSuccess(responseEntity, null)
         assertSessionFileDoesNotExist(FileType.Population)
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can get consistent validate result when no files are uploaded`(isAuthorized: IsAuthorized) {
+
+    @Test
+    fun `can get consistent validate result when no files are uploaded`() {
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/validate/")
-        assertSecureWithSuccess(isAuthorized, responseEntity, "ValidateBaselineResponse")
-        if (isAuthorized == IsAuthorized.TRUE) {
-            val data = getResponseData(responseEntity)
-            assertThat(data["consistent"].asBoolean()).isEqualTo(true)
-        }
+        assertSuccess(responseEntity, "ValidateBaselineResponse")
+        val data = getResponseData(responseEntity)
+        assertThat(data["consistent"].asBoolean()).isEqualTo(true)
     }
 
     @Test
@@ -151,7 +144,7 @@ class BaselineTests : SessionFileTests() {
         testRestTemplate.postForEntity<String>("/baseline/population/", postPopEntity)
 
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/validate/")
-        assertSecureWithSuccess(IsAuthorized.TRUE, responseEntity, "ValidateBaselineResponse")
+        assertSuccess(responseEntity, "ValidateBaselineResponse")
 
         val data = getResponseData(responseEntity)
         assertThat(data["consistent"].asBoolean()).isEqualTo(true)
@@ -172,6 +165,6 @@ class BaselineTests : SessionFileTests() {
         testRestTemplate.postForEntity<String>("/baseline/population/", postPopEntity)
 
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/validate/")
-        assertSecureWithError(IsAuthorized.TRUE, responseEntity, HttpStatus.BAD_REQUEST, "INVALID_BASELINE")
+        assertError(responseEntity, HttpStatus.BAD_REQUEST, "INVALID_BASELINE")
     }
 }

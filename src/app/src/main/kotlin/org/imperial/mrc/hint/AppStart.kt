@@ -1,7 +1,6 @@
 package org.imperial.mrc.hint
 
 import org.pac4j.core.config.Config
-import org.pac4j.springframework.web.SecurityInterceptor
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Configuration
@@ -26,18 +25,6 @@ class MvcConfig(val config: Config) : WebMvcConfigurer {
                 .resourceChain(true)
                 .addResolver(EncodedResourceResolver())
                 .addResolver(PathResourceResolver())
-    }
-
-    override fun addInterceptors(registry: InterceptorRegistry) {
-        //Root url - redirect to login if required
-        registry.addInterceptor(SecurityInterceptor(config, "FormClient"))
-                .addPathPatterns("/")
-
-        //Ajax endpoints - secure, but do not redirect with login form client - return a 401
-        registry.addInterceptor(SecurityInterceptor(config, ""))
-                .addPathPatterns("/**")
-                .excludePathPatterns("/", "/login", "/login/", "/password/**", "/callback", "/callback/", "/public/**",
-                        "/logout", "/logout/")
     }
 
     override fun configureAsyncSupport(configurer: AsyncSupportConfigurer) {

@@ -32,6 +32,14 @@ class UserLogicTests {
         assertThat(sut.getUser(TEST_EMAIL)).isNotNull
     }
 
+
+    @Test
+    fun `can add guest user`() {
+        sut.addUser("guest", "guest")
+
+        assertThat(sut.getUser("guest")).isNotNull
+    }
+
     @Test
     fun `can add user without password`() {
         sut.addUser(TEST_EMAIL, null)

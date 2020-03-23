@@ -17,14 +17,16 @@ class HintApplicationTests : SecureIntegrationTests() {
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `unauthorized users are redirected to login page`(isAuthorized: IsAuthorized) {
+    fun `unauthorized users can access index as guest`(isAuthorized: IsAuthorized) {
 
         val rootEntity = testRestTemplate.getForEntity<String>("/")
         assertThat(rootEntity.statusCode).isEqualTo(HttpStatus.OK)
         if (isAuthorized == IsAuthorized.TRUE) {
             assertThat(rootEntity.body!!).doesNotContain("<title>Login</title>")
+            assertThat(rootEntity.body!!).contains("var currentUser = \"test.user@example.com\"")
         } else {
-            assertThat(rootEntity.body!!).contains("<title>Login</title>")
+            assertThat(rootEntity.body!!).doesNotContain("<title>Login</title>")
+            assertThat(rootEntity.body!!).contains("var currentUser = \"guest\"")
         }
     }
 
@@ -45,16 +47,16 @@ class HintApplicationTests : SecureIntegrationTests() {
                 .isEqualTo("/login?username=test.user%40example.com&error=BadCredentialsException")
     }
 
-
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `only authorized users can access REST endpoints`(isAuthorized: IsAuthorized) {
+    fun `authorized users and guest user can access REST endpoints`(isAuthorized: IsAuthorized) {
         val entity = testRestTemplate.getForEntity<String>("/baseline/pjnz/")
         if (isAuthorized == IsAuthorized.TRUE) {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
             assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
         } else {
-            assertThat(entity.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
+            assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+            assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
         }
     }
 
@@ -78,15 +80,13 @@ class HintApplicationTests : SecureIntegrationTests() {
         assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `api responses are gzipped`(isAuthorized: IsAuthorized) {
+    @Test
+    fun `api responses are gzipped`() {
+        authorize()
+        testRestTemplate.getForEntity<String>("/")
         val postEntity = getTestEntity("malawi.geojson", acceptGzip = true)
         val response = testRestTemplate.exchange<String>("/baseline/shape/", HttpMethod.POST, postEntity)
-
-        if (isAuthorized == IsAuthorized.TRUE) {
-            assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
-        }
+        assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
     }
 
 }

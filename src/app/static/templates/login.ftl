@@ -48,6 +48,10 @@
             </div>
         </div>
     </div>
+    <div class="text-center mt-3">
+        <div class="mb-3">OR</div>
+        <a class="btn btn-red" type="submit" href="/">Continue as guest</a>
+    </div>
     <div id="partner-logos" class="logos mx-auto mt-5">
       <a href="https://www.fjelltopp.org"><img src="public/images/fjelltopp_logo.png" class="small-logo"></a>
       <a href="https://www.imperial.ac.uk"><img src="public/images/imperial_logo.png" class="small-logo"></a>

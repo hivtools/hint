@@ -6,7 +6,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                               :show="showAdjust" :colour-scale="colourScale" @update="update">
             </map-adjust-scale>
             <div class="legend-element map-control p-3">
-                <div class="legend" v-for="level in levels" v-bind:key="level.val">
+                <div class="legend" v-for="(level, index) in levels" v-bind:key="index">
                     <i v-bind:style="level.style"></i>
                     <span class="level">{{level.val}}</span>
                     <span class="hidden" style="display: none">{{level.style}}</span>
@@ -94,7 +94,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
 
                     return indexes.map((i) => {
                         let val = min + (i * step);
-                        val = roundToContext(val, max);
+                        val = roundToContext(val, [min, max]);
 
                         let valAsProportion =  (max != min) ? (val - min) / (max - min) : 0;
                         if (this.metadata.invert_scale) {

@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.security
 
+import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
 import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
 import org.pac4j.core.context.WebContext
@@ -41,6 +42,10 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
 
     fun getUserProfile(): CommonProfile {
         val manager = ProfileManager<CommonProfile>(webContext)
-        return manager.getAll(true).single()
+        val profiles = manager.getAll(true)
+        return profiles.singleOrNull() ?: CommonProfile().apply {
+            id = GUEST_USER
+        }
+
     }
 }

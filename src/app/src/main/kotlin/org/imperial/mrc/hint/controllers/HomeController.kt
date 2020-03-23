@@ -19,6 +19,7 @@ class HomeController(
         val userProfile = session.getUserProfile()
         sessionRepository.saveSession(session.getId(), userProfile.id)
         model["title"] = appProperties.applicationTitle
+        model["user"] = userProfile.id
         return "index"
     }
 }

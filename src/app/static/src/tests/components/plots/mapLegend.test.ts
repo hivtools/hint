@@ -52,6 +52,33 @@ describe("Map legend component", () => {
         expectLevels(levels);
     });
 
+    it("calculates 6 levels from min to max with negative min", () => {
+        const rangeWrapper = shallowMount(MapLegend, {
+            propsData: {
+                metadata: {
+                    max: 2,
+                    min: 1,
+                    colour: "interpolateGreys",
+                    invert_scale: false
+                },
+                colourScale: {
+                    type: ColourScaleType.Custom,
+                    customMin: -0.45,
+                    customMax: 0
+                }
+            }
+        });
+        const levels = rangeWrapper.findAll(".level");
+        expect(levels.length).toBe(6);
+
+        expect(levels.at(0).text()).toBe("0");
+        expect(levels.at(1).text()).toBe("-0.09");
+        expect(levels.at(2).text()).toBe("-0.18");
+        expect(levels.at(3).text()).toBe("-0.27");
+        expect(levels.at(4).text()).toBe("-0.36");
+        expect(levels.at(5).text()).toBe("-0.45");
+    });
+
     it("renders icons with colors", () => {
         const icons = wrapper.findAll("i");
         expectIcons(icons);
