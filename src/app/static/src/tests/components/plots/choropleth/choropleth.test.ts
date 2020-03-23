@@ -83,11 +83,17 @@ describe("Choropleth component", () => {
         expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
             ["MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"],
             propsData.indicators,
-            getColourRanges(propsData.chartdata,propsData.indicators, {}),
+            getColourRanges(propsData.chartdata,propsData.indicators, propsData.colourScales),
             [propsData.filters[1]],
             propsData.selections.selectedFilterOptions,
             ["prevalence"]
         ));
+    });
+
+    it("computed colourRanges", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.colourRanges).toStrictEqual(getColourRanges(propsData.chartdata,propsData.indicators, propsData.colourScales));
     });
 
     it("computes featureIndicators when colour scale is custom", () => {

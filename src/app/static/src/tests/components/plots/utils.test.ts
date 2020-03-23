@@ -3,9 +3,11 @@ import {
     getColor,
     getIndicatorRanges,
     toIndicatorNameLookup,
-    roundToContext, colourScaleStepFromMetadata
+    roundToContext, colourScaleStepFromMetadata, getColourRanges
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
+import {ChoroplethIndicatorMetadata} from "../../../app/generated";
+import {ColourScaleSelections, ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 
 const indicators = [
     {
@@ -74,6 +76,40 @@ it("can get indicator ranges", () => {
     expect(result).toStrictEqual({
         plhiv: {min: 13, max: 15},
         prevalence: {min: 0.5, max: 0.7}
+    });
+});
+
+it("can get colour ranges", () => {
+    const data = [
+        {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 15, art_cov: 0.2},
+        {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14, art_cov: 0.3},
+        {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 13, art_cov: 0.4}
+    ];
+
+    const indicatorsMeta = [
+        {
+            indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 1, colour: "interpolateGreys", invert_scale: false
+        },
+        {
+            indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:20, colour: "interpolateGreys", invert_scale: false
+        },
+        {
+            indicator: "art_cov", value_column: "art_cov", name: "ART coverage", min: 0, max:20, colour: "interpolateGreys", invert_scale: false
+        }
+    ];
+
+    const colourScales = {
+        prevalence: {type: ColourScaleType.Default, customMin: 0, customMax: 0},
+        plhiv: {type: ColourScaleType.DynamicFull, customMin: 0, customMax: 1},
+        art_cov: {type: ColourScaleType.Custom, customMin: 0.1, customMax: 0.9}
+    };
+
+    const result = getColourRanges(data, indicatorsMeta, colourScales);
+
+    expect(result).toStrictEqual({
+        prevalence: {min: 0, max: 1},
+        plhiv: {min: 13, max: 15},
+        art_cov: {min: 0.1, max: 0.9}
     });
 });
 
