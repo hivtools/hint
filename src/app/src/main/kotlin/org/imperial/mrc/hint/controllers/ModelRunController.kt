@@ -14,7 +14,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: APIClient)
     @PostMapping("/run/")
     @ResponseBody
     fun run(@RequestBody modelRunOptions: ModelRunOptions): ResponseEntity<String> {
-        val allFiles = fileManager.getAllHashes()
+        val allFiles = fileManager.getFiles()
         return apiClient.submit(allFiles, modelRunOptions)
     }
 

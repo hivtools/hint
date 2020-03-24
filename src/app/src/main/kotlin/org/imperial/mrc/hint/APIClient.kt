@@ -18,7 +18,7 @@ interface APIClient {
     fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, SessionFileWithPath?>): ResponseEntity<String>
     fun validateSurveyAndProgramme(file: SessionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
-    fun submit(data: Map<String, String>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
+    fun submit(data: Map<String, SessionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
@@ -65,7 +65,7 @@ class HintrAPIClient(
         return postJson("validate/survey-and-programme", json)
     }
 
-    override fun submit(data: Map<String, String>, modelRunOptions: ModelRunOptions): ResponseEntity<String> {
+    override fun submit(data: Map<String, SessionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("options" to modelRunOptions.options,
