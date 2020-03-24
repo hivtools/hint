@@ -101,6 +101,12 @@ it("can get colour ranges", () => {
         },
         {
             indicator: "vls", value_column: "vls", name: "Viral Load Suppression", min: 0, max:21, colour: "interpolateGreys", invert_scale: false
+        },
+        {
+            indicator: "nonexistent_full", value_column: "ne_full", name: "Not In Data", min: 0, max:1, colour: "interpolateGreys", invert_scale: false
+        },
+        {
+            indicator: "nonexistent_filtered", value_column: "ne_filtered", name: "Not In Data", min: 0, max:1, colour: "interpolateGreys", invert_scale: false
         }
     ];
 
@@ -108,7 +114,9 @@ it("can get colour ranges", () => {
         prevalence: {type: ColourScaleType.Default, customMin: 0, customMax: 0},
         plhiv: {type: ColourScaleType.DynamicFull, customMin: 0, customMax: 1},
         art_cov: {type: ColourScaleType.Custom, customMin: 0.1, customMax: 0.9},
-        vls: {type: ColourScaleType.DynamicFiltered, customMin: 0, customMax: 0.1}
+        vls: {type: ColourScaleType.DynamicFiltered, customMin: 0, customMax: 0.1},
+        nonexistent_full: {type: ColourScaleType.DynamicFull, customMin: 0, customMax: 1},
+        nonexistent_filtered: {type: ColourScaleType.DynamicFiltered, customMin: 0, customMax: 1}
     };
 
     const filters = [{id: "year", column_id: "year", label: "Year", options: [{id: "2018", label: ""}, {id: "2019", label: ""}]}];
@@ -122,7 +130,9 @@ it("can get colour ranges", () => {
         prevalence: {min: 0, max: 1},
         plhiv: {min: 13, max: 15},
         art_cov: {min: 0.1, max: 0.9},
-        vls: {min: 0.4, max: 0.5}
+        vls: {min: 0.4, max: 0.5},
+        nonexistent_full: {min: 0, max: 0},
+        nonexistent_filtered: {min: 0, max: 0}
     });
 });
 

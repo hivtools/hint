@@ -84,14 +84,21 @@ export const getColourRanges = function(data: any,
                 if (!fullIndicatorRanges) {
                     fullIndicatorRanges = getIndicatorRanges(data, indicatorsMeta, null, null, null);
                 }
-                result[indicatorId] = {min: fullIndicatorRanges[indicatorId].min, max: fullIndicatorRanges[indicatorId].max};
+
+                result[indicatorId] = {
+                    min: fullIndicatorRanges[indicatorId] ? fullIndicatorRanges[indicatorId].min : 0,
+                    max: fullIndicatorRanges[indicatorId] ? fullIndicatorRanges[indicatorId].max : 0
+                };
                 break;
             case(ColourScaleType.DynamicFiltered):
                 if (!filteredIndicatorRanges) {
                     filteredIndicatorRanges = getIndicatorRanges(data, indicatorsMeta, filters, selectedFilterValues, selectedAreaIds);
                 }
 
-                result[indicatorId] = {min: filteredIndicatorRanges[indicatorId].min, max: filteredIndicatorRanges[indicatorId].max};
+                result[indicatorId] = {
+                    min: filteredIndicatorRanges[indicatorId] ? filteredIndicatorRanges[indicatorId].min : 0,
+                    max:  filteredIndicatorRanges[indicatorId] ? filteredIndicatorRanges[indicatorId].max : 0
+                };
                 break;
             default:
                 break;
