@@ -61,11 +61,7 @@ describe("Map legend component", () => {
                     colour: "interpolateGreys",
                     invert_scale: false
                 },
-                colourScale: {
-                    type: ColourScaleType.Custom,
-                    customMin: -0.45,
-                    customMax: 0
-                }
+                colourRange: { min: -0.45, max: 0}
             }
         });
         const levels = rangeWrapper.findAll(".level");
@@ -77,6 +73,28 @@ describe("Map legend component", () => {
         expect(levels.at(3).text()).toBe("-0.27");
         expect(levels.at(4).text()).toBe("-0.36");
         expect(levels.at(5).text()).toBe("-0.45");
+    });
+
+    it("calculates single level when max equals min", () => {
+        const rangeWrapper = shallowMount(MapLegend, {
+            propsData: {
+                metadata: {
+                    max: 2,
+                    min: 1,
+                    colour: "interpolateGreys",
+                    invert_scale: false
+                },
+                colourRange: {min: 3, max: 3}
+            }
+        });
+        const levels = rangeWrapper.findAll(".level");
+        expect(levels.length).toBe(1);
+        expect(levels.at(0).text()).toBe("3");
+
+        const icons = rangeWrapper.findAll("i");
+        expect(icons.length).toBe(1);
+        expect(icons.at(0).element.style
+            .getPropertyValue("background")).toBe("rgb(255, 255, 255)");
     });
 
     it("renders icons with colors", () => {

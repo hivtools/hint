@@ -219,7 +219,7 @@
                 return Math.max(...levelNums);
             },
             currentFeatures() {
-                return this.featuresByLevel[this.selections.detail]
+                return this.featuresByLevel[this.selections.detail] || [];
             },
             currentLevelFeatureIds() {
                 return this.currentFeatures.map(f => f.properties!!["area_id"]);
@@ -238,10 +238,10 @@
                 if (selectedOptions && selectedOptions.length > 0) {
                     return selectedOptions
                 }
-                return this.areaFilter.options; //consider all top level areas to be selected if none are
+                return this.areaFilter ? this.areaFilter.options : []; //consider all top level areas to be selected if none are
             },
             flattenedAreas() {
-                return flattenOptions(this.areaFilter.options);
+                return this.areaFilter ? flattenOptions(this.areaFilter.options) : {};
             },
             selectedAreaFeatures(): Feature[] {
                 if (this.initialised) {

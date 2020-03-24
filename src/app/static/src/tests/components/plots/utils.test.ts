@@ -6,7 +6,7 @@ import {
     roundToContext, colourScaleStepFromMetadata, getColourRanges
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
-import {ChoroplethIndicatorMetadata} from "../../../app/generated";
+import {ChoroplethIndicatorMetadata, FilterOption} from "../../../app/generated";
 import {ColourScaleSelections, ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 
 const indicators = [
@@ -81,9 +81,12 @@ it("can get indicator ranges", () => {
 
 it("can get colour ranges", () => {
     const data = [
-        {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 15, art_cov: 0.2},
-        {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14, art_cov: 0.3},
-        {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 13, art_cov: 0.4}
+        {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 13, art_cov: 0.2, vls: 0.1, year: "2018"},
+        {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 13, art_cov: 0.3, vls: 0.2, year: "2018"},
+        {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 14, art_cov: 0.4, vls: 0.3, year: "2018"},
+        {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 14, art_cov: 0.2, vls: 0.4, year: "2019"},
+        {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 15, art_cov: 0.3, vls: 0.5, year: "2019"},
+        {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 15, art_cov: 0.4, vls: 0.6, year: "2019"}
     ];
 
     const indicatorsMeta = [
@@ -95,22 +98,40 @@ it("can get colour ranges", () => {
         },
         {
             indicator: "art_cov", value_column: "art_cov", name: "ART coverage", min: 0, max:20, colour: "interpolateGreys", invert_scale: false
+        },
+        {
+            indicator: "vls", value_column: "vls", name: "Viral Load Suppression", min: 0, max:21, colour: "interpolateGreys", invert_scale: false
         }
     ];
 
     const colourScales = {
         prevalence: {type: ColourScaleType.Default, customMin: 0, customMax: 0},
         plhiv: {type: ColourScaleType.DynamicFull, customMin: 0, customMax: 1},
-        art_cov: {type: ColourScaleType.Custom, customMin: 0.1, customMax: 0.9}
+        art_cov: {type: ColourScaleType.Custom, customMin: 0.1, customMax: 0.9},
+        vls: {type: ColourScaleType.DynamicFiltered, customMin: 0, customMax: 0.1}
     };
 
-    const result = getColourRanges(data, indicatorsMeta, colourScales);
+    const filters = [{id: "year", column_id: "year", label: "Year", options: [{id: "2018", label: ""}, {id: "2019", label: ""}]}];
+    const selectedFilterValues = {year: [{id: "2019", label: "2019"}]};
+
+    const areaIds = ["MWI_1_1", "MWI_1_2"];
+
+    const result = getColourRanges(data, indicatorsMeta, colourScales, filters, selectedFilterValues, areaIds);
 
     expect(result).toStrictEqual({
         prevalence: {min: 0, max: 1},
         plhiv: {min: 13, max: 15},
-        art_cov: {min: 0.1, max: 0.9}
+        art_cov: {min: 0.1, max: 0.9},
+        vls: {min: 0.4, max: 0.5}
     });
+});
+
+it("getColouRanges for unknown scale type returns nothing", () => {
+    const colourScales = {
+      fakeIndicator: {type: 99 as ColourScaleType, customMin: 0, customMax: 0}
+    };
+    const result = getColourRanges([], [], colourScales, [], {}, []);
+    expect(result).toStrictEqual({});
 });
 
 it("getColor can invert color function", () => {
@@ -164,17 +185,17 @@ it("getColor can use negative min and zero max", () => {
         value_column: "",
         name: ""
     };
-    let result = getColor(-0.45, metadata, -0.45, 0);
+    let result = getColor(-0.45, metadata, {min: -0.45, max: 0});
     expect(result).toEqual("rgb(255, 255, 255)");
-    result = getColor(0, metadata, -0.45, 0);
+    result = getColor(0, metadata, {min: -0.45, max: 0});
     expect(result).toEqual("rgb(0, 0, 0)");
-    result = getColor(-0.225, metadata, -0.45, 0);
+    result = getColor(-0.225, metadata, {min: -0.45, max: 0});
     expect(result).toEqual("rgb(151, 151, 151)");
 
     //Test out of range
-    result = getColor(-0.9, metadata, -0.45, 0);
+    result = getColor(-0.9, metadata, {min: -0.45, max: 0});
     expect(result).toEqual("rgb(255, 255, 255)");
-    result = getColor(1, metadata, -0.45, 0);
+    result = getColor(1, metadata, {min: -0.45, max: 0});
     expect(result).toEqual("rgb(0, 0, 0)");
 });
 
@@ -188,17 +209,17 @@ it("getColor can use negative min and positive max", () => {
         value_column: "",
         name: ""
     };
-    let result = getColor(-10, metadata, -10, 10);
+    let result = getColor(-10, metadata, {min: -10, max: 10});
     expect(result).toEqual("rgb(255, 255, 255)");
-    result = getColor(10, metadata, -10, 10);
+    result = getColor(10, metadata, {min: -10, max: 10});
     expect(result).toEqual("rgb(0, 0, 0)");
-    result = getColor(0, metadata, -10, 10);
+    result = getColor(0, metadata, {min: -10, max: 10});
     expect(result).toEqual("rgb(151, 151, 151)");
 
     //Test out of range
-    result = getColor(-10.5, metadata, -10, 10);
+    result = getColor(-10.5, metadata, {min: -10, max: 10});
     expect(result).toEqual("rgb(255, 255, 255)");
-    result = getColor(11, metadata, -10, 1);
+    result = getColor(11, metadata, {min: -10, max: 10});
     expect(result).toEqual("rgb(0, 0, 0)");
 });
 
@@ -212,17 +233,17 @@ it("getColor can use negative min and negative max", () => {
         value_column: "",
         name: ""
     };
-    let result = getColor(-10, metadata, -10, -5);
+    let result = getColor(-10, metadata, {min: -10, max: -5});
     expect(result).toEqual("rgb(255, 255, 255)");
-    result = getColor(-5, metadata, -10, -5);
+    result = getColor(-5, metadata, {min: -10, max: -5});
     expect(result).toEqual("rgb(0, 0, 0)");
-    result = getColor(-7.5, metadata, -10, -5);
+    result = getColor(-7.5, metadata, {min: -10, max: -5});
     expect(result).toEqual("rgb(151, 151, 151)");
 
     //Test out of range
-    result = getColor(-11, metadata, -10, -5);
+    result = getColor(-11, metadata, {min: -10, max: -5});
     expect(result).toEqual("rgb(255, 255, 255)");
-    result = getColor(0, metadata, -10, -5);
+    result = getColor(0, metadata, {min: -10, max: -5});
     expect(result).toEqual("rgb(0, 0, 0)");
 });
 

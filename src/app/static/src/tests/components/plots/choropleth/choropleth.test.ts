@@ -39,6 +39,8 @@ const propsData = {
     }
 };
 
+const allAreaIds = ["MWI", "MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"];
+
 const getWrapper  = (customPropsData: any = {}) => {
     return shallowMount(Choropleth, {propsData: {...propsData, ...customPropsData}, localVue});
 };
@@ -80,41 +82,48 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
 
+        const colourRanges = getColourRanges(propsData.chartdata, propsData.indicators, propsData.colourScales,
+            propsData.filters, propsData.selections.selectedFilterOptions, allAreaIds);
         expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
-            ["MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"],
+            allAreaIds,
             propsData.indicators,
-            getColourRanges(propsData.chartdata,propsData.indicators, propsData.colourScales),
+            colourRanges,
             [propsData.filters[1]],
             propsData.selections.selectedFilterOptions,
             ["prevalence"]
         ));
     });
 
-    it("computed colourRanges", () => {
+    it("computes currentLevelFeatureIds", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
-        expect(vm.colourRanges).toStrictEqual(getColourRanges(propsData.chartdata,propsData.indicators, propsData.colourScales));
+        expect(vm.currentLevelFeatureIds).toStrictEqual(["MWI_4_1", "MWI_4_2"]);
     });
 
-    it("computes featureIndicators when colour scale is custom", () => {
-        const colourScales = {
-            prevalence: {
-                type: ColourScaleType.Custom,
-                customMin: 1,
-                customMax: 2
-            }
-        };
-        const wrapper = getWrapper({colourScales});
+    it("computes selectedAreaIds with no area selection, where detail is 0", () => {
+        //no selections means select all areas, including top level
+        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
         const vm = wrapper.vm as any;
+        expect(vm.selectedAreaIds).toStrictEqual(allAreaIds);
+    });
 
-        expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
-            ["MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"],
-            propsData.indicators,
-            getColourRanges(propsData.chartdata,propsData.indicators, colourScales),
-            [propsData.filters[1]],
-            propsData.selections.selectedFilterOptions,
-            ["prevalence"]
-        ));
+    it("computes selectedAreaIds with area selection", () => {
+        const wrapper = getWrapper({selections: {
+            ...propsData.selections,
+                selectedFilterOptions: {
+                    ...propsData.selections.selectedFilterOptions,
+                    area: [{id: "MWI_4_1", label: ""}]
+                }
+        }});
+        const vm = wrapper.vm as any;
+        expect(vm.selectedAreaIds).toStrictEqual(["MWI_4_1"]);
+    });
+
+    it("computes colourRanges", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.colourRanges).toStrictEqual(getColourRanges(propsData.chartdata,propsData.indicators,
+            propsData.colourScales, propsData.filters, propsData.selections.selectedFilterOptions, allAreaIds));
     });
 
     it("computes featuresByLevel", () => {

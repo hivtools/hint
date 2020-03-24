@@ -90,6 +90,7 @@ export const getColourRanges = function(data: any,
                 if (!filteredIndicatorRanges) {
                     filteredIndicatorRanges = getIndicatorRanges(data, indicatorsMeta, filters, selectedFilterValues, selectedAreaIds);
                 }
+
                 result[indicatorId] = {min: filteredIndicatorRanges[indicatorId].min, max: filteredIndicatorRanges[indicatorId].max};
                 break;
             default:
