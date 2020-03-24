@@ -137,10 +137,13 @@ it("can get colour ranges", () => {
 });
 
 it("getColouRanges for unknown scale type returns nothing", () => {
+    const indicatorsMeta = [{
+            indicator: "fakeIndicator", value_column: "fake", name: "fake", min: 0, max: 1, colour: "interpolateGreys", invert_scale: false
+    }];
     const colourScales = {
       fakeIndicator: {type: 99 as ColourScaleType, customMin: 0, customMax: 0}
     };
-    const result = getColourRanges([], [], colourScales, [], {}, []);
+    const result = getColourRanges([], indicatorsMeta, colourScales, [], {}, []);
     expect(result).toStrictEqual({});
 });
 
