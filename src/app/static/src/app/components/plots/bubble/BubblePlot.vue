@@ -274,7 +274,7 @@
                 return this.indicatorRanges[this.selections.sizeIndicatorId];
             },
             colourRange(): NumericRange {
-                //TODO: This will take account of variable ranges when implemented for outputs
+                //TODO: This will take account of variable ranges when implemented for outputs.
                 return {
                     min: this.colorIndicator ? this.colorIndicator.min : 0,
                     max: this.colorIndicator ? this.colorIndicator.max : 0
