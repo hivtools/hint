@@ -7,11 +7,13 @@ import {
     mockModelRunState, mockShapeResponse,
 } from "../../mocks";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
-import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
+import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 import {inactiveFeatures} from "../../../app/main";
 import {BarChartWithFilters} from "@reside-ic/vue-charts";
+import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
+import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
 
 const localVue = createLocalVue();
 
@@ -67,8 +69,12 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                         }
                     },
                     bubble: {test: "TEST BUBBLE SELECTIONS"} as any,
-                    outputChoropleth: {test: "TEST CHORO SELECTIONS"} as any
-                }
+                    outputChoropleth: {test: "TEST CHORO SELECTIONS"} as any,
+                    colourScales: {
+                        output: {test: "TEST OUTPUT COLOUR SCALES"} as any
+                    }
+                },
+                mutations: plottingSelectionMutations
             }
         }
     });
@@ -91,7 +97,7 @@ describe("ModelOutput component", () => {
         expect(choro.props().filters).toStrictEqual(["TEST CHORO FILTERS"]);
         expect(choro.props().selections).toStrictEqual({test: "TEST CHORO SELECTIONS"});
         expect(choro.props().indicators).toStrictEqual(["TEST CHORO INDICATORS"]);
-
+        expect(choro.props().colourScales).toStrictEqual({test: "TEST OUTPUT COLOUR SCALES"});
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
@@ -224,5 +230,16 @@ describe("ModelOutput component", () => {
         const vm = (wrapper as any).vm;
 
         expect(vm.featureLevels).toStrictEqual(["TEST LEVEL LABELS"]);
+    });
+
+    it("commits updated colour scales", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+
+        const choro = wrapper.find(Choropleth);
+        const newColourScales = {test: "NEW COLOUR SCALES"};
+        choro.vm.$emit("updateColourScales", newColourScales);
+
+        expect(store.state.plottingSelections.colourScales.output).toBe(newColourScales);
     });
 });

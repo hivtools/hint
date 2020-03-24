@@ -72,7 +72,15 @@ describe("Plotting selections mutations", () => {
         }
     };
 
-    it("UpdateSAPColourScales updates colour scales correctly for survey", () => {
+    it("updateOutputColourScales updates colour output scales", () => {
+        const testState = mockPlottingSelections();
+        mutations.updateOutputColourScales(testState, {type: "updateOutputColourScales",
+            payload: colourScales
+        });
+        expect(testState.colourScales.output).toBe(colourScales);
+    });
+
+    it("updateSAPColourScales updates colour scales correctly for survey", () => {
         const testState = mockPlottingSelections();
         mutations.updateSAPColourScales(testState, {type: "updateSAPColourScales",
             payload: [DataType.Survey, colourScales]
@@ -80,7 +88,7 @@ describe("Plotting selections mutations", () => {
         expect(testState.colourScales.survey).toBe(colourScales);
     });
 
-    it("UpdateSAPColourScales updates colour scales correctly for program", () => {
+    it("updateSAPColourScales updates colour scales correctly for program", () => {
         const testState = mockPlottingSelections();
         mutations.updateSAPColourScales(testState, {type: "updateSAPColourScales",
             payload: [DataType.Program, colourScales]
@@ -88,7 +96,7 @@ describe("Plotting selections mutations", () => {
         expect(testState.colourScales.program).toBe(colourScales);
     });
 
-    it("UpdateSAPColourScales updates colour scales correctly for anc", () => {
+    it("updateSAPColourScales updates colour scales correctly for anc", () => {
         const testState = mockPlottingSelections();
         mutations.updateSAPColourScales(testState, {type: "updateSAPColourScales",
             payload: [DataType.ANC, colourScales]
@@ -96,7 +104,7 @@ describe("Plotting selections mutations", () => {
         expect(testState.colourScales.anc).toBe(colourScales);
     });
 
-    it("UpdateSAPColourScales does nothgin if unknown DataType", () => {
+    it("updateSAPColourScales does nothgin if unknown DataType", () => {
         const testState = mockPlottingSelections();
         mutations.updateSAPColourScales(testState, {type: "updateSAPColourScales",
             payload: [99 as DataType, colourScales]
