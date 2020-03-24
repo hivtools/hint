@@ -291,6 +291,11 @@ describe("BubblePlot component", () => {
         expect((wrapper.vm as any).colorIndicator).toBe(propsData.indicators[1]);
     });
 
+    it("computes colourRange", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).colourRange).toStrictEqual({min: 0, max: 0.8});
+    });
+
     it("updateBounds updates bounds of map from features geojson", () => {
         const wrapper = getWrapper();
         const mockMapFitBounds = jest.fn();
