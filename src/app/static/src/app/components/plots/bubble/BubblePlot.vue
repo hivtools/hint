@@ -58,7 +58,10 @@
                              :show-indicators="false"
                              :level-labels="featureLevels"
                              @detail-changed="onDetailChange"></map-control>
-                <map-legend :metadata="colorIndicator" :colour-range="colourRange"></map-legend>
+                <map-legend :metadata="colorIndicator"
+                            :colour-scale="colourIndicatorScale"
+                            :colour-range="colourRange"
+                            @update="updateColourScale"></map-legend>
                 <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius"></size-legend>
             </l-map>
         </div>
@@ -75,7 +78,7 @@
     import FilterSelect from "../FilterSelect.vue";
     import {GeoJSON} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
-    import {BubblePlotSelections} from "../../../store/plottingSelections/plottingSelections";
+    import {BubblePlotSelections, ColourScaleSelections} from "../../../store/plottingSelections/plottingSelections";
     import {getFeatureIndicators} from "./utils";
     import {toIndicatorNameLookup, getIndicatorRanges} from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
@@ -90,7 +93,8 @@
         chartdata: any[],
         filters: Filter[],
         selections: BubblePlotSelections,
-        areaFilterId: string
+        areaFilterId: string,
+        colourScales: ColourScaleSelections,
     }
 
     interface Data {
@@ -274,11 +278,7 @@
                 return this.indicatorRanges[this.selections.sizeIndicatorId];
             },
             colourRange(): NumericRange {
-                //TODO: This will take account of variable ranges when implemented for outputs.
-                return {
-                    min: this.colorIndicator ? this.colorIndicator.min : 0,
-                    max: this.colorIndicator ? this.colorIndicator.max : 0
-                };
+                return this.colourScales[this.colourIndicator];
             }
         },
         methods: {

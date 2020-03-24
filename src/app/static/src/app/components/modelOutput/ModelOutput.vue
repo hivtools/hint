@@ -41,7 +41,9 @@
                              :filters="bubblePlotFilters" :indicators="bubblePlotIndicators"
                              :selections="bubblePlotSelections"
                              area-filter-id="area"
-                             @update="updateBubblePlotSelections({payload: $event})"></bubble-plot>
+                             :colour-scales="colourScales"
+                             @update="updateBubblePlotSelections({payload: $event})"
+                             @updateColourScales="updateOutputColourScales({payload: $event})"></bubble-plot>
             </div>
         </div>
     </div>
