@@ -268,7 +268,7 @@
                 return Math.max(...levelNums);
             },
             currentFeatures() {
-                return this.featuresByLevel[this.selections.detail]
+                return this.featuresByLevel[this.selections.detail] || [];
             },
             indicatorNameLookup() {
                 return toIndicatorNameLookup(this.indicators)
