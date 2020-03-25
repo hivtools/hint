@@ -314,10 +314,6 @@
                 return this.colourRanges[this.selections.colorIndicatorId];
             },
             colourIndicatorScale(): ColourScaleSettings | null{
-                if (!this.colourScales) {
-                    return null;
-                }
-
                 const current = this.colourScales[this.selections.colorIndicatorId];
                 if (current) {
                     return current

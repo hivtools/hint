@@ -253,10 +253,6 @@
                 return this.indicators.find(i => i.indicator == this.selections.indicatorId)!!;
             },
             indicatorColourScale(): ColourScaleSettings | null{
-                if (!this.colourScales) {
-                    return null;
-                }
-
                 const current = this.colourScales[this.selections.indicatorId];
                 if (current) {
                     return current
