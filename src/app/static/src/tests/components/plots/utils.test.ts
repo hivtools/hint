@@ -3,7 +3,7 @@ import {
     getColor,
     getIndicatorRanges,
     toIndicatorNameLookup,
-    roundToContext, colourScaleStepFromMetadata, getColourRanges
+    roundToContext, colourScaleStepFromMetadata, getColourRanges, roundRange
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../../app/generated";
@@ -329,4 +329,19 @@ it("colourScaleStepFromMetadata returns expected value", () => {
         max: 1
     };
     expect(colourScaleStepFromMetadata(meta as any)).toBe(0.1);
+});
+
+it("roundRange rounds as expected", () => {
+    expect(roundRange({min: 0.31432, max: 0.84162})).toStrictEqual({min: 0.31, max: 0.84});
+
+    expect(roundRange({min: 0.031432, max: 0.084162})).toStrictEqual({min: 0.031, max: 0.084});
+
+    expect(roundRange({min: 3.11, max: 4.12})).toStrictEqual({min: 3.1, max: 4.1});
+
+    expect(roundRange({min: 101, max: 201})).toStrictEqual({min: 101, max: 201});
+});
+
+it("roundRange can round where max equals min", () => {
+    expect(roundRange({min: 0.314, max: 0.314})).toStrictEqual({min: 0.31, max: 0.31});
+    expect(roundRange({min: 10, max: 10})).toStrictEqual({min: 10, max: 10});
 });

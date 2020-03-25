@@ -2,6 +2,7 @@ import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
 import {ColourScaleSelections, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
+import {mockAncResponse} from "../../../tests/mocks";
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
                          colourRange: NumericRange) => {
@@ -91,26 +92,42 @@ export const getColourRanges = function(data: any,
                     fullIndicatorRanges = getIndicatorRanges(data, indicatorsMeta, null, null, null);
                 }
 
-                result[indicatorId] = {
+                result[indicatorId] = roundRange({
                     min: fullIndicatorRanges[indicatorId] ? fullIndicatorRanges[indicatorId].min : 0,
                     max: fullIndicatorRanges[indicatorId] ? fullIndicatorRanges[indicatorId].max : 0
-                };
+                });
                 break;
             case(ColourScaleType.DynamicFiltered):
                 if (!filteredIndicatorRanges) {
                     filteredIndicatorRanges = getIndicatorRanges(data, indicatorsMeta, filters, selectedFilterValues, selectedAreaIds);
                 }
 
-                result[indicatorId] = {
+                result[indicatorId] = roundRange({
                     min: filteredIndicatorRanges[indicatorId] ? filteredIndicatorRanges[indicatorId].min : 0,
                     max:  filteredIndicatorRanges[indicatorId] ? filteredIndicatorRanges[indicatorId].max : 0
-                };
+                });
                 break;
             default:
                 break;
         }
   }
   return result;
+};
+
+export const roundRange = function(unrounded: NumericRange) {
+    //round appropriate to the range magnitude
+    let decPl = 0;
+    let magnitude = unrounded.max == unrounded.min ? unrounded.min : (unrounded.max - unrounded.min);
+    magnitude = magnitude / 100;
+
+    if (magnitude < 1 && magnitude > 0) {
+        let fractionString = magnitude.toString().split('.')[1];
+        while((fractionString.length > decPl) && (fractionString[decPl] =='0')) {
+            decPl++;
+        }
+    }
+
+    return {min: roundToPlaces(unrounded.min, decPl), max: roundToPlaces(unrounded.max, decPl)};
 };
 
 export const iterateDataValues = function(
@@ -179,10 +196,13 @@ export const roundToContext = function (value: number, context: number[]) {
     for(const contextValue of context) {
         const maxFraction = contextValue.toString().split(".");
         const decPl = maxFraction.length > 1 ? maxFraction[1].length : 0;
-        maxDecPl = Math.max(maxDecPl, decPl);
+        maxDecPl = Math.max(maxDecPl, decPl + 1);
     }
 
-    const roundingNum = Math.pow(10, maxDecPl + 1);
+    return roundToPlaces(value, maxDecPl);
+};
 
+const roundToPlaces = function(value: number, decPl: number){
+    const roundingNum = Math.pow(10, decPl);
     return Math.round(value * roundingNum) / roundingNum;
 };
