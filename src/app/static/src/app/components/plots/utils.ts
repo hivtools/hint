@@ -118,11 +118,11 @@ export const roundRange = function(unrounded: NumericRange) {
     //round appropriate to the range magnitude
     let decPl = 0;
     let magnitude = unrounded.max == unrounded.min ? unrounded.min : (unrounded.max - unrounded.min);
-    magnitude = magnitude / 100;
+    magnitude = magnitude / 10;
 
     if (magnitude < 1 && magnitude > 0) {
-        let fractionString = magnitude.toString().split('.')[1];
-        while((fractionString.length > decPl) && (fractionString[decPl] =='0')) {
+        while( magnitude < 1) {
+            magnitude = magnitude * 10;
             decPl++;
         }
     }
