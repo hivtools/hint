@@ -188,6 +188,34 @@ it("getColor can use custom min and max", () => {
 });
 
 
+it("getColor can get expected colour when value is less than min", () => {
+    const result = getColor(0.5, {
+        min: 1,
+        max: 2,
+        colour: "interpolateGreys",
+        invert_scale: false,
+        indicator: "test",
+        value_column: "",
+        name: ""
+    }, {min: 1, max: 2});
+
+    expect(result).toEqual("rgb(255, 255, 255)");
+});
+
+it("getColor can get expected colour when value is greater than max", () => {
+    const result = getColor(5, {
+        min: 1,
+        max: 2,
+        colour: "interpolateGreys",
+        invert_scale: false,
+        indicator: "test",
+        value_column: "",
+        name: ""
+    }, {min: 1, max: 2});
+
+    expect(result).toEqual("rgb(0, 0, 0)");
+});
+
 it("getColor can use negative min and zero max", () => {
     const metadata = {
         min: 0,

@@ -16,6 +16,12 @@ export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
         1;
 
     let colorValue = (value - min) / rangeNum;
+    if (colorValue > 1) {
+        colorValue = 1;
+    }
+    if (colorValue < 0) {
+        colorValue = 0;
+    }
 
     if (metadata.invert_scale) {
         colorValue = 1 - colorValue;
