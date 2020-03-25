@@ -118,13 +118,10 @@ export const roundRange = function(unrounded: NumericRange) {
     //round appropriate to the range magnitude
     let decPl = 0;
     let magnitude = unrounded.max == unrounded.min ? unrounded.min : (unrounded.max - unrounded.min);
-    magnitude = magnitude / 10;
 
+    magnitude = magnitude / 100;
     if (magnitude < 1 && magnitude > 0) {
-        while( magnitude < 1) {
-            magnitude = magnitude * 10;
-            decPl++;
-        }
+        decPl = Math.trunc(Math.abs(Math.log10(magnitude)));
     }
 
     return {min: roundToPlaces(unrounded.min, decPl), max: roundToPlaces(unrounded.max, decPl)};
