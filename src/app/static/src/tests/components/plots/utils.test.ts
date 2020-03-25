@@ -341,6 +341,7 @@ it("roundRange rounds as expected", () => {
     expect(roundRange({min: 101, max: 201})).toStrictEqual({min: 101, max: 201});
 
     expect(roundRange({min: 1.1234, max: 1.1235})).toStrictEqual({min: 1.1234, max: 1.1235});
+    expect(roundRange({min: 1.1234566001, max: 1.123457001})).toStrictEqual({min: 1.1234566, max: 1.123457});
 });
 
 it("roundRange can round where max equals min", () => {
