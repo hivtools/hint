@@ -30,11 +30,13 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {ColourScaleSettings, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
     import MapAdjustScale from "./MapAdjustScale.vue";
+    import {NumericRange} from "../../types";
 
     var numeral = require('numeral');
     interface Props {
         metadata: ChoroplethIndicatorMetadata,
-        colourScale: ColourScaleSettings
+        colourScale: ColourScaleSettings,
+        colourRange: NumericRange
     }
 
     interface Level {
@@ -61,7 +63,8 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         name: "MapLegend",
         props: {
             "metadata": Object,
-            "colourScale": Object
+            "colourScale": Object,
+            "colourRange": Object
         },
         components: {
             LControl,
@@ -81,23 +84,19 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
             },
             levels: function () {
                 if (this.metadata) {
-                    //Use custom scale if selected, otherwise use metadata range
-                    //This logic will be removed in mrc-1417 when replaced with externally provided range
-                    let max = this.metadata.max;
-                    let min =  this.metadata.min;
-                    if (this.adjustable && this.colourScale.type == ColourScaleType.Custom) {
-                        max = this.colourScale.customMax;
-                        min = this.colourScale.customMin;
-                    }
+                    const max = this.colourRange.max;
+                    const min =  this.colourRange.min;
 
                     const colorFunction = colorFunctionFromName(this.metadata.colour);
                     const step = (max - min) / 5;
 
-                    return [5, 4, 3, 2, 1, 0].map((i) => {
+                    const indexes = max == min ? [0] : [5, 4, 3, 2, 1, 0];
+
+                    return indexes.map((i) => {
                         let val = min + (i * step);
                         val = roundToContext(val, [min, max]);
 
-                        let valAsProportion = (val - min) / (max - min);
+                        let valAsProportion =  (max != min) ? (val - min) / (max - min) : 0;
                         if (this.metadata.invert_scale) {
                             valAsProportion = 1 - valAsProportion;
                         }
@@ -105,6 +104,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                         if (val >= 1000) {
                             val = numeral(val).format("0a")
                         }
+
                         return {
                             val, style: {background: colorFunction(valAsProportion)}
                         }

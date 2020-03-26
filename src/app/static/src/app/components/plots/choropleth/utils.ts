@@ -6,12 +6,10 @@ import {initialColourScaleSettings} from "../../../store/plottingSelections/plot
 export const getFeatureIndicators = function (data: any[],
                                               selectedAreaIds: string[],
                                               indicatorsMeta: ChoroplethIndicatorMetadata[],
-                                              indicatorRanges: Dict<NumericRange>,
+                                              colourRanges: Dict<NumericRange>,
                                               filters: Filter[],
                                               selectedFilterValues: Dict<FilterOption[]>,
-                                              selectedIndicatorIds: string[],
-                                              customMin: number | null,
-                                              customMax: number | null) : Dict<IndicatorValuesDict> {
+                                              selectedIndicatorIds: string[]) : Dict<IndicatorValuesDict> {
 
     const result = {} as Dict<IndicatorValuesDict>;
     iterateDataValues(data, indicatorsMeta, selectedAreaIds, filters, selectedFilterValues,
@@ -26,7 +24,7 @@ export const getFeatureIndicators = function (data: any[],
                 const regionValues = result[areaId];
                 regionValues[indicator] = {
                     value: value,
-                    color: getColor(value, indicatorMeta, customMin, customMax)
+                    color: getColor(value, indicatorMeta, colourRanges[indicator])
                 }
             }
         });

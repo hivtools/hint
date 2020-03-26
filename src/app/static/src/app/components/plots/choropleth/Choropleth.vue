@@ -22,6 +22,7 @@
                              @indicator-changed="onIndicatorChange"></map-control>
                 <map-legend :metadata="colorIndicator"
                             :colour-scale="indicatorColourScale"
+                            :colour-range="colourRanges[selections.indicatorId]"
                             @update="updateColourScale"></map-legend>
             </l-map>
         </div>
@@ -40,11 +41,10 @@
     import {GeoJSON} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {ChoroplethSelections} from "../../../store/plottingSelections/plottingSelections";
-    import {toIndicatorNameLookup} from "../utils";
+    import {getColourRanges, toIndicatorNameLookup} from "../utils";
     import {getFeatureIndicators, initialiseColourScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
-    import {getIndicatorRanges} from "../utils";
     import {
         ColourScaleSelections,
         ColourScaleSettings, ColourScaleType
@@ -82,10 +82,11 @@
 
     interface Computed {
         initialised: boolean,
-        indicatorRanges: Dict<NumericRange>,
+        colourRanges: Dict<NumericRange>,
         featureIndicators: Dict<IndicatorValuesDict>,
         featuresByLevel: { [k: number]: Feature[] },
         currentFeatures: Feature[],
+        currentLevelFeatureIds: string[],
         maxLevel: number,
         indicatorNameLookup: Dict<string>,
         indicatorColourScale: ColourScaleSettings | null,
@@ -94,6 +95,7 @@
         selectedAreaFilterOptions: FilterOption[],
         flattenedAreas: Dict<NestedFilterOption>,
         selectedAreaFeatures: Feature[],
+        selectedAreaIds: string[],
         colorIndicator: ChoroplethIndicatorMetadata,
         options: L.GeoJSONOptions
     }
@@ -153,12 +155,30 @@
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
                     !!this.selections.indicatorId;
             },
-            indicatorRanges() {
-                return getIndicatorRanges(this.chartdata, this.indicators)
+            colourRanges() {
+                let selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
+
+                return getColourRanges(
+                    this.chartdata,
+                    this.indicators,
+                    this.colourScales || {},
+                    this.nonAreaFilters,
+                    this.selections.selectedFilterOptions,
+                    selectedCurrentLevelAreaIds
+                )
             },
-            featureIndicators() {
+            selectedAreaIds() {
                 const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
 
+                //Should also ensure include top level (country) included if no filters selected
+                const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
+                if (!selectedOptions || selectedOptions.length == 0) {
+                    this.currentLevelFeatureIds.forEach(id => selectedAreaIdSet.add(id));
+                }
+
+                return Array.from(selectedAreaIdSet);
+            },
+            featureIndicators() {
                 let customMin = null;
                 let customMax = null;
                 if (this.indicatorColourScale && this.indicatorColourScale.type == ColourScaleType.Custom) {
@@ -168,14 +188,12 @@
 
                 return getFeatureIndicators(
                     this.chartdata,
-                    Array.from(selectedAreaIdSet),
+                    this.selectedAreaIds,
                     this.indicators,
-                    this.indicatorRanges,
+                    this.colourRanges,
                     this.nonAreaFilters,
                     this.selections.selectedFilterOptions,
-                    [this.selections.indicatorId],
-                    customMin,
-                    customMax
+                    [this.selections.indicatorId]
                 );
             },
             featuresByLevel() {
@@ -201,7 +219,10 @@
                 return Math.max(...levelNums);
             },
             currentFeatures() {
-                return this.featuresByLevel[this.selections.detail]
+                return this.featuresByLevel[this.selections.detail] || [];
+            },
+            currentLevelFeatureIds() {
+                return this.currentFeatures.map(f => f.properties!!["area_id"]);
             },
             indicatorNameLookup() {
                 return toIndicatorNameLookup(this.indicators)
@@ -217,10 +238,10 @@
                 if (selectedOptions && selectedOptions.length > 0) {
                     return selectedOptions
                 }
-                return this.areaFilter.options; //consider all top level areas to be selected if none are
+                return this.areaFilter ? this.areaFilter.options : []; //consider all top level areas to be selected if none are
             },
             flattenedAreas() {
-                return flattenOptions(this.areaFilter.options);
+                return this.areaFilter ? flattenOptions(this.areaFilter.options) : {};
             },
             selectedAreaFeatures(): Feature[] {
                 if (this.initialised) {

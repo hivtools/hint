@@ -28,6 +28,9 @@ describe("MapAdjustScale component", () => {
 
         expect((wrapper.find("#type-input-default").element as HTMLInputElement).checked).toBe(true);
         expect((wrapper.find("#type-input-custom").element as HTMLInputElement).checked).toBe(false);
+        expect((wrapper.find("#type-input-dynamic-full").element as HTMLInputElement).checked).toBe(false);
+        expect((wrapper.find("#type-input-dynamic-filtered").element as HTMLInputElement).checked).toBe(false);
+
         expect((wrapper.find("#custom-min-input").element as HTMLInputElement).disabled).toBe(true);
         expect((wrapper.find("#custom-max-input").element as HTMLInputElement).disabled).toBe(true);
     });
@@ -46,6 +49,8 @@ describe("MapAdjustScale component", () => {
 
         expect((wrapper.find("#type-input-default").element as HTMLInputElement).checked).toBe(false);
         expect((wrapper.find("#type-input-custom").element as HTMLInputElement).checked).toBe(true);
+        expect((wrapper.find("#type-input-dynamic-full").element as HTMLInputElement).checked).toBe(false);
+        expect((wrapper.find("#type-input-dynamic-filtered").element as HTMLInputElement).checked).toBe(false);
 
         expect((wrapper.find("#custom-min-input").element as HTMLInputElement).disabled).toBe(false);
         expect((wrapper.find("#custom-min-input").element as HTMLInputElement).value).toBe("0");
@@ -56,6 +61,48 @@ describe("MapAdjustScale component", () => {
         expect((wrapper.find("#custom-max-input").element as HTMLInputElement).value).toBe("1");
         expect(wrapper.find("#custom-max-input").attributes("min")).toBe("0");
         expect(wrapper.find("#custom-max-input").attributes("step")).toBe("0.1");
+    });
+
+    it("renders as expected with full dynamic scale",  () => {
+        const wrapper = mount(MapAdjustScale, {propsData: {
+                show: true,
+                step: 0.1,
+                colourScale: {
+                    type: ColourScaleType.DynamicFull,
+                    customMin: 0,
+                    customMax: 1
+                }
+            }
+        });
+
+        expect((wrapper.find("#type-input-default").element as HTMLInputElement).checked).toBe(false);
+        expect((wrapper.find("#type-input-custom").element as HTMLInputElement).checked).toBe(false);
+        expect((wrapper.find("#type-input-dynamic-full").element as HTMLInputElement).checked).toBe(true);
+        expect((wrapper.find("#type-input-dynamic-filtered").element as HTMLInputElement).checked).toBe(false);
+
+        expect((wrapper.find("#custom-min-input").element as HTMLInputElement).disabled).toBe(true);
+        expect((wrapper.find("#custom-max-input").element as HTMLInputElement).disabled).toBe(true);
+    });
+
+    it("renders as expected with filtered dynamic scale",  () => {
+        const wrapper = mount(MapAdjustScale, {propsData: {
+                show: true,
+                step: 0.1,
+                colourScale: {
+                    type: ColourScaleType.DynamicFiltered,
+                    customMin: 0,
+                    customMax: 1
+                }
+            }
+        });
+
+        expect((wrapper.find("#type-input-default").element as HTMLInputElement).checked).toBe(false);
+        expect((wrapper.find("#type-input-custom").element as HTMLInputElement).checked).toBe(false);
+        expect((wrapper.find("#type-input-dynamic-full").element as HTMLInputElement).checked).toBe(false);
+        expect((wrapper.find("#type-input-dynamic-filtered").element as HTMLInputElement).checked).toBe(true);
+
+        expect((wrapper.find("#custom-min-input").element as HTMLInputElement).disabled).toBe(true);
+        expect((wrapper.find("#custom-max-input").element as HTMLInputElement).disabled).toBe(true);
     });
 
     it("emits update event when type changes", () => {
@@ -84,6 +131,24 @@ describe("MapAdjustScale component", () => {
         expect(wrapper.emitted("update").length).toBe(2);
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({
             type: ColourScaleType.Default,
+            customMin: 0,
+            customMax: 1
+        });
+
+        wrapper.find("#type-input-dynamic-full").trigger("click");
+
+        expect(wrapper.emitted("update").length).toBe(3);
+        expect(wrapper.emitted("update")[1][0]).toStrictEqual({
+            type: ColourScaleType.DynamicFull,
+            customMin: 0,
+            customMax: 1
+        });
+
+        wrapper.find("#type-input-dynamic-filtered").trigger("click");
+
+        expect(wrapper.emitted("update").length).toBe(4);
+        expect(wrapper.emitted("update")[1][0]).toStrictEqual({
+            type: ColourScaleType.DynamicFiltered,
             customMin: 0,
             customMax: 1
         });

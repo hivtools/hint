@@ -6,6 +6,11 @@ import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
 
 describe("Map legend component", () => {
 
+    const colourRange = {
+        max: 2,
+        min: 1
+    };
+
     const wrapper = shallowMount(MapLegend, {
         propsData: {
             metadata: {
@@ -18,7 +23,8 @@ describe("Map legend component", () => {
                 type: ColourScaleType.Default,
                 customMin: 1.5,
                 customMax: 2.5
-            }
+            },
+            colourRange
         }
     });
 
@@ -55,11 +61,7 @@ describe("Map legend component", () => {
                     colour: "interpolateGreys",
                     invert_scale: false
                 },
-                colourScale: {
-                    type: ColourScaleType.Custom,
-                    customMin: -0.45,
-                    customMax: 0
-                }
+                colourRange: { min: -0.45, max: 0}
             }
         });
         const levels = rangeWrapper.findAll(".level");
@@ -73,31 +75,30 @@ describe("Map legend component", () => {
         expect(levels.at(5).text()).toBe("-0.45");
     });
 
-    it("renders icons with colors", () => {
-        const icons = wrapper.findAll("i");
-        expectIcons(icons);
-    });
-
-    it("renders correctly with custom colour scale", () => {
-        const rangeWrapper = shallowMount(MapLegend,{
+    it("calculates single level when max equals min", () => {
+        const rangeWrapper = shallowMount(MapLegend, {
             propsData: {
                 metadata: {
-                    max: 10,
-                    min: 0,
+                    max: 2,
+                    min: 1,
                     colour: "interpolateGreys",
                     invert_scale: false
                 },
-                colourScale: {
-                    type: ColourScaleType.Custom,
-                    customMin: 1,
-                    customMax: 2
-                }
+                colourRange: {min: 3, max: 3}
             }
         });
-
         const levels = rangeWrapper.findAll(".level");
-        expectLevels(levels);
+        expect(levels.length).toBe(1);
+        expect(levels.at(0).text()).toBe("3");
+
         const icons = rangeWrapper.findAll("i");
+        expect(icons.length).toBe(1);
+        expect(icons.at(0).element.style
+            .getPropertyValue("background")).toBe("rgb(255, 255, 255)");
+    });
+
+    it("renders icons with colors", () => {
+        const icons = wrapper.findAll("i");
         expectIcons(icons);
     });
 
@@ -110,8 +111,9 @@ describe("Map legend component", () => {
                         colour: "interpolateGreys",
                         invert_scale: false
                     },
-                    colourScale: null
-                    }
+                    colourScale: null,
+                    colourRange
+                    },
                 });
         expect(wrapper.find("#adjust-scales").exists()).toBe(false);
     });
@@ -127,7 +129,8 @@ describe("Map legend component", () => {
                 },
                 colourScale: {
                     type: ColourScaleType.Default
-                }
+                },
+                colourRange
             }
         });
 
@@ -162,7 +165,8 @@ describe("Map legend component", () => {
                 },
                 colourScale: {
                     type: ColourScaleType.Default
-                }
+                },
+                colourRange: {max: 60000, min: 1000}
             }
         });
         const levels = wrapper.findAll(".level");
@@ -183,6 +187,7 @@ describe("Map legend component", () => {
                     colour: "interpolateGreys",
                     invert_scale: false
                 },
+                colourRange,
                 colourScale
             }
         });
@@ -211,7 +216,8 @@ describe("Map legend component", () => {
                     colour: "interpolateGreys",
                     invert_scale: false
                 },
-                colourScale: {type: ColourScaleType.Default}
+                colourScale: {type: ColourScaleType.Default},
+                colourRange
             }
         });
 

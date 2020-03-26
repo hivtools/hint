@@ -1,12 +1,14 @@
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
+import {ColourScaleSelections, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
+import {mockAncResponse} from "../../../tests/mocks";
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
-                         customMin: number | null = null, customMax: number | null = null) => {
+                         colourRange: NumericRange) => {
 
-    const min = customMin === null ? metadata.min : customMin;
-    const max = customMax === null ? metadata.max : customMax;
+    const min = colourRange.min;
+    const max = colourRange.max;
 
     const colorFunction = colorFunctionFromName(metadata.colour);
 
@@ -15,6 +17,12 @@ export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
         1;
 
     let colorValue = (value - min) / rangeNum;
+    if (colorValue > 1) {
+        colorValue = 1;
+    }
+    if (colorValue < 0) {
+        colorValue = 0;
+    }
 
     if (metadata.invert_scale) {
         colorValue = 1 - colorValue;
@@ -38,11 +46,15 @@ export const colorFunctionFromName = function (name: string) {
 };
 
 export const getIndicatorRanges = function(data: any,
-                                           indicatorsMeta: ChoroplethIndicatorMetadata[]): Dict<NumericRange>{
+                                           indicatorsMeta: ChoroplethIndicatorMetadata[],
+                                           filters: Filter[] | null = null,
+                                           selectedFilterValues: Dict<FilterOption[]> | null = null,
+                                           selectedAreaIds: string[] | null = null): Dict<NumericRange>{
     const result = {} as Dict<NumericRange>;
-    iterateDataValues(data, indicatorsMeta, null, null, null,
+    iterateDataValues(data, indicatorsMeta, selectedAreaIds, filters, selectedFilterValues,
         (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
             const indicator = indicatorMeta.indicator;
+
             if (!result[indicator]) {
                 result[indicator] = {min: value, max: value};
             } else {
@@ -52,6 +64,67 @@ export const getIndicatorRanges = function(data: any,
         });
 
     return result;
+};
+
+export const getColourRanges = function(data: any,
+                                        indicatorsMeta: ChoroplethIndicatorMetadata[],
+                                        colourScales: ColourScaleSelections,
+                                        filters: Filter[],
+                                        selectedFilterValues: Dict<FilterOption[]>,
+                                        selectedAreaIds: string[]) {
+  const result = {} as Dict<NumericRange>;
+  let fullIndicatorRanges = null;
+  let filteredIndicatorRanges = null;
+
+  for(const meta of indicatorsMeta) {
+        const indicatorId = meta.indicator;
+        const colourScale = colourScales[indicatorId];
+        const colourScaleType = colourScale ? colourScale.type : ColourScaleType.Default;
+        switch(colourScaleType) {
+            case(ColourScaleType.Default):
+                result[indicatorId] = {min: meta.min, max: meta.max};
+                break;
+            case(ColourScaleType.Custom):
+                result[indicatorId] = {min: colourScale.customMin, max: colourScale.customMax};
+                break;
+            case(ColourScaleType.DynamicFull):
+                if (!fullIndicatorRanges) {
+                    fullIndicatorRanges = getIndicatorRanges(data, indicatorsMeta, null, null, null);
+                }
+
+                result[indicatorId] = roundRange({
+                    min: fullIndicatorRanges[indicatorId] ? fullIndicatorRanges[indicatorId].min : 0,
+                    max: fullIndicatorRanges[indicatorId] ? fullIndicatorRanges[indicatorId].max : 0
+                });
+                break;
+            case(ColourScaleType.DynamicFiltered):
+                if (!filteredIndicatorRanges) {
+                    filteredIndicatorRanges = getIndicatorRanges(data, indicatorsMeta, filters, selectedFilterValues, selectedAreaIds);
+                }
+
+                result[indicatorId] = roundRange({
+                    min: filteredIndicatorRanges[indicatorId] ? filteredIndicatorRanges[indicatorId].min : 0,
+                    max:  filteredIndicatorRanges[indicatorId] ? filteredIndicatorRanges[indicatorId].max : 0
+                });
+                break;
+            default:
+                break;
+        }
+  }
+  return result;
+};
+
+export const roundRange = function(unrounded: NumericRange) {
+    //round appropriate to the range magnitude
+    let decPl = 0;
+    let magnitude = unrounded.max == unrounded.min ? unrounded.min : (unrounded.max - unrounded.min);
+
+    magnitude = magnitude / 100;
+    if (magnitude < 1 && magnitude > 0) {
+        decPl = Math.trunc(Math.abs(Math.log10(magnitude)));
+    }
+
+    return {min: roundToPlaces(unrounded.min, decPl), max: roundToPlaces(unrounded.max, decPl)};
 };
 
 export const iterateDataValues = function(
@@ -120,10 +193,13 @@ export const roundToContext = function (value: number, context: number[]) {
     for(const contextValue of context) {
         const maxFraction = contextValue.toString().split(".");
         const decPl = maxFraction.length > 1 ? maxFraction[1].length : 0;
-        maxDecPl = Math.max(maxDecPl, decPl);
+        maxDecPl = Math.max(maxDecPl, decPl + 1);
     }
 
-    const roundingNum = Math.pow(10, maxDecPl + 1);
+    return roundToPlaces(value, maxDecPl);
+};
 
+const roundToPlaces = function(value: number, decPl: number){
+    const roundingNum = Math.pow(10, decPl);
     return Math.round(value * roundingNum) / roundingNum;
 };

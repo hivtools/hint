@@ -71,7 +71,8 @@ describe("BubblePlot component", () => {
                             <br/>PLHIV: 10
                         </div>`);
         const meta = propsData.indicators[1];
-        let color = getColor(0.1, meta);
+        const colourRange = {min: meta.min, max: meta.max};
+        let color = getColor(0.1, meta, colourRange);
         expect(circles.at(0).props().color).toEqual(color);
         expect(circles.at(0).props().fillColor).toEqual(color);
 
@@ -82,7 +83,7 @@ describe("BubblePlot component", () => {
                             <br/>Prevalence: 0.2
                             <br/>PLHIV: 20
                         </div>`);
-        color = getColor(0.2, meta);
+        color = getColor(0.2, meta, colourRange);
         expect(circles.at(1).props().color).toEqual(color);
         expect(circles.at(1).props().fillColor).toEqual(color);
 
@@ -288,6 +289,11 @@ describe("BubblePlot component", () => {
     it("computes colorIndicator", () => {
         const wrapper = getWrapper();
         expect((wrapper.vm as any).colorIndicator).toBe(propsData.indicators[1]);
+    });
+
+    it("computes colourRange", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).colourRange).toStrictEqual({min: 0, max: 0.8});
     });
 
     it("updateBounds updates bounds of map from features geojson", () => {

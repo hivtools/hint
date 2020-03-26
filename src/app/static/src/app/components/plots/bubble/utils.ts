@@ -33,7 +33,7 @@ export const getFeatureIndicators = function (data: any[],
                 const regionValues = result[areaId];
                 regionValues[indicator] = {
                     value: value,
-                    color: getColor(value, indicatorMeta),
+                    color: getColor(value, indicatorMeta, {min: indicatorMeta.min, max: indicatorMeta.max}),
                     radius: getRadius(value, indicatorRange.min, indicatorRange.max, minRadius, maxRadius)
                 }
             }

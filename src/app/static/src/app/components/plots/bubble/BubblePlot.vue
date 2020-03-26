@@ -58,7 +58,7 @@
                              :show-indicators="false"
                              :level-labels="featureLevels"
                              @detail-changed="onDetailChange"></map-control>
-                <map-legend :metadata="colorIndicator"></map-legend>
+                <map-legend :metadata="colorIndicator" :colour-range="colourRange"></map-legend>
                 <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius"></size-legend>
             </l-map>
         </div>
@@ -132,7 +132,8 @@
         countryFilterOption: FilterOption,
         countryFeature: Feature | null,
         colorIndicator: ChoroplethIndicatorMetadata,
-        sizeRange: NumericRange
+        sizeRange: NumericRange,
+        colourRange: NumericRange
     }
 
     const props = {
@@ -271,6 +272,13 @@
             },
             sizeRange(): NumericRange {
                 return this.indicatorRanges[this.selections.sizeIndicatorId];
+            },
+            colourRange(): NumericRange {
+                //TODO: This will take account of variable ranges when implemented for outputs.
+                return {
+                    min: this.colorIndicator ? this.colorIndicator.min : 0,
+                    max: this.colorIndicator ? this.colorIndicator.max : 0
+                };
             }
         },
         methods: {

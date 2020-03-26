@@ -1,41 +1,65 @@
 import {ColourScaleType} from "../../store/colourScales/colourScales";
 <template>
     <div v-if="show" class="pt-2 pl-3">
-        <div class="form-check">
-            <label class="form-check-label">
-                <input id="type-input-default" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.Default"
-                       v-model="colourScaleToAdjust.type" @change="update">
-                Default
-            </label>
-        </div>
-        <div class="form-check mt-1">
-            <label class="form-check-label">
-                <input id="type-input-custom" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.Custom"
-                       v-model="colourScaleToAdjust.type" @change="update">
-                Custom
-            </label>
+        <div>Static</div>
+        <div class="ml-2">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input id="type-input-default" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.Default"
+                           v-model="colourScaleToAdjust.type" @change="update">
+                    Default
+                </label>
+            </div>
+            <div class="form-check mt-1">
+                <label class="form-check-label">
+                    <input id="type-input-custom" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.Custom"
+                           v-model="colourScaleToAdjust.type" @change="update">
+                    Custom
+                </label>
+            </div>
+
+            <div class="mt-2 ml-2">
+                <form novalidate>
+                    <div class="row p-0 mb-2">
+                        <label for="custom-min-input" class="col col-form-label col-2">Min</label>
+                        <div class="col pt-1">
+                            <input id="custom-min-input" type="number" :step="step" v-model.number="colourScaleToAdjust.customMin"
+                                   :max="colourScaleToAdjust.customMax"
+                                   @change="update" @keyup="update" :disabled="disableCustom">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col col-form-label col-2" for="custom-max-input">Max</label>
+                        <div class="col pt-1">
+                            <input id="custom-max-input" type="number" :step="step" v-model.number="colourScaleToAdjust.customMax"
+                                   :min="colourScaleToAdjust.customMin"
+                                   @change="update" @keyup="update" :disabled="disableCustom">
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <div class="mt-2 ml-2">
-            <form novalidate>
-                <div class="row p-0 mb-2">
-                    <label for="custom-min-input" class="col col-form-label col-2">Min</label>
-                    <div class="col pt-1">
-                        <input id="custom-min-input" type="number" :step="step" v-model.number="colourScaleToAdjust.customMin"
-                               :max="colourScaleToAdjust.customMax"
-                               @change="update" @keyup="update" :disabled="disableCustom">
-                    </div>
-                </div>
-                <div class="row">
-                    <label class="col col-form-label col-2" for="custom-max-input">Max</label>
-                    <div class="col pt-1">
-                        <input id="custom-max-input" type="number" :step="step" v-model.number="colourScaleToAdjust.customMax"
-                               :min="colourScaleToAdjust.customMin"
-                               @change="update" @keyup="update" :disabled="disableCustom">
-                    </div>
-                </div>
-            </form>
+        <div class="mt-1">Fit to current dataset</div>
+        <div class="ml-2">
+            <div class="form-check mt-1">
+                <label class="form-check-label">
+                    <input id="type-input-dynamic-full" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.DynamicFull"
+                           v-model="colourScaleToAdjust.type" @change="update">
+                    Entire dataset
+                </label>
+            </div>
         </div>
+        <div class="ml-2">
+            <div class="form-check mt-1">
+                <label class="form-check-label">
+                    <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.DynamicFiltered"
+                           v-model="colourScaleToAdjust.type" @change="update">
+                    Filtered dataset
+                </label>
+            </div>
+        </div>
+
         <div class="text-danger">{{invalidMsg}}</div>
     </div>
 </template>
