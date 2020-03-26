@@ -136,12 +136,13 @@ export const iterateDataValues = function(
            indicatorMeta: ChoroplethIndicatorMetadata, value: number) => void) {
 
     const selectedFilterValueIds: Dict<string[]> = {};
-    if (filters && selectedFilterValues) {
-        for (const f of filters) {
+    const validFilters = filters && filters.filter(f => f.options && f.options.length > 0);
+
+    if (validFilters && selectedFilterValues) {
+        for (const f of validFilters) {
             selectedFilterValueIds[f.id] = selectedFilterValues[f.id].map(n => n.id)
         }
     }
-    const validFilters = filters && filters.filter(f => f.options && f.options.length > 0);
 
     for (const row of data) {
         if (validFilters && selectedFilterValues && excludeRow(row, validFilters, selectedFilterValueIds)) {
