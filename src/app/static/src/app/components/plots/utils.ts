@@ -2,7 +2,6 @@ import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
 import {ColourScaleSelections, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
-import {mockAncResponse} from "../../../tests/mocks";
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
                          colourRange: NumericRange) => {
@@ -136,8 +135,16 @@ export const iterateDataValues = function(
     func: (areaId: string,
            indicatorMeta: ChoroplethIndicatorMetadata, value: number) => void) {
 
+    const selectedFilterValueIds: Dict<string[]> = {};
+    if (filters && selectedFilterValues) {
+        for (const f of filters) {
+            selectedFilterValueIds[f.id] = selectedFilterValues[f.id].map(n => n.id)
+        }
+    }
+    const validFilters = filters && filters.filter(f => f.options && f.options.length > 0);
+
     for (const row of data) {
-        if (filters && selectedFilterValues && excludeRow(row, filters, selectedFilterValues)) {
+        if (validFilters && selectedFilterValues && excludeRow(row, validFilters, selectedFilterValueIds)) {
             continue;
         }
 
@@ -166,14 +173,10 @@ export const iterateDataValues = function(
     }
 };
 
-const excludeRow = function(row: any, filters: Filter[], selectedFilterValues: Dict<FilterOption[]>){
+const excludeRow = function(row: any, filters: Filter[], selectedFilterValues: Dict<string[]>){
     let excludeRow = false;
     for (const filter of filters) {
-        if (!filter.options || filter.options.length == 0) {
-            continue;
-        }
-        const filterValues = selectedFilterValues[filter.id].map(n => n.id);
-        if (filterValues.indexOf(row[filter.column_id].toString()) < 0) {
+        if (selectedFilterValues[filter.id].indexOf(row[filter.column_id].toString()) < 0) {
             excludeRow = true;
             break;
         }
