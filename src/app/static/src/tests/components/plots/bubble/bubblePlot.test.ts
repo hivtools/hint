@@ -2,7 +2,7 @@ import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
 import {LGeoJson, LCircleMarker, LTooltip} from "vue2-leaflet";
 import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
-import {getColor, getIndicatorRanges} from "../../../../app/components/plots/utils";
+import {getColor, getColourRanges, getIndicatorRanges} from "../../../../app/components/plots/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 import {NestedFilterOption} from "../../../../app/generated";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
@@ -13,6 +13,7 @@ import {Vue} from "vue/types/vue";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {testData, expectFilter} from "../testHelpers"
+import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -31,8 +32,17 @@ const propsData = {
             sex: [{id: "female", label:"Female"}],
             area: []
         }
+    },
+    colourScales: {
+        prevalence: {
+            type: ColourScaleType.Default,
+            customMin: 0,
+            customMax: 1
+        }
     }
 };
+
+const allAreaIds = ["MWI", "MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"];
 
 const getWrapper  = (customPropsData: any = {}) => {
 
@@ -118,6 +128,8 @@ describe("BubblePlot component", () => {
         const wrapper = getWrapper();
         const legend = wrapper.find(MapLegend);
         expect(legend.props().metadata).toBe(propsData.indicators[1]);
+        expect(legend.props().colourScale).toBe(propsData.colourScales.prevalence);
+        expect(legend.props().colourRange).toStrictEqual({min: 0, max: 0.8});
     });
 
     it("renders size legend", () => {
@@ -135,14 +147,30 @@ describe("BubblePlot component", () => {
         expect(vm.indicatorRanges).toStrictEqual(getIndicatorRanges(propsData.chartdata, propsData.indicators));
     });
 
+    it("computes colourRanges", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.colourRanges).toStrictEqual(getColourRanges(propsData.chartdata,propsData.indicators,
+            propsData.colourScales, propsData.filters, propsData.selections.selectedFilterOptions, allAreaIds));
+    });
+
+    it("computes currentLevelFeatureIds", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.currentLevelFeatureIds).toStrictEqual(["MWI_4_1", "MWI_4_2"]);
+    });
+
     it("computes featureIndicators", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
 
+        const colourRanges = getColourRanges(propsData.chartdata, propsData.indicators, propsData.colourScales,
+            propsData.filters, propsData.selections.selectedFilterOptions, allAreaIds);
         expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
-            ["MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"],
+            allAreaIds,
             propsData.indicators,
             getIndicatorRanges(propsData.chartdata, propsData.indicators),
+            colourRanges,
             [propsData.filters[1]],
             propsData.selections.selectedFilterOptions,
             ["prevalence", "plhiv"],
@@ -291,9 +319,14 @@ describe("BubblePlot component", () => {
         expect((wrapper.vm as any).colorIndicator).toBe(propsData.indicators[1]);
     });
 
-    it("computes colourRange", () => {
+    it("computes colouIndicatorRange", () => {
         const wrapper = getWrapper();
-        expect((wrapper.vm as any).colourRange).toStrictEqual({min: 0, max: 0.8});
+        expect((wrapper.vm as any).colourIndicatorRange).toStrictEqual({min: 0, max: 0.8});
+    });
+
+    it("computes colouIndicatorScale", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).colourIndicatorScale).toStrictEqual(propsData.colourScales.prevalence);
     });
 
     it("updateBounds updates bounds of map from features geojson", () => {
@@ -425,6 +458,7 @@ describe("BubblePlot component", () => {
                 { id: "age", label: "Age", column_id: "age", options: []},
                 { id: "sex", label: "Sex", column_id: "sex", options: []}
             ],
+            colourScales: {...propsData.colourScales}
         });
         const vm = wrapper.vm as any;
         vm.updateBounds = mockUpdateBounds;
@@ -438,5 +472,15 @@ describe("BubblePlot component", () => {
         const vm = wrapper.vm as any;
         const result = vm.normalizeIndicators(propsData.indicators[0]);
         expect(result).toStrictEqual({id: "plhiv", label: "PLHIV"});
+    });
+
+    it("emits event when colour scale updated", () => {
+        const wrapper = getWrapper();
+        const legend = wrapper.find(MapLegend);
+        const newColourScale = {type: ColourScaleType.DynamicFiltered, customMin: -5, customMax: 5};
+        legend.vm.$emit("update", newColourScale);
+
+        expect(wrapper.emitted("updateColourScales").length).toBe(1);
+        expect(wrapper.emitted("updateColourScales")[0][0]).toStrictEqual({prevalence: newColourScale});
     });
 });

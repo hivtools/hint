@@ -58,7 +58,11 @@
                              :show-indicators="false"
                              :level-labels="featureLevels"
                              @detail-changed="onDetailChange"></map-control>
-                <map-legend :metadata="colorIndicator" :colour-range="colourRange"></map-legend>
+                <map-legend :metadata="colorIndicator"
+                            :colour-range="colourIndicatorRange"
+                            :colour-scale="colourIndicatorScale"
+                            @update="updateColourScale"
+                ></map-legend>
                 <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius"></size-legend>
             </l-map>
         </div>
@@ -75,12 +79,17 @@
     import FilterSelect from "../FilterSelect.vue";
     import {GeoJSON} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
-    import {BubblePlotSelections} from "../../../store/plottingSelections/plottingSelections";
+    import {
+        BubblePlotSelections,
+        ColourScaleSelections,
+        ColourScaleSettings
+    } from "../../../store/plottingSelections/plottingSelections";
     import {getFeatureIndicators} from "./utils";
-    import {toIndicatorNameLookup, getIndicatorRanges} from "../utils";
+    import {toIndicatorNameLookup, getIndicatorRanges, getColourRanges} from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
+    import {initialiseColourScaleFromMetadata} from "../choropleth/utils";
 
 
     interface Props {
@@ -90,7 +99,8 @@
         chartdata: any[],
         filters: Filter[],
         selections: BubblePlotSelections,
-        areaFilterId: string
+        areaFilterId: string,
+        colourScales: ColourScaleSelections,
     }
 
     interface Data {
@@ -112,12 +122,15 @@
         onSizeIndicatorSelect: (newValue: string) => void,
         changeSelections: (newSelections: Partial<BubblePlotSelections>) => void,
         getFeatureFromAreaId: (id: string) => Feature,
-        normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any
+        normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any,
+        updateColourScale: (colourScale: ColourScaleSettings) => void,
     }
 
     interface Computed {
         initialised: boolean,
         indicatorRanges: Dict<NumericRange>,
+        colourRanges: Dict<NumericRange>,
+        currentLevelFeatureIds: string[],
         featureIndicators: Dict<BubbleIndicatorValuesDict>,
         featuresByLevel: { [k: number]: Feature[] },
         currentFeatures: Feature[],
@@ -133,7 +146,9 @@
         countryFeature: Feature | null,
         colorIndicator: ChoroplethIndicatorMetadata,
         sizeRange: NumericRange,
-        colourRange: NumericRange
+        colourIndicatorRange: NumericRange,
+        colourIndicatorScale: ColourScaleSettings | null
+        selectedAreaIds: string[]
     }
 
     const props = {
@@ -157,7 +172,10 @@
         },
         areaFilterId: {
             type: String
-        }
+        },
+        colourScales: {
+            type: Object
+        },
     };
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -192,13 +210,32 @@
             indicatorRanges() {
                 return getIndicatorRanges(this.chartdata, this.indicators)
             },
-            featureIndicators() {
+            currentLevelFeatureIds() {
+                return this.currentFeatures.map(f => f.properties!!["area_id"]);
+            },
+            colourRanges() {
+                let selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
+
+                return getColourRanges(
+                    this.chartdata,
+                    this.indicators,
+                    this.colourScales || {},
+                    this.nonAreaFilters,
+                    this.selections.selectedFilterOptions,
+                    selectedCurrentLevelAreaIds
+                )
+            },
+            selectedAreaIds() {
                 const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+                return Array.from(selectedAreaIdSet)
+            },
+            featureIndicators() {
                 return getFeatureIndicators(
                     this.chartdata,
-                    Array.from(selectedAreaIdSet),
+                    this.selectedAreaIds,
                     this.indicators,
                     this.indicatorRanges,
+                    this.colourRanges,
                     this.nonAreaFilters,
                     this.selections.selectedFilterOptions,
                     [this.selections.colorIndicatorId, this.selections.sizeIndicatorId],
@@ -231,7 +268,7 @@
                 return Math.max(...levelNums);
             },
             currentFeatures() {
-                return this.featuresByLevel[this.selections.detail]
+                return this.featuresByLevel[this.selections.detail] || [];
             },
             indicatorNameLookup() {
                 return toIndicatorNameLookup(this.indicators)
@@ -273,13 +310,20 @@
             sizeRange(): NumericRange {
                 return this.indicatorRanges[this.selections.sizeIndicatorId];
             },
-            colourRange(): NumericRange {
-                //TODO: This will take account of variable ranges when implemented for outputs.
-                return {
-                    min: this.colorIndicator ? this.colorIndicator.min : 0,
-                    max: this.colorIndicator ? this.colorIndicator.max : 0
-                };
-            }
+            colourIndicatorRange(): NumericRange {
+                return this.colourRanges[this.selections.colorIndicatorId];
+            },
+            colourIndicatorScale(): ColourScaleSettings | null{
+                const current = this.colourScales[this.selections.colorIndicatorId];
+                if (current) {
+                    return current
+                }
+                else {
+                    const newScale = initialiseColourScaleFromMetadata(this.colorIndicator);
+                    this.updateColourScale(newScale);
+                    return newScale;
+                }
+            },
         },
         methods: {
             updateBounds: function() {
@@ -345,7 +389,13 @@
             },
             normalizeIndicators(node: ChoroplethIndicatorMetadata) {
                 return {id: node.indicator, label: node.name};
-            }
+            },
+            updateColourScale: function(colourScale: ColourScaleSettings) {
+                const newColourScales = {...this.colourScales};
+                newColourScales[this.selections.colorIndicatorId] = colourScale;
+
+                this.$emit("updateColourScales", newColourScales);
+            },
         },
         watch:
             {

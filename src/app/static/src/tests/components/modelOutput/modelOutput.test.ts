@@ -14,6 +14,7 @@ import {inactiveFeatures} from "../../../app/main";
 import {BarChartWithFilters} from "@reside-ic/vue-charts";
 import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
+import BubblePlot from "../../../app/components/plots/bubble/BubblePlot.vue";
 
 const localVue = createLocalVue();
 
@@ -98,6 +99,18 @@ describe("ModelOutput component", () => {
         expect(choro.props().selections).toStrictEqual({test: "TEST CHORO SELECTIONS"});
         expect(choro.props().indicators).toStrictEqual(["TEST CHORO INDICATORS"]);
         expect(choro.props().colourScales).toStrictEqual({test: "TEST OUTPUT COLOUR SCALES"});
+    });
+
+    it("renders bubble plot", () => {
+        const store = getStore({selectedTab: "bubble"});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const bubble = wrapper.find(BubblePlot);
+        expect(bubble.props().areaFilterId).toBe("area");
+        expect(bubble.props().filters).toStrictEqual(["TEST BUBBLE FILTERS"]);
+        expect(bubble.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
+        expect(bubble.props().indicators).toStrictEqual(["TEST BUBBLE INDICATORS"]);
+        expect(bubble.props().colourScales).toStrictEqual({test: "TEST OUTPUT COLOUR SCALES"});
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
@@ -232,14 +245,23 @@ describe("ModelOutput component", () => {
         expect(vm.featureLevels).toStrictEqual(["TEST LEVEL LABELS"]);
     });
 
-    it("commits updated colour scales", () => {
+    it("commits updated colour scale from choropleth", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {store, localVue});
 
         const choro = wrapper.find(Choropleth);
         const newColourScales = {test: "NEW COLOUR SCALES"};
         choro.vm.$emit("updateColourScales", newColourScales);
-
         expect(store.state.plottingSelections.colourScales.output).toBe(newColourScales);
+    });
+
+    it("commits updated colour scale from bubble plot", () => {
+        const store = getStore( {selectedTab: "bubble"});
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+
+        const bubble = wrapper.find(BubblePlot);
+        const bubbleColourScales = {test: "NEW BUBBLE COLOUR SCALES"};
+        bubble.vm.$emit("updateColourScales", bubbleColourScales);
+        expect(store.state.plottingSelections.colourScales.output).toBe(bubbleColourScales);
     });
 });
