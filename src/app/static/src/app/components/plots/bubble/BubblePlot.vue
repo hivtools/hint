@@ -214,6 +214,9 @@
                 return this.currentFeatures.map(f => f.properties!!["area_id"]);
             },
             sizeRange() {
+                if (!this.initialised) {
+                    return {max: 1, min: 0}
+                }
                 const sizeId = this.selections.sizeIndicatorId;
                 if (!this.fullIndicatorRanges.hasOwnProperty(sizeId)) {
                     // cache the result in the fullIndicatorRanges object for future lookups
@@ -250,6 +253,9 @@
                         };
                     case ColourScaleType.Default:
                     default:
+                        if (!this.initialised) {
+                            return {max: 1, min: 0}
+                        }
                         return {max: this.colorIndicator.max, min: this.colorIndicator.min}
                 }
             },
@@ -258,12 +264,10 @@
                 return Array.from(selectedAreaIdSet)
             },
             featureIndicators() {
-                const colorId = this.selections.colorIndicatorId;
-                const sizeId = this.selections.sizeIndicatorId;
                 return getFeatureIndicators(
                     this.chartdata,
                     this.selectedAreaIds,
-                    this.indicators.filter(i => i.indicator == colorId || i.indicator == sizeId),
+                    [this.sizeIndicator, this.colorIndicator],
                     this.sizeRange,
                     this.colourRange,
                     this.nonAreaFilters,
@@ -361,7 +365,9 @@
             },
             showBubble(feature: Feature) {
                 return !!this.featureIndicators[feature.properties!!.area_id] &&
-                    !!this.featureIndicators[feature.properties!!.area_id] && !!this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId]
+                    !!this.featureIndicators[feature.properties!!.area_id]
+                    && !!this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId]
+                    && !!this.featureIndicators[feature.properties!!.area_id][this.selections.colorIndicatorId]
             },
             getRadius: function (feature: Feature) {
                 return this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId].radius;
