@@ -66,8 +66,10 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 16} //should not be included, not in selectedFeatures
         ];
 
-        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, indicatorRanges, colourRanges,
-            [], {}, ["prevalence", "plhiv"], minRadius, maxRadius);
+        const colorRange = {min: 0, max: 1};
+        const sizeRange = {min: 1, max: 2};
+        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, colorRange, sizeRange,
+            [], {}, minRadius, maxRadius);
 
         expect(result).toStrictEqual(expectedFeatureIndicators);
     });
@@ -92,8 +94,11 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_3", indicator: "plhiv", value: 14} //should not be included, not in selectedFeatures
         ];
 
-        const result = getFeatureIndicators(data, selectedFeatureIds, longIndicators, indicatorRanges, colourRanges,
-            [],{},["prevalence", "plhiv"], minRadius, maxRadius);
+        const colorRange = {min: 0, max: 1};
+        const sizeRange = {min: 1, max: 2};
+
+        const result = getFeatureIndicators(data, selectedFeatureIds, longIndicators, colorRange, sizeRange,
+            [],{}, minRadius, maxRadius);
         expect(result).toStrictEqual(expectedFeatureIndicators);
     });
 
@@ -117,8 +122,11 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_1", prevalence: 0.2, plhiv: 20, sex: "female", age: "30:45"}, //not included: no age filter match
         ];
 
-        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, indicatorRanges, colourRanges, filters,
-            selectedFilterValues, ["prevalence", "plhiv"], minRadius, maxRadius);
+        const colorRange = {min: 0, max: 1};
+        const sizeRange = {min: 1, max: 2};
+
+        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, colorRange, sizeRange, filters,
+            selectedFilterValues, minRadius, maxRadius);
 
         expect(result).toStrictEqual(expectedFeatureIndicators);
     });
@@ -128,9 +136,10 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_1", prevalence: 0.5},
             {area_id: "MWI_1_2", plhiv: 14},
         ];
-
-        const result = getFeatureIndicators(partialData, selectedFeatureIds, indicators, indicatorRanges, colourRanges,
-            [], {}, ["prevalence", "plhiv"],
+        const colorRange = {min: 0, max: 1};
+        const sizeRange = {min: 1, max: 2};
+        const result = getFeatureIndicators(partialData, selectedFeatureIds, indicators, colorRange, sizeRange,
+            [], {},
             minRadius, maxRadius);
 
         expect(result).toStrictEqual({

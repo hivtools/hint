@@ -60,7 +60,7 @@
                              :level-labels="featureLevels"
                              @detail-changed="onDetailChange"></map-control>
                 <map-legend :metadata="colorIndicator"
-                            :colour-range="colourIndicatorRange"
+                            :colour-range="colourRange"
                             :colour-scale="colourIndicatorScale"
                             @update="updateColourScale"
                 ></map-legend>
@@ -87,13 +87,7 @@
         ColourScaleType
     } from "../../../store/plottingSelections/plottingSelections";
     import {getFeatureIndicators} from "./utils";
-    import {
-        getColourRanges,
-        getCustomColourRanges,
-        getDefaultColourRanges, getDynamicFilteredColourRanges,
-        getIndicatorRanges,
-        toIndicatorNameLookup
-    } from "../utils";
+    import {getDynamicFilteredColourRange, getIndicatorRange, toIndicatorNameLookup} from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
@@ -114,7 +108,8 @@
     interface Data {
         style: any,
         maxRadius: number,
-        minRadius: number
+        minRadius: number,
+        fullIndicatorRanges: Dict<NumericRange>
     }
 
     interface Methods {
@@ -136,8 +131,6 @@
 
     interface Computed {
         initialised: boolean,
-        indicatorRanges: Dict<NumericRange>,
-        colourRanges: Dict<NumericRange>,
         currentLevelFeatureIds: string[],
         featureIndicators: Dict<BubbleIndicatorValuesDict>,
         featuresByLevel: { [k: number]: Feature[] },
@@ -152,9 +145,10 @@
         selectedAreaFeatures: Feature[],
         countryFilterOption: FilterOption,
         countryFeature: Feature | null,
+        sizeIndicator: ChoroplethIndicatorMetadata,
         colorIndicator: ChoroplethIndicatorMetadata,
         sizeRange: NumericRange,
-        colourIndicatorRange: NumericRange,
+        colourRange: NumericRange,
         colourIndicatorScale: ColourScaleSettings | null
         selectedAreaIds: string[]
     }
@@ -206,7 +200,8 @@
                     className: "geojson-grey",
                 },
                 maxRadius: 70,
-                minRadius: 10
+                minRadius: 10,
+                fullIndicatorRanges: {}
             }
         },
         computed: {
@@ -215,32 +210,47 @@
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
                     !!this.selections.colorIndicatorId && !!this.selections.sizeIndicatorId;
             },
-            indicatorRanges() {
-                return getIndicatorRanges(this.chartdata, this.indicators)
-            },
             currentLevelFeatureIds() {
                 return this.currentFeatures.map(f => f.properties!!["area_id"]);
             },
-            colourRanges() {
-                if (!this.colourScales[this.selections.colorIndicatorId]) {
-                    return getDefaultColourRanges(this.indicators)
+            sizeRange() {
+                const sizeId = this.selections.sizeIndicatorId;
+                if (!this.fullIndicatorRanges.hasOwnProperty(sizeId)) {
+                    // cache the result in the fullIndicatorRanges object for future lookups
+                    this.fullIndicatorRanges[sizeId] =
+                        getIndicatorRange(this.chartdata, this.sizeIndicator)
                 }
-                switch (this.colourScales[this.selections.colorIndicatorId].type) {
+                return this.fullIndicatorRanges[sizeId];
+            },
+            colourRange() {
+                const colorId = this.selections.colorIndicatorId;
+                const type = this.colourScales[colorId] && this.colourScales[colorId].type;
+                switch (type) {
                     case  ColourScaleType.DynamicFull:
-                        return this.indicatorRanges;
+                        if (!this.fullIndicatorRanges.hasOwnProperty(colorId)) {
+                            // cache the result in the fullIndicatorRanges object for future lookups
+                            this.fullIndicatorRanges[colorId] =
+                                getIndicatorRange(this.chartdata, this.colorIndicator)
+                        }
+                        return this.fullIndicatorRanges[colorId];
                     case  ColourScaleType.DynamicFiltered:
-                        const selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
-                        return getDynamicFilteredColourRanges(
+                        const selectedCurrentLevelAreaIds = this.selectedAreaIds
+                            .filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
+                        return getDynamicFilteredColourRange(
                             this.chartdata,
-                            this.indicators,
+                            this.colorIndicator,
                             this.nonAreaFilters,
                             this.selections.selectedFilterOptions,
                             selectedCurrentLevelAreaIds
                         );
                     case ColourScaleType.Custom:
-                        return getCustomColourRanges(this.indicators, this.colourScales);
+                        return {
+                            min: this.colourScales[colorId].customMin,
+                            max: this.colourScales[colorId].customMax
+                        };
                     case ColourScaleType.Default:
-                        return getDefaultColourRanges(this.indicators);
+                    default:
+                        return {max: this.colorIndicator.max, min: this.colorIndicator.min}
                 }
             },
             selectedAreaIds() {
@@ -248,15 +258,16 @@
                 return Array.from(selectedAreaIdSet)
             },
             featureIndicators() {
+                const colorId = this.selections.colorIndicatorId;
+                const sizeId = this.selections.sizeIndicatorId;
                 return getFeatureIndicators(
                     this.chartdata,
                     this.selectedAreaIds,
-                    this.indicators,
-                    this.indicatorRanges,
-                    this.colourRanges,
+                    this.indicators.filter(i => i.indicator == colorId || i.indicator == sizeId),
+                    this.sizeRange,
+                    this.colourRange,
                     this.nonAreaFilters,
                     this.selections.selectedFilterOptions,
-                    [this.selections.colorIndicatorId, this.selections.sizeIndicatorId],
                     this.minRadius,
                     this.maxRadius
                 );
@@ -325,11 +336,8 @@
             colorIndicator(): ChoroplethIndicatorMetadata {
                 return this.indicators.find(i => i.indicator == this.selections.colorIndicatorId)!!;
             },
-            sizeRange(): NumericRange {
-                return this.indicatorRanges[this.selections.sizeIndicatorId];
-            },
-            colourIndicatorRange(): NumericRange {
-                return this.colourRanges[this.selections.colorIndicatorId];
+            sizeIndicator(): ChoroplethIndicatorMetadata {
+                return this.indicators.find(i => i.indicator == this.selections.sizeIndicatorId)!!;
             },
             colourIndicatorScale(): ColourScaleSettings | null {
                 const current = this.colourScales[this.selections.colorIndicatorId];
@@ -353,8 +361,7 @@
             },
             showBubble(feature: Feature) {
                 return !!this.featureIndicators[feature.properties!!.area_id] &&
-                    !!this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId] &&
-                    !!this.featureIndicators[feature.properties!!.area_id][this.selections.colorIndicatorId];
+                    !!this.featureIndicators[feature.properties!!.area_id] && !!this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId]
             },
             getRadius: function (feature: Feature) {
                 return this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId].radius;

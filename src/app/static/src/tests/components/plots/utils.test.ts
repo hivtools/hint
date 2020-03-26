@@ -1,13 +1,11 @@
 import {
     colorFunctionFromName,
     getColor,
-    getIndicatorRanges,
+    getIndicatorRange,
     toIndicatorNameLookup,
-    roundToContext, colourScaleStepFromMetadata, getColourRanges, roundRange
+    roundToContext, colourScaleStepFromMetadata, roundRange, getDynamicFilteredColourRange
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
-import {ChoroplethIndicatorMetadata, FilterOption} from "../../../app/generated";
-import {ColourScaleSelections, ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 
 const indicators = [
     {
@@ -64,14 +62,14 @@ it("getColor avoids dividing by zero if min equals max", () => {
     expect(result).toEqual("rgb(255, 255, 255)");
 });
 
-it("can get indicator ranges", () => {
+it("can get indicator range", () => {
     const data = [
         {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 15},
         {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14},
         {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 13}
     ];
 
-    const result = getIndicatorRanges(data, indicators);
+    const result = getIndicatorRange(data, indicators[0]);
 
     expect(result).toStrictEqual({
         plhiv: {min: 13, max: 15},
@@ -79,72 +77,29 @@ it("can get indicator ranges", () => {
     });
 });
 
-it("can get colour ranges", () => {
+it("can get dynamic filtered colour range", () => {
     const data = [
         {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 13, art_cov: 0.2, vls: 0.1, year: "2018"},
         {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 13, art_cov: 0.3, vls: 0.2, year: "2018"},
         {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 14, art_cov: 0.4, vls: 0.3, year: "2018"},
-        {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 14, art_cov: 0.2, vls: 0.4, year: "2019"},
-        {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 15, art_cov: 0.3, vls: 0.5, year: "2019"},
-        {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 15, art_cov: 0.4, vls: 0.6, year: "2019"}
+        {area_id: "MWI_1_1", prevalence: 0.6, plhiv: 14, art_cov: 0.2, vls: 0.4, year: "2019"},
+        {area_id: "MWI_1_2", prevalence: 0.7, plhiv: 15, art_cov: 0.3, vls: 0.5, year: "2019"},
+        {area_id: "MWI_1_3", prevalence: 0.8, plhiv: 15, art_cov: 0.4, vls: 0.6, year: "2019"}
     ];
 
-    const indicatorsMeta = [
+    const indicatorMeta =
         {
             indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 1, colour: "interpolateGreys", invert_scale: false
-        },
-        {
-            indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:20, colour: "interpolateGreys", invert_scale: false
-        },
-        {
-            indicator: "art_cov", value_column: "art_cov", name: "ART coverage", min: 0, max:20, colour: "interpolateGreys", invert_scale: false
-        },
-        {
-            indicator: "vls", value_column: "vls", name: "Viral Load Suppression", min: 0, max:21, colour: "interpolateGreys", invert_scale: false
-        },
-        {
-            indicator: "nonexistent_full", value_column: "ne_full", name: "Not In Data", min: 0, max:1, colour: "interpolateGreys", invert_scale: false
-        },
-        {
-            indicator: "nonexistent_filtered", value_column: "ne_filtered", name: "Not In Data", min: 0, max:1, colour: "interpolateGreys", invert_scale: false
-        }
-    ];
-
-    const colourScales = {
-        prevalence: {type: ColourScaleType.Default, customMin: 0, customMax: 0},
-        plhiv: {type: ColourScaleType.DynamicFull, customMin: 0, customMax: 1},
-        art_cov: {type: ColourScaleType.Custom, customMin: 0.1, customMax: 0.9},
-        vls: {type: ColourScaleType.DynamicFiltered, customMin: 0, customMax: 0.1},
-        nonexistent_full: {type: ColourScaleType.DynamicFull, customMin: 0, customMax: 1},
-        nonexistent_filtered: {type: ColourScaleType.DynamicFiltered, customMin: 0, customMax: 1}
-    };
+        };
 
     const filters = [{id: "year", column_id: "year", label: "Year", options: [{id: "2018", label: ""}, {id: "2019", label: ""}]}];
     const selectedFilterValues = {year: [{id: "2019", label: "2019"}]};
 
     const areaIds = ["MWI_1_1", "MWI_1_2"];
 
-    const result = getColourRanges(data, indicatorsMeta, colourScales, filters, selectedFilterValues, areaIds);
+    const result = getDynamicFilteredColourRange(data, indicatorMeta, filters, selectedFilterValues, areaIds);
 
-    expect(result).toStrictEqual({
-        prevalence: {min: 0, max: 1},
-        plhiv: {min: 13, max: 15},
-        art_cov: {min: 0.1, max: 0.9},
-        vls: {min: 0.4, max: 0.5},
-        nonexistent_full: {min: 0, max: 0},
-        nonexistent_filtered: {min: 0, max: 0}
-    });
-});
-
-it("getColouRanges for unknown scale type returns nothing", () => {
-    const indicatorsMeta = [{
-            indicator: "fakeIndicator", value_column: "fake", name: "fake", min: 0, max: 1, colour: "interpolateGreys", invert_scale: false
-    }];
-    const colourScales = {
-      fakeIndicator: {type: 99 as ColourScaleType, customMin: 0, customMax: 0}
-    };
-    const result = getColourRanges([], indicatorsMeta, colourScales, [], {}, []);
-    expect(result).toStrictEqual({});
+    expect(result).toStrictEqual({min: 0.6, max: 0.8});
 });
 
 it("getColor can invert color function", () => {
