@@ -363,15 +363,6 @@ describe("Choropleth component", () => {
         });
     });
 
-    it("does not attempt to initialise new colour scales when colourScales is null", () => {
-        const wrapper = getWrapper({
-            selections: {...propsData.selections, indicatorId: "plhiv"},
-            colourScales: null
-        });
-
-        expect(wrapper.emitted("updateColourScales")).toBeUndefined();
-    });
-
     it("updates bounds when becomes initialises", () => {
         const mockUpdateBounds = jest.fn();
         const wrapper = getWrapper({ //this cannot initialise

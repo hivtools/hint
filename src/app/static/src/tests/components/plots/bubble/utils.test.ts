@@ -20,6 +20,11 @@ describe("Bubble plot utils", () => {
         prevalence: {min: 0, max: 0.8}
     };
 
+    const colourRanges = {
+        plhiv: {min: 0, max: 1},
+        prevalence: {min: 0, max: 1}
+    };
+
     const selectedFeatureIds = ["MWI_1_1", "MWI_1_2"];
 
     const minRadius = 10;
@@ -61,7 +66,7 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 16} //should not be included, not in selectedFeatures
         ];
 
-        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, indicatorRanges,
+        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, indicatorRanges, colourRanges,
             [], {}, ["prevalence", "plhiv"], minRadius, maxRadius);
 
         expect(result).toStrictEqual(expectedFeatureIndicators);
@@ -87,7 +92,7 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_3", indicator: "plhiv", value: 14} //should not be included, not in selectedFeatures
         ];
 
-        const result = getFeatureIndicators(data, selectedFeatureIds, longIndicators, indicatorRanges,
+        const result = getFeatureIndicators(data, selectedFeatureIds, longIndicators, indicatorRanges, colourRanges,
             [],{},["prevalence", "plhiv"], minRadius, maxRadius);
         expect(result).toStrictEqual(expectedFeatureIndicators);
     });
@@ -112,7 +117,7 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_1", prevalence: 0.2, plhiv: 20, sex: "female", age: "30:45"}, //not included: no age filter match
         ];
 
-        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, indicatorRanges, filters,
+        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, indicatorRanges, colourRanges, filters,
             selectedFilterValues, ["prevalence", "plhiv"], minRadius, maxRadius);
 
         expect(result).toStrictEqual(expectedFeatureIndicators);
@@ -124,7 +129,7 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_2", plhiv: 14},
         ];
 
-        const result = getFeatureIndicators(partialData, selectedFeatureIds, indicators, indicatorRanges,
+        const result = getFeatureIndicators(partialData, selectedFeatureIds, indicators, indicatorRanges, colourRanges,
             [], {}, ["prevalence", "plhiv"],
             minRadius, maxRadius);
 

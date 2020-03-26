@@ -172,7 +172,7 @@ const excludeRow = function(row: any, filters: Filter[], selectedFilterValues: D
         if (!filter.options || filter.options.length == 0) {
             continue;
         }
-        const filterValues = selectedFilterValues[filter.id].map(n => n.id);
+        const filterValues = selectedFilterValues[filter.id] ? selectedFilterValues[filter.id].map(n => n.id) : [];
         if (filterValues.indexOf(row[filter.column_id].toString()) < 0) {
             excludeRow = true;
             break;
