@@ -15,7 +15,8 @@ export interface PlottingSelectionsMutations {
     updateBubblePlotSelections: PlottingSelectionsMutation,
     updateSAPChoroplethSelections: PlottingSelectionsMutation,
     updateOutputChoroplethSelections: PlottingSelectionsMutation,
-    updateSAPColourScales: PlottingSelectionsMutation
+    updateSAPColourScales: PlottingSelectionsMutation,
+    updateOutputColourScales: PlottingSelectionsMutation
 }
 
 export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectionsMutations = {
@@ -46,5 +47,8 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
             default:
 
         }
+    },
+    updateOutputColourScales(state: PlottingSelectionsState, action: PayloadWithType<ColourScaleSelections>) {
+        state.colourScales.output = action.payload;
     }
 };
