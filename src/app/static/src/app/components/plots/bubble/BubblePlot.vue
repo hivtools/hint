@@ -45,7 +45,8 @@
                                 :geojson="feature"
                                 :optionsStyle="style">
                     </l-geo-json>
-                    <l-circle-marker v-if="showBubble(feature)" :lat-lng="[feature.properties.center_y, feature.properties.center_x]"
+                    <l-circle-marker v-if="showBubble(feature)"
+                                     :lat-lng="[feature.properties.center_y, feature.properties.center_x]"
                                      :radius="getRadius(feature)"
                                      :fill-opacity="0.75"
                                      :opacity="0.75"
@@ -73,7 +74,7 @@
     import Vue from "vue";
     import Treeselect from '@riophae/vue-treeselect';
     import {Feature} from "geojson";
-    import {LGeoJson, LMap, LCircleMarker, LTooltip} from "vue2-leaflet";
+    import {LCircleMarker, LGeoJson, LMap, LTooltip} from "vue2-leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import FilterSelect from "../FilterSelect.vue";
@@ -82,10 +83,17 @@
     import {
         BubblePlotSelections,
         ColourScaleSelections,
-        ColourScaleSettings
+        ColourScaleSettings,
+        ColourScaleType
     } from "../../../store/plottingSelections/plottingSelections";
     import {getFeatureIndicators} from "./utils";
-    import {toIndicatorNameLookup, getIndicatorRanges, getColourRanges} from "../utils";
+    import {
+        getColourRanges,
+        getCustomColourRanges,
+        getDefaultColourRanges, getDynamicFilteredColourRanges,
+        getIndicatorRanges,
+        toIndicatorNameLookup
+    } from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
@@ -214,16 +222,26 @@
                 return this.currentFeatures.map(f => f.properties!!["area_id"]);
             },
             colourRanges() {
-                let selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
-
-                return getColourRanges(
-                    this.chartdata,
-                    this.indicators,
-                    this.colourScales || {},
-                    this.nonAreaFilters,
-                    this.selections.selectedFilterOptions,
-                    selectedCurrentLevelAreaIds
-                )
+                if (!this.colourScales[this.selections.colorIndicatorId]) {
+                    return getDefaultColourRanges(this.indicators)
+                }
+                switch (this.colourScales[this.selections.colorIndicatorId].type) {
+                    case  ColourScaleType.DynamicFull:
+                        return this.indicatorRanges;
+                    case  ColourScaleType.DynamicFiltered:
+                        const selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
+                        return getDynamicFilteredColourRanges(
+                            this.chartdata,
+                            this.indicators,
+                            this.nonAreaFilters,
+                            this.selections.selectedFilterOptions,
+                            selectedCurrentLevelAreaIds
+                        );
+                    case ColourScaleType.Custom:
+                        return getCustomColourRanges(this.indicators, this.colourScales);
+                    case ColourScaleType.Default:
+                        return getDefaultColourRanges(this.indicators);
+                }
             },
             selectedAreaIds() {
                 const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
@@ -274,7 +292,7 @@
                 return toIndicatorNameLookup(this.indicators)
             },
             areaFilter() {
-                return this.filters.find((f:Filter) => f.id == this.areaFilterId)!!;
+                return this.filters.find((f: Filter) => f.id == this.areaFilterId)!!;
             },
             nonAreaFilters() {
                 return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
@@ -313,12 +331,11 @@
             colourIndicatorRange(): NumericRange {
                 return this.colourRanges[this.selections.colorIndicatorId];
             },
-            colourIndicatorScale(): ColourScaleSettings | null{
+            colourIndicatorScale(): ColourScaleSettings | null {
                 const current = this.colourScales[this.selections.colorIndicatorId];
                 if (current) {
                     return current
-                }
-                else {
+                } else {
                     const newScale = initialiseColourScaleFromMetadata(this.colorIndicator);
                     this.updateColourScale(newScale);
                     return newScale;
@@ -326,7 +343,7 @@
             },
         },
         methods: {
-            updateBounds: function() {
+            updateBounds: function () {
                 if (this.initialised) {
                     const map = this.$refs.map as LMap;
                     if (map && map.fitBounds) {
@@ -339,13 +356,13 @@
                     !!this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId] &&
                     !!this.featureIndicators[feature.properties!!.area_id][this.selections.colorIndicatorId];
             },
-            getRadius: function(feature: Feature) {
+            getRadius: function (feature: Feature) {
                 return this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId].radius;
             },
-            getColor: function(feature: Feature) {
+            getColor: function (feature: Feature) {
                 return this.featureIndicators[feature.properties!!.area_id][this.selections.colorIndicatorId].color;
             },
-            getTooltip: function(feature: Feature) {
+            getTooltip: function (feature: Feature) {
                 const area_id = feature.properties && feature.properties["area_id"];
                 const area_name = feature.properties && feature.properties["area_name"];
 
@@ -375,10 +392,10 @@
 
                 this.changeSelections({selectedFilterOptions: newSelectedFilterOptions});
             },
-            onColorIndicatorSelect(newValue: string){
+            onColorIndicatorSelect(newValue: string) {
                 this.changeSelections({colorIndicatorId: newValue});
             },
-            onSizeIndicatorSelect(newValue: string){
+            onSizeIndicatorSelect(newValue: string) {
                 this.changeSelections({sizeIndicatorId: newValue});
             },
             changeSelections(newSelections: Partial<BubblePlotSelections>) {
@@ -390,7 +407,7 @@
             normalizeIndicators(node: ChoroplethIndicatorMetadata) {
                 return {id: node.indicator, label: node.name};
             },
-            updateColourScale: function(colourScale: ColourScaleSettings) {
+            updateColourScale: function (colourScale: ColourScaleSettings) {
                 const newColourScales = {...this.colourScales};
                 newColourScales[this.selections.colorIndicatorId] = colourScale;
 
@@ -399,7 +416,7 @@
         },
         watch:
             {
-                initialised: function(newVal: boolean) {
+                initialised: function (newVal: boolean) {
                     this.updateBounds();
                 },
                 selectedAreaFeatures: function (newVal) {

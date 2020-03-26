@@ -41,7 +41,12 @@
     import {GeoJSON} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {ChoroplethSelections} from "../../../store/plottingSelections/plottingSelections";
-    import {getColourRanges, toIndicatorNameLookup} from "../utils";
+    import {
+        getColourRanges, getCustomColourRanges,
+        getDefaultColourRanges,
+        getDynamicFilteredColourRanges, getIndicatorRanges,
+        toIndicatorNameLookup
+    } from "../utils";
     import {getFeatureIndicators, initialiseColourScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
@@ -82,6 +87,7 @@
 
     interface Computed {
         initialised: boolean,
+        fullColourRanges: Dict<NumericRange>,
         colourRanges: Dict<NumericRange>,
         featureIndicators: Dict<IndicatorValuesDict>,
         featuresByLevel: { [k: number]: Feature[] },
@@ -155,17 +161,30 @@
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
                     !!this.selections.indicatorId;
             },
+            fullColourRanges() {
+                return getIndicatorRanges(this.chartdata, this.indicators)
+            },
             colourRanges() {
-                let selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
-
-                return getColourRanges(
-                    this.chartdata,
-                    this.indicators,
-                    this.colourScales || {},
-                    this.nonAreaFilters,
-                    this.selections.selectedFilterOptions,
-                    selectedCurrentLevelAreaIds
-                )
+                if (!this.colourScales[this.selections.indicatorId]) {
+                    return getDefaultColourRanges(this.indicators)
+                }
+                switch (this.colourScales[this.selections.indicatorId].type) {
+                    case  ColourScaleType.DynamicFull:
+                        return this.fullColourRanges;
+                    case  ColourScaleType.DynamicFiltered:
+                        const selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
+                        return getDynamicFilteredColourRanges(
+                            this.chartdata,
+                            this.indicators,
+                            this.nonAreaFilters,
+                            this.selections.selectedFilterOptions,
+                            selectedCurrentLevelAreaIds
+                        );
+                    case ColourScaleType.Custom:
+                        return getCustomColourRanges(this.indicators, this.colourScales);
+                    case ColourScaleType.Default:
+                        return getDefaultColourRanges(this.indicators);
+                }
             },
             selectedAreaIds() {
                 const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
