@@ -8,6 +8,7 @@ API=hintr
 REDIS=hintr_redis
 
 "$HERE"/run-dependencies.sh
+"$HERE"/add-guest-user.sh
 
 # From now on, if the user presses Ctrl+C we should teardown gracefully
 trap cleanup INT
