@@ -22,7 +22,9 @@
                             :selections="choroplethSelections"
                             :include-filters="true"
                             area-filter-id="area"
-                            v-on:update="updateOutputChoroplethSelections({payload: $event})"></choropleth>
+                            :colour-scales="colourScales"
+                            @update="updateOutputChoroplethSelections({payload: $event})"
+                            @updateColourScales="updateOutputColourScales({payload: $event})"></choropleth>
             </div>
 
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
@@ -31,7 +33,7 @@
                         :filter-config="filterConfig"
                         :indicators="barchartIndicators"
                         :selections="barchartSelections"
-                        v-on:update="updateBarchartSelections({payload: $event})"></bar-chart-with-filters>
+                        @update="updateBarchartSelections({payload: $event})" ></bar-chart-with-filters>
             </div>
 
             <div v-if="selectedTab==='bubble'" id="bubble-plot-container" class="col-md-12">
@@ -39,7 +41,7 @@
                              :filters="bubblePlotFilters" :indicators="bubblePlotIndicators"
                              :selections="bubblePlotSelections"
                              area-filter-id="area"
-                             v-on:update="updateBubblePlotSelections({payload: $event})"></bubble-plot>
+                             @update="updateBubblePlotSelections({payload: $event})"></bubble-plot>
             </div>
         </div>
     </div>
@@ -58,7 +60,7 @@
     import {
         BarchartSelections,
         BubblePlotSelections,
-        ChoroplethSelections,
+        ChoroplethSelections, ColourScaleSelections,
         PlottingSelectionsState
     } from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
@@ -69,6 +71,7 @@
     import {inactiveFeatures} from "../../main";
     import {RootState} from "../../root";
     import {LevelLabel} from "../../types";
+    import {mapState} from "vuex";
 
     const namespace: string = 'filteredData';
 
@@ -80,6 +83,7 @@
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: BarchartSelections) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
+        updateOutputColourScales: (colourScales: ColourScaleSelections) => void
     }
 
     interface Computed {
@@ -95,7 +99,8 @@
         features: Feature[],
         featureLevels: LevelLabel[]
         currentLanguage: Language,
-        filterConfig: FilterConfig
+        filterConfig: FilterConfig,
+        colourScales: ColourScaleSelections
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -131,7 +136,8 @@
             ...mapStateProps<PlottingSelectionsState, keyof Computed>("plottingSelections", {
                 barchartSelections: state => state.barchart,
                 bubblePlotSelections: state => state.bubble,
-                choroplethSelections: state => state.outputChoropleth
+                choroplethSelections: state => state.outputChoropleth,
+                colourScales: state => state.colourScales.output
             }),
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                     features: state => state.shape!!.data.features as Feature[],
@@ -152,7 +158,8 @@
         },
         methods: {
             ...mapMutationsByNames<keyof Methods>("plottingSelections",
-                ["updateBarchartSelections", "updateBubblePlotSelections", "updateOutputChoroplethSelections"]),
+                ["updateBarchartSelections", "updateBubblePlotSelections", "updateOutputChoroplethSelections",
+                    "updateOutputColourScales"]),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected)
         },
         components: {
