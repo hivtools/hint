@@ -1,16 +1,16 @@
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
 import {LGeoJson} from "vue2-leaflet";
-import {getFeatureIndicators} from "../../../../app/components/plots/choropleth/utils";
-import {getColourRanges, getIndicatorRanges} from "../../../../app/components/plots/utils";
+import {getFeatureIndicator} from "../../../../app/components/plots/choropleth/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
 import {emptyState} from "../../../../app/root";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
-import {testData} from "../testHelpers";
+import {prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
 import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
+import Vue from "vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -24,24 +24,24 @@ const propsData = {
         indicatorId: "prevalence",
         detail: 4,
         selectedFilterOptions: {
-            age: [{id: "0:15", label:"0-15"}],
-            sex: [{id: "female", label:"Female"}],
+            age: [{id: "0:15", label: "0-15"}],
+            sex: [{id: "female", label: "Female"}],
             area: []
         }
     },
     includeFilters: true,
     colourScales: {
         prevalence: {
-            type: ColourScaleType.Default,
+            type: ColourScaleType.Custom,
             customMin: 1,
             customMax: 2
         }
     }
 };
 
-const allAreaIds = ["MWI", "MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"];
+const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
-const getWrapper  = (customPropsData: any = {}) => {
+const getWrapper = (customPropsData: any = {}) => {
     return shallowMount(Choropleth, {propsData: {...propsData, ...customPropsData}, localVue});
 };
 
@@ -63,7 +63,7 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         expect(wrapper.findAll(Filters).length).toBe(1);
 
-        //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLAY IN FILTERS
+        //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLA   Y IN FILTERS
     });
 
     it("does not render filters if includeFilters is false", () => {
@@ -82,15 +82,12 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
 
-        const colourRanges = getColourRanges(propsData.chartdata, propsData.indicators, propsData.colourScales,
-            propsData.filters, propsData.selections.selectedFilterOptions, allAreaIds);
-        expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
+        expect(vm.featureIndicators).toStrictEqual(getFeatureIndicator(propsData.chartdata,
             allAreaIds,
-            propsData.indicators,
-            colourRanges,
-            [propsData.filters[1]],
-            propsData.selections.selectedFilterOptions,
-            ["prevalence"]
+            prev,
+            {min: propsData.colourScales["prevalence"].customMin, max: propsData.colourScales["prevalence"].customMax},
+            [propsData.filters[1], propsData.filters[2]],
+            propsData.selections.selectedFilterOptions
         ));
     });
 
@@ -108,22 +105,84 @@ describe("Choropleth component", () => {
     });
 
     it("computes selectedAreaIds with area selection", () => {
-        const wrapper = getWrapper({selections: {
-            ...propsData.selections,
+        const wrapper = getWrapper({
+            selections: {
+                ...propsData.selections,
                 selectedFilterOptions: {
                     ...propsData.selections.selectedFilterOptions,
                     area: [{id: "MWI_4_1", label: ""}]
                 }
-        }});
+            }
+        });
         const vm = wrapper.vm as any;
         expect(vm.selectedAreaIds).toStrictEqual(["MWI_4_1"]);
     });
 
-    it("computes colourRanges", () => {
+    it("computes colourRange", async () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
-        expect(vm.colourRanges).toStrictEqual(getColourRanges(propsData.chartdata,propsData.indicators,
-            propsData.colourScales, propsData.filters, propsData.selections.selectedFilterOptions, allAreaIds));
+        expect(vm.colourRange).toStrictEqual({
+            min: propsData.colourScales["prevalence"].customMin,
+            max: propsData.colourScales["prevalence"].customMax
+        });
+
+        wrapper.setProps({
+            colourScales: {
+                prevalence: {
+                    type: ColourScaleType.Default,
+                    customMin: 1,
+                    customMax: 2
+                }
+            }
+        });
+
+        await Vue.nextTick();
+        expect(vm.colourRange).toStrictEqual({
+            min: prev.min,
+            max: prev.max
+        });
+
+        wrapper.setProps({
+            colourScales: {
+                prevalence: {
+                    type: ColourScaleType.DynamicFull,
+                    customMin: 1,
+                    customMax: 2
+                }
+            }
+        });
+
+        await Vue.nextTick();
+        expect(vm.colourRange).toStrictEqual({
+            min: 0,
+            max: 0.9
+        });
+
+        wrapper.setProps({
+            colourScales: {
+                prevalence: {
+                    type: ColourScaleType.DynamicFiltered,
+                    customMin: 1,
+                    customMax: 2
+                }
+            },
+            selections: {
+                indicatorId: "prevalence",
+                detail: 4,
+                selectedFilterOptions: {
+                    age: [{id: "0:15", label: "0-15"}],
+                    sex: [{id: "male", label: "Male"}],
+                    area: []
+                }
+            }
+        });
+
+        await Vue.nextTick();
+        expect(vm.colourRange).toStrictEqual({
+            min: 0.1,
+            max: 0.9
+        });
+
     });
 
     it("computes featuresByLevel", () => {
@@ -163,16 +222,18 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         expect(vm.flattenedAreas).toStrictEqual({
-            "MWI": {id: "MWI", label: "Malawi", children: [
+            "MWI": {
+                id: "MWI", label: "Malawi", children: [
                     {id: "MWI_3_1", label: "3.1"},
+                    {id: "MWI_3_2", label: "3.2"},
                     {id: "MWI_4_1", label: "4.1"},
-                    {id: "MWI_4_2", label: "4.2"},
-                    {id: "MWI_4_3", label: "4.3"}
-                ]},
+                    {id: "MWI_4_2", label: "4.2"}
+                ]
+            },
             "MWI_3_1": {id: "MWI_3_1", label: "3.1"},
+            "MWI_3_2": {id: "MWI_3_2", label: "3.2"},
             "MWI_4_1": {id: "MWI_4_1", label: "4.1"},
             "MWI_4_2": {id: "MWI_4_2", label: "4.2"},
-            "MWI_4_3": {id: "MWI_4_3", label: "4.3"}
         });
     });
 
@@ -188,8 +249,8 @@ describe("Choropleth component", () => {
             },
             filters: [
                 propsData.filters[0], //area
-                { id: "age", label: "Age", column_id: "age", options: []},
-                { id: "sex", label: "Sex", column_id: "sex", options: []}
+                {id: "age", label: "Age", column_id: "age", options: []},
+                {id: "sex", label: "Sex", column_id: "sex", options: []}
             ],
         });
 
@@ -258,7 +319,12 @@ describe("Choropleth component", () => {
 
     it("computes empty selectedAreaFeatures with empty area options", () => {
         const wrapper = getWrapper({
-            filters: [{ id: "area", label: "Area", column_id: "area_id",options: []}, propsData.filters[1], propsData.filters[2]]
+            filters: [{
+                id: "area",
+                label: "Area",
+                column_id: "area_id",
+                options: []
+            }, propsData.filters[1], propsData.filters[2]]
         });
         expect((wrapper.vm as any).selectedAreaFeatures).toStrictEqual([]);
     });
@@ -278,11 +344,13 @@ describe("Choropleth component", () => {
     });
 
     it("initialises from empty selections and emits updates", () => {
-        const wrapper = getWrapper({selections: {
+        const wrapper = getWrapper({
+            selections: {
                 detail: -1,
                 indicatorId: null,
                 selectedFilterOptions: {}
-            }});
+            }
+        });
 
         const updates = wrapper.emitted("update");
         expect(wrapper.emitted("update")[0][0]).toStrictEqual({detail: 4});
@@ -376,8 +444,8 @@ describe("Choropleth component", () => {
             },
             filters: [
                 propsData.filters[0], //area
-                { id: "age", label: "Age", column_id: "age", options: []},
-                { id: "sex", label: "Sex", column_id: "sex", options: []}
+                {id: "age", label: "Age", column_id: "age", options: []},
+                {id: "sex", label: "Sex", column_id: "sex", options: []}
             ],
             colourScales: {}
         });
@@ -421,7 +489,7 @@ describe("Choropleth component", () => {
 
         const mockZeroValueFeature = {
             properties: {
-                area_id: "MWI_4_3",
+                area_id: "MWI_3_2",
                 area_name: "Area 2"
             }
         };

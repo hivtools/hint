@@ -17,6 +17,7 @@ export interface IndicatorValues {
 
 export interface BubbleIndicatorValues extends IndicatorValues {
     radius: number;
+    sizeValue: number;
 }
 
 export interface LevelLabel {
