@@ -1,27 +1,27 @@
 import {ColourScaleType} from "../../store/colourScales/colourScales";
 <template>
     <div v-if="show" class="pt-2 pl-3">
-        <div>Static</div>
+        <div><span v-translate="'static'"></span></div>
         <div class="ml-2">
             <div class="form-check">
                 <label class="form-check-label">
                     <input id="type-input-default" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.Default"
                            v-model="colourScaleToAdjust.type" @change="update">
-                    Default
+                    <span v-translate="'default'"></span>
                 </label>
             </div>
             <div class="form-check mt-1">
                 <label class="form-check-label">
                     <input id="type-input-custom" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.Custom"
                            v-model="colourScaleToAdjust.type" @change="update">
-                    Custom
+                    <span v-translate="'custom'"></span>
                 </label>
             </div>
 
             <div class="mt-2 ml-2">
                 <form novalidate>
                     <div class="row p-0 mb-2">
-                        <label for="custom-min-input" class="col col-form-label col-2">Min</label>
+                        <label for="custom-min-input" class="col col-form-label col-2"><span v-translate="'min'"></span></label>
                         <div class="col pt-1">
                             <input id="custom-min-input" type="number" :step="step" v-model.number="colourScaleToAdjust.customMin"
                                    :max="colourScaleToAdjust.customMax"
@@ -29,7 +29,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                         </div>
                     </div>
                     <div class="row">
-                        <label class="col col-form-label col-2" for="custom-max-input">Max</label>
+                        <label class="col col-form-label col-2" for="custom-max-input"><span v-translate="'max'"></span></label>
                         <div class="col pt-1">
                             <input id="custom-max-input" type="number" :step="step" v-model.number="colourScaleToAdjust.customMax"
                                    :min="colourScaleToAdjust.customMin"
@@ -40,13 +40,13 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
             </div>
         </div>
 
-        <div class="mt-1">Fit to current dataset</div>
+        <div class="mt-1"><span v-translate="'fitToCurrentDataset'"></span>t</div>
         <div class="ml-2">
             <div class="form-check mt-1">
                 <label class="form-check-label">
                     <input id="type-input-dynamic-full" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.DynamicFull"
                            v-model="colourScaleToAdjust.type" @change="update">
-                    Entire dataset
+                    <span v-translate="'entireDataset'"></span>
                 </label>
             </div>
         </div>
@@ -55,7 +55,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                 <label class="form-check-label">
                     <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.DynamicFiltered"
                            v-model="colourScaleToAdjust.type" @change="update">
-                    Filtered dataset
+                    <span v-translate="'filteredDataset'"></span>
                 </label>
             </div>
         </div>
@@ -67,6 +67,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
 <script lang="ts">
     import Vue from "vue";
     import {ColourScaleSettings, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
+    import i18next from "i18next";
 
     interface Props {
         show: Boolean,
@@ -105,7 +106,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                 let result = null;
                 if (this.colourScaleToAdjust.type == ColourScaleType.Custom) {
                     if (this.colourScaleToAdjust.customMin >= this.colourScaleToAdjust.customMax) {
-                        result = `Max must be greater than min`;
+                        result = i18next.t("maxMustBeGreaterThanMin");
                     }
                 }
 

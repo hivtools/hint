@@ -13,7 +13,10 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                     <br/>
                 </div>
                 <div v-if="adjustable" id="adjust-scale" class="mt-1">
-                    <a @click="toggleAdjust" href="">{{showAdjust ? "Done" : "Adjust scale"}}</a>
+                    <a @click="toggleAdjust" href="">
+                        <span v-if="showAdjust" v-translate="'done'"></span>
+                        <span v-if="!showAdjust" v-translate="'adjustScale'"></span>
+                    </a>
                 </div>
             </div>
         </div>
