@@ -7,7 +7,7 @@ import registerTranslations from "../../../../app/store/translations/registerTra
 import Vuex from "vuex";
 import {emptyState} from "../../../../app/root";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
-import {testData} from "../testHelpers";
+import {prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
 import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 
@@ -31,7 +31,7 @@ const propsData = {
     includeFilters: true,
     colourScales: {
         prevalence: {
-            type: ColourScaleType.Default,
+            type: ColourScaleType.Custom,
             customMin: 1,
             customMax: 2
         }
@@ -83,7 +83,7 @@ describe("Choropleth component", () => {
 
         expect(vm.featureIndicators).toStrictEqual(getFeatureIndicator(propsData.chartdata,
             allAreaIds,
-            propsData.indicators[0],
+            prev,
             {min: propsData.colourScales["prevalence"].customMin, max: propsData.colourScales["prevalence"].customMax},
             [propsData.filters[1]],
             propsData.selections.selectedFilterOptions
@@ -120,7 +120,10 @@ describe("Choropleth component", () => {
     it("computes colourRange", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
-        expect(vm.colourRange).toStrictEqual({min: propsData.indicators[0].min, max: propsData.indicators[0].max});
+        expect(vm.colourRange).toStrictEqual({
+            min: propsData.colourScales["prevalence"].customMin,
+            max: propsData.colourScales["prevalence"].customMax
+        });
     });
 
     it("computes featuresByLevel", () => {

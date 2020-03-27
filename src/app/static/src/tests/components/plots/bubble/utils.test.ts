@@ -1,28 +1,25 @@
-import {
-    getFeatureIndicators,
-    getRadius
-} from "../../../../app/components/plots/bubble/utils";
+import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
 import {getColor} from "../../../../app/components/plots/utils";
 
 describe("Bubble plot utils", () => {
 
-    const indicators = [
-        {
-            indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:1, colour: "interpolateGreys", invert_scale: false
-        },
-        {
-            indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 1, colour: "interpolateGreys", invert_scale: false
-        }
-    ];
-
-    const indicatorRanges = {
-        plhiv: {min: 1, max: 100},
-        prevalence: {min: 0, max: 0.8}
+    const plhiv = {
+        indicator: "plhiv",
+        value_column: "plhiv",
+        name: "PLHIV",
+        min: 0,
+        max: 1,
+        colour: "interpolateGreys",
+        invert_scale: false
     };
-
-    const colourRanges = {
-        plhiv: {min: 0, max: 1},
-        prevalence: {min: 0, max: 1}
+    const prev = {
+        indicator: "prevalence",
+        value_column: "prevalence",
+        name: "Prevalence",
+        min: 0,
+        max: 1,
+        colour: "interpolateGreys",
+        invert_scale: false
     };
 
     const selectedFeatureIds = ["MWI_1_1", "MWI_1_2"];
@@ -31,31 +28,20 @@ describe("Bubble plot utils", () => {
     const maxRadius = 1000;
 
     const colourRange = {min: 0, max: 1};
+    const sizeRange = {min: 1, max: 100};
 
     const expectedFeatureIndicators = {
         MWI_1_1: {
-            plhiv: {
-                value: 12,
-                color: getColor(12, indicators[0], colourRange),
-                radius: getRadius(12, 1, 100, minRadius, maxRadius)
-            },
-            prevalence: {
-                value: 0.5,
-                color: getColor(0.5, indicators[1], colourRange),
-                radius: getRadius(0.5, 0, 0.8, minRadius, maxRadius)
-            }
+            sizeValue: 12,
+            value: 0.5,
+            color: getColor(0.5, prev, colourRange),
+            radius: getRadius(12, 1, 100, minRadius, maxRadius)
         },
         MWI_1_2: {
-            plhiv: {
-                value: 14,
-                color: getColor(14,indicators[0], colourRange),
-                radius: getRadius(14, 1, 100, minRadius, maxRadius)
-            },
-            prevalence: {
-                value: 0.6,
-                color: getColor(0.6,indicators[1], colourRange),
-                radius: getRadius(0.6, 0, 0.8, minRadius, maxRadius)
-            }
+            sizeValue: 14,
+            radius: getRadius(14, 1, 100, minRadius, maxRadius),
+            value: 0.6,
+            color: getColor(0.6, prev, colourRange)
         }
     };
 
@@ -66,25 +52,21 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 16} //should not be included, not in selectedFeatures
         ];
 
-        const colorRange = {min: 0, max: 1};
-        const sizeRange = {min: 1, max: 2};
-        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, colorRange, sizeRange,
+        const result = getFeatureIndicators(data, selectedFeatureIds, plhiv, prev, sizeRange, colourRange,
             [], {}, minRadius, maxRadius);
 
         expect(result).toStrictEqual(expectedFeatureIndicators);
     });
 
     it("can get feature indicators from long format data", () => {
-        const longIndicators = [
-            {
-                indicator: "plhiv", value_column: "value", indicator_column: "indicator", indicator_value: "plhiv",
-                name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
-            },
-            {
-                indicator: "prevalence", value_column: "value", indicator_column: "indicator", indicator_value: "prev",
-                name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
-            }
-        ];
+        const plhivLong = {
+            indicator: "plhiv", value_column: "value", indicator_column: "indicator", indicator_value: "plhiv",
+            name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        };
+        const prevLong = {
+            indicator: "prevalence", value_column: "value", indicator_column: "indicator", indicator_value: "prev",
+            name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        };
 
         const data = [
             {area_id: "MWI_1_1", indicator: "plhiv", value: 12},
@@ -94,18 +76,25 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_3", indicator: "plhiv", value: 14} //should not be included, not in selectedFeatures
         ];
 
-        const colorRange = {min: 0, max: 1};
-        const sizeRange = {min: 1, max: 2};
-
-        const result = getFeatureIndicators(data, selectedFeatureIds, longIndicators, colorRange, sizeRange,
-            [],{}, minRadius, maxRadius);
+        const result = getFeatureIndicators(data, selectedFeatureIds, plhivLong, prevLong, sizeRange, colourRange,
+            [], {}, minRadius, maxRadius);
         expect(result).toStrictEqual(expectedFeatureIndicators);
     });
 
     it("can exclude rows based on filters", () => {
         const filters = [
-            {id: "age", label: "Age", column_id: "age", options: [{id: "0:15", label: "0-15"}, {id: "15:30", label: "15-30"}]},
-            {id: "sex", label: "Sex", column_id: "sex", options: [{id: "female", label: "F"}, {id: "male", label: "M"}]},
+            {
+                id: "age",
+                label: "Age",
+                column_id: "age",
+                options: [{id: "0:15", label: "0-15"}, {id: "15:30", label: "15-30"}]
+            },
+            {
+                id: "sex",
+                label: "Sex",
+                column_id: "sex",
+                options: [{id: "female", label: "F"}, {id: "male", label: "M"}]
+            },
             {id: "survey", label: "Survey", column_id: "survey_id", options: []}//should not exclude for filters with no options
         ];
 
@@ -122,10 +111,7 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_1", prevalence: 0.2, plhiv: 20, sex: "female", age: "30:45"}, //not included: no age filter match
         ];
 
-        const colorRange = {min: 0, max: 1};
-        const sizeRange = {min: 1, max: 2};
-
-        const result = getFeatureIndicators(data, selectedFeatureIds, indicators, colorRange, sizeRange, filters,
+        const result = getFeatureIndicators(data, selectedFeatureIds, plhiv, prev, sizeRange, colourRange, filters,
             selectedFilterValues, minRadius, maxRadius);
 
         expect(result).toStrictEqual(expectedFeatureIndicators);
@@ -136,39 +122,36 @@ describe("Bubble plot utils", () => {
             {area_id: "MWI_1_1", prevalence: 0.5},
             {area_id: "MWI_1_2", plhiv: 14},
         ];
-        const colorRange = {min: 0, max: 1};
-        const sizeRange = {min: 1, max: 2};
-        const result = getFeatureIndicators(partialData, selectedFeatureIds, indicators, colorRange, sizeRange,
+        const result = getFeatureIndicators(partialData, selectedFeatureIds, plhiv, prev, sizeRange, colourRange,
             [], {},
             minRadius, maxRadius);
 
         expect(result).toStrictEqual({
             MWI_1_1: {
-                prevalence: {
-                    value: 0.5,
-                    color: getColor(0.5, indicators[1], colourRange),
-                    radius: getRadius(0.5, 0, 0.8, minRadius, maxRadius)
-                }
+                value: 0.5,
+                color: getColor(0.5, prev, colourRange)
+
             },
             MWI_1_2: {
-                plhiv: {
-                    value: 14,
-                    color: getColor(14, indicators[0], colourRange),
-                    radius: getRadius(14, 1, 100, minRadius, maxRadius)
-                }
+                radius: getRadius(14, 1, 100, minRadius, maxRadius),
+                sizeValue: 14
             }
         });
     });
 
-    const radiusToArea = (r: number) => {return Math.PI * r *r};
-    const areaToRadius = (x: number) => {return Math.sqrt(x/Math.PI)};
+    const radiusToArea = (r: number) => {
+        return Math.PI * r * r
+    };
+    const areaToRadius = (x: number) => {
+        return Math.sqrt(x / Math.PI)
+    };
     const minArea = radiusToArea(5);
     const maxArea = radiusToArea(10);
-    it ("can get radius", () => {
+    it("can get radius", () => {
         expect(getRadius(1, 1, 10, 5, 10)).toBe(5);
         expect(getRadius(10, 1, 10, 5, 10)).toBe(10);
 
-        const expectedArea = minArea + ((4/9) * (maxArea - minArea));
+        const expectedArea = minArea + ((4 / 9) * (maxArea - minArea));
         const expectedRadius = areaToRadius(expectedArea);
         expect(getRadius(5, 1, 10, 5, 10)).toBeCloseTo(expectedRadius, 5);
     });
@@ -182,7 +165,7 @@ describe("Bubble plot utils", () => {
         expect(getRadius(5, 0, 10, 5, 10)).toBeCloseTo(expectedRadius, 5);
     });
 
-    it ("can get radius where min area is 0", () => {
+    it("can get radius where min area is 0", () => {
         expect(getRadius(0, 0, 10, 0, 10)).toBe(0);
         expect(getRadius(10, 0, 10, 0, 10)).toBe(10);
 

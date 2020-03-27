@@ -1,4 +1,4 @@
-import {BubbleIndicatorValuesDict, Dict, Filter, NumericRange} from "../../../types";
+import {BubbleIndicatorValues, BubbleIndicatorValuesDict, Dict, Filter, NumericRange} from "../../../types";
 import {getColor, iterateDataValues} from "../utils";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
 
@@ -11,24 +11,28 @@ export const getRadius = function (value: number, minValue: number, maxValue: nu
 
 export const getFeatureIndicators = function (data: any[],
                                               selectedAreaIds: string[],
-                                              indicatorsMeta: ChoroplethIndicatorMetadata[],
+                                              sizeIndicator: ChoroplethIndicatorMetadata,
+                                              colorIndicator: ChoroplethIndicatorMetadata,
                                               sizeRange: NumericRange,
                                               colourRange: NumericRange,
                                               filters: Filter[],
                                               selectedFilterValues: Dict<FilterOption[]>,
                                               minRadius: number,
-                                              maxRadius: number): Dict<BubbleIndicatorValuesDict> {
+                                              maxRadius: number): BubbleIndicatorValuesDict {
 
-    const result = {} as Dict<BubbleIndicatorValuesDict>;
-    iterateDataValues(data, indicatorsMeta, selectedAreaIds, filters, selectedFilterValues,
+    const result = {} as BubbleIndicatorValuesDict;
+    iterateDataValues(data, [sizeIndicator, colorIndicator], selectedAreaIds, filters, selectedFilterValues,
         (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
             if (!result[areaId]) {
-                result[areaId] = {}
+                result[areaId] = {} as BubbleIndicatorValues
             }
-            result[areaId][indicatorMeta.indicator] = {
-                value: value,
-                color: getColor(value, indicatorMeta, colourRange),
-                radius: getRadius(value, sizeRange.min, sizeRange.max, minRadius, maxRadius)
+            if (indicatorMeta.indicator == colorIndicator.indicator) {
+                result[areaId].value = value;
+                result[areaId].color = getColor(value, indicatorMeta, colourRange)
+            }
+            if (indicatorMeta.indicator == sizeIndicator.indicator) {
+                result[areaId].sizeValue = value;
+                result[areaId].radius = getRadius(value, sizeRange.min, sizeRange.max, minRadius, maxRadius)
             }
         });
 

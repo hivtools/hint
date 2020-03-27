@@ -132,7 +132,7 @@
     interface Computed {
         initialised: boolean,
         currentLevelFeatureIds: string[],
-        featureIndicators: Dict<BubbleIndicatorValuesDict>,
+        featureIndicators: BubbleIndicatorValuesDict,
         featuresByLevel: { [k: number]: Feature[] },
         currentFeatures: Feature[],
         maxLevel: number,
@@ -267,7 +267,8 @@
                 return getFeatureIndicators(
                     this.chartdata,
                     this.selectedAreaIds,
-                    [this.sizeIndicator, this.colorIndicator],
+                    this.sizeIndicator,
+                    this.colorIndicator,
                     this.sizeRange,
                     this.colourRange,
                     this.nonAreaFilters,
@@ -366,14 +367,14 @@
             showBubble(feature: Feature) {
                 return !!this.featureIndicators[feature.properties!!.area_id] &&
                     !!this.featureIndicators[feature.properties!!.area_id]
-                    && !!this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId]
-                    && !!this.featureIndicators[feature.properties!!.area_id][this.selections.colorIndicatorId]
+                    && !!this.featureIndicators[feature.properties!!.area_id].value
+                    && !!this.featureIndicators[feature.properties!!.area_id].sizeValue
             },
             getRadius: function (feature: Feature) {
-                return this.featureIndicators[feature.properties!!.area_id][this.selections.sizeIndicatorId].radius;
+                return this.featureIndicators[feature.properties!!.area_id].radius;
             },
             getColor: function (feature: Feature) {
-                return this.featureIndicators[feature.properties!!.area_id][this.selections.colorIndicatorId].color;
+                return this.featureIndicators[feature.properties!!.area_id].color;
             },
             getTooltip: function (feature: Feature) {
                 const area_id = feature.properties && feature.properties["area_id"];
@@ -382,8 +383,8 @@
                 const values = this.featureIndicators[area_id];
                 const colorIndicator = this.selections.colorIndicatorId;
                 const sizeIndicator = this.selections.sizeIndicatorId;
-                const colorValue = values && values[colorIndicator] && values[colorIndicator]!!.value;
-                const sizeValue = values && values[sizeIndicator] && values[sizeIndicator]!!.value;
+                const colorValue = values && values!!.value;
+                const sizeValue = values && values!!.sizeValue;
 
                 const colorIndicatorName = this.indicatorNameLookup[colorIndicator];
                 const sizeIndicatorName = this.indicatorNameLookup[sizeIndicator];

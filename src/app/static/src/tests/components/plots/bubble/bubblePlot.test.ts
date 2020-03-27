@@ -2,7 +2,7 @@ import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
 import {LCircleMarker, LGeoJson, LTooltip} from "vue2-leaflet";
 import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
-import {getColor, getIndicatorRange} from "../../../../app/components/plots/utils";
+import {getColor} from "../../../../app/components/plots/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 import {NestedFilterOption} from "../../../../app/generated";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
@@ -12,7 +12,7 @@ import {emptyState} from "../../../../app/root";
 import {Vue} from "vue/types/vue";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
-import {expectFilter, testData} from "../testHelpers"
+import {expectFilter, plhiv, prev, testData} from "../testHelpers"
 import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 
 const localVue = createLocalVue();
@@ -144,15 +144,18 @@ describe("BubblePlot component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
 
-        expect(vm.sizeRange).toStrictEqual({max: 1, min: 0});
+        expect(vm.sizeRange).toStrictEqual({
+            min: 1,
+            max: 20
+        });
     });
 
     it("computes colourRange", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         expect(vm.colourRange).toStrictEqual({
-            min: propsData.colourScales["prevalence"].customMin,
-            max: propsData.colourScales["prevalence"].customMax
+            min: 0,
+            max: 0.8
         });
     });
 
@@ -166,11 +169,18 @@ describe("BubblePlot component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
 
-        const sizeRange = {min: 0, max: 1};
-        const colorRange = {min: 0, max: 1};
+        const sizeRange = {
+            min: 1,
+            max: 20
+        };
+        const colorRange = {
+            min: 0,
+            max: 0.8
+        };
         expect(vm.featureIndicators).toStrictEqual(getFeatureIndicators(propsData.chartdata,
             allAreaIds,
-            propsData.indicators,
+            plhiv,
+            prev,
             sizeRange,
             colorRange,
             [propsData.filters[1]],

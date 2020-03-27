@@ -7,15 +7,6 @@ import {
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 
-const indicators = [
-    {
-        indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:0, colour: "interpolateGreys", invert_scale: false
-    },
-    {
-        indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
-    }
-];
-
 it("colorFunctionFromName returns color function", () => {
     const result = colorFunctionFromName("interpolateMagma");
     expect(result).toBe(interpolateMagma);
@@ -63,18 +54,27 @@ it("getColor avoids dividing by zero if min equals max", () => {
 });
 
 it("can get indicator range", () => {
+
     const data = [
         {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 15},
         {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14},
         {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 13}
     ];
 
-    const result = getIndicatorRange(data, indicators[0]);
+    const plhiv = {
+        indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:0, colour: "interpolateGreys", invert_scale: false
+    };
 
-    expect(result).toStrictEqual({
-        plhiv: {min: 13, max: 15},
-        prevalence: {min: 0.5, max: 0.7}
-    });
+    let result = getIndicatorRange(data, plhiv);
+
+    expect(result).toStrictEqual({min: 13, max: 15});
+
+    const prev = {
+        indicator: "prevalence", value_column: "prevalence", name: "prevalence", min: 0, max:0, colour: "interpolateGreys", invert_scale: false
+    };
+    result = getIndicatorRange(data, prev);
+
+    expect(result).toStrictEqual({min: 0.5, max: 0.7});
 });
 
 it("can get dynamic filtered colour range", () => {
@@ -99,7 +99,7 @@ it("can get dynamic filtered colour range", () => {
 
     const result = getDynamicFilteredColourRange(data, indicatorMeta, filters, selectedFilterValues, areaIds);
 
-    expect(result).toStrictEqual({min: 0.6, max: 0.8});
+    expect(result).toStrictEqual({min: 0.6, max: 0.7});
 });
 
 it("getColor can invert color function", () => {
