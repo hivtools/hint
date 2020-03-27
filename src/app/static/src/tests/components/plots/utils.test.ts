@@ -3,7 +3,7 @@ import {
     getColor,
     getIndicatorRange,
     toIndicatorNameLookup,
-    roundToContext, colourScaleStepFromMetadata, roundRange, getDynamicFilteredColourRange, iterateDataValues
+    roundToContext, colourScaleStepFromMetadata, roundRange, iterateDataValues
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 import {Filter} from "../../../app/generated";
@@ -78,7 +78,7 @@ it("can get indicator range", () => {
     expect(result).toStrictEqual({min: 0.5, max: 0.7});
 });
 
-it("can get dynamic filtered colour range", () => {
+it("can get filtered indicator range", () => {
     const data = [
         {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 13, art_cov: 0.2, vls: 0.1, year: "2018"},
         {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 13, art_cov: 0.3, vls: 0.2, year: "2018"},
@@ -98,7 +98,7 @@ it("can get dynamic filtered colour range", () => {
 
     const areaIds = ["MWI_1_1", "MWI_1_2"];
 
-    const result = getDynamicFilteredColourRange(data, indicatorMeta, filters, selectedFilterValues, areaIds);
+    const result = getIndicatorRange(data, indicatorMeta, filters, selectedFilterValues, areaIds);
 
     expect(result).toStrictEqual({min: 0.6, max: 0.7});
 });

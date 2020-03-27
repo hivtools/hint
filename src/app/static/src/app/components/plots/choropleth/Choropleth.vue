@@ -45,7 +45,7 @@
         ColourScaleSettings,
         ColourScaleType
     } from "../../../store/plottingSelections/plottingSelections";
-    import {getDynamicFilteredColourRange, getIndicatorRange, toIndicatorNameLookup} from "../utils";
+    import {getIndicatorRange, toIndicatorNameLookup} from "../utils";
     import {getFeatureIndicator, initialiseColourScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
@@ -170,7 +170,7 @@
                         return this.fullIndicatorRanges[indicator];
                     case  ColourScaleType.DynamicFiltered:
                         const selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
-                        return getDynamicFilteredColourRange(
+                        return getIndicatorRange(
                             this.chartdata,
                             this.colorIndicator,
                             this.nonAreaFilters,

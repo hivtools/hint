@@ -1,7 +1,6 @@
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
-import {ColourScaleSelections} from "../../store/plottingSelections/plottingSelections";
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
                          colourRange: NumericRange) => {
@@ -59,19 +58,9 @@ export const getIndicatorRange = function (data: any,
                 result.max = Math.max(result.max, value);
             }
         });
-    return result;
-};
-
-export const getDynamicFilteredColourRange = function (data: any,
-                                                       indicatorMeta: ChoroplethIndicatorMetadata,
-                                                       filters: Filter[],
-                                                       selectedFilterValues: Dict<FilterOption[]>,
-                                                       selectedAreaIds: string[]) {
-    const filteredIndicatorRange = getIndicatorRange(data, indicatorMeta, filters, selectedFilterValues, selectedAreaIds);
-
     return roundRange({
-        min: filteredIndicatorRange ? filteredIndicatorRange.min : 0,
-        max: filteredIndicatorRange ? filteredIndicatorRange.max : 0
+        min: result ? result.min : 0,
+        max: result ? result.max : 0
     });
 };
 

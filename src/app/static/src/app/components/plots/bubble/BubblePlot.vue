@@ -87,7 +87,7 @@
         ColourScaleType
     } from "../../../store/plottingSelections/plottingSelections";
     import {getFeatureIndicators} from "./utils";
-    import {getDynamicFilteredColourRange, getIndicatorRange, toIndicatorNameLookup} from "../utils";
+    import {getIndicatorRange, toIndicatorNameLookup} from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
@@ -242,7 +242,7 @@
                     case ColourScaleType.DynamicFiltered:
                         const selectedCurrentLevelAreaIds = this.selectedAreaIds
                             .filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
-                        return getDynamicFilteredColourRange(
+                        return getIndicatorRange(
                             this.chartdata,
                             this.colorIndicator,
                             this.nonAreaFilters,
