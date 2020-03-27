@@ -239,7 +239,7 @@
                                 getIndicatorRange(this.chartdata, this.colorIndicator)
                         }
                         return this.fullIndicatorRanges[colorId];
-                    case  ColourScaleType.DynamicFiltered:
+                    case ColourScaleType.DynamicFiltered:
                         const selectedCurrentLevelAreaIds = this.selectedAreaIds
                             .filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
                         return getDynamicFilteredColourRange(

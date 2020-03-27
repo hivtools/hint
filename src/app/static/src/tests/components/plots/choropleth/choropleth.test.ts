@@ -10,6 +10,7 @@ import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import {prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
 import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
+import Vue from "vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -38,7 +39,7 @@ const propsData = {
     }
 };
 
-const allAreaIds = ["MWI", "MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"];
+const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
 const getWrapper = (customPropsData: any = {}) => {
     return shallowMount(Choropleth, {propsData: {...propsData, ...customPropsData}, localVue});
@@ -62,7 +63,7 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         expect(wrapper.findAll(Filters).length).toBe(1);
 
-        //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLAY IN FILTERS
+        //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLA   Y IN FILTERS
     });
 
     it("does not render filters if includeFilters is false", () => {
@@ -85,7 +86,7 @@ describe("Choropleth component", () => {
             allAreaIds,
             prev,
             {min: propsData.colourScales["prevalence"].customMin, max: propsData.colourScales["prevalence"].customMax},
-            [propsData.filters[1]],
+            [propsData.filters[1], propsData.filters[2]],
             propsData.selections.selectedFilterOptions
         ));
     });
@@ -117,13 +118,71 @@ describe("Choropleth component", () => {
         expect(vm.selectedAreaIds).toStrictEqual(["MWI_4_1"]);
     });
 
-    it("computes colourRange", () => {
+    it("computes colourRange", async () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         expect(vm.colourRange).toStrictEqual({
             min: propsData.colourScales["prevalence"].customMin,
             max: propsData.colourScales["prevalence"].customMax
         });
+
+        wrapper.setProps({
+            colourScales: {
+                prevalence: {
+                    type: ColourScaleType.Default,
+                    customMin: 1,
+                    customMax: 2
+                }
+            }
+        });
+
+        await Vue.nextTick();
+        expect(vm.colourRange).toStrictEqual({
+            min: prev.min,
+            max: prev.max
+        });
+
+        wrapper.setProps({
+            colourScales: {
+                prevalence: {
+                    type: ColourScaleType.DynamicFull,
+                    customMin: 1,
+                    customMax: 2
+                }
+            }
+        });
+
+        await Vue.nextTick();
+        expect(vm.colourRange).toStrictEqual({
+            min: 0,
+            max: 0.9
+        });
+
+        wrapper.setProps({
+            colourScales: {
+                prevalence: {
+                    type: ColourScaleType.DynamicFiltered,
+                    customMin: 1,
+                    customMax: 2
+                }
+            },
+            selections: {
+                indicatorId: "prevalence",
+                detail: 4,
+                selectedFilterOptions: {
+                    age: [{id: "0:15", label: "0-15"}],
+                    sex: [{id: "male", label: "Male"}],
+                    area: []
+                }
+            }
+        });
+
+        await Vue.nextTick();
+        expect(vm.colourRange).toStrictEqual({
+            min: 0.1,
+            max: 0.9
+        });
+
     });
 
     it("computes featuresByLevel", () => {
@@ -166,15 +225,15 @@ describe("Choropleth component", () => {
             "MWI": {
                 id: "MWI", label: "Malawi", children: [
                     {id: "MWI_3_1", label: "3.1"},
+                    {id: "MWI_3_2", label: "3.2"},
                     {id: "MWI_4_1", label: "4.1"},
-                    {id: "MWI_4_2", label: "4.2"},
-                    {id: "MWI_4_3", label: "4.3"}
+                    {id: "MWI_4_2", label: "4.2"}
                 ]
             },
             "MWI_3_1": {id: "MWI_3_1", label: "3.1"},
+            "MWI_3_2": {id: "MWI_3_2", label: "3.2"},
             "MWI_4_1": {id: "MWI_4_1", label: "4.1"},
             "MWI_4_2": {id: "MWI_4_2", label: "4.2"},
-            "MWI_4_3": {id: "MWI_4_3", label: "4.3"}
         });
     });
 
@@ -430,7 +489,7 @@ describe("Choropleth component", () => {
 
         const mockZeroValueFeature = {
             properties: {
-                area_id: "MWI_4_3",
+                area_id: "MWI_3_2",
                 area_name: "Area 2"
             }
         };

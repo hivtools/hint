@@ -87,7 +87,7 @@ export const testData = {
             "type": "Feature",
             "properties": {
                 "iso3": "MWI",
-                "area_id": "MWI_4_3",
+                "area_id": "MWI_3_2",
                 "area_name": "North North East",
                 "area_level": 3,
                 "center_x": 35.7084,
@@ -115,7 +115,13 @@ export const testData = {
             area_id: "MWI_4_2", plhiv: 20, prevalence: 0.2, age: "0:15", sex: "female"
         },
         {
-            area_id: "MWI_4_3", plhiv: 20, prevalence: 0, age: "0:15", sex: "female"
+            area_id: "MWI_3_2", plhiv: 20, prevalence: 0, age: "0:15", sex: "female"
+        },
+        {
+            area_id: "MWI_4_2", plhiv: 20, prevalence: 0.1, age: "0:15", sex: "male"
+        },
+        {
+            area_id: "MWI_4_1", plhiv: 20, prevalence: 0.9, age: "0:15", sex: "male"
         }
     ],
     indicators: [
@@ -128,9 +134,9 @@ export const testData = {
             options: [{
                 id: "MWI", label: "Malawi", children: [
                     {id: "MWI_3_1", label: "3.1"},
+                    {id: "MWI_3_2", label: "3.2"},
                     {id: "MWI_4_1", label: "4.1"},
-                    {id: "MWI_4_2", label: "4.2"},
-                    {id: "MWI_4_3", label: "4.3"}
+                    {id: "MWI_4_2", label: "4.2"}
                 ]
             }
             ]

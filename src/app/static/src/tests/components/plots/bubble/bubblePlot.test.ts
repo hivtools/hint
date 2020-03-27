@@ -9,7 +9,7 @@ import registerTranslations from "../../../../app/store/translations/registerTra
 import Vuex from "vuex";
 import Treeselect from '@riophae/vue-treeselect';
 import {emptyState} from "../../../../app/root";
-import {Vue} from "vue/types/vue";
+import Vue from "vue";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {expectFilter, plhiv, prev, testData} from "../testHelpers"
@@ -42,7 +42,7 @@ const propsData = {
     }
 };
 
-const allAreaIds = ["MWI", "MWI_3_1", "MWI_4_1", "MWI_4_2", "MWI_4_3"];
+const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
 const getWrapper = (customPropsData: any = {}) => {
 
@@ -103,10 +103,11 @@ describe("BubblePlot component", () => {
 
     it("renders area filter", () => {
         const wrapper = getWrapper();
-        expectFilter(wrapper, "area-filter", [], "Area", true, [{id: "MWI_3_1", label: "3.1"},
+        expectFilter(wrapper, "area-filter", [], "Area", true, [
+            {id: "MWI_3_1", label: "3.1"},
+            {id: "MWI_3_2", label: "3.2"},
             {id: "MWI_4_1", label: "4.1"},
-            {id: "MWI_4_2", label: "4.2"},
-            {id: "MWI_4_3", label: "4.3"}]);
+            {id: "MWI_4_2", label: "4.2"}]);
     });
 
     it("renders non-area filters", () => {
@@ -150,14 +151,74 @@ describe("BubblePlot component", () => {
         });
     });
 
-    it("computes colourRange", () => {
+    it("computes colourRange", async () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         expect(vm.colourRange).toStrictEqual({
             min: 0,
             max: 0.8
         });
+
+        wrapper.setProps({
+            colourScales: {
+                prevalence: {
+                    type: ColourScaleType.Custom,
+                    customMin: 1,
+                    customMax: 2
+                }
+            }
+        });
+
+        await Vue.nextTick();
+        expect(vm.colourRange).toStrictEqual({
+            min: 1,
+            max: 2
+        });
+
+        wrapper.setProps({
+            colourScales: {
+                prevalence: {
+                    type: ColourScaleType.DynamicFull,
+                    customMin: 1,
+                    customMax: 2
+                }
+            }
+        });
+
+        await Vue.nextTick();
+        expect(vm.colourRange).toStrictEqual({
+            min: 0,
+            max: 0.9
+        });
+
+        wrapper.setProps({
+            colourScales: {
+                prevalence: {
+                    type: ColourScaleType.DynamicFiltered,
+                    customMin: 1,
+                    customMax: 2
+                }
+            },
+            selections: {
+                colorIndicatorId: "prevalence",
+                sizeIndicatorId: "plhiv",
+                detail: 4,
+                selectedFilterOptions: {
+                    age: [{id: "0:15", label: "0-15"}],
+                    sex: [{id: "male", label: "Male"}],
+                    area: []
+                }
+            }
+        });
+
+        await Vue.nextTick();
+        expect(vm.colourRange).toStrictEqual({
+            min: 0.1,
+            max: 0.9
+        });
+
     });
+
 
     it("computes currentLevelFeatureIds", () => {
         const wrapper = getWrapper();
@@ -183,7 +244,7 @@ describe("BubblePlot component", () => {
             prev,
             sizeRange,
             colorRange,
-            [propsData.filters[1]],
+            [propsData.filters[1], propsData.filters[2]],
             propsData.selections.selectedFilterOptions,
             10,
             70));
@@ -229,15 +290,15 @@ describe("BubblePlot component", () => {
             "MWI": {
                 id: "MWI", label: "Malawi", children: [
                     {id: "MWI_3_1", label: "3.1"},
+                    {id: "MWI_3_2", label: "3.2"},
                     {id: "MWI_4_1", label: "4.1"},
-                    {id: "MWI_4_2", label: "4.2"},
-                    {id: "MWI_4_3", label: "4.3"}
+                    {id: "MWI_4_2", label: "4.2"}
                 ]
             },
             "MWI_3_1": {id: "MWI_3_1", label: "3.1"},
+            "MWI_3_2": {id: "MWI_3_2", label: "3.2"},
             "MWI_4_1": {id: "MWI_4_1", label: "4.1"},
             "MWI_4_2": {id: "MWI_4_2", label: "4.2"},
-            "MWI_4_3": {id: "MWI_4_3", label: "4.3"}
         });
     });
 
