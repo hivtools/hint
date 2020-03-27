@@ -1,20 +1,37 @@
 import {
     colorFunctionFromName,
+    colourScaleStepFromMetadata,
     getColor,
+    getColourRanges,
     getIndicatorRanges,
-    toIndicatorNameLookup,
-    roundToContext, colourScaleStepFromMetadata, getColourRanges, roundRange
+    iterateDataValues,
+    roundRange,
+    roundToContext,
+    toIndicatorNameLookup
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
-import {ChoroplethIndicatorMetadata, FilterOption} from "../../../app/generated";
-import {ColourScaleSelections, ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
+import {Filter} from "../../../app/generated";
+import {ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
+import {Dict, NumericRange} from "../../../app/types";
 
 const indicators = [
     {
-        indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:0, colour: "interpolateGreys", invert_scale: false
+        indicator: "plhiv",
+        value_column: "plhiv",
+        name: "PLHIV",
+        min: 0,
+        max: 0,
+        colour: "interpolateGreys",
+        invert_scale: false
     },
     {
-        indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        indicator: "prevalence",
+        value_column: "prevalence",
+        name: "Prevalence",
+        min: 0,
+        max: 0,
+        colour: "interpolateGreys",
+        invert_scale: false
     }
 ];
 
@@ -40,7 +57,7 @@ it("getColor calculates colour string", () => {
         },
         {
             min: 0,
-            max:1
+            max: 1
         });
 
     expect(result).toEqual("rgb(151, 151, 151)");
@@ -91,22 +108,58 @@ it("can get colour ranges", () => {
 
     const indicatorsMeta = [
         {
-            indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 1, colour: "interpolateGreys", invert_scale: false
+            indicator: "prevalence",
+            value_column: "prevalence",
+            name: "Prevalence",
+            min: 0,
+            max: 1,
+            colour: "interpolateGreys",
+            invert_scale: false
         },
         {
-            indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:20, colour: "interpolateGreys", invert_scale: false
+            indicator: "plhiv",
+            value_column: "plhiv",
+            name: "PLHIV",
+            min: 0,
+            max: 20,
+            colour: "interpolateGreys",
+            invert_scale: false
         },
         {
-            indicator: "art_cov", value_column: "art_cov", name: "ART coverage", min: 0, max:20, colour: "interpolateGreys", invert_scale: false
+            indicator: "art_cov",
+            value_column: "art_cov",
+            name: "ART coverage",
+            min: 0,
+            max: 20,
+            colour: "interpolateGreys",
+            invert_scale: false
         },
         {
-            indicator: "vls", value_column: "vls", name: "Viral Load Suppression", min: 0, max:21, colour: "interpolateGreys", invert_scale: false
+            indicator: "vls",
+            value_column: "vls",
+            name: "Viral Load Suppression",
+            min: 0,
+            max: 21,
+            colour: "interpolateGreys",
+            invert_scale: false
         },
         {
-            indicator: "nonexistent_full", value_column: "ne_full", name: "Not In Data", min: 0, max:1, colour: "interpolateGreys", invert_scale: false
+            indicator: "nonexistent_full",
+            value_column: "ne_full",
+            name: "Not In Data",
+            min: 0,
+            max: 1,
+            colour: "interpolateGreys",
+            invert_scale: false
         },
         {
-            indicator: "nonexistent_filtered", value_column: "ne_filtered", name: "Not In Data", min: 0, max:1, colour: "interpolateGreys", invert_scale: false
+            indicator: "nonexistent_filtered",
+            value_column: "ne_filtered",
+            name: "Not In Data",
+            min: 0,
+            max: 1,
+            colour: "interpolateGreys",
+            invert_scale: false
         }
     ];
 
@@ -119,7 +172,12 @@ it("can get colour ranges", () => {
         nonexistent_filtered: {type: ColourScaleType.DynamicFiltered, customMin: 0, customMax: 1}
     };
 
-    const filters = [{id: "year", column_id: "year", label: "Year", options: [{id: "2018", label: ""}, {id: "2019", label: ""}]}];
+    const filters = [{
+        id: "year",
+        column_id: "year",
+        label: "Year",
+        options: [{id: "2018", label: ""}, {id: "2019", label: ""}]
+    }];
     const selectedFilterValues = {year: [{id: "2019", label: "2019"}]};
 
     const areaIds = ["MWI_1_1", "MWI_1_2"];
@@ -138,10 +196,16 @@ it("can get colour ranges", () => {
 
 it("getColouRanges for unknown scale type returns nothing", () => {
     const indicatorsMeta = [{
-            indicator: "fakeIndicator", value_column: "fake", name: "fake", min: 0, max: 1, colour: "interpolateGreys", invert_scale: false
+        indicator: "fakeIndicator",
+        value_column: "fake",
+        name: "fake",
+        min: 0,
+        max: 1,
+        colour: "interpolateGreys",
+        invert_scale: false
     }];
     const colourScales = {
-      fakeIndicator: {type: 99 as ColourScaleType, customMin: 0, customMax: 0}
+        fakeIndicator: {type: 99 as ColourScaleType, customMin: 0, customMax: 0}
     };
     const result = getColourRanges([], indicatorsMeta, colourScales, [], {}, []);
     expect(result).toStrictEqual({});
@@ -162,14 +226,14 @@ it("getColor can invert color function", () => {
     expect(result).toEqual("rgb(255, 255, 255)"); //0 = white in interpolateGreys
 
     const invertedResult = getColor(0, {
-            min: 0,
-            max: 1,
-            colour: "interpolateGreys",
-            invert_scale: true,
-            indicator: "test",
-            value_column: "",
-            name: ""
-        }, {min: 0, max: 1});
+        min: 0,
+        max: 1,
+        colour: "interpolateGreys",
+        invert_scale: true,
+        indicator: "test",
+        value_column: "",
+        name: ""
+    }, {min: 0, max: 1});
     expect(invertedResult).toEqual("rgb(0, 0, 0)");
 });
 
@@ -291,10 +355,22 @@ it("getColor can use negative min and negative max", () => {
 it("can get indicator name lookup", () => {
     const indicators = [
         {
-            indicator: "plhiv", value_column: "plhiv", name: "PLHIV", min: 0, max:0, colour: "interpolateGreys", invert_scale: false
+            indicator: "plhiv",
+            value_column: "plhiv",
+            name: "PLHIV",
+            min: 0,
+            max: 0,
+            colour: "interpolateGreys",
+            invert_scale: false
         },
         {
-            indicator: "prevalence", value_column: "prevalence", name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+            indicator: "prevalence",
+            value_column: "prevalence",
+            name: "Prevalence",
+            min: 0,
+            max: 0,
+            colour: "interpolateGreys",
+            invert_scale: false
         }
     ];
     expect(toIndicatorNameLookup(indicators)).toStrictEqual({
@@ -303,23 +379,23 @@ it("can get indicator name lookup", () => {
     });
 });
 
-it ("round to context rounds values to 1 more decimal place than the context where context is integer", () => {
+it("round to context rounds values to 1 more decimal place than the context where context is integer", () => {
     expect(roundToContext(0.1234, [0, 1])).toBe(0.1);
 });
 
-it ("round to context rounds values to 1 more decimal place than the context where context has fewer decimal places than value", () => {
+it("round to context rounds values to 1 more decimal place than the context where context has fewer decimal places than value", () => {
     expect(roundToContext(0.1234, [0, 0.1])).toBe(0.12);
 });
 
-it ("round to context does not round value if it already has fewer decimal places than context", () => {
+it("round to context does not round value if it already has fewer decimal places than context", () => {
     expect(roundToContext(0.1, [0, 0.12])).toBe(0.1);
 });
 
-it ("round to context does not round value if both values and context are integers", () => {
+it("round to context does not round value if both values and context are integers", () => {
     expect(roundToContext(5, [0, 10])).toBe(5);
 });
 
-it ("round to context can round when context includes negative", () => {
+it("round to context can round when context includes negative", () => {
     expect(roundToContext(-0.3614, [-0.45, 0])).toBe(-0.361);
 });
 
@@ -347,4 +423,64 @@ it("roundRange rounds as expected", () => {
 it("roundRange can round where max equals min", () => {
     expect(roundRange({min: 0.314, max: 0.314})).toStrictEqual({min: 0.31, max: 0.31});
     expect(roundRange({min: 10, max: 10})).toStrictEqual({min: 10, max: 10});
+});
+
+it("can iterate data values and filter rows", () => {
+
+    const indicators = [
+        {
+            indicator: "plhiv", value_column: "value", indicator_column: "indicator", indicator_value: "plhiv",
+            name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        },
+        {
+            indicator: "prevalence", value_column: "value", indicator_column: "indicator", indicator_value: "prev",
+            name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        }
+    ];
+
+    const data = [
+        {area_id: "MWI_1_1", indicator: "plhiv", value: 12, year: 2010},
+        {area_id: "MWI_1_1", indicator: "prev", value: 0.5, year: 2010},
+        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2010},
+        {area_id: "MWI_1_2", indicator: "prev", value: 0.6, year: 2011},
+        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2011}
+    ];
+
+    const fakeFilter: Filter = {id: "year", column_id: "year", label: "year", options: [{id: "2010", label: "2010"}]};
+
+    const result: number[] = [];
+    iterateDataValues(data, indicators, ["MWI_1_1", "MWI_1_2"], [fakeFilter], {"year": [{id: "2010", label: "2010"}]},
+        (areaId, meta, value) => result.push(value));
+
+    expect(result).toStrictEqual([12, 0.5, 14]);
+});
+
+it("handles iterating data values where there are no selected filter options", () => {
+
+    const indicators = [
+        {
+            indicator: "plhiv", value_column: "value", indicator_column: "indicator", indicator_value: "plhiv",
+            name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        },
+        {
+            indicator: "prevalence", value_column: "value", indicator_column: "indicator", indicator_value: "prev",
+            name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        }
+    ];
+
+    const data = [
+        {area_id: "MWI_1_1", indicator: "plhiv", value: 12, year: 2010},
+        {area_id: "MWI_1_1", indicator: "prev", value: 0.5, year: 2010},
+        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2010},
+        {area_id: "MWI_1_2", indicator: "prev", value: 0.6, year: 2011},
+        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2011}
+    ];
+
+    const fakeFilter: Filter = {id: "year", column_id: "year", label: "year", options: [{id: "2010", label: "2010"}]};
+
+    const result: number[] = [];
+    iterateDataValues(data, indicators, ["MWI_1_1", "MWI_1_2"], [fakeFilter], {},
+        (areaId, meta, value) => result.push(value));
+
+    expect(result).toStrictEqual([12, 0.5, 14, 0.6, 14]);
 });
