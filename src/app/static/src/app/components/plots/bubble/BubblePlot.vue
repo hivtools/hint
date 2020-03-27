@@ -226,6 +226,9 @@
                 return this.fullIndicatorRanges[sizeId];
             },
             colourRange() {
+                if (!this.initialised) {
+                    return {max: 1, min: 0}
+                }
                 const colorId = this.selections.colorIndicatorId;
                 const type = this.colourScales[colorId] && this.colourScales[colorId].type;
                 switch (type) {
@@ -264,6 +267,9 @@
                 return Array.from(selectedAreaIdSet)
             },
             featureIndicators() {
+                if (!this.initialised) {
+                    return {}
+                }
                 return getFeatureIndicators(
                     this.chartdata,
                     this.selectedAreaIds,

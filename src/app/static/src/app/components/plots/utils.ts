@@ -73,7 +73,6 @@ export const getDynamicFilteredColourRange = function (data: any,
         min: filteredIndicatorRange ? filteredIndicatorRange.min : 0,
         max: filteredIndicatorRange ? filteredIndicatorRange.max : 0
     });
-
 };
 
 export const roundRange = function (unrounded: NumericRange) {
@@ -99,16 +98,16 @@ export const iterateDataValues = function (
            indicatorMeta: ChoroplethIndicatorMetadata, value: number) => void) {
 
     const selectedFilterValueIds: Dict<string[]> = {};
-    const validFilters = filters && filters.filter(f => f.options && f.options.length > 0);
+    const validFilters = filters && selectedFilterValues
+        && filters.filter(f => f.options && f.options.length > 0 && selectedFilterValues!!.hasOwnProperty(f.id));
 
-    if (validFilters && selectedFilterValues) {
+    if (validFilters) {
         for (const f of validFilters) {
-            selectedFilterValueIds[f.id] = selectedFilterValues[f.id].map(n => n.id)
+            selectedFilterValueIds[f.id] = selectedFilterValues!![f.id].map(n => n.id)
         }
     }
-
     for (const row of data) {
-        if (validFilters && selectedFilterValues && excludeRow(row, validFilters, selectedFilterValueIds)) {
+        if (validFilters && excludeRow(row, validFilters, selectedFilterValueIds)) {
             continue;
         }
 

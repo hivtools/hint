@@ -3,9 +3,10 @@ import {
     getColor,
     getIndicatorRange,
     toIndicatorNameLookup,
-    roundToContext, colourScaleStepFromMetadata, roundRange, getDynamicFilteredColourRange
+    roundToContext, colourScaleStepFromMetadata, roundRange, getDynamicFilteredColourRange, iterateDataValues
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
+import {Filter} from "../../../app/generated";
 
 it("colorFunctionFromName returns color function", () => {
     const result = colorFunctionFromName("interpolateMagma");
@@ -117,14 +118,14 @@ it("getColor can invert color function", () => {
     expect(result).toEqual("rgb(255, 255, 255)"); //0 = white in interpolateGreys
 
     const invertedResult = getColor(0, {
-            min: 0,
-            max: 1,
-            colour: "interpolateGreys",
-            invert_scale: true,
-            indicator: "test",
-            value_column: "",
-            name: ""
-        }, {min: 0, max: 1});
+        min: 0,
+        max: 1,
+        colour: "interpolateGreys",
+        invert_scale: true,
+        indicator: "test",
+        value_column: "",
+        name: ""
+    }, {min: 0, max: 1});
     expect(invertedResult).toEqual("rgb(0, 0, 0)");
 });
 
@@ -302,4 +303,65 @@ it("roundRange rounds as expected", () => {
 it("roundRange can round where max equals min", () => {
     expect(roundRange({min: 0.314, max: 0.314})).toStrictEqual({min: 0.31, max: 0.31});
     expect(roundRange({min: 10, max: 10})).toStrictEqual({min: 10, max: 10});
+});
+
+
+it("can iterate data values and filter rows", () => {
+
+    const indicators = [
+        {
+            indicator: "plhiv", value_column: "value", indicator_column: "indicator", indicator_value: "plhiv",
+            name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        },
+        {
+            indicator: "prevalence", value_column: "value", indicator_column: "indicator", indicator_value: "prev",
+            name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        }
+    ];
+
+    const data = [
+        {area_id: "MWI_1_1", indicator: "plhiv", value: 12, year: 2010},
+        {area_id: "MWI_1_1", indicator: "prev", value: 0.5, year: 2010},
+        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2010},
+        {area_id: "MWI_1_2", indicator: "prev", value: 0.6, year: 2011},
+        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2011}
+    ];
+
+    const fakeFilter: Filter = {id: "year", column_id: "year", label: "year", options: [{id: "2010", label: "2010"}]};
+
+    const result: number[] = [];
+    iterateDataValues(data, indicators, ["MWI_1_1", "MWI_1_2"], [fakeFilter], {"year": [{id: "2010", label: "2010"}]},
+        (areaId, meta, value) => result.push(value));
+
+    expect(result).toStrictEqual([12, 0.5, 14]);
+});
+
+it("handles iterating data values where there are no selected filter options", () => {
+
+    const indicators = [
+        {
+            indicator: "plhiv", value_column: "value", indicator_column: "indicator", indicator_value: "plhiv",
+            name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        },
+        {
+            indicator: "prevalence", value_column: "value", indicator_column: "indicator", indicator_value: "prev",
+            name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+        }
+    ];
+
+    const data = [
+        {area_id: "MWI_1_1", indicator: "plhiv", value: 12, year: 2010},
+        {area_id: "MWI_1_1", indicator: "prev", value: 0.5, year: 2010},
+        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2010},
+        {area_id: "MWI_1_2", indicator: "prev", value: 0.6, year: 2011},
+        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2011}
+    ];
+
+    const fakeFilter: Filter = {id: "year", column_id: "year", label: "year", options: [{id: "2010", label: "2010"}]};
+
+    const result: number[] = [];
+    iterateDataValues(data, indicators, ["MWI_1_1", "MWI_1_2"], [fakeFilter], {},
+        (areaId, meta, value) => result.push(value));
+
+    expect(result).toStrictEqual([12, 0.5, 14, 0.6, 14]);
 });
