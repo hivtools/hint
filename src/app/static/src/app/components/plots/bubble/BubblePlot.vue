@@ -214,6 +214,9 @@
                 return this.currentFeatures.map(f => f.properties!!["area_id"]);
             },
             colourRanges() {
+                if (!this.initialised){
+                    return {}
+                }
                 let selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
 
                 return getColourRanges(
@@ -230,6 +233,9 @@
                 return Array.from(selectedAreaIdSet)
             },
             featureIndicators() {
+                if (!this.initialised){
+                    return {}
+                }
                 return getFeatureIndicators(
                     this.chartdata,
                     this.selectedAreaIds,
