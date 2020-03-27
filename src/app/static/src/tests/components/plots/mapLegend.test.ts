@@ -1,8 +1,17 @@
-import {shallowMount, WrapperArray} from '@vue/test-utils';
+import {createLocalVue, shallowMount, WrapperArray} from '@vue/test-utils';
 import MapLegend from "../../../app/components/plots/MapLegend.vue";
 import {Vue} from "vue/types/vue";
 import {ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
+import Vuex from "vuex";
+import {emptyState} from "../../../app/root";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+
+const localVue = createLocalVue();
+const store = new Vuex.Store({
+    state: emptyState()
+});
+registerTranslations(store);
 
 describe("Map legend component", () => {
 
@@ -25,7 +34,7 @@ describe("Map legend component", () => {
                 customMax: 2.5
             },
             colourRange
-        }
+        }, localVue
     });
 
     const expectLevels = (levels: WrapperArray<Vue>) => {
@@ -198,13 +207,15 @@ describe("Map legend component", () => {
         expect(adjust.props().step).toBe(2);
 
         const showAdjust = wrapper.find("#adjust-scale a");
+        expect(showAdjust.find("span").text()).toBe("Adjust scale");
+
         showAdjust.trigger("click");
         expect(adjust.props().show).toBe(true);
-        expect(showAdjust.text()).toBe("Done");
+        expect(showAdjust.find("span").text()).toBe("Done");
 
         showAdjust.trigger("click");
         expect(adjust.props().show).toBe(false);
-        expect(showAdjust.text()).toBe("Adjust scale");
+        expect(showAdjust.find("span").text()).toBe("Adjust scale");
     });
 
     it("emits update event when scale changes", () => {

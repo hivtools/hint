@@ -99,7 +99,7 @@ export interface Translations {
 }
 
 const en: Translations = {
-    adjustScale: "Adjust scales",
+    adjustScale: "Adjust scale",
     age: "Age",
     ANC: "ANC",
     area: "Area",
