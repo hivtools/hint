@@ -2,7 +2,6 @@ import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
 import {ColourScaleSelections, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
-import {jsJsx} from "ts-loader/dist/constants";
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
                          colourRange: NumericRange) => {
@@ -138,12 +137,11 @@ export const iterateDataValues = function (
 
     const selectedFilterValueIds: Dict<string[]> = {};
     const validFilters = filters && selectedFilterValues
-        && filters.filter(f => f.options && f.options.length > 0);
+        && filters.filter(f => f.options && f.options.length > 0 && selectedFilterValues!!.hasOwnProperty(f.id));
 
     if (validFilters) {
         for (const f of validFilters) {
-                selectedFilterValueIds[f.id] = selectedFilterValues!!.hasOwnProperty(f.id) ?
-                    selectedFilterValues!![f.id].map(n => n.id) : []
+            selectedFilterValueIds[f.id] = selectedFilterValues!![f.id].map(n => n.id)
         }
     }
     for (const row of data) {

@@ -442,8 +442,8 @@ it("can iterate data values and filter rows", () => {
         {area_id: "MWI_1_1", indicator: "plhiv", value: 12, year: 2010},
         {area_id: "MWI_1_1", indicator: "prev", value: 0.5, year: 2010},
         {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2010},
-        {area_id: "MWI_1_2", indicator: "prev", value: 0.6, year: 2010},
-        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2010}
+        {area_id: "MWI_1_2", indicator: "prev", value: 0.6, year: 2011},
+        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2011}
     ];
 
     const fakeFilter: Filter = {id: "year", column_id: "year", label: "year", options: [{id: "2010", label: "2010"}]};
@@ -452,7 +452,7 @@ it("can iterate data values and filter rows", () => {
     iterateDataValues(data, indicators, ["MWI_1_1", "MWI_1_2"], [fakeFilter], {"year": [{id: "2010", label: "2010"}]},
         (areaId, meta, value) => result.push(value));
 
-    expect(result).toStrictEqual([12, 0.5, 14, 0.6, 14]);
+    expect(result).toStrictEqual([12, 0.5, 14]);
 });
 
 it("handles iterating data values where there are no selected filter options", () => {
@@ -472,8 +472,8 @@ it("handles iterating data values where there are no selected filter options", (
         {area_id: "MWI_1_1", indicator: "plhiv", value: 12, year: 2010},
         {area_id: "MWI_1_1", indicator: "prev", value: 0.5, year: 2010},
         {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2010},
-        {area_id: "MWI_1_2", indicator: "prev", value: 0.6, year: 2010},
-        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2010}
+        {area_id: "MWI_1_2", indicator: "prev", value: 0.6, year: 2011},
+        {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2011}
     ];
 
     const fakeFilter: Filter = {id: "year", column_id: "year", label: "year", options: [{id: "2010", label: "2010"}]};
@@ -482,5 +482,5 @@ it("handles iterating data values where there are no selected filter options", (
     iterateDataValues(data, indicators, ["MWI_1_1", "MWI_1_2"], [fakeFilter], {},
         (areaId, meta, value) => result.push(value));
 
-    expect(result).toStrictEqual([]);
+    expect(result).toStrictEqual([12, 0.5, 14, 0.6, 14]);
 });
