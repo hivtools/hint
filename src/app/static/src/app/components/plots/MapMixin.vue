@@ -16,7 +16,9 @@
     }
 
     export interface Computed {
-        featuresByLevel: { [k: number]: Feature[] }
+        featuresByLevel: { [k: number]: Feature[] },
+        currentFeatures: Feature[],
+        currentLevelFeatureIds: string[]
     }
 
     export const props = {
@@ -62,6 +64,12 @@
                 });
 
                 return result;
+            },
+            currentFeatures() {
+                return this.featuresByLevel[this.selections.detail] || [];
+            },
+            currentLevelFeatureIds() {
+                return this.currentFeatures.map(f => f.properties!!["area_id"]);
             },
         }
     });

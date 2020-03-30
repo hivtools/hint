@@ -78,12 +78,10 @@
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any
     }
 
-    interface Computed extends MapMixinComputed{
+    interface Computed {
         initialised: boolean,
         colourRange: NumericRange,
         featureIndicators: IndicatorValuesDict,
-        currentFeatures: Feature[],
-        currentLevelFeatureIds: string[],
         maxLevel: number,
         indicatorNameLookup: Dict<string>,
         indicatorColourScale: ColourScaleSettings | null,
@@ -191,12 +189,6 @@
                 const levelNums: number[] = Object.keys(this.featuresByLevel).map(k => parseInt(k));
 
                 return Math.max(...levelNums);
-            },
-            currentFeatures() {
-                return this.featuresByLevel[this.selections.detail] || [];
-            },
-            currentLevelFeatureIds() {
-                return this.currentFeatures.map(f => f.properties!!["area_id"]);
             },
             indicatorNameLookup() {
                 return toIndicatorNameLookup(this.indicators)

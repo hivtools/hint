@@ -126,11 +126,9 @@
         updateColourScale: (colourScale: ColourScaleSettings) => void,
     }
 
-    interface Computed extends MapMixinComputed{
+    interface Computed {
         initialised: boolean,
-        currentLevelFeatureIds: string[],
         featureIndicators: BubbleIndicatorValuesDict,
-        currentFeatures: Feature[],
         maxLevel: number,
         indicatorNameLookup: Dict<string>,
         areaFilter: Filter,
@@ -185,9 +183,6 @@
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
                     !!this.selections.colorIndicatorId && !!this.selections.sizeIndicatorId;
-            },
-            currentLevelFeatureIds() {
-                return this.currentFeatures.map(f => f.properties!!["area_id"]);
             },
             sizeRange() {
                 if (!this.initialised) {
@@ -261,9 +256,6 @@
                 const levelNums: number[] = Object.keys(this.featuresByLevel).map(k => parseInt(k));
 
                 return Math.max(...levelNums);
-            },
-            currentFeatures() {
-                return this.featuresByLevel[this.selections.detail] || [];
             },
             indicatorNameLookup() {
                 return toIndicatorNameLookup(this.indicators)
