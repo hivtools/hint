@@ -92,17 +92,14 @@
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
     import {initialiseColourScaleFromMetadata} from "../choropleth/utils";
+    import MapMixin from "../MapMixin.vue";
+    import {Props as MapMixinProps} from "../MapMixin.vue";
+    import {Computed as MapMixinComputed} from "../MapMixin.vue";
+    import {props as mapMixinProps} from "../MapMixin.vue";
 
 
-    interface Props {
-        features: Feature[],
-        featureLevels: LevelLabel[]
-        indicators: ChoroplethIndicatorMetadata[],
-        chartdata: any[],
-        filters: Filter[],
-        selections: BubblePlotSelections,
-        areaFilterId: string,
-        colourScales: ColourScaleSelections,
+    interface Props extends MapMixinProps{
+        selections: BubblePlotSelections
     }
 
     interface Data {
@@ -129,11 +126,10 @@
         updateColourScale: (colourScale: ColourScaleSettings) => void,
     }
 
-    interface Computed {
+    interface Computed extends MapMixinComputed{
         initialised: boolean,
         currentLevelFeatureIds: string[],
         featureIndicators: BubbleIndicatorValuesDict,
-        featuresByLevel: { [k: number]: Feature[] },
         currentFeatures: Feature[],
         maxLevel: number,
         indicatorNameLookup: Dict<string>,
@@ -154,33 +150,13 @@
     }
 
     const props = {
-        features: {
-            type: Array
-        },
-        featureLevels: {
-            type: Array
-        },
-        indicators: {
-            type: Array
-        },
-        chartdata: {
-            type: Array
-        },
-        filters: {
-            type: Array
-        },
+        ...mapMixinProps,
         selections: {
             type: Object
-        },
-        areaFilterId: {
-            type: String
-        },
-        colourScales: {
-            type: Object
-        },
+        }
     };
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default MapMixin.extend<Data, Methods, Computed, Props>({
         name: "BubblePlot",
         components: {
             LMap,
@@ -279,24 +255,6 @@
                     this.minRadius,
                     this.maxRadius
                 );
-            },
-            featuresByLevel() {
-                //TODO: this is shared with choropleth, could move into utils file or Mixin
-                const result = {} as any;
-                this.featureLevels.forEach((l: any) => {
-                    if (l.display) {
-                        result[l.id] = [];
-                    }
-                });
-
-                this.features.forEach((feature: Feature) => {
-                    const adminLevel = parseInt(feature.properties!!["area_level"]); //Country (e.g. "MWI") is level 0
-                    if (result[adminLevel]) {
-                        result[adminLevel].push(feature);
-                    }
-                });
-
-                return result;
             },
             maxLevel() {
                 //TODO: this is shared with choropleth, could move into utils file or Mixin

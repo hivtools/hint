@@ -49,16 +49,13 @@
     import {getFeatureIndicator, initialiseColourScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
+    import MapMixin from "../MapMixin.vue";
+    import {Props as MapMixinProps} from "../MapMixin.vue";
+    import {Computed as MapMixinComputed} from "../MapMixin.vue";
+    import {props as mapMixinProps} from "../MapMixin.vue";
 
-    interface Props {
-        features: Feature[],
-        featureLevels: LevelLabel[]
-        indicators: ChoroplethIndicatorMetadata[],
-        chartdata: any[],
-        filters: Filter[],
+    interface Props extends MapMixinProps{
         selections: ChoroplethSelections,
-        colourScales: ColourScaleSelections,
-        areaFilterId: string,
         includeFilters: boolean
     }
 
@@ -81,11 +78,10 @@
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any
     }
 
-    interface Computed {
+    interface Computed extends MapMixinComputed{
         initialised: boolean,
         colourRange: NumericRange,
         featureIndicators: IndicatorValuesDict,
-        featuresByLevel: { [k: number]: Feature[] },
         currentFeatures: Feature[],
         currentLevelFeatureIds: string[],
         maxLevel: number,
@@ -102,36 +98,16 @@
     }
 
     const props = {
-        features: {
-            type: Array
-        },
-        featureLevels: {
-            type: Array
-        },
-        indicators: {
-            type: Array
-        },
-        chartdata: {
-            type: Array
-        },
-        filters: {
-            type: Array
-        },
+        ...mapMixinProps,
         selections: {
             type: Object
-        },
-        colourScales: {
-            type: Object
-        },
-        areaFilterId: {
-            type: String
         },
         includeFilters: {
             type: Boolean
         }
     };
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default MapMixin.extend<Data, Methods, Computed, Props>({
         name: "Choropleth",
         components: {
             LMap,
@@ -210,23 +186,6 @@
                     this.nonAreaFilters,
                     this.selections.selectedFilterOptions
                 );
-            },
-            featuresByLevel() {
-                const result = {} as any;
-                this.featureLevels.forEach((l: any) => {
-                    if (l.display) {
-                        result[l.id] = [];
-                    }
-                });
-
-                this.features.forEach((feature: Feature) => {
-                    const adminLevel = parseInt(feature.properties!!["area_level"]); //Country (e.g. "MWI") is level 0
-                    if (result[adminLevel]) {
-                        result[adminLevel].push(feature);
-                    }
-                });
-
-                return result;
             },
             maxLevel() {
                 const levelNums: number[] = Object.keys(this.featuresByLevel).map(k => parseInt(k));
