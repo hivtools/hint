@@ -7,7 +7,6 @@ import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 
-const localVue = createLocalVue();
 const store = new Vuex.Store({
     state: emptyState()
 });
@@ -19,23 +18,6 @@ describe("Map legend component", () => {
         max: 2,
         min: 1
     };
-
-    const wrapper = shallowMount(MapLegend, {
-        propsData: {
-            metadata: {
-                max: 2,
-                min: 1,
-                colour: "interpolateGreys",
-                invert_scale: false
-            },
-            colourScale: {
-                type: ColourScaleType.Default,
-                customMin: 1.5,
-                customMax: 2.5
-            },
-            colourRange
-        }, localVue
-    });
 
     const expectLevels = (levels: WrapperArray<Vue>) => {
         expect(levels.length).toBe(6);
@@ -56,9 +38,31 @@ describe("Map legend component", () => {
             .getPropertyValue("background")).toBe("rgb(0, 0, 0)");
     };
 
+    const wrapper = shallowMount(MapLegend, {
+        propsData: {
+            metadata: {
+                max: 2,
+                min: 1,
+                colour: "interpolateGreys",
+                invert_scale: false
+            },
+            colourScale: {
+                type: ColourScaleType.Default,
+                customMin: 1.5,
+                customMax: 2.5
+            },
+            colourRange
+        }
+    });
+
     it("calculates 6 levels from min to max", () => {
         const levels = wrapper.findAll(".level");
         expectLevels(levels);
+    });
+
+    it("renders icons with colors", () => {
+        const icons = wrapper.findAll("i");
+        expectIcons(icons);
     });
 
     it("calculates 6 levels from min to max with negative min", () => {
@@ -106,12 +110,9 @@ describe("Map legend component", () => {
             .getPropertyValue("background")).toBe("rgb(255, 255, 255)");
     });
 
-    it("renders icons with colors", () => {
-        const icons = wrapper.findAll("i");
-        expectIcons(icons);
-    });
-
     it("does not render adjust link if no colour scale", () => {
+        expect(wrapper.find("#adjust-scale").exists()).toBe(true);
+
         const noScaleWrapper = shallowMount(MapLegend, {
             propsData: {
                     metadata: {
@@ -124,7 +125,7 @@ describe("Map legend component", () => {
                     colourRange
                     },
                 });
-        expect(wrapper.find("#adjust-scales").exists()).toBe(false);
+        expect(noScaleWrapper.find("#adjust-scale").exists()).toBe(false);
     });
 
     it("renders icons with colors, with scale inverted", () => {
