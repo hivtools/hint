@@ -227,7 +227,7 @@ const fr: Partial<Translations> = {
     done: "Terminé",
     download: "Télécharger",
     downloadResults: "Télécharger les résultats",
-    downloadSummary: "Télécharger le résumé",
+    downloadSummary: "Télécharger les résultats grossiers du groupe d'âge",
     email: "Adresse e-mail",
     emailValidation: "Veuillez entrer une adresse e-mail valide.",
     entireDataset: "Toutes les données",
