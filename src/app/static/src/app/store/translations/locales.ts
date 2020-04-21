@@ -128,7 +128,7 @@ const en: Translations = {
     done: "Done",
     download: "Download",
     downloadResults: "Download results",
-    downloadSummary: "Download summary",
+    downloadSummary: "Download coarse age group outputs",
     email: "Email address",
     emailValidation: "Please enter a valid email address.",
     entireDataset: "Entire dataset",
