@@ -40,7 +40,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
             </div>
         </div>
 
-        <div class="mt-1"><span v-translate="'fitToCurrentDataset'"></span>t</div>
+        <div class="mt-1"><span v-translate="'fitToCurrentDataset'"></span></div>
         <div class="ml-2">
             <div class="form-check mt-1">
                 <label class="form-check-label">
