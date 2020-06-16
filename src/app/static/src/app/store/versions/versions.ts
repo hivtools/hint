@@ -1,7 +1,8 @@
 import {Module} from 'vuex';
 import {localStorageManager} from "../../localStorageManager";
 import {RootState} from "../../root";
-import {mutations} from "./mutations"
+import {mutations} from "./mutations";
+import {actions} from "./actions";
 
 export interface VersionsState {
     userVersion: string | null,
@@ -22,5 +23,6 @@ const existingState = localStorageManager.getState();
 export const versions: Module<VersionsState, RootState> = {
     namespaced,
     state: {...initialVersionsState(), ...existingState && existingState.versions},
-    mutations
+    mutations,
+    actions
 };

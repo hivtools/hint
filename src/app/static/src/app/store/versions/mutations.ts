@@ -1,4 +1,4 @@
-import {Mutation, MutationTree} from "vuex";
+import {MutationTree} from "vuex";
 import {VersionsState} from "../versions/versions";
 import {PayloadWithType} from "../../types";
 

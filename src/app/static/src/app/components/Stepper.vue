@@ -1,5 +1,5 @@
 <template>
-    <div class="container mb-5">
+    <div>
         <div class="row">
             <template v-for="step in steps">
                 <step :key="step.number"
