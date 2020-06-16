@@ -95,6 +95,7 @@ export interface Translations {
     usernameValidation: string,
     validate: string,
     validating: string,
+    versions: string,
     xAxis: string
 }
 
@@ -196,6 +197,7 @@ const en: Translations = {
     usernameValidation: "Please enter your username",
     validate: "Validate",
     validating: "Validating...",
+    versions: "Versions",
     xAxis: "X Axis"
 };
 

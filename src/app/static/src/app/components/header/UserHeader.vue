@@ -5,7 +5,18 @@
                 <div class="navbar-header">
                     {{title}}
                 </div>
-                <file-menu :title="title"></file-menu>
+
+                    <a v-if="!isGuest"
+                       href="#"
+                       v-translate="'versions'"
+                       style="flex:none"
+                       class="ml-2"
+                       @click="manageVersions(true)"></a>
+
+                    <file-menu :title="title"></file-menu>
+
+
+
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-light">
                     <span v-translate="'loggedInAs'"></span> {{user}}
                 </span>
@@ -40,8 +51,9 @@
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
-    import {mapStateProp} from "../../utils";
+    import {mapMutationByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
+    import {VersionsMutations} from "../../store/versions/mutations";
 
     interface Props {
         title: string,
@@ -75,6 +87,9 @@
             isGuest() {
                 return this.user == "guest"
             }
+        },
+        methods: {
+            manageVersions: mapMutationByName("versions", VersionsMutations.SetManageVersions),
         },
         props: {
             title: String,
