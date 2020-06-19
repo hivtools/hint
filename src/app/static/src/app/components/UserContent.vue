@@ -17,7 +17,8 @@
     interface Computed {
         manageVersions: boolean,
         isGuest: boolean,
-        showVersions: boolean
+        showVersions: boolean,
+        userVersion: string | null
     }
 
     interface Props {
@@ -34,13 +35,14 @@
         },
         computed: {
             ...mapStateProps<VersionsState, keyof Computed>(namespace, {
-                manageVersions: state => state.manageVersions
+                manageVersions: state => state.manageVersions,
+                userVersion: state => state.userVersion
             }),
             isGuest() {
                 return this.user == "guest"
             },
             showVersions() {
-                return !this.isGuest && this.manageVersions;
+                return !this.isGuest && (this.manageVersions || !this.userVersion);
             }
         }
     });

@@ -6,13 +6,15 @@ import {actions} from "./actions";
 
 export interface VersionsState {
     userVersion: string | null,
-    manageVersions: boolean
+    manageVersions: boolean,
+    error: Error | null
 }
 
 export const initialVersionsState = (): VersionsState => {
     return {
         userVersion: null,
-        manageVersions: false
+        manageVersions: false,
+        error: null
     }
 };
 
