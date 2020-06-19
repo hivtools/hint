@@ -46,6 +46,10 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
         return profiles.singleOrNull() ?: CommonProfile().apply {
             id = GUEST_USER
         }
+    }
 
+    fun renew() {
+        // Force the creation of a new session with a new id
+        pac4jConfig.sessionStore.renewSession(webContext)
     }
 }
