@@ -17,9 +17,6 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
             .postAndReturn<String>("/version/")
             .then(() => {
                 if (!state.error) {
-                    //TODO: Still have a weird login loading artefact on first login
-                    //commit("load/UpdatingState");
-                    //Reset state for the new version
                     const newRootState = {
                         ...emptyState(),
                         versions: {
