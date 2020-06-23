@@ -98,6 +98,7 @@ export interface Translations {
     validate: string,
     validating: string,
     versions: string,
+    versionsHeader: string,
     xAxis: string
 }
 
@@ -122,7 +123,7 @@ const en: Translations = {
     continue: "continue",
     couldNotParse: "Could not parse API response. Please contact support.",
     country: "Country",
-    createVersion: "Create a new version",
+    createVersion: "Create version",
     currentVersion: "Current version",
     custom: "Custom",
     default: "Default",
@@ -202,6 +203,7 @@ const en: Translations = {
     validate: "Validate",
     validating: "Validating...",
     versions: "Versions",
+    versionsHeader: "Create a new version",
     xAxis: "X Axis"
 };
 

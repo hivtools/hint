@@ -13,6 +13,7 @@ export const mutations: MutationTree<VersionsState> = {
         state.manageVersions = action.payload;
     },
     [VersionsMutations.NewVersion](state: VersionsState, action: PayloadWithType<string>) {
+        //state.manageVersions = true; //ensure Versions screen is displayed until state is reloaded
         state.userVersion = action.payload;
         state.error = null;
     },

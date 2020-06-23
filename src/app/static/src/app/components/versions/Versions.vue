@@ -1,9 +1,10 @@
 <template>
     <div>
+        <h2 v-translate="versionsHeader"></h2>
         <div class="my-2">
             <div v-if="userVersion">
-                <span v-translate="'currentVersion'"></span>
-                : {{userVersion}}
+                <a v-translate="'currentVersion'" href="#" @click></a>
+                 ({{userVersion}})
             </div>
             <button type="button"
                     class="btn btn-red"
