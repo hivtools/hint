@@ -3,7 +3,8 @@ set -ex
 
 docker network prune -f
 
-HERE=$(readlink -f "$(dirname $0)")
+source scripts/detect-os.sh
+HERE=$($PATH_TYPE "$(dirname $0)")
 NETWORK=hint_nw
 DB=hint_db
 API=hintr

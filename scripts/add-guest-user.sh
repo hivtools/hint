@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
+source scripts/detect-os.sh
 NETWORK=hint_nw
-HERE=$(readlink -f "$(dirname $0)")
+HERE=$($PATH_TYPE "$(dirname $0)")
 TEST_CONFIG=$HERE/../src/app/static/scripts/test.properties
 
 image=mrcide/hint-user-cli:master
