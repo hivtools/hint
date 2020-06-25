@@ -38,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SessionFile extends TableImpl<SessionFileRecord> {
 
-    private static final long serialVersionUID = -1805479186;
+    private static final long serialVersionUID = -526572594;
 
     /**
      * The reference instance of <code>public.session_file</code>
@@ -61,12 +61,12 @@ public class SessionFile extends TableImpl<SessionFileRecord> {
     /**
      * The column <code>public.session_file.hash</code>.
      */
-    public final TableField<SessionFileRecord, String> HASH = createField("hash", org.jooq.impl.SQLDataType.CLOB, this, "");
+    public final TableField<SessionFileRecord, String> HASH = createField("hash", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>public.session_file.type</code>.
      */
-    public final TableField<SessionFileRecord, String> TYPE = createField("type", org.jooq.impl.SQLDataType.CLOB, this, "");
+    public final TableField<SessionFileRecord, String> TYPE = createField("type", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>public.session_file.filename</code>.

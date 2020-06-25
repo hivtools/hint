@@ -11,6 +11,7 @@ import org.imperial.mrc.hint.db.tables.OnetimeToken;
 import org.imperial.mrc.hint.db.tables.SessionFile;
 import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
+import org.imperial.mrc.hint.db.tables.Version;
 
 
 /**
@@ -50,4 +51,9 @@ public class Tables {
      * The table <code>public.users</code>.
      */
     public static final Users USERS = org.imperial.mrc.hint.db.tables.Users.USERS;
+
+    /**
+     * The table <code>public.version</code>.
+     */
+    public static final Version VERSION = org.imperial.mrc.hint.db.tables.Version.VERSION;
 }

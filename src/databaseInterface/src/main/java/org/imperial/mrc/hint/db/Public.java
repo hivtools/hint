@@ -15,7 +15,9 @@ import org.imperial.mrc.hint.db.tables.OnetimeToken;
 import org.imperial.mrc.hint.db.tables.SessionFile;
 import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
+import org.imperial.mrc.hint.db.tables.Version;
 import org.jooq.Catalog;
+import org.jooq.Sequence;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
@@ -33,7 +35,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -617993275;
+    private static final long serialVersionUID = 1195988866;
 
     /**
      * The reference instance of <code>public</code>
@@ -66,6 +68,11 @@ public class Public extends SchemaImpl {
     public final Users USERS = org.imperial.mrc.hint.db.tables.Users.USERS;
 
     /**
+     * The table <code>public.version</code>.
+     */
+    public final Version VERSION = org.imperial.mrc.hint.db.tables.Version.VERSION;
+
+    /**
      * No further instances allowed
      */
     private Public() {
@@ -82,6 +89,18 @@ public class Public extends SchemaImpl {
     }
 
     @Override
+    public final List<Sequence<?>> getSequences() {
+        List result = new ArrayList();
+        result.addAll(getSequences0());
+        return result;
+    }
+
+    private final List<Sequence<?>> getSequences0() {
+        return Arrays.<Sequence<?>>asList(
+            Sequences.VERSION_ID_SEQ);
+    }
+
+    @Override
     public final List<Table<?>> getTables() {
         List result = new ArrayList();
         result.addAll(getTables0());
@@ -94,6 +113,7 @@ public class Public extends SchemaImpl {
             OnetimeToken.ONETIME_TOKEN,
             SessionFile.SESSION_FILE,
             UserSession.USER_SESSION,
-            Users.USERS);
+            Users.USERS,
+            Version.VERSION);
     }
 }

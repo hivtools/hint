@@ -11,6 +11,7 @@ import org.imperial.mrc.hint.db.tables.OnetimeToken;
 import org.imperial.mrc.hint.db.tables.SessionFile;
 import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
+import org.imperial.mrc.hint.db.tables.Version;
 import org.jooq.Index;
 import org.jooq.OrderField;
 import org.jooq.impl.Internal;
@@ -38,6 +39,7 @@ public class Indexes {
     public static final Index SESSION_FILE_PKEY = Indexes0.SESSION_FILE_PKEY;
     public static final Index USER_SESSION_PKEY = Indexes0.USER_SESSION_PKEY;
     public static final Index USERS_PKEY = Indexes0.USERS_PKEY;
+    public static final Index VERSION_PKEY = Indexes0.VERSION_PKEY;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -46,8 +48,9 @@ public class Indexes {
     private static class Indexes0 {
         public static Index FILE_PKEY = Internal.createIndex("file_pkey", File.FILE, new OrderField[] { File.FILE.HASH }, true);
         public static Index ONETIME_TOKEN_PKEY = Internal.createIndex("onetime_token_pkey", OnetimeToken.ONETIME_TOKEN, new OrderField[] { OnetimeToken.ONETIME_TOKEN.TOKEN }, true);
-        public static Index SESSION_FILE_PKEY = Internal.createIndex("session_file_pkey", SessionFile.SESSION_FILE, new OrderField[] { SessionFile.SESSION_FILE.SESSION }, true);
+        public static Index SESSION_FILE_PKEY = Internal.createIndex("session_file_pkey", SessionFile.SESSION_FILE, new OrderField[] { SessionFile.SESSION_FILE.SESSION, SessionFile.SESSION_FILE.HASH, SessionFile.SESSION_FILE.TYPE }, true);
         public static Index USER_SESSION_PKEY = Internal.createIndex("user_session_pkey", UserSession.USER_SESSION, new OrderField[] { UserSession.USER_SESSION.SESSION }, true);
         public static Index USERS_PKEY = Internal.createIndex("users_pkey", Users.USERS, new OrderField[] { Users.USERS.ID }, true);
+        public static Index VERSION_PKEY = Internal.createIndex("version_pkey", Version.VERSION, new OrderField[] { Version.VERSION.ID }, true);
     }
 }
