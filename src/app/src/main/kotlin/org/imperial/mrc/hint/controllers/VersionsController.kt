@@ -17,13 +17,12 @@ class VersionsController(private val session: Session,
     @ResponseBody
     fun newVersion(): ResponseEntity<String>
     {
-        session.renew()
-        val id = session.getId()
+        val newSnapshotId = session.generateNewSnapshotId()
+
         val user = session.getUserProfile()
 
-        sessionRepository.saveSession(id, user.id)
+        sessionRepository.saveSession(newSnapshotId, user.id)
 
-        return SuccessResponse(id).asResponseEntity()
-
+        return SuccessResponse(newSnapshotId).asResponseEntity()
     }
 }
