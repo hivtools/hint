@@ -6,9 +6,10 @@
                 <a v-translate="'currentVersion'" href="#" @click></a>
                  ({{userVersion}})
             </div>
+            <input type="text" class="form-control" v-translate:placeholder="'versionName'" v-model="newVersionName">
             <button type="button"
                     class="btn btn-red"
-                    @click="createVersion"
+                    @click="createVersion(newVersionName)"
                     v-translate="'createVersion'">
             </button>
         </div>
@@ -32,6 +33,11 @@
     }
 
     export default Vue.extend({
+        data: function(){
+            return {
+                newVersionName: ""
+            }
+        },
         computed: {
             ...mapStateProps<VersionsState, keyof Computed>(namespace, {
                 userVersion: state => state.userVersion,

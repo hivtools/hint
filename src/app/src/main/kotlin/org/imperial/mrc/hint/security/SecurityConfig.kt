@@ -62,8 +62,6 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
 
     fun generateNewSnapshotId(): String {
         val newSnapshotId = UUID.randomUUID().toString()
-        //TODO: remove this
-        println("MADE A NEW SNAPSHOT ID: " + newSnapshotId)
         setSnapshotId(newSnapshotId)
         return newSnapshotId
     }

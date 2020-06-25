@@ -5,16 +5,16 @@ import {api} from "../../apiService";
 import {VersionsMutations} from "./mutations";
 
 export interface VersionsActions {
-    createVersion: (store: ActionContext<VersionsState, RootState>) => void
+    createVersion: (store: ActionContext<VersionsState, RootState>, name: string) => void
 }
 
 export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
-    async createVersion(context) {
+    async createVersion(context, name) {
         const {commit, dispatch, state} = context;
         await api<VersionsMutations, VersionsMutations>(context)
             .withSuccess(VersionsMutations.NewVersion)
             .withError(VersionsMutations.VersionError)
-            .postAndReturn<String>("/version/")
+            .postAndReturn<String>("/version/", {name})
             .then(() => {
                 if (!state.error) {
                     const newRootState = {
