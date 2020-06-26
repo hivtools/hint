@@ -1,14 +1,17 @@
 <template>
     <div>
-        <h2 v-translate="versionsHeader"></h2>
-        <div class="my-2">
-            <div v-if="currentVersion">
-                <a v-translate="'currentVersion'" href="#" @click></a>
-                 ({{currentVersion.name}})
-            </div>
+        <div class="versions-header">
+            <span v-translate="'versionsHeaderCreate'"></span>
+            <span v-if="currentVersion">
+                <span v-translate="'or'"></span>
+                <a v-translate="'versionsHeaderReturn'" href="#" @click></a>
+                ({{currentVersion.name}})
+            </span>
+        </div>
+        <div class="my-3 col-6">
             <input type="text" class="form-control" v-translate:placeholder="'versionName'" v-model="newVersionName">
             <button type="button"
-                    class="btn btn-red"
+                    class="btn btn-red mt-2 float-right"
                     :disabled="disableCreate"
                     @click="createVersion(newVersionName)"
                     v-translate="'createVersion'">

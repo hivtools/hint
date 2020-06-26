@@ -65,6 +65,7 @@ export interface Translations {
     newPassword: string,
     notUsed: string,
     ok: string,
+    or: string,
     optionsValid: string,
     password: string,
     passwordValidation: string,
@@ -99,7 +100,8 @@ export interface Translations {
     validating: string,
     versionName: string,
     versions: string,
-    versionsHeader: string,
+    versionsHeaderCreate: string,
+    versionsHeaderReturn: string,
     xAxis: string
 }
 
@@ -170,6 +172,7 @@ const en: Translations = {
     newPassword: "New password",
     notUsed: "Not used",
     ok: "OK",
+    or: " or ",
     optionsValid: "Options are valid",
     password: "Password",
     passwordValidation: "Please enter your password.",
@@ -205,7 +208,8 @@ const en: Translations = {
     validating: "Validating...",
     versionName: "Version name",
     versions: "Versions",
-    versionsHeader: "Create a new version",
+    versionsHeaderCreate: "Create a new version",
+    versionsHeaderReturn: "return to current version",
     xAxis: "X Axis"
 };
 
@@ -271,6 +275,7 @@ const fr: Partial<Translations> = {
     newPassword: "Nouveau mot de passe",
     notUsed: "Non utilisé",
     ok: "OK",
+    or: " ou ",
     optionsValid: "Les options sont valides",
     password: "Mot de passe",
     passwordValidation: "Veuillez entrer votre mot de passe.",
