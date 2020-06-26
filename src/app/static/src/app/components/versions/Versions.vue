@@ -2,13 +2,14 @@
     <div>
         <h2 v-translate="versionsHeader"></h2>
         <div class="my-2">
-            <div v-if="userVersion">
+            <div v-if="currentVersion">
                 <a v-translate="'currentVersion'" href="#" @click></a>
-                 ({{userVersion}})
+                 ({{currentVersion.name}})
             </div>
             <input type="text" class="form-control" v-translate:placeholder="'versionName'" v-model="newVersionName">
             <button type="button"
                     class="btn btn-red"
+                    :disabled="disableCreate"
                     @click="createVersion(newVersionName)"
                     v-translate="'createVersion'">
             </button>
@@ -23,16 +24,22 @@
     import {VersionsState} from "../../store/versions/versions";
     import {Error} from "../../generated";
     import ErrorAlert from "../ErrorAlert.vue";
+    import {Version} from "../../types";
 
     const namespace = "versions";
 
-    interface Computed {
-        userVersion: string,
-        error: Error,
-        hasError: boolean
+    interface Data {
+        newVersionName: string
     }
 
-    export default Vue.extend({
+    interface Computed {
+        currentVersion: Version | null,
+        error: Error,
+        hasError: boolean,
+        disableCreate: boolean
+    }
+
+    export default Vue.extend<Data, {}, Computed, {}>({
         data: function(){
             return {
                 newVersionName: ""
@@ -40,10 +47,13 @@
         },
         computed: {
             ...mapStateProps<VersionsState, keyof Computed>(namespace, {
-                userVersion: state => state.userVersion,
+                currentVersion: state => state.currentVersion,
                 error: state => state.error,
                 hasError: state => !!state.error
             }),
+            disableCreate: function() {
+                return !this.newVersionName;
+            }
         },
         methods: {
             createVersion: mapActionByName(namespace, "createVersion")

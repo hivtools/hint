@@ -3,16 +3,19 @@ import {localStorageManager} from "../../localStorageManager";
 import {RootState} from "../../root";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
+import {Snapshot, Version} from "../../types";
 
 export interface VersionsState {
-    userVersion: string | null,
+    currentVersion: Version | null,
+    currentSnapshot: Snapshot | null,
     manageVersions: boolean,
     error: Error | null
 }
 
 export const initialVersionsState = (): VersionsState => {
     return {
-        userVersion: null,
+        currentVersion: null,
+        currentSnapshot: null,
         manageVersions: false,
         error: null
     }

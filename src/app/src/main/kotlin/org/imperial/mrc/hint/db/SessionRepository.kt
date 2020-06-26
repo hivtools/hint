@@ -4,14 +4,16 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.Tables.*
 import org.imperial.mrc.hint.exceptions.SessionException
 import org.imperial.mrc.hint.models.SessionFile
+import org.imperial.mrc.hint.models.Snapshot
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Component
 
+
 interface SessionRepository {
-    fun saveSession(sessionId: String, userId: String)
+    fun saveSession(sessionId: String, userId: String, versionId: Int?)
     // returns true if a new hash is saved, false if it already exists
     fun saveNewHash(hash: String): Boolean
 
@@ -21,12 +23,14 @@ interface SessionRepository {
     fun getHashesForSession(sessionId: String): Map<String, String>
     fun getSessionFiles(sessionId: String): Map<String, SessionFile>
     fun setFilesForSession(sessionId: String, files: Map<String, SessionFile?>)
+
+    fun getSessionSnapshot(sessionId: String, userId: String): Snapshot
 }
 
 @Component
 class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
 
-    override fun saveSession(sessionId: String, userId: String) {
+    override fun saveSession(sessionId: String, userId: String, versionId: Int?) {
 
         val userSession = dsl.selectFrom(USER_SESSION)
                 .where(USER_SESSION.SESSION.eq(sessionId))
@@ -36,6 +40,7 @@ class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
             dsl.insertInto(USER_SESSION)
                     .set(USER_SESSION.USER_ID, userId)
                     .set(USER_SESSION.SESSION, sessionId)
+                    .set(USER_SESSION.VERSION_ID, versionId)
                     .execute()
         }
     }
@@ -125,6 +130,19 @@ class JooqSessionRepository(private val dsl: DSLContext) : SessionRepository {
         } catch (e: DataIntegrityViolationException) {
             throw SessionException("loadFailed")
         }
+    }
+
+    override fun getSessionSnapshot(sessionId: String, userId: String): Snapshot
+    {
+       val result =  dsl.select(USER_SESSION.SESSION,
+                    USER_SESSION.CREATED,
+                    USER_SESSION.UPDATED)
+                .from(USER_SESSION)
+                .where(USER_SESSION.SESSION.eq(sessionId))
+                .and(USER_SESSION.USER_ID.eq(userId))
+               .fetchOne()
+
+        return Snapshot(result[USER_SESSION.SESSION], result[USER_SESSION.CREATED], result[USER_SESSION.UPDATED])
     }
 
     private fun getSessionFileRecord(sessionId: String, type: FileType): Record? {

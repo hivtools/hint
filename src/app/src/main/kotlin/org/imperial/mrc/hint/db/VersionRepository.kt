@@ -14,9 +14,6 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
     override fun saveNewVersion(userId: String, versionName: String): Int
     {
         val result = dsl.insertInto(VERSION, VERSION.USER_ID, VERSION.NAME)
-                //.set(VERSION.USER_ID, userId)
-                //.set(VERSION.NAME, versionName)
-                //.execute()
                 .values(userId, versionName)
                 .returning(VERSION.ID)
                 .fetchOne();

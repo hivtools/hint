@@ -35,7 +35,7 @@ docker run --rm -d \
   --network=$NETWORK \
   --name=$API \
   -p 8888:8888 \
-  -v $HERE/../src/app/uploads:/uploads \cd
+  -v $HERE/../src/app/uploads:/uploads \
   -e REDIS_URL=redis://redis:6379 \
   -e USE_MOCK_MODEL=true \
   $HINTR_IMAGE

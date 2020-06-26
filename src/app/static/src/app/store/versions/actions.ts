@@ -17,11 +17,13 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
             .postAndReturn<String>("/version/", {name})
             .then(() => {
                 if (!state.error) {
+                    // Reset state for new version
                     const newRootState = {
                         ...emptyState(),
                         versions: {
                             ...initialVersionsState,
-                            userVersion: state.userVersion
+                            currentVersion: state.currentVersion,
+                            currentSnapshot: state.currentVersion!.snapshots[0]
                         }
                     };
                     dispatch("load/updateStoreState", newRootState, {root: true});

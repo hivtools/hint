@@ -11,6 +11,7 @@
     import Versions from "./versions/Versions";
     import {mapStateProps} from "../utils";
     import {VersionsState} from "../store/versions/versions";
+    import {Snapshot} from "../types";
 
     const namespace = "versions";
 
@@ -18,7 +19,7 @@
         manageVersions: boolean,
         isGuest: boolean,
         showVersions: boolean,
-        userVersion: string | null
+        currentSnapshot: Snapshot | null
     }
 
     interface Props {
@@ -36,13 +37,13 @@
         computed: {
             ...mapStateProps<VersionsState, keyof Computed>(namespace, {
                 manageVersions: state => state.manageVersions,
-                userVersion: state => state.userVersion
+                currentSnapshot: state => state.currentSnapshot
             }),
             isGuest() {
                 return this.user == "guest"
             },
             showVersions() {
-                return !this.isGuest && (this.manageVersions || !this.userVersion);
+                return !this.isGuest && (this.manageVersions || !this.currentSnapshot);
             }
         }
     });
