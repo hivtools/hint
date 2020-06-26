@@ -106,7 +106,7 @@ abstract class HintrControllerTests {
     protected fun assertDeletes(fileType: FileType,
                                 getAction: (sut: HintrController) -> ResponseEntity<String>) {
         val mockSession = mock<Session> {
-            on { getId() } doReturn "sid"
+            on { getSnapshotId() } doReturn "sid"
         }
         val mockSessionRepository = mock<SessionRepository>()
         val sut = getSut(mock(), mock(), mockSession, mockSessionRepository)

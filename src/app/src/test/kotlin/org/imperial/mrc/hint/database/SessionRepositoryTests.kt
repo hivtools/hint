@@ -4,6 +4,7 @@ import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.SessionRepository
 import org.imperial.mrc.hint.db.Tables.SESSION_FILE
+import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.db.tables.UserSession.USER_SESSION
 import org.imperial.mrc.hint.exceptions.SessionException
 import org.imperial.mrc.hint.helpers.TranslationAssert
@@ -25,6 +26,9 @@ class SessionRepositoryTests {
     private lateinit var sut: SessionRepository
 
     @Autowired
+    private lateinit var versionRepo: VersionRepository
+
+    @Autowired
     private lateinit var userRepo: UserLogic
 
     @Autowired
@@ -34,24 +38,40 @@ class SessionRepositoryTests {
     private val testEmail = "test@test.com"
 
     @Test
-    fun `can save session`() {
+    fun `can save session without version id`() {
         userRepo.addUser(testEmail, "pw")
         val uid = userRepo.getUser(testEmail)!!.id
-        sut.saveSession(sessionId, uid)
+        sut.saveSession(sessionId, uid, null)
 
         val session = dsl.selectFrom(USER_SESSION)
                 .fetchOne()
 
         assertThat(session[USER_SESSION.USER_ID]).isEqualTo(uid)
         assertThat(session[USER_SESSION.SESSION]).isEqualTo(sessionId)
+        assertThat(session[USER_SESSION.VERSION_ID]).isEqualTo(null)
+    }
+
+    @Test
+    fun `can save session with version id`() {
+        userRepo.addUser(testEmail, "pw")
+        val uid = userRepo.getUser(testEmail)!!.id
+        val versionId = versionRepo.saveNewVersion(uid, "testVersion")
+        sut.saveSession(sessionId, uid, versionId)
+
+        val session = dsl.selectFrom(USER_SESSION)
+                .fetchOne()
+
+        assertThat(session[USER_SESSION.USER_ID]).isEqualTo(uid)
+        assertThat(session[USER_SESSION.SESSION]).isEqualTo(sessionId)
+        assertThat(session[USER_SESSION.VERSION_ID]).isEqualTo(versionId)
     }
 
     @Test
     fun `saveSession is idempotent`() {
         userRepo.addUser(testEmail, "pw")
         val uid = userRepo.getUser(testEmail)!!.id
-        sut.saveSession(sessionId, uid)
-        sut.saveSession(sessionId, uid)
+        sut.saveSession(sessionId, uid, null)
+        sut.saveSession(sessionId, uid, null)
 
         val session = dsl.selectFrom(USER_SESSION)
                 .fetchOne()
@@ -195,7 +215,7 @@ class SessionRepositoryTests {
     @Test
     fun `setFilesForSession deletes existing files for this session only`() {
         val uid = setUpSession()
-        sut.saveSession("sid2", uid);
+        sut.saveSession("sid2", uid, null);
 
         sut.saveNewHash("shape_hash")
         setUpHashAndSessionFile("old_pjnz_hash", "old_pjnz", sessionId, "pjnz")
@@ -261,7 +281,8 @@ class SessionRepositoryTests {
     private fun setUpSession(): String {
         userRepo.addUser(testEmail, "pw")
         val uid = userRepo.getUser(testEmail)!!.id
-        sut.saveSession(sessionId, uid)
+        val versionId = versionRepo.saveNewVersion(uid, "testversion")
+        sut.saveSession(sessionId, uid, versionId)
 
         return uid
     }
