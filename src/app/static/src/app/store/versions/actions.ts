@@ -11,6 +11,7 @@ export interface VersionsActions {
 export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
     async createVersion(context, name) {
         const {commit, dispatch, state} = context;
+        commit({type: VersionsMutations.SetLoading, payload: true});
         await api<VersionsMutations, VersionsMutations>(context)
             .withSuccess(VersionsMutations.NewVersion)
             .withError(VersionsMutations.VersionError)
