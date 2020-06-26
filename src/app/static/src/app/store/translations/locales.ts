@@ -95,13 +95,14 @@ export interface Translations {
     usernameValidation: string,
     validate: string,
     validating: string,
-    xAxis: string
+    xAxis: string,
+    year: string
 }
 
 const en: Translations = {
     adjustScale: "Adjust scale",
     age: "Age",
-    ANC: "ANC",
+    ANC: "ANC Testing",
     area: "Area",
     ART: "ART",
     apiCouldNotParseError: "Could not parse API response. Please contact support.",
@@ -187,7 +188,7 @@ const en: Translations = {
     shape: "Shape file",
     sizeIndicator: "Size Indicator",
     static: "Static",
-    survey: "Survey",
+    survey: "Household Survey",
     troubleshooting: "Troubleshooting",
     updatePassword: "Update password",
     uploadBaseline: "Upload baseline data",
@@ -196,13 +197,14 @@ const en: Translations = {
     usernameValidation: "Please enter your username",
     validate: "Validate",
     validating: "Validating...",
-    xAxis: "X Axis"
+    xAxis: "X Axis",
+    year: "Year"
 };
 
 const fr: Partial<Translations> = {
     adjustScale: "Ajuster l'échelle",
     age: "Âge",
-    ANC: "Clinique prénatale",
+    ANC: "Test de clinique prénatale",
     apiCouldNotParseError: "Impossible d'analyser la réponse de l'API. Veuillez contacter le support.",
     apiMissingError: "La réponse de l'API a échoué mais ne contenait aucune information d'erreur. Veuillez contacter le support.",
     area: "Zone",
@@ -283,7 +285,7 @@ const fr: Partial<Translations> = {
     sex: "Sexe",
     shape: "Fichier de formes",
     static: "Statique",
-    survey: "Enquête",
+    survey: "Enquête de ménage",
     troubleshooting: "Dépannage",
     updatePassword: "Mettre à jour le mot de passe",
     uploadBaseline: "Télécharger les données de base",
@@ -292,7 +294,8 @@ const fr: Partial<Translations> = {
     usernameValidation: "Veuillez entrer votre nom d’utilisateur",
     validate: "Valider",
     validating: "Validation en cours...",
-    xAxis: "Axe X"
+    xAxis: "Axe X",
+    year: "An"
 
 };
 
