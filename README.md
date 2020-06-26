@@ -9,7 +9,7 @@ Requirements:
 * Docker
 * npm
 * openjdk 8
-* realpath (Mac users only)
+* coreutils (Mac users only)
 
 1. Clone this repo
 1. Run `npm install` from `src/app/static`
