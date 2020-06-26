@@ -4,7 +4,7 @@
             <span v-translate="'versionsHeaderCreate'"></span>
             <span v-if="currentVersion">
                 <span v-translate="'or'"></span>
-                <a v-translate="'versionsHeaderReturn'" href="#" @click></a>
+                <a v-translate="'versionsHeaderReturn'" href="#" @click="setManageVersions(false)"></a>
                 ({{currentVersion.name}})
             </span>
         </div>
@@ -23,11 +23,12 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
     import {VersionsState} from "../../store/versions/versions";
     import {Error} from "../../generated";
     import ErrorAlert from "../ErrorAlert.vue";
     import {Version} from "../../types";
+    import {VersionsMutations} from "../../store/versions/mutations";
 
     const namespace = "versions";
 
@@ -59,7 +60,8 @@
             }
         },
         methods: {
-            createVersion: mapActionByName(namespace, "createVersion")
+            createVersion: mapActionByName(namespace, "createVersion"),
+            setManageVersions: mapMutationByName(namespace, VersionsMutations.SetManageVersions)
         },
         components: {
             ErrorAlert
