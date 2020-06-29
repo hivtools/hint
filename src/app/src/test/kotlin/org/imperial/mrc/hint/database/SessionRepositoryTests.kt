@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
 @ActiveProfiles(profiles = ["test"])
 @SpringBootTest
@@ -264,6 +267,23 @@ class SessionRepositoryTests {
         assertThat(records[0][SESSION_FILE.SESSION]).isEqualTo(sessionId)
         assertThat(records[0][SESSION_FILE.TYPE]).isEqualTo("pjnz")
 
+    }
+
+    @Test
+    fun `can get session snapshot`()
+    {
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        val soon = now.plusSeconds(5)
+        val uid = setUpSession()
+        val snapshot = sut.getSessionSnapshot(sessionId, uid)
+
+        assertThat(snapshot.id).isEqualTo(sessionId)
+
+        val created = LocalDateTime.parse(snapshot.created, ISO_LOCAL_DATE_TIME)
+        assertThat(created).isBetween(now, soon)
+
+        val updated = LocalDateTime.parse(snapshot.updated, ISO_LOCAL_DATE_TIME)
+        assertThat(updated).isBetween(now, soon)
     }
 
     private fun assertSessionFileExists(hash: String) {
