@@ -4,6 +4,7 @@ import {RootState} from "../../root";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
 import {Snapshot, Version} from "../../types";
+import {Error} from "../../generated";
 
 export interface VersionsState {
     currentVersion: Version | null,

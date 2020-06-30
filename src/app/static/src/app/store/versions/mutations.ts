@@ -1,6 +1,7 @@
 import {MutationTree} from "vuex";
 import {VersionsState} from "./versions";
 import {PayloadWithType} from "../../types";
+import {Error} from "../../generated";
 
 export enum VersionsMutations {
     SetManageVersions = "SetManageVersions",

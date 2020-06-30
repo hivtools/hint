@@ -18,7 +18,7 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
             .postAndReturn<String>("/version/", {name})
             .then((response: any) => {
                 if (!state.error) {
-                    commit({type: RootMutation.ResetVersion, payload: response.data}, { root: true });
+                    commit({type: RootMutation.ResetVersion, payload: response.data}, {root: true});
                 }
             });
     }

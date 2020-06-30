@@ -1,12 +1,12 @@
 <template>
     <div>
-        <div v-if="!loading">
+        <div v-if="!loading" id="versions-content" >
             <div class="versions-header">
                 <span v-translate="'versionsHeaderCreate'"></span>
                 <span v-if="currentVersion">
                     <span v-translate="'or'"></span>
-                    <a v-translate="'versionsHeaderReturn'" href="#" @click="setManageVersions(false)"></a>
-                    ({{currentVersion.name}})
+                    <a v-translate="'versionsHeaderReturn'"
+                       href="#" @click="setManageVersions(false)"></a> ({{currentVersion.name}})
                 </span>
             </div>
             <div class="my-3 col-6 clearfix">
