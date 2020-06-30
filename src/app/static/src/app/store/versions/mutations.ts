@@ -1,11 +1,10 @@
 import {MutationTree} from "vuex";
-import {VersionsState} from "../versions/versions";
+import {VersionsState} from "./versions";
 import {PayloadWithType, Version} from "../../types";
 
 export enum VersionsMutations {
     SetManageVersions = "SetManageVersions",
     SetLoading = "SetLoading",
-    NewVersion = "NewVersion",
     VersionError = "VersionError"
 }
 
@@ -15,11 +14,6 @@ export const mutations: MutationTree<VersionsState> = {
     },
     [VersionsMutations.SetLoading](state: VersionsState, action: PayloadWithType<boolean>) {
         state.loading = action.payload;
-    },
-    [VersionsMutations.NewVersion](state: VersionsState, action: PayloadWithType<Version>) {
-        state.manageVersions = true; //ensure Versions screen is displayed until state is reloaded
-        state.currentVersion = action.payload;
-        state.error = null;
     },
     [VersionsMutations.VersionError](state: VersionsState, action: PayloadWithType<Error>) {
         state.error = action.payload;

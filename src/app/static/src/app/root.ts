@@ -1,5 +1,6 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
+import {versions, VersionsState, initialVersionsState} from "./store/versions/versions";
 import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
 import {
     initialSurveyAndProgramState,
@@ -24,7 +25,6 @@ import {
     PlottingSelectionsState
 } from "./store/plottingSelections/plottingSelections";
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
-import {versions, VersionsState, initialVersionsState} from "./store/versions/versions";
 import {Language} from "./store/translations/locales";
 
 export interface TranslatableState {
@@ -87,7 +87,7 @@ const resetState = (store: Store<RootState>) => {
 };
 
 export const emptyState = (): RootState => {
-    return {
+     return {
         language: Language.en,
         version: '0.0.0',
         baseline: initialBaselineState(),
