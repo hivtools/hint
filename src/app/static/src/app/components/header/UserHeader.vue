@@ -6,6 +6,7 @@
                     {{title}}
                 </div>
                     <a v-if="!isGuest"
+                       id="versions-link"
                        href="#"
                        v-translate="'versions'"
                        style="flex:none"
