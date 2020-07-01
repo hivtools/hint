@@ -1,26 +1,23 @@
 package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.mock
-import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.controllers.BaselineController
 import org.imperial.mrc.hint.controllers.DiseaseController
 import org.imperial.mrc.hint.controllers.HintrController
-import org.imperial.mrc.hint.db.SessionRepository
+import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
 
 class DiseaseControllerTests: HintrControllerTests() {
 
     override fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient,
-                        mockSession: Session, mockSessionRepository: SessionRepository): HintrController {
-        return DiseaseController(mockFileManager, mockAPIClient, mockSession, mockSessionRepository)
+                        mockSession: Session, mockSnapshotRepository: SnapshotRepository): HintrController {
+        return DiseaseController(mockFileManager, mockAPIClient, mockSession, mockSnapshotRepository)
     }
 
     @Test

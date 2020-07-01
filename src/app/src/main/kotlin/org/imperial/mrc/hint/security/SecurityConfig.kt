@@ -66,3 +66,4 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
         return newSnapshotId
     }
 }
+

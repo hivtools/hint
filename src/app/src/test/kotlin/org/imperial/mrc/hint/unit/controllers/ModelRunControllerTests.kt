@@ -8,7 +8,7 @@ import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.ModelRunController
 import org.imperial.mrc.hint.models.ModelRunOptions
-import org.imperial.mrc.hint.models.SessionFileWithPath
+import org.imperial.mrc.hint.models.SnapshotFileWithPath
 import org.junit.jupiter.api.Test
 import org.springframework.http.ResponseEntity
 
@@ -19,7 +19,7 @@ class ModelRunControllerTests {
 
     @Test
     fun `can run`() {
-        val mockFiles = mapOf<String, SessionFileWithPath>()
+        val mockFiles = mapOf<String, SnapshotFileWithPath>()
         val mockFileManager = mock<FileManager> {
             on { getFiles() } doReturn mockFiles
         }
@@ -61,7 +61,7 @@ class ModelRunControllerTests {
 
     @Test
     fun `can get options`() {
-        val mockFiles: Map<String, SessionFileWithPath> = mapOf()
+        val mockFiles: Map<String, SnapshotFileWithPath> = mapOf()
         val mockFileManager = mock<FileManager> {
             on { getFiles(FileType.Shape, FileType.Survey, FileType.Programme, FileType.ANC) } doReturn mockFiles
         }

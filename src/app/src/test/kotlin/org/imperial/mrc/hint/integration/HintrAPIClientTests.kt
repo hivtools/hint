@@ -7,7 +7,7 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.HintrAPIClient
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.models.ModelRunOptions
-import org.imperial.mrc.hint.models.SessionFileWithPath
+import org.imperial.mrc.hint.models.SnapshotFileWithPath
 import org.junit.jupiter.api.Test
 
 class HintrApiClientTests {
@@ -15,7 +15,7 @@ class HintrApiClientTests {
     @Test
     fun `can validate baseline individual`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val file = SessionFileWithPath("fakepath", "hash", "filename")
+        val file = SnapshotFileWithPath("fakepath", "hash", "filename")
         val result = sut.validateBaselineIndividual(file, FileType.PJNZ)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")
@@ -25,9 +25,9 @@ class HintrApiClientTests {
     fun `can validate baseline combined`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.validateBaselineCombined( mapOf(
-                "pjnz" to SessionFileWithPath("fakePjnz", "pjnzHash", "pjnzFile"),
-                "shape" to SessionFileWithPath("fakeShape", "shapeHash", "shapeFile"),
-                "population" to SessionFileWithPath("fakePop", "popHash", "popFile")
+                "pjnz" to SnapshotFileWithPath("fakePjnz", "pjnzHash", "pjnzFile"),
+                "shape" to SnapshotFileWithPath("fakeShape", "shapeHash", "shapeFile"),
+                "population" to SnapshotFileWithPath("fakePop", "popHash", "popFile")
             )
         )
         assertThat(result.statusCodeValue).isEqualTo(400)
@@ -37,7 +37,7 @@ class HintrApiClientTests {
     @Test
     fun `can validate survey and programme`() {
         val sut = HintrAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val file = SessionFileWithPath("fakepath", "hash", "filename")
+        val file = SnapshotFileWithPath("fakepath", "hash", "filename")
         val result = sut.validateSurveyAndProgramme(file, "fakepath", FileType.ANC)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")

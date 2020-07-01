@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.integration
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.AssertionsForClassTypes
 import org.imperial.mrc.hint.helpers.getTestEntity
-import org.imperial.mrc.hint.models.SessionFile
+import org.imperial.mrc.hint.models.SnapshotFile
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
@@ -47,7 +47,7 @@ class SessionTests : SecureIntegrationTests() {
     }
 
     private fun getJsonEntity(hash: String): HttpEntity<String> {
-        val files = mapOf("pjnz" to SessionFile(hash, "file1"))
+        val files = mapOf("pjnz" to SnapshotFile(hash, "file1"))
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val jsonString = ObjectMapper().writeValueAsString(files)

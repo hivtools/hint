@@ -103,13 +103,14 @@ export interface Translations {
     versions: string,
     versionsHeaderCreate: string,
     versionsHeaderReturn: string,
-    xAxis: string
+    xAxis: string,
+    year: string
 }
 
 const en: Translations = {
     adjustScale: "Adjust scale",
     age: "Age",
-    ANC: "ANC",
+    ANC: "ANC Testing",
     area: "Area",
     ART: "ART",
     apiCouldNotParseError: "Could not parse API response. Please contact support.",
@@ -199,7 +200,7 @@ const en: Translations = {
     shape: "Shape file",
     sizeIndicator: "Size Indicator",
     static: "Static",
-    survey: "Survey",
+    survey: "Household Survey",
     troubleshooting: "Troubleshooting",
     updatePassword: "Update password",
     uploadBaseline: "Upload baseline data",
@@ -212,13 +213,14 @@ const en: Translations = {
     versions: "Versions",
     versionsHeaderCreate: "Create a new version",
     versionsHeaderReturn: "return to current version",
-    xAxis: "X Axis"
+    xAxis: "X Axis",
+    year: "Year"
 };
 
 const fr: Partial<Translations> = {
     adjustScale: "Ajuster l'échelle",
     age: "Âge",
-    ANC: "Clinique prénatale",
+    ANC: "Test de clinique prénatale",
     apiCouldNotParseError: "Impossible d'analyser la réponse de l'API. Veuillez contacter le support.",
     apiMissingError: "La réponse de l'API a échoué mais ne contenait aucune information d'erreur. Veuillez contacter le support.",
     area: "Zone",
@@ -302,7 +304,7 @@ const fr: Partial<Translations> = {
     sex: "Sexe",
     shape: "Fichier de formes",
     static: "Statique",
-    survey: "Enquête",
+    survey: "Enquête de ménage",
     troubleshooting: "Dépannage",
     updatePassword: "Mettre à jour le mot de passe",
     uploadBaseline: "Télécharger les données de base",
@@ -315,8 +317,8 @@ const fr: Partial<Translations> = {
     versionsHeaderReturn: "retour à la version actuelle",
     versionName: "Nom de la version",
     versions: "Versions",
-    xAxis: "Axe X"
-
+    xAxis: "Axe X",
+    year: "An"
 };
 
 export const locales = {

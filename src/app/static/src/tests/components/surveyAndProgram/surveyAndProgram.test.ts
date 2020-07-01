@@ -161,7 +161,7 @@ describe("Survey and programme component", () => {
     });
 
     it("survey tab is enabled when survey data is present", () => {
-        expectTabEnabled({survey: mockSurveyResponse(), selectedDataType: DataType.Survey}, "Survey", 0);
+        expectTabEnabled({survey: mockSurveyResponse(), selectedDataType: DataType.Survey}, "Household Survey", 0);
     });
 
     it("programme (ART) tab is enabled when programme data is present", () => {
@@ -169,7 +169,7 @@ describe("Survey and programme component", () => {
     });
 
     it("ANC tab is enabled when ANC data is present", () => {
-        expectTabEnabled({anc: mockAncResponse(), selectedDataType: DataType.Survey}, "ANC", 2);
+        expectTabEnabled({anc: mockAncResponse(), selectedDataType: DataType.Survey}, "ANC Testing", 2);
     });
 
     function expectTabEnabled(state: Partial<SurveyAndProgramState>, name: string, index: number) {
@@ -193,11 +193,11 @@ describe("Survey and programme component", () => {
 
         wrapper.findAll(".nav-link").at(2).trigger("click");
         Vue.nextTick();
-        expect(wrapper.find(".nav-link.active").text()).toBe("ANC");
+        expect(wrapper.find(".nav-link.active").text()).toBe("ANC Testing");
 
         wrapper.findAll(".nav-link").at(0).trigger("click");
         Vue.nextTick();
-        expect(wrapper.find(".nav-link.active").text()).toBe("Survey");
+        expect(wrapper.find(".nav-link.active").text()).toBe("Household Survey");
 
         wrapper.findAll(".nav-link").at(1).trigger("click");
         Vue.nextTick();

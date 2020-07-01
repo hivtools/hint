@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.controllers
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.db.SessionRepository
+import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Session
@@ -16,8 +16,8 @@ import org.springframework.web.multipart.MultipartFile
 class DiseaseController(fileManager: FileManager,
                         apiClient: APIClient,
                         session: Session,
-                        sessionRepository: SessionRepository) :
-        HintrController(fileManager, apiClient, session, sessionRepository) {
+                        snapshotRepository: SnapshotRepository) :
+        HintrController(fileManager, apiClient, session, snapshotRepository) {
 
     @PostMapping("/survey/")
     @ResponseBody
@@ -58,21 +58,21 @@ class DiseaseController(fileManager: FileManager,
     @DeleteMapping("/survey/")
     @ResponseBody
     fun removeSurvey(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.Survey)
+        snapshotRepository.removeSnapshotFile(session.getSnapshotId(), FileType.Survey)
         return EmptySuccessResponse.asResponseEntity()
     }
 
     @DeleteMapping("/programme/")
     @ResponseBody
     fun removeProgramme(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.Programme)
+        snapshotRepository.removeSnapshotFile(session.getSnapshotId(), FileType.Programme)
         return EmptySuccessResponse.asResponseEntity()
     }
 
     @DeleteMapping("/anc/")
     @ResponseBody
     fun removeANC(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.ANC)
+        snapshotRepository.removeSnapshotFile(session.getSnapshotId(), FileType.ANC)
         return EmptySuccessResponse.asResponseEntity()
     }
 

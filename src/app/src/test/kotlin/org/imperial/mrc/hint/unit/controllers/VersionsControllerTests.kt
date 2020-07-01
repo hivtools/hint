@@ -9,7 +9,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.db.SessionRepository
+import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.models.Snapshot
 import org.pac4j.core.profile.CommonProfile
@@ -28,8 +28,8 @@ class VersionsControllerTests {
         }
 
         val snapshot = Snapshot("testSnapshot", "createdTime", "updatedTime")
-        val mockSessionRepo = mock<SessionRepository> {
-            on { getSessionSnapshot("testSnapshot", "testUser") } doReturn snapshot
+        val mockSessionRepo = mock<SnapshotRepository> {
+            on { getSnapshot("testSnapshot") } doReturn snapshot
         }
 
         val mockVersionRepo = mock<VersionRepository> {
@@ -41,7 +41,7 @@ class VersionsControllerTests {
         val request = mapOf("name" to "testVersion")
         val result = sut.newVersion(request)
 
-        verify(mockSessionRepo).saveSession("testSnapshot", "testUser", 99)
+        verify(mockSessionRepo).saveSnapshot("testSnapshot", 99)
 
         val parser = ObjectMapper()
         val resultJson = parser.readTree(result.body)["data"]

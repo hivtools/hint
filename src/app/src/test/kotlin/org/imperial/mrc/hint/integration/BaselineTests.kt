@@ -11,7 +11,7 @@ import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
-class BaselineTests : SessionFileTests() {
+class BaselineTests : SnapshotFileTests() {
 
     @BeforeEach
     fun setup() {
@@ -93,31 +93,31 @@ class BaselineTests : SessionFileTests() {
 
     @Test
     fun `can delete pjnz data`() {
-        setUpSessionFileAndGetHash("Botswana2018.PJNZ", "/baseline/pjnz/")
-        assertSessionFileExists(FileType.PJNZ)
+        setUpSnapshotFileAndGetHash("Botswana2018.PJNZ", "/baseline/pjnz/")
+        assertSnapshotFileExists(FileType.PJNZ)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/pjnz/", HttpMethod.DELETE)
         assertSuccess(responseEntity, null)
-        assertSessionFileDoesNotExist(FileType.PJNZ)
+        assertSnapshotFileDoesNotExist(FileType.PJNZ)
     }
 
 
     @Test
     fun `can delete shape data`() {
-        setUpSessionFileAndGetHash("malawi.geojson", "/baseline/shape/")
-        assertSessionFileExists(FileType.Shape)
+        setUpSnapshotFileAndGetHash("malawi.geojson", "/baseline/shape/")
+        assertSnapshotFileExists(FileType.Shape)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/shape/", HttpMethod.DELETE)
         assertSuccess(responseEntity, null)
-        assertSessionFileDoesNotExist(FileType.Shape)
+        assertSnapshotFileDoesNotExist(FileType.Shape)
     }
 
 
     @Test
     fun `can delete population data`() {
-        setUpSessionFileAndGetHash("population.csv", "/baseline/population/")
-        assertSessionFileExists(FileType.Population)
+        setUpSnapshotFileAndGetHash("population.csv", "/baseline/population/")
+        assertSnapshotFileExists(FileType.Population)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/population/", HttpMethod.DELETE)
         assertSuccess(responseEntity, null)
-        assertSessionFileDoesNotExist(FileType.Population)
+        assertSnapshotFileDoesNotExist(FileType.Population)
     }
 
 

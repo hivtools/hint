@@ -2,15 +2,14 @@ package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.BaselineController
 import org.imperial.mrc.hint.controllers.HintrController
-import org.imperial.mrc.hint.db.SessionRepository
-import org.imperial.mrc.hint.models.SessionFileWithPath
+import org.imperial.mrc.hint.db.SnapshotRepository
+import org.imperial.mrc.hint.models.SnapshotFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.springframework.http.ResponseEntity
@@ -18,8 +17,8 @@ import org.springframework.http.ResponseEntity
 class BaselineControllerTests : HintrControllerTests() {
 
     override fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient,
-                        mockSession: Session, mockSessionRepository: SessionRepository): HintrController {
-        return BaselineController(mockFileManager, mockAPIClient, mockSession, mockSessionRepository)
+                        mockSession: Session, mockSnapshotRepository: SnapshotRepository): HintrController {
+        return BaselineController(mockFileManager, mockAPIClient, mockSession, mockSnapshotRepository)
     }
 
     @Test
@@ -87,9 +86,9 @@ class BaselineControllerTests : HintrControllerTests() {
 
     @Test
     fun `validates combined files`() {
-        val mockPjnz = SessionFileWithPath("pjnzPath", "pjnzHash", "pjnzFile")
-        val mockShape = SessionFileWithPath("shapePath", "shapeHash", "shapeFile")
-        val mockPop = SessionFileWithPath("popPath", "pjnzHash", "popFile")
+        val mockPjnz = SnapshotFileWithPath("pjnzPath", "pjnzHash", "pjnzFile")
+        val mockShape = SnapshotFileWithPath("shapePath", "shapeHash", "shapeFile")
+        val mockPop = SnapshotFileWithPath("popPath", "pjnzHash", "popFile")
 
         val mockFileManager = mock<FileManager> {
             on { getFile(FileType.PJNZ) } doReturn mockPjnz
