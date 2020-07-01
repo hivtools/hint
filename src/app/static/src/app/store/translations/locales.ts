@@ -234,6 +234,7 @@ const fr: Partial<Translations> = {
     continue: "poursuivre",
     couldNotParse: "Impossible d'analyser la réponse de l'API. Veuillez contacter le support.",
     country: "Pays",
+    createVersion: "Créer version",
     custom: "Personnalisé",
     default: "Défaut",
     detail: "Détail",
@@ -265,6 +266,7 @@ const fr: Partial<Translations> = {
     loadFailedErrorDetail: "Un problème est survenu lors du chargement de vos données. Certaines données n’étaient peut-être pas valides. Veuillez contacter le support si ce problème persiste.",
     loadingData: "Chargement de vos données",
     loadingOptions: "Chargement de vos options.",
+    loadingVersion: "Chargement de la version",
     loggedInAs: "Connecté en tant que",
     logIn: "Ouvrir une session",
     logout: "Fermer une session",
@@ -309,6 +311,10 @@ const fr: Partial<Translations> = {
     usernameValidation: "Veuillez entrer votre nom d’utilisateur",
     validate: "Valider",
     validating: "Validation en cours...",
+    versionsHeaderCreate: "Créer une nouvelle version",
+    versionsHeaderReturn: "retour à la version actuelle",
+    versionName: "Nom de la version",
+    versions: "Versions",
     xAxis: "Axe X"
 
 };
