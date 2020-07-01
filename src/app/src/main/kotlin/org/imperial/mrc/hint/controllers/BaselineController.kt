@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.controllers
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.db.SessionRepository
+import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Session
@@ -16,8 +16,8 @@ import org.springframework.web.multipart.MultipartFile
 class BaselineController(fileManager: FileManager,
                          apiClient: APIClient,
                          session: Session,
-                         sessionRepository: SessionRepository) :
-        HintrController(fileManager, apiClient, session, sessionRepository) {
+                         snapshotRepository: SnapshotRepository) :
+        HintrController(fileManager, apiClient, session, snapshotRepository) {
 
     @PostMapping("/pjnz/")
     @ResponseBody
@@ -34,7 +34,7 @@ class BaselineController(fileManager: FileManager,
     @DeleteMapping("/pjnz/")
     @ResponseBody
     fun removePJNZ(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.PJNZ)
+        snapshotRepository.removeSnapshotFile(session.getSnapshotId(), FileType.PJNZ)
         return EmptySuccessResponse.asResponseEntity()
     }
 
@@ -53,7 +53,7 @@ class BaselineController(fileManager: FileManager,
     @DeleteMapping("/shape/")
     @ResponseBody
     fun removeShape(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.Shape)
+        snapshotRepository.removeSnapshotFile(session.getSnapshotId(), FileType.Shape)
         return EmptySuccessResponse.asResponseEntity()
     }
 
@@ -72,7 +72,7 @@ class BaselineController(fileManager: FileManager,
     @DeleteMapping("/population/")
     @ResponseBody
     fun removePopulation(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.Population)
+        snapshotRepository.removeSnapshotFile(session.getSnapshotId(), FileType.Population)
         return EmptySuccessResponse.asResponseEntity()
     }
 

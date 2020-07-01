@@ -1,9 +1,9 @@
 package org.imperial.mrc.hint
 
 import org.apache.tomcat.util.http.fileupload.FileUtils
-import org.imperial.mrc.hint.db.SessionRepository
-import org.imperial.mrc.hint.models.SessionFile
-import org.imperial.mrc.hint.models.SessionFileWithPath
+import org.imperial.mrc.hint.db.SnapshotRepository
+import org.imperial.mrc.hint.models.SnapshotFile
+import org.imperial.mrc.hint.models.SnapshotFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
@@ -27,22 +27,22 @@ enum class FileType {
 }
 
 interface FileManager {
-    fun saveFile(file: MultipartFile, type: FileType): SessionFileWithPath
-    fun getFile(type: FileType): SessionFileWithPath?
+    fun saveFile(file: MultipartFile, type: FileType): SnapshotFileWithPath
+    fun getFile(type: FileType): SnapshotFileWithPath?
     fun getAllHashes(): Map<String, String>
-    fun getFiles(vararg include: FileType): Map<String, SessionFileWithPath>
-    fun setAllFiles(files: Map<String, SessionFile?>)
+    fun getFiles(vararg include: FileType): Map<String, SnapshotFileWithPath>
+    fun setAllFiles(files: Map<String, SnapshotFile?>)
 }
 
 @Component
 class LocalFileManager(
         private val session: Session,
-        private val sessionRepository: SessionRepository,
+        private val snapshotRepository: SnapshotRepository,
         private val appProperties: AppProperties) : FileManager {
 
     private val uploadPath = appProperties.uploadDirectory
 
-    override fun saveFile(file: MultipartFile, type: FileType): SessionFileWithPath {
+    override fun saveFile(file: MultipartFile, type: FileType): SnapshotFileWithPath {
         val md = MessageDigest.getInstance("MD5")
         val bytes = file.inputStream.use {
             DigestInputStream(it, md).readBytes()
@@ -52,35 +52,35 @@ class LocalFileManager(
         val hash = "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
         val path = "${appProperties.uploadDirectory}/$hash"
         val originalFilename = file.originalFilename!!
-        if (sessionRepository.saveNewHash(hash)) {
+        if (snapshotRepository.saveNewHash(hash)) {
             val localFile = File(path)
             FileUtils.forceMkdirParent(localFile)
             localFile.writeBytes(bytes)
         }
 
-        sessionRepository.saveSessionFile(session.getSnapshotId(), type, hash, originalFilename)
-        return SessionFileWithPath(path, hash, originalFilename)
+        snapshotRepository.saveSnapshotFile(session.getSnapshotId(), type, hash, originalFilename)
+        return SnapshotFileWithPath(path, hash, originalFilename)
     }
 
-    override fun getFile(type: FileType): SessionFileWithPath? {
-        return sessionRepository.getSessionFile(session.getSnapshotId(), type)
-                ?.toSessionFileWithPath(uploadPath)
+    override fun getFile(type: FileType): SnapshotFileWithPath? {
+        return snapshotRepository.getSnapshotFile(session.getSnapshotId(), type)
+                ?.toSnapshotFileWithPath(uploadPath)
     }
 
     override fun getAllHashes(): Map<String, String> {
-        val hashes = sessionRepository.getHashesForSession(session.getSnapshotId())
+        val hashes = snapshotRepository.getHashesForSnapshot(session.getSnapshotId())
         return hashes.mapValues { "$uploadPath/${it.value}" }
     }
 
-    override fun getFiles(vararg include: FileType): Map<String, SessionFileWithPath> {
-        val files = sessionRepository.getSessionFiles(session.getSnapshotId())
+    override fun getFiles(vararg include: FileType): Map<String, SnapshotFileWithPath> {
+        val files = snapshotRepository.getSnapshotFiles(session.getSnapshotId())
         val includeKeys = include.map { it.toString() }
         return files.filterKeys { includeKeys.count() == 0 || includeKeys.contains(it) }
-                .mapValues { it.value.toSessionFileWithPath(uploadPath) }
+                .mapValues { it.value.toSnapshotFileWithPath(uploadPath) }
     }
 
-    override fun setAllFiles(files: Map<String, SessionFile?>) {
-        sessionRepository.setFilesForSession(session.getSnapshotId(), files);
+    override fun setAllFiles(files: Map<String, SnapshotFile?>) {
+        snapshotRepository.setFilesForSnapshot(session.getSnapshotId(), files);
     }
 }
 

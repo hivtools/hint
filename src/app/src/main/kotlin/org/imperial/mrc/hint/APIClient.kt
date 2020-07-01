@@ -7,7 +7,7 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.fuel.core.Request
 import org.imperial.mrc.hint.models.ModelRunOptions
-import org.imperial.mrc.hint.models.SessionFileWithPath
+import org.imperial.mrc.hint.models.SnapshotFileWithPath
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
@@ -15,16 +15,16 @@ import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
 interface APIClient {
-    fun validateBaselineIndividual(file: SessionFileWithPath, type: FileType): ResponseEntity<String>
-    fun validateBaselineCombined(files: Map<String, SessionFileWithPath?>): ResponseEntity<String>
-    fun validateSurveyAndProgramme(file: SessionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
-    fun submit(data: Map<String, SessionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
+    fun validateBaselineIndividual(file: SnapshotFileWithPath, type: FileType): ResponseEntity<String>
+    fun validateBaselineCombined(files: Map<String, SnapshotFileWithPath?>): ResponseEntity<String>
+    fun validateSurveyAndProgramme(file: SnapshotFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
+    fun submit(data: Map<String, SnapshotFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
     fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
-    fun getModelRunOptions(files: Map<String, SessionFileWithPath>): ResponseEntity<String>
+    fun getModelRunOptions(files: Map<String, SnapshotFileWithPath>): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
 }
 
@@ -43,7 +43,7 @@ class HintrAPIClient(
         return "en"
     }
 
-    override fun validateBaselineIndividual(file: SessionFileWithPath,
+    override fun validateBaselineIndividual(file: SnapshotFileWithPath,
                                             type: FileType): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
@@ -53,7 +53,7 @@ class HintrAPIClient(
         return postJson("validate/baseline-individual", json)
     }
 
-    override fun validateSurveyAndProgramme(file: SessionFileWithPath,
+    override fun validateSurveyAndProgramme(file: SnapshotFileWithPath,
                                             shapePath: String,
                                             type: FileType): ResponseEntity<String> {
 
@@ -65,7 +65,7 @@ class HintrAPIClient(
         return postJson("validate/survey-and-programme", json)
     }
 
-    override fun submit(data: Map<String, SessionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String> {
+    override fun submit(data: Map<String, SnapshotFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("options" to modelRunOptions.options,
@@ -87,12 +87,12 @@ class HintrAPIClient(
         return get("meta/plotting/${iso3}")
     }
 
-    override fun getModelRunOptions(files: Map<String, SessionFileWithPath>): ResponseEntity<String> {
+    override fun getModelRunOptions(files: Map<String, SnapshotFileWithPath>): ResponseEntity<String> {
         val json = objectMapper.writeValueAsString(files)
         return postJson("model/options", json)
     }
 
-    override fun validateBaselineCombined(files: Map<String, SessionFileWithPath?>): ResponseEntity<String> {
+    override fun validateBaselineCombined(files: Map<String, SnapshotFileWithPath?>): ResponseEntity<String> {
         val json = objectMapper.writeValueAsString(
                 files.mapValues { it.value?.path }
         )
