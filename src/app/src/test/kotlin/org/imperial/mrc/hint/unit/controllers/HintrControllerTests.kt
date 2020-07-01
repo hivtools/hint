@@ -6,10 +6,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.APIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.controllers.BaselineController
 import org.imperial.mrc.hint.controllers.HintrController
-import org.imperial.mrc.hint.db.SessionRepository
-import org.imperial.mrc.hint.models.SessionFileWithPath
+import org.imperial.mrc.hint.db.SnapshotRepository
+import org.imperial.mrc.hint.models.SnapshotFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.springframework.http.HttpStatus
@@ -36,15 +35,15 @@ abstract class HintrControllerTests {
                 saveFile(argWhere {
                     it.originalFilename == "some-file-name.csv"
                 }, eq(type))
-            } doReturn SessionFileWithPath("test-path", "hash", "some-file-name.csv")
+            } doReturn SnapshotFileWithPath("test-path", "hash", "some-file-name.csv")
 
             on {
                 getFile(FileType.Shape)
-            } doReturn SessionFileWithPath("shape-path", "hash", "shape-file-name.csv")
+            } doReturn SnapshotFileWithPath("shape-path", "hash", "shape-file-name.csv")
 
             on {
                 getFile(type)
-            } doReturn SessionFileWithPath("test-path", "hash", "some-file-name.csv")
+            } doReturn SnapshotFileWithPath("test-path", "hash", "some-file-name.csv")
         }
     }
 
@@ -57,7 +56,7 @@ abstract class HintrControllerTests {
     }
 
     abstract fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient,
-                        mockSession: Session, mockSessionRepository: SessionRepository): HintrController
+                        mockSession: Session, mockSnapshotRepository: SnapshotRepository): HintrController
 
     protected fun assertValidates(fileType: FileType,
                                   uploadAction: (sut: HintrController) -> ResponseEntity<String>) {
@@ -73,9 +72,9 @@ abstract class HintrControllerTests {
         when (fileType) {
             FileType.PJNZ, FileType.Population, FileType.Shape -> verify(mockApiClient)
                     .validateBaselineIndividual(
-                            SessionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
+                            SnapshotFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
             else -> verify(mockApiClient)
-                    .validateSurveyAndProgramme(SessionFileWithPath("test-path", "hash", "some-file-name.csv"), "shape-path", fileType)
+                    .validateSurveyAndProgramme(SnapshotFileWithPath("test-path", "hash", "some-file-name.csv"), "shape-path", fileType)
         }
     }
 
@@ -91,7 +90,7 @@ abstract class HintrControllerTests {
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
         verify(mockApiClient)
-                .validateBaselineIndividual(SessionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
+                .validateBaselineIndividual(SnapshotFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
 
         // should return a null result when null is returned from the file manager
         sut = getSut(mock(), mockApiClient, mock(), mock())
@@ -106,12 +105,12 @@ abstract class HintrControllerTests {
     protected fun assertDeletes(fileType: FileType,
                                 getAction: (sut: HintrController) -> ResponseEntity<String>) {
         val mockSession = mock<Session> {
-            on { getId() } doReturn "sid"
+            on { getSnapshotId() } doReturn "sid"
         }
-        val mockSessionRepository = mock<SessionRepository>()
+        val mockSessionRepository = mock<SnapshotRepository>()
         val sut = getSut(mock(), mock(), mockSession, mockSessionRepository)
         val result = getAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-        verify(mockSessionRepository).removeSessionFile(sessionId, fileType)
+        verify(mockSessionRepository).removeSnapshotFile(sessionId, fileType)
     }
 }

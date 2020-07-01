@@ -8,8 +8,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.LocalFileManager
-import org.imperial.mrc.hint.db.SessionRepository
-import org.imperial.mrc.hint.models.SessionFile
+import org.imperial.mrc.hint.db.SnapshotRepository
+import org.imperial.mrc.hint.models.SnapshotFile
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -25,11 +25,11 @@ class LocalFileManagerTests {
     }
 
     private val mockSession = mock<Session> {
-        on { getId() } doReturn "fake-id"
+        on { getSnapshotId() } doReturn "fake-id"
     }
 
     private val allFilesMap = FileType.values().associate {
-        it.toString() to SessionFile("${it}hash", "${it}filename")
+        it.toString() to SnapshotFile("${it}hash", "${it}filename")
     }
 
     @AfterEach
@@ -40,7 +40,7 @@ class LocalFileManagerTests {
     @Test
     fun `saves file if file is new and returns path`() {
 
-        val mockStateRepository = mock<SessionRepository> {
+        val mockStateRepository = mock<SnapshotRepository> {
             on { saveNewHash(any()) } doReturn true
         }
 
@@ -56,7 +56,7 @@ class LocalFileManagerTests {
     @Test
     fun `does not save file if file matches an existing hash and returns path`() {
 
-        val mockStateRepository = mock<SessionRepository> {
+        val mockStateRepository = mock<SnapshotRepository> {
             on { saveNewHash(any()) } doReturn false
         }
 
@@ -73,9 +73,9 @@ class LocalFileManagerTests {
     @Test
     fun `gets file if it exists`() {
 
-        val mockStateRepository = mock<SessionRepository> {
+        val mockStateRepository = mock<SnapshotRepository> {
             on { saveNewHash(any()) } doReturn true
-            on { getSessionFile(any(), any()) } doReturn SessionFile("test", "filename")
+            on { getSnapshotFile(any(), any()) } doReturn SnapshotFile("test", "filename")
         }
 
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
@@ -97,8 +97,8 @@ class LocalFileManagerTests {
     @Test
     fun `gets all file paths`() {
 
-        val stateRepo = mock<SessionRepository> {
-            on { getHashesForSession("fake-id") } doReturn mapOf("survey" to "hash.csv")
+        val stateRepo = mock<SnapshotRepository> {
+            on { getHashesForSnapshot("fake-id") } doReturn mapOf("survey" to "hash.csv")
         }
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
@@ -111,8 +111,8 @@ class LocalFileManagerTests {
     @Test
     fun `gets all files`() {
 
-        val stateRepo = mock<SessionRepository> {
-            on { getSessionFiles("fake-id") } doReturn allFilesMap
+        val stateRepo = mock<SnapshotRepository> {
+            on { getSnapshotFiles("fake-id") } doReturn allFilesMap
         }
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
@@ -130,8 +130,8 @@ class LocalFileManagerTests {
     @Test
     fun `only gets files that match the given includes`() {
 
-        val stateRepo = mock<SessionRepository> {
-            on { getSessionFiles("fake-id") } doReturn allFilesMap
+        val stateRepo = mock<SnapshotRepository> {
+            on { getSnapshotFiles("fake-id") } doReturn allFilesMap
         }
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
@@ -144,13 +144,13 @@ class LocalFileManagerTests {
     @Test
     fun `sets files for session`() {
 
-        val stateRepo = mock<SessionRepository>()
+        val stateRepo = mock<SnapshotRepository>()
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
-        val files = mapOf("pjnz" to SessionFile("hash1", "file1"))
+        val files = mapOf("pjnz" to SnapshotFile("hash1", "file1"))
         sut.setAllFiles(files)
 
-        verify(stateRepo).setFilesForSession("fake-id", files)
+        verify(stateRepo).setFilesForSnapshot("fake-id", files)
     }
 
 }

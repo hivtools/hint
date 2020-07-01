@@ -14,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import org.springframework.stereotype.Component
+import java.util.*
 import javax.sql.DataSource
 
 @Configuration
@@ -38,7 +39,9 @@ class Pac4jConfig {
 @Component
 class Session(private val webContext: WebContext, private val pac4jConfig: Config) {
 
-    fun getId(): String = pac4jConfig.sessionStore.getOrCreateSessionId(webContext)
+    companion object {
+        private const val SNAPSHOT_ID = "snapshot_id"
+    }
 
     fun getUserProfile(): CommonProfile {
         val manager = ProfileManager<CommonProfile>(webContext)
@@ -46,6 +49,21 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
         return profiles.singleOrNull() ?: CommonProfile().apply {
             id = GUEST_USER
         }
+    }
 
+    fun getSnapshotId() :String {
+        //Generate a new id if none exists
+        return ( pac4jConfig.sessionStore.get(webContext, SNAPSHOT_ID) ?: generateNewSnapshotId() ) as String
+    }
+
+    fun setSnapshotId(value: String) {
+        pac4jConfig.sessionStore.set(webContext, SNAPSHOT_ID, value)
+    }
+
+    fun generateNewSnapshotId(): String {
+        val newSnapshotId = UUID.randomUUID().toString()
+        setSnapshotId(newSnapshotId)
+        return newSnapshotId
     }
 }
+
