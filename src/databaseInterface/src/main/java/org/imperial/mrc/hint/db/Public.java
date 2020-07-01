@@ -13,9 +13,13 @@ import javax.annotation.Generated;
 import org.imperial.mrc.hint.db.tables.File;
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
 import org.imperial.mrc.hint.db.tables.SessionFile;
+import org.imperial.mrc.hint.db.tables.SnapshotFile;
 import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
+import org.imperial.mrc.hint.db.tables.Version;
+import org.imperial.mrc.hint.db.tables.VersionSnapshot;
 import org.jooq.Catalog;
+import org.jooq.Sequence;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
@@ -33,7 +37,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -617993275;
+    private static final long serialVersionUID = 1759016044;
 
     /**
      * The reference instance of <code>public</code>
@@ -56,6 +60,11 @@ public class Public extends SchemaImpl {
     public final SessionFile SESSION_FILE = org.imperial.mrc.hint.db.tables.SessionFile.SESSION_FILE;
 
     /**
+     * The table <code>public.snapshot_file</code>.
+     */
+    public final SnapshotFile SNAPSHOT_FILE = org.imperial.mrc.hint.db.tables.SnapshotFile.SNAPSHOT_FILE;
+
+    /**
      * The table <code>public.user_session</code>.
      */
     public final UserSession USER_SESSION = org.imperial.mrc.hint.db.tables.UserSession.USER_SESSION;
@@ -64,6 +73,16 @@ public class Public extends SchemaImpl {
      * The table <code>public.users</code>.
      */
     public final Users USERS = org.imperial.mrc.hint.db.tables.Users.USERS;
+
+    /**
+     * The table <code>public.version</code>.
+     */
+    public final Version VERSION = org.imperial.mrc.hint.db.tables.Version.VERSION;
+
+    /**
+     * The table <code>public.version_snapshot</code>.
+     */
+    public final VersionSnapshot VERSION_SNAPSHOT = org.imperial.mrc.hint.db.tables.VersionSnapshot.VERSION_SNAPSHOT;
 
     /**
      * No further instances allowed
@@ -82,6 +101,18 @@ public class Public extends SchemaImpl {
     }
 
     @Override
+    public final List<Sequence<?>> getSequences() {
+        List result = new ArrayList();
+        result.addAll(getSequences0());
+        return result;
+    }
+
+    private final List<Sequence<?>> getSequences0() {
+        return Arrays.<Sequence<?>>asList(
+            Sequences.VERSION_ID_SEQ);
+    }
+
+    @Override
     public final List<Table<?>> getTables() {
         List result = new ArrayList();
         result.addAll(getTables0());
@@ -93,7 +124,10 @@ public class Public extends SchemaImpl {
             File.FILE,
             OnetimeToken.ONETIME_TOKEN,
             SessionFile.SESSION_FILE,
+            SnapshotFile.SNAPSHOT_FILE,
             UserSession.USER_SESSION,
-            Users.USERS);
+            Users.USERS,
+            Version.VERSION,
+            VersionSnapshot.VERSION_SNAPSHOT);
     }
 }
