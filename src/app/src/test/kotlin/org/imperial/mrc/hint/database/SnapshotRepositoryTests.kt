@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.database
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.SnapshotRepository
+import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.db.Tables.SNAPSHOT_FILE
 import org.imperial.mrc.hint.db.Tables.VERSION_SNAPSHOT
 import org.imperial.mrc.hint.db.VersionRepository
@@ -31,10 +32,13 @@ class SnapshotRepositoryTests {
     private lateinit var versionRepo: VersionRepository
 
     @Autowired
+    private lateinit var userRepo: UserLogic
+
+    @Autowired
     private lateinit var dsl: DSLContext
 
     private val snapshotId = "sid"
-    private val uid = "test.user@test.com"
+    private val testEmail = "test.user@test.com"
 
     @Test
     fun `can save snapshot without version id`() {
@@ -42,13 +46,17 @@ class SnapshotRepositoryTests {
 
         val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
                 .fetchOne()
-
         assertThat(snapshot[VERSION_SNAPSHOT.ID]).isEqualTo(snapshotId)
-        assertThat(snapshot[VERSION_SNAPSHOT.VERSION_ID]).isNull()
+
+        val versionId: Int? = snapshot[VERSION_SNAPSHOT.VERSION_ID]
+        assertThat(versionId).isEqualTo(null)
     }
 
     @Test
     fun `can save snapshot with version id`() {
+
+        userRepo.addUser(testEmail, "pw")
+        val uid = userRepo.getUser(testEmail)!!.id
         val versionId = versionRepo.saveNewVersion(uid, "testVersion")
         sut.saveSnapshot(snapshotId, versionId)
 
