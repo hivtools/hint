@@ -34,7 +34,7 @@ class BaselineController(fileManager: FileManager,
     @DeleteMapping("/pjnz/")
     @ResponseBody
     fun removePJNZ(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getId(), FileType.PJNZ)
+        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.PJNZ)
         return EmptySuccessResponse.asResponseEntity()
     }
 
@@ -53,7 +53,7 @@ class BaselineController(fileManager: FileManager,
     @DeleteMapping("/shape/")
     @ResponseBody
     fun removeShape(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getId(), FileType.Shape)
+        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.Shape)
         return EmptySuccessResponse.asResponseEntity()
     }
 
@@ -72,7 +72,7 @@ class BaselineController(fileManager: FileManager,
     @DeleteMapping("/population/")
     @ResponseBody
     fun removePopulation(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getId(), FileType.Population)
+        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.Population)
         return EmptySuccessResponse.asResponseEntity()
     }
 

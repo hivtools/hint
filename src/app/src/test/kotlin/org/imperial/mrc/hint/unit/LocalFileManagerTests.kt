@@ -25,7 +25,7 @@ class LocalFileManagerTests {
     }
 
     private val mockSession = mock<Session> {
-        on { getId() } doReturn "fake-id"
+        on { getSnapshotId() } doReturn "fake-id"
     }
 
     private val allFilesMap = FileType.values().associate {

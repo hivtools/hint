@@ -17,7 +17,7 @@ class HomeController(
     @GetMapping("/")
     fun index(model: Model): String {
         val userProfile = session.getUserProfile()
-        sessionRepository.saveSession(session.getId(), userProfile.id)
+        sessionRepository.saveSession(session.getSnapshotId(), userProfile.id)
         model["title"] = appProperties.applicationTitle
         model["user"] = userProfile.id
         return "index"

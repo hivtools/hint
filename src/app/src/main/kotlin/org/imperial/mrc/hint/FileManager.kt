@@ -58,29 +58,29 @@ class LocalFileManager(
             localFile.writeBytes(bytes)
         }
 
-        sessionRepository.saveSessionFile(session.getId(), type, hash, originalFilename)
+        sessionRepository.saveSessionFile(session.getSnapshotId(), type, hash, originalFilename)
         return SessionFileWithPath(path, hash, originalFilename)
     }
 
     override fun getFile(type: FileType): SessionFileWithPath? {
-        return sessionRepository.getSessionFile(session.getId(), type)
+        return sessionRepository.getSessionFile(session.getSnapshotId(), type)
                 ?.toSessionFileWithPath(uploadPath)
     }
 
     override fun getAllHashes(): Map<String, String> {
-        val hashes = sessionRepository.getHashesForSession(session.getId())
+        val hashes = sessionRepository.getHashesForSession(session.getSnapshotId())
         return hashes.mapValues { "$uploadPath/${it.value}" }
     }
 
     override fun getFiles(vararg include: FileType): Map<String, SessionFileWithPath> {
-        val files = sessionRepository.getSessionFiles(session.getId())
+        val files = sessionRepository.getSessionFiles(session.getSnapshotId())
         val includeKeys = include.map { it.toString() }
         return files.filterKeys { includeKeys.count() == 0 || includeKeys.contains(it) }
                 .mapValues { it.value.toSessionFileWithPath(uploadPath) }
     }
 
     override fun setAllFiles(files: Map<String, SessionFile?>) {
-        sessionRepository.setFilesForSession(session.getId(), files);
+        sessionRepository.setFilesForSession(session.getSnapshotId(), files);
     }
 }
 

@@ -58,21 +58,21 @@ class DiseaseController(fileManager: FileManager,
     @DeleteMapping("/survey/")
     @ResponseBody
     fun removeSurvey(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getId(), FileType.Survey)
+        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.Survey)
         return EmptySuccessResponse.asResponseEntity()
     }
 
     @DeleteMapping("/programme/")
     @ResponseBody
     fun removeProgramme(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getId(), FileType.Programme)
+        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.Programme)
         return EmptySuccessResponse.asResponseEntity()
     }
 
     @DeleteMapping("/anc/")
     @ResponseBody
     fun removeANC(): ResponseEntity<String> {
-        sessionRepository.removeSessionFile(session.getId(), FileType.ANC)
+        sessionRepository.removeSessionFile(session.getSnapshotId(), FileType.ANC)
         return EmptySuccessResponse.asResponseEntity()
     }
 
