@@ -60,14 +60,8 @@
                                 @update="updateChoroplethSelections({payload: $event})"
                                 @updateColourScales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
                     <div>
-                        <table>
-                              <tr>
-                                    <th v-for="(v, k, i) in data[0]">{{ k }}</th>
-                             </tr>
-                                <tr v-for="x in data">
-                                    <td v-for="z in x">{{ z }}</td>
-                                </tr>
-                        </table>
+                        <table-view :tabledata="data"
+                        ></table-view>
                     </div>
             </div>
         </div>
@@ -80,7 +74,7 @@
     import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
     import FileUpload from "../FileUpload.vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
-    import Table from "../plots/table/Table.vue";
+    import TableView from "../plots/table/Table.vue";
     import Filters from "../plots/Filters.vue";
     import {Filter, LevelLabel, PartialFileUploadProps} from "../../types";
     import {RootState} from "../../root";
@@ -177,7 +171,8 @@
         components: {
             FileUpload,
             Choropleth,
-            Filters
+            Filters,
+            TableView
         }
     })
 </script>
