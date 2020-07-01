@@ -12,7 +12,7 @@ HINTR_VERSION=$(<$HERE/../src/config/hintr_version)
 
 REGISTRY=mrcide
 DB_IMAGE=$REGISTRY/hint-db:master
-DB_MIGRATE_IMAGE=$REGISTRY/hint-db-migrate:master
+DB_MIGRATE_IMAGE=$REGISTRY/hint-db-migrate:mrc-1646
 HINTR_IMAGE=$REGISTRY/$API:$HINTR_VERSION
 
 docker network create $NETWORK
