@@ -256,6 +256,7 @@ class SnapshotRepositoryTests {
 
     private fun setUpHashAndSnapshotFile(hash: String, filename: String, snapshotId: String, type: String) {
         sut.saveNewHash(hash)
+        setUpSnapshot()
         dsl.insertInto(SNAPSHOT_FILE)
                 .set(SNAPSHOT_FILE.FILENAME, filename)
                 .set(SNAPSHOT_FILE.HASH, hash)
