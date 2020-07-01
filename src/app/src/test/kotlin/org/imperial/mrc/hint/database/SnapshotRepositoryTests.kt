@@ -39,7 +39,7 @@ class SnapshotRepositoryTests {
         val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
                 .fetchOne()
 
-        assertThat(snapshot[VERSION_SNAPSHOT.ID]).isEqualTo(snapshot)
+        assertThat(snapshot[VERSION_SNAPSHOT.ID]).isEqualTo(snapshotId)
     }
 
     @Test
