@@ -4,7 +4,6 @@
 package org.imperial.mrc.hint.db.tables;
 
 
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserSession extends TableImpl<UserSessionRecord> {
 
-    private static final long serialVersionUID = -796461384;
+    private static final long serialVersionUID = -830839356;
 
     /**
      * The reference instance of <code>public.user_session</code>
@@ -63,36 +62,6 @@ public class UserSession extends TableImpl<UserSessionRecord> {
      * The column <code>public.user_session.user_id</code>.
      */
     public final TableField<UserSessionRecord, String> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.CLOB, this, "");
-
-    /**
-     * The column <code>public.user_session.version_id</code>.
-     */
-    public final TableField<UserSessionRecord, Integer> VERSION_ID = createField("version_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
-
-    /**
-     * The column <code>public.user_session.state</code>.
-     */
-    public final TableField<UserSessionRecord, String> STATE = createField("state", org.jooq.impl.SQLDataType.CLOB, this, "");
-
-    /**
-     * The column <code>public.user_session.note</code>.
-     */
-    public final TableField<UserSessionRecord, String> NOTE = createField("note", org.jooq.impl.SQLDataType.CLOB, this, "");
-
-    /**
-     * The column <code>public.user_session.created</code>.
-     */
-    public final TableField<UserSessionRecord, Timestamp> CREATED = createField("created", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("timezone('utc'::text, now())", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
-
-    /**
-     * The column <code>public.user_session.updated</code>.
-     */
-    public final TableField<UserSessionRecord, Timestamp> UPDATED = createField("updated", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("timezone('utc'::text, now())", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
-
-    /**
-     * The column <code>public.user_session.deleted</code>.
-     */
-    public final TableField<UserSessionRecord, Boolean> DELETED = createField("deleted", org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>public.user_session</code> table reference
@@ -160,7 +129,7 @@ public class UserSession extends TableImpl<UserSessionRecord> {
      */
     @Override
     public List<ForeignKey<UserSessionRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<UserSessionRecord, ?>>asList(Keys.USER_SESSION__USER_SESSION_USER_ID_FKEY, Keys.USER_SESSION__USER_SESSION_VERSION_ID_FKEY);
+        return Arrays.<ForeignKey<UserSessionRecord, ?>>asList(Keys.USER_SESSION__USER_SESSION_USER_ID_FKEY);
     }
 
     /**

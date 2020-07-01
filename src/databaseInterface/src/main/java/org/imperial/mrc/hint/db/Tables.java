@@ -9,9 +9,11 @@ import javax.annotation.Generated;
 import org.imperial.mrc.hint.db.tables.File;
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
 import org.imperial.mrc.hint.db.tables.SessionFile;
+import org.imperial.mrc.hint.db.tables.SnapshotFile;
 import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
 import org.imperial.mrc.hint.db.tables.Version;
+import org.imperial.mrc.hint.db.tables.VersionSnapshot;
 
 
 /**
@@ -43,6 +45,11 @@ public class Tables {
     public static final SessionFile SESSION_FILE = org.imperial.mrc.hint.db.tables.SessionFile.SESSION_FILE;
 
     /**
+     * The table <code>public.snapshot_file</code>.
+     */
+    public static final SnapshotFile SNAPSHOT_FILE = org.imperial.mrc.hint.db.tables.SnapshotFile.SNAPSHOT_FILE;
+
+    /**
      * The table <code>public.user_session</code>.
      */
     public static final UserSession USER_SESSION = org.imperial.mrc.hint.db.tables.UserSession.USER_SESSION;
@@ -56,4 +63,9 @@ public class Tables {
      * The table <code>public.version</code>.
      */
     public static final Version VERSION = org.imperial.mrc.hint.db.tables.Version.VERSION;
+
+    /**
+     * The table <code>public.version_snapshot</code>.
+     */
+    public static final VersionSnapshot VERSION_SNAPSHOT = org.imperial.mrc.hint.db.tables.VersionSnapshot.VERSION_SNAPSHOT;
 }

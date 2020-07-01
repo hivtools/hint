@@ -9,15 +9,19 @@ import javax.annotation.Generated;
 import org.imperial.mrc.hint.db.tables.File;
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
 import org.imperial.mrc.hint.db.tables.SessionFile;
+import org.imperial.mrc.hint.db.tables.SnapshotFile;
 import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
 import org.imperial.mrc.hint.db.tables.Version;
+import org.imperial.mrc.hint.db.tables.VersionSnapshot;
 import org.imperial.mrc.hint.db.tables.records.FileRecord;
 import org.imperial.mrc.hint.db.tables.records.OnetimeTokenRecord;
 import org.imperial.mrc.hint.db.tables.records.SessionFileRecord;
+import org.imperial.mrc.hint.db.tables.records.SnapshotFileRecord;
 import org.imperial.mrc.hint.db.tables.records.UserSessionRecord;
 import org.imperial.mrc.hint.db.tables.records.UsersRecord;
 import org.imperial.mrc.hint.db.tables.records.VersionRecord;
+import org.imperial.mrc.hint.db.tables.records.VersionSnapshotRecord;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.UniqueKey;
@@ -51,9 +55,11 @@ public class Keys {
     public static final UniqueKey<FileRecord> FILE_PKEY = UniqueKeys0.FILE_PKEY;
     public static final UniqueKey<OnetimeTokenRecord> ONETIME_TOKEN_PKEY = UniqueKeys0.ONETIME_TOKEN_PKEY;
     public static final UniqueKey<SessionFileRecord> SESSION_FILE_PKEY = UniqueKeys0.SESSION_FILE_PKEY;
+    public static final UniqueKey<SnapshotFileRecord> SNAPSHOT_FILE_PKEY = UniqueKeys0.SNAPSHOT_FILE_PKEY;
     public static final UniqueKey<UserSessionRecord> USER_SESSION_PKEY = UniqueKeys0.USER_SESSION_PKEY;
     public static final UniqueKey<UsersRecord> USERS_PKEY = UniqueKeys0.USERS_PKEY;
     public static final UniqueKey<VersionRecord> VERSION_PKEY = UniqueKeys0.VERSION_PKEY;
+    public static final UniqueKey<VersionSnapshotRecord> VERSION_SNAPSHOT_PKEY = UniqueKeys0.VERSION_SNAPSHOT_PKEY;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -61,9 +67,11 @@ public class Keys {
 
     public static final ForeignKey<SessionFileRecord, UserSessionRecord> SESSION_FILE__SESSION_FILE_SESSION_FKEY = ForeignKeys0.SESSION_FILE__SESSION_FILE_SESSION_FKEY;
     public static final ForeignKey<SessionFileRecord, FileRecord> SESSION_FILE__SESSION_FILE_HASH_FKEY = ForeignKeys0.SESSION_FILE__SESSION_FILE_HASH_FKEY;
+    public static final ForeignKey<SnapshotFileRecord, VersionSnapshotRecord> SNAPSHOT_FILE__SNAPSHOT_FILE_SNAPSHOT_FKEY = ForeignKeys0.SNAPSHOT_FILE__SNAPSHOT_FILE_SNAPSHOT_FKEY;
+    public static final ForeignKey<SnapshotFileRecord, FileRecord> SNAPSHOT_FILE__SNAPSHOT_FILE_HASH_FKEY = ForeignKeys0.SNAPSHOT_FILE__SNAPSHOT_FILE_HASH_FKEY;
     public static final ForeignKey<UserSessionRecord, UsersRecord> USER_SESSION__USER_SESSION_USER_ID_FKEY = ForeignKeys0.USER_SESSION__USER_SESSION_USER_ID_FKEY;
-    public static final ForeignKey<UserSessionRecord, VersionRecord> USER_SESSION__USER_SESSION_VERSION_ID_FKEY = ForeignKeys0.USER_SESSION__USER_SESSION_VERSION_ID_FKEY;
     public static final ForeignKey<VersionRecord, UsersRecord> VERSION__VERSION_USER_ID_FKEY = ForeignKeys0.VERSION__VERSION_USER_ID_FKEY;
+    public static final ForeignKey<VersionSnapshotRecord, VersionRecord> VERSION_SNAPSHOT__VERSION_SNAPSHOT_VERSION_ID_FKEY = ForeignKeys0.VERSION_SNAPSHOT__VERSION_SNAPSHOT_VERSION_ID_FKEY;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -77,16 +85,20 @@ public class Keys {
         public static final UniqueKey<FileRecord> FILE_PKEY = Internal.createUniqueKey(File.FILE, "file_pkey", File.FILE.HASH);
         public static final UniqueKey<OnetimeTokenRecord> ONETIME_TOKEN_PKEY = Internal.createUniqueKey(OnetimeToken.ONETIME_TOKEN, "onetime_token_pkey", OnetimeToken.ONETIME_TOKEN.TOKEN);
         public static final UniqueKey<SessionFileRecord> SESSION_FILE_PKEY = Internal.createUniqueKey(SessionFile.SESSION_FILE, "session_file_pkey", SessionFile.SESSION_FILE.SESSION, SessionFile.SESSION_FILE.HASH, SessionFile.SESSION_FILE.TYPE);
+        public static final UniqueKey<SnapshotFileRecord> SNAPSHOT_FILE_PKEY = Internal.createUniqueKey(SnapshotFile.SNAPSHOT_FILE, "snapshot_file_pkey", SnapshotFile.SNAPSHOT_FILE.SNAPSHOT, SnapshotFile.SNAPSHOT_FILE.HASH, SnapshotFile.SNAPSHOT_FILE.TYPE);
         public static final UniqueKey<UserSessionRecord> USER_SESSION_PKEY = Internal.createUniqueKey(UserSession.USER_SESSION, "user_session_pkey", UserSession.USER_SESSION.SESSION);
         public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, "users_pkey", Users.USERS.ID);
         public static final UniqueKey<VersionRecord> VERSION_PKEY = Internal.createUniqueKey(Version.VERSION, "version_pkey", Version.VERSION.ID);
+        public static final UniqueKey<VersionSnapshotRecord> VERSION_SNAPSHOT_PKEY = Internal.createUniqueKey(VersionSnapshot.VERSION_SNAPSHOT, "version_snapshot_pkey", VersionSnapshot.VERSION_SNAPSHOT.ID);
     }
 
     private static class ForeignKeys0 {
         public static final ForeignKey<SessionFileRecord, UserSessionRecord> SESSION_FILE__SESSION_FILE_SESSION_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.USER_SESSION_PKEY, SessionFile.SESSION_FILE, "session_file__session_file_session_fkey", SessionFile.SESSION_FILE.SESSION);
         public static final ForeignKey<SessionFileRecord, FileRecord> SESSION_FILE__SESSION_FILE_HASH_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.FILE_PKEY, SessionFile.SESSION_FILE, "session_file__session_file_hash_fkey", SessionFile.SESSION_FILE.HASH);
+        public static final ForeignKey<SnapshotFileRecord, VersionSnapshotRecord> SNAPSHOT_FILE__SNAPSHOT_FILE_SNAPSHOT_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.VERSION_SNAPSHOT_PKEY, SnapshotFile.SNAPSHOT_FILE, "snapshot_file__snapshot_file_snapshot_fkey", SnapshotFile.SNAPSHOT_FILE.SNAPSHOT);
+        public static final ForeignKey<SnapshotFileRecord, FileRecord> SNAPSHOT_FILE__SNAPSHOT_FILE_HASH_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.FILE_PKEY, SnapshotFile.SNAPSHOT_FILE, "snapshot_file__snapshot_file_hash_fkey", SnapshotFile.SNAPSHOT_FILE.HASH);
         public static final ForeignKey<UserSessionRecord, UsersRecord> USER_SESSION__USER_SESSION_USER_ID_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.USERS_PKEY, UserSession.USER_SESSION, "user_session__user_session_user_id_fkey", UserSession.USER_SESSION.USER_ID);
-        public static final ForeignKey<UserSessionRecord, VersionRecord> USER_SESSION__USER_SESSION_VERSION_ID_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.VERSION_PKEY, UserSession.USER_SESSION, "user_session__user_session_version_id_fkey", UserSession.USER_SESSION.VERSION_ID);
         public static final ForeignKey<VersionRecord, UsersRecord> VERSION__VERSION_USER_ID_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.USERS_PKEY, Version.VERSION, "version__version_user_id_fkey", Version.VERSION.USER_ID);
+        public static final ForeignKey<VersionSnapshotRecord, VersionRecord> VERSION_SNAPSHOT__VERSION_SNAPSHOT_VERSION_ID_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.VERSION_PKEY, VersionSnapshot.VERSION_SNAPSHOT, "version_snapshot__version_snapshot_version_id_fkey", VersionSnapshot.VERSION_SNAPSHOT.VERSION_ID);
     }
 }
