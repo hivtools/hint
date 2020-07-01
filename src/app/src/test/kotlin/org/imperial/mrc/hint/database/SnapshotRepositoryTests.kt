@@ -25,9 +25,6 @@ class SnapshotRepositoryTests {
     private lateinit var sut: SnapshotRepository
 
     @Autowired
-    private lateinit var userRepo: UserLogic
-
-    @Autowired
     private lateinit var dsl: DSLContext
 
     private val snapshotId = "sid"
