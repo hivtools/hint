@@ -1,15 +1,13 @@
 package org.imperial.mrc.hint.integration
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
-import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
+import org.springframework.http.HttpStatus
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -23,13 +21,11 @@ class VersionTests : SecureIntegrationTests() {
     @Test
     fun `can create new version`()
     {
-        val map = mapOf("name" to "testVersionEndpoint")
         val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_JSON
-        val jsonString = ObjectMapper().writeValueAsString(map)
 
-        val httpEntity =  HttpEntity(jsonString, headers)
-        val result = testRestTemplate.postForEntity<String>("/version/", httpEntity)
+        val result = testRestTemplate.postForEntity<String>("/version/testVersionEndpoint/")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+
         val data = getResponseData(result)
 
         assertThat(data["id"].asInt()).isGreaterThan(0)

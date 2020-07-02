@@ -15,9 +15,9 @@ class VersionsController(private val session: Session,
                          private val snapshotRepository: SnapshotRepository,
                          private val versionRepository: VersionRepository)
 {
-    @PostMapping("/version/")
+    @PostMapping("/version/{name}/")
     @ResponseBody
-    fun newVersion(@RequestParam("name") name: String): ResponseEntity<String>
+    fun newVersion(@PathVariable("name") name: String): ResponseEntity<String>
     {
         val userId = session.getUserProfile().id
         val versionId = versionRepository.saveNewVersion(userId, name)
