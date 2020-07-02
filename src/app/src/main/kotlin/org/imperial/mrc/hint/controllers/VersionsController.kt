@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.controllers
 
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.exceptions.VersionException
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.Version
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -19,7 +20,7 @@ class VersionsController(private val session: Session,
     @ResponseBody
     fun newVersion(@RequestBody request: Map<String, String>): ResponseEntity<String>
     {
-        val versionName = request["name"] ?: "" //TODO: Exception if not populated
+        val versionName = request["name"] ?: throw VersionException("Version name missing")
         val userId = session.getUserProfile().id
         val versionId = versionRepository.saveNewVersion(userId, versionName)
 

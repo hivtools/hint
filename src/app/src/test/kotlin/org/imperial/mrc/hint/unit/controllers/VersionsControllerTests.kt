@@ -9,8 +9,10 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.exceptions.VersionException
 import org.imperial.mrc.hint.models.Snapshot
 import org.pac4j.core.profile.CommonProfile
 
@@ -53,5 +55,14 @@ class VersionsControllerTests {
         assertThat(snapshots[0]["id"].asText()).isEqualTo("testSnapshot")
         assertThat(snapshots[0]["created"].asText()).isEqualTo("createdTime")
         assertThat(snapshots[0]["updated"].asText()).isEqualTo("updatedTime")
+    }
+
+    @Test
+    fun `throws exception if name missing on create`()
+    {
+        val sut = VersionsController(mock(), mock(), mock())
+
+        assertThatThrownBy{ sut.newVersion(mapOf()) }.isInstanceOf(VersionException::class.java)
+                .hasMessageContaining("Version name missing")
     }
 }
