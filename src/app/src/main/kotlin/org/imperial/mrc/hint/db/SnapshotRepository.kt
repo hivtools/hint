@@ -5,6 +5,7 @@ import org.imperial.mrc.hint.db.Tables.FILE
 import org.imperial.mrc.hint.db.Tables.VERSION_SNAPSHOT
 import org.imperial.mrc.hint.db.Tables.SNAPSHOT_FILE
 import org.imperial.mrc.hint.exceptions.SnapshotException
+import org.imperial.mrc.hint.models.Snapshot
 import org.imperial.mrc.hint.models.SnapshotFile
 import org.jooq.DSLContext
 import org.jooq.Record
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Component
 
 interface SnapshotRepository {
     fun saveSnapshot(snapshotId: String, versionId: Int?)
+    fun getSnapshot(snapshotId: String): Snapshot
+
     // returns true if a new hash is saved, false if it already exists
     fun saveNewHash(hash: String): Boolean
 
@@ -40,6 +43,18 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
                     .set(VERSION_SNAPSHOT.VERSION_ID, versionId)
                     .execute()
         }
+    }
+
+    override fun getSnapshot(snapshotId: String): Snapshot
+    {
+        val result =  dsl.select(VERSION_SNAPSHOT.ID,
+                VERSION_SNAPSHOT.CREATED,
+                VERSION_SNAPSHOT.UPDATED)
+                .from(VERSION_SNAPSHOT)
+                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
+                .fetchOne()
+
+        return Snapshot(result[VERSION_SNAPSHOT.ID], result[VERSION_SNAPSHOT.CREATED], result[VERSION_SNAPSHOT.UPDATED])
     }
 
     override fun saveNewHash(hash: String): Boolean {
