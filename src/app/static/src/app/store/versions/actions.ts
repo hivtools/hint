@@ -11,15 +11,11 @@ export interface VersionsActions {
 
 export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
     async createVersion(context, name) {
-        const {commit, state} = context;
+        const {commit} = context;
         commit({type: VersionsMutations.SetLoading, payload: true});
-        await api<VersionsMutations, VersionsMutations>(context)
+        await api<RootMutation, VersionsMutations>(context)
+            .withSuccess(RootMutation.ResetVersion, true)
             .withError(VersionsMutations.VersionError)
-            .postAndReturn<String>("/version/", {name})
-            .then((response: any) => {
-                if (!state.error) {
-                    commit({type: RootMutation.ResetVersion, payload: response.data}, {root: true});
-                }
-            });
+            .postAndReturn<String>("/version/", {name});
     }
 };

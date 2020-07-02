@@ -15,7 +15,7 @@ export interface ResponseWithType<T> extends Response {
 export interface API<S, E> {
 
     withError: (type: E) => API<S, E>
-    withSuccess: (type: S) => API<S, E>
+    withSuccess: (type: S, root: boolean) => API<S, E>
     ignoreErrors: () => API<S, E>
 
     postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>>
@@ -80,10 +80,16 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this;
     };
 
-    withSuccess = (type: S) => {
+    withSuccess = (type: S, root: boolean = false) => {
         this._onSuccess = (data: any) => {
             const finalData = this._freezeResponse ? freezer.deepFreeze(data) : data;
-            this._commit({type: type, payload: finalData});
+            const toCommit = {type: type, payload: finalData};
+            if (root) {
+                this._commit(toCommit, {root: true});
+            } else {
+                this._commit(toCommit);
+            }
+
         };
         return this;
     };
