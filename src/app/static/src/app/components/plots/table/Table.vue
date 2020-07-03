@@ -1,26 +1,17 @@
 <template>
 <div>
-    <h3>Selections</h3>
-    <div>{{ selections }}</div>
-    <h3>Stuff</h3>
-    <!-- <div>{{ filterData() }}</div> -->
-<!-- <ul>
-        <h3>Selections</h3>
-        <li v-for="x in selections">{{ x }}</li>
-        <h3>Filters</h3>
-        <li v-for="x in filters">{{ x }}</li>
-    </ul> -->
     <h3>Table</h3>
-<table>
-    <!--
+    <table>
+    
          <tr>
-             <th v-for="(v, k, i) in tabledata[0]">{{ k }}</th>
+             <th>Area</th>
+             <th>{{ filteredData[0]['indicatorMeta']['indicator'] === 'current_art' ? 'Current ART' : 'Prevalence'}}</th>
         </tr>
-        <tr v-for="x in tabledata">
-            <td v-for="z in x">{{ z }}</td>
-        </tr>-->
+        <tr v-for="x in filteredData">
+            <td>{{ flattenedAreas[x['areaId']]['label'] }}</td>
+            <td>{{ x['value'] }}</td>
+        </tr>
     </table>
-    <div v-for="item in filteredData">{{item}}</div>
 </div>
     
     
@@ -39,7 +30,6 @@ import {
         ColourScaleType
     } from "../../../store/plottingSelections/plottingSelections";
 import {flattenOptions, flattenToIdSet} from "../../../utils";
-// import featureIndicators from "src/app/static/src/app/components/plots/choropleth/Choropleth.vue"
 
 interface Props {
         tabledata: any[],
@@ -79,26 +69,18 @@ const props = {
     }
 }
 
-// export default Vue.extend<Props>({
 export default Vue.extend<{}, {}, Computed, Props>({
     name: "table-view",
     props: props,
-    mounted() {
-    console.log('filterdata2', this.selections)
-  },
     // data(): Data {
     data() {
       return {
-        //   sel: this.selections
       }
     },
     computed: {
         nonAreaFilters() {
              return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
          },
-        // colorIndicator(): ChoroplethIndicatorMetadata {
-        //         return this.indicators.find(i => i.indicator == this.selections.indicatorId)!!;
-        //     },
         areaFilter() {
                  return this.filters.find((f: Filter) => f.id == this.areaFilterId)!!;
              },
@@ -129,28 +111,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
             console.log('filterdata', result)
             return result;
         }
-
-    //     filterData2(){
-    //         const getFeatureIndicator = function (tabledata: any[],
-    //                                          selectedAreaIds: string[],
-    //                                          indicatorMeta: ChoroplethIndicatorMetadata,
-    //                                          colourRange: NumericRange,
-    //                                          filters: Filter[],
-    //                                          selectedFilterValues: Dict<FilterOption[]>): IndicatorValuesDict {
-
-    // const result = {} as IndicatorValuesDict;
-    // iterateDataValues(tabledata, [indicatorMeta], selectedAreaIds, filters, selectedFilterValues,
-    //     (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
-    //         result[areaId] = {
-    //             value: value,
-    //             color: getColor(value, indicatorMeta, colourRange)
-    //         }
-    //     });
-    // console.log('filterdata2', result)
-    // return result;
-    //         }
-    //     return getFeatureIndicator
-    //     }
     }
 });
 </script>
