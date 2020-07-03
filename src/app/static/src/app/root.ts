@@ -54,6 +54,12 @@ const persistState = (store: Store<RootState>) => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
         console.log(mutation.type);
         localStorageManager.saveState(state);
+
+        const {dispatch} = store;
+        const type = stripNamespace(mutation.type);
+        if (type[0] !== "versions") {
+            dispatch("versions/uploadSnapshotState", {root: true});
+        }
     })
 };
 

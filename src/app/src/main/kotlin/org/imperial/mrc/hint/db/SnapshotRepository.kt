@@ -25,7 +25,7 @@ interface SnapshotRepository {
     fun getHashesForSnapshot(snapshotId: String): Map<String, String>
     fun getSnapshotFiles(snapshotId: String): Map<String, SnapshotFile>
     fun setFilesForSnapshot(snapshotId: String, files: Map<String, SnapshotFile?>)
-    fun saveSnapshotState(snapshotId: String, versionName: String, userId: String, state: String)
+    fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
 }
 
 @Component
@@ -144,22 +144,22 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         }
     }
 
-    override fun saveSnapshotState(snapshotId: String, versionName: String, userId: String, state: String)
+    override fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
     {
-        checkSnapshotExists(snapshotId, versionName, userId)
+        checkSnapshotExists(snapshotId, versionId, userId)
         dsl.update(VERSION_SNAPSHOT)
                 .set(VERSION_SNAPSHOT.STATE, state)
                 .execute()
     }
 
-    private fun checkSnapshotExists(snapshotId: String, versionName: String, userId: String)
+    private fun checkSnapshotExists(snapshotId: String, versionId: Int, userId: String)
     {
         val count = dsl.select(count(VERSION_SNAPSHOT.ID))
                 .from(VERSION_SNAPSHOT)
                 .join(VERSION)
                 .on(VERSION_SNAPSHOT.VERSION_ID.eq(VERSION.ID))
                 .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
-                .and(VERSION.NAME.eq(versionName))
+                .and(VERSION.ID.eq(versionId))
                 .and(VERSION.USER_ID.eq(userId))
                 .fetchOne().value1()
 
