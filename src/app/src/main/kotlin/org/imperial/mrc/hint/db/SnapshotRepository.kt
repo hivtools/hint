@@ -149,6 +149,7 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         checkSnapshotExists(snapshotId, versionId, userId)
         dsl.update(VERSION_SNAPSHOT)
                 .set(VERSION_SNAPSHOT.STATE, state)
+                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
                 .execute()
     }
 
