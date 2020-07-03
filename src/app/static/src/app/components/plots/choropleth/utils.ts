@@ -18,7 +18,6 @@ export const getFeatureIndicator = function (data: any[],
                 color: getColor(value, indicatorMeta, colourRange)
             }
         });
-
     return result;
 };
 

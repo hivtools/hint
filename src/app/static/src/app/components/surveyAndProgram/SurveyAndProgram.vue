@@ -61,6 +61,13 @@
                                 @updateColourScales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
                     <div>
                         <table-view :tabledata="data"
+                                    :area-filter-id="areaFilterId"
+                                    :filters="filters"
+                                    :indicators="sapIndicatorsMetadata"
+                                    :selections="plottingSelections"
+
+                                    :selectedFilterOptions="plottingSelections.selectedFilterOptions"
+                                     @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"
                         ></table-view>
                     </div>
             </div>
@@ -164,7 +171,7 @@
             ...mapMutations({
                 updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections",
                 updateSAPColourScales: "plottingSelections/updateSAPColourScales",
-            })
+            }),
         },
         created() {
         },

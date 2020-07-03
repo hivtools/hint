@@ -26,6 +26,13 @@
                             @update="updateColourScale"></map-legend>
             </l-map>
         </div>
+        <!-- <ul>
+            <h3>Filters</h3>
+        <li v-for="x in filters">{{ x }}</li>
+        <h3>selectedFilterOptions</h3>
+        <li v-for="x in selections.selectedFilterOptions">{{ x }}</li>
+        
+    </ul> -->
     </div>
 </template>
 
@@ -202,6 +209,14 @@
                 return Array.from(selectedAreaIdSet);
             },
             featureIndicators() {
+                console.log('getfeature indicators', getFeatureIndicator(
+                    this.chartdata,
+                    this.selectedAreaIds,
+                    this.colorIndicator,
+                    this.colourRange,
+                    this.nonAreaFilters,
+                    this.selections.selectedFilterOptions
+                ))
                 return getFeatureIndicator(
                     this.chartdata,
                     this.selectedAreaIds,
