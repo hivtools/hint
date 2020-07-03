@@ -31,7 +31,7 @@ class VersionsController(private val session: Session,
         return SuccessResponse(version).asResponseEntity()
     }
 
-   @PostMapping("/version/{versionId}/snapshot/{snapshotId}/state")
+    @PostMapping("/version/{versionId}/snapshot/{snapshotId}/state")
     @ResponseBody
     fun uploadState(@PathVariable("versionId") versionId: Int,
                     @PathVariable("snapshotId") snapshotId: String,

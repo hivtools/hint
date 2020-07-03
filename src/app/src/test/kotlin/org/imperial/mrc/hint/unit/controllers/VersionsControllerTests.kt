@@ -15,22 +15,25 @@ import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.VersionException
 import org.imperial.mrc.hint.models.Snapshot
 import org.pac4j.core.profile.CommonProfile
+import org.springframework.http.HttpStatus
 
 class VersionsControllerTests {
+
+    val mockProfile = mock<CommonProfile> {
+        on { id } doReturn "testUser"
+    }
+
+    val mockSession = mock<Session> {
+        on { getUserProfile() } doReturn mockProfile
+        on { generateNewSnapshotId() } doReturn "testSnapshot"
+    }
+
     @Test
     fun `creates new version`()
     {
-        val mockProfile = mock<CommonProfile> {
-            on { id } doReturn "testUser"
-        }
-
-        val mockSession = mock<Session> {
-            on { getUserProfile() } doReturn mockProfile
-            on { generateNewSnapshotId() } doReturn "testSnapshot"
-        }
 
         val snapshot = Snapshot("testSnapshot", "createdTime", "updatedTime")
-        val mockSessionRepo = mock<SnapshotRepository> {
+        val mockSnapshotRepo = mock<SnapshotRepository> {
             on { getSnapshot("testSnapshot") } doReturn snapshot
         }
 
@@ -38,12 +41,12 @@ class VersionsControllerTests {
             on { saveNewVersion("testUser", "testVersion") } doReturn 99
         }
 
-        val sut = VersionsController(mockSession, mockSessionRepo, mockVersionRepo)
+        val sut = VersionsController(mockSession, mockSnapshotRepo, mockVersionRepo)
 
         val request = mapOf("name" to "testVersion")
         val result = sut.newVersion(request)
 
-        verify(mockSessionRepo).saveSnapshot("testSnapshot", 99)
+        verify(mockSnapshotRepo).saveSnapshot("testSnapshot", 99)
 
         val parser = ObjectMapper()
         val resultJson = parser.readTree(result.body)["data"]
@@ -64,5 +67,18 @@ class VersionsControllerTests {
 
         assertThatThrownBy{ sut.newVersion(mapOf()) }.isInstanceOf(VersionException::class.java)
                 .hasMessageContaining("Version name missing")
+    }
+
+    @Test
+    fun `can upload state`()
+    {
+        val mockRepo = mock<SnapshotRepository>();
+        val sut = VersionsController(mockSession, mockRepo, mock())
+
+        val result = sut.uploadState(99, "testSnapshot", "testState")
+
+        verify(mockRepo).saveSnapshotState("testSnapshot", 99, "testUser", "testState")
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 }
