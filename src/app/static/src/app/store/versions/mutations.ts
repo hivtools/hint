@@ -25,7 +25,7 @@ export const mutations: MutationTree<VersionsState> = {
         state.error = action.payload;
         state.loading = false;
     },
-    [VersionsMutations.VersionError](state: VersionsState, action: PayloadWithType<Error>) {
+    [VersionsMutations.SnapshotUploadError](state: VersionsState, action: PayloadWithType<Error>) {
         console.error(action.payload);
     }
 };

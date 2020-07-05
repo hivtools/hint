@@ -8,7 +8,7 @@ import {serialiseState} from "../../localStorageManager";
 
 export interface VersionsActions {
     createVersion: (store: ActionContext<VersionsState, RootState>, name: string) => void
-    uploadSnapshotState: (store: ActionContext<VersionsState, RootState>, name: string) => void
+    uploadSnapshotState: (store: ActionContext<VersionsState, RootState>) => void
 }
 
 export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
