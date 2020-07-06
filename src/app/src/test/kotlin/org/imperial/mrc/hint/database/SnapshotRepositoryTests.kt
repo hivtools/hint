@@ -3,11 +3,12 @@ package org.imperial.mrc.hint.database
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.SnapshotRepository
+import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.db.Tables.SNAPSHOT_FILE
 import org.imperial.mrc.hint.db.Tables.VERSION_SNAPSHOT
+import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.SnapshotException
 import org.imperial.mrc.hint.helpers.TranslationAssert
-import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.models.SnapshotFile
 import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
@@ -15,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
 @ActiveProfiles(profiles = ["test"])
 @SpringBootTest
@@ -25,18 +29,42 @@ class SnapshotRepositoryTests {
     private lateinit var sut: SnapshotRepository
 
     @Autowired
+    private lateinit var versionRepo: VersionRepository
+
+    @Autowired
+    private lateinit var userRepo: UserLogic
+
+    @Autowired
     private lateinit var dsl: DSLContext
 
     private val snapshotId = "sid"
+    private val testEmail = "test.user@test.com"
 
     @Test
-    fun `can save snapshot`() {
+    fun `can save snapshot without version id`() {
         sut.saveSnapshot(snapshotId, null)
+
+        val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
+                .fetchOne()
+        assertThat(snapshot[VERSION_SNAPSHOT.ID]).isEqualTo(snapshotId)
+
+        val versionId: Int? = snapshot[VERSION_SNAPSHOT.VERSION_ID]
+        assertThat(versionId).isEqualTo(null)
+    }
+
+    @Test
+    fun `can save snapshot with version id`() {
+
+        userRepo.addUser(testEmail, "pw")
+        val uid = userRepo.getUser(testEmail)!!.id
+        val versionId = versionRepo.saveNewVersion(uid, "testVersion")
+        sut.saveSnapshot(snapshotId, versionId)
 
         val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
                 .fetchOne()
 
         assertThat(snapshot[VERSION_SNAPSHOT.ID]).isEqualTo(snapshotId)
+        assertThat(snapshot[VERSION_SNAPSHOT.VERSION_ID]).isEqualTo(versionId)
     }
 
     @Test
@@ -48,6 +76,23 @@ class SnapshotRepositoryTests {
                 .fetchOne()
 
         assertThat(snapshot[VERSION_SNAPSHOT.ID]).isEqualTo(snapshotId)
+    }
+
+    @Test
+    fun `can get session snapshot`()
+    {
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        val soon = now.plusSeconds(5)
+        setUpSnapshot()
+        val snapshot = sut.getSnapshot(snapshotId)
+
+        assertThat(snapshot.id).isEqualTo(snapshotId)
+
+        val created = LocalDateTime.parse(snapshot.created, ISO_LOCAL_DATE_TIME)
+        assertThat(created).isBetween(now, soon)
+
+        val updated = LocalDateTime.parse(snapshot.updated, ISO_LOCAL_DATE_TIME)
+        assertThat(updated).isBetween(now, soon)
     }
 
     @Test
@@ -256,6 +301,7 @@ class SnapshotRepositoryTests {
         setUpSnapshot()
         dsl.insertInto(SNAPSHOT_FILE)
                 .set(SNAPSHOT_FILE.FILENAME, filename)
+
                 .set(SNAPSHOT_FILE.HASH, hash)
                 .set(SNAPSHOT_FILE.SNAPSHOT, snapshotId)
                 .set(SNAPSHOT_FILE.TYPE, type)
