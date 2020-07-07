@@ -55,13 +55,4 @@ class VersionsControllerTests {
         assertThat(snapshots[0]["created"].asText()).isEqualTo("createdTime")
         assertThat(snapshots[0]["updated"].asText()).isEqualTo("updatedTime")
     }
-
-    @Test
-    fun `throws exception if name missing on create`()
-    {
-        val sut = VersionsController(mock(), mock(), mock())
-
-        assertThatThrownBy{ sut.newVersion(mapOf()) }.isInstanceOf(VersionException::class.java)
-                .hasMessageContaining("Version name missing")
-    }
 }
