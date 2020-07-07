@@ -18,20 +18,17 @@ class VersionsController(private val session: Session,
 {
     @PostMapping("/version/")
     @ResponseBody
-    fun newVersion(@RequestBody request: Map<String, String>): ResponseEntity<String>
+    fun newVersion(@RequestParam("name") name: String): ResponseEntity<String>
     {
-        val versionName = request["name"] ?: throw VersionException("Version name missing")
         val userId = session.getUserProfile().id
-        val versionId = versionRepository.saveNewVersion(userId, versionName)
+        val versionId = versionRepository.saveNewVersion(userId, name)
 
         //Generate new snapshot id and set it as the session variable, and save new snapshot to db
         val newSnapshotId = session.generateNewSnapshotId()
         snapshotRepository.saveSnapshot(newSnapshotId, versionId)
 
         val snapshot = snapshotRepository.getSnapshot(newSnapshotId)
-        val version = Version(versionId, versionName, listOf(snapshot))
-
+        val version = Version(versionId, name, listOf(snapshot))
         return SuccessResponse(version).asResponseEntity()
     }
 }
-

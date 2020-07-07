@@ -40,8 +40,7 @@ class VersionsControllerTests {
 
         val sut = VersionsController(mockSession, mockSessionRepo, mockVersionRepo)
 
-        val request = mapOf("name" to "testVersion")
-        val result = sut.newVersion(request)
+        val result = sut.newVersion("testVersion")
 
         verify(mockSessionRepo).saveSnapshot("testSnapshot", 99)
 

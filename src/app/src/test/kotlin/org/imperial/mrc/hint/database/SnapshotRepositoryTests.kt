@@ -301,6 +301,7 @@ class SnapshotRepositoryTests {
         setUpSnapshot()
         dsl.insertInto(SNAPSHOT_FILE)
                 .set(SNAPSHOT_FILE.FILENAME, filename)
+
                 .set(SNAPSHOT_FILE.HASH, hash)
                 .set(SNAPSHOT_FILE.SNAPSHOT, snapshotId)
                 .set(SNAPSHOT_FILE.TYPE, type)
