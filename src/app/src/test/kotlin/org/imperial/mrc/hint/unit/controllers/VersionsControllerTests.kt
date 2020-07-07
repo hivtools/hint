@@ -9,10 +9,8 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.VersionRepository
-import org.imperial.mrc.hint.exceptions.VersionException
 import org.imperial.mrc.hint.models.Snapshot
 import org.pac4j.core.profile.CommonProfile
 

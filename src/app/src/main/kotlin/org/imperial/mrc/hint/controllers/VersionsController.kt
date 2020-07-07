@@ -2,7 +2,6 @@ package org.imperial.mrc.hint.controllers
 
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.VersionRepository
-import org.imperial.mrc.hint.exceptions.VersionException
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.Version
 import org.imperial.mrc.hint.models.asResponseEntity
