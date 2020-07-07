@@ -22,7 +22,7 @@
     "@types/crypto-js": "^3.1.43",
     "@types/d3-scale-chromatic": "^1.3.1",
     "@types/i18next": "^13.0.0",
-    "@types/jest": "^24.0.21",
+    "@types/jest": "^24.9.1",
     "@types/numeral": "0.0.26",
     "@types/qs": "^6.5.3",
     "@vue/test-utils": "^1.0.0-beta.29",

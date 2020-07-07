@@ -1,17 +1,38 @@
 <template>
-<div>
+<div v-if="filteredData.length > 0">
     <h3>Table</h3>
     <table>
-    
          <tr>
              <th>Area</th>
-             <th>{{ filteredData[0]['indicatorMeta']['indicator'] === 'current_art' ? 'Current ART' : 'Prevalence'}}</th>
+             <th>{{ filteredData[0]['indicatorMeta']['name'] }}</th>
+             <th v-for="(options, key) in selectedFilterOptions" v-if="options.length > 0">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</th>
+             <!-- <th v-for="options in selectedFilterOptions">{{ options.label }}</th> -->
         </tr>
         <tr v-for="x in filteredData">
             <td>{{ flattenedAreas[x['areaId']]['label'] }}</td>
             <td>{{ x['value'] }}</td>
+            <td v-for="(options, key) in selectedFilterOptions" v-if="options.length > 0 && key !== 'area'">{{ options[0]['label'] }}</td>
         </tr>
     </table>
+    <!-- <h3>flattenedAreas</h3>
+    <div>{{ flattenedAreas }}</div> -->
+    <h3>filteredData</h3>
+    <ul>
+        <li v-for="x in filteredData">{{ x }}</li>
+    </ul>
+    <!-- <div>{{ filteredData }}</div> -->
+    <!-- <h3>Filters</h3>
+    <div>{{ filters }}</div>
+    <h3>Indicators</h3>
+    <div>{{ indicators }}</div>
+    <h3>areafilterid</h3>
+    <div>{{ areaFilterId }}</div> -->
+    <h3>selectedfilter options</h3>
+    <div>{{ selectedFilterOptions }}</div>
+    <!-- <h3>selections</h3>
+    <div>{{ selections }}</div>
+    <h3>table data</h3>
+    <div>{{ tabledata }}</div> -->
 </div>
     
     
@@ -69,6 +90,8 @@ const props = {
     }
 }
 
+
+
 export default Vue.extend<{}, {}, Computed, Props>({
     name: "table-view",
     props: props,
@@ -76,6 +99,9 @@ export default Vue.extend<{}, {}, Computed, Props>({
     data() {
       return {
       }
+    },
+    mounted(){
+    console.log('selections', this.selections)
     },
     computed: {
         nonAreaFilters() {
@@ -109,8 +135,14 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     result.push({areaId, indicatorMeta, value});
                 });
             console.log('filterdata', result)
-            return result;
+            // return result;
+            const filterByIndicator = result.filter(row => row.indicatorMeta.indicator === this.selections.indicatorId)
+            const filterByDetail = filterByIndicator.filter(row => row.areaId[4] == this.selections.detail)
+            return filterByDetail
         }
+        // filterByIndicator() {
+        //     return this.filteredData().filter(row => row.indicatorMeta.indicatorMeta === this.selections.indicatorId)
+        // }
     }
 });
 </script>

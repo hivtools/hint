@@ -118,6 +118,10 @@
                 areaFilterId: "area"
             };
         },
+        // mounted() {
+        //     console.log('plottingSelections', plottingSelections.state)
+        //     console.log('selectedDataType', this.selectedDataType)
+        // },
         computed: {
             ...mapState<RootState>({
                 selectedDataType: ({surveyAndProgram}) => {
