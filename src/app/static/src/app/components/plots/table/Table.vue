@@ -1,5 +1,6 @@
 <template>
-<div v-if="filteredData.length > 0">
+<!-- <div v-if="filteredData.length > 0"> -->
+<div>
     <h3>Table</h3>
     <table>
          <tr>
@@ -15,10 +16,10 @@
     </table>
     <!-- <h3>flattenedAreas</h3>
     <div>{{ flattenedAreas }}</div> -->
-    <h3>filteredData</h3>
+    <!-- <h3>filteredData</h3>
     <ul>
         <li v-for="x in filteredData">{{ x }}</li>
-    </ul>
+    </ul> -->
     <!-- <div>{{ filteredData }}</div> -->
     <!-- <h3>Filters</h3>
     <div>{{ filters }}</div>
@@ -29,8 +30,8 @@
     <h3>selectedfilter options</h3>
     <div>{{ selectedFilterOptions }}</div>
     <!-- <h3>selections</h3>
-    <div>{{ selections }}</div>
-    <h3>table data</h3>
+    <div>{{ selections }}</div> -->
+    <!-- <h3>table data</h3>
     <div>{{ tabledata }}</div> -->
 </div>
     
@@ -106,9 +107,10 @@ export default Vue.extend<{}, {}, Computed, Props>({
           }
       }
     },
-    mounted(){
-    console.log('selections', this.selections)
-    },
+    // mounted(){
+    // console.log('selections', this.selections)
+    // console.log('tabledata', this.tabledata)
+    // },
     computed: {
         nonAreaFilters() {
              return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
