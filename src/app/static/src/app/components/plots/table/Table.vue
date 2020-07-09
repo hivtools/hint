@@ -1,40 +1,42 @@
 <template>
-<div v-if="filteredData.length > 0">
-    <h3>Table</h3>
-    <table>
-         <tr>
-             <th>Area</th>
-             <th>{{ filteredData[0]['indicatorMeta']['name'] }}</th>
-             <th v-for="(value, key) in filteredData[0]['filter']">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</th>
-        </tr>
-        <tr v-for="row in filteredData">
-            <td :style="styleObject">{{ flattenedAreas[row['areaId']]['label'] }}</td>
-            <td :style="styleObject">{{ row['value'] }}</td>
-            <td :style="styleObject" v-for="(value2, key2) in row['filter']">{{ value2[0]['label'] }}</td>
-        </tr>
-    </table>
-    <!-- <h3>flattenedAreas</h3>
-    <div>{{ flattenedAreas }}</div> -->
-    <!-- <h3>filteredData</h3>
-    <ul>
-        <li v-for="x in filteredData">{{ x }}</li>
-    </ul> -->
-    <!-- <div>{{ filteredData }}</div> -->
-    <!-- <h3>Filters</h3>
-    <div>{{ filters }}</div>
-    <h3>Indicators</h3>
-    <div>{{ indicators }}</div>
-    <h3>areafilterid</h3>
-    <div>{{ areaFilterId }}</div> -->
-    <h3>selectedfilter options</h3>
-    <div>{{ selectedFilterOptions }}</div>
-    <!-- <h3>selections</h3>
-    <div>{{ selections }}</div>
-    <h3>table data</h3>
-    <div>{{ tabledata }}</div> -->
-</div>
-    
-    
+    <div>
+        <br>
+        <div v-if="filteredData.length > 0">
+            <!-- <h3>Table</h3> -->
+            <table>
+                <tr>
+                    <th>Area</th>
+                    <th>{{ filteredData[0]['indicatorMeta']['name'] }}</th>
+                    <th v-for="(value, key) in filteredData[0]['filter']">{{ key === 'survey' ? 'Household survey' : key.charAt(0).toUpperCase() + key.slice(1) }}</th>
+                </tr>
+                <tr v-for="row in filteredData">
+                    <td :style="styleObject">{{ flattenedAreas[row['areaId']]['label'] }}</td>
+                    <td :style="styleObject">{{ row['value'] }}</td>
+                    <td :style="styleObject" v-for="(value2, key2) in row['filter']">{{ value2[0]['label'] }}</td>
+                </tr>
+            </table>
+            <!-- <h3>flattenedAreas</h3>
+            <div>{{ flattenedAreas }}</div> -->
+            <!-- <h3>filteredData</h3>
+            <ul>
+                <li v-for="x in filteredData">{{ x }}</li>
+            </ul> -->
+            <!-- <div>{{ filteredData }}</div> -->
+            <!-- <h3>Filters</h3>
+            <div>{{ filters }}</div>
+            <h3>Indicators</h3>
+            <div>{{ indicators }}</div>
+            <h3>areafilterid</h3>
+            <div>{{ areaFilterId }}</div> -->
+            <!-- <h3>selectedfilter options</h3>
+            <div>{{ selectedFilterOptions }}</div> -->
+            <!-- <h3>selections</h3>
+            <div>{{ selections }}</div>
+            <h3>table data</h3>
+            <div>{{ tabledata }}</div> -->
+        </div>
+        <div v-else>No data to show.</div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -100,9 +102,9 @@ export default Vue.extend<{}, {}, Computed, Props>({
           }
       }
     },
-    mounted(){
-    console.log('selections', this.selections)
-    },
+    // mounted(){
+    // console.log('selections', this.selections)
+    // },
     computed: {
         nonAreaFilters() {
              return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
@@ -134,7 +136,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                 (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
                     result.push({areaId, indicatorMeta, value});
                 });
-            console.log('filterdata', result)
+            // console.log('filterdata', result)
             // return result;
             const filterByIndicator = result.filter(row => row.indicatorMeta.indicator === this.selections.indicatorId)
             const filterByDetail = filterByIndicator.filter(row => row.areaId[4] == this.selections.detail)
