@@ -1,6 +1,5 @@
 <template>
-<!-- <div v-if="filteredData.length > 0"> -->
-<div>
+<div v-if="filteredData.length > 0">
     <h3>Table</h3>
     <table>
          <tr>
@@ -30,8 +29,8 @@
     <h3>selectedfilter options</h3>
     <div>{{ selectedFilterOptions }}</div>
     <!-- <h3>selections</h3>
-    <div>{{ selections }}</div> -->
-    <!-- <h3>table data</h3>
+    <div>{{ selections }}</div>
+    <h3>table data</h3>
     <div>{{ tabledata }}</div> -->
 </div>
     
@@ -51,7 +50,6 @@ import {
         ColourScaleType
     } from "../../../store/plottingSelections/plottingSelections";
 import {flattenOptions, flattenToIdSet} from "../../../utils";
-
 interface Props {
         tabledata: any[],
         indicators: ChoroplethIndicatorMetadata[],
@@ -59,7 +57,6 @@ interface Props {
         filters: Filter[],
         areaFilterId: string
 }
-
 interface Computed {
     nonAreaFilters: Filter[],
     areaFilter: Filter,
@@ -68,7 +65,6 @@ interface Computed {
     selectedAreaIds: string[],
     selectedAreaFilterOptions: FilterOption[],
 }
-
 const props = {
     tabledata: {
         type: Array
@@ -89,9 +85,6 @@ const props = {
         type: Object
     }
 }
-
-
-
 export default Vue.extend<{}, {}, Computed, Props>({
     name: "table-view",
     props: props,
@@ -107,10 +100,9 @@ export default Vue.extend<{}, {}, Computed, Props>({
           }
       }
     },
-    // mounted(){
-    // console.log('selections', this.selections)
-    // console.log('tabledata', this.tabledata)
-    // },
+    mounted(){
+    console.log('selections', this.selections)
+    },
     computed: {
         nonAreaFilters() {
              return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
@@ -147,24 +139,21 @@ export default Vue.extend<{}, {}, Computed, Props>({
             const filterByIndicator = result.filter(row => row.indicatorMeta.indicator === this.selections.indicatorId)
             const filterByDetail = filterByIndicator.filter(row => row.areaId[4] == this.selections.detail)
             let filterObject = {...this.selections.selectedFilterOptions}
-            // const filterObject2 = Object.keys(filterObject).filter(function(key, index) {
-            //     return filterObject[key].length > 0 && key !== 'area'
-            // })
+            // console.log('filterObject', filterObject)
+            delete filterObject['area']
             Object.keys(filterObject).map(function(key, index) {
                 if (filterObject[key].length < 1 || key === 'area') {
                     delete filterObject[key]
                 }
             })
-            console.log('filterObject', filterObject)
+            // console.log('filterObject', filterObject)
             const addFilterObject = filterByDetail.map(row => {
                 row['filter'] = {...filterObject}
                 return row
             })
             return addFilterObject
+            // return filterByDetail
         }
-        // filterByIndicator() {
-        //     return this.filteredData().filter(row => row.indicatorMeta.indicatorMeta === this.selections.indicatorId)
-        // }
     }
 });
 </script>
