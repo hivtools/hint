@@ -69,6 +69,7 @@
                                     :selectedFilterOptions="plottingSelections.selectedFilterOptions"
                                      @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"
                         ></table-view>
+                        <!-- <div>{{ filterTableIndicators }}</div> -->
                     </div>
             </div>
         </div>
@@ -108,7 +109,9 @@
         survey: PartialFileUploadProps,
         features: Feature[],
         featureLevels: LevelLabel[],
-        plottingSelections: ChoroplethSelections
+        plottingSelections: ChoroplethSelections,
+        selectedIndicator: any[],
+        filterTableIndicators: any[]
     }
 
     export default Vue.extend<Data, {}, Computed, {}>({
@@ -118,15 +121,29 @@
                 areaFilterId: "area"
             };
         },
-        // mounted() {
-        //     console.log('plottingSelections in sap', this.plottingSelections)
+        mounted() {
+            console.log('sap data', this.data),
+            console.log('sap plottingSelections', this.plottingSelections),
+            console.log('sap indicators', this.sapIndicatorsMetadata),
+            console.log('sap areaFilterId', this.areaFilterId),
+            console.log('sap filterTableIndicators', this.filterTableIndicators)
             // console.log('selectedDataType', this.selectedDataType)
-        // },
+        },
         computed: {
+            filterTableIndicators(){
+                // return this.sapIndicatorsMetadata.filter(val => val.indicator === this.plottingSelections.indicatorId)
+                // return [this.sapIndicatorsMetadata[0]['indicator'], this.plottingSelections.indicatorId]
+            },
+            // filterTableDetail(){
+            //     return this.data.filter(val => )
+            // },
             ...mapState<RootState>({
                 selectedDataType: ({surveyAndProgram}) => {
                     return surveyAndProgram.selectedDataType;
                 },
+                // filteredData() {
+                //     const filterByIndicator = data.filter(row => row.indicatorMeta.indicator === this.selections.indicatorId)
+                // },
                 showChoropleth: ({surveyAndProgram, baseline}) => {
                     return surveyAndProgram.selectedDataType != null;
                 },

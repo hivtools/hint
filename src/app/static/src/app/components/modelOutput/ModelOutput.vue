@@ -45,6 +45,27 @@
                              @update="updateBubblePlotSelections({payload: $event})"
                              @updateColourScales="updateOutputColourScales({payload: $event})"></bubble-plot>
             </div>
+            <div class="col-md-12">
+                <table-view :tabledata="chartdata"
+                        :area-filter-id="areaFilterId"
+                        :filters="choroplethFilters"
+                        :indicators="choroplethIndicators"
+                        :selections="choroplethSelections"
+                        
+                        :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
+                        @update="updateChoroplethSelections({payload: {choroplethSelections: $event}})"
+                        ></table-view>
+                        <!-- <div>{{ selectionType }}</div> -->
+            </div>
+            
+
+                        <!-- :selections="selectedTab==='bar' ? barchartSelections : selectedTab==='map' ? choroplethSelections : bubblePlotSelections"
+
+                        :selectedFilterOptions="selectedTab==='bar' ? barchartSelections.selectedFilterOptions : selectedTab==='map' ? choroplethSelections.selectedFilterOptions : bubblePlotSelections.selectedFilterOptions"
+                        @update="updateChoroplethSelections({payload: {selectionType: $event}})"
+                        ></table-view> -->
+
+                        
         </div>
     </div>
 </template>
@@ -54,6 +75,7 @@
     import Vue from "vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
+    import TableView from "../plots/table/Table.vue";
     import {BarchartIndicator, Filter} from "@reside-ic/vue-charts/src/bar/types";
     import {BarChartWithFilters, FilterConfig} from "@reside-ic/vue-charts";
 
@@ -102,7 +124,9 @@
         featureLevels: LevelLabel[]
         currentLanguage: Language,
         filterConfig: FilterConfig,
-        colourScales: ColourScaleSelections
+        colourScales: ColourScaleSelections,
+        areaFilterId: string,
+        selectionType: string
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -120,10 +144,24 @@
             }
 
             return {
-                tabs: tabs
+                tabs: tabs,
+                areaFilterId: "area"
             }
         },
+        // mounted() {
+        //     console.log('selected tab mounted', this.selectedTab)
+        // },
         computed: {
+            selectionType(){
+                // console.log('selected tab', this.selectedTab)
+                // if (this.selectedTab === 'map'){
+                //     return this.choroplethSelections
+                // } else if (this.selectedTab === 'bar'){
+                //     return this.barchartSelections
+                // } else if (this.selectedTab === 'bubble'){
+                //     return this.bubblePlotSelections
+                // }
+            },
             ...mapGettersByNames("modelOutput", [
                 "barchartFilters", "barchartIndicators",
                 "bubblePlotFilters", "bubblePlotIndicators",
@@ -167,7 +205,8 @@
         components: {
             BarChartWithFilters,
             BubblePlot,
-            Choropleth
+            Choropleth,
+            TableView
         }
     })
 </script>

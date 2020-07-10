@@ -31,9 +31,12 @@
             <!-- <h3>selectedfilter options</h3>
             <div>{{ selectedFilterOptions }}</div> -->
             <!-- <h3>selections</h3>
-            <div>{{ selections }}</div>
-            <h3>table data</h3>
-            <div>{{ tabledata }}</div> -->
+            <div>{{ selections }}</div> -->
+            <!-- <h3>table data</h3>
+            <ul>
+                <li v-for="z in tabledata">{{ z }}</li>
+            </ul> -->
+            <!-- <div>{{ tabledata }}</div> -->
         </div>
         <div v-else>No data to show.</div>
     </div>
@@ -102,9 +105,9 @@ export default Vue.extend<{}, {}, Computed, Props>({
           }
       }
     },
-    // mounted(){
-    // console.log('selections', this.selections)
-    // },
+    mounted(){
+    console.log('indicators', this.indicators)
+    },
     computed: {
         nonAreaFilters() {
              return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
@@ -136,10 +139,12 @@ export default Vue.extend<{}, {}, Computed, Props>({
                 (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
                     result.push({areaId, indicatorMeta, value});
                 });
-            // console.log('filterdata', result)
+            console.log('table filterdata', result)
             // return result;
             const filterByIndicator = result.filter(row => row.indicatorMeta.indicator === this.selections.indicatorId)
+            // const filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)
             const filterByDetail = filterByIndicator.filter(row => row.areaId[4] == this.selections.detail)
+            console.log('table fully filtered data', filterByDetail)
             let filterObject = {...this.selections.selectedFilterOptions}
             // console.log('filterObject', filterObject)
             delete filterObject['area']
