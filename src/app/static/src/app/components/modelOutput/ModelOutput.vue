@@ -25,6 +25,16 @@
                             :colour-scales="colourScales"
                             @update="updateOutputChoroplethSelections({payload: $event})"
                             @updateColourScales="updateOutputColourScales({payload: $event})"></choropleth>
+                <table-view :style="styleObject"
+                           :tabledata="chartdata"
+                           :area-filter-id="areaFilterId"
+                           :filters="choroplethFilters"
+                           :indicators="choroplethIndicators"
+                           :selections="choroplethSelections"
+                        
+                           :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
+                            @update="updateChoroplethSelections({payload: {choroplethSelections: $event}})"
+                        ></table-view>
             </div>
 
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
@@ -34,6 +44,15 @@
                         :indicators="barchartIndicators"
                         :selections="barchartSelections"
                         @update="updateBarchartSelections({payload: $event})" ></bar-chart-with-filters>
+                <table-view :style="styleObject" :tabledata="chartdata"
+                        :area-filter-id="areaFilterId"
+                        :filters="barchartFilters"
+                        :indicators="barchartIndicators"
+                        :selections="barchartSelections"
+                        
+                        :selectedFilterOptions="barchartSelections.selectedFilterOptions"
+                        @update="updateBarchartSelections({payload: $event})"
+                        ></table-view>
             </div>
 
             <div v-if="selectedTab==='bubble'" id="bubble-plot-container" class="col-md-12">
@@ -44,9 +63,19 @@
                              :colour-scales="colourScales"
                              @update="updateBubblePlotSelections({payload: $event})"
                              @updateColourScales="updateOutputColourScales({payload: $event})"></bubble-plot>
+                    <table-view :style="styleObject" :tabledata="chartdata"
+                            :area-filter-id="areaFilterId"
+                            :filters="bubblePlotFilters"
+                            :indicators="bubblePlotIndicators"
+                            :selections="bubblePlotSelections"
+                            
+                            :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
+                            @update="updateBubblePlotSelections({payload: $event})"
+                            ></table-view>
+                
             </div>
             <div class="col-md-12">
-                <table-view :tabledata="chartdata"
+                <!-- <table-view :tabledata="chartdata"
                         :area-filter-id="areaFilterId"
                         :filters="choroplethFilters"
                         :indicators="choroplethIndicators"
@@ -54,7 +83,7 @@
                         
                         :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
                         @update="updateChoroplethSelections({payload: {choroplethSelections: $event}})"
-                        ></table-view>
+                        ></table-view> -->
                         <!-- <div>{{ selectionType }}</div> -->
             </div>
             
@@ -145,7 +174,10 @@
 
             return {
                 tabs: tabs,
-                areaFilterId: "area"
+                areaFilterId: "area",
+                styleObject: {
+                    marginLeft: "290px"
+                }
             }
         },
         // mounted() {

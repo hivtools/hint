@@ -7,7 +7,7 @@
                 <tr>
                     <th>Area</th>
                     <th>{{ filteredData[0]['indicatorMeta']['name'] }}</th>
-                    <th v-for="(value, key) in filteredData[0]['filter']">{{ key === 'survey' ? 'Household survey' : key.charAt(0).toUpperCase() + key.slice(1) }}</th>
+                    <th v-for="(value, key) in filteredData[0]['filter']">{{ key === 'survey' ? 'Household survey' : key === 'quarter' ? 'Period' : key.charAt(0).toUpperCase() + key.slice(1) }}</th>
                 </tr>
                 <tr v-for="row in filteredData">
                     <td :style="styleObject">{{ flattenedAreas[row['areaId']]['label'] }}</td>
@@ -139,12 +139,27 @@ export default Vue.extend<{}, {}, Computed, Props>({
                 (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
                     result.push({areaId, indicatorMeta, value});
                 });
+            console.log('table unfiltered data', this.tabledata)
             console.log('table filterdata', result)
+            console.log('table selections', this.selections)
             // return result;
-            const filterByIndicator = result.filter(row => row.indicatorMeta.indicator === this.selections.indicatorId)
-            // const filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)
-            const filterByDetail = filterByIndicator.filter(row => row.areaId[4] == this.selections.detail)
+            if (result.length > 0){
+            let filterByIndicator = result
+            if (this.selections.indicatorId){
+            filterByIndicator = result.filter(row => row.indicatorMeta.indicator === this.selections.indicatorId)
+            } else if (this.selections.colorIndicatorId){
+            // NOTE: THIS FUNCTION WORKS BUT CAUSES A BUILD ERROR
+            filterByIndicator = result.filter(row => row.indicatorMeta.indicator === this.selections.colorIndicatorId)
+            }
+            console.log('filterByIndicator', filterByIndicator)
+
+            let filterByDetail = filterByIndicator
+            if (result[0]['indicatorMeta']['indicator'].length > 3){
+            filterByDetail = filterByIndicator.filter(row => row.areaId[4] == this.selections.detail)
+            }
+            // const filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)            
             console.log('table fully filtered data', filterByDetail)
+            console.log('table selected filter options', this.selections.selectedFilterOptions)
             let filterObject = {...this.selections.selectedFilterOptions}
             // console.log('filterObject', filterObject)
             delete filterObject['area']
@@ -154,12 +169,40 @@ export default Vue.extend<{}, {}, Computed, Props>({
                 }
             })
             // console.log('filterObject', filterObject)
-            const addFilterObject = filterByDetail.map(row => {
+            const addFilterObject = filterByDetail.map((row, index, array) => {
                 row['filter'] = {...filterObject}
+                if ('age' in row.filter){
+                    if (row.filter.age.length > 1){
+                    let i = index
+                    if (i >= filterObject.age.length * 2){
+                        i -= filterObject.age.length
+                    }
+                    if (i >= filterObject.age.length){
+                        i -= filterObject.age.length
+                    }
+                    
+                    row.filter.age = [{...filterObject.age[i]}]
+                    }
+                }
+                if ('sex' in row.filter){
+                    if (row.filter.sex.length > 1){
+                        let i = 0
+                        if (index >= array.length / row.filter.sex.length){
+                            i += 1
+                        }
+                        if (index >= (array.length / row.filter.sex.length) * 2){
+                            i += 1
+                        }
+
+                        row.filter.sex = [{...filterObject.sex[i]}]
+                    }
+                }
+
                 return row
             })
             return addFilterObject
             // return filterByDetail
+            } else return result
         }
     }
 });
