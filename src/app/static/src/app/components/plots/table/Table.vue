@@ -38,7 +38,7 @@
             </ul> -->
             <!-- <div>{{ tabledata }}</div> -->
         </div>
-        <div v-else>No data to show.</div>
+        <div v-else>No data are available for these selections.</div>
     </div>
 </template>
 
@@ -144,31 +144,41 @@ export default Vue.extend<{}, {}, Computed, Props>({
             console.log('table selections', this.selections)
             // return result;
             if (result.length > 0){
-            let filterByIndicator = result
-            if (this.selections.indicatorId){
-            filterByIndicator = result.filter(row => row.indicatorMeta.indicator === this.selections.indicatorId)
-            } else if (this.selections.colorIndicatorId){
-            // NOTE: THIS FUNCTION WORKS BUT CAUSES A BUILD ERROR
-            filterByIndicator = result.filter(row => row.indicatorMeta.indicator === this.selections.colorIndicatorId)
-            }
-            console.log('filterByIndicator', filterByIndicator)
 
-            let filterByDetail = filterByIndicator
+
+            // let filterByIndicator = result
+            // if (this.selections.indicatorId){
+            // filterByIndicator = result.filter(row => row.indicatorMeta.indicator === this.selections.indicatorId)
+            // } else if (this.selections.colorIndicatorId){
+            // // NOTE: THIS FUNCTION WORKS BUT CAUSES A BUILD ERROR
+            // filterByIndicator = result.filter(row => row.indicatorMeta.indicator === this.selections.colorIndicatorId)
+            // }
+            // console.log('filterByIndicator', filterByIndicator)
+
+
+            // let filterByDetail = filterByIndicator
+            // if (result[0]['indicatorMeta']['indicator'].length > 3){
+            // filterByDetail = filterByIndicator.filter(row => row.areaId[4] == this.selections.detail)
+            // }
+            let filterByDetail = result
             if (result[0]['indicatorMeta']['indicator'].length > 3){
-            filterByDetail = filterByIndicator.filter(row => row.areaId[4] == this.selections.detail)
+            filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)
             }
             // const filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)            
             console.log('table fully filtered data', filterByDetail)
             console.log('table selected filter options', this.selections.selectedFilterOptions)
             let filterObject = {...this.selections.selectedFilterOptions}
-            // console.log('filterObject', filterObject)
+            console.log('filterObject', filterObject)
             delete filterObject['area']
             Object.keys(filterObject).map(function(key, index) {
                 if (filterObject[key].length < 1 || key === 'area') {
                     delete filterObject[key]
                 }
             })
-            // console.log('filterObject', filterObject)
+            // filterObject.sex = filterObject.sex.sort((a, b) => (a.id > b.id) ? 1 : -1)
+            // filterObject.age.sort((a, b) => (a.id > b.id) ? 1 : -1)
+
+            console.log('filterObject', filterObject)
             const addFilterObject = filterByDetail.map((row, index, array) => {
                 row['filter'] = {...filterObject}
                 if ('age' in row.filter){

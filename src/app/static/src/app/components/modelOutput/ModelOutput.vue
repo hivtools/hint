@@ -29,7 +29,7 @@
                            :tabledata="chartdata"
                            :area-filter-id="areaFilterId"
                            :filters="choroplethFilters"
-                           :indicators="choroplethIndicators"
+                           :indicators="filterChoroplethIndicators"
                            :selections="choroplethSelections"
                         
                            :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
@@ -47,7 +47,7 @@
                 <table-view :style="styleObject" :tabledata="chartdata"
                         :area-filter-id="areaFilterId"
                         :filters="barchartFilters"
-                        :indicators="barchartIndicators"
+                        :indicators="filterBarchartIndicators"
                         :selections="barchartSelections"
                         
                         :selectedFilterOptions="barchartSelections.selectedFilterOptions"
@@ -66,7 +66,7 @@
                     <table-view :style="styleObject" :tabledata="chartdata"
                             :area-filter-id="areaFilterId"
                             :filters="bubblePlotFilters"
-                            :indicators="bubblePlotIndicators"
+                            :indicators="filterBubblePlotIndicators"
                             :selections="bubblePlotSelections"
                             
                             :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
@@ -155,7 +155,12 @@
         filterConfig: FilterConfig,
         colourScales: ColourScaleSelections,
         areaFilterId: string,
-        selectionType: string
+        selectionType: string,
+        filterChoroplethIndicators: any[],
+        choroplethIndicators: any[],
+        filterBarchartIndicators: any[],
+        filterBubblePlotIndicators: any[],
+        bubblePlotIndicators: any[],
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -180,19 +185,18 @@
                 }
             }
         },
-        // mounted() {
-        //     console.log('selected tab mounted', this.selectedTab)
-        // },
+        mounted() {
+            console.log('barchar indicators', this.barchartIndicators)
+        },
         computed: {
-            selectionType(){
-                // console.log('selected tab', this.selectedTab)
-                // if (this.selectedTab === 'map'){
-                //     return this.choroplethSelections
-                // } else if (this.selectedTab === 'bar'){
-                //     return this.barchartSelections
-                // } else if (this.selectedTab === 'bubble'){
-                //     return this.bubblePlotSelections
-                // }
+            filterChoroplethIndicators(){
+                return this.choroplethIndicators.filter((val: any) => val.indicator === this.choroplethSelections.indicatorId)
+            },
+            filterBarchartIndicators(){
+                return this.barchartIndicators.filter((val: any) => val.indicator === this.barchartSelections.indicatorId)
+            },
+            filterBubblePlotIndicators(){
+                return this.bubblePlotIndicators.filter((val: any) => val.indicator === this.bubblePlotSelections.colorIndicatorId)
             },
             ...mapGettersByNames("modelOutput", [
                 "barchartFilters", "barchartIndicators",

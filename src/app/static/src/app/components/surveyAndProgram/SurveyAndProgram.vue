@@ -63,13 +63,13 @@
                         <table-view :tabledata="data"
                                     :area-filter-id="areaFilterId"
                                     :filters="filters"
-                                    :indicators="sapIndicatorsMetadata"
+                                    :indicators="filterTableIndicators"
                                     :selections="plottingSelections"
 
                                     :selectedFilterOptions="plottingSelections.selectedFilterOptions"
                                      @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"
                         ></table-view>
-                        <div>{{ filterTableIndicators }}</div>
+                        <!-- <div>{{ filterTableIndicators }}</div> -->
                     </div>
             </div>
         </div>
@@ -133,13 +133,8 @@
         },
         computed: {
             filterTableIndicators(){
-                // return this.sapIndicatorsMetadata.filter(val => val.indicator === this.plottingSelections.indicatorId)
-                // return [this.sapIndicatorsMetadata[0]['indicator'], this.plottingSelections.indicatorId]
-                // if (filtering){return filtering} else return ''
+                return this.sapIndicatorsMetadata.filter((val: any) => val.indicator === this.plottingSelections.indicatorId)
             },
-            // filterTableDetail(){
-            //     return this.data.filter(val => )
-            // },
             ...mapState<RootState>({
                 selectedDataType: ({surveyAndProgram}) => {
                     return surveyAndProgram.selectedDataType;
