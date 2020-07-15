@@ -66,7 +66,8 @@
                     <table-view :style="styleObject" :tabledata="chartdata"
                             :area-filter-id="areaFilterId"
                             :filters="bubblePlotFilters"
-                            :indicators="filterBubblePlotIndicators"
+                            :indicators="filterBubblePlotIndicatorsColour"
+                            :indicatorsSize="filterBubblePlotIndicatorsSize"
                             :selections="bubblePlotSelections"
                             
                             :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
@@ -159,7 +160,8 @@
         filterChoroplethIndicators: any[],
         choroplethIndicators: any[],
         filterBarchartIndicators: any[],
-        filterBubblePlotIndicators: any[],
+        filterBubblePlotIndicatorsColour: any[],
+        filterBubblePlotIndicatorsSize: any[],
         bubblePlotIndicators: any[],
     }
 
@@ -195,8 +197,11 @@
             filterBarchartIndicators(){
                 return this.barchartIndicators.filter((val: any) => val.indicator === this.barchartSelections.indicatorId)
             },
-            filterBubblePlotIndicators(){
+            filterBubblePlotIndicatorsColour(){
                 return this.bubblePlotIndicators.filter((val: any) => val.indicator === this.bubblePlotSelections.colorIndicatorId)
+            },
+            filterBubblePlotIndicatorsSize(){
+                return this.bubblePlotIndicators.filter((val: any) => val.indicator === this.bubblePlotSelections.sizeIndicatorId)
             },
             ...mapGettersByNames("modelOutput", [
                 "barchartFilters", "barchartIndicators",

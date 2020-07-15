@@ -3,18 +3,34 @@
         <br>
         <div v-if="filteredData.length > 0">
             <!-- <h3>Table</h3> -->
-            <table>
-                <tr>
+            <table style="display: flex">
+                <div>
+                    <tr>
                     <th>Area</th>
-                    <th>{{ filteredData[0]['indicatorMeta']['name'] }}</th>
                     <th v-for="(value, key) in filteredData[0]['filter']">{{ key === 'survey' ? 'Household survey' : key === 'quarter' ? 'Period' : key.charAt(0).toUpperCase() + key.slice(1) }}</th>
+                    <th>{{ filteredData[0]['indicatorMeta']['name'] }}</th>
+                    <!-- <th v-if="filteredDataSize.length > 0">{{ filteredDataSize[0]['indicatorMeta']['name'] }}</th> -->
                 </tr>
-                <tr v-for="row in filteredData">
-                    <td :style="styleObject">{{ flattenedAreas[row['areaId']]['label'] }}</td>
-                    <td :style="styleObject">{{ row['value'] }}</td>
-                    <td :style="styleObject" v-for="(value2, key2) in row['filter']">{{ value2[0]['label'] }}</td>
-                </tr>
+                <!-- <tr> -->
+                    <tr v-for="row in filteredData">
+                        <td :style="styleObject">{{ flattenedAreas[row['areaId']]['label'] }}</td>
+                        <td :style="styleObject" v-for="(value2, key2) in row['filter']">{{ value2[0]['label'] }}</td>
+                        <td :style="styleObject">{{ row['value'] }}</td>
+                    </tr>
+                </div>
+                <div>
+                    <tr v-if="filteredDataSize.length > 0">
+                        <th v-if="filteredDataSize.length > 0">{{ filteredDataSize[0]['indicatorMeta']['name'] }}</th>
+                    </tr>
+                    <tr v-if="filteredDataSize.length > 0" v-for="row in filteredDataSize">
+                        <td :style="styleObject">{{ row['value'] }}</td>
+                    </tr>
+                </div>
+                
+                    
+                <!-- </tr> -->
             </table>
+            <!-- <div>{{ filteredDataSize }}</div> -->
             <!-- <h3>flattenedAreas</h3>
             <div>{{ flattenedAreas }}</div> -->
             <!-- <h3>filteredData</h3>
@@ -58,6 +74,7 @@ import {flattenOptions, flattenToIdSet} from "../../../utils";
 interface Props {
         tabledata: any[],
         indicators: ChoroplethIndicatorMetadata[],
+        indicatorsSize: ChoroplethIndicatorMetadata[],
         selections: ChoroplethSelections,
         filters: Filter[],
         areaFilterId: string
@@ -66,6 +83,7 @@ interface Computed {
     nonAreaFilters: Filter[],
     areaFilter: Filter,
     filteredData: any[],
+    filteredDataSize: any[],
     flattenedAreas: Dict<NestedFilterOption>,
     selectedAreaIds: string[],
     selectedAreaFilterOptions: FilterOption[],
@@ -80,6 +98,9 @@ const props = {
     indicators: {
             type: Array
         },
+    indicatorsSize: {
+        type: Array
+    },
     areaFilterId: {
         type: String
     },
@@ -213,6 +234,28 @@ export default Vue.extend<{}, {}, Computed, Props>({
             return addFilterObject
             // return filterByDetail
             } else return result
+        },
+        filteredDataSize() {
+            if (this.indicatorsSize){
+                const result: any[] = [];
+                iterateDataValues(this.tabledata,
+                    this.indicatorsSize,
+                    this.selectedAreaIds,
+                    this.nonAreaFilters,
+                    this.selections.selectedFilterOptions,
+                    (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
+                        result.push({areaId, indicatorMeta, value});
+                    });
+                console.log('filteredDataSize', result)
+                // return result
+                let filterByDetail = result
+                if (result[0]['indicatorMeta']['indicator'].length > 3){
+                filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)
+                }
+                // const filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)            
+                console.log('table fully filtered data SIZE', filterByDetail)
+                return filterByDetail
+            } else return []
         }
     }
 });
