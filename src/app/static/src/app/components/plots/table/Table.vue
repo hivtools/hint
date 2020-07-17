@@ -1,31 +1,34 @@
 <template>
     <div>
         <br>
-        <div v-if="filteredData.length > 0">
+        <div v-if="combinedData.length > 0">
             <!-- <h3>Table</h3> -->
             <table style="display: flex">
                 <div>
                     <tr>
                     <th>Area</th>
-                    <th v-for="(value, key) in filteredData[0]['filter']">{{ key === 'survey' ? 'Household survey' : key === 'quarter' ? 'Period' : key.charAt(0).toUpperCase() + key.slice(1) }}</th>
-                    <th>{{ filteredData[0]['indicatorMeta']['name'] }}</th>
-                    <!-- <th v-if="filteredDataSize.length > 0">{{ filteredDataSize[0]['indicatorMeta']['name'] }}</th> -->
+                    <th v-for="(value, key) in combinedData[0]['filter']">{{ key === 'survey' ? 'Household survey' : key === 'quarter' ? 'Period' : key.charAt(0).toUpperCase() + key.slice(1) }}</th>
+                    <th>{{ combinedData[0]['indicatorMeta']['name'] }}</th>
+                    <th v-if="filteredDataSize.length > 0">{{ filteredDataSize[0]['indicatorMeta']['name'] }}</th>
                 </tr>
                 <!-- <tr> -->
-                    <tr v-for="row in filteredData">
+                    <tr v-for="row in combinedData">
                         <td :style="styleObject">{{ flattenedAreas[row['areaId']]['label'] }}</td>
-                        <td :style="styleObject" v-for="(value2, key2) in row['filter']">{{ value2[0]['label'] }}</td>
+                        <!-- <td :style="styleObject" v-for="(value2, key2) in row['filter']">{{ value2[0]['label'] }}</td> -->
+                        <td :style="styleObject" v-for="(value2, key2) in row['filter']">{{ typeof value2 === 'string' ? value2.charAt(0).toUpperCase() + value2.slice(1) : value2 }}</td>
+                        <!-- <td :style="styleObject" v-for="(value2, key2) in row['row']" v-if="combinedData.filter[key2]">{{ value2 }}</td> -->
                         <td :style="styleObject">{{ row['value'] }}</td>
+                        <td :style="styleObject" v-if="filteredDataSize.length > 0">{{ row['sizeValue'] }}</td>
                     </tr>
                 </div>
-                <div>
+                <!-- <div>
                     <tr v-if="filteredDataSize.length > 0">
                         <th v-if="filteredDataSize.length > 0">{{ filteredDataSize[0]['indicatorMeta']['name'] }}</th>
                     </tr>
                     <tr v-if="filteredDataSize.length > 0" v-for="row in filteredDataSize">
                         <td :style="styleObject">{{ row['value'] }}</td>
                     </tr>
-                </div>
+                </div> -->
                 
                     
                 <!-- </tr> -->
@@ -84,6 +87,7 @@ interface Computed {
     areaFilter: Filter,
     filteredData: any[],
     filteredDataSize: any[],
+    combinedData: any[],
     flattenedAreas: Dict<NestedFilterOption>,
     selectedAreaIds: string[],
     selectedAreaFilterOptions: FilterOption[],
@@ -127,7 +131,11 @@ export default Vue.extend<{}, {}, Computed, Props>({
       }
     },
     mounted(){
-    console.log('indicators', this.indicators)
+    console.log('indicators', this.indicators),
+    console.log('combinedData', this.combinedData),
+    console.log('selectedAreaIds', this.selectedAreaIds),
+    console.log('nonAreaFilters', this.nonAreaFilters)
+    // console.log('selectedAreaIds filtered', this.selectedAreaIds.filter(row => row[4] === this.selections.detail.toString()))
     },
     computed: {
         nonAreaFilters() {
@@ -141,7 +149,18 @@ export default Vue.extend<{}, {}, Computed, Props>({
              },
         selectedAreaIds() {
             const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
-            return Array.from(selectedAreaIdSet);
+            // return Array.from(selectedAreaIdSet)
+            const areaArray = Array.from(selectedAreaIdSet)
+            console.log('this.selections.detail', this.selections.detail)
+            console.log('areaArray', areaArray)
+            if (this.selections.detail === 0 || !this.selections.detail){
+                console.log('areaArray substring', areaArray[0].substring(0,3))
+                return [areaArray[0]]
+            // } else if (this.selections.detail) {
+            //     return areaArray.filter(val => parseInt(val[4]) === this.selections.detail)
+            // } else return areaArray;
+            } else return areaArray.filter(val => parseInt(val[4]) === this.selections.detail);
+
         },
         selectedAreaFilterOptions() {
             const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
@@ -157,8 +176,8 @@ export default Vue.extend<{}, {}, Computed, Props>({
                 this.selectedAreaIds,
                 this.nonAreaFilters,
                 this.selections.selectedFilterOptions,
-                (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
-                    result.push({areaId, indicatorMeta, value});
+                (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number, row: object) => {
+                    result.push({areaId, indicatorMeta, value, row});
                 });
             console.log('table unfiltered data', this.tabledata)
             console.log('table filterdata', result)
@@ -181,53 +200,89 @@ export default Vue.extend<{}, {}, Computed, Props>({
             // if (result[0]['indicatorMeta']['indicator'].length > 3){
             // filterByDetail = filterByIndicator.filter(row => row.areaId[4] == this.selections.detail)
             // }
-            let filterByDetail = result
-            if (result[0]['indicatorMeta']['indicator'].length > 3){
-            filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)
-            }
+            // let filterByDetail = result
+            // if (result[0]['indicatorMeta']['indicator'].length > 3){
+            // filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)
+            // }
             // const filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)            
-            console.log('table fully filtered data', filterByDetail)
-            console.log('table selected filter options', this.selections.selectedFilterOptions)
-            let filterObject = {...this.selections.selectedFilterOptions}
-            console.log('filterObject', filterObject)
+            // console.log('table fully filtered data', filterByDetail)
+            // console.log('table selected filter options', this.selections.selectedFilterOptions)
+            let filterObject: any = {...this.selections.selectedFilterOptions}
+            // console.log('filterObject', filterObject)
             delete filterObject['area']
             Object.keys(filterObject).map(function(key, index) {
                 if (filterObject[key].length < 1 || key === 'area') {
                     delete filterObject[key]
+                // } else if (key === 'quarter'){
+                //     filterObject[key] = filterObject[key][0]['label']
+                } else if (key === 'survey'){
+                    filterObject[key] = filterObject[key][0]['label']
                 }
             })
+            
+            // const filterRowKeys = result.map((value, index, array) => {
+            //     Object.keys(value.row).map(function(key, index) {
+            //     if (filterObject[key]) {
+            //         return value.row[key]
+            //     }
+            // })
+            // return value
+            // })
+            // return filterRowKeys
+
             // filterObject.sex = filterObject.sex.sort((a, b) => (a.id > b.id) ? 1 : -1)
             // filterObject.age.sort((a, b) => (a.id > b.id) ? 1 : -1)
 
             console.log('filterObject', filterObject)
-            const addFilterObject = filterByDetail.map((row, index, array) => {
+            const addFilterObject = result.map((row, index, array) => {
                 row['filter'] = {...filterObject}
-                if ('age' in row.filter){
-                    if (row.filter.age.length > 1){
-                    let i = index
-                    if (i >= filterObject.age.length * 2){
-                        i -= filterObject.age.length
-                    }
-                    if (i >= filterObject.age.length){
-                        i -= filterObject.age.length
-                    }
-                    
-                    row.filter.age = [{...filterObject.age[i]}]
-                    }
-                }
-                if ('sex' in row.filter){
-                    if (row.filter.sex.length > 1){
-                        let i = 0
-                        if (index >= array.length / row.filter.sex.length){
-                            i += 1
-                        }
-                        if (index >= (array.length / row.filter.sex.length) * 2){
-                            i += 1
-                        }
 
-                        row.filter.sex = [{...filterObject.sex[i]}]
-                    }
+                // maps through the row property for each row in the table and checks if it matches a selected filter
+                Object.keys(row['row']).map(function(key, index) {
+                if (row['filter'][key]) {
+                    row['filter'][key] = row['row'][key]
+                // age_group and age have different ids in the row and filter so this matches them
+                } else if (key === 'age_group' && 'age' in row['filter']){
+                    row['filter']['age'] = row['row'][key]
+                // checks if calender_quarter id in row matches the quarter id in filter and assigns filter the value label
+                } else if (key === 'calendar_quarter' && 'quarter' in row['filter']){
+                    row['filter']['quarter'].map((value2: any) => {
+                        if(value2.id === row['row'][key]){
+                            row['filter']['quarter'] = value2.label
+                            return
+                        }
+                    })
                 }
+            })
+                // row['filter'][row.row]
+
+
+                // if ('age' in row.filter){
+                //     if (row.filter.age.length > 1){
+                //     let i = index
+                //     if (i >= filterObject.age.length * 2){
+                //         i -= filterObject.age.length
+                //     }
+                //     if (i >= filterObject.age.length){
+                //         i -= filterObject.age.length
+                //     }
+                    
+                //     row.filter.age = [{...filterObject.age[i]}]
+                //     }
+                // }
+                // if ('sex' in row.filter){
+                //     if (row.filter.sex.length > 1){
+                //         let i = 0
+                //         if (index >= array.length / row.filter.sex.length){
+                //             i += 1
+                //         }
+                //         if (index >= (array.length / row.filter.sex.length) * 2){
+                //             i += 1
+                //         }
+
+                //         row.filter.sex = [{...filterObject.sex[i]}]
+                //     }
+                // }
 
                 return row
             })
@@ -247,15 +302,25 @@ export default Vue.extend<{}, {}, Computed, Props>({
                         result.push({areaId, indicatorMeta, value});
                     });
                 console.log('filteredDataSize', result)
-                // return result
-                let filterByDetail = result
-                if (result[0]['indicatorMeta']['indicator'].length > 3){
-                filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)
-                }
+                return result
+                // let filterByDetail = result
+                // if (result[0]['indicatorMeta']['indicator'].length > 3){
+                // filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)
+                // }
                 // const filterByDetail = result.filter(row => row.areaId[4] == this.selections.detail)            
-                console.log('table fully filtered data SIZE', filterByDetail)
-                return filterByDetail
+                // console.log('table fully filtered data SIZE', filterByDetail)
+                // return filterByDetail
             } else return []
+        },
+        combinedData(){
+            const colourArray = [...this.filteredData]
+            const sizeArray = [...this.filteredDataSize]
+            if (sizeArray.length > 0){
+                return colourArray.map((val: any, index: any) => {
+                    val.sizeValue = sizeArray[index].value
+                    return val
+                    })
+            } else return colourArray
         }
     }
 });
