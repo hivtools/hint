@@ -59,6 +59,17 @@
                                 :colour-scales="selectedSAPColourScales"
                                 @update="updateChoroplethSelections({payload: $event})"
                                 @updateColourScales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
+                    <div>
+                        <table-view :tabledata="data"
+                                    :area-filter-id="areaFilterId"
+                                    :filters="filters"
+                                    :indicators="filterTableIndicators"
+                                    :selections="plottingSelections"
+
+                                    :selectedFilterOptions="plottingSelections.selectedFilterOptions"
+                                     @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"
+                        ></table-view>
+                    </div>
             </div>
         </div>
     </div>
@@ -70,6 +81,7 @@
     import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
     import FileUpload from "../FileUpload.vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
+    import TableView from "../plots/table/Table.vue";
     import Filters from "../plots/Filters.vue";
     import {Filter, LevelLabel, PartialFileUploadProps} from "../../types";
     import {RootState} from "../../root";
@@ -96,7 +108,9 @@
         survey: PartialFileUploadProps,
         features: Feature[],
         featureLevels: LevelLabel[],
-        plottingSelections: ChoroplethSelections
+        plottingSelections: ChoroplethSelections,
+        selectedIndicator: any[],
+        filterTableIndicators: any[]
     }
 
     export default Vue.extend<Data, {}, Computed, {}>({
@@ -107,6 +121,9 @@
             };
         },
         computed: {
+            filterTableIndicators(){
+                return this.sapIndicatorsMetadata.filter((val: any) => val.indicator === this.plottingSelections.indicatorId)
+            },
             ...mapState<RootState>({
                 selectedDataType: ({surveyAndProgram}) => {
                     return surveyAndProgram.selectedDataType;
@@ -159,14 +176,15 @@
             ...mapMutations({
                 updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections",
                 updateSAPColourScales: "plottingSelections/updateSAPColourScales",
-            })
+            }),
         },
         created() {
         },
         components: {
             FileUpload,
             Choropleth,
-            Filters
+            Filters,
+            TableView
         }
     })
 </script>
