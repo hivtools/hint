@@ -69,7 +69,6 @@
                                     :selectedFilterOptions="plottingSelections.selectedFilterOptions"
                                      @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"
                         ></table-view>
-                        <!-- <div>{{ filterTableIndicators }}</div> -->
                     </div>
             </div>
         </div>
@@ -121,16 +120,6 @@
                 areaFilterId: "area"
             };
         },
-        mounted() {
-            console.log('sap data', this.data),
-            // console.log('sap plottingSelections', this.plottingSelections),
-            // console.log('sap indicators', this.sapIndicatorsMetadata),
-            // console.log('sap areaFilterId', this.areaFilterId),
-            // console.log('sap filterTableIndicators', this.filterTableIndicators)
-            // console.log('selectedDataType', this.selectedDataType)
-            console.log('featureLevels', this.featureLevels),
-            console.log('areaFilterId', this.areaFilterId)
-        },
         computed: {
             filterTableIndicators(){
                 return this.sapIndicatorsMetadata.filter((val: any) => val.indicator === this.plottingSelections.indicatorId)
@@ -139,11 +128,6 @@
                 selectedDataType: ({surveyAndProgram}) => {
                     return surveyAndProgram.selectedDataType;
                 },
-                // filteredData() {
-                //     const filterByIndicator = this.data.filter(row => row.indicatorMeta.indicator === this.selections.indicatorId)
-                //     console.log('filterByIndicator', filterByIndicator)
-                //     return filterByIndicator
-                // },
                 showChoropleth: ({surveyAndProgram, baseline}) => {
                     return surveyAndProgram.selectedDataType != null;
                 },

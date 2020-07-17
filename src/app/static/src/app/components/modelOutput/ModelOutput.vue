@@ -74,28 +74,7 @@
                             @update="updateBubblePlotSelections({payload: $event})"
                             ></table-view>
                 
-            </div>
-            <div class="col-md-12">
-                <!-- <table-view :tabledata="chartdata"
-                        :area-filter-id="areaFilterId"
-                        :filters="choroplethFilters"
-                        :indicators="choroplethIndicators"
-                        :selections="choroplethSelections"
-                        
-                        :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
-                        @update="updateChoroplethSelections({payload: {choroplethSelections: $event}})"
-                        ></table-view> -->
-                        <!-- <div>{{ selectionType }}</div> -->
-            </div>
-            
-
-                        <!-- :selections="selectedTab==='bar' ? barchartSelections : selectedTab==='map' ? choroplethSelections : bubblePlotSelections"
-
-                        :selectedFilterOptions="selectedTab==='bar' ? barchartSelections.selectedFilterOptions : selectedTab==='map' ? choroplethSelections.selectedFilterOptions : bubblePlotSelections.selectedFilterOptions"
-                        @update="updateChoroplethSelections({payload: {selectionType: $event}})"
-                        ></table-view> -->
-
-                        
+            </div> 
         </div>
     </div>
 </template>
@@ -186,9 +165,6 @@
                     marginLeft: "290px"
                 }
             }
-        },
-        mounted() {
-            console.log('barchar indicators', this.barchartIndicators)
         },
         computed: {
             filterChoroplethIndicators(){
