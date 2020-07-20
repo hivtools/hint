@@ -20,6 +20,22 @@
             </table>
         </div>
         <div v-else>No data are available for these selections.</div>
+        <div v-if="filteredData2.length > 0">
+            <table style="display: flex">
+                <div>
+                    <tr>
+                        <th v-for="filter in filteredFilters">{{ filter.column_id }}</th>
+                        <th v-for="indicator in indicators">{{ indicator.indicator }}</th>
+                    </tr>
+                    <tr v-for="row in filteredData2">
+                        <td :style="styleObject" v-for="filter in filteredFilters">{{ row.row[filter.column_id] }}</td>
+                        <td :style="styleObject" v-for="indicator in indicators">{{ row.value }}</td>
+                    </tr>
+                </div>
+            </table>
+        </div>
+        <div v-else>No data are available for these selections.</div>
+        <ul><li v-for="x in filteredData2">{{ x }}</li></ul>
     </div>
 </template>
 
@@ -44,10 +60,12 @@ interface Computed {
     areaFilter: Filter,
     filteredData: any[],
     filteredDataSize: any[],
+    filteredData2: any[],
     combinedData: any[],
     flattenedAreas: Dict<NestedFilterOption>,
     selectedAreaIds: string[],
     selectedAreaFilterOptions: FilterOption[],
+    filteredFilters: any[]
 }
 const props = {
     tabledata: {
@@ -81,6 +99,11 @@ export default Vue.extend<{}, {}, Computed, Props>({
             width: '150px'
           }
       }
+    },
+    mounted(){
+        console.log('filteredData2', this.filteredData2),
+        console.log('filters', this.filters),
+        console.log('filteredFilters', this.filteredFilters)
     },
     computed: {
         nonAreaFilters() {
@@ -177,6 +200,33 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     return val
                     })
             } else return colourArray
+        },
+        filteredData2() {
+            const result: any[] = [];
+            iterateDataValues(this.tabledata,
+                this.indicators,
+                this.selectedAreaIds,
+                this.nonAreaFilters,
+                this.selections.selectedFilterOptions,
+                (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number, row: object) => {
+                    result.push({areaId, indicatorMeta, value, row});
+                });
+            // if (result.length > 0) {
+                let addAreaLabels = result.map((value: any) => {
+                    console.log('expected value', this.flattenedAreas[value.row.area_id].label)
+                    console.log('replaced value', value.row.area_id)
+                value.row.area_id = this.flattenedAreas[value.row.area_id].label
+                return value
+                })
+                console.log('add labels', addAreaLabels)
+            // }
+            
+            console.log('flatten area', this.flattenedAreas)
+            
+            return result
+        },
+        filteredFilters(){
+            return this.filters.filter(value => this.filteredData2[0].row[value.column_id])
         }
     }
 });
