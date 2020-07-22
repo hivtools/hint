@@ -7,12 +7,12 @@
                     <tr>
                         <th v-translate="'area'"></th>
                         <th v-for="f in filtersToDisplay" v-translate="f.label"></th>
-                        <th v-for="i in indicators">{{ i.label }}</th>
+                        <th v-for="i in indicators">{{ i.name }}</th>
                     </tr>
                     <tr v-for="row in filteredData">
                         <td>{{ row.areaLabel }}</td>
                         <td v-for="f in filtersToDisplay">{{ row.filterLabels[f.id] }}</td>
-                        <td v-for="i in indicators">{{ row.indicatorValues[i.id] }}</td>
+                        <td v-for="i in indicators">{{ row.indicatorValues[i.indicator] }}</td>
                     </tr>
                 </div>
             </table>
@@ -171,8 +171,9 @@ export default Vue.extend<{}, {}, Computed, Props>({
                             indicatorValues: {}
                         }
                     }
-                    displayRows[key].indicatorValues[current.indicatorMeta.name] = current.value;
+                    displayRows[key].indicatorValues[current.indicatorMeta.indicator] = current.value;
                 });
+                //console.log(displayRows);
                 return Object.values(displayRows);
            /* const addLabels = combinedArray.map((row: any) => {
                     row.areaId = this.flattenedAreas[row.areaId].label
