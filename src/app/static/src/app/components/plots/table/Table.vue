@@ -2,17 +2,17 @@
     <div>
         <br>
         <div v-if="filteredData.length > 0">
-            <table style="display: flex">
+            <table class="table">
                 <div>
                     <tr>
-                        <th v-for="(v, k) in filteredData[0]" v-if="typeof v === 'string'">{{ k }}</th>
-                        <th v-for="(v, k) in filteredData[0].nonAreaFilters">{{ k }}</th>
+                        <th v-translate="'area'"></th>
+                        <th v-for="(v, k) in filteredData[0].nonAreaFilters" v-translate="k"></th>
                         <th v-for="(v, k) in filteredData[0].indicators">{{ k }}</th>
                     </tr>
                     <tr v-for="row in filteredData">
-                        <td :style="styleObject">{{ row.areaId }}</td>
-                        <td :style="styleObject" v-for="nonAreaFilter in row.nonAreaFilters">{{ nonAreaFilter }}</td>
-                        <td :style="styleObject" v-for="indicator in row.indicators">{{ indicator }}</td>
+                        <td>{{ row.areaId }}</td>
+                        <td v-for="nonAreaFilter in row.nonAreaFilters">{{ nonAreaFilter }}</td>
+                        <td v-for="indicator in row.indicators">{{ indicator }}</td>
                     </tr>
                 </div>
             </table>
@@ -38,9 +38,16 @@ interface Props {
         areaFilterId: string
 }
 interface Computed {
+    // filteredDataDisplayRow {
+    //    areaId: string,
+    //    nonAreaFilters: Dict<string>
+    //    indicators: Dict<number>
+    // },
+    // filterLabels: Dict<string>
     nonAreaFilters: Filter[],
     areaFilter: Filter,
     filteredData: any[],
+    // filteredData: [filteredDataDisplayRow],
     flattenedAreas: Dict<NestedFilterOption>,
     selectedAreaIds: string[],
     selectedAreaFilterOptions: FilterOption[]
@@ -73,9 +80,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
     props: props,
     data() {
       return {
-          styleObject: {
-            width: '150px'
-          }
+          
       }
     },
     computed: {
@@ -103,6 +108,18 @@ export default Vue.extend<{}, {}, Computed, Props>({
             }
             return this.areaFilter ? this.areaFilter.options : []; //consider all top level areas to be selected if none are
         },
+        // filterLabels(){
+        //     let filterLabels: Dict<string> = {}
+        //     this.filters.map(row => {
+        //         filterLabels[row.column_id] = row.label
+        //         if (row.options.length > 0){
+        //             row.options.map(row2 => {
+        //                 filterLabels[row2.id] = row2.label
+        //             })
+        //         }
+        //     })
+        //     return filterLabels
+        // },
         filteredData() {
             let filterLabels: Dict<string> = {}
             this.filters.map(row => {
@@ -149,6 +166,9 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     })
                     return row
                     })
+        // console.log('nonAreaFilters', this.nonAreaFilters)
+        // console.log('indicators', this.indicators)
+        console.log('addLabels', addLabels)
         return addLabels;
         }
     }
