@@ -6,18 +6,25 @@
                 <div>
                     <tr>
                         <th v-translate="'area'"></th>
-                        <th v-for="(v, k) in filteredData[0].nonAreaFilters" v-translate="k"></th>
-                        <th v-for="(v, k) in filteredData[0].indicators">{{ k }}</th>
+                        <th v-for="f in filtersToDisplay" v-translate="f.label"></th>
+                        <th v-for="i in indicators">{{ i.name }}</th>
                     </tr>
                     <tr v-for="row in filteredData">
-                        <td>{{ row.areaId }}</td>
-                        <td v-for="nonAreaFilter in row.nonAreaFilters">{{ nonAreaFilter }}</td>
-                        <td v-for="indicator in row.indicators">{{ indicator }}</td>
+                        <td>{{ row.areaLabel }}</td>
+                        <td v-for="f in filtersToDisplay">{{ row.filterLabels[f.id] }}</td>
+                        <td v-for="i in indicators">{{ row.indicatorValues[i.indicator] }}</td>
                     </tr>
                 </div>
             </table>
         </div>
         <div v-else>No data are available for these selections.</div>
+        <!-- <div>areaFilterId: {{ areaFilterId }}</div>
+        <div>indicators: {{ indicators }}</div>
+        <div>selections: {{ selections }}</div>
+        <div>filters: {{ filters }}</div>
+        <div>selectedFilterOptions: {{ selectedFilterOptions }}</div> -->
+        <!-- <br>
+        <div>tabledata: {{ tabledata }}</div> -->
     </div>
 </template>
 
@@ -30,12 +37,21 @@ import {Dict, Filter} from "../../../types";
 import {ChoroplethSelections} from "../../../store/plottingSelections/plottingSelections";
 import {flattenOptions, flattenToIdSet} from "../../../utils";
 interface Props {
-        tabledata: any[],
-        indicators: ChoroplethIndicatorMetadata[],
-        indicatorsSize: ChoroplethIndicatorMetadata[],
-        selections: ChoroplethSelections,
-        filters: Filter[],
-        areaFilterId: string
+    tabledata: any[],
+    indicators: ChoroplethIndicatorMetadata[],
+    // indicatorsSize: ChoroplethIndicatorMetadata[],
+    selections: {
+        indicatorId: string,
+        selectedFilterOptions: Dict<FilterOption[]>,
+        detail: number
+    },
+    filters: Filter[],
+    areaFilterId: string
+}
+interface DisplayRow {
+    areaLabel: string,
+    filterLabels: Dict<string>,
+    indicatorValues: Dict<string>
 }
 interface Computed {
     // filteredDataDisplayRow {
@@ -45,8 +61,9 @@ interface Computed {
     // },
     // filterLabels: Dict<string>
     nonAreaFilters: Filter[],
+    filtersToDisplay: Filter[],
     areaFilter: Filter,
-    filteredData: any[],
+    filteredData: DisplayRow[],
     // filteredData: [filteredDataDisplayRow],
     flattenedAreas: Dict<NestedFilterOption>,
     selectedAreaIds: string[],
@@ -62,9 +79,9 @@ const props = {
     indicators: {
             type: Array
         },
-    indicatorsSize: {
-        type: Array
-    },
+    // indicatorsSize: {
+    //     type: Array
+    // },
     areaFilterId: {
         type: String
     },
@@ -83,6 +100,10 @@ export default Vue.extend<{}, {}, Computed, Props>({
           
       }
     },
+    mounted(){
+        // var templatehtml = document.getElementsByClassName('table')[0]['outerHTML']
+        // console.log('tabledata:', JSON.stringify(this.tabledata))
+    },
     computed: {
         nonAreaFilters() {
              return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
@@ -99,7 +120,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
             if (this.selections.detail === 0 || !this.selections.detail){
                 return [areaArray[0]]
             } else return areaArray.filter(val => parseInt(val[4]) === this.selections.detail);
-
         },
         selectedAreaFilterOptions() {
             const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
@@ -120,8 +140,11 @@ export default Vue.extend<{}, {}, Computed, Props>({
         //     })
         //     return filterLabels
         // },
+        filtersToDisplay() {
+            return this.nonAreaFilters.filter(f => f.options.length > 0)
+        },
         filteredData() {
-            let filterLabels: Dict<string> = {}
+            /*let filterLabels: Dict<string> = {}
             this.filters.map(row => {
                 filterLabels[row.column_id] = row.label
                 if (row.options.length > 0){
@@ -129,7 +152,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                         filterLabels[row2.id] = row2.label
                     })
                 }
-            })
+            })*/
             const filteredValues: any[] = [];
             iterateDataValues(this.tabledata,
                 this.indicators,
@@ -138,26 +161,32 @@ export default Vue.extend<{}, {}, Computed, Props>({
                 this.selections.selectedFilterOptions,
                 (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number, row: any) => {
                     const filterValues: Dict<any> = {};
-                    this.nonAreaFilters.forEach(f => {
+                    this.filtersToDisplay.forEach(f => {
                         if (row[f.column_id]) {
                         filterValues[f.id] = row[f.column_id]
                         }});
                     filteredValues.push({areaId, filterValues, indicatorMeta, value});
                 });
-            const combined: Dict<any> = {};
-            filteredValues.forEach(current => {
-            const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
-            if (!(key in combined)) {
-                combined[key] = {
-                    areaId: current.areaId,
-                    nonAreaFilters: current.filterValues,
-                    indicators: {}
-                }
-            }
-            combined[key].indicators[current.indicatorMeta.name] = current.value;
-            });
-            const combinedArray = Object.values(combined);
-            const addLabels = combinedArray.map((row: any) => {
+                const displayRows: Dict<any> = {};
+                filteredValues.forEach(current => {
+                    const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
+                    if (!(key in displayRows)) {
+                        const areaLabel =  this.flattenedAreas[current.areaId].label;
+                        const filterLabels: Dict<string> = {};
+                        Object.keys(current.filterValues).forEach(k => {
+                            const selectedOptions =  this.selections.selectedFilterOptions[k];
+                            filterLabels[k] = selectedOptions.filter(o => o.id == current.filterValues[k])[0].label;
+                        });
+                        displayRows[key] = {
+                            areaLabel,
+                            filterLabels,
+                            indicatorValues: {}
+                        }
+                    }
+                    displayRows[key].indicatorValues[current.indicatorMeta.indicator] = current.value;
+                });
+                return Object.values(displayRows);
+           /* const addLabels = combinedArray.map((row: any) => {
                     row.areaId = this.flattenedAreas[row.areaId].label
                     Object.keys(row.nonAreaFilters).map(function(key, index) {
                         if (filterLabels[row.nonAreaFilters[key]]){
@@ -168,8 +197,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     })
         // console.log('nonAreaFilters', this.nonAreaFilters)
         // console.log('indicators', this.indicators)
-        console.log('addLabels', addLabels)
-        return addLabels;
+        console.log('addLabels', addLabels)*/
         }
     }
 });
