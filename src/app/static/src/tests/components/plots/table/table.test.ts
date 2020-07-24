@@ -133,11 +133,7 @@ describe('Table from testdata', () => {
         const wrapper = getWrapper({ selections: {
             indicatorId: "prevalence",
             detail: 3,
-            selectedFilterOptions: {
-                age: [{id: "0:15", label: "0-15"}],
-                sex: [{id: "female", label: "Female"}],
-                area: []
-            },
+            selectedFilterOptions: {...propsData.selections.selectedFilterOptions}
         } });
         expect(wrapper.find('th').text()).toBe('Area');
         expect(wrapper.find('td').text()).toBe('Area 1');
@@ -197,11 +193,7 @@ describe('Table from testdata', () => {
             selections: {
                 indicatorId: "plhiv",
                 detail: 4,
-                selectedFilterOptions: {
-                    age: [{id: "0:15", label: "0-15"}],
-                    sex: [{id: "female", label: "Female"}],
-                    area: []
-                },
+                selectedFilterOptions: {...propsData.selections.selectedFilterOptions}
             },
             indicators: [{indicator: "plhiv", "value_column": "plhiv", "indicator_column": "", "indicator_value": "", "name": "PLHIV", "min": 0, "max": 0.5, "colour": "interpolateMagma", "invert_scale": true }]
         });
@@ -215,29 +207,41 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('td').at(3).text()).toBe('10');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
-    // it('renders correct markup when area 2 is selected only', () => {
-    //     const wrapper = getWrapper({ selections: {
-    //         indicatorId: "prevalence",
-    //         detail: 4,
-    //         selectedFilterOptions: {
-    //             age: [{id: "0:15", label: "0-15"}],
-    //             sex: [{id: "female", label: "Female"}],
-    //             area: [ { "id": "MWI_3_2", "label": "Area 2", "children": [ { "id": "MWI_4_2", "label": "City B", "children": [] }] }]
-    //         },
-    //     },
-    //     selectedFilterOptions: {
-    //         age: [{id: "0:15", label: "0-15"}],
-    //         sex: [{id: "female", label: "Female"}],
-    //         area: [ { "id": "MWI_3_2", "label": "Area 2", "children": [ { "id": "MWI_4_2", "label": "City B", "children": [] }] }]
-    //     } });
-    //     expect(wrapper.find('th').text()).toBe('Area');
-    //     expect(wrapper.find('td').text()).toBe('City B');
-    //     expect(wrapper.findAll('th').at(1).text()).toBe('Age');
-    //     expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-    //     expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
-    //     expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-    //     expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
-    //     expect(wrapper.findAll('td').at(3).text()).toBe('0.3');
-    //     expect(wrapper.findAll('tr').length).toBe(3);
-    // });
+    it('renders correct markup when area 2 is selected only', () => {
+        const wrapper = getWrapper({ selections: {
+            indicatorId: "prevalence",
+            detail: 4,
+            selectedFilterOptions: {
+                age: [{id: "0:15", label: "0-15"}],
+                sex: [{id: "female", label: "Female"}],
+                area: [ { "id": "MWI_3_2", "label": "Area 2", "children": [ { "id": "MWI_4_2", "label": "City B", "children": [] }] }]
+            },
+        },
+        selectedFilterOptions: {
+            age: [{id: "0:15", label: "0-15"}],
+            sex: [{id: "female", label: "Female"}],
+            area: [ { "id": "MWI_3_2", "label": "Area 2", "children": [ { "id": "MWI_4_2", "label": "City B", "children": [] }] }]
+        }, 
+        filters: [
+            {
+                id: "area", label: "Area", column_id: "area_id",
+                options: [
+                    { "id": "MWI_3_1", "label": "Area 1", "children": [ { "id": "MWI_4_1", "label": "City A", "children": [] }] },
+                    { "id": "MWI_3_2", "label": "Area 2", "children": [ { "id": "MWI_4_2", "label": "City B", "children": [] }] }
+                ]
+            },
+            {...propsData.filters[1]},
+            {...propsData.filters[2]}
+        ]
+        });
+        expect(wrapper.find('th').text()).toBe('Area');
+        expect(wrapper.find('td').text()).toBe('City B');
+        expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+        expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
+        expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+        expect(wrapper.findAll('td').at(2).text()).toBe('Female');
+        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
+        expect(wrapper.findAll('td').at(3).text()).toBe('0.3');
+        expect(wrapper.findAll('tr').length).toBe(2);
+    });
 })
