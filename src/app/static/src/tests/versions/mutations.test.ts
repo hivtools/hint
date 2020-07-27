@@ -13,9 +13,10 @@ describe("Versions mutations", () => {
     });
 
     it("sets fake current version", () => {
-        const state = mockVersionsState();
-        mutations[VersionsMutations.SetManageVersions](state);
+        const state = mockVersionsState({manageVersions: true});
+        mutations[VersionsMutations.SetFakeCurrentVersion](state);
         expect(state.currentVersion).toBe("fakeCurrentVersion");
         expect(state.currentSnapshot).toBe("fakeCurrentSnapshot");
+        expect(state.manageVersions).toBe(false);
     });
 });
