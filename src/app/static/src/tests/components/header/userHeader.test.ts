@@ -6,6 +6,7 @@ import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import {Language} from "../../../app/store/translations/locales";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {initialVersionsState} from "../../../app/store/versions/versions";
 
 const localVue = createLocalVue();
 
@@ -90,5 +91,35 @@ describe("user header", () => {
         const frWrapper = shallowMount(UserHeader, {store: frStore});
         expect(frWrapper.find("a[href='public/resources/Naomi-instructions-de-base.pdf']").text()).toBe("Aide");
         expect(frWrapper.find("a[href='https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html']").text()).toBe("Dépannage");
-    })
+    });
+
+    it("renders Versions link if user is not guest", () => {
+        const wrapper = getWrapper();
+        expect(wrapper.find("#versions-link").text()).toBe("Versions");
+    });
+
+    it("does not render Versions link if current user is guest", () => {
+        const wrapper = getWrapper("guest");
+        expect(wrapper.find("#versions-link").exists()).toBe(false);
+    });
+
+    it("clicking Versions link sets manageVersions", () => {
+        const mockSetManageVersions = jest.fn();
+        const versionsStore = new Vuex.Store({
+            modules: {
+                versions: {
+                    namespaced: true,
+                    state: initialVersionsState(),
+                    mutations: {
+                        SetManageVersions: mockSetManageVersions
+                    }
+                }
+            }
+        });
+        const wrapper =  shallowMount(UserHeader, {propsData: {user: "testUser"}, store: versionsStore});
+        wrapper.find("#versions-link").trigger("click");
+        expect(mockSetManageVersions.mock.calls.length).toBe(1);
+        expect(mockSetManageVersions.mock.calls[0][1].payload).toBe(true);
+    });
+
 });
