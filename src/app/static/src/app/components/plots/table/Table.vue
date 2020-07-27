@@ -18,13 +18,6 @@
             </table>
         </div>
         <div v-else>No data are available for these selections.</div>
-        <!-- <div>areaFilterId: {{ areaFilterId }}</div>
-        <div>indicators: {{ indicators }}</div>
-        <div>selections: {{ selections }}</div>
-        <div>filters: {{ filters }}</div>
-        <div>selectedFilterOptions: {{ selectedFilterOptions }}</div> -->
-        <!-- <br>
-        <div>tabledata: {{ tabledata }}</div> -->
     </div>
 </template>
 
@@ -39,7 +32,6 @@ import {flattenOptions, flattenToIdSet} from "../../../utils";
 interface Props {
     tabledata: any[],
     indicators: ChoroplethIndicatorMetadata[],
-    // indicatorsSize: ChoroplethIndicatorMetadata[],
     selections: {
         indicatorId: string,
         selectedFilterOptions: Dict<FilterOption[]>,
@@ -54,17 +46,10 @@ interface DisplayRow {
     indicatorValues: Dict<string>
 }
 interface Computed {
-    // filteredDataDisplayRow {
-    //    areaId: string,
-    //    nonAreaFilters: Dict<string>
-    //    indicators: Dict<number>
-    // },
-    // filterLabels: Dict<string>
     nonAreaFilters: Filter[],
     filtersToDisplay: Filter[],
     areaFilter: Filter,
     filteredData: DisplayRow[],
-    // filteredData: [filteredDataDisplayRow],
     flattenedAreas: Dict<NestedFilterOption>,
     selectedAreaIds: string[],
     selectedAreaFilterOptions: FilterOption[]
@@ -79,9 +64,6 @@ const props = {
     indicators: {
             type: Array
         },
-    // indicatorsSize: {
-    //     type: Array
-    // },
     areaFilterId: {
         type: String
     },
@@ -99,10 +81,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
       return {
           
       }
-    },
-    mounted(){
-        // var templatehtml = document.getElementsByClassName('table')[0]['outerHTML']
-        // console.log('tabledata:', JSON.stringify(this.tabledata))
     },
     computed: {
         nonAreaFilters() {
@@ -128,31 +106,10 @@ export default Vue.extend<{}, {}, Computed, Props>({
             }
             return this.areaFilter ? this.areaFilter.options : []; //consider all top level areas to be selected if none are
         },
-        // filterLabels(){
-        //     let filterLabels: Dict<string> = {}
-        //     this.filters.map(row => {
-        //         filterLabels[row.column_id] = row.label
-        //         if (row.options.length > 0){
-        //             row.options.map(row2 => {
-        //                 filterLabels[row2.id] = row2.label
-        //             })
-        //         }
-        //     })
-        //     return filterLabels
-        // },
         filtersToDisplay() {
             return this.nonAreaFilters.filter(f => f.options.length > 0)
         },
         filteredData() {
-            /*let filterLabels: Dict<string> = {}
-            this.filters.map(row => {
-                filterLabels[row.column_id] = row.label
-                if (row.options.length > 0){
-                    row.options.map(row2 => {
-                        filterLabels[row2.id] = row2.label
-                    })
-                }
-            })*/
             const filteredValues: any[] = [];
             iterateDataValues(this.tabledata,
                 this.indicators,
@@ -186,18 +143,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     displayRows[key].indicatorValues[current.indicatorMeta.indicator] = current.value;
                 });
                 return Object.values(displayRows);
-           /* const addLabels = combinedArray.map((row: any) => {
-                    row.areaId = this.flattenedAreas[row.areaId].label
-                    Object.keys(row.nonAreaFilters).map(function(key, index) {
-                        if (filterLabels[row.nonAreaFilters[key]]){
-                            row.nonAreaFilters[key] = filterLabels[row.nonAreaFilters[key]]
-                        }
-                    })
-                    return row
-                    })
-        // console.log('nonAreaFilters', this.nonAreaFilters)
-        // console.log('indicators', this.indicators)
-        console.log('addLabels', addLabels)*/
         }
     }
 });

@@ -67,7 +67,6 @@
                                     :selections="plottingSelections"
 
                                     :selectedFilterOptions="plottingSelections.selectedFilterOptions"
-                                     @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"
                         ></table-view>
                     </div>
             </div>
