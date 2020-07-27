@@ -5,14 +5,14 @@
                 <div class="navbar-header">
                     {{title}}
                 </div>
-                    <a v-if="!isGuest"
-                       id="versions-link"
-                       href="#"
-                       v-translate="'versions'"
-                       style="flex:none"
-                       class="ml-2"
-                       @click="manageVersions({payload: true})"></a>
-                    <file-menu :title="title"></file-menu>
+                <a v-if="!isGuest"
+                   id="versions-link"
+                   href="#"
+                   v-translate="'versions'"
+                   style="flex:none"
+                   class="ml-2"
+                   @click="manageVersions({payload: true})"></a>
+                <file-menu :title="title"></file-menu>
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-light">
                     <span v-translate="'loggedInAs'"></span> {{user}}
                 </span>

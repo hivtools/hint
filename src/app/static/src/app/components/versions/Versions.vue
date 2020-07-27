@@ -35,6 +35,7 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {Version} from "../../types";
+
     import {VersionsMutations} from "../../store/versions/mutations";
 
     const namespace = "versions";

@@ -90,4 +90,5 @@ describe("Versions component", () => {
         expect(wrapper.find(LoadingSpinner).exists()).toBe(true);
         expect(wrapper.find("#versions-content").exists()).toBe(false);
     });
+
 });
