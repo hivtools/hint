@@ -14,5 +14,6 @@ export const mutations: MutationTree<VersionsState> = {
     [VersionsMutations.SetFakeCurrentVersion](state: VersionsState) {
         state.currentVersion = "fakeCurrentVersion";
         state.currentSnapshot = "fakeCurrentSnapshot";
+        state.manageVersions = false;
     }
 };

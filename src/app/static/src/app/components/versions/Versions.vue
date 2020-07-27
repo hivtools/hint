@@ -1,10 +1,10 @@
 <template>
     <div>
-        <div class="my-3 col-6 clearfix">
+        <div class="col-6">
+            <h2 v-translate="'versionsHeaderCreate'"></h2>
             <button type="button"
-                    class="btn btn-red mt-2 float-right"
-                    :disabled="disableCreate"
-                    @click="createVersion(newVersionName)"
+                    class="btn btn-red mt-2"
+                    @click="createFakeVersion"
                     v-translate="'createVersion'">
             </button>
         </div>
