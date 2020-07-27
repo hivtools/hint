@@ -11,6 +11,7 @@ import {initialBaselineState} from "../baseline/baseline";
 import {initialSurveyAndProgramState, DataType} from "../surveyAndProgram/surveyAndProgram";
 import {PayloadWithType} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
+import {initialVersionsState} from "../versions/versions";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -38,7 +39,8 @@ export const mutations: MutationTree<RootState> = {
             plottingSelections: initialPlottingSelectionsState(),
             stepper: state.stepper,
             load: initialLoadState(),
-            errors: initialErrorsState()
+            errors: initialErrorsState(),
+            versions: initialVersionsState()
         };
         Object.assign(state, resetState);
 

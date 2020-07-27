@@ -10,7 +10,7 @@
 <body>
 <div id="app" :class="language">
     <user-header title="${title}" user="${user}"></user-header>
-    <stepper></stepper>
+    <user-content user="${user}"></user-content>
     <errors title="${title}"></errors>
 </div>
 <script>

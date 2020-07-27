@@ -79,7 +79,7 @@ describe("Forgot password component", () => {
         expect((wrapper.find("input[type='submit']").element as HTMLInputElement).value).toEqual("Request password reset email");
         expect(wrapper.findAll("error-alert-stub").length).toEqual(0);
         expect(wrapper.findAll(".alert-success").length).toEqual(1);
-        expect(wrapper.find(".alert-success").text()).toEqual("Thank you. If we have an account registered for this email address, you wil receive a password reset link.");
+        expect(wrapper.find(".alert-success").text()).toEqual("Thank you. If we have an account registered for this email address, you will receive a password reset link.");
     });
 
     it("invokes requestResetLink action", (done) => {
