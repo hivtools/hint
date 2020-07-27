@@ -91,25 +91,6 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('td').at(3).text()).toBe('0.01');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
-    it('renders correct markup when age set to 15-30', () => {
-        const wrapper = getWrapper({ selections: {
-            ...propsData.selections,
-            selectedFilterOptions: {
-                ...propsData.selections.selectedFilterOptions,
-                age: [{id: "15:30", label: "15-30"}]
-            }
-        }
-        });
-        expect(wrapper.find('th').text()).toBe('Area');
-        expect(wrapper.find('td').text()).toBe('4.1');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age');
-        expect(wrapper.findAll('td').at(1).text()).toBe('15-30');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
-        expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.8');
-        expect(wrapper.findAll('tr').length).toBe(2);
-    });
     it('renders correct markup when no data are available for selected filters', () => {
         const wrapper = getWrapper({ selections: {
             ...propsData.selections,
