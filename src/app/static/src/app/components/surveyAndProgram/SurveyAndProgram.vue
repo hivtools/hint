@@ -86,7 +86,7 @@
     import {RootState} from "../../root";
     import {DataType} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
-    import {Metadata} from "../../generated";
+    import {Metadata, ChoroplethIndicatorMetadata} from "../../generated";
     import {mapGettersByNames} from "../../utils";
     import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
 
@@ -100,7 +100,7 @@
         selectedDataType: DataType,
         filters: Filter[],
         data: any,
-        sapIndicatorsMetadata: Metadata,
+        sapIndicatorsMetadata: ChoroplethIndicatorMetadata[],
         showChoropleth: boolean,
         anc: PartialFileUploadProps,
         programme: PartialFileUploadProps,
@@ -121,7 +121,7 @@
         },
         computed: {
             filterTableIndicators(){
-                return this.sapIndicatorsMetadata.filter((val: any) => val.indicator === this.plottingSelections.indicatorId)
+                return this.sapIndicatorsMetadata.filter((val: any):any => val.indicator === this.plottingSelections.indicatorId)
             },
             ...mapState<RootState>({
                 selectedDataType: ({surveyAndProgram}) => {
