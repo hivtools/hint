@@ -58,7 +58,7 @@ describe("Survey and programme component", () => {
                 metadata: {
                     namespaced: true,
                     getters: {
-                        sapIndicatorsMetadata: () => {return "TEST INDICATORS"}
+                        sapIndicatorsMetadata: () => {return ["TEST INDICATORS"]}
                     }
                 }
             }
@@ -113,7 +113,7 @@ describe("Survey and programme component", () => {
         });
         expect(choro.props().features).toBe("TEST FEATURES");
         expect(choro.props().featureLevels).toBe("TEST LEVEL LABELS");
-        expect(choro.props().indicators).toBe("TEST INDICATORS");
+        expect(choro.props().indicators).toStrictEqual(["TEST INDICATORS"]);
         expect(choro.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
 
     });
