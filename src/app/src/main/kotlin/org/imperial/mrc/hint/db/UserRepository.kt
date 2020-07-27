@@ -42,5 +42,6 @@ class JooqUserRepository(private val dsl: DSLContext) : UserRepository {
     override fun deleteADRKey(userId: String) {
         dsl.deleteFrom(ADR_KEY)
                 .where(ADR_KEY.USER_ID.eq(userId))
+                .execute()
     }
 }

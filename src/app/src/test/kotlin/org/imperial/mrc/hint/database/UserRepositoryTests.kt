@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 @ActiveProfiles(profiles = ["test"])
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
+
 @Transactional
 class UserRepositoryTests {
 
@@ -36,9 +37,10 @@ class UserRepositoryTests {
 
         sut.saveADRKey(testEmail, "encryptedkey")
 
-        val key = dsl.selectFrom(ADR_KEY)
+        val key = dsl.select(ADR_KEY.API_KEY)
+                .from(ADR_KEY)
                 .where(ADR_KEY.USER_ID.eq(testEmail))
-                .fetchAny()
+                .fetchAnyInto(String::class.java)
 
         assertThat(key).isEqualTo("encryptedkey")
     }
@@ -50,9 +52,10 @@ class UserRepositoryTests {
         sut.saveADRKey(testEmail, "encryptedkey")
         sut.saveADRKey(testEmail, "newkey")
 
-        val key = dsl.selectFrom(ADR_KEY)
+        val key = dsl.select(ADR_KEY.API_KEY)
+                .from(ADR_KEY)
                 .where(ADR_KEY.USER_ID.eq(testEmail))
-                .fetchAny()
+                .fetchAnyInto(String::class.java)   
 
         assertThat(key).isEqualTo("newkey")
     }
