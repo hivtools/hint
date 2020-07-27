@@ -35,7 +35,7 @@ interface Props {
     selections: {
         indicatorId: string,
         selectedFilterOptions: Dict<FilterOption[]>,
-        detail: number
+        detail: number | null
     },
     filters: Filter[],
     areaFilterId: string
