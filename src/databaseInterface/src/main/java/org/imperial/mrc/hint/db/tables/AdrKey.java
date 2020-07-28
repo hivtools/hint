@@ -38,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AdrKey extends TableImpl<AdrKeyRecord> {
 
-    private static final long serialVersionUID = -497829520;
+    private static final long serialVersionUID = -926894088;
 
     /**
      * The reference instance of <code>public.adr_key</code>
@@ -56,7 +56,7 @@ public class AdrKey extends TableImpl<AdrKeyRecord> {
     /**
      * The column <code>public.adr_key.api_key</code>.
      */
-    public final TableField<AdrKeyRecord, String> API_KEY = createField("api_key", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+    public final TableField<AdrKeyRecord, byte[]> API_KEY = createField("api_key", org.jooq.impl.SQLDataType.BLOB.nullable(false), this, "");
 
     /**
      * The column <code>public.adr_key.user_id</code>.
