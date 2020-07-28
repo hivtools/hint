@@ -264,4 +264,37 @@ describe("ModelOutput component", () => {
         bubble.vm.$emit("updateColourScales", bubbleColourScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(bubbleColourScales);
     });
+
+    it("renders choropleth table", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.find("table-view-stub");
+        expect(table.props().areaFilterId).toBe("area");
+        expect(table.props().filters).toStrictEqual(["TEST CHORO FILTERS"]);
+        expect(table.props().selections).toStrictEqual({test: "TEST CHORO SELECTIONS"});
+        expect(table.props().indicators).toStrictEqual(["TEST CHORO INDICATORS"]);
+    });
+
+    it("renders bubble plot table", () => {
+        const store = getStore({selectedTab: "bubble"});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.findAll("table-view-stub").at(1);
+        expect(table.props().areaFilterId).toBe("area");
+        expect(table.props().filters).toStrictEqual(["TEST BUBBLE FILTERS"]);
+        expect(table.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
+        expect(table.props().indicators).toStrictEqual(["TEST BUBBLE INDICATORS", "TEST BUBBLE INDICATORS"]);
+    });
+
+    it("renders barchart table", () => {
+        const store = getStore({selectedTab: "bar"});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.find("table-view-stub");
+        expect(table.props().areaFilterId).toBe("area");
+        expect(table.props().filters).toStrictEqual(["TEST BAR FILTERS"]);
+        // expect(table.props().selections).toStrictEqual({test: "TEST BARCHART SELECTIONS"});
+        // expect(table.props().indicators).toStrictEqual(["TEST BARCHART INDICATORS"]);
+    });
 });
