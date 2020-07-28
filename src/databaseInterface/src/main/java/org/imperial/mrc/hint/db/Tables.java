@@ -6,6 +6,7 @@ package org.imperial.mrc.hint.db;
 
 import javax.annotation.Generated;
 
+import org.imperial.mrc.hint.db.tables.AdrKey;
 import org.imperial.mrc.hint.db.tables.File;
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
 import org.imperial.mrc.hint.db.tables.SessionFile;
@@ -28,6 +29,11 @@ import org.imperial.mrc.hint.db.tables.VersionSnapshot;
 )
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
+
+    /**
+     * The table <code>public.adr_key</code>.
+     */
+    public static final AdrKey ADR_KEY = org.imperial.mrc.hint.db.tables.AdrKey.ADR_KEY;
 
     /**
      * The table <code>public.file</code>.
