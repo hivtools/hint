@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.core.Parameters
@@ -53,7 +54,7 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
     return try {
         val body = this.body().asString("application/json")
         val json = ObjectMapper().readTree(body)
-        if (!json.has("status") && !json.has("result")) {
+        if (!json.has("status") && !json.has("success")) {
             throw IOException()
         }
         return if (json.has("status")) {
@@ -63,12 +64,31 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
                     .body(body)
         } else {
             // this is an ADR response, so convert to our response schema
-            SuccessResponse(json["result"])
-                    .asResponseEntity()
+            formatADRResponse(json)
         }
 
     } catch (e: IOException) {
         ErrorDetail(httpStatusFromCode(500), "Could not parse response.")
+                .toResponseEntity() as ResponseEntity<String>
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+fun formatADRResponse(json: JsonNode): ResponseEntity<String> {
+
+    if (!json.has("result") && !json.has("error")) {
+        throw IOException()
+    }
+
+    return if (json["success"].asBoolean()) {
+        SuccessResponse(json["result"])
+                .asResponseEntity()
+    } else {
+        // ckan API always returns a 200, even when the request errors,
+        // so just return a 500 for every error response
+        ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR,
+                json["error"]["message"].asText(),
+                "ADR_ERROR")
                 .toResponseEntity() as ResponseEntity<String>
     }
 

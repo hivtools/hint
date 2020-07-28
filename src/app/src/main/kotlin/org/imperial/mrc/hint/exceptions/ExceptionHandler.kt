@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.exceptions
 
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.models.ErrorDetail
+import org.imperial.mrc.hint.models.ErrorDetail.Companion.defaultError
 import org.postgresql.util.PSQLException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -81,7 +82,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         } else {
             null
         }
-        return ErrorDetail(status, message, trace)
+        return ErrorDetail(status, message, defaultError, trace)
                 .toResponseEntity()
     }
 
