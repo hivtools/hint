@@ -1,9 +1,14 @@
 package org.imperial.mrc.hint
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.core.Headers
-import com.github.kittinunf.fuel.core.Response
+import com.github.kittinunf.fuel.core.Parameters
 import com.github.kittinunf.fuel.core.Request
+import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.requests.DownloadRequest
+import org.imperial.mrc.hint.models.ErrorDetail
+import org.imperial.mrc.hint.models.SuccessResponse
+import org.imperial.mrc.hint.models.asResponseEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -11,12 +16,9 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.io.ByteArrayInputStream
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.kittinunf.fuel.core.Parameters
-import org.imperial.mrc.hint.models.ErrorDetail
-import java.io.IOException
 
 
 fun httpStatusFromCode(code: Int): HttpStatus {
@@ -51,16 +53,22 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
     return try {
         val body = this.body().asString("application/json")
         val json = ObjectMapper().readTree(body)
-        if (!json.has("status")) {
+        if (!json.has("status") && !json.has("result")) {
             throw IOException()
         }
-
-        ResponseEntity.status(httpStatus)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(body)
+        return if (json.has("status")) {
+            // this is a hintr response, so already conforms to our response schema
+            ResponseEntity.status(httpStatus)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(body)
+        } else {
+            // this is an ADR response, so convert to our response schema
+            SuccessResponse(json["result"])
+                    .asResponseEntity()
+        }
 
     } catch (e: IOException) {
-        ErrorDetail(httpStatus, "Could not parse response.")
+        ErrorDetail(httpStatusFromCode(500), "Could not parse response.")
                 .toResponseEntity() as ResponseEntity<String>
     }
 
@@ -71,7 +79,7 @@ fun Request.getStreamingResponseEntity(headRequest: (url: String, parameters: Pa
     val responseBody = StreamingResponseBody { outputStream: OutputStream ->
         //return an empty input stream to the body - don't need to re-use it
         val returnEmptyInputStream: () -> InputStream = { ByteArrayInputStream(ByteArray(0)) }
-        (this as DownloadRequest).streamDestination{ _, _ -> Pair(outputStream, returnEmptyInputStream) }
+        (this as DownloadRequest).streamDestination { _, _ -> Pair(outputStream, returnEmptyInputStream) }
                 .response()
     }
 

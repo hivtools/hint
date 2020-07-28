@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.APIClient
+import org.imperial.mrc.hint.HintrAPIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.SnapshotRepository
@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.multipart.MultipartFile
 
 abstract class HintrController(protected val fileManager: FileManager,
-                               protected val apiClient: APIClient,
+                               protected val apiClient: HintrAPIClient,
                                protected val session: Session,
                                protected val snapshotRepository: SnapshotRepository) {
 

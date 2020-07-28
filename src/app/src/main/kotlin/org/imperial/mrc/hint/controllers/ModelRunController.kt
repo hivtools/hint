@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.APIClient
+import org.imperial.mrc.hint.HintrAPIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.models.ModelRunOptions
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/model")
-class ModelRunController(val fileManager: FileManager, val apiClient: APIClient) {
+class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPIClient) {
 
     @PostMapping("/run/")
     @ResponseBody

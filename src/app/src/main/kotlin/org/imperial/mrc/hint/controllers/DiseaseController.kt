@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.APIClient
+import org.imperial.mrc.hint.HintrAPIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.SnapshotRepository
@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("/disease")
 class DiseaseController(fileManager: FileManager,
-                        apiClient: APIClient,
+                        apiClient: HintrAPIClient,
                         session: Session,
                         snapshotRepository: SnapshotRepository) :
         HintrController(fileManager, apiClient, session, snapshotRepository) {

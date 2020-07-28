@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.unit.controllers
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.APIClient
+import org.imperial.mrc.hint.HintrAPIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.ModelRunController
@@ -24,7 +24,7 @@ class ModelRunControllerTests {
             on { getFiles() } doReturn mockFiles
         }
 
-        val mockAPIClient = mock<APIClient> {
+        val mockAPIClient = mock<HintrAPIClient> {
             on { submit(mockFiles, modelRunOptions) } doReturn mockResponse
         }
 
@@ -37,7 +37,7 @@ class ModelRunControllerTests {
     @Test
     fun `can get status`() {
         val mockFileManager = mock<FileManager>()
-        val mockAPIClient = mock<APIClient> {
+        val mockAPIClient = mock<HintrAPIClient> {
             on { getStatus("testId") } doReturn mockResponse
         }
 
@@ -50,7 +50,7 @@ class ModelRunControllerTests {
     @Test
     fun `can get result`() {
         val mockFileManager = mock<FileManager>()
-        val mockAPIClient = mock<APIClient> {
+        val mockAPIClient = mock<HintrAPIClient> {
             on { getResult("testId") } doReturn mockResponse
         }
         val sut = ModelRunController(mockFileManager, mockAPIClient)
@@ -66,7 +66,7 @@ class ModelRunControllerTests {
             on { getFiles(FileType.Shape, FileType.Survey, FileType.Programme, FileType.ANC) } doReturn mockFiles
         }
 
-        val mockAPIClient = mock<APIClient> {
+        val mockAPIClient = mock<HintrAPIClient> {
             on { getModelRunOptions(mockFiles) } doReturn mockResponse
         }
         val sut = ModelRunController(mockFileManager, mockAPIClient)
@@ -78,7 +78,7 @@ class ModelRunControllerTests {
     @Test
     fun `can cancel`() {
         val mockFileManager = mock<FileManager>()
-        val mockAPIClient = mock<APIClient> {
+        val mockAPIClient = mock<HintrAPIClient> {
             on { cancelModelRun("testId") } doReturn mockResponse
         }
         val sut = ModelRunController(mockFileManager, mockAPIClient)

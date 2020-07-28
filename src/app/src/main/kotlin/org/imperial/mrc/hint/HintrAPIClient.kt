@@ -3,9 +3,7 @@ package org.imperial.mrc.hint
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel.head
 import com.github.kittinunf.fuel.httpDownload
-import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
-import com.github.kittinunf.fuel.core.Request
 import org.imperial.mrc.hint.models.ModelRunOptions
 import org.imperial.mrc.hint.models.SnapshotFileWithPath
 import org.springframework.http.ResponseEntity
@@ -14,7 +12,7 @@ import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
-interface APIClient {
+interface HintrAPIClient {
     fun validateBaselineIndividual(file: SnapshotFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, SnapshotFileWithPath?>): ResponseEntity<String>
     fun validateSurveyAndProgramme(file: SnapshotFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
@@ -29,18 +27,20 @@ interface APIClient {
 }
 
 @Component
-class HintrAPIClient(
+class HintrFuelAPIClient(
         appProperties: AppProperties,
-        private val objectMapper: ObjectMapper) : APIClient {
+        private val objectMapper: ObjectMapper) : HintrAPIClient, FuelAPIClient(appProperties.apiUrl) {
 
-    private val baseUrl = appProperties.apiUrl
-
-    fun getAcceptLanguage(): String {
+    private fun getAcceptLanguage(): String {
         val requestAttributes = RequestContextHolder.getRequestAttributes()
         if (requestAttributes is ServletRequestAttributes) {
-            return requestAttributes.request.getHeader("Accept-Language")?: "en"
+            return requestAttributes.request.getHeader("Accept-Language") ?: "en"
         }
         return "en"
+    }
+
+    override fun standardHeaders(): Map<String, Any> {
+        return mapOf("Accept-Language" to getAcceptLanguage())
     }
 
     override fun validateBaselineIndividual(file: SnapshotFileWithPath,
@@ -105,31 +105,6 @@ class HintrAPIClient(
                 .response()
                 .second
                 .asResponseEntity()
-    }
-
-    fun get(url: String): ResponseEntity<String> {
-        return "$baseUrl/$url".httpGet()
-                .header("Accept-Language" to getAcceptLanguage())
-                .addTimeouts()
-                .response()
-                .second
-                .asResponseEntity()
-    }
-
-    private fun postJson(url: String, json: String): ResponseEntity<String> {
-        return "$baseUrl/$url".httpPost()
-                .addTimeouts()
-                .header("Accept-Language" to getAcceptLanguage())
-                .header("Content-Type" to "application/json")
-                .body(json)
-                .response()
-                .second
-                .asResponseEntity()
-    }
-
-    private fun Request.addTimeouts(): Request {
-        return this.timeout(60000)
-                .timeoutRead(60000)
     }
 
     override fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody> {

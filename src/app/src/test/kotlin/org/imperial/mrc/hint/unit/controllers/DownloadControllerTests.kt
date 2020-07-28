@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.unit.controllers
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
-import org.imperial.mrc.hint.APIClient
+import org.imperial.mrc.hint.HintrAPIClient
 import org.imperial.mrc.hint.controllers.DownloadController
 import org.junit.jupiter.api.Test
 import org.springframework.http.ResponseEntity
@@ -13,7 +13,7 @@ class DownloadControllerTests {
     @Test
     fun `downloads spectrum data`() {
         val mockResponse = mock<ResponseEntity<StreamingResponseBody>>()
-        val mockAPIClient = mock<APIClient>{
+        val mockAPIClient = mock<HintrAPIClient>{
             on {downloadSpectrum("id1")} doReturn mockResponse
         }
 
@@ -25,7 +25,7 @@ class DownloadControllerTests {
     @Test
     fun `downloads summary data`() {
         val mockResponse = mock<ResponseEntity<StreamingResponseBody>>()
-        val mockAPIClient = mock<APIClient>{
+        val mockAPIClient = mock<HintrAPIClient>{
             on {downloadSummary("id1")} doReturn mockResponse
         }
 

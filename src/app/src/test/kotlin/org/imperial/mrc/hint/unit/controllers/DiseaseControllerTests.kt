@@ -1,7 +1,7 @@
 package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.mock
-import org.imperial.mrc.hint.APIClient
+import org.imperial.mrc.hint.HintrAPIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.DiseaseController
@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus
 
 class DiseaseControllerTests: HintrControllerTests() {
 
-    override fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient,
+    override fun getSut(mockFileManager: FileManager, mockAPIClient: HintrAPIClient,
                         mockSession: Session, mockSnapshotRepository: SnapshotRepository): HintrController {
         return DiseaseController(mockFileManager, mockAPIClient, mockSession, mockSnapshotRepository)
     }
