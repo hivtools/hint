@@ -6,7 +6,9 @@ import org.springframework.stereotype.Component
 
 interface UserRepository {
     fun getAllUserNames(): List<String>
-    fun getADRKey(userId: String): String?
+    fun saveADRKey(userId: String, encryptedKey: ByteArray)
+    fun deleteADRKey(userId: String)
+    fun getADRKey(userId: String): ByteArray?
 }
 
 @Component
@@ -18,12 +20,38 @@ class JooqUserRepository(private val dsl: DSLContext) : UserRepository {
                 .fetchInto(String::class.java)
     }
 
-    override fun getADRKey(userId: String): String? {
-        return dsl.select(ADR_KEY.API_KEY)
+    override fun saveADRKey(userId: String, encryptedKey: ByteArray) {
+
+        val existingKey = dsl.select(ADR_KEY.API_KEY)
                 .from(ADR_KEY)
                 .where(ADR_KEY.USER_ID.eq(userId))
                 .fetch()
-                .singleOrNull()
-                ?.into(String::class.java)
+
+        if (existingKey.any()) {
+            dsl.update(ADR_KEY)
+                    .set(ADR_KEY.API_KEY, encryptedKey)
+                    .where(ADR_KEY.USER_ID.eq(userId))
+                    .execute()
+        } else {
+            dsl.insertInto(ADR_KEY)
+                    .set(ADR_KEY.API_KEY, encryptedKey)
+                    .set(ADR_KEY.USER_ID, userId)
+                    .execute()
+        }
+    }
+
+    override fun deleteADRKey(userId: String) {
+        dsl.deleteFrom(ADR_KEY)
+                .where(ADR_KEY.USER_ID.eq(userId))
+                .execute()
+
+    }
+
+    override fun getADRKey(userId: String): ByteArray? {
+        return dsl.select(ADR_KEY.API_KEY)
+                .from(ADR_KEY)
+                .where(ADR_KEY.USER_ID.eq(userId))
+                .fetchAny()
+                ?.get(ADR_KEY.API_KEY)
     }
 }
