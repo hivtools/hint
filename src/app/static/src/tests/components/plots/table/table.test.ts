@@ -185,4 +185,36 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('td').at(3).text()).toBe('0');
         expect(wrapper.findAll('tr').length).toBe(2);
     });
+    it('renders correct markup when detail is set to null', () => {
+        const wrapper = getWrapper({ selections: {
+            ...propsData.selections,
+            detail: null,
+            selectedFilterOptions: {
+                ...propsData.selections.selectedFilterOptions,
+                area: [ { "id": "MWI_3_1", "label": "3.1", "children": [ { "id": "MWI_4_1", "label": "4.1", "children": [] }] },
+                    { "id": "MWI_3_2", "label": "3.2", "children": [ { "id": "MWI_4_2", "label": "4.2", "children": [] }] }]
+            }
+        },
+        filters: [
+            {
+                ...propsData.filters[0],
+                options: [
+                    { "id": "MWI_3_1", "label": "3.1", "children": [ { "id": "MWI_4_1", "label": "4.1", "children": [] }] },
+                    { "id": "MWI_3_2", "label": "3.2", "children": [ { "id": "MWI_4_2", "label": "4.2", "children": [] }] }
+                ]
+            },
+            {...propsData.filters[1]},
+            {...propsData.filters[2]}
+        ]
+        });
+        expect(wrapper.find('th').text()).toBe('Area');
+        expect(wrapper.find('td').text()).toBe('3.1');
+        expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+        expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
+        expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+        expect(wrapper.findAll('td').at(2).text()).toBe('Female');
+        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
+        expect(wrapper.findAll('td').at(3).text()).toBe('0.01');
+        expect(wrapper.findAll('tr').length).toBe(2);
+    });
 })
