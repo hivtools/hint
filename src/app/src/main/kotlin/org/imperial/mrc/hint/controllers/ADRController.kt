@@ -11,13 +11,25 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/adr")
 class ADRController(private val session: Session,
-                    private val encyption: Encryption,
+                    private val encryption: Encryption,
                     private val userRepository: UserRepository) {
+
+    @GetMapping("/key")
+    fun getAPIKey(): ResponseEntity<String> {
+        val userId = session.getUserProfile().id
+        val encryptedKey = userRepository.getADRKey(userId)
+        val key = if (encryptedKey != null) {
+            encryption.decrypt(encryptedKey)
+        } else {
+            null
+        }
+        return SuccessResponse(key).asResponseEntity()
+    }
 
     @PostMapping("/key")
     fun saveAPIKey(@RequestParam("key") key: String): ResponseEntity<String> {
         val userId = session.getUserProfile().id
-        val encryptedKey = encyption.encrypt(key)
+        val encryptedKey = encryption.encrypt(key)
         userRepository.saveADRKey(userId, encryptedKey)
         return SuccessResponse(null).asResponseEntity()
     }

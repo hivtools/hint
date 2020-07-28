@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.integration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.db.Tables.ADR_KEY
 import org.junit.jupiter.api.BeforeEach
@@ -23,6 +24,15 @@ class ADRTests : SecureIntegrationTests() {
         val result = testRestTemplate.postForEntity<String>("/adr/key", getPostEntity())
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(dsl.selectFrom(ADR_KEY).count()).isEqualTo(1)
+    }
+
+    @Test
+    fun `can get ADR key`() {
+        testRestTemplate.postForEntity<String>("/adr/key", getPostEntity())
+        val result = testRestTemplate.getForEntity<String>("/adr/key")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        val data = ObjectMapper().readTree(result.body!!)["data"].asText()
+        assertThat(data).isEqualTo("testkey")
     }
 
     @Test
