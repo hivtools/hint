@@ -208,7 +208,7 @@ describe("Root mutations", () => {
         state.language = Language.fr;
 
         const version = {id: 1, name: "newVersion", snapshots: [{id: "newSnapshot"}]};
-        mutations.ResetVersion(state, {payload: version});
+        mutations.SetVersion(state, {payload: version});
 
         testOnlyExpectedModulesArePopulated([], state);
         expect(state.stepper.activeStep).toBe(1);

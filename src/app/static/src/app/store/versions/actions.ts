@@ -15,7 +15,7 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
         const {commit} = context;
         commit({type: VersionsMutations.SetLoading, payload: true});
         await api<RootMutation, VersionsMutations>(context)
-            .withSuccess(RootMutation.ResetVersion, true)
+            .withSuccess(RootMutation.SetVersion, true)
             .withError(VersionsMutations.VersionError)
             .postAndReturn<String>("/version/", qs.stringify({name}));
     }

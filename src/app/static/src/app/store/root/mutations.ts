@@ -18,7 +18,7 @@ export enum RootMutation {
     ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
-    ResetVersion = "ResetVersion"
+    SetVersion = "SetVersion"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -55,7 +55,7 @@ export const mutations: MutationTree<RootState> = {
         state.modelRun.ready = true;
     },
 
-    [RootMutation.ResetVersion](state: RootState, action: PayloadWithType<Version>) {
+    [RootMutation.SetVersion](state: RootState, action: PayloadWithType<Version>) {
         const resetState: RootState = {
             ...emptyState(),
             language: state.language,
