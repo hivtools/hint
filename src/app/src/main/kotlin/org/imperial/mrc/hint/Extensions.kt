@@ -75,11 +75,7 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
 
 @Suppress("UNCHECKED_CAST")
 fun formatADRResponse(json: JsonNode): ResponseEntity<String> {
-
-    if (!json.has("result") && !json.has("error")) {
-        throw IOException()
-    }
-
+    
     return if (json["success"].asBoolean()) {
         SuccessResponse(json["result"])
                 .asResponseEntity()
