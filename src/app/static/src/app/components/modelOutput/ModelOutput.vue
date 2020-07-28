@@ -25,6 +25,15 @@
                             :colour-scales="colourScales"
                             @update="updateOutputChoroplethSelections({payload: $event})"
                             @updateColourScales="updateOutputColourScales({payload: $event})"></choropleth>
+                <table-view :style="styleObject"
+                           :tabledata="chartdata"
+                           :area-filter-id="areaFilterId"
+                           :filters="choroplethFilters"
+                           :indicators="filterChoroplethIndicators"
+                           :selections="choroplethSelections"
+                        
+                           :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
+                        ></table-view>
             </div>
 
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
@@ -34,6 +43,14 @@
                         :indicators="barchartIndicators"
                         :selections="barchartSelections"
                         @update="updateBarchartSelections({payload: $event})" ></bar-chart-with-filters>
+                <table-view :style="styleObject" :tabledata="chartdata"
+                        :area-filter-id="areaFilterId"
+                        :filters="barchartFilters"
+                        :indicators="filterBarchartIndicators"
+                        :selections="barchartSelections"
+                        
+                        :selectedFilterOptions="barchartSelections.selectedFilterOptions"
+                        ></table-view>
             </div>
 
             <div v-if="selectedTab==='bubble'" id="bubble-plot-container" class="col-md-12">
@@ -44,6 +61,14 @@
                              :colour-scales="colourScales"
                              @update="updateBubblePlotSelections({payload: $event})"
                              @updateColourScales="updateOutputColourScales({payload: $event})"></bubble-plot>
+                <table-view :style="styleObject" :tabledata="chartdata"
+                            :area-filter-id="areaFilterId"
+                            :filters="bubblePlotFilters"
+                            :indicators="filterBubblePlotIndicators"
+                            :selections="bubblePlotSelections"
+                            
+                            :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
+                            ></table-view>
             </div>
         </div>
     </div>
@@ -54,6 +79,7 @@
     import Vue from "vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
+    import TableView from "../plots/table/Table.vue";
     import {BarchartIndicator, Filter} from "@reside-ic/vue-charts/src/bar/types";
     import {BarChartWithFilters, FilterConfig} from "@reside-ic/vue-charts";
 
@@ -102,7 +128,13 @@
         featureLevels: LevelLabel[]
         currentLanguage: Language,
         filterConfig: FilterConfig,
-        colourScales: ColourScaleSelections
+        colourScales: ColourScaleSelections,
+        choroplethIndicators: any[],
+        bubblePlotIndicators: any[],
+        filterIndicators: any[],
+        filterChoroplethIndicators: any[],
+        filterBarchartIndicators: any[],
+        filterBubblePlotIndicators: any[],
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -120,10 +152,32 @@
             }
 
             return {
-                tabs: tabs
+                tabs: tabs,
+                areaFilterId: "area",
+                styleObject: {
+                    marginLeft: "290px"
+                }
             }
         },
         computed: {
+            // filterIndicators(indicators: any[], selections: any, id: string){
+            //     return indicators.filter((val: any) => val.indicator === selections.id)
+            // },
+            // filterChoroplethIndicators(){
+            //     return this.filterIndicators(this.choroplethIndicators, this.choroplethSelections, 'indicatorId')
+            // },
+            filterChoroplethIndicators(){
+                return this.choroplethIndicators.filter((val: any) => val.indicator === this.choroplethSelections.indicatorId)
+            },
+            filterBarchartIndicators(){
+                return this.barchartIndicators.filter((val: any) => val.indicator === this.barchartSelections.indicatorId)
+            },
+            filterBubblePlotIndicators(){
+                return [
+                    ...this.bubblePlotIndicators.filter((val: any) => val.indicator === this.bubblePlotSelections.colorIndicatorId),
+                    ...this.bubblePlotIndicators.filter((val: any) => val.indicator === this.bubblePlotSelections.sizeIndicatorId)
+                    ]
+            },
             ...mapGettersByNames("modelOutput", [
                 "barchartFilters", "barchartIndicators",
                 "bubblePlotFilters", "bubblePlotIndicators",
@@ -167,7 +221,8 @@
         components: {
             BarChartWithFilters,
             BubblePlot,
-            Choropleth
+            Choropleth,
+            TableView
         }
     })
 </script>
