@@ -3,7 +3,7 @@
         <div class="row">
             <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
                 <form>
-                    <file-upload label="survey"
+                    <new-file-upload label="survey"
                                  :valid="survey.valid"
                                  :error="survey.error"
                                  :upload="uploadSurvey"
@@ -11,7 +11,7 @@
                                  :existingFileName="survey.existingFileName"
                                  accept="csv,.csv"
                                  name="survey">
-                    </file-upload>
+                    </new-file-upload>
                     <file-upload label="ART"
                                  :valid="programme.valid"
                                  :error="programme.error"
@@ -89,6 +89,7 @@
     import {Metadata, ChoroplethIndicatorMetadata} from "../../generated";
     import {mapGettersByNames} from "../../utils";
     import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
+    import NewFileUpload from "../files/FileSelect.vue";
 
     const namespace: string = 'surveyAndProgram';
 
@@ -183,7 +184,8 @@
             FileUpload,
             Choropleth,
             Filters,
-            TableView
+            TableView,
+            NewFileUpload
         }
     })
 </script>

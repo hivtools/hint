@@ -3,16 +3,16 @@
         <div class="row">
             <div class="col-sm-6 col-md-8">
                 <form>
-                    <file-upload label="PJNZ"
-                                 :valid="pjnz.valid"
-                                 :error="pjnz.error || plottingMetadataError"
-                                 :upload="uploadPJNZ"
-                                 :delete-file="deletePJNZ"
-                                 :existingFileName="pjnz.existingFileName"
-                                 accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
-                                 name="pjnz">
+                    <new-file-upload label="PJNZ"
+                                     :valid="pjnz.valid"
+                                     :error="pjnz.error || plottingMetadataError"
+                                     :upload="uploadPJNZ"
+                                     :delete-file="deletePJNZ"
+                                     :existingFileName="pjnz.existingFileName"
+                                     accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
+                                     name="pjnz">
                         <label v-if="country"><strong v-translate="'country'"></strong>: {{country}}</label>
-                    </file-upload>
+                    </new-file-upload>
                     <file-upload label="shape"
                                  :valid="shape.valid"
                                  :error="shape.error"
@@ -53,6 +53,7 @@
     import {MetadataState} from "../../store/metadata/metadata";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
+    import NewFileUpload from "../files/FileSelect.vue";
 
     const namespace: string = 'baseline';
 
@@ -97,7 +98,8 @@
         components: {
             FileUpload,
             ErrorAlert,
-            LoadingSpinner
+            LoadingSpinner,
+            NewFileUpload
         }
     })
 </script>
