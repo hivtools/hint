@@ -32,7 +32,8 @@ export interface TranslatableState {
 }
 
 export interface RootState extends TranslatableState {
-    version: string;
+    version: string,
+    adrKey: string,
     baseline: BaselineState,
     metadata: MetadataState,
     surveyAndProgram: SurveyAndProgramState,
@@ -88,6 +89,7 @@ const resetState = (store: Store<RootState>) => {
 
 export const emptyState = (): RootState => {
     return {
+        adrKey: "123", // TODO fetch from server on load
         language: Language.en,
         version: '0.0.0',
         baseline: initialBaselineState(),
