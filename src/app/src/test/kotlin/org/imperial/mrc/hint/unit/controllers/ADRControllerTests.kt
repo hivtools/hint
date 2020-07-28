@@ -19,12 +19,12 @@ class ADRControllerTests {
             on { getUserProfile() } doReturn CommonProfile().apply { id = "test" }
         }
         val mockEncryption = mock<Encryption> {
-            on { encrypt(any()) } doReturn "encrypted"
+            on { encrypt(any()) } doReturn "encrypted".toByteArray()
         }
         val mockRepo = mock<UserRepository>()
         val sut = ADRController(mockSession, mockEncryption, mockRepo)
         sut.saveAPIKey("plainText")
-        verify(mockRepo).saveADRKey("test", "encrypted")
+        verify(mockRepo).saveADRKey("test", "encrypted".toByteArray())
     }
 
 }
