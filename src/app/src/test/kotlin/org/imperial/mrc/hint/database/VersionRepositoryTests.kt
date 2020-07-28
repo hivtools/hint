@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.Instant.now
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 @ActiveProfiles(profiles = ["test"])
@@ -77,26 +80,30 @@ class VersionRepositoryTests {
         val versions = sut.getVersions(userId)
         assertThat(versions.count()).isEqualTo(2)
 
-        val v1 = versions[1]
-        assertThat(v1.id).isEqualTo(v1Id)
-        assertThat(v1.name).isEqualTo("v1")
-        assertThat(v1.snapshots.count()).isEqualTo(2)
-        assertThat(v1.snapshots[0].id).isEqualTo("v1s2")
-        assertThat(v1.snapshots[0].created).isEqualTo(ago_2h)
-        assertThat(v1.snapshots[0].updated).isEqualTo(ago_2h)
-        assertThat(v1.snapshots[1].id).isEqualTo("v1s1")
-        assertThat(v1.snapshots[1].created).isEqualTo(ago_4h)
-        assertThat(v1.snapshots[1].updated).isEqualTo(ago_3h)
-
         val v2 = versions[0]
         assertThat(v2.id).isEqualTo(v2Id)
         assertThat(v2.name).isEqualTo("v2")
         assertThat(v2.snapshots.count()).isEqualTo(1)
         assertThat(v2.snapshots[0].id).isEqualTo("v2s1")
-        assertThat(v2.snapshots[0].created).isEqualTo(ago_3h)
-        assertThat(v2.snapshots[0].updated).isEqualTo(ago_1h)
+        assertThat(v2.snapshots[0].created).isEqualTo(format(ago_3h))
+        assertThat(v2.snapshots[0].updated).isEqualTo(format(ago_1h))
 
+        val v1 = versions[1]
+        assertThat(v1.id).isEqualTo(v1Id)
+        assertThat(v1.name).isEqualTo("v1")
+        assertThat(v1.snapshots.count()).isEqualTo(2)
+        assertThat(v1.snapshots[0].id).isEqualTo("v1s2")
+        assertThat(v1.snapshots[0].created).isEqualTo(format(ago_2h))
+        assertThat(v1.snapshots[0].updated).isEqualTo(format(ago_2h))
+        assertThat(v1.snapshots[1].id).isEqualTo("v1s1")
+        assertThat(v1.snapshots[1].created).isEqualTo(format(ago_4h))
+        assertThat(v1.snapshots[1].updated).isEqualTo(format(ago_3h))
+    }
 
+    private fun format(time: Instant): String
+    {
+        val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        return formatter.format(LocalDateTime.ofInstant(time, ZoneId.systemDefault()))
     }
 
     private fun insertVersion(name: String, userId: String): Int
@@ -111,7 +118,7 @@ class VersionRepositoryTests {
 
     private fun insertSnapshot(snapshotId: String, versionId: Int, created: Instant, updated: Instant, deleted: Boolean)
     {
-        val saved = dsl.insertInto(VERSION_SNAPSHOT,
+        dsl.insertInto(VERSION_SNAPSHOT,
                 VERSION_SNAPSHOT.ID,
                 VERSION_SNAPSHOT.VERSION_ID,
                 VERSION_SNAPSHOT.CREATED,

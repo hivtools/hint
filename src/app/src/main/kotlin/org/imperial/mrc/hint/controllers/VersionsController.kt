@@ -35,8 +35,12 @@ class VersionsController(private val session: Session,
     @ResponseBody
     fun getVersions(): ResponseEntity<String>
     {
-        //TODO: logged in users only
-        val versions = versionRepository.getVersions(userId())
+        val versions =
+                if (session.userIsGuest()) {
+                    listOf<Version>()
+                } else {
+                    versionRepository.getVersions(userId())
+                }
         return SuccessResponse(versions).asResponseEntity()
     }
 
