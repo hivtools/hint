@@ -11,14 +11,14 @@ class Encryption {
     val cipher: Cipher = Cipher.getInstance(ALGORITHM)
     val keyPair: KeyPair = KeyHelper.keyPair
 
-    fun encrypt(plainText: String): String {
+    fun encrypt(plainText: String): ByteArray {
         cipher.init(Cipher.ENCRYPT_MODE, keyPair.public)
-        return cipher.doFinal(plainText.toBytes()).toISOString()
+        return cipher.doFinal(plainText.toBytes())
     }
 
-    fun decrypt(cipherText: String): String {
+    fun decrypt(cipherText: ByteArray): String {
         cipher.init(Cipher.DECRYPT_MODE, keyPair.private)
-        return cipher.doFinal(cipherText.toBytes()).toISOString()
+        return cipher.doFinal(cipherText).toISOString()
     }
 
     private fun String.toBytes(): ByteArray {

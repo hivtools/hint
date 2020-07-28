@@ -6,8 +6,9 @@ import org.springframework.stereotype.Component
 
 interface UserRepository {
     fun getAllUserNames(): List<String>
-    fun saveADRKey(userId: String, encryptedKey: String)
+    fun saveADRKey(userId: String, encryptedKey: ByteArray)
     fun deleteADRKey(userId: String)
+    fun getADRKey(userId: String): ByteArray?
 }
 
 @Component
@@ -19,7 +20,7 @@ class JooqUserRepository(private val dsl: DSLContext) : UserRepository {
                 .fetchInto(String::class.java)
     }
 
-    override fun saveADRKey(userId: String, encryptedKey: String) {
+    override fun saveADRKey(userId: String, encryptedKey: ByteArray) {
 
         val existingKey = dsl.select(ADR_KEY.API_KEY)
                 .from(ADR_KEY)
@@ -43,5 +44,14 @@ class JooqUserRepository(private val dsl: DSLContext) : UserRepository {
         dsl.deleteFrom(ADR_KEY)
                 .where(ADR_KEY.USER_ID.eq(userId))
                 .execute()
+
+    }
+
+    override fun getADRKey(userId: String): ByteArray? {
+        return dsl.select(ADR_KEY.API_KEY)
+                .from(ADR_KEY)
+                .where(ADR_KEY.USER_ID.eq(userId))
+                .fetchAny()
+                ?.get(ADR_KEY.API_KEY)
     }
 }

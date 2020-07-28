@@ -84,7 +84,7 @@ export const iterateDataValues = function (
     filters: Filter[] | null,
     selectedFilterValues: Dict<FilterOption[]> | null,
     func: (areaId: string,
-           indicatorMeta: ChoroplethIndicatorMetadata, value: number) => void) {
+           indicatorMeta: ChoroplethIndicatorMetadata, value: number, row: object) => void) {
 
     const selectedFilterValueIds: Dict<string[]> = {};
     const validFilters = filters && selectedFilterValues
@@ -120,7 +120,7 @@ export const iterateDataValues = function (
 
             const value = row[metadata.value_column];
 
-            func(areaId, metadata, value);
+            func(areaId, metadata, value, row);
         }
     }
 };
