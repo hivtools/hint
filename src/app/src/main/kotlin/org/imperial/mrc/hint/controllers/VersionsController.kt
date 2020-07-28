@@ -15,11 +15,12 @@ class VersionsController(private val session: Session,
                          private val snapshotRepository: SnapshotRepository,
                          private val versionRepository: VersionRepository)
 {
+    private val userId = session.getUserProfile().id
+
     @PostMapping("/version/")
     @ResponseBody
     fun newVersion(@RequestParam("name") name: String): ResponseEntity<String>
     {
-        val userId = session.getUserProfile().id
         val versionId = versionRepository.saveNewVersion(userId, name)
 
         //Generate new snapshot id and set it as the session variable, and save new snapshot to db
@@ -30,5 +31,14 @@ class VersionsController(private val session: Session,
         val version = Version(versionId, name, listOf(snapshot))
 
         return SuccessResponse(version).asResponseEntity()
+    }
+
+    @GetMapping("/versions/")
+    @ResponseBody
+    fun getVersions(): ResponseEntity<String>
+    {
+        //TODO: logged in users only
+        val versions = versionRepository.getVersions(userId)
+        return SuccessResponse(versions).asResponseEntity()
     }
 }
