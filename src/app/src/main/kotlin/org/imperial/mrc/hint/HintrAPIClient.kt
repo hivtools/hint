@@ -29,7 +29,7 @@ interface HintrAPIClient {
 @Component
 class HintrFuelAPIClient(
         appProperties: AppProperties,
-        private val objectMapper: ObjectMapper) : HintrAPIClient, FuelAPIClient(appProperties.apiUrl) {
+        private val objectMapper: ObjectMapper) : HintrAPIClient, FuelClient(appProperties.apiUrl) {
 
     private fun getAcceptLanguage(): String {
         val requestAttributes = RequestContextHolder.getRequestAttributes()

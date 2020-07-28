@@ -5,7 +5,7 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import org.springframework.http.ResponseEntity
 
-abstract class FuelAPIClient(protected val baseUrl: String) {
+abstract class FuelClient(protected val baseUrl: String) {
 
     abstract fun standardHeaders(): Map<String, Any>
 

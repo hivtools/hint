@@ -22,7 +22,7 @@ class ADRClientBuilder(val appProperties: AppProperties,
 }
 
 class ADRClient(appProperties: AppProperties,
-                private val apiKey: String) : FuelAPIClient(appProperties.adrUrl) {
+                private val apiKey: String) : FuelClient(appProperties.adrUrl) {
 
     override fun standardHeaders(): Map<String, Any> {
         return mapOf("Authorization" to apiKey)
