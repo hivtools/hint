@@ -48,7 +48,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                     ...modelOutputState,
                 },
                 getters: {
-                    barchartIndicators: jest.fn(),
+                    barchartIndicators: jest.fn().mockReturnValue(["TEST BARCHART INDICATORS"]),
                     barchartFilters: jest.fn().mockReturnValue(["TEST BAR FILTERS"]),
                     bubblePlotIndicators: jest.fn().mockReturnValue(["TEST BUBBLE INDICATORS"]),
                     bubblePlotFilters: jest.fn().mockReturnValue(["TEST BUBBLE FILTERS"]),
