@@ -1,13 +1,13 @@
 <template>
     <div class="row mb-3">
-        <div class="col-6">
+        <div class="col-8">
             <div class="d-flex">
                 <label for="key"
                        class="font-weight-bold align-self-stretch"
                        >ADR API Key: </label>
-                <div class="align-self-stretch pl-3">
+                <div class="align-self-stretch pl-2">
                     <div v-if="!editing">
-                        <span>{{keyText}}</span>
+                        <span class="pr-2">{{keyText}}</span>
                         <a href="#" v-if="!key" @click="edit">add</a>
                         <a href="#" v-if="key" @click="edit">edit</a>
                         <span v-if="key">/</span>
