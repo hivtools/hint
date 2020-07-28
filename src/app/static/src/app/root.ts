@@ -1,5 +1,6 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
+import {versions, VersionsState, initialVersionsState} from "./store/versions/versions";
 import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
 import {
     initialSurveyAndProgramState,
@@ -41,7 +42,8 @@ export interface RootState extends TranslatableState {
     plottingSelections: PlottingSelectionsState,
     stepper: StepperState,
     load: LoadState,
-    errors: ErrorsState
+    errors: ErrorsState,
+    versions: VersionsState
 }
 
 export interface ReadyState {
@@ -97,7 +99,8 @@ export const emptyState = (): RootState => {
         stepper: initialStepperState(),
         load: initialLoadState(),
         plottingSelections: initialPlottingSelectionsState(),
-        errors: initialErrorsState()
+        errors: initialErrorsState(),
+        versions: initialVersionsState()
     }
 };
 
@@ -113,7 +116,8 @@ export const storeOptions: StoreOptions<RootState> = {
         plottingSelections,
         stepper,
         load,
-        errors
+        errors,
+        versions
     },
     actions: actions,
     mutations: mutations,

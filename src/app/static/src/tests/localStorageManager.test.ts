@@ -6,7 +6,7 @@ import {
     mockModelRunState,
     mockPlottingSelections,
     mockStepperState,
-    mockSurveyAndProgramState
+    mockSurveyAndProgramState, mockVersionsState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -25,7 +25,8 @@ describe("LocalStorageManager", () => {
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey})
+            surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey}),
+            versions: mockVersionsState()
         } as RootState;
 
         const result = serialiseState(mockRoot);
@@ -36,7 +37,8 @@ describe("LocalStorageManager", () => {
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: {selectedDataType: DataType.Survey}
+            surveyAndProgram: {selectedDataType: DataType.Survey},
+            versions: mockVersionsState()
         });
     });
 
