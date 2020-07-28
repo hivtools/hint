@@ -38,13 +38,17 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
                         .on(VERSION.ID.eq(VERSION_SNAPSHOT.VERSION_ID))
                         .where(VERSION.USER_ID.eq(userId))
                         .and(VERSION_SNAPSHOT.DELETED.eq(false))
+                        .orderBy(VERSION_SNAPSHOT.UPDATED.desc())
                         .fetch()
 
-        return result.groupBy{it[VERSION.ID]}
-            .map{v -> Version(v.key, v.value[0][VERSION.NAME],
-                    v.value.map{s -> Snapshot(s[VERSION_SNAPSHOT.ID],
-                            s[VERSION_SNAPSHOT.CREATED], s[VERSION_SNAPSHOT.UPDATED])})}
-
-
+        return result.groupBy { it[VERSION.ID] }
+                .map { v ->
+                    Version(v.key, v.value[0][VERSION.NAME],
+                            v.value.map { s ->
+                                Snapshot(s[VERSION_SNAPSHOT.ID], s[VERSION_SNAPSHOT.CREATED],
+                                        s[VERSION_SNAPSHOT.UPDATED])
+                            })
+                }
+                .sortedByDescending { it.snapshots[0].updated }
     }
 }
