@@ -1,10 +1,10 @@
-package org.imperial.mrc.hint.integration
+package org.imperial.mrc.hint.integration.clients
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.ADRClient
+import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.junit.jupiter.api.Test
 

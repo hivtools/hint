@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.unit
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
-import org.imperial.mrc.hint.ADRClientBuilder
+import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException

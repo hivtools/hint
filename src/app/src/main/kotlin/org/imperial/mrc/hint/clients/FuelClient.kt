@@ -1,8 +1,9 @@
-package org.imperial.mrc.hint
+package org.imperial.mrc.hint.clients
 
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
+import org.imperial.mrc.hint.asResponseEntity
 import org.springframework.http.ResponseEntity
 
 abstract class FuelClient(protected val baseUrl: String) {

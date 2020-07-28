@@ -1,5 +1,6 @@
-package org.imperial.mrc.hint
+package org.imperial.mrc.hint.clients
 
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.security.Encryption

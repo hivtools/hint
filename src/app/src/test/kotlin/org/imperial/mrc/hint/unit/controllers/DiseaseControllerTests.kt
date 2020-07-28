@@ -1,7 +1,7 @@
 package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.mock
-import org.imperial.mrc.hint.HintrAPIClient
+import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.DiseaseController

@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.unit.controllers
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
-import org.imperial.mrc.hint.HintrAPIClient
+import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.DownloadController
 import org.junit.jupiter.api.Test
 import org.springframework.http.ResponseEntity

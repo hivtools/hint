@@ -1,10 +1,10 @@
-package org.imperial.mrc.hint.integration
+package org.imperial.mrc.hint.integration.clients
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.HintrFuelAPIClient
+import org.imperial.mrc.hint.clients.HintrFuelAPIClient
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.models.ModelRunOptions
 import org.imperial.mrc.hint.models.SnapshotFileWithPath

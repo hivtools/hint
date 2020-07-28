@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.HintrAPIClient
+import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.models.ModelRunOptions

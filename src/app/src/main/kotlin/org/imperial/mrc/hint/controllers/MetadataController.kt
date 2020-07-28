@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.HintrAPIClient
+import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 

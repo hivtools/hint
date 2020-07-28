@@ -1,9 +1,13 @@
-package org.imperial.mrc.hint
+package org.imperial.mrc.hint.clients
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel.head
 import com.github.kittinunf.fuel.httpDownload
 import com.github.kittinunf.fuel.httpPost
+import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.FileType
+import org.imperial.mrc.hint.asResponseEntity
+import org.imperial.mrc.hint.getStreamingResponseEntity
 import org.imperial.mrc.hint.models.ModelRunOptions
 import org.imperial.mrc.hint.models.SnapshotFileWithPath
 import org.springframework.http.ResponseEntity
