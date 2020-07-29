@@ -13,7 +13,7 @@
                                      name="pjnz">
                         <label v-if="country"><strong v-translate="'country'"></strong>: {{country}}</label>
                     </manage-file>
-                    <file-upload label="shape"
+                    <manage-file label="shape"
                                  :valid="shape.valid"
                                  :error="shape.error"
                                  :upload="uploadShape"
@@ -21,8 +21,8 @@
                                  :existingFileName="shape.existingFileName"
                                  accept="geojson,.geojson,GEOJSON,.GEOJSON"
                                  name="shape">
-                    </file-upload>
-                    <file-upload label="population"
+                    </manage-file>
+                    <manage-file label="population"
                                  :valid="population.valid"
                                  :error="population.error"
                                  :upload="uploadPopulation"
@@ -30,7 +30,7 @@
                                  :existingFileName="population.existingFileName"
                                  accept="csv,.csv"
                                  name="population">
-                    </file-upload>
+                    </manage-file>
                 </form>
                 <div v-if="validating" id="baseline-validating">
                     <loading-spinner size="xs"></loading-spinner>

@@ -3,7 +3,7 @@
         <label class="font-weight-bold" v-translate="label"></label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
         <slot></slot>
-        <label v-if="existingFileName">
+        <label v-if="existingFileName" class="file-name">
             <strong v-translate="'file'"></strong>: {{existingFileName}}
         </label>
         <a v-if="existingFileName"

@@ -1,7 +1,7 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import SurveyAndProgram from "../../../app/components/surveyAndProgram/SurveyAndProgram.vue";
-import FileUpload from "../../../app/components/FileUpload.vue";
+import ManageFile from "../../../app/components/files/ManageFile.vue";
 import {SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {mockBaselineState, mockError, mockPlottingSelections, mockSurveyAndProgramState} from "../../mocks";
@@ -107,26 +107,26 @@ export function testUploadComponent(name: string, position: number) {
     it(`${name} upload is valid if data is present`, () => {
         const store = createSut(successState);
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.findAll(FileUpload).at(position).props().valid).toBe(true);
+        expect(wrapper.findAll(ManageFile).at(position).props().valid).toBe(true);
     });
 
     it(`${name} upload is invalid if data is null`, () => {
         const store = createSut();
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.findAll(FileUpload).at(position).props().valid).toBe(false);
+        expect(wrapper.findAll(ManageFile).at(position).props().valid).toBe(false);
     });
 
     it(`passes ${name} upload error to file upload`, () => {
         const store = createSut(errorState);
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.findAll(FileUpload).at(position).props().error).toStrictEqual(mockError("File upload went wrong"));
+        expect(wrapper.findAll(ManageFile).at(position).props().error).toStrictEqual(mockError("File upload went wrong"));
     });
 
     it(`upload ${name} dispatches surveyAndProgram/upload${name}`, (done) => {
         const store = createSut();
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        wrapper.findAll(FileUpload).at(position).props().upload({name: "TEST"});
+        wrapper.findAll(ManageFile).at(position).props().upload({name: "TEST"});
         setTimeout(() => {
             expect(expectedUploadAction.mock.calls[0][1]).toStrictEqual({name: "TEST"});
             done();
@@ -137,7 +137,7 @@ export function testUploadComponent(name: string, position: number) {
         const store = createSut();
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        wrapper.findAll(FileUpload).at(position).props().deleteFile();
+        wrapper.findAll(ManageFile).at(position).props().deleteFile();
         setTimeout(() => {
             expect(expectedDeleteAction.mock.calls.length).toBe(1);
             done();

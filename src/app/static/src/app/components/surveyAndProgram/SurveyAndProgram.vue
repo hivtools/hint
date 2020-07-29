@@ -12,7 +12,7 @@
                                  accept="csv,.csv"
                                  name="survey">
                     </manage-file>
-                    <file-upload label="ART"
+                    <manage-file label="ART"
                                  :valid="programme.valid"
                                  :error="programme.error"
                                  :upload="uploadProgram"
@@ -20,8 +20,8 @@
                                  :existingFileName="programme.existingFileName"
                                  accept="csv,.csv"
                                  name="program">
-                    </file-upload>
-                    <file-upload label="ANC"
+                    </manage-file>
+                    <manage-file label="ANC"
                                  :valid="anc.valid"
                                  :error="anc.error"
                                  :upload="uploadANC"
@@ -29,7 +29,7 @@
                                  :existingFileName="anc.existingFileName"
                                  accept="csv,.csv"
                                  name="anc">
-                    </file-upload>
+                    </manage-file>
                 </form>
                 <filters v-if="showChoropleth"
                          :filters="filters"

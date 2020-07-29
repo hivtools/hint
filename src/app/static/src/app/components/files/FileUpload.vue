@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-dropdown text="Select file from" variant="red">
+        <b-dropdown text="Select file from" variant="white">
             <a class="dropdown-item" href="#" v-on:mousedown="$refs[name].click()">
                 <input type="file"
                        style="display:none"
