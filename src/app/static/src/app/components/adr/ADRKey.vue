@@ -1,5 +1,5 @@
 <template>
-    <div class="row mb-3">
+    <div class="row mb-3" v-if="loggedIn">
         <div class="col-8">
             <div class="d-flex">
                 <label for="key"
@@ -74,7 +74,10 @@
         key: string | null
         currentLanguage: Language
         keyText: string
+        loggedIn: boolean
     }
+
+    declare const currentUser: string;
 
     export default Vue.extend<Data, Methods, Computed, {}>({
         data() {
@@ -84,6 +87,9 @@
             }
         },
         computed: {
+            loggedIn() {
+                return currentUser != "guest"
+            },
             key: mapStateProp<RootState, string | null>(null,
                 (state: RootState) => state.adrKey),
             currentLanguage: mapStateProp<RootState, Language>(null,

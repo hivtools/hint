@@ -7,6 +7,8 @@ import {mockRootState} from "../../mocks";
 import {mutations, RootMutation} from "../../../app/store/root/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 
+declare let currentUser: string;
+
 describe("ADR Key", function () {
 
     const createStore = (key: string = "") => {
@@ -17,6 +19,16 @@ describe("ADR Key", function () {
        registerTranslations(store);
        return store;
     }
+
+    beforeEach(() => {
+        currentUser = "some.user@example.com"
+    })
+
+    it("does not render if current user is guest", () => {
+        currentUser = "guest";
+        const rendered = shallowMount(ADRKey, {store: createStore()});
+        expect(rendered.findAll("div").length).toBe(0);
+    });
 
     it("shows title", () => {
         const rendered = shallowMount(ADRKey, {store: createStore()});
