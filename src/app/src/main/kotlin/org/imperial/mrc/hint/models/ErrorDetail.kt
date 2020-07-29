@@ -1,15 +1,18 @@
 package org.imperial.mrc.hint.models
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 
 class ErrorDetail(private val httpStatus: HttpStatus,
                   val detail: String,
+                  val error: String = defaultError,
                   val trace: List<String>? = null) {
 
-    val error = "OTHER_ERROR"
+    companion object {
+        const val defaultError = "OTHER_ERROR"
+    }
+
     fun toResponseEntity() = ResponseEntity
             .status(this.httpStatus)
             .contentType(MediaType.APPLICATION_JSON)
