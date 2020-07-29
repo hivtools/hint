@@ -43,12 +43,16 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
         private const val SNAPSHOT_ID = "snapshot_id"
     }
 
-    fun getUserProfile(): CommonProfile {
+     fun getUserProfile(): CommonProfile {
         val manager = ProfileManager<CommonProfile>(webContext)
         val profiles = manager.getAll(true)
         return profiles.singleOrNull() ?: CommonProfile().apply {
             id = GUEST_USER
         }
+    }
+
+    fun userIsGuest(): Boolean {
+        return getUserProfile().id == GUEST_USER
     }
 
     fun getSnapshotId() :String {

@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.unit.controllers
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.APIClient
+import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.HintrController
@@ -47,7 +47,7 @@ abstract class HintrControllerTests {
         }
     }
 
-    protected fun getMockAPIClient(type: FileType): APIClient {
+    protected fun getMockAPIClient(type: FileType): HintrAPIClient {
         return mock {
             on { validateBaselineIndividual(argWhere { it.path == "test-path" }, eq(type)) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
             on { validateSurveyAndProgramme(argWhere { it.path == "test-path" }, eq("shape-path"), eq(type)) } doReturn
@@ -55,7 +55,7 @@ abstract class HintrControllerTests {
         }
     }
 
-    abstract fun getSut(mockFileManager: FileManager, mockAPIClient: APIClient,
+    abstract fun getSut(mockFileManager: FileManager, mockAPIClient: HintrAPIClient,
                         mockSession: Session, mockSnapshotRepository: SnapshotRepository): HintrController
 
     protected fun assertValidates(fileType: FileType,

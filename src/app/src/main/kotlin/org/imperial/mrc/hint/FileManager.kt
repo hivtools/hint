@@ -57,7 +57,6 @@ class LocalFileManager(
             FileUtils.forceMkdirParent(localFile)
             localFile.writeBytes(bytes)
         }
-
         snapshotRepository.saveSnapshotFile(session.getSnapshotId(), type, hash, originalFilename)
         return SnapshotFileWithPath(path, hash, originalFilename)
     }
