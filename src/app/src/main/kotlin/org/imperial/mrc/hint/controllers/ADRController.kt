@@ -31,7 +31,7 @@ class ADRController(private val session: Session,
         val userId = session.getUserProfile().id
         val encryptedKey = encryption.encrypt(key)
         userRepository.saveADRKey(userId, encryptedKey)
-        return SuccessResponse(null).asResponseEntity()
+        return SuccessResponse(key).asResponseEntity()
     }
 
     @DeleteMapping("/key")

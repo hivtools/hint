@@ -51,7 +51,7 @@
 </template>
 <script lang="ts">
     import Vue from "vue";
-    import {mapMutationByName, mapStateProp} from "../../utils";
+    import {mapActionByName, mapActionsByNames, mapMutationByName, mapStateProp} from "../../utils";
     import {RootMutation} from "../../store/root/mutations";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
@@ -63,7 +63,9 @@
     }
 
     interface Methods {
-        updateADRKey: (key: string | null) => void
+        fetchADRKey: () => void
+        saveADRKey: (key: string | null) => void
+        deleteADRKey: () => void
         edit: (e: Event) => void
         remove: (e: Event) => void
         save: (e: Event) => void
@@ -109,24 +111,29 @@
             }
         },
         methods: {
-            updateADRKey: mapMutationByName(null, RootMutation.UpdateADRKey),
+            ...mapActionsByNames<keyof Methods>(null, ["fetchADRKey", "saveADRKey", "deleteADRKey"]),
             edit(e: Event) {
                 e.preventDefault();
                 this.editing = true;
                 this.editableKey = this.key;
             },
             remove(e: Event) {
-                this.updateADRKey(null);
+                this.deleteADRKey();
                 e.preventDefault();
             },
             save(e: Event) {
                 e.preventDefault();
-                this.updateADRKey(this.editableKey);
+                this.saveADRKey(this.editableKey);
                 this.editing = false;
             },
             cancel(e: Event) {
                 e.preventDefault();
                 this.editing = false;
+            }
+        },
+        created() {
+            if (this.loggedIn) {
+                this.fetchADRKey();
             }
         }
     });

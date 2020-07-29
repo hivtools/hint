@@ -5,9 +5,14 @@ import {RootMutation} from "./mutations";
 import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
+import {api} from "../../apiService";
+import qs from "qs";
 
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
+    fetchADRKey: (store: ActionContext<RootState, RootState>) => void;
+    saveADRKey: (store: ActionContext<RootState, RootState>, key: string) => void;
+    deleteADRKey: (store: ActionContext<RootState, RootState>) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -52,5 +57,27 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
 
     async changeLanguage(context, payload) {
         await changeLanguage<RootState>(context, payload)
+    },
+
+    async fetchADRKey(context) {
+        await api<RootMutation, RootMutation>(context)
+            .withSuccess(RootMutation.UpdateADRKey)
+            .get("/adr/key/");
+    },
+
+    async saveADRKey(context, key) {
+        await api<RootMutation, RootMutation>(context)
+            .withSuccess(RootMutation.UpdateADRKey)
+            .postAndReturn("/adr/key/", qs.stringify({key}));
+    },
+
+    async deleteADRKey(context) {
+        await api<RootMutation, RootMutation>(context)
+            .delete("/adr/key/")
+            .then((response) => {
+                if (response) {
+                   context.commit(RootMutation.UpdateADRKey, {payload: null})
+                }
+            });
     }
 };

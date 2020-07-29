@@ -23,8 +23,8 @@ export enum RootMutation {
 }
 
 export const mutations: MutationTree<RootState> = {
-    [RootMutation.UpdateADRKey](state: RootState, payload: string | null) {
-        state.adrKey = payload;
+    [RootMutation.UpdateADRKey](state: RootState, action: PayloadWithType<string | null>) {
+        state.adrKey = action.payload;
     },
 
     [RootMutation.Reset](state: RootState, action: PayloadWithType<number>) {
