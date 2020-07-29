@@ -1,5 +1,5 @@
 import {MutationTree} from "vuex";
-import {RootState} from "../../root";
+import {emptyState, RootState} from "../../root";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
@@ -9,7 +9,7 @@ import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
 import {initialSurveyAndProgramState, DataType} from "../surveyAndProgram/surveyAndProgram";
-import {PayloadWithType} from "../../types";
+import {PayloadWithType, Version} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialVersionsState} from "../versions/versions";
 
@@ -17,7 +17,8 @@ export enum RootMutation {
     Reset = "Reset",
     ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
-    ResetOutputs = "ResetOutputs"
+    ResetOutputs = "ResetOutputs",
+    SetVersion = "SetVersion"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -48,6 +49,24 @@ export const mutations: MutationTree<RootState> = {
         if (state.stepper.activeStep > maxAccessibleStep) {
             state.stepper.activeStep = maxAccessibleStep;
         }
+
+        state.surveyAndProgram.ready = true;
+        state.baseline.ready = true;
+        state.modelRun.ready = true;
+    },
+
+    [RootMutation.SetVersion](state: RootState, action: PayloadWithType<Version>) {
+        const resetState: RootState = {
+            ...emptyState(),
+            language: state.language,
+            versions: {
+                ...initialVersionsState(),
+                currentVersion: action.payload,
+                currentSnapshot: action.payload.snapshots[0]
+            }
+        };
+
+        Object.assign(state, resetState);
 
         state.surveyAndProgram.ready = true;
         state.baseline.ready = true;

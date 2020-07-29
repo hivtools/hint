@@ -27,7 +27,6 @@ class VersionsController(private val session: Session,
 
         val snapshot = snapshotRepository.getSnapshot(newSnapshotId)
         val version = Version(versionId, name, listOf(snapshot))
-
         return SuccessResponse(version).asResponseEntity()
     }
 

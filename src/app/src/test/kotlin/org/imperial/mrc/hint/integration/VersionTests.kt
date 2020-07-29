@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
@@ -25,7 +24,6 @@ class VersionTests : SecureIntegrationTests() {
     {
         val result = createVersion()
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-
         val data = getResponseData(result)
 
         assertThat(data["id"].asInt()).isGreaterThan(0)

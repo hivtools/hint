@@ -8,9 +8,10 @@
 <script lang="ts">
     import Vue from "vue";
     import Stepper from "./Stepper";
-    import Versions from "./versions/Versions.vue";
+    import Versions from "./versions/Versions";
     import {mapStateProps} from "../utils";
     import {VersionsState} from "../store/versions/versions";
+    import {Snapshot} from "../types";
 
     const namespace = "versions";
 
@@ -18,7 +19,7 @@
         manageVersions: boolean,
         isGuest: boolean,
         showVersions: boolean,
-        currentSnapshot: string | null
+        currentSnapshot: Snapshot | null
     }
 
     interface Props {

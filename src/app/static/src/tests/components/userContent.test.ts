@@ -21,7 +21,7 @@ describe("UserContent component", () => {
         return shallowMount(UserContent, {store, propsData});
     };
 
-    const currentSnapshot = "testCurrentSnapshot";
+    const currentSnapshot = {id: "testSnapshot", created: "2020-06-29", updated: "2020-06-30"};
 
     it("renders versions if non-guest user and manageVersions is true", () => {
         const wrapper = createSut("testUser", {manageVersions: true, currentSnapshot});
