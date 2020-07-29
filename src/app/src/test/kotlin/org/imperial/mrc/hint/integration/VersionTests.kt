@@ -6,11 +6,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.HttpEntity
-import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.http.HttpStatus
 import org.springframework.util.LinkedMultiValueMap
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -32,7 +31,6 @@ class VersionTests : SecureIntegrationTests() {
         val httpEntity =  HttpEntity(map, headers)
         val result = testRestTemplate.postForEntity<String>("/version/", httpEntity)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-
         val data = getResponseData(result)
 
         assertThat(data["id"].asInt()).isGreaterThan(0)
