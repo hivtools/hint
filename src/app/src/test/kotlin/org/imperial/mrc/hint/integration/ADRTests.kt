@@ -3,8 +3,8 @@ package org.imperial.mrc.hint.integration
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.db.Tables.ADR_KEY
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
@@ -13,37 +13,47 @@ import org.springframework.util.LinkedMultiValueMap
 
 class ADRTests : SecureIntegrationTests() {
 
-    @BeforeEach
-    fun setup() {
-        authorize()
-        testRestTemplate.getForEntity<String>("/")
-    }
-
-    @Test
-    fun `can save ADR key`() {
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can save ADR key`(isAuthorized: IsAuthorized) {
         val result = testRestTemplate.postForEntity<String>("/adr/key", getPostEntity())
-        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(dsl.selectFrom(ADR_KEY).count()).isEqualTo(1)
+        assertSecureWithSuccess(isAuthorized, result, null)
+
+        if (isAuthorized == IsAuthorized.TRUE) {
+            assertThat(dsl.selectFrom(ADR_KEY).count()).isEqualTo(1)
+        }
     }
 
-    @Test
-    fun `can get ADR key`() {
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can get ADR key`(isAuthorized: IsAuthorized) {
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntity())
         val result = testRestTemplate.getForEntity<String>("/adr/key")
-        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-        val data = ObjectMapper().readTree(result.body!!)["data"].asText()
-        assertThat(data).isEqualTo("testkey")
+
+        assertSecureWithSuccess(isAuthorized, result, null)
+
+        if (isAuthorized == IsAuthorized.TRUE) {
+            val data = ObjectMapper().readTree(result.body!!)["data"].asText()
+            assertThat(data).isEqualTo("testkey")
+        }
     }
 
-    @Test
-    fun `can delete ADR key`() {
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can delete ADR key`(isAuthorized: IsAuthorized) {
         val result = testRestTemplate.postForEntity<String>("/adr/key", getPostEntity())
-        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(dsl.selectFrom(ADR_KEY).count()).isEqualTo(1)
+        assertSecureWithSuccess(isAuthorized, result, null)
+
+        if (isAuthorized == IsAuthorized.TRUE) {
+            assertThat(dsl.selectFrom(ADR_KEY).count()).isEqualTo(1)
+        }
 
         val response = testRestTemplate.exchange<String>("/adr/key/", HttpMethod.DELETE)
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(dsl.selectFrom(ADR_KEY).count()).isEqualTo(0)
+        assertSecureWithSuccess(isAuthorized, response, null)
+
+        if (isAuthorized == IsAuthorized.TRUE) {
+            assertThat(dsl.selectFrom(ADR_KEY).count()).isEqualTo(0)
+        }
     }
 
     private fun getPostEntity(): HttpEntity<LinkedMultiValueMap<String, String>> {
