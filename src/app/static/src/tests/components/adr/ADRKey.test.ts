@@ -5,14 +5,17 @@ import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import Vuex from "vuex";
 import {mockRootState} from "../../mocks";
 import {mutations} from "../../../app/store/root/mutations";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 describe("ADR Key", function () {
 
     const createStore = (key: string = "") => {
-       return new Vuex.Store({
+       const store = new Vuex.Store({
            state: mockRootState({adrKey: key}),
            mutations: mutations
         });
+       registerTranslations(store);
+       return store;
     }
 
     it("shows asterisks if key exists", () => {
@@ -48,12 +51,29 @@ describe("ADR Key", function () {
 
         await Vue.nextTick();
 
+        expect(rendered.find("button").text()).toBe("Save");
+
         rendered.find("input").setValue("new-key-456");
         rendered.find("button").trigger("click");
 
         await Vue.nextTick();
 
         expect(rendered.find("span").text()).toBe("***********");
+    });
+
+    it("cannot save empty key", async () => {
+        const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
+        expect(rendered.findAll(".input-group").length).toBe(0);
+        const links = rendered.findAll("a")
+        links.at(0).trigger("click");
+
+        await Vue.nextTick();
+
+        rendered.find("input").setValue("");
+
+        await Vue.nextTick();
+
+        expect(rendered.find("button").attributes("disabled")).toBe("disabled");
     });
 
     it("can remove key", async () => {

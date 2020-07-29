@@ -1,4 +1,5 @@
 export interface Translations {
+    add: string,
     adjustScale: string,
     age: string,
     ANC: string,
@@ -31,6 +32,7 @@ export interface Translations {
     download: string,
     downloadResults: string,
     downloadSummary: string,
+    edit: string,
     email: string,
     emailValidation: string,
     enterPassword: string,
@@ -108,6 +110,7 @@ export interface Translations {
 }
 
 const en: Translations = {
+    add: "add",
     adjustScale: "Adjust scale",
     age: "Age",
     ANC: "ANC Testing",
@@ -140,6 +143,7 @@ const en: Translations = {
     download: "Download",
     downloadResults: "Download results",
     downloadSummary: "Download coarse age group outputs",
+    edit: "edit",
     email: "Email address",
     emailValidation: "Please enter a valid email address.",
     entireDataset: "Entire dataset",

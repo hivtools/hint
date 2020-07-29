@@ -3,15 +3,23 @@
         <div class="col-8">
             <div class="d-flex">
                 <label for="key"
-                       class="font-weight-bold align-self-stretch"
-                       >ADR API Key: </label>
+                       class="font-weight-bold align-self-stretch">
+                    ADR API Key:
+                </label>
                 <div class="align-self-stretch pl-2">
                     <div v-if="!editing">
                         <span class="pr-2">{{keyText}}</span>
-                        <a href="#" v-if="!key" @click="edit">add</a>
-                        <a href="#" v-if="key" @click="edit">edit</a>
+                        <a href="#" v-if="!key"
+                           @click="edit"
+                           v-translate="'add'"></a>
+                        <a href="#" v-if="key"
+                           @click="edit"
+                           v-translate="'edit'"> </a>
                         <span v-if="key">/</span>
-                        <a href="#" v-if="key" @click="remove">remove</a>
+                        <a href="#"
+                           v-if="key"
+                           @click="remove"
+                           v-translate="'remove'"></a>
                     </div>
                     <div class="input-group"
                          style="margin-top: -11px; min-width: 390px"
@@ -22,7 +30,12 @@
                                type="text"
                                placeholder="Enter key"/>
                         <div class="input-group-append">
-                            <button class="btn btn-red" type="button" @click="save">Save</button>
+                            <button class="btn btn-red"
+                                    type="button"
+                                    v-translate="'save'"
+                                    :disabled="!editableKey"
+                                    @click="save">
+                            </button>
                         </div>
                     </div>
                 </div>
