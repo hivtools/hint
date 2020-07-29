@@ -51,6 +51,10 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
         }
     }
 
+    fun userIsGuest(): Boolean {
+        return getUserProfile().id == GUEST_USER
+    }
+
     fun getSnapshotId() :String {
         //Generate a new id if none exists
         return ( pac4jConfig.sessionStore.get(webContext, SNAPSHOT_ID) ?: generateNewSnapshotId() ) as String

@@ -18,6 +18,7 @@ import javax.sql.DataSource
 @ExtendWith(SpringExtension::class)
 @Transactional
 class TokenRepositoryTests {
+
     @Autowired
     private lateinit var sut: TokenRepository
 

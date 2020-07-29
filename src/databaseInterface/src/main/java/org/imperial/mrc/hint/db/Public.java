@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.annotation.Generated;
 
+import org.imperial.mrc.hint.db.tables.AdrKey;
 import org.imperial.mrc.hint.db.tables.File;
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
 import org.imperial.mrc.hint.db.tables.SessionFile;
@@ -37,12 +38,17 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 1759016044;
+    private static final long serialVersionUID = 1183024912;
 
     /**
      * The reference instance of <code>public</code>
      */
     public static final Public PUBLIC = new Public();
+
+    /**
+     * The table <code>public.adr_key</code>.
+     */
+    public final AdrKey ADR_KEY = org.imperial.mrc.hint.db.tables.AdrKey.ADR_KEY;
 
     /**
      * The table <code>public.file</code>.
@@ -121,6 +127,7 @@ public class Public extends SchemaImpl {
 
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
+            AdrKey.ADR_KEY,
             File.FILE,
             OnetimeToken.ONETIME_TOKEN,
             SessionFile.SESSION_FILE,

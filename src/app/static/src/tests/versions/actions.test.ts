@@ -45,9 +45,8 @@ describe("Versions actions", () => {
             expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
 
             const posted = mockAxios.history.post[0].data;
-            expect(JSON.parse(posted)).toStrictEqual({name: "newVersion"});
-
-            expect(commit.mock.calls[1][0]).toStrictEqual({type: RootMutation.ResetVersion, payload: "TestVersion"});
+            expect(posted).toEqual("name=newVersion");
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: RootMutation.SetVersion, payload: "TestVersion"});
             expect(commit.mock.calls[1][1]).toStrictEqual({root: true});
             done();
         });

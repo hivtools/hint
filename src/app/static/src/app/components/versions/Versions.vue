@@ -1,12 +1,12 @@
 <template>
     <div>
-        <div v-if="!loading" id="versions-content" >
-            <div class="versions-header">
+        <div v-if="!loading" id="versions-content" class="row">
+            <div id="versions-header" class="lead col-12">
                 <span v-translate="'versionsHeaderCreate'"></span>
                 <span v-if="currentVersion">
                     <span v-translate="'or'"></span>
                     <a v-translate="'versionsHeaderReturn'"
-                       href="#" @click="setManageVersions(false)"></a> ({{currentVersion.name}})
+                       href="#" @click="handleCurrentVersionClick"></a> ({{currentVersion.name}})
                 </span>
             </div>
             <div class="my-3 col-6 clearfix">
@@ -34,7 +34,8 @@
     import {Error} from "../../generated";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import {Version} from "../../types";
+    import {PayloadWithType, Version} from "../../types";
+
     import {VersionsMutations} from "../../store/versions/mutations";
 
     const namespace = "versions";
@@ -51,7 +52,13 @@
         loading: boolean
     }
 
-    export default Vue.extend<Data, {}, Computed, {}>({
+    interface Methods {
+        handleCurrentVersionClick: (e: Event) => void,
+        createVersion: (name: string) => void,
+        setManageVersions: (payload: PayloadWithType<boolean>) => void
+    }
+
+    export default Vue.extend<Data, Methods, Computed, {}>({
         data: function(){
             return {
                 newVersionName: ""
@@ -69,6 +76,10 @@
             }
         },
         methods: {
+            handleCurrentVersionClick: function(e: Event) {
+                e.preventDefault();
+                this.setManageVersions({type:  VersionsMutations.SetManageVersions, payload: false});
+            },
             createVersion: mapActionByName(namespace, "createVersion"),
             setManageVersions: mapMutationByName(namespace, VersionsMutations.SetManageVersions)
         },

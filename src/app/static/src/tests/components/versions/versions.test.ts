@@ -39,7 +39,7 @@ describe("Versions component", () => {
         expect(wrapper.find(LoadingSpinner).exists()).toBe(false);
         expect(wrapper.find("#versions-content").exists()).toBe(true);
 
-        expect(wrapper.find(".versions-header").text()).toBe("Create a new version");
+        expect(wrapper.find("#versions-header").text()).toBe("Create a new version");
         expect(wrapper.find("input").attributes()["placeholder"]).toBe("Version name");
         expect(wrapper.find("button").text()).toBe("Create version");
         expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
@@ -49,8 +49,8 @@ describe("Versions component", () => {
     it("renders as expected with current version", () => {
         const wrapper = createSut({currentVersion});
 
-        expect(wrapper.find(".versions-header").text()).toBe("Create a new version or return to current version (existingVersion)");
-        expect(wrapper.find(".versions-header a").exists()).toBe(true);
+        expect(wrapper.find("#versions-header").text()).toBe("Create a new version or return to current version (existingVersion)");
+        expect(wrapper.find("#versions-header a").exists()).toBe(true);
     });
 
     it("enables create version button when version name is entered", () => {
@@ -79,10 +79,10 @@ describe("Versions component", () => {
         const mockManageVersions = jest.fn();
         const wrapper = createSut({currentVersion}, jest.fn(), mockManageVersions);
 
-        wrapper.find(".versions-header a").trigger("click");
+        wrapper.find("#versions-header a").trigger("click");
 
         expect(mockManageVersions.mock.calls.length).toBe(1);
-        expect(mockManageVersions.mock.calls[0][1]).toBe(false);
+        expect(mockManageVersions.mock.calls[0][1]).toStrictEqual( {"payload": false, "type": "SetManageVersions"});
     });
 
     it("displays spinner if loading", () => {
@@ -90,4 +90,5 @@ describe("Versions component", () => {
         expect(wrapper.find(LoadingSpinner).exists()).toBe(true);
         expect(wrapper.find("#versions-content").exists()).toBe(false);
     });
+
 });

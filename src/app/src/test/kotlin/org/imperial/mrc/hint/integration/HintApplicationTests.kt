@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.integration
 
+import org.apache.http.impl.client.HttpClients
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.api.Test
@@ -9,6 +10,7 @@ import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.*
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.util.LinkedMultiValueMap
 import java.io.File
 
@@ -71,6 +73,7 @@ class HintApplicationTests : SecureIntegrationTests() {
 
     @Test
     fun `static responses are gzipped`() {
+        disableAutomaticDecompression()
         val headers = HttpHeaders()
         headers.set("Accept-Encoding", "gzip")
         val entity = HttpEntity<String>(headers)
@@ -83,10 +86,19 @@ class HintApplicationTests : SecureIntegrationTests() {
     @Test
     fun `api responses are gzipped`() {
         authorize()
+        disableAutomaticDecompression()
         testRestTemplate.getForEntity<String>("/")
         val postEntity = getTestEntity("malawi.geojson", acceptGzip = true)
         val response = testRestTemplate.exchange<String>("/baseline/shape/", HttpMethod.POST, postEntity)
         assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
+    }
+
+    private fun disableAutomaticDecompression() {
+        // the apache http client decompresses the response and removes the content encoding header by default
+        val client = HttpClients.custom()
+                .disableContentCompression()
+                .build()
+        testRestTemplate.restTemplate.requestFactory = HttpComponentsClientHttpRequestFactory(client)
     }
 
 }

@@ -5,14 +5,14 @@
                 <div class="navbar-header">
                     {{title}}
                 </div>
-                    <a v-if="!isGuest"
-                       id="versions-link"
-                       href="#"
-                       v-translate="'versions'"
-                       style="flex:none"
-                       class="ml-2"
-                       @click="manageVersions({payload: true})"></a>
-                    <file-menu :title="title"></file-menu>
+                <a v-if="!isGuest"
+                   id="versions-link"
+                   href="#"
+                   v-translate="'versions'"
+                   style="flex:none"
+                   class="ml-2"
+                   @click="handleVersionsClick"></a>
+                <file-menu :title="title"></file-menu>
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-light">
                     <span v-translate="'loggedInAs'"></span> {{user}}
                 </span>
@@ -50,6 +50,7 @@
     import {mapMutationByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {VersionsMutations} from "../../store/versions/mutations";
+    import {PayloadWithType} from "../../types";
 
     interface Props {
         title: string,
@@ -62,7 +63,12 @@
         isGuest: boolean
     }
 
-    export default Vue.extend<{}, {}, Computed, Props>({
+    interface Methods {
+        handleVersionsClick: (e: Event) => void,
+        setManageVersions: (manageVersions: PayloadWithType<boolean>) => void
+    }
+
+    export default Vue.extend<{}, Methods, Computed, Props>({
         computed: {
             helpFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {
@@ -85,7 +91,11 @@
             }
         },
         methods: {
-            manageVersions: mapMutationByName("versions", VersionsMutations.SetManageVersions),
+            handleVersionsClick: function(e: Event) {
+                e.preventDefault();
+                this.setManageVersions({type:  VersionsMutations.SetManageVersions, payload: true});
+            },
+            setManageVersions: mapMutationByName("versions", VersionsMutations.SetManageVersions),
         },
         props: {
             title: String,

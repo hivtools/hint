@@ -6,6 +6,7 @@ package org.imperial.mrc.hint.db;
 
 import javax.annotation.Generated;
 
+import org.imperial.mrc.hint.db.tables.AdrKey;
 import org.imperial.mrc.hint.db.tables.File;
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
 import org.imperial.mrc.hint.db.tables.SessionFile;
@@ -14,6 +15,7 @@ import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
 import org.imperial.mrc.hint.db.tables.Version;
 import org.imperial.mrc.hint.db.tables.VersionSnapshot;
+import org.imperial.mrc.hint.db.tables.records.AdrKeyRecord;
 import org.imperial.mrc.hint.db.tables.records.FileRecord;
 import org.imperial.mrc.hint.db.tables.records.OnetimeTokenRecord;
 import org.imperial.mrc.hint.db.tables.records.SessionFileRecord;
@@ -52,6 +54,7 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<AdrKeyRecord> ADR_KEY_PKEY = UniqueKeys0.ADR_KEY_PKEY;
     public static final UniqueKey<FileRecord> FILE_PKEY = UniqueKeys0.FILE_PKEY;
     public static final UniqueKey<OnetimeTokenRecord> ONETIME_TOKEN_PKEY = UniqueKeys0.ONETIME_TOKEN_PKEY;
     public static final UniqueKey<SessionFileRecord> SESSION_FILE_PKEY = UniqueKeys0.SESSION_FILE_PKEY;
@@ -65,6 +68,7 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final ForeignKey<AdrKeyRecord, UsersRecord> ADR_KEY__ADR_KEY_USER_ID_FKEY = ForeignKeys0.ADR_KEY__ADR_KEY_USER_ID_FKEY;
     public static final ForeignKey<SessionFileRecord, UserSessionRecord> SESSION_FILE__SESSION_FILE_SESSION_FKEY = ForeignKeys0.SESSION_FILE__SESSION_FILE_SESSION_FKEY;
     public static final ForeignKey<SessionFileRecord, FileRecord> SESSION_FILE__SESSION_FILE_HASH_FKEY = ForeignKeys0.SESSION_FILE__SESSION_FILE_HASH_FKEY;
     public static final ForeignKey<SnapshotFileRecord, VersionSnapshotRecord> SNAPSHOT_FILE__SNAPSHOT_FILE_SNAPSHOT_FKEY = ForeignKeys0.SNAPSHOT_FILE__SNAPSHOT_FILE_SNAPSHOT_FKEY;
@@ -82,6 +86,7 @@ public class Keys {
     }
 
     private static class UniqueKeys0 {
+        public static final UniqueKey<AdrKeyRecord> ADR_KEY_PKEY = Internal.createUniqueKey(AdrKey.ADR_KEY, "adr_key_pkey", AdrKey.ADR_KEY.API_KEY);
         public static final UniqueKey<FileRecord> FILE_PKEY = Internal.createUniqueKey(File.FILE, "file_pkey", File.FILE.HASH);
         public static final UniqueKey<OnetimeTokenRecord> ONETIME_TOKEN_PKEY = Internal.createUniqueKey(OnetimeToken.ONETIME_TOKEN, "onetime_token_pkey", OnetimeToken.ONETIME_TOKEN.TOKEN);
         public static final UniqueKey<SessionFileRecord> SESSION_FILE_PKEY = Internal.createUniqueKey(SessionFile.SESSION_FILE, "session_file_pkey", SessionFile.SESSION_FILE.SESSION, SessionFile.SESSION_FILE.HASH, SessionFile.SESSION_FILE.TYPE);
@@ -93,6 +98,7 @@ public class Keys {
     }
 
     private static class ForeignKeys0 {
+        public static final ForeignKey<AdrKeyRecord, UsersRecord> ADR_KEY__ADR_KEY_USER_ID_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.USERS_PKEY, AdrKey.ADR_KEY, "adr_key__adr_key_user_id_fkey", AdrKey.ADR_KEY.USER_ID);
         public static final ForeignKey<SessionFileRecord, UserSessionRecord> SESSION_FILE__SESSION_FILE_SESSION_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.USER_SESSION_PKEY, SessionFile.SESSION_FILE, "session_file__session_file_session_fkey", SessionFile.SESSION_FILE.SESSION);
         public static final ForeignKey<SessionFileRecord, FileRecord> SESSION_FILE__SESSION_FILE_HASH_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.FILE_PKEY, SessionFile.SESSION_FILE, "session_file__session_file_hash_fkey", SessionFile.SESSION_FILE.HASH);
         public static final ForeignKey<SnapshotFileRecord, VersionSnapshotRecord> SNAPSHOT_FILE__SNAPSHOT_FILE_SNAPSHOT_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.VERSION_SNAPSHOT_PKEY, SnapshotFile.SNAPSHOT_FILE, "snapshot_file__snapshot_file_snapshot_fkey", SnapshotFile.SNAPSHOT_FILE.SNAPSHOT);

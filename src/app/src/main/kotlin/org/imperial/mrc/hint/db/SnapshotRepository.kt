@@ -21,7 +21,7 @@ interface SnapshotRepository {
 
     fun saveSnapshotFile(snapshotId: String, type: FileType, hash: String, fileName: String)
     fun removeSnapshotFile(snapshotId: String, type: FileType)
-    fun getSnapshotFile(ssnapshotId: String, type: FileType): SnapshotFile?
+    fun getSnapshotFile(snapshotId: String, type: FileType): SnapshotFile?
     fun getHashesForSnapshot(snapshotId: String): Map<String, String>
     fun getSnapshotFiles(snapshotId: String): Map<String, SnapshotFile>
     fun setFilesForSnapshot(snapshotId: String, files: Map<String, SnapshotFile?>)

@@ -6,6 +6,7 @@ package org.imperial.mrc.hint.db;
 
 import javax.annotation.Generated;
 
+import org.imperial.mrc.hint.db.tables.AdrKey;
 import org.imperial.mrc.hint.db.tables.File;
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
 import org.imperial.mrc.hint.db.tables.SessionFile;
@@ -36,6 +37,7 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index ADR_KEY_PKEY = Indexes0.ADR_KEY_PKEY;
     public static final Index FILE_PKEY = Indexes0.FILE_PKEY;
     public static final Index ONETIME_TOKEN_PKEY = Indexes0.ONETIME_TOKEN_PKEY;
     public static final Index SESSION_FILE_PKEY = Indexes0.SESSION_FILE_PKEY;
@@ -50,6 +52,7 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
+        public static Index ADR_KEY_PKEY = Internal.createIndex("adr_key_pkey", AdrKey.ADR_KEY, new OrderField[] { AdrKey.ADR_KEY.API_KEY }, true);
         public static Index FILE_PKEY = Internal.createIndex("file_pkey", File.FILE, new OrderField[] { File.FILE.HASH }, true);
         public static Index ONETIME_TOKEN_PKEY = Internal.createIndex("onetime_token_pkey", OnetimeToken.ONETIME_TOKEN, new OrderField[] { OnetimeToken.ONETIME_TOKEN.TOKEN }, true);
         public static Index SESSION_FILE_PKEY = Internal.createIndex("session_file_pkey", SessionFile.SESSION_FILE, new OrderField[] { SessionFile.SESSION_FILE.SESSION, SessionFile.SESSION_FILE.HASH, SessionFile.SESSION_FILE.TYPE }, true);
