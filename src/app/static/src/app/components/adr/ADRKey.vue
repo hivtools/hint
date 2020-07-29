@@ -38,6 +38,8 @@
                             </button>
                         </div>
                     </div>
+                </div>
+                <div class="align-self-stretch pl-2">
                     <a href="#"
                        v-if="editing"
                        @click="cancel"
