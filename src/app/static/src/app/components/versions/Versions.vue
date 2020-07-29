@@ -8,12 +8,15 @@
                     v-translate="'createVersion'">
             </button>
         </div>
+        <div>
+            {{JSON.stringify(previousVersions)}}
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapMutationByName} from "../../utils";
+    import {mapActionByName, mapMutationByName} from "../../utils";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {VersionsMutations} from "../../store/versions/mutations";
@@ -24,16 +27,26 @@
         newVersionName: string
     }
 
-    export default Vue.extend<Data, {}, {}, {}>({
+    interface Methods {
+        createFakeVersion: (name: string) => void,
+        getVersions: () => void
+    }
+
+    export default Vue.extend<Data, Methods, {}, {}>({
         data: function(){
             return {
-                newVersionName: ""
+                newVersionName: "",
+                previousVersions: []
             }
         },
         computed: {
         },
         methods: {
-            createFakeVersion: mapMutationByName(namespace, VersionsMutations.SetFakeCurrentVersion)
+            createFakeVersion: mapMutationByName(namespace, VersionsMutations.SetFakeCurrentVersion),
+            getVersions: mapActionByName(namespace, "getVersions")
+        },
+        mounted() {
+            this.getVersions();
         },
         components: {
             ErrorAlert,
