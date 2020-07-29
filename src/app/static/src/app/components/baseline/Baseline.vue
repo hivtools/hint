@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-sm-6 col-md-8">
                 <form>
-                    <new-file-upload label="PJNZ"
+                    <manage-file label="PJNZ"
                                      :valid="pjnz.valid"
                                      :error="pjnz.error || plottingMetadataError"
                                      :upload="uploadPJNZ"
@@ -12,7 +12,7 @@
                                      accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
                                      name="pjnz">
                         <label v-if="country"><strong v-translate="'country'"></strong>: {{country}}</label>
-                    </new-file-upload>
+                    </manage-file>
                     <file-upload label="shape"
                                  :valid="shape.valid"
                                  :error="shape.error"
@@ -53,7 +53,7 @@
     import {MetadataState} from "../../store/metadata/metadata";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import NewFileUpload from "../files/FileSelect.vue";
+    import ManageFile from "../files/ManageFile.vue";
 
     const namespace: string = 'baseline';
 
@@ -99,7 +99,7 @@
             FileUpload,
             ErrorAlert,
             LoadingSpinner,
-            NewFileUpload
+            ManageFile
         }
     })
 </script>

@@ -1,20 +1,29 @@
 <template>
-    <a class="dropdown-item" href="#" v-on:mousedown="$refs[name].click()">
-        <input type="file"
-               style="display:none"
-               :ref="name"
-               :id="name"
-               :accept="accept"
-               v-on:change="handleFileSelect"/>
-        This computer
-    </a>
+    <div>
+        <b-dropdown text="Select file from" variant="red">
+            <a class="dropdown-item" href="#" v-on:mousedown="$refs[name].click()">
+                <input type="file"
+                       style="display:none"
+                       :ref="name"
+                       :id="name"
+                       :accept="accept"
+                       v-on:change="handleFileSelect"/>
+                This computer
+            </a>
+            <adr-select></adr-select>
+        </b-dropdown>
+        <reset-confirmation :continue-editing="uploadSelectedFile"
+                            :cancel-editing="cancelEdit"
+                            :open="showUploadConfirmation"></reset-confirmation>
+    </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {BDropdownItem} from "bootstrap-vue";
+    import {BDropdown} from "bootstrap-vue";
     import {mapGetterByName} from "../../utils";
     import ResetConfirmation from "../ResetConfirmation.vue";
+    import AdrSelect from "./ADRSelect.vue";
 
     interface Methods {
         handleFileSelect: () => void
@@ -48,8 +57,9 @@
             }
         },
         components: {
-            BDropdownItem,
-            ResetConfirmation
+            BDropdown,
+            ResetConfirmation,
+            AdrSelect
         },
         computed: {
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation")

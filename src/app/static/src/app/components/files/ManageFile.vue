@@ -3,23 +3,20 @@
         <label class="font-weight-bold" v-translate="label"></label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
         <slot></slot>
-        <label v-if="existingFileName"><strong v-translate="'file'"></strong>: {{existingFileName}}</label>
+        <label v-if="existingFileName">
+            <strong v-translate="'file'"></strong>: {{existingFileName}}
+        </label>
         <a v-if="existingFileName"
            class="small float-right"
            href="#"
            v-on:click="handleFileDelete"
            v-translate="'remove'"></a>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
+        <file-upload :name="name"
+                     :accept="accept"
+                     :upload="upload"
+                     @uploading="handleUploading"></file-upload>
         <error-alert v-if="hasError" :error="error"></error-alert>
-        <div>
-            <b-dropdown text="Select file from" variant="red">
-                <file-upload :accept="accept"
-                             :name="name"
-                             :upload="upload"
-                             @uploading="handleUploading"></file-upload>
-                <adr-select></adr-select>
-            </b-dropdown>
-        </div>
         <reset-confirmation :continue-editing="deleteSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showDeleteConfirmation"></reset-confirmation>
@@ -28,7 +25,6 @@
 <script lang="ts">
     import Vue from "vue";
     import {BDropdown} from "bootstrap-vue";
-    import AdrSelect from "./ADRSelect.vue";
     import FileUpload from "./FileUpload.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
@@ -92,7 +88,6 @@
         components: {
             BDropdown,
             FileUpload,
-            AdrSelect,
             LoadingSpinner,
             Tick,
             ErrorAlert,
