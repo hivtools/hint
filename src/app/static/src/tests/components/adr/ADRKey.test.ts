@@ -6,8 +6,6 @@ import Vuex from "vuex";
 import {mockRootState} from "../../mocks";
 import {mutations, RootMutation} from "../../../app/store/root/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {Language} from "../../../app/store/translations/locales";
-import {LanguageMutation} from "../../../app/store/language/mutations";
 
 describe("ADR Key", function () {
 
@@ -19,6 +17,11 @@ describe("ADR Key", function () {
        registerTranslations(store);
        return store;
     }
+
+    it("shows title", () => {
+        const rendered = shallowMount(ADRKey, {store: createStore()});
+        expect(rendered.find("label").text()).toBe("ADR API Key");
+    });
 
     it("shows asterisks if key exists", () => {
         const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});

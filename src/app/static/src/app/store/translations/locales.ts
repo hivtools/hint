@@ -1,6 +1,7 @@
 export interface Translations {
     add: string,
     adjustScale: string,
+    adrKey: string,
     age: string,
     ANC: string,
     area: string,
@@ -113,6 +114,7 @@ export interface Translations {
 const en: Translations = {
     add: "add",
     adjustScale: "Adjust scale",
+    adrKey: "ADR API Key",
     age: "Age",
     ANC: "ANC Testing",
     area: "Area",

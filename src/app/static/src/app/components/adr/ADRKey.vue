@@ -3,8 +3,8 @@
         <div class="col-8">
             <div class="d-flex">
                 <label for="key"
-                       class="font-weight-bold align-self-stretch">
-                    ADR API Key:
+                       class="font-weight-bold align-self-stretch"
+                       v-translate="'adrKey'">
                 </label>
                 <div class="align-self-stretch pl-2">
                     <div v-if="!editing">
