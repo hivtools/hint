@@ -1,5 +1,5 @@
 import Vue from "vue";
-import {shallowMount, Slots} from '@vue/test-utils';
+import {createWrapper, shallowMount, Slots} from '@vue/test-utils';
 
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import {mockFile} from "../../mocks";
@@ -51,6 +51,15 @@ describe("File upload component", () => {
         expect(input.attributes().accept).toBe("csv");
         expect(input.attributes().id).toBe("test-name");
         expect(wrapper.find({ref: "test-name"})).toStrictEqual(input);
+    });
+
+    it("trigger click on hidden input when dropdown link is clicked", () => {
+        const wrapper = createSut({
+            name: "test-name"
+        });
+        wrapper.find(".dropdown-item").trigger("mousedown");
+
+        expect(wrapper.emitted()['input-opened'].length).toBe(1);
     });
 
     it("calls upload when file is selected", (done) => {

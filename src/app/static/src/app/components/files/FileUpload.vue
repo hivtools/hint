@@ -7,6 +7,7 @@
                        :ref="name"
                        :id="name"
                        :accept="accept"
+                       @click="$emit('input-opened')"
                        v-on:change="handleFileSelect"/>
                 This computer
             </a>
