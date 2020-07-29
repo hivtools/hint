@@ -38,6 +38,10 @@
                             </button>
                         </div>
                     </div>
+                    <a href="#"
+                       v-if="editing"
+                       @click="cancel"
+                       v-translate="'cancel'"></a>
                 </div>
             </div>
         </div>
@@ -45,10 +49,32 @@
 </template>
 <script lang="ts">
     import Vue from "vue";
-    import {mapMutationByName, mapStatePropByName} from "../../utils";
+    import {mapMutationByName, mapStateProp} from "../../utils";
     import {RootMutation} from "../../store/root/mutations";
+    import {RootState} from "../../root";
+    import {Language} from "../../store/translations/locales";
+    import i18next from "i18next";
 
-    export default Vue.extend({
+    interface Data {
+        editableKey: string | null
+        editing: boolean
+    }
+
+    interface Methods {
+        updateADRKey: (key: string | null) => void
+        edit: (e: Event) => void
+        remove: (e: Event) => void
+        save: (e: Event) => void
+        cancel: (e: Event) => void
+    }
+
+    interface Computed {
+        key: string | null
+        currentLanguage: Language
+        keyText: string
+    }
+
+    export default Vue.extend<Data, Methods, Computed, {}>({
         data() {
             return {
                 editableKey: "",
@@ -56,7 +82,10 @@
             }
         },
         computed: {
-            key: mapStatePropByName<string>(null, "adrKey"),
+            key: mapStateProp<RootState, string | null>(null,
+                (state: RootState) => state.adrKey),
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language),
             keyText() {
                 if (this.key) {
                     let str = ""
@@ -67,7 +96,7 @@
                     }
                     return str;
                 } else {
-                    return "none provided"
+                    return i18next.t("noneProvided", this.currentLanguage)
                 }
             }
         },
@@ -85,6 +114,10 @@
             save(e: Event) {
                 e.preventDefault();
                 this.updateADRKey(this.editableKey);
+                this.editing = false;
+            },
+            cancel(e: Event) {
+                e.preventDefault();
                 this.editing = false;
             }
         }

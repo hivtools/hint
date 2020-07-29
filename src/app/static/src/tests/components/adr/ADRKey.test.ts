@@ -4,8 +4,10 @@ import {shallowMount} from "@vue/test-utils";
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import Vuex from "vuex";
 import {mockRootState} from "../../mocks";
-import {mutations} from "../../../app/store/root/mutations";
+import {mutations, RootMutation} from "../../../app/store/root/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {Language} from "../../../app/store/translations/locales";
+import {LanguageMutation} from "../../../app/store/language/mutations";
 
 describe("ADR Key", function () {
 
@@ -74,6 +76,24 @@ describe("ADR Key", function () {
         await Vue.nextTick();
 
         expect(rendered.find("button").attributes("disabled")).toBe("disabled");
+    });
+
+    it("can cancel editing", async () => {
+        const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
+        expect(rendered.findAll(".input-group").length).toBe(0);
+        const links = rendered.findAll("a")
+        links.at(0).trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(".input-group").length).toBe(1);
+
+        expect(rendered.find("a").text()).toBe("cancel");
+        rendered.find("a").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(".input-group").length).toBe(0);
     });
 
     it("can remove key", async () => {
