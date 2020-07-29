@@ -76,7 +76,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             .delete("/adr/key/")
             .then((response) => {
                 if (response) {
-                   context.commit(RootMutation.UpdateADRKey, {payload: null})
+                   context.commit({type: RootMutation.UpdateADRKey, payload: null})
                 }
             });
     }
