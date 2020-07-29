@@ -14,7 +14,8 @@
         </div>
         <div class="row mt-2">
             <div v-if="selectedTab==='map'" id="choropleth-container" class="col-md-12">
-                <choropleth :chartdata="chartdata"
+                <choropleth 
+                            :chartdata="chartdata"
                             :filters="choroplethFilters"
                             :features="features"
                             :feature-levels="featureLevels"
@@ -25,7 +26,7 @@
                             :colour-scales="colourScales"
                             @update="updateOutputChoroplethSelections({payload: $event})"
                             @updateColourScales="updateOutputColourScales({payload: $event})"></choropleth>
-                <table-view :style="styleObject"
+                <table-view class="d-flex justify-content-center"
                            :tabledata="chartdata"
                            :area-filter-id="areaFilterId"
                            :filters="choroplethFilters"
@@ -43,7 +44,8 @@
                         :indicators="barchartIndicators"
                         :selections="barchartSelections"
                         @update="updateBarchartSelections({payload: $event})" ></bar-chart-with-filters>
-                <table-view :style="styleObject" :tabledata="chartdata"
+                <table-view class="d-flex justify-content-center"
+                        :tabledata="chartdata"
                         :area-filter-id="areaFilterId"
                         :filters="barchartFilters"
                         :indicators="filterBarchartIndicators"
@@ -61,7 +63,8 @@
                              :colour-scales="colourScales"
                              @update="updateBubblePlotSelections({payload: $event})"
                              @updateColourScales="updateOutputColourScales({payload: $event})"></bubble-plot>
-                <table-view :style="styleObject" :tabledata="chartdata"
+                <table-view class="d-flex justify-content-center"
+                            :tabledata="chartdata"
                             :area-filter-id="areaFilterId"
                             :filters="bubblePlotFilters"
                             :indicators="filterBubblePlotIndicators"
@@ -100,6 +103,7 @@
     import {RootState} from "../../root";
     import {LevelLabel} from "../../types";
     import {mapState} from "vuex";
+    import {ChoroplethIndicatorMetadata} from "../../generated";
 
     const namespace: string = 'filteredData';
 
@@ -129,12 +133,11 @@
         currentLanguage: Language,
         filterConfig: FilterConfig,
         colourScales: ColourScaleSelections,
-        choroplethIndicators: any[],
-        bubblePlotIndicators: any[],
-        filterIndicators: any[],
-        filterChoroplethIndicators: any[],
-        filterBarchartIndicators: any[],
-        filterBubblePlotIndicators: any[],
+        choroplethIndicators: ChoroplethIndicatorMetadata[],
+        bubblePlotIndicators: ChoroplethIndicatorMetadata[],
+        filterChoroplethIndicators: ChoroplethIndicatorMetadata[],
+        filterBarchartIndicators: BarchartIndicator[],
+        filterBubblePlotIndicators: ChoroplethIndicatorMetadata[],
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -153,19 +156,10 @@
 
             return {
                 tabs: tabs,
-                areaFilterId: "area",
-                styleObject: {
-                    marginLeft: "290px"
-                }
+                areaFilterId: "area"
             }
         },
         computed: {
-            // filterIndicators(indicators: any[], selections: any, id: string){
-            //     return indicators.filter((val: any) => val.indicator === selections.id)
-            // },
-            // filterChoroplethIndicators(){
-            //     return this.filterIndicators(this.choroplethIndicators, this.choroplethSelections, 'indicatorId')
-            // },
             filterChoroplethIndicators(){
                 return this.choroplethIndicators.filter((val: any) => val.indicator === this.choroplethSelections.indicatorId)
             },

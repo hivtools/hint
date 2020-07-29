@@ -294,7 +294,5 @@ describe("ModelOutput component", () => {
         const table = wrapper.find("table-view-stub");
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST BAR FILTERS"]);
-        // expect(table.props().selections).toStrictEqual({test: "TEST BARCHART SELECTIONS"});
-        // expect(table.props().indicators).toStrictEqual(["TEST BARCHART INDICATORS"]);
     });
 });
