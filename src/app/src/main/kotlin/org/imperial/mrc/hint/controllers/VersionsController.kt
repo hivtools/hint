@@ -2,14 +2,10 @@ package org.imperial.mrc.hint.controllers
 
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.VersionRepository
-<<<<<<< HEAD
-import org.imperial.mrc.hint.exceptions.VersionException
 import org.imperial.mrc.hint.models.*
-=======
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.Version
 import org.imperial.mrc.hint.models.asResponseEntity
->>>>>>> master
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -20,7 +16,7 @@ class VersionsController(private val session: Session,
                          private val snapshotRepository: SnapshotRepository,
                          private val versionRepository: VersionRepository)
 {
-   @PostMapping("/version/")
+    @PostMapping("/version/")
     @ResponseBody
     fun newVersion(@RequestParam("name") name: String): ResponseEntity<String>
     {

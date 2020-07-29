@@ -43,7 +43,7 @@ class VersionTests : SecureIntegrationTests() {
     @Test
     fun `can update snapshot state`()
     {
-        val createResult = getCreateVersionResult()
+        val createResult = createVersion()
         val data = getResponseData(createResult)
         val versionId = data["id"].asInt()
         val snapshots = data["snapshots"] as ArrayNode
