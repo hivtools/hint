@@ -7,6 +7,7 @@ import java.net.URL
 import java.util.*
 
 interface AppProperties {
+    val adrUrl: String
     val apiUrl: String
     val applicationTitle: String
     val applicationUrl: String
@@ -29,6 +30,7 @@ class HintProperties: Properties()
 
 @Component
 class ConfiguredAppProperties(private val props: HintProperties = properties): AppProperties {
+    override val adrUrl = propString("adr_url")
     override val apiUrl = propString("hintr_url")
     override val applicationTitle = propString("application_title")
     override val applicationUrl = propString("application_url")

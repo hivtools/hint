@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint
 
 import org.pac4j.core.config.Config
+import org.pac4j.springframework.web.SecurityInterceptor
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Configuration
@@ -25,6 +26,12 @@ class MvcConfig(val config: Config) : WebMvcConfigurer {
                 .resourceChain(true)
                 .addResolver(EncodedResourceResolver())
                 .addResolver(PathResourceResolver())
+    }
+
+    override fun addInterceptors(registry: InterceptorRegistry) {
+        //Ajax endpoints only available to logged in users
+        registry.addInterceptor(SecurityInterceptor(config, ""))
+                .addPathPatterns("/adr/**")
     }
 
     override fun configureAsyncSupport(configurer: AsyncSupportConfigurer) {

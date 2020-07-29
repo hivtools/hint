@@ -1,7 +1,10 @@
 package org.imperial.mrc.hint.unit
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.kittinunf.fuel.core.*
+import com.github.kittinunf.fuel.core.Body
+import com.github.kittinunf.fuel.core.Headers
+import com.github.kittinunf.fuel.core.Request
+import com.github.kittinunf.fuel.core.Response
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -18,25 +21,28 @@ class ExtensionTests {
     @Test
     fun `response status code gets translated to HttpStatus`() {
 
-        var res = Response(URL("http://whatever"), 200)
+        val mockBody = mock<Body> {
+            on { it.asString(any()) } doReturn "{\"status\": \"success\"}"
+        }
+        var res = Response(URL("http://whatever"), 200, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.OK)
 
-        res = Response(URL("http://whatever"), 201)
+        res = Response(URL("http://whatever"), 201, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.CREATED)
 
-        res = Response(URL("http://whatever"), 400)
+        res = Response(URL("http://whatever"), 400, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
 
-        res = Response(URL("http://whatever"), 401)
+        res = Response(URL("http://whatever"), 401, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
 
-        res = Response(URL("http://whatever"), 403)
+        res = Response(URL("http://whatever"), 403, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.FORBIDDEN)
 
-        res = Response(URL("http://whatever"), 404)
+        res = Response(URL("http://whatever"), 404, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.NOT_FOUND)
 
-        res = Response(URL("http://whatever"), 500)
+        res = Response(URL("http://whatever"), 500, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
 
     }
@@ -53,7 +59,7 @@ class ExtensionTests {
     @Test
     fun `error is returned when response is not valid json`() {
         val mockBody = mock<Body> {
-            on {it.asString(any())} doReturn "Bad response"
+            on { it.asString(any()) } doReturn "Bad response"
         }
         val res = Response(URL("http://whatever"), 500, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -65,9 +71,9 @@ class ExtensionTests {
     @Test
     fun `error is returned when response json does not conform to schema`() {
         val mockBody = mock<Body> {
-            on {it.asString(any())} doReturn "{\"wrong\": \"schema\"}"
+            on { it.asString(any()) } doReturn "{\"wrong\": \"schema\"}"
         }
-        val res = Response(URL("http://whatever"), 500, body = mockBody)
+        val res = Response(URL("http://whatever"), 200, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         val body = ObjectMapper().readTree(res.asResponseEntity().body)
         val errorDetail = body["errors"].first()["detail"].textValue()
@@ -82,15 +88,15 @@ class ExtensionTests {
 
         val response = Response(URL("http://test"), 200, "test msg", headers)
 
-        val downloadRequest = mock<Request>{
-            on {url} doReturn URL("http://test")
+        val downloadRequest = mock<Request> {
+            on { url } doReturn URL("http://test")
         }
 
-        val mockHeadRequest = mock<Request>{
-            on {response()} doReturn Triple(mock(), response, mock())
+        val mockHeadRequest = mock<Request> {
+            on { response() } doReturn Triple(mock(), response, mock())
         }
 
-        val result = downloadRequest.getStreamingResponseEntity({_,_ -> mockHeadRequest})
+        val result = downloadRequest.getStreamingResponseEntity({ _, _ -> mockHeadRequest })
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.headers["test-header"]?.first()).isEqualTo("test-value")

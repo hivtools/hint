@@ -32,7 +32,7 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
 
     private fun expectedErrorResponse(errorMessage: String): String {
         return "{\"data\":{},\"status\":\"failure\"," +
-                "\"errors\":[{\"error\":\"OTHER_ERROR\",\"detail\":\"$errorMessage\"}]}"
+                "\"errors\":[{\"detail\":\"$errorMessage\",\"error\":\"OTHER_ERROR\"}]}"
     }
 
     @AfterEach

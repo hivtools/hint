@@ -58,7 +58,7 @@ describe("Survey and programme component", () => {
                 metadata: {
                     namespaced: true,
                     getters: {
-                        sapIndicatorsMetadata: () => {return "TEST INDICATORS"}
+                        sapIndicatorsMetadata: () => {return ["TEST INDICATORS"]}
                     }
                 }
             }
@@ -113,7 +113,7 @@ describe("Survey and programme component", () => {
         });
         expect(choro.props().features).toBe("TEST FEATURES");
         expect(choro.props().featureLevels).toBe("TEST LEVEL LABELS");
-        expect(choro.props().indicators).toBe("TEST INDICATORS");
+        expect(choro.props().indicators).toStrictEqual(["TEST INDICATORS"]);
         expect(choro.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
 
     });
@@ -216,6 +216,38 @@ describe("Survey and programme component", () => {
             });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
+    });
+
+    it("renders table as expected", () => {
+        const store = createStore({
+            selectedDataType: DataType.Survey,
+            survey: {
+                "data": "TEST DATA",
+                "filters": {
+                    "year": "TEST YEAR FILTERS"
+                }
+            } as any,});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const table = wrapper.find("table-view-stub");
+        expect(table.props().areaFilterId).toBe("area");
+        expect(table.props().tabledata).toBe("TEST DATA");
+        expect(table.props().filters[0]).toStrictEqual({
+            id: "area",
+            column_id: "area_id",
+            label: "area",
+            allowMultiple: true,
+            options: [{id: "region 1"}, {id: "region 2"}]
+        });
+        expect(table.props().filters[1]).toStrictEqual({
+            id: "year",
+            column_id: "year",
+            label: "year",
+            allowMultiple: false,
+            options: "TEST YEAR FILTERS"
+        });
+        expect(table.props().indicators).toStrictEqual(["TEST INDICATORS"]);
+        expect(table.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
+
     });
 
 });
