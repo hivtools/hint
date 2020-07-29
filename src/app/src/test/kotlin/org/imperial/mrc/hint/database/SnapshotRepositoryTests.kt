@@ -68,8 +68,7 @@ class SnapshotRepositoryTests {
     }
 
     @Test
-    fun `saveSnapshot is idempotent`()
-    {
+    fun `saveSnapshot is idempotent`() {
 
         sut.saveSnapshot(snapshotId, null)
         sut.saveSnapshot(snapshotId, null)
