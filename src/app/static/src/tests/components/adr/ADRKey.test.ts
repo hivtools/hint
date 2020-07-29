@@ -2,19 +2,30 @@ import Vue from "vue";
 import {shallowMount} from "@vue/test-utils";
 
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
-import Vuex from "vuex";
+import Vuex, {ActionTree} from "vuex";
 import {mockRootState} from "../../mocks";
 import {mutations, RootMutation} from "../../../app/store/root/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {RootActions} from "../../../app/store/root/actions";
+import {RootState} from "../../../app/root";
 
 declare let currentUser: string;
 
 describe("ADR Key", function () {
 
+    const fetchStub = jest.fn();
+    const saveStub = jest.fn();
+    const deleteStub = jest.fn();
+
     const createStore = (key: string = "") => {
        const store = new Vuex.Store({
            state: mockRootState({adrKey: key}),
-           mutations: mutations
+           mutations: mutations,
+           actions: {
+               fetchADRKey: fetchStub,
+               saveADRKey: saveStub,
+               deleteADRKey: deleteStub
+           } as Partial<RootActions> & ActionTree<RootState, RootState>
         });
        registerTranslations(store);
        return store;
@@ -22,12 +33,24 @@ describe("ADR Key", function () {
 
     beforeEach(() => {
         currentUser = "some.user@example.com"
+        jest.resetAllMocks();
     })
 
-    it("does not render if current user is guest", () => {
+    it("does not render if not logged in", () => {
         currentUser = "guest";
         const rendered = shallowMount(ADRKey, {store: createStore()});
         expect(rendered.findAll("div").length).toBe(0);
+    });
+
+    it("fetches ADR key if logged in", () => {
+        shallowMount(ADRKey, {store: createStore()});
+        expect(fetchStub.mock.calls.length).toBe(1);
+    });
+
+    it("does not fetch ADR key if not logged in", () => {
+        currentUser = "guest";
+        shallowMount(ADRKey, {store: createStore()});
+        expect(fetchStub.mock.calls.length).toBe(0);
     });
 
     it("shows title", () => {
@@ -75,7 +98,7 @@ describe("ADR Key", function () {
 
         await Vue.nextTick();
 
-        expect(rendered.find("span").text()).toBe("***********");
+        expect(saveStub.mock.calls.length).toBe(1);
     });
 
     it("cannot save empty key", async () => {
@@ -90,7 +113,12 @@ describe("ADR Key", function () {
 
         await Vue.nextTick();
 
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
         expect(rendered.find("button").attributes("disabled")).toBe("disabled");
+        expect(saveStub.mock.calls.length).toBe(0);
     });
 
     it("can cancel editing", async () => {
@@ -119,7 +147,7 @@ describe("ADR Key", function () {
 
         await Vue.nextTick();
 
-        expect(rendered.find("span").text()).toBe("none provided");
+        expect(deleteStub.mock.calls.length).toBe(1);
     });
 
     it("can add key", async () => {
@@ -134,7 +162,7 @@ describe("ADR Key", function () {
 
         await Vue.nextTick();
 
-        expect(rendered.find("span").text()).toBe("***********");
+        expect(saveStub.mock.calls.length).toBe(1);
     });
 
 });
