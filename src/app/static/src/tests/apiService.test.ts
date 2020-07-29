@@ -156,9 +156,11 @@ describe("ApiService", () => {
 
         let committedType: any = false;
         let committedPayload: any = false;
-        const commit = ({type, payload}: any) => {
+        let committedOptions: any = null;
+        const commit = ({type, payload}: any, options?: any) => {
             committedType = type;
             committedPayload = payload;
+            committedOptions = options;
         };
 
         await api({commit, rootState} as any)
@@ -167,6 +169,30 @@ describe("ApiService", () => {
 
         expect(committedType).toBe("TEST_TYPE");
         expect(committedPayload).toBe(true);
+        expect(committedOptions).toBeUndefined();
+    });
+
+    it("commits the success response with the specified type with root options", async () => {
+
+        mockAxios.onGet(`/baseline/`)
+            .reply(200, mockSuccess(true));
+
+        let committedType: any = false;
+        let committedPayload: any = false;
+        let committedOptions: any = null;
+        const commit = ({type, payload}: any, options?: any) => {
+            committedType = type;
+            committedPayload = payload;
+            committedOptions = options;
+        };
+
+        await api({commit, rootState} as any)
+            .withSuccess("TEST_TYPE", true)
+            .get("/baseline/");
+
+        expect(committedType).toBe("TEST_TYPE");
+        expect(committedPayload).toBe(true);
+        expect(committedOptions).toStrictEqual({root: true});
     });
 
     it("returns the response object", async () => {

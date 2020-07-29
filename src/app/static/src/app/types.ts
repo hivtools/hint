@@ -62,3 +62,16 @@ export interface NumericRange {
     min: number,
     max: number
 }
+
+export interface Snapshot {
+    id: string,
+    created: string,
+    updated: string
+}
+
+export interface Version {
+    id: number,
+    name: string,
+    snapshots: Snapshot[]
+}
+

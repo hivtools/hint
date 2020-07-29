@@ -30,6 +30,7 @@ import {initialModelOutputState} from "../../app/store/modelOutput/modelOutput";
 import {initialLoadState} from "../../app/store/load/load";
 import {initialErrorsState} from "../../app/store/errors/errors";
 import {LanguageMutation} from "../../app/store/language/mutations";
+import {Language} from "../../app/store/translations/locales";
 
 describe("Root mutations", () => {
 
@@ -200,6 +201,26 @@ describe("Root mutations", () => {
         const state = mockRootState();
         mutations[LanguageMutation.ChangeLanguage](state, {payload: "fr"});
         expect(state.language).toBe("fr");
+    });
+
+    it("can reset for new version", () => {
+        const state = populatedState();
+        state.language = Language.fr;
+
+        const version = {id: 1, name: "newVersion", snapshots: [{id: "newSnapshot"}]};
+        mutations.SetVersion(state, {payload: version});
+
+        testOnlyExpectedModulesArePopulated([], state);
+        expect(state.stepper.activeStep).toBe(1);
+
+        expect(state.versions.currentVersion).toBe(version);
+        expect(state.versions.currentSnapshot).toBe(version.snapshots[0]);
+
+        expect(state.language).toBe(Language.fr);
+
+        expect(state.baseline.ready).toBe(true);
+        expect(state.surveyAndProgram.ready).toBe(true);
+        expect(state.modelRun.ready).toBe(true);
     });
 });
 

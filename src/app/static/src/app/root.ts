@@ -87,7 +87,7 @@ const resetState = (store: Store<RootState>) => {
 };
 
 export const emptyState = (): RootState => {
-    return {
+     return {
         language: Language.en,
         version: '0.0.0',
         baseline: initialBaselineState(),
