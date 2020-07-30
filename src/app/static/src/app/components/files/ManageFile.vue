@@ -2,15 +2,17 @@
     <div class="form-group">
         <label class="font-weight-bold" v-translate="label"></label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
+        <br/>
         <slot></slot>
         <label v-if="existingFileName" class="file-name">
-            <strong v-translate="'file'"></strong>: {{existingFileName}}
+            <span>
+                <strong v-translate="'file'"></strong>: {{existingFileName}}
+            </span>
+            <a class="small float-right"
+               href="#"
+               v-on:click="handleFileDelete"
+               v-translate="'remove'"></a>
         </label>
-        <a v-if="existingFileName"
-           class="small float-right"
-           href="#"
-           v-on:click="handleFileDelete"
-           v-translate="'remove'"></a>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <file-upload :name="name"
                      :accept="accept"
