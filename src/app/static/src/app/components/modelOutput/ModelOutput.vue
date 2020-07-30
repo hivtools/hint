@@ -32,7 +32,7 @@
                            :tabledata="chartdata"
                            :area-filter-id="areaFilterId"
                            :filters="choroplethFilters"
-                           :indicators="filterChoroplethIndicators"
+                           :indicators="filteredChoroplethIndicators"
                            :selections="choroplethSelections"
                         
                            :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
@@ -53,7 +53,7 @@
                             :tabledata="chartdata"
                             :area-filter-id="areaFilterId"
                             :filters="barchartFilters"
-                            :indicators="filterBarchartIndicators"
+                            :indicators="filteredBarchartIndicators"
                             :selections="barchartSelections"
                             
                             :selectedFilterOptions="barchartSelections.selectedFilterOptions"
@@ -75,7 +75,7 @@
                                 :tabledata="chartdata"
                                 :area-filter-id="areaFilterId"
                                 :filters="bubblePlotFilters"
-                                :indicators="filterBubblePlotIndicators"
+                                :indicators="filteredBubblePlotIndicators"
                                 :selections="bubblePlotSelections"
                                 
                                 :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
@@ -144,9 +144,9 @@
         colourScales: ColourScaleSelections,
         choroplethIndicators: ChoroplethIndicatorMetadata[],
         bubblePlotIndicators: ChoroplethIndicatorMetadata[],
-        filterChoroplethIndicators: ChoroplethIndicatorMetadata[],
-        filterBarchartIndicators: BarchartIndicator[],
-        filterBubblePlotIndicators: ChoroplethIndicatorMetadata[],
+        filteredChoroplethIndicators: ChoroplethIndicatorMetadata[],
+        filteredBarchartIndicators: BarchartIndicator[],
+        filteredBubblePlotIndicators: ChoroplethIndicatorMetadata[],
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -169,16 +169,16 @@
             }
         },
         computed: {
-            filterChoroplethIndicators(){
-                return this.choroplethIndicators.filter((val: any) => val.indicator === this.choroplethSelections.indicatorId)
+            filteredChoroplethIndicators(){
+                return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
             },
-            filterBarchartIndicators(){
-                return this.barchartIndicators.filter((val: any) => val.indicator === this.barchartSelections.indicatorId)
+            filteredBarchartIndicators(){
+                return this.barchartIndicators.filter((val: BarchartIndicator) => val.indicator === this.barchartSelections.indicatorId)
             },
-            filterBubblePlotIndicators(){
+            filteredBubblePlotIndicators(){
                 return [
-                    ...this.bubblePlotIndicators.filter((val: any) => val.indicator === this.bubblePlotSelections.colorIndicatorId),
-                    ...this.bubblePlotIndicators.filter((val: any) => val.indicator === this.bubblePlotSelections.sizeIndicatorId)
+                    ...this.bubblePlotIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.bubblePlotSelections.colorIndicatorId),
+                    ...this.bubblePlotIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.bubblePlotSelections.sizeIndicatorId)
                     ]
             },
             ...mapGettersByNames("modelOutput", [
