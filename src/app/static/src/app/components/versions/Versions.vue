@@ -19,6 +19,7 @@
                 </button>
             </div>
             <div class="my-3 col-12">
+                <version-history :versions="previousVersions"></version-history>
                 {{JSON.stringify(previousVersions)}}
             </div>
             <error-alert v-if="hasError" :error="error"></error-alert>
@@ -40,6 +41,7 @@
     import {PayloadWithType, Version} from "../../types";
 
     import {VersionsMutations} from "../../store/versions/mutations";
+    import VersionHistory from "./VersionHistory.vue";
 
     const namespace = "versions";
 
@@ -95,7 +97,8 @@
         },
         components: {
             ErrorAlert,
-            LoadingSpinner
+            LoadingSpinner,
+            VersionHistory
         }
     });
 </script>
