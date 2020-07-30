@@ -20,7 +20,6 @@
             </div>
             <div class="my-3 col-12">
                 <version-history :versions="previousVersions"></version-history>
-                {{JSON.stringify(previousVersions)}}
             </div>
             <error-alert v-if="hasError" :error="error"></error-alert>
         </div>
