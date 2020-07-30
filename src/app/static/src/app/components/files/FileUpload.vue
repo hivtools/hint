@@ -7,7 +7,10 @@
                        :ref="name"
                        :id="name"
                        :accept="accept"
-                       v-on:change="handleFileSelect"/>
+                       v-on:change="handleFileSelect"
+                       @click="$emit('input-opened')"/>
+                <!-- emit input-opened event so that tests can verify that this
+                is triggered -->
                 This computer
             </a>
             <adr-select></adr-select>

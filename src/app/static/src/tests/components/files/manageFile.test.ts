@@ -74,7 +74,7 @@ describe("Manage file component", () => {
         const wrapper = createSut({
             existingFileName: "existing-name.csv"
         });
-        expect(wrapper.find("label.file-name").text()).toBe("File: existing-name.csv");
+        expect(wrapper.find("label.file-name").text()).toContain("File: existing-name.csv");
     });
 
     it("does not render tick if valid is false", () => {
