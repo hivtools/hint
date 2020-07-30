@@ -281,10 +281,14 @@ describe("ModelOutput component", () => {
 
     it("renders choropleth table with correct indicator props", () => {
         const store = getStore({}, {
-            choroplethIndicators: jest.fn().mockReturnValue([ 
-                { "indicator": "prevalence", "indicator_value": "2" }, 
-                { "indicator": "art_coverage", "indicator_value": "4" }
-     ])}, {
+            choroplethIndicators: jest.fn().mockReturnValue(
+                [ 
+                    { "indicator": "prevalence", "indicator_value": "2" }, 
+                    { "indicator": "art_coverage", "indicator_value": "4" }
+                ]
+            )
+    }, 
+    {
         outputChoropleth: {indicatorId: "art_coverage"}
     });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
@@ -307,19 +311,38 @@ describe("ModelOutput component", () => {
     });
 
     it("renders bubble plot table with correct indicator props", () => {
-        const store = getStore({selectedTab: "bubble"}, {
-            bubblePlotIndicators: jest.fn().mockReturnValue([ 
-                { "indicator": "prevalence", "indicator_value": "2" }, 
-                { "indicator": "art_coverage", "indicator_value": "4" },
-                { "indicator": "current_art", "indicator_value": "6" }
-     ])}, {
-        bubble: {colorIndicatorId: "art_coverage", sizeIndicatorId: "current_art"}
-    });
+        const store = getStore(
+            {
+                selectedTab: "bubble"
+            },
+            {
+                bubblePlotIndicators: jest.fn().mockReturnValue(
+                    [
+                        {"indicator": "prevalence", "indicator_value": "2"},
+                        {"indicator": "art_coverage", "indicator_value": "4"},
+                        {"indicator": "current_art", "indicator_value": "6"}
+                    ]
+                )
+            },
+            {
+                bubble: {colorIndicatorId: "art_coverage", sizeIndicatorId: "current_art"}
+            });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
         const table = wrapper.findAll("table-view-stub").at(1);
         expect(table.props().selections).toStrictEqual({colorIndicatorId: "art_coverage", sizeIndicatorId: "current_art"});
-        expect(table.props().indicators).toStrictEqual([ { "indicator": "art_coverage", "indicator_value": "4" }, { "indicator": "current_art", "indicator_value": "6" } ]);
+        expect(table.props().indicators).toStrictEqual(
+            [
+                {
+                    "indicator": "art_coverage",
+                    "indicator_value": "4"
+                },
+                {
+                    "indicator": "current_art",
+                    "indicator_value": "6"
+                }
+            ]
+        );
     });
 
     it("renders barchart table", () => {
@@ -329,7 +352,6 @@ describe("ModelOutput component", () => {
         const table = wrapper.find("table-view-stub");
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST BAR FILTERS"]);
-        // expect(table.props().indicators).toStrictEqual(["TEST BARCHART INDICATORS"]);
         expect(table.props().selections).toStrictEqual({
             indicatorId: "TestIndicator",
             xAxisId: "region",
@@ -343,16 +365,24 @@ describe("ModelOutput component", () => {
 
     it("renders barchart table with correct indicator props", () => {
         const store = getStore({selectedTab: "bar"}, {
-            barchartIndicators: jest.fn().mockReturnValue([ 
-                { "indicator": "prevalence", "indicator_value": "2" }, 
-                { "indicator": "art_coverage", "indicator_value": "4" }
-     ])}, {
+            barchartIndicators: jest.fn().mockReturnValue(
+                [ 
+                    { "indicator": "prevalence", "indicator_value": "2" }, 
+                    { "indicator": "art_coverage", "indicator_value": "4" }
+                ]
+            )
+    }, 
+    {
         barchart: {indicatorId: "art_coverage"}
     });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
         const table = wrapper.find("table-view-stub");
         expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
-        expect(table.props().indicators).toStrictEqual([ { "indicator": "art_coverage", "indicator_value": "4" } ]);
+        expect(table.props().indicators).toStrictEqual(
+            [ 
+                { "indicator": "art_coverage", "indicator_value": "4" }
+            ]
+        );
     });
 });
