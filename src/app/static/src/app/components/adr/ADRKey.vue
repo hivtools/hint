@@ -25,6 +25,7 @@
                          style="margin-top: -11px; min-width: 390px"
                          v-if="editing">
                         <input id="key"
+                               ref="keyInput"
                                class="form-control"
                                v-model="editableKey"
                                type="text"
@@ -114,6 +115,9 @@
                 e.preventDefault();
                 this.editing = true;
                 this.editableKey = this.key;
+                this.$nextTick(() => {
+                    (this.$refs["keyInput"] as HTMLInputElement).focus();
+                })
             },
             remove(e: Event) {
                 this.updateADRKey(null);
