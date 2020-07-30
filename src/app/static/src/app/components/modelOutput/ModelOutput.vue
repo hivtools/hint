@@ -26,7 +26,9 @@
                             :colour-scales="colourScales"
                             @update="updateOutputChoroplethSelections({payload: $event})"
                             @updateColourScales="updateOutputColourScales({payload: $event})"></choropleth>
-                <table-view class="d-flex justify-content-center"
+                <div class="row mt-2">
+                    <div class="col-md-3"></div>
+                    <table-view class="col-md-9"
                            :tabledata="chartdata"
                            :area-filter-id="areaFilterId"
                            :filters="choroplethFilters"
@@ -35,6 +37,7 @@
                         
                            :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
                         ></table-view>
+                </div>
             </div>
 
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
@@ -44,15 +47,18 @@
                         :indicators="barchartIndicators"
                         :selections="barchartSelections"
                         @update="updateBarchartSelections({payload: $event})" ></bar-chart-with-filters>
-                <table-view class="d-flex justify-content-center"
-                        :tabledata="chartdata"
-                        :area-filter-id="areaFilterId"
-                        :filters="barchartFilters"
-                        :indicators="filterBarchartIndicators"
-                        :selections="barchartSelections"
-                        
-                        :selectedFilterOptions="barchartSelections.selectedFilterOptions"
-                        ></table-view>
+                <div class="row mt-2">
+                    <div class="col-md-3"></div>
+                    <table-view class="col-md-9"
+                            :tabledata="chartdata"
+                            :area-filter-id="areaFilterId"
+                            :filters="barchartFilters"
+                            :indicators="filterBarchartIndicators"
+                            :selections="barchartSelections"
+                            
+                            :selectedFilterOptions="barchartSelections.selectedFilterOptions"
+                            ></table-view>
+                </div>
             </div>
 
             <div v-if="selectedTab==='bubble'" id="bubble-plot-container" class="col-md-12">
@@ -63,15 +69,18 @@
                              :colour-scales="colourScales"
                              @update="updateBubblePlotSelections({payload: $event})"
                              @updateColourScales="updateOutputColourScales({payload: $event})"></bubble-plot>
-                <table-view class="d-flex justify-content-center"
-                            :tabledata="chartdata"
-                            :area-filter-id="areaFilterId"
-                            :filters="bubblePlotFilters"
-                            :indicators="filterBubblePlotIndicators"
-                            :selections="bubblePlotSelections"
-                            
-                            :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
-                            ></table-view>
+                <div class="row mt-2">
+                    <div class="col-md-3"></div>
+                    <table-view class="col-md-9"
+                                :tabledata="chartdata"
+                                :area-filter-id="areaFilterId"
+                                :filters="bubblePlotFilters"
+                                :indicators="filterBubblePlotIndicators"
+                                :selections="bubblePlotSelections"
+                                
+                                :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
+                                ></table-view>
+                    </div>
             </div>
         </div>
     </div>
