@@ -320,7 +320,7 @@ const fr: Partial<Translations> = {
     validating: "Validation en cours...",
     versionsHeaderCreate: "Créer une nouvelle version",
     versionsHeaderReturn: "retour à la version actuelle",
-    versionHistory: "Historique des versions",
+    versionHistory: "Versions précédentes",
     versionName: "Nom de la version",
     versions: "Versions",
     xAxis: "Axe X",

@@ -1,6 +1,9 @@
 import {mount, Wrapper} from "@vue/test-utils";
 import VersionHistory from "../../../app/components/versions/VersionHistory.vue";
 import {formatDateTime} from "../../../app/utils";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+import Vuex from "vuex";
+import {emptyState} from "../../../app/root";
 
 describe("Versions component", () => {
 
@@ -8,6 +11,11 @@ describe("Versions component", () => {
         "2020-07-31T09:00:00.000000",
         "2020-07-31T10:00:00.000000",
         "2020-08-01T11:00:00.000000"];
+
+    const store = new Vuex.Store({
+        state: emptyState()
+    });
+    registerTranslations(store);
 
     const testPropsData = {
         versions: [
@@ -24,7 +32,7 @@ describe("Versions component", () => {
     };
 
     const getWrapper = (propsData = testPropsData) => {
-        return mount(VersionHistory, {propsData});
+        return mount(VersionHistory, {store, propsData});
     };
 
     const testRendersVersion = (wrapper: Wrapper<any>, id: number, name: string, updatedIsoDate: string) => {
