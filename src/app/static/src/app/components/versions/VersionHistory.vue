@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="versions.length > 0">
         <h5>Version history</h5>
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>

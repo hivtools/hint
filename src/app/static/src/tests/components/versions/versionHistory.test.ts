@@ -9,22 +9,22 @@ describe("Versions component", () => {
         "2020-07-31T10:00:00.000000",
         "2020-08-01T11:00:00.000000"];
 
-    const getWrapper = () => {
-        return mount(VersionHistory, {
-            propsData: {
-                versions: [
-                    {
-                        id: 1, name: "v1", snapshots: [
-                            {id: "s11", created: isoDates[0], updated: isoDates[1]},
-                            {id: "s12", created: isoDates[1], updated: isoDates[2]}]
-                    },
-                    {
-                        id: 2, name: "v2", snapshots: [
-                            {id: "s21", created: isoDates[2], updated: isoDates[3]}]
-                    }
-                ]
+    const testPropsData = {
+        versions: [
+            {
+                id: 1, name: "v1", snapshots: [
+                    {id: "s11", created: isoDates[0], updated: isoDates[1]},
+                    {id: "s12", created: isoDates[1], updated: isoDates[2]}]
+            },
+            {
+                id: 2, name: "v2", snapshots: [
+                    {id: "s21", created: isoDates[2], updated: isoDates[3]}]
             }
-        });
+        ]
+    };
+
+    const getWrapper = (propsData = testPropsData) => {
+        return mount(VersionHistory, {propsData});
     };
 
     const testRendersVersion = (wrapper: Wrapper<any>, id: number, name: string, updatedIsoDate: string) => {
@@ -100,5 +100,10 @@ describe("Versions component", () => {
                 done();
             });
         });
+    });
+
+    it("does not render if no previous versions", () => {
+        const wrapper = getWrapper({versions: []});
+        expect(wrapper.findAll("div").length).toBe(0);
     });
 });
