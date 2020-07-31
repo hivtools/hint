@@ -1,29 +1,29 @@
 <template>
     <div>
         <h5>Version history</h5>
-        <div class="row font-weight-bold">
-            <div class="col-md-1"></div>
-            <div class="col-md-3">Version name</div>
-            <div class="col-md-3">Last updated</div>
+        <div id="headers" class="row font-weight-bold pt-2">
+            <div class="col-md-1 header-cell"></div>
+            <div class="col-md-3 header-cell">Version name</div>
+            <div class="col-md-3 header-cell">Last updated</div>
         </div>
         <hr/>
         <div v-for="v in versions">
-            <div  class="row">
-                <div class="col-md-1">
-                    <button v-b-toggle='"snapshots-"+v.id' class="btn btn-xs bg-transparent shadow-none">
+            <div :id="`v-${v.id}`"  class="row">
+                <div class="col-md-1 version-cell">
+                    <button v-b-toggle="`snapshots-${v.id}`" class="btn btn-xs bg-transparent shadow-none">
                         <chevron-right-icon size="20" class="icon when-closed"></chevron-right-icon>
                         <chevron-down-icon size="20" class="icon when-open"></chevron-down-icon>
                     </button>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 version-cell">
                     {{v.name}}
                 </div>
-                <div class="col-md-3">{{format(v.snapshots[0].updated)}}</div>
+                <div class="col-md-3 version-cell">{{format(v.snapshots[0].updated)}}</div>
             </div>
-            <b-collapse :id='"snapshots-"+v.id'>
-                <div v-for="s in v.snapshots" class="row font-italic bg-light pb-3">
-                    <div class="col-md-4"></div>
-                    <div class="col-md-3">{{format(s.updated)}}</div>
+            <b-collapse :id="`snapshots-${v.id}`">
+                <div v-for="s in v.snapshots" :id="`s-${s.id}`" class="row font-italic bg-light pb-3">
+                    <div class="col-md-4 snapshot-cell"></div>
+                    <div class="col-md-3 snapshot-cell">{{format(s.updated)}}</div>
                 </div>
             </b-collapse>
         </div>
