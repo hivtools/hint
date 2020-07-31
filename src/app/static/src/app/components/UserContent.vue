@@ -1,7 +1,10 @@
 <template>
-    <div class="container mb-5">
-        <versions v-if="showVersions"></versions>
-        <stepper v-if="!showVersions"></stepper>
+    <div>
+        <div class="container mb-5">
+            <versions v-if="showVersions"></versions>
+            <stepper v-if="!showVersions"></stepper>
+        </div>
+        <snapshot-status></snapshot-status>
     </div>
 </template>
 
@@ -12,6 +15,7 @@
     import {mapStateProps} from "../utils";
     import {VersionsState} from "../store/versions/versions";
     import {Snapshot} from "../types";
+    import SnapshotStatus from "./versions/SnapshotStatus.vue";
 
     const namespace = "versions";
 
@@ -32,7 +36,8 @@
         },
         components: {
             Stepper,
-            Versions
+            Versions,
+            SnapshotStatus
         },
         computed: {
             ...mapStateProps<VersionsState, keyof Computed>(namespace, {

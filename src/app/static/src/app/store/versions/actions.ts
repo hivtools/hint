@@ -48,9 +48,9 @@ const immediateUploadSnapshotState = (context: ActionContext<VersionsState, Root
     const snapshotId = state.currentSnapshot && state.currentSnapshot.id;
     if (versionId && snapshotId) {
         api<VersionsMutations, VersionsMutations>(context)
-            .ignoreSuccess()
+            .withSuccess(VersionsMutations.SnapshotUploadSuccess)
             .withError(VersionsMutations.SnapshotUploadError)
-            .postAndReturn(`/version/${versionId}/snapshot/${snapshotId}/state/`, serialiseState(rootState));
+            .postAndReturn(`/versionx/${versionId}/snapshot/${snapshotId}/state/`, serialiseState(rootState));
     }
 };
 
