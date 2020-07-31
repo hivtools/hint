@@ -1,10 +1,10 @@
 <template>
     <div v-if="versions.length > 0">
-        <h5>Version history</h5>
+        <h5 v-translate="'versionHistory'"></h5>
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
-            <div class="col-md-3 header-cell">Version name</div>
-            <div class="col-md-3 header-cell">Last updated</div>
+            <div class="col-md-3 header-cell" v-translate="'versionName'"></div>
+            <div class="col-md-3 header-cell" v-translate="'lastUpdated'"></div>
         </div>
         <hr/>
         <div v-for="v in versions">
