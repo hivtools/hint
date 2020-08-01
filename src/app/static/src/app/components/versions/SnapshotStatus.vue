@@ -1,11 +1,11 @@
 <template>
     <div v-if="display" class="text-muted small pl-1">
         <span v-if="success">
-            <span>Saved snapshot</span> {{formattedTime}}
+            <span>Saved snapshot at</span> {{formattedTime}}
             <check-icon size="14" class="mb-1"></check-icon>
         </span>
         <span v-if="!success">
-            <span>Could not save snapshot</span> {{formattedTime}}
+            <span>Could not save snapshot at</span> {{formattedTime}}
             <alert-triangle-icon size="14" class="mb-1"></alert-triangle-icon>
         </span>
     </div>
