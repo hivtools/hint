@@ -106,7 +106,7 @@ describe("Versions actions", () => {
         }, 2500);
     });
 
-    it("uploadSnapshotState sets pending then unsets and uploads state", async (done) => {
+    it("uploadSnapshotState sets pending then unsets and uploads state, and commits SnapshotUploadSuccess", async (done) => {
         const commit = jest.fn();
         const state = mockVersionsState({
             currentVersion: mockVersion,
@@ -123,12 +123,13 @@ describe("Versions actions", () => {
             {type: VersionsMutations.SetSnapshotUploadPending, payload: true});
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
+            expect(commit.mock.calls.length).toBe(3);
             expect(commit.mock.calls[1][0]).toStrictEqual(
                 {type: VersionsMutations.SetSnapshotUploadPending, payload: false});
+            expect(commit.mock.calls[2][0].type).toStrictEqual(VersionsMutations.SnapshotUploadSuccess);
 
             expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe(url)
+            expect(mockAxios.history.post[0].url).toBe(url);
             const posted = mockAxios.history.post[0].data;
             expect(JSON.parse(posted)).toStrictEqual(serialiseState(rootState));
             done();

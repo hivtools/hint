@@ -2,6 +2,9 @@ import {mockVersionsState} from "../mocks";
 import {mutations, VersionsMutations} from "../../app/store/versions/mutations";
 
 describe("Versions mutations", () => {
+    const testNow = Date.now();
+    global.Date.now = jest.fn(() => testNow);
+
     it("sets manageVersions", () => {
         const state = mockVersionsState();
 
@@ -38,12 +41,19 @@ describe("Versions mutations", () => {
         expect(state.snapshotUploadPending).toBe(true);
     });
 
-    it("SnapshotUploadError logs error to console", () => {
-        const consoleSpy = jest.spyOn(console, 'error');
-
+    it("SnapshotUploadError sets snapshotSuccess and snapshotTime", () => {
         const state = mockVersionsState();
-        mutations[VersionsMutations.SnapshotUploadError](state, {payload: "test error"});
+        mutations[VersionsMutations.SnapshotUploadError](state);
 
-        expect(consoleSpy).toHaveBeenCalledWith("test error");
+        expect(state.snapshotSuccess).toBe(false);
+        expect(state.snapshotTime!.valueOf()).toEqual(testNow);
+    });
+
+    it("SnapshotUploadSuccess sets snapshotSuccess and snapshotTime", () => {
+        const state = mockVersionsState();
+        mutations[VersionsMutations.SnapshotUploadSuccess](state);
+
+        expect(state.snapshotSuccess).toBe(true);
+        expect(state.snapshotTime!.valueOf()).toEqual(testNow);
     });
 });

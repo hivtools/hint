@@ -26,12 +26,12 @@ export const mutations: MutationTree<VersionsState> = {
         state.error = action.payload;
         state.loading = false;
     },
-    [VersionsMutations.SnapshotUploadError](state: VersionsState, action: PayloadWithType<Error>) {
+    [VersionsMutations.SnapshotUploadError](state: VersionsState) {
         state.snapshotSuccess = false;
-        state.snapshotTime = new Date();
+        state.snapshotTime = new Date(Date.now());
     },
-    [VersionsMutations.SnapshotUploadSuccess](state: VersionsState, action: PayloadWithType<Error>) {
+    [VersionsMutations.SnapshotUploadSuccess](state: VersionsState) {
         state.snapshotSuccess = true;
-        state.snapshotTime = new Date();
+        state.snapshotTime = new Date(Date.now());
     }
 };

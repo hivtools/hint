@@ -5,6 +5,7 @@ import {shallowMount} from "@vue/test-utils";
 import {mockVersionsState} from "../mocks";
 import Versions from "../../app/components/versions/Versions.vue";
 import Stepper from "../../app/components/Stepper.vue";
+import SnapshotStatus from "../../app/components/versions/SnapshotStatus.vue";
 
 describe("UserContent component", () => {
 
@@ -45,5 +46,10 @@ describe("UserContent component", () => {
         const wrapper = createSut("testUser", {manageVersions: false, currentSnapshot});
         expect(wrapper.find(Versions).exists()).toBe(false);
         expect(wrapper.find(Stepper).exists()).toBe(true);
+    });
+
+    it("renders snapshot status", () => {
+        const wrapper = createSut("testUser",{});
+        expect(wrapper.find(SnapshotStatus).exists()).toBe(true);
     });
 });
