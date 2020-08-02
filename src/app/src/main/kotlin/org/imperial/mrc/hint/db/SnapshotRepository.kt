@@ -155,19 +155,14 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
 
     private fun checkSnapshotExists(snapshotId: String, versionId: Int, userId: String)
     {
-        val count = dsl.select(count(VERSION_SNAPSHOT.ID))
+        dsl.select(VERSION_SNAPSHOT.ID)
                 .from(VERSION_SNAPSHOT)
                 .join(VERSION)
                 .on(VERSION_SNAPSHOT.VERSION_ID.eq(VERSION.ID))
                 .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
                 .and(VERSION.ID.eq(versionId))
                 .and(VERSION.USER_ID.eq(userId))
-                .fetchOne().value1()
-
-        if (count < 1)
-        {
-            throw SnapshotException("snapshotDoesNotExist")
-        }
+                .fetchAny() ?: throw SnapshotException("snapshotDoesNotExist");
     }
 
     private fun getSnapshotFileRecord(snapshotId: String, type: FileType): Record? {
