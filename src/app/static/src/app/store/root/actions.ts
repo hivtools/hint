@@ -61,18 +61,23 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
 
     async fetchADRKey(context) {
         await api<RootMutation, RootMutation>(context)
+            .ignoreErrors()
             .withSuccess(RootMutation.UpdateADRKey)
             .get("/adr/key/");
     },
 
     async saveADRKey(context, key) {
+        context.commit({type: RootMutation.SetADRKeyError, payload: null});
         await api<RootMutation, RootMutation>(context)
+            .withError(RootMutation.SetADRKeyError)
             .withSuccess(RootMutation.UpdateADRKey)
             .postAndReturn("/adr/key/", qs.stringify({key}));
     },
 
     async deleteADRKey(context) {
+        context.commit({type: RootMutation.SetADRKeyError, payload: null});
         await api<RootMutation, RootMutation>(context)
+            .withError(RootMutation.SetADRKeyError)
             .withSuccess(RootMutation.UpdateADRKey)
             .delete("/adr/key/")
     }

@@ -216,6 +216,11 @@ describe("root actions", () => {
 
         expect(commit.mock.calls[0][0])
             .toStrictEqual({
+                type: RootMutation.SetADRKeyError,
+                payload: null
+            });
+        expect(commit.mock.calls[1][0])
+            .toStrictEqual({
                 type: RootMutation.UpdateADRKey,
                 payload: "1234"
             });
@@ -230,6 +235,11 @@ describe("root actions", () => {
         await actions.deleteADRKey({commit, rootState} as any);
 
         expect(commit.mock.calls[0][0])
+            .toStrictEqual({
+                type: RootMutation.SetADRKeyError,
+                payload: null
+            });
+        expect(commit.mock.calls[1][0])
             .toStrictEqual({
                 type: RootMutation.UpdateADRKey,
                 payload: null

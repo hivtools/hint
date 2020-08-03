@@ -20,15 +20,15 @@ describe("Root actions", () => {
         const commit = jest.fn();
         await actions.saveADRKey({commit, rootState} as any, "1234");
 
-        expect(commit.mock.calls[0][0]["type"]).toBe(RootMutation.UpdateADRKey);
-        expect(commit.mock.calls[0][0]["payload"]).toBe("1234");
+        expect(commit.mock.calls[1][0]["type"]).toBe(RootMutation.UpdateADRKey);
+        expect(commit.mock.calls[1][0]["payload"]).toBe("1234");
     });
 
     it("can delete ADR key", async () => {
         const commit = jest.fn();
         await actions.deleteADRKey({commit, rootState} as any);
 
-        expect(commit.mock.calls[0][0]["type"]).toBe(RootMutation.UpdateADRKey);
-        expect(commit.mock.calls[0][0]["payload"]).toBe(null);
+        expect(commit.mock.calls[1][0]["type"]).toBe(RootMutation.UpdateADRKey);
+        expect(commit.mock.calls[1][0]["payload"]).toBe(null);
     });
 });
