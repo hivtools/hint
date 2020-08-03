@@ -1,5 +1,6 @@
 import Vue from "vue";
 import {store} from "./main"
+import {router} from "./router";
 import UserContent from "./components/UserContent.vue";
 import UserHeader from "./components/header/UserHeader.vue";
 import Errors from "./components/Errors.vue";
@@ -9,6 +10,7 @@ import {RootState} from "./root";
 export const app = new Vue({
     el: "#app",
     store,
+    router,
     components: {
         UserContent,
         UserHeader,

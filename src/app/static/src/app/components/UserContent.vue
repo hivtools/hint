@@ -1,7 +1,6 @@
 <template>
     <div class="container mb-5">
-        <versions v-if="showVersions"></versions>
-        <stepper v-if="!showVersions"></stepper>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -15,12 +14,11 @@
 
     const namespace = "versions";
 
-    interface Computed {
-        manageVersions: boolean,
+    /*interface Computed {
         isGuest: boolean,
         showVersions: boolean,
         currentSnapshot: Snapshot | null
-    }
+    }*/
 
     interface Props {
         user: string
