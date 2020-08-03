@@ -10,9 +10,10 @@ import {emptyState} from "../../../app/root";
 
 describe("Versions component", () => {
 
-    const createSut = (state: Partial<VersionsState> = {},
+   const createSut = (state: Partial<VersionsState> = {},
                        mockCreateVersion = jest.fn(),
-                       mockSetManageVersions = jest.fn()) => {
+                       mockRouterPush = jest.fn()) => {
+
         const store =  new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -21,15 +22,19 @@ describe("Versions component", () => {
                     state: mockVersionsState(state),
                     actions: {
                         createVersion: mockCreateVersion
-                    },
-                    mutations: {
-                        SetManageVersions: mockSetManageVersions
                     }
                 }
-            }
+            },
         });
         registerTranslations(store);
-        return shallowMount(Versions, {store});
+
+        const mocks = {
+            $router: {
+                push: mockRouterPush
+            }
+        };
+
+        return shallowMount(Versions, {store, mocks});
     };
 
     const currentVersion = {name: "existingVersion", id: 1, snapshots: []};
@@ -75,14 +80,14 @@ describe("Versions component", () => {
         expect(mockCreateVersion.mock.calls[0][1]).toBe("newVersion");
     });
 
-    it("clicking back link sets manageVersions", () =>{
-        const mockManageVersions = jest.fn();
-        const wrapper = createSut({currentVersion}, jest.fn(), mockManageVersions);
+    it("clicking back to current version link invokes router", () =>{
+        const mockRouterPush = jest.fn();
+        const wrapper = createSut({currentVersion}, jest.fn(), mockRouterPush);
 
         wrapper.find("#versions-header a").trigger("click");
 
-        expect(mockManageVersions.mock.calls.length).toBe(1);
-        expect(mockManageVersions.mock.calls[0][1]).toStrictEqual( {"payload": false, "type": "SetManageVersions"});
+        expect(mockRouterPush.mock.calls.length).toBe(1);
+        expect(mockRouterPush.mock.calls[0][0]).toStrictEqual( "/");
     });
 
     it("displays spinner if loading", () => {
