@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount, Wrapper, mount} from '@vue/test-utils';
+import {createLocalVue, mount, shallowMount, Wrapper} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
@@ -10,8 +10,10 @@ import {
     mockModelRunState,
     mockPlottingMetadataResponse,
     mockPopulationResponse,
-    mockShapeResponse, mockStepperState,
-    mockSurveyAndProgramState, mockValidateBaselineResponse
+    mockShapeResponse,
+    mockStepperState,
+    mockSurveyAndProgramState,
+    mockValidateBaselineResponse
 } from "../mocks";
 import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {getters as surveyAndProgramGetters} from "../../app/store/surveyAndProgram/getters";
@@ -21,6 +23,7 @@ import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations
 import {mutations as stepperMutations} from '../../app/store/stepper/mutations';
 import {mutations as loadMutations} from '../../app/store/load/mutations';
 import {modelRunGetters, ModelRunState} from "../../app/store/modelRun/modelRun";
+import ADRKey from "../../app/components/adr/ADRKey.vue";
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
@@ -45,7 +48,7 @@ describe("Stepper component", () => {
                        stepperState?: Partial<StepperState>,
                        loadState?: Partial<LoadState>) => {
 
-        const store =  new Vuex.Store({
+        const store = new Vuex.Store({
             actions: rootActions,
             mutations: rootMutations,
             modules: {
@@ -498,5 +501,48 @@ describe("Stepper component", () => {
         await makeReady(store, wrapper);
         expect(spy).toHaveBeenCalled();
     });
+
+    it("show ADR key if on step 1", () => {
+        const wrapper = getStepperOnStep(1);
+        expect(wrapper.findAll(ADRKey).length).toBe(1);
+    });
+
+    it("show ADR key if on step 2", () => {
+        const wrapper = getStepperOnStep(2);
+        expect(wrapper.findAll(ADRKey).length).toBe(1);
+    });
+
+    it("does not show ADR key on step 3", () => {
+        const wrapper = getStepperOnStep(3);
+        expect(wrapper.findAll(ADRKey).length).toBe(0);
+    });
+
+
+    it("does not show ADR key on step 4", () => {
+        const wrapper = getStepperOnStep(4);
+        expect(wrapper.findAll(ADRKey).length).toBe(0);
+    });
+
+
+    it("does not show ADR key on step 5", () => {
+        const wrapper = getStepperOnStep(5);
+        expect(wrapper.findAll(ADRKey).length).toBe(0);
+    });
+
+
+    it("does not show ADR key on step 6", () => {
+        const wrapper = getStepperOnStep(6);
+        expect(wrapper.findAll(ADRKey).length).toBe(0);
+    });
+
+    const getStepperOnStep = (step: number) => {
+        const store = createSut(
+            {ready: true},
+            {ready: true},
+            {},
+            {ready: true, result: "TEST" as any},
+            {activeStep: step});
+        return shallowMount(Stepper, {store, localVue});
+    }
 
 });
