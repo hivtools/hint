@@ -1,5 +1,7 @@
 export interface Translations {
+    add: string,
     adjustScale: string,
+    adrKey: string,
     age: string,
     ANC: string,
     area: string,
@@ -31,6 +33,7 @@ export interface Translations {
     download: string,
     downloadResults: string,
     downloadSummary: string,
+    edit: string,
     email: string,
     emailValidation: string,
     enterPassword: string,
@@ -64,6 +67,7 @@ export interface Translations {
     missingError: string,
     modelOptions: string,
     newPassword: string,
+    noneProvided: string,
     notUsed: string,
     ok: string,
     or: string,
@@ -108,7 +112,9 @@ export interface Translations {
 }
 
 const en: Translations = {
+    add: "add",
     adjustScale: "Adjust scale",
+    adrKey: "ADR API Key",
     age: "Age",
     ANC: "ANC Testing",
     area: "Area",
@@ -140,6 +146,7 @@ const en: Translations = {
     download: "Download",
     downloadResults: "Download results",
     downloadSummary: "Download coarse age group outputs",
+    edit: "edit",
     email: "Email address",
     emailValidation: "Please enter a valid email address.",
     entireDataset: "Entire dataset",
@@ -173,6 +180,7 @@ const en: Translations = {
     missingError: "API response failed but did not contain any error information. Please contact support.",
     modelOptions: "Model options",
     newPassword: "New password",
+    noneProvided: "none provided",
     notUsed: "Not used",
     ok: "OK",
     or: "or",
@@ -279,6 +287,7 @@ const fr: Partial<Translations> = {
     missingError: "La réponse de l'API a échoué mais ne contenait aucune information d'erreur. Veuillez contacter le support.",
     modelOptions: "Options des modèles",
     newPassword: "Nouveau mot de passe",
+    noneProvided: "aucune",
     notUsed: "Non utilisé",
     ok: "OK",
     or: "ou",
