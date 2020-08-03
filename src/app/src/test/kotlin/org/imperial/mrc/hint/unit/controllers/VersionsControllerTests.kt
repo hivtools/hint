@@ -14,6 +14,7 @@ import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.models.Snapshot
 import org.imperial.mrc.hint.models.Version
 import org.pac4j.core.profile.CommonProfile
+import org.springframework.http.HttpStatus
 
 class VersionsControllerTests {
     private val mockProfile = mock<CommonProfile> {
@@ -33,7 +34,7 @@ class VersionsControllerTests {
     {
 
         val snapshot = Snapshot("testSnapshot", "createdTime", "updatedTime")
-        val mockSessionRepo = mock<SnapshotRepository> {
+        val mockSnapshotRepo = mock<SnapshotRepository> {
             on { getSnapshot("testSnapshot") } doReturn snapshot
         }
 
@@ -41,11 +42,11 @@ class VersionsControllerTests {
             on { saveNewVersion("testUser", "testVersion") } doReturn 99
         }
 
-        val sut = VersionsController(mockSession, mockSessionRepo, mockVersionRepo)
+        val sut = VersionsController(mockSession, mockSnapshotRepo, mockVersionRepo)
 
         val result = sut.newVersion("testVersion")
 
-        verify(mockSessionRepo).saveSnapshot("testSnapshot", 99)
+        verify(mockSnapshotRepo).saveSnapshot("testSnapshot", 99)
 
         val resultJson = parser.readTree(result.body)["data"]
 
@@ -94,5 +95,18 @@ class VersionsControllerTests {
         val resultJson = parser.readTree(result.body)["data"]
         val versions = resultJson as ArrayNode
         assertThat(versions.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `can upload state`()
+    {
+        val mockRepo = mock<SnapshotRepository>();
+        val sut = VersionsController(mockSession, mockRepo, mock())
+
+        val result = sut.uploadState(99, "testSnapshot", "testState")
+
+        verify(mockRepo).saveSnapshotState("testSnapshot", 99, "testUser", "testState")
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 }
