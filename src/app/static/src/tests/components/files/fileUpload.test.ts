@@ -1,11 +1,12 @@
 import Vue from "vue";
-import {createWrapper, shallowMount, Slots} from '@vue/test-utils';
+import {shallowMount, Slots} from '@vue/test-utils';
 
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import {mockFile} from "../../mocks";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {BDropdown} from "bootstrap-vue";
 
 describe("File upload component", () => {
 
@@ -28,6 +29,9 @@ describe("File upload component", () => {
         return store;
     };
 
+    const mockHideDropDown = jest.fn();
+    const dropdownWithMockedHideMethod = Vue.extend({mixins: [BDropdown], methods: {hide: mockHideDropDown}});
+
     const createSut = (props?: any, slots?: Slots) => {
         return shallowMount(FileUpload, {
             store: createStore(),
@@ -37,11 +41,18 @@ describe("File upload component", () => {
                 accept: "csv",
                 ...props
             },
-            slots: slots
+            slots: slots,
+            stubs: {
+                "b-dropdown": dropdownWithMockedHideMethod
+            }
         });
     };
 
     const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
+
+    beforeEach(() => {
+        jest.resetAllMocks();
+    });
 
     it("renders hidden input", () => {
         const wrapper = createSut({
@@ -62,7 +73,18 @@ describe("File upload component", () => {
         expect(wrapper.emitted()['input-opened'].length).toBe(1);
     });
 
-    it("calls upload when file is selected", (done) => {
+    it("closes dropdown when file is selected", async () => {
+
+        const wrapper = createSut({name: "test"});
+
+        wrapper.find("input").trigger("change");
+
+        await Vue.nextTick();
+
+        expect(mockHideDropDown).toBeCalledWith(true);
+    });
+
+    it("calls upload when file is selected", async () => {
 
         const uploader = jest.fn();
         const wrapper = createSut({
@@ -76,15 +98,13 @@ describe("File upload component", () => {
 
         wrapper.find("input").trigger("change");
 
-        setTimeout(() => {
-            const formData = uploader.mock.calls[0][0] as FormData;
-            expect(formData.get('file')).toBe(testFile);
-            done();
-        });
+        await Vue.nextTick();
 
+        const formData = uploader.mock.calls[0][0] as FormData;
+        expect(formData.get('file')).toBe(testFile);
     });
 
-    it("calls upload function with formData", (done) => {
+    it("calls upload function with formData", async () => {
         const uploader = jest.fn();
         const wrapper = createSut({
             upload: uploader
@@ -96,10 +116,9 @@ describe("File upload component", () => {
 
         (wrapper.vm as any).handleFileSelect();
 
-        setTimeout(() => {
-            expect(uploader.mock.calls[0][0] instanceof FormData).toBe(true);
-            done();
-        });
+        await Vue.nextTick();
+
+        expect(uploader.mock.calls[0][0] instanceof FormData).toBe(true);
     });
 
     it("emits uploading event while uploading", async () => {

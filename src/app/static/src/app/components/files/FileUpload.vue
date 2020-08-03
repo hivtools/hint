@@ -1,18 +1,20 @@
 <template>
     <div>
-        <b-dropdown text="Select file from" variant="white">
-            <a class="dropdown-item" href="#" v-on:mousedown="$refs[name].click()">
-                <input type="file"
-                       style="display:none"
-                       :ref="name"
-                       :id="name"
-                       :accept="accept"
-                       v-on:change="handleFileSelect"
-                       @click="$emit('input-opened')"/>
-                <!-- emit input-opened event so that tests can verify that this
-                is triggered -->
-                This computer
-            </a>
+        <b-dropdown text="Select file from" variant="white" :ref="'dropdown-' + name">
+            <li>
+                <a class="dropdown-item" href="#" v-on:mousedown="$refs[name].click()">
+                    <input type="file"
+                           style="display:none"
+                           :ref="name"
+                           :id="name"
+                           :accept="accept"
+                           v-on:change="handleFileSelect"
+                           @click="$emit('input-opened')"/>
+                    <!-- emit input-opened event so that tests can verify that this
+                    is triggered -->
+                    This computer
+                </a>
+            </li>
             <adr-select></adr-select>
         </b-dropdown>
         <reset-confirmation :continue-editing="uploadSelectedFile"
@@ -76,6 +78,7 @@
                 }
             },
             uploadSelectedFile() {
+                (this.$refs[`dropdown-${this.name}`] as BDropdown).hide(true);
                 const fileInput = this.$refs[this.name] as HTMLInputElement;
                 const selectedFile = fileInput.files!![0]!!;
                 const formData = new FormData();
