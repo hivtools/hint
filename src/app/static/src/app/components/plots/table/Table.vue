@@ -86,14 +86,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
           
       }
     },
-    mounted(){
-      console.log("this.countryAreaFilterOption in table", this.countryAreaFilterOption),
-      console.log("this.selections", this.selections),
-      console.log("this.selectedAreaIds", this.selectedAreaIds),
-      console.log("this.selectedAreaFilterOptions", this.selectedAreaFilterOptions),
-      console.log("this.selections.selectedFilterOptions", this.selections.selectedFilterOptions),
-      console.log("this.filters", this.filters)
-    },
     computed: {
         nonAreaFilters() {
              return this.filters.filter((f: Filter) => f.id != this.areaFilterId);

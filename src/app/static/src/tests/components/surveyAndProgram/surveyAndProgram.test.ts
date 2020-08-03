@@ -247,7 +247,29 @@ describe("Survey and programme component", () => {
         });
         expect(table.props().indicators).toStrictEqual(["TEST INDICATORS"]);
         expect(table.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
-
+        expect(table.props().countryAreaFilterOption).toStrictEqual(
+          [
+          {
+              "allowMultiple": true,
+              "column_id": "area_id",
+              "id": "area",
+              "label": "area",
+              "options": [
+                {
+                  "children":[
+                    {
+                      "id": "region 1",
+                    },
+                    {
+                      "id": "region 2",
+                    },
+                  ],
+                  "id": "country",
+                },
+              ],
+            }
+        ]
+        );
     });
 
 });
