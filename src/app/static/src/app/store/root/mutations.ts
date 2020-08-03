@@ -12,6 +12,7 @@ import {initialSurveyAndProgramState, DataType} from "../surveyAndProgram/survey
 import {PayloadWithType, Version} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialVersionsState} from "../versions/versions";
+import {router} from '../../router';
 
 export enum RootMutation {
     Reset = "Reset",
@@ -71,6 +72,8 @@ export const mutations: MutationTree<RootState> = {
         state.surveyAndProgram.ready = true;
         state.baseline.ready = true;
         state.modelRun.ready = true;
+
+        router.push("/");
     },
 
     [RootMutation.ResetSelectedDataType](state: RootState) {

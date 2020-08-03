@@ -29,14 +29,14 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProps} from "../../utils";
     import {VersionsState} from "../../store/versions/versions";
     import {Error} from "../../generated";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import {PayloadWithType, Version} from "../../types";
+    import {Version} from "../../types";
 
-    import {VersionsMutations} from "../../store/versions/mutations";
+    declare const currentUser: string;
 
     const namespace = "versions";
 
@@ -54,8 +54,7 @@
 
     interface Methods {
         handleCurrentVersionClick: (e: Event) => void,
-        createVersion: (name: string) => void,
-        setManageVersions: (payload: PayloadWithType<boolean>) => void
+        createVersion: (name: string) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -78,10 +77,9 @@
         methods: {
             handleCurrentVersionClick: function(e: Event) {
                 e.preventDefault();
-                this.setManageVersions({type:  VersionsMutations.SetManageVersions, payload: false});
+                this.$router.push('/');
             },
-            createVersion: mapActionByName(namespace, "createVersion"),
-            setManageVersions: mapMutationByName(namespace, VersionsMutations.SetManageVersions)
+            createVersion: mapActionByName(namespace, "createVersion")
         },
         components: {
             ErrorAlert,
