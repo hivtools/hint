@@ -3,11 +3,13 @@ import {mount, shallowMount} from "@vue/test-utils";
 
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import Vuex, {ActionTree} from "vuex";
-import {mockRootState} from "../../mocks";
+import {Error} from "../../../app/generated";
+import {mockError, mockRootState} from "../../mocks";
 import {mutations} from "../../../app/store/root/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {RootActions} from "../../../app/store/root/actions";
 import {RootState} from "../../../app/root";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 declare let currentUser: string;
 
@@ -17,9 +19,9 @@ describe("ADR Key", function () {
     const saveStub = jest.fn();
     const deleteStub = jest.fn();
 
-    const createStore = (key: string = "") => {
+    const createStore = (key: string = "", error: Error | null = null) => {
         const store = new Vuex.Store({
-            state: mockRootState({adrKey: key}),
+            state: mockRootState({adrKey: key, adrKeyError: error}),
             mutations: mutations,
             actions: {
                 fetchADRKey: fetchStub,
@@ -168,6 +170,16 @@ describe("ADR Key", function () {
         await Vue.nextTick();
 
         expect(saveStub.mock.calls.length).toBe(1);
+    });
+
+    it("displays error if it exists", () => {
+        let rendered = shallowMount(ADRKey, {store: createStore("", null)});
+        expect(rendered.findAll(ErrorAlert).length).toBe(0);
+
+        const fakeError = mockError("whatevs")
+        rendered = shallowMount(ADRKey, {store: createStore("", fakeError)});
+        expect(rendered.findAll(ErrorAlert).length).toBe(1);
+        expect(rendered.find(ErrorAlert).props("error")).toEqual(fakeError);
     });
 
 });

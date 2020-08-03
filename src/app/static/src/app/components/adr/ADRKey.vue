@@ -47,16 +47,18 @@
                        v-translate="'cancel'"></a>
                 </div>
             </div>
+            <error-alert v-if="error" :error="error"></error-alert>
         </div>
     </div>
 </template>
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapActionsByNames, mapMutationByName, mapStateProp} from "../../utils";
-    import {RootMutation} from "../../store/root/mutations";
+    import {mapActionsByNames, mapStateProp} from "../../utils";
+    import {Error} from "../../generated"
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import i18next from "i18next";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     interface Data {
         editableKey: string | null
@@ -77,7 +79,8 @@
         key: string | null
         currentLanguage: Language
         keyText: string
-        loggedIn: boolean
+        loggedIn: boolean,
+        error: Error | null
     }
 
     declare const currentUser: string;
@@ -97,6 +100,8 @@
                 (state: RootState) => state.adrKey),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
+            error: mapStateProp<RootState, Error | null>(null,
+                (state: RootState) => state.adrKeyError),
             keyText() {
                 if (this.key) {
                     let str = ""
@@ -139,7 +144,8 @@
             if (this.loggedIn) {
                 this.fetchADRKey();
             }
-        }
+        },
+        components: {ErrorAlert}
     });
 
 </script>
