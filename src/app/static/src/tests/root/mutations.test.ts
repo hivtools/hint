@@ -1,4 +1,4 @@
-import {mutations} from "../../app/store/root/mutations";
+import {mutations, RootMutation} from "../../app/store/root/mutations";
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 
@@ -35,7 +35,7 @@ import {router} from '../../app/router';
 
 describe("Root mutations", () => {
 
-    const populatedState = function() {
+    const populatedState = function () {
         return mockRootState({
             baseline: mockBaselineState({country: "Test Country", ready: true}),
             metadata: mockMetadataState({plottingMetadataError: mockError("Test Metadata Error")}),
@@ -50,11 +50,11 @@ describe("Root mutations", () => {
         });
     };
 
-    const testOnlyExpectedModulesArePopulated = function(modules: string[], state: RootState) {
+    const testOnlyExpectedModulesArePopulated = function (modules: string[], state: RootState) {
         const popState = populatedState();
 
         //These modules may or may not be reset depending on the last valid step
-        expect(state.baseline).toStrictEqual(modules.includes("baseline") ?  popState.baseline : mockBaselineState({ready: true}));
+        expect(state.baseline).toStrictEqual(modules.includes("baseline") ? popState.baseline : mockBaselineState({ready: true}));
         expect(state.metadata).toStrictEqual(modules.includes("metadata") ? popState.metadata : initialMetadataState());
         expect(state.surveyAndProgram).toStrictEqual(modules.includes("surveyAndProgram") ? popState.surveyAndProgram :
             mockSurveyAndProgramState({ready: true}));
@@ -185,7 +185,7 @@ describe("Root mutations", () => {
         //These should not be reset
         state.plottingSelections.sapChoropleth.detail = 2;
         state.plottingSelections.colourScales.anc = {
-                testIndicator: {type: ColourScaleType.Custom} as any
+            testIndicator: {type: ColourScaleType.Custom} as any
         };
 
         mutations.ResetOutputs(state);
@@ -229,5 +229,13 @@ describe("Root mutations", () => {
         expect(mockRouterPush.mock.calls.length).toBe(1);
         expect(mockRouterPush.mock.calls[0][0]).toBe("/");
     });
-});
 
+    it("can update ADR key", () => {
+        const state = mockRootState();
+        mutations[RootMutation.UpdateADRKey](state, "new-key");
+        expect(state.adrKey).toBe("new-key");
+
+        mutations[RootMutation.UpdateADRKey](state, null);
+        expect(state.adrKey).toBe(null);
+    });
+});

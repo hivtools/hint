@@ -2,6 +2,8 @@ import {mockAxios, mockFailure, mockRootState, mockSuccess, mockVersionsState} f
 import {actions} from "../../app/store/versions/actions";
 import {VersionsMutations} from "../../app/store/versions/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
+import {Version} from "../../app/types";
+import {serialiseState} from "../../app/localStorageManager";
 
 describe("Versions actions", () => {
     beforeEach(() => {
@@ -10,7 +12,9 @@ describe("Versions actions", () => {
 
     const rootState = mockRootState();
 
-    it("posts to new version endpoint and sets error on unsuccessful response", async (done) => {
+    const mockVersion: Version = {id: 1, name: "testVersion", snapshots: [{id: "snap-id", created: "", updated: ""}]};
+
+    it("createVersion posts to new version endpoint and sets error on unsuccessful response", async (done) => {
         mockAxios.onPost(`/version/`)
             .reply(500, mockFailure("TestError"));
 
@@ -28,7 +32,7 @@ describe("Versions actions", () => {
         });
     });
 
-    it("posts to new version endpoint and resets version with root on successful response", async (done) => {
+    it("createVersion posts to new version endpoint and resets version with root on successful response", async (done) => {
         mockAxios.onPost(`/version/`)
             .reply(200, mockSuccess("TestVersion"));
 
@@ -46,5 +50,111 @@ describe("Versions actions", () => {
             expect(commit.mock.calls[1][1]).toStrictEqual({root: true});
             done();
         });
+    });
+
+    it("if current snapshot, createVersion uploads current snapshot before post to new version endpoint", async (done) => {
+        mockAxios.onPost(`/version/`)
+            .reply(200, mockSuccess("TestVersion"));
+        mockAxios.onPost( "/version/1/snapshot/snap-id/state/")
+            .reply(200, mockSuccess("ok"));
+
+        const commit = jest.fn();
+        const state = mockVersionsState({
+            currentVersion: mockVersion,
+            currentSnapshot: mockVersion.snapshots[0],
+            snapshotUploadPending: true
+        });
+
+        actions.createVersion({commit, state, rootState} as any, "newVersion");
+
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(2);
+            expect(mockAxios.history.post[0].url).toBe("/version/1/snapshot/snap-id/state/");
+            expect(mockAxios.history.post[1].url).toBe("/version/");
+
+            done();
+        });
+    });
+
+    it("uploadSnapshotState does nothing if no current snapshot", async (done) => {
+        const commit = jest.fn();
+        const state = mockVersionsState();
+
+        actions.uploadSnapshotState({commit, state, rootState} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(0);
+            expect(mockAxios.history.post.length).toBe(0);
+            done();
+        }, 2500);
+    });
+
+    it("uploadSnapshotState does nothing if no snapshot upload is pending", async (done) => {
+        const commit = jest.fn();
+        const state = mockVersionsState({
+            currentVersion: mockVersion,
+            currentSnapshot: mockVersion.snapshots[0],
+            snapshotUploadPending: true
+        });
+
+        actions.uploadSnapshotState({commit, state, rootState} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(0);
+            expect(mockAxios.history.post.length).toBe(0);
+            done();
+        }, 2500);
+    });
+
+    it("uploadSnapshotState sets pending then unsets and uploads state", async (done) => {
+        const commit = jest.fn();
+        const state = mockVersionsState({
+            currentVersion: mockVersion,
+            currentSnapshot: mockVersion.snapshots[0],
+            snapshotUploadPending: false
+        });
+
+        const url = "/version/1/snapshot/snap-id/state/";
+        mockAxios.onPost(url)
+            .reply(200, mockSuccess("ok"));
+
+        actions.uploadSnapshotState({commit, state, rootState} as any);
+        expect(commit.mock.calls[0][0]).toStrictEqual(
+            {type: VersionsMutations.SetSnapshotUploadPending, payload: true});
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2);
+            expect(commit.mock.calls[1][0]).toStrictEqual(
+                {type: VersionsMutations.SetSnapshotUploadPending, payload: false});
+
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.post[0].url).toBe(url)
+            const posted = mockAxios.history.post[0].data;
+            expect(JSON.parse(posted)).toStrictEqual(serialiseState(rootState));
+            done();
+        }, 2500);
+    });
+
+    it("uploadSnapshotState commits SnapshotUploadError on error response", async (done) => {
+        const commit = jest.fn();
+        const state = mockVersionsState({
+            currentVersion: mockVersion,
+            currentSnapshot: mockVersion.snapshots[0],
+            snapshotUploadPending: false
+        });
+
+        const url = "/version/1/snapshot/snap-id/state/";
+        mockAxios.onPost(url)
+            .reply(500, mockFailure("TEST ERROR"));
+
+        actions.uploadSnapshotState({commit, state, rootState} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls[2][0].type).toStrictEqual(VersionsMutations.SnapshotUploadError);
+            expect(commit.mock.calls[2][0].payload.detail).toStrictEqual("TEST ERROR");
+
+            done();
+        }, 2500);
     });
 });

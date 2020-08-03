@@ -15,6 +15,7 @@ import {initialVersionsState} from "../versions/versions";
 import {router} from '../../router';
 
 export enum RootMutation {
+    UpdateADRKey = "UpdateADRKey",
     Reset = "Reset",
     ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
@@ -23,6 +24,10 @@ export enum RootMutation {
 }
 
 export const mutations: MutationTree<RootState> = {
+    [RootMutation.UpdateADRKey](state: RootState, payload: string | null) {
+        state.adrKey = payload;
+    },
+
     [RootMutation.Reset](state: RootState, action: PayloadWithType<number>) {
 
         const maxValidStep = action.payload;
@@ -32,6 +37,7 @@ export const mutations: MutationTree<RootState> = {
         const resetState: RootState = {
             version: state.version,
             language: state.language,
+            adrKey: state.adrKey,
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
             surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramState() : state.surveyAndProgram,

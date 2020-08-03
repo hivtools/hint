@@ -18,7 +18,7 @@ import BubblePlot from "../../../app/components/plots/bubble/BubblePlot.vue";
 
 const localVue = createLocalVue();
 
-function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
+function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}) {
     const store = new Vuex.Store({
         state: emptyState(),
         modules: {
@@ -48,12 +48,13 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                     ...modelOutputState,
                 },
                 getters: {
-                    barchartIndicators: jest.fn(),
+                    barchartIndicators: jest.fn().mockReturnValue(["TEST BARCHART INDICATORS"]),
                     barchartFilters: jest.fn().mockReturnValue(["TEST BAR FILTERS"]),
                     bubblePlotIndicators: jest.fn().mockReturnValue(["TEST BUBBLE INDICATORS"]),
                     bubblePlotFilters: jest.fn().mockReturnValue(["TEST BUBBLE FILTERS"]),
                     choroplethFilters: jest.fn().mockReturnValue(["TEST CHORO FILTERS"]),
-                    choroplethIndicators: jest.fn().mockReturnValue(["TEST CHORO INDICATORS"])
+                    choroplethIndicators: jest.fn().mockReturnValue(["TEST CHORO INDICATORS"]),
+                    ...partialGetters
                 },
                 mutations: modelOutputMutations
             },
@@ -73,7 +74,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}) {
                     outputChoropleth: {test: "TEST CHORO SELECTIONS"} as any,
                     colourScales: {
                         output: {test: "TEST OUTPUT COLOUR SCALES"} as any
-                    }
+                    },
+                    ...partialSelections
                 },
                 mutations: plottingSelectionMutations
             }
@@ -263,5 +265,124 @@ describe("ModelOutput component", () => {
         const bubbleColourScales = {test: "NEW BUBBLE COLOUR SCALES"};
         bubble.vm.$emit("updateColourScales", bubbleColourScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(bubbleColourScales);
+    });
+
+    it("renders choropleth table", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.find("table-view-stub");
+        expect(table.props().areaFilterId).toBe("area");
+        expect(table.props().filters).toStrictEqual(["TEST CHORO FILTERS"]);
+        expect(table.props().selections).toStrictEqual({test: "TEST CHORO SELECTIONS"});
+        expect(table.props().indicators).toStrictEqual(["TEST CHORO INDICATORS"]);
+        expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+    });
+
+    it("renders choropleth table with correct indicator props", () => {
+        const store = getStore({}, {
+            choroplethIndicators: jest.fn().mockReturnValue(
+                [ 
+                    { "indicator": "prevalence", "indicator_value": "2" }, 
+                    { "indicator": "art_coverage", "indicator_value": "4" }
+                ]
+            )
+    }, 
+    {
+        outputChoropleth: {indicatorId: "art_coverage"}
+    });
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.find("table-view-stub");
+        expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
+        expect(table.props().indicators).toStrictEqual([ { "indicator": "art_coverage", "indicator_value": "4" } ]);
+    });
+
+    it("renders bubble plot table", () => {
+        const store = getStore({selectedTab: "bubble"});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.findAll("table-view-stub").at(1);
+        expect(table.props().areaFilterId).toBe("area");
+        expect(table.props().filters).toStrictEqual(["TEST BUBBLE FILTERS"]);
+        expect(table.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
+        expect(table.props().indicators).toStrictEqual(["TEST BUBBLE INDICATORS", "TEST BUBBLE INDICATORS"]);
+        expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+    });
+
+    it("renders bubble plot table with correct indicator props", () => {
+        const store = getStore(
+            {
+                selectedTab: "bubble"
+            },
+            {
+                bubblePlotIndicators: jest.fn().mockReturnValue(
+                    [
+                        {"indicator": "prevalence", "indicator_value": "2"},
+                        {"indicator": "art_coverage", "indicator_value": "4"},
+                        {"indicator": "current_art", "indicator_value": "6"}
+                    ]
+                )
+            },
+            {
+                bubble: {colorIndicatorId: "art_coverage", sizeIndicatorId: "current_art"}
+            });
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.findAll("table-view-stub").at(1);
+        expect(table.props().selections).toStrictEqual({colorIndicatorId: "art_coverage", sizeIndicatorId: "current_art"});
+        expect(table.props().indicators).toStrictEqual(
+            [
+                {
+                    "indicator": "art_coverage",
+                    "indicator_value": "4"
+                },
+                {
+                    "indicator": "current_art",
+                    "indicator_value": "6"
+                }
+            ]
+        );
+    });
+
+    it("renders barchart table", () => {
+        const store = getStore({selectedTab: "bar"});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.find("table-view-stub");
+        expect(table.props().areaFilterId).toBe("area");
+        expect(table.props().filters).toStrictEqual(["TEST BAR FILTERS"]);
+        expect(table.props().selections).toStrictEqual({
+            indicatorId: "TestIndicator",
+            xAxisId: "region",
+            disaggregateById: "age",
+            selectedFilterOptions: {
+                region: {id: "r1", label: "region 1"},
+                age: {id: "a1", label: "0-4"}
+            }});
+        expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+    });
+
+    it("renders barchart table with correct indicator props", () => {
+        const store = getStore({selectedTab: "bar"}, {
+            barchartIndicators: jest.fn().mockReturnValue(
+                [ 
+                    { "indicator": "prevalence", "indicator_value": "2" }, 
+                    { "indicator": "art_coverage", "indicator_value": "4" }
+                ]
+            )
+    }, 
+    {
+        barchart: {indicatorId: "art_coverage"}
+    });
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.find("table-view-stub");
+        expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
+        expect(table.props().indicators).toStrictEqual(
+            [ 
+                { "indicator": "art_coverage", "indicator_value": "4" }
+            ]
+        );
     });
 });
