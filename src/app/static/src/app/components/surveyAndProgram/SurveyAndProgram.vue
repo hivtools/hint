@@ -63,6 +63,7 @@
                         <table-view :tabledata="data"
                                     :area-filter-id="areaFilterId"
                                     :filters="filters"
+                                    :countryAreaFilterOption="countryAreaFilterOption"
                                     :indicators="filterTableIndicators"
                                     :selections="plottingSelections"
 
@@ -99,6 +100,7 @@
     interface Computed {
         selectedDataType: DataType,
         filters: Filter[],
+        countryAreaFilterOption: Filter[],
         data: any,
         sapIndicatorsMetadata: ChoroplethIndicatorMetadata[],
         showChoropleth: boolean,
@@ -158,7 +160,7 @@
                 featureLevels: ({baseline}) => baseline.shape ? baseline.shape.filters.level_labels : [],
                 plottingSelections: ({plottingSelections}) => plottingSelections.sapChoropleth
             }),
-            ...mapGettersByNames(namespace, ["data", "filters"]),
+            ...mapGettersByNames(namespace, ["data", "filters", "countryAreaFilterOption"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
             ...mapGetters("plottingSelections", ["selectedSAPColourScales"])
         },

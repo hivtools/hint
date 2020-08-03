@@ -32,6 +32,7 @@
                            :tabledata="chartdata"
                            :area-filter-id="areaFilterId"
                            :filters="choroplethFilters"
+                           :countryAreaFilterOption="countryAreaFilterOption"
                            :indicators="filteredChoroplethIndicators"
                            :selections="choroplethSelections"
                         
@@ -53,6 +54,7 @@
                             :tabledata="chartdata"
                             :area-filter-id="areaFilterId"
                             :filters="barchartFilters"
+                            :countryAreaFilterOption="countryAreaFilterOption"
                             :indicators="filteredBarchartIndicators"
                             :selections="barchartSelections"
                             
@@ -75,6 +77,7 @@
                                 :tabledata="chartdata"
                                 :area-filter-id="areaFilterId"
                                 :filters="bubblePlotFilters"
+                                :countryAreaFilterOption="countryAreaFilterOption"
                                 :indicators="filteredBubblePlotIndicators"
                                 :selections="bubblePlotSelections"
                                 
@@ -131,6 +134,7 @@
         barchartFilters: Filter[],
         bubblePlotFilters: Filter[],
         choroplethFilters: Filter[],
+        countryAreaFilterOption: Filter[],
         barchartIndicators: BarchartIndicator[],
         chartdata: any,
         barchartSelections: BarchartSelections,
@@ -184,7 +188,7 @@
             ...mapGettersByNames("modelOutput", [
                 "barchartFilters", "barchartIndicators",
                 "bubblePlotFilters", "bubblePlotIndicators",
-                "choroplethFilters", "choroplethIndicators"]),
+                "choroplethFilters", "choroplethIndicators", "countryAreaFilterOption"]),
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
             chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
                 return state.result ? state.result.data : [];

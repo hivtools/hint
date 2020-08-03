@@ -33,6 +33,21 @@ export const getters = {
         return res ? res.data : null;
     },
 
+    countryAreaFilterOption: (state: SurveyAndProgramState, getters: any, rootState: RootState): DisplayFilter[] => {
+      const result = [] as DisplayFilter[];
+
+      if (rootState.baseline.shape) {
+        result.push({
+            id: "area",
+            column_id: "area_id",
+            label: "area",
+            options: [rootState.baseline.shape!!.filters!!.regions as FilterOption],
+            allowMultiple: true
+        });
+    }
+    return result;
+    },
+
     filters: (state: SurveyAndProgramState, getters: any, rootState: RootState): DisplayFilter[] => {
         const result = [] as DisplayFilter[];
 

@@ -38,6 +38,7 @@ interface Props {
         detail: number | null
     },
     filters: Filter[],
+    countryAreaFilterOption: Filter[],
     areaFilterId: string
 }
 interface DisplayRow {
@@ -61,9 +62,12 @@ const props = {
     filters: {
         type: Array
     },
+    countryAreaFilterOption: {
+        type: Array
+    },
     indicators: {
-            type: Array
-        },
+        type: Array
+    },
     areaFilterId: {
         type: String
     },
@@ -82,16 +86,26 @@ export default Vue.extend<{}, {}, Computed, Props>({
           
       }
     },
+    mounted(){
+      console.log("this.countryAreaFilterOption in table", this.countryAreaFilterOption),
+      console.log("this.selections", this.selections),
+      console.log("this.selectedAreaIds", this.selectedAreaIds),
+      console.log("this.selectedAreaFilterOptions", this.selectedAreaFilterOptions),
+      console.log("this.selections.selectedFilterOptions", this.selections.selectedFilterOptions),
+      console.log("this.filters", this.filters)
+    },
     computed: {
         nonAreaFilters() {
              return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
-         },
+        },
         areaFilter() {
-                 return this.filters.find((f: Filter) => f.id == this.areaFilterId)!!;
-             },
+          if (this.selections.detail === 0 || !this.selections.detail) {
+            return this.countryAreaFilterOption.find((f: Filter) => f.id == this.areaFilterId)!!;
+          } else return this.filters.find((f: Filter) => f.id == this.areaFilterId)!!;
+        },
         flattenedAreas() {
                  return this.areaFilter ? flattenOptions(this.areaFilter.options) : {};
-             },
+        },
         selectedAreaIds() {
             const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
             const areaArray = Array.from(selectedAreaIdSet)
@@ -103,8 +117,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
             const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
             if (selectedOptions && selectedOptions.length > 0) {
                 return selectedOptions
-            }
-            return this.areaFilter ? this.areaFilter.options : []; //consider all top level areas to be selected if none are
+            } else return this.areaFilter ? this.areaFilter.options : []; //consider all top level areas to be selected if none are
         },
         filtersToDisplay() {
             return this.nonAreaFilters.filter(f => f.options.length > 0)
