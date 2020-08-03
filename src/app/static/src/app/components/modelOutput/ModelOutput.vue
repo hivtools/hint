@@ -14,7 +14,8 @@
         </div>
         <div class="row mt-2">
             <div v-if="selectedTab==='map'" id="choropleth-container" class="col-md-12">
-                <choropleth :chartdata="chartdata"
+                <choropleth 
+                            :chartdata="chartdata"
                             :filters="choroplethFilters"
                             :features="features"
                             :feature-levels="featureLevels"
@@ -25,6 +26,18 @@
                             :colour-scales="colourScales"
                             @update="updateOutputChoroplethSelections({payload: $event})"
                             @updateColourScales="updateOutputColourScales({payload: $event})"></choropleth>
+                <div class="row mt-2">
+                    <div class="col-md-3"></div>
+                    <table-view class="col-md-9"
+                           :tabledata="chartdata"
+                           :area-filter-id="areaFilterId"
+                           :filters="choroplethFilters"
+                           :indicators="filteredChoroplethIndicators"
+                           :selections="choroplethSelections"
+                        
+                           :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
+                        ></table-view>
+                </div>
             </div>
 
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
@@ -34,6 +47,18 @@
                         :indicators="barchartIndicators"
                         :selections="barchartSelections"
                         @update="updateBarchartSelections({payload: $event})" ></bar-chart-with-filters>
+                <div class="row mt-2">
+                    <div class="col-md-3"></div>
+                    <table-view class="col-md-9"
+                            :tabledata="chartdata"
+                            :area-filter-id="areaFilterId"
+                            :filters="barchartFilters"
+                            :indicators="filteredBarchartIndicators"
+                            :selections="barchartSelections"
+                            
+                            :selectedFilterOptions="barchartSelections.selectedFilterOptions"
+                            ></table-view>
+                </div>
             </div>
 
             <div v-if="selectedTab==='bubble'" id="bubble-plot-container" class="col-md-12">
@@ -44,6 +69,18 @@
                              :colour-scales="colourScales"
                              @update="updateBubblePlotSelections({payload: $event})"
                              @updateColourScales="updateOutputColourScales({payload: $event})"></bubble-plot>
+                <div class="row mt-2">
+                    <div class="col-md-3"></div>
+                    <table-view class="col-md-9"
+                                :tabledata="chartdata"
+                                :area-filter-id="areaFilterId"
+                                :filters="bubblePlotFilters"
+                                :indicators="filteredBubblePlotIndicators"
+                                :selections="bubblePlotSelections"
+                                
+                                :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
+                                ></table-view>
+                    </div>
             </div>
         </div>
     </div>
@@ -54,6 +91,7 @@
     import Vue from "vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
+    import TableView from "../plots/table/Table.vue";
     import {BarchartIndicator, Filter} from "@reside-ic/vue-charts/src/bar/types";
     import {BarChartWithFilters, FilterConfig} from "@reside-ic/vue-charts";
 
@@ -74,6 +112,7 @@
     import {RootState} from "../../root";
     import {LevelLabel} from "../../types";
     import {mapState} from "vuex";
+    import {ChoroplethIndicatorMetadata} from "../../generated";
 
     const namespace: string = 'filteredData';
 
@@ -102,7 +141,12 @@
         featureLevels: LevelLabel[]
         currentLanguage: Language,
         filterConfig: FilterConfig,
-        colourScales: ColourScaleSelections
+        colourScales: ColourScaleSelections,
+        choroplethIndicators: ChoroplethIndicatorMetadata[],
+        bubblePlotIndicators: ChoroplethIndicatorMetadata[],
+        filteredChoroplethIndicators: ChoroplethIndicatorMetadata[],
+        filteredBarchartIndicators: BarchartIndicator[],
+        filteredBubblePlotIndicators: ChoroplethIndicatorMetadata[],
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -120,10 +164,23 @@
             }
 
             return {
-                tabs: tabs
+                tabs: tabs,
+                areaFilterId: "area"
             }
         },
         computed: {
+            filteredChoroplethIndicators(){
+                return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
+            },
+            filteredBarchartIndicators(){
+                return this.barchartIndicators.filter((val: BarchartIndicator) => val.indicator === this.barchartSelections.indicatorId)
+            },
+            filteredBubblePlotIndicators(){
+                return [
+                    ...this.bubblePlotIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.bubblePlotSelections.colorIndicatorId),
+                    ...this.bubblePlotIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.bubblePlotSelections.sizeIndicatorId)
+                    ]
+            },
             ...mapGettersByNames("modelOutput", [
                 "barchartFilters", "barchartIndicators",
                 "bubblePlotFilters", "bubblePlotIndicators",
@@ -167,7 +224,8 @@
         components: {
             BarChartWithFilters,
             BubblePlot,
-            Choropleth
+            Choropleth,
+            TableView
         }
     })
 </script>
