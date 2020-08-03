@@ -1,10 +1,10 @@
 import Vue from "vue";
-import {shallowMount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import Vuex, {ActionTree} from "vuex";
 import {mockRootState} from "../../mocks";
-import {mutations, RootMutation} from "../../../app/store/root/mutations";
+import {mutations} from "../../../app/store/root/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {RootActions} from "../../../app/store/root/actions";
 import {RootState} from "../../../app/root";
@@ -18,17 +18,17 @@ describe("ADR Key", function () {
     const deleteStub = jest.fn();
 
     const createStore = (key: string = "") => {
-       const store = new Vuex.Store({
-           state: mockRootState({adrKey: key}),
-           mutations: mutations,
-           actions: {
-               fetchADRKey: fetchStub,
-               saveADRKey: saveStub,
-               deleteADRKey: deleteStub
-           } as Partial<RootActions> & ActionTree<RootState, RootState>
+        const store = new Vuex.Store({
+            state: mockRootState({adrKey: key}),
+            mutations: mutations,
+            actions: {
+                fetchADRKey: fetchStub,
+                saveADRKey: saveStub,
+                deleteADRKey: deleteStub
+            } as Partial<RootActions> & ActionTree<RootState, RootState>
         });
-       registerTranslations(store);
-       return store;
+        registerTranslations(store);
+        return store;
     }
 
     beforeEach(() => {
@@ -84,7 +84,11 @@ describe("ADR Key", function () {
     });
 
     it("can edit key", async () => {
-        const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
+        const rendered = mount(ADRKey,
+            {
+                store: createStore("123-abc"),
+                attachToDocument: true
+            });
         expect(rendered.findAll(".input-group").length).toBe(0);
         const links = rendered.findAll("a")
         links.at(0).trigger("click");
@@ -92,6 +96,7 @@ describe("ADR Key", function () {
         await Vue.nextTick();
 
         expect(rendered.find("button").text()).toBe("Save");
+        expect(rendered.find("input").element).toBe(document.activeElement);
 
         rendered.find("input").setValue("new-key-456");
         rendered.find("button").trigger("click");

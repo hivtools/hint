@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.controllers
 
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.Version
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -28,6 +29,16 @@ class VersionsController(private val session: Session,
         val snapshot = snapshotRepository.getSnapshot(newSnapshotId)
         val version = Version(versionId, name, listOf(snapshot))
         return SuccessResponse(version).asResponseEntity()
+    }
+
+    @PostMapping("/version/{versionId}/snapshot/{snapshotId}/state")
+    @ResponseBody
+    fun uploadState(@PathVariable("versionId") versionId: Int,
+                    @PathVariable("snapshotId") snapshotId: String,
+                    @RequestBody state: String): ResponseEntity<String>
+    {
+        snapshotRepository.saveSnapshotState(snapshotId, versionId, userId(), state)
+        return EmptySuccessResponse.asResponseEntity()
     }
 
     @GetMapping("/versions/")
