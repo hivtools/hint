@@ -1,5 +1,7 @@
 package org.imperial.mrc.hint.controllers
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -12,7 +14,9 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/adr")
 class ADRController(private val session: Session,
                     private val encryption: Encryption,
-                    private val userRepository: UserRepository) {
+                    private val userRepository: UserRepository,
+                    private val adrClientBuilder: ADRClientBuilder,
+                    private val objectMapper: ObjectMapper) {
 
     @GetMapping("/key")
     fun getAPIKey(): ResponseEntity<String> {
@@ -39,5 +43,22 @@ class ADRController(private val session: Session,
         val userId = session.getUserProfile().id
         userRepository.deleteADRKey(userId)
         return SuccessResponse(null).asResponseEntity()
+    }
+
+    @GetMapping("/datasets")
+    fun getDatasets(@RequestParam showInaccessible: Boolean = false): ResponseEntity<String> {
+        val adr = adrClientBuilder.build()
+        var url = "package_search?q=type:inputs-unaids-estimates"
+        url = if (showInaccessible) {
+            // this flag is used for testing but will never
+            // actually be passed by the front-end
+            url
+        } else {
+            "$url&hide_inaccessible_resources=true"
+        }
+        val response = adr.get(url)
+        val body = objectMapper.readTree(response.body!!)
+        val data = objectMapper.readTree(response.body!!)["data"]["results"]
+        return SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
     }
 }

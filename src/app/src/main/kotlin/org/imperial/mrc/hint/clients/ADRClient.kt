@@ -13,7 +13,7 @@ class ADRClientBuilder(val appProperties: AppProperties,
                        val session: Session,
                        val userRepository: UserRepository) {
 
-    fun build(): ADRClient {
+    fun build(): HttpClient {
 
         val userId = this.session.getUserProfile().id
         val encryptedKey = this.userRepository.getADRKey(userId)?: throw UserException("noADRKey")
