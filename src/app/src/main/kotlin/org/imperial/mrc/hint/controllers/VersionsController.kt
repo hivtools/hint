@@ -35,9 +35,12 @@ class VersionsController(private val session: Session,
     fun newSnapshot(@PathVariable("versionId") versionId: Int,
                     @RequestBody state: String): ResponseEntity<String>
     {
+        //TODO: take 'parent' snapshot id as qs parameter, and copy over all snapshot file rows
         val newSnapshotId = session.generateNewSnapshotId()
-        val snapshot = snapshotRepository.saveUserSnapshot(newSnapshotId, versionId, userId())
+        snapshotRepository.saveUserSnapshot(newSnapshotId, versionId, userId())
         snapshotRepository.saveSnapshotState(newSnapshotId, versionId, userId(), state)
+
+        val snapshot = snapshotRepository.getSnapshot(newSnapshotId)
         return SuccessResponse(snapshot).asResponseEntity();
     }
 
