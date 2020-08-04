@@ -32,6 +32,11 @@ describe("App", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        console.log = jest.fn();
+    });
+
+    afterEach(() => {
+        (console.log as jest.Mock).mockClear();
     });
 
     const getStore = (ready: boolean = false) => {
