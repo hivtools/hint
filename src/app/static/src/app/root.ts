@@ -1,4 +1,5 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
+import {Error} from "./generated";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
 import {versions, VersionsState, initialVersionsState} from "./store/versions/versions";
 import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
@@ -32,7 +33,9 @@ export interface TranslatableState {
 }
 
 export interface RootState extends TranslatableState {
-    version: string;
+    version: string,
+    adrKey: string | null,
+    adrKeyError: Error | null,
     baseline: BaselineState,
     metadata: MetadataState,
     surveyAndProgram: SurveyAndProgramState,
@@ -54,6 +57,12 @@ const persistState = (store: Store<RootState>) => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
         console.log(mutation.type);
         localStorageManager.saveState(state);
+
+        const {dispatch} = store;
+        const type = stripNamespace(mutation.type);
+        if (type[0] !== "versions" && type[0] !== "errors") {
+            dispatch("versions/uploadSnapshotState", {root: true});
+        }
     })
 };
 
@@ -87,7 +96,9 @@ const resetState = (store: Store<RootState>) => {
 };
 
 export const emptyState = (): RootState => {
-     return {
+    return {
+        adrKey: null,
+        adrKeyError: null,
         language: Language.en,
         version: '0.0.0',
         baseline: initialBaselineState(),

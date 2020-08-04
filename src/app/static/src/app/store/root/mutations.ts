@@ -1,5 +1,6 @@
 import {MutationTree} from "vuex";
 import {emptyState, RootState} from "../../root";
+import {Error} from "../../generated";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
@@ -12,16 +13,27 @@ import {initialSurveyAndProgramState, DataType} from "../surveyAndProgram/survey
 import {PayloadWithType, Version} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialVersionsState} from "../versions/versions";
+import {router} from '../../router';
 
 export enum RootMutation {
     Reset = "Reset",
     ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
-    SetVersion = "SetVersion"
+    SetADRKeyError = "ADRKeyError",
+    SetVersion = "SetVersion",
+    UpdateADRKey = "UpdateADRKey"
 }
 
 export const mutations: MutationTree<RootState> = {
+    [RootMutation.UpdateADRKey](state: RootState, action: PayloadWithType<string | null>) {
+        state.adrKey = action.payload;
+    },
+
+    [RootMutation.SetADRKeyError](state: RootState, action: PayloadWithType<Error | null>) {
+        state.adrKeyError = action.payload;
+    },
+
     [RootMutation.Reset](state: RootState, action: PayloadWithType<number>) {
 
         const maxValidStep = action.payload;
@@ -31,6 +43,8 @@ export const mutations: MutationTree<RootState> = {
         const resetState: RootState = {
             version: state.version,
             language: state.language,
+            adrKey: state.adrKey,
+            adrKeyError: state.adrKeyError,
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
             surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramState() : state.surveyAndProgram,
@@ -71,6 +85,8 @@ export const mutations: MutationTree<RootState> = {
         state.surveyAndProgram.ready = true;
         state.baseline.ready = true;
         state.modelRun.ready = true;
+
+        router.push("/");
     },
 
     [RootMutation.ResetSelectedDataType](state: RootState) {

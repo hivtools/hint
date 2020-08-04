@@ -1,15 +1,14 @@
 package org.imperial.mrc.hint.db
 
 import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.db.Tables.FILE
-import org.imperial.mrc.hint.db.Tables.VERSION_SNAPSHOT
-import org.imperial.mrc.hint.db.Tables.SNAPSHOT_FILE
+import org.imperial.mrc.hint.db.Tables.*
 import org.imperial.mrc.hint.exceptions.SnapshotException
 import org.imperial.mrc.hint.models.Snapshot
 import org.imperial.mrc.hint.models.SnapshotFile
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
+import org.jooq.impl.DSL.count
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Component
 
@@ -26,6 +25,7 @@ interface SnapshotRepository {
     fun getHashesForSnapshot(snapshotId: String): Map<String, String>
     fun getSnapshotFiles(snapshotId: String): Map<String, SnapshotFile>
     fun setFilesForSnapshot(snapshotId: String, files: Map<String, SnapshotFile?>)
+    fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
 }
 
 @Component
@@ -142,6 +142,27 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         } catch (e: DataIntegrityViolationException) {
             throw SnapshotException("loadFailed")
         }
+    }
+
+    override fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
+    {
+        checkSnapshotExists(snapshotId, versionId, userId)
+        dsl.update(VERSION_SNAPSHOT)
+                .set(VERSION_SNAPSHOT.STATE, state)
+                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
+                .execute()
+    }
+
+    private fun checkSnapshotExists(snapshotId: String, versionId: Int, userId: String)
+    {
+        dsl.select(VERSION_SNAPSHOT.ID)
+                .from(VERSION_SNAPSHOT)
+                .join(VERSION)
+                .on(VERSION_SNAPSHOT.VERSION_ID.eq(VERSION.ID))
+                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
+                .and(VERSION.ID.eq(versionId))
+                .and(VERSION.USER_ID.eq(userId))
+                .fetchAny() ?: throw SnapshotException("snapshotDoesNotExist");
     }
 
     private fun getSnapshotFileRecord(snapshotId: String, type: FileType): Record? {

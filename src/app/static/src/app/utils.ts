@@ -34,9 +34,9 @@ export const mapActionByName = <T>(namespace: string | null, name: string): Acti
     return (!!namespace && mapActions(namespace, [name])[name]) || mapActions([name])[name]
 };
 
-export const mapActionsByNames = <K extends string>(namespace: string, names: string[]) => {
+export const mapActionsByNames = <K extends string>(namespace: string | null, names: string[]) => {
     type R = { [key in K]: any }
-    return mapActions(namespace, names) as R
+    return (!!namespace && mapActions(namespace, names) || mapActions(names)) as R
 };
 
 export const mapMutationsByNames = <K extends string>(namespace: string, names: string[]) => {
@@ -44,8 +44,8 @@ export const mapMutationsByNames = <K extends string>(namespace: string, names: 
     return mapMutations(namespace, names) as R
 };
 
-export const mapMutationByName = <T>(namespace: string, name: string): MutationMethod => {
-    return mapMutations(namespace, [name])[name]
+export const mapMutationByName = <T>(namespace: string | null, name: string): MutationMethod => {
+    return (!!namespace && mapMutations(namespace, [name])[name]) || mapMutations([name])[name]
 };
 
 export const addCheckSum = (data: string): string => {

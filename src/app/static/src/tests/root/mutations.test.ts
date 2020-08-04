@@ -1,4 +1,4 @@
-import {mutations} from "../../app/store/root/mutations";
+import {mutations, RootMutation} from "../../app/store/root/mutations";
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 
@@ -31,10 +31,11 @@ import {initialLoadState} from "../../app/store/load/load";
 import {initialErrorsState} from "../../app/store/errors/errors";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
+import {router} from '../../app/router';
 
 describe("Root mutations", () => {
 
-    const populatedState = function() {
+    const populatedState = function () {
         return mockRootState({
             baseline: mockBaselineState({country: "Test Country", ready: true}),
             metadata: mockMetadataState({plottingMetadataError: mockError("Test Metadata Error")}),
@@ -49,11 +50,11 @@ describe("Root mutations", () => {
         });
     };
 
-    const testOnlyExpectedModulesArePopulated = function(modules: string[], state: RootState) {
+    const testOnlyExpectedModulesArePopulated = function (modules: string[], state: RootState) {
         const popState = populatedState();
 
         //These modules may or may not be reset depending on the last valid step
-        expect(state.baseline).toStrictEqual(modules.includes("baseline") ?  popState.baseline : mockBaselineState({ready: true}));
+        expect(state.baseline).toStrictEqual(modules.includes("baseline") ? popState.baseline : mockBaselineState({ready: true}));
         expect(state.metadata).toStrictEqual(modules.includes("metadata") ? popState.metadata : initialMetadataState());
         expect(state.surveyAndProgram).toStrictEqual(modules.includes("surveyAndProgram") ? popState.surveyAndProgram :
             mockSurveyAndProgramState({ready: true}));
@@ -184,7 +185,7 @@ describe("Root mutations", () => {
         //These should not be reset
         state.plottingSelections.sapChoropleth.detail = 2;
         state.plottingSelections.colourScales.anc = {
-                testIndicator: {type: ColourScaleType.Custom} as any
+            testIndicator: {type: ColourScaleType.Custom} as any
         };
 
         mutations.ResetOutputs(state);
@@ -207,6 +208,9 @@ describe("Root mutations", () => {
         const state = populatedState();
         state.language = Language.fr;
 
+        const mockRouterPush = jest.fn();
+        router.push = mockRouterPush;
+
         const version = {id: 1, name: "newVersion", snapshots: [{id: "newSnapshot"}]};
         mutations.SetVersion(state, {payload: version});
 
@@ -221,6 +225,26 @@ describe("Root mutations", () => {
         expect(state.baseline.ready).toBe(true);
         expect(state.surveyAndProgram.ready).toBe(true);
         expect(state.modelRun.ready).toBe(true);
+
+        expect(mockRouterPush.mock.calls.length).toBe(1);
+        expect(mockRouterPush.mock.calls[0][0]).toBe("/");
+    });
+
+    it("can update ADR key", () => {
+        const state = mockRootState();
+        mutations[RootMutation.UpdateADRKey](state, {payload: "new-key"});
+        expect(state.adrKey).toBe("new-key");
+
+        mutations[RootMutation.UpdateADRKey](state, {payload: null});
+        expect(state.adrKey).toBe(null);
+    });
+
+    it("can set ADR key error", () => {
+        const state = mockRootState();
+        mutations[RootMutation.SetADRKeyError](state, {payload: mockError("whatevs")});
+        expect(state.adrKeyError!!.detail).toBe("whatevs");
+
+        mutations[RootMutation.SetADRKeyError](state, {payload: null});
+        expect(state.adrKeyError).toBe(null);
     });
 });
-

@@ -10,7 +10,9 @@
 <body>
 <div id="app" :class="language">
     <user-header title="${title}" user="${user}"></user-header>
-    <user-content user="${user}"></user-content>
+    <div class="container mb-5">
+        <router-view></router-view>
+    </div>
     <errors title="${title}"></errors>
 </div>
 <script>
