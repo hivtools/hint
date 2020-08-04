@@ -43,4 +43,5 @@ class ADRClientTests {
         assertThat(errors[0]["error"].textValue()).isEqualTo("OTHER_ERROR")
         assertThat(errors[0]["detail"].textValue()).isEqualTo("Could not parse response.")
     }
+
 }

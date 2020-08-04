@@ -34,23 +34,17 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return unexpectedError(status, request, e.message)
     }
 
-    @ExceptionHandler(PSQLException::class)
-    fun handlePSQLException(e: PSQLException, request: WebRequest): ResponseEntity<Any> {
-        logger.error(e.message)
-        // for security reasons we should not return arbitrary db errors to the frontend
-        // so do not pass the original error message here
-        return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
-    }
-    
     @ExceptionHandler(HintException::class)
     fun handleHintException(e: HintException, request: WebRequest): ResponseEntity<Any> {
-        logger.error(e.message)
+        logger.error(e)
         return translatedError(e.key, e.httpStatus, request)
     }
 
     @ExceptionHandler(Exception::class)
     fun handleArbitraryException(e: Exception, request: WebRequest): ResponseEntity<Any> {
-        logger.error(e.message)
+        logger.error(e)
+        // for security reasons we should not return arbitrary errors to the frontend
+        // so do not pass the original error message here
         return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
     }
 

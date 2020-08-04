@@ -79,7 +79,7 @@ class ADRController(private val encryption: Encryption,
     }
 
     @PostMapping("/file")
-    fun uploadPJNZ(@RequestParam url: String, @RequestParam type: String): ResponseEntity<String> {
+    fun saveFile(@RequestParam url: String, @RequestParam type: String): ResponseEntity<String> {
         val fileType = when (type) {
             appProperties.adrANC -> FileType.ANC
             appProperties.adrART -> FileType.Programme

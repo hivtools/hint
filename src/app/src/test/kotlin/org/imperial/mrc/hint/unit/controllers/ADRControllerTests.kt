@@ -6,11 +6,16 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.FileManager
+import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.exceptions.HintException
+import org.imperial.mrc.hint.models.SnapshotFileWithPath
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
@@ -31,6 +36,12 @@ class ADRControllerTests {
 
     private val mockProperties = mock<AppProperties> {
         on { adrSchema } doReturn "adr-schema"
+        on { adrANC } doReturn "adr-anc"
+        on { adrART } doReturn "adr-art"
+        on { adrPJNZ } doReturn "adr-pjnz"
+        on { adrPop } doReturn "adr-pop"
+        on { adrShape } doReturn "adr-shape"
+        on { adrSurvey } doReturn "adr-survey"
     }
 
     private val objectMapper = ObjectMapper()
@@ -38,7 +49,7 @@ class ADRControllerTests {
     @Test
     fun `encrypts key before saving it`() {
         val mockRepo = mock<UserRepository>()
-        val sut = ADRController(mockEncryption, mockRepo, mock(), mock(), mock(), mock(), mock(), mockSession,mock())
+        val sut = ADRController(mockEncryption, mockRepo, mock(), mock(), mock(), mock(), mock(), mockSession, mock())
         sut.saveAPIKey("plainText")
         verify(mockRepo).saveADRKey("test", "encrypted".toByteArray())
     }
@@ -48,7 +59,7 @@ class ADRControllerTests {
         val mockRepo = mock<UserRepository>() {
             on { getADRKey("test") } doReturn "encrypted".toByteArray()
         }
-        val sut = ADRController(mockEncryption, mockRepo, mock(), mock(), mock(), mock(), mock(), mockSession,mock())
+        val sut = ADRController(mockEncryption, mockRepo, mock(), mock(), mock(), mock(), mock(), mockSession, mock())
         val result = sut.getAPIKey()
         val data = objectMapper.readTree(result.body!!)["data"].asText()
         assertThat(data).isEqualTo("decrypted")
@@ -56,7 +67,7 @@ class ADRControllerTests {
 
     @Test
     fun `returns null if key does not exist`() {
-        val sut = ADRController(mock(), mock(), mock(), mock(), mock(), mock(), mock(), mockSession,mock())
+        val sut = ADRController(mock(), mock(), mock(), mock(), mock(), mock(), mock(), mockSession, mock())
         val result = sut.getAPIKey()
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isNull).isTrue()
@@ -160,6 +171,48 @@ class ADRControllerTests {
                 mock())
         val result = sut.getDatasets()
         assertThat(result).isEqualTo(badResponse)
+    }
+
+    @Test
+    fun `parses adr file schemas to the appropriate file type`() {
+
+        val mockFileManager = mock<FileManager> {
+            on { getFile(FileType.Shape) } doReturn SnapshotFileWithPath("path", "hash", "filename")
+        }
+
+        val fakeUrl = "http://url"
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mock(),
+                objectMapper,
+                mockProperties,
+                mockFileManager,
+                mock(),
+                mockSession,
+                mock())
+
+        sut.saveFile(fakeUrl, "adr-art")
+        verify(mockFileManager).saveFile(fakeUrl, FileType.Programme)
+
+        sut.saveFile(fakeUrl, "adr-anc")
+        verify(mockFileManager).saveFile(fakeUrl, FileType.ANC)
+
+        sut.saveFile(fakeUrl, "adr-pjnz")
+        verify(mockFileManager).saveFile(fakeUrl, FileType.PJNZ)
+
+        sut.saveFile(fakeUrl, "adr-pop")
+        verify(mockFileManager).saveFile(fakeUrl, FileType.Population)
+
+        sut.saveFile(fakeUrl, "adr-shape")
+        verify(mockFileManager).saveFile(fakeUrl, FileType.Shape)
+
+        sut.saveFile(fakeUrl, "adr-survey")
+        verify(mockFileManager).saveFile(fakeUrl, FileType.Survey)
+
+        assertThatThrownBy {
+            sut.saveFile(fakeUrl, "bad-type")
+        }.isInstanceOf(HintException::class.java)
     }
 
     private fun makeFakeSuccessResponse(): ResponseEntity<String> {

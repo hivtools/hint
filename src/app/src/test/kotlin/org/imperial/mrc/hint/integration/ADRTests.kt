@@ -98,6 +98,7 @@ class ADRTests : SecureIntegrationTests() {
                 getPostEntityWithUrl(pjnz, "inputs-unaids-spectrum-file"))
         assertSecureWithError(isAuthorized, result, HttpStatus.INTERNAL_SERVER_ERROR, "OTHER_ERROR")
         //assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
+
     }
 
     private fun getPostEntityWithKey(): HttpEntity<LinkedMultiValueMap<String, String>> {
