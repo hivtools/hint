@@ -1,16 +1,26 @@
 import Vue from "vue";
 import {store} from "./main"
-import UserContent from "./components/UserContent.vue";
+import {router} from "./router";
 import UserHeader from "./components/header/UserHeader.vue";
 import Errors from "./components/Errors.vue";
+import Stepper from "./components/Stepper.vue";
+import Versions from "./components/versions/Versions.vue";
 import {mapActions, mapState} from "vuex";
 import {RootState} from "./root";
+import VueRouter from "vue-router";
+
+Vue.use(VueRouter);
+
+router.addRoutes( [
+    {path: "/", component: Stepper},
+    {path: "/versions", component: Versions}
+]);
 
 export const app = new Vue({
     el: "#app",
     store,
+    router,
     components: {
-        UserContent,
         UserHeader,
         Errors
     },

@@ -31,6 +31,7 @@ import {initialLoadState} from "../../app/store/load/load";
 import {initialErrorsState} from "../../app/store/errors/errors";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
+import {router} from '../../app/router';
 
 describe("Root mutations", () => {
 
@@ -207,6 +208,9 @@ describe("Root mutations", () => {
         const state = populatedState();
         state.language = Language.fr;
 
+        const mockRouterPush = jest.fn();
+        router.push = mockRouterPush;
+
         const version = {id: 1, name: "newVersion", snapshots: [{id: "newSnapshot"}]};
         mutations.SetVersion(state, {payload: version});
 
@@ -221,6 +225,9 @@ describe("Root mutations", () => {
         expect(state.baseline.ready).toBe(true);
         expect(state.surveyAndProgram.ready).toBe(true);
         expect(state.modelRun.ready).toBe(true);
+
+        expect(mockRouterPush.mock.calls.length).toBe(1);
+        expect(mockRouterPush.mock.calls[0][0]).toBe("/");
     });
 
     it("can update ADR key", () => {
