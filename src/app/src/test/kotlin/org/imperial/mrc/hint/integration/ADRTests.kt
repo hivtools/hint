@@ -84,7 +84,7 @@ class ADRTests : SecureIntegrationTests() {
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `can save PJNZ from ADR`(isAuthorized: IsAuthorized) {
+    fun `can save file from ADR`(isAuthorized: IsAuthorized) {
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
         val resultWithResources = testRestTemplate.getForEntity<String>("/adr/datasets?showInaccessible=true")
         val pjnz = if (isAuthorized == IsAuthorized.TRUE) {
@@ -94,7 +94,8 @@ class ADRTests : SecureIntegrationTests() {
         } else {
             "fake"
         }
-        val result = testRestTemplate.postForEntity<String>("/adr/pjnz", getPostEntityWithUrl(pjnz))
+        val result = testRestTemplate.postForEntity<String>("/adr/file",
+                getPostEntityWithUrl(pjnz, "inputs-unaids-spectrum-file"))
         assertSecureWithError(isAuthorized, result, HttpStatus.INTERNAL_SERVER_ERROR, "OTHER_ERROR")
         //assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
@@ -107,9 +108,10 @@ class ADRTests : SecureIntegrationTests() {
         return HttpEntity(map, headers)
     }
 
-    private fun getPostEntityWithUrl(url: String): HttpEntity<LinkedMultiValueMap<String, String>> {
+    private fun getPostEntityWithUrl(url: String, type: String): HttpEntity<LinkedMultiValueMap<String, String>> {
         val map = LinkedMultiValueMap<String, String>()
         map.add("url", url)
+        map.add("type", type)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         return HttpEntity(map, headers)

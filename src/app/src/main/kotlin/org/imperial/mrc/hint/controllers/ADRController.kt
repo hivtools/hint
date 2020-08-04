@@ -8,6 +8,8 @@ import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.exceptions.HintException
+import org.imperial.mrc.hint.models.ErrorResponse
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
@@ -76,40 +78,21 @@ class ADRController(private val encryption: Encryption,
         }
     }
 
-    @PostMapping("/dataset")
-    fun selectDataset(@RequestParam dataset: String) {
-       // save to db
+    @PostMapping("/file")
+    fun uploadPJNZ(@RequestParam url: String, @RequestParam type: String): ResponseEntity<String> {
+        val fileType = when (type) {
+            appProperties.adrANC -> FileType.ANC
+            appProperties.adrART -> FileType.Programme
+            appProperties.adrPJNZ -> FileType.PJNZ
+            appProperties.adrPop -> FileType.Population
+            appProperties.adrShape -> FileType.Shape
+            appProperties.adrSurvey -> FileType.Survey
+            else -> null
+        }
+        if (fileType == null) {
+            throw HintException("Unrecognised ADR file type: $type", HttpStatus.BAD_REQUEST)
+        } else {
+            return saveAndValidate(url, fileType)
+        }
     }
-
-    @PostMapping("/pjnz")
-    fun uploadPJNZ(@RequestParam url: String): ResponseEntity<String> {
-        return saveAndValidate(url, FileType.PJNZ)
-    }
-
-    @PostMapping("/shape")
-    fun uploadShape(@RequestParam url: String): ResponseEntity<String> {
-        return saveAndValidate(url, FileType.Shape)
-    }
-
-    @PostMapping("/population")
-    fun uploadPopulation(@RequestParam url: String): ResponseEntity<String> {
-        return saveAndValidate(url, FileType.Population)
-    }
-
-    @PostMapping("/survey")
-    fun uploadSurvey(@RequestParam url: String): ResponseEntity<String> {
-        return saveAndValidate(url, FileType.Survey)
-    }
-
-    @PostMapping("/programme")
-    fun uploadProgramme(@RequestParam url: String): ResponseEntity<String> {
-        return saveAndValidate(url, FileType.Programme)
-    }
-
-    @PostMapping("/anc")
-    fun uploadANC(@RequestParam url: String): ResponseEntity<String> {
-        return saveAndValidate(url, FileType.ANC)
-    }
-
-
 }
