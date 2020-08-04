@@ -124,6 +124,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                         }});
                     filteredValues.push({areaId, filterValues, indicatorMeta, value});
                 });
+                console.log('filteredValues', filteredValues)
                 const displayRows: Dict<any> = {};
                 filteredValues.forEach(current => {
                     const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
@@ -142,6 +143,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     }
                     displayRows[key].indicatorValues[current.indicatorMeta.indicator] = current.value;
                 });
+                console.log('filteredData', Object.values(displayRows))
                 return Object.values(displayRows);
         }
     }
