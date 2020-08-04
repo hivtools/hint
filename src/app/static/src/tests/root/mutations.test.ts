@@ -225,10 +225,19 @@ describe("Root mutations", () => {
 
     it("can update ADR key", () => {
         const state = mockRootState();
-        mutations[RootMutation.UpdateADRKey](state, "new-key");
+        mutations[RootMutation.UpdateADRKey](state, {payload: "new-key"});
         expect(state.adrKey).toBe("new-key");
 
-        mutations[RootMutation.UpdateADRKey](state, null);
+        mutations[RootMutation.UpdateADRKey](state, {payload: null});
         expect(state.adrKey).toBe(null);
+    });
+
+    it("can set ADR key error", () => {
+        const state = mockRootState();
+        mutations[RootMutation.SetADRKeyError](state, {payload: mockError("whatevs")});
+        expect(state.adrKeyError!!.detail).toBe("whatevs");
+
+        mutations[RootMutation.SetADRKeyError](state, {payload: null});
+        expect(state.adrKeyError).toBe(null);
     });
 });

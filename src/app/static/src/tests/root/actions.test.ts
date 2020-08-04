@@ -1,9 +1,16 @@
 import {actions} from "../../app/store/root/actions";
-import {mockStepperState} from "../mocks";
+import {mockAxios, mockRootState, mockStepperState, mockSuccess} from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
+import {RootMutation} from "../../app/store/root/mutations";
 
 describe("root actions", () => {
+
+    const rootState = mockRootState();
+
+    beforeEach(() => {
+        mockAxios.reset();
+    });
 
     //NB in these tests 'valid' means complete with no preceding incomplete steps, or incomplete with no subsequent
     //complete steps
@@ -183,5 +190,61 @@ describe("root actions", () => {
             payload: "fr"
         })
     });
+
+    it("fetches ADR key", async () => {
+        mockAxios.onGet(`/adr/key/`)
+            .reply(200, mockSuccess("1234"));
+
+        const commit = jest.fn();
+
+        await actions.fetchADRKey({commit, rootState} as any);
+
+        expect(commit.mock.calls[0][0])
+            .toStrictEqual({
+                type: RootMutation.UpdateADRKey,
+                payload: "1234"
+            });
+    });
+
+    it("saves ADR key", async () => {
+        mockAxios.onPost(`/adr/key/`)
+            .reply(200, mockSuccess("1234"));
+
+        const commit = jest.fn();
+
+        await actions.saveADRKey({commit, rootState} as any, "1234");
+
+        expect(commit.mock.calls[0][0])
+            .toStrictEqual({
+                type: RootMutation.SetADRKeyError,
+                payload: null
+            });
+        expect(commit.mock.calls[1][0])
+            .toStrictEqual({
+                type: RootMutation.UpdateADRKey,
+                payload: "1234"
+            });
+    });
+
+    it("deletes ADR key", async () => {
+        mockAxios.onDelete(`/adr/key/`)
+            .reply(200, mockSuccess(null));
+
+        const commit = jest.fn();
+
+        await actions.deleteADRKey({commit, rootState} as any);
+
+        expect(commit.mock.calls[0][0])
+            .toStrictEqual({
+                type: RootMutation.SetADRKeyError,
+                payload: null
+            });
+        expect(commit.mock.calls[1][0])
+            .toStrictEqual({
+                type: RootMutation.UpdateADRKey,
+                payload: null
+            });
+    });
+
 
 });

@@ -1,5 +1,6 @@
 import {MutationTree} from "vuex";
 import {emptyState, RootState} from "../../root";
+import {Error} from "../../generated";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
@@ -14,17 +15,22 @@ import {mutations as languageMutations} from "../language/mutations";
 import {initialVersionsState} from "../versions/versions";
 
 export enum RootMutation {
-    UpdateADRKey = "UpdateADRKey",
     Reset = "Reset",
     ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
-    SetVersion = "SetVersion"
+    SetADRKeyError = "ADRKeyError",
+    SetVersion = "SetVersion",
+    UpdateADRKey = "UpdateADRKey"
 }
 
 export const mutations: MutationTree<RootState> = {
-    [RootMutation.UpdateADRKey](state: RootState, payload: string | null) {
-        state.adrKey = payload;
+    [RootMutation.UpdateADRKey](state: RootState, action: PayloadWithType<string | null>) {
+        state.adrKey = action.payload;
+    },
+
+    [RootMutation.SetADRKeyError](state: RootState, action: PayloadWithType<Error | null>) {
+        state.adrKeyError = action.payload;
     },
 
     [RootMutation.Reset](state: RootState, action: PayloadWithType<number>) {
@@ -37,6 +43,7 @@ export const mutations: MutationTree<RootState> = {
             version: state.version,
             language: state.language,
             adrKey: state.adrKey,
+            adrKeyError: state.adrKeyError,
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
             surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramState() : state.surveyAndProgram,
