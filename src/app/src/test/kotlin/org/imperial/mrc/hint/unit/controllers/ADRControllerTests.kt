@@ -15,6 +15,7 @@ import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
 class ADRControllerTests {
@@ -126,6 +127,27 @@ class ADRControllerTests {
         assertThat(data.isArray).isTrue()
         assertThat(data.count()).isEqualTo(1)
         assertThat(data[0]["resources"].count()).isEqualTo(2)
+    }
+
+    @Test
+    fun `passes error responses along`() {
+        val badResponse = ResponseEntity<String>(HttpStatus.BAD_REQUEST)
+        val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
+        val mockClient = mock<HttpClient> {
+            on { get(expectedUrl) } doReturn badResponse
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mockSession,
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties)
+        val result = sut.getDatasets()
+        assertThat(result).isEqualTo(badResponse)
     }
 
     private fun makeFakeSuccessResponse(): ResponseEntity<String> {

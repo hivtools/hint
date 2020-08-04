@@ -8,6 +8,7 @@ import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -59,7 +60,11 @@ class ADRController(private val session: Session,
             "$url&hide_inaccessible_resources=true"
         }
         val response = adr.get(url)
-        val data = objectMapper.readTree(response.body!!)["data"]["results"]
-        return SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
+        return if (response.statusCode != HttpStatus.OK) {
+            response
+        } else {
+            val data = objectMapper.readTree(response.body!!)["data"]["results"]
+            SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
+        }
     }
 }
