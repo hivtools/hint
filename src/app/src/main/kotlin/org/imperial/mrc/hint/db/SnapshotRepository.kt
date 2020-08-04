@@ -8,12 +8,12 @@ import org.imperial.mrc.hint.models.SnapshotFile
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
-import org.jooq.impl.DSL.count
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Component
 
 interface SnapshotRepository {
     fun saveSnapshot(snapshotId: String, versionId: Int?)
+    fun saveUserSnapshot(snapshotId: String, versionId: Int, userId: String)
     fun getSnapshot(snapshotId: String): Snapshot
 
     // returns true if a new hash is saved, false if it already exists
@@ -31,10 +31,11 @@ interface SnapshotRepository {
 @Component
 class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
 
-    override fun saveSnapshot(snapshotId: String, versionId: Int?) {
-
+    override fun saveSnapshot(snapshotId: String, versionId: Int?)
+    {
         val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
                 .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
+                .and(VERSION_SNAPSHOT.VERSION_ID.eq(versionId))
                 .firstOrNull()
 
         if (snapshot == null) {
@@ -43,6 +44,12 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
                     .set(VERSION_SNAPSHOT.VERSION_ID, versionId)
                     .execute()
         }
+    }
+
+    override fun saveUserSnapshot(snapshotId: String, versionId: Int, userId: String)
+    {
+        checkVersionExists(versionId, userId);
+        saveSnapshot(snapshotId, versionId);
     }
 
     override fun getSnapshot(snapshotId: String): Snapshot
@@ -153,6 +160,15 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
                 .execute()
     }
 
+    private fun checkVersionExists(versionId: Int, userId: String)
+    {
+        dsl.select(VERSION.ID)
+                .from(VERSION)
+                .where(VERSION.ID.eq(versionId))
+                .and(VERSION.USER_ID.eq(userId))
+                .fetchAny() ?: throw SnapshotException("versionDoesNotExist")
+    }
+
     private fun checkSnapshotExists(snapshotId: String, versionId: Int, userId: String)
     {
         dsl.select(VERSION_SNAPSHOT.ID)
@@ -162,7 +178,7 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
                 .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
                 .and(VERSION.ID.eq(versionId))
                 .and(VERSION.USER_ID.eq(userId))
-                .fetchAny() ?: throw SnapshotException("snapshotDoesNotExist");
+                .fetchAny() ?: throw SnapshotException("snapshotDoesNotExist")
     }
 
     private fun getSnapshotFileRecord(snapshotId: String, type: FileType): Record? {

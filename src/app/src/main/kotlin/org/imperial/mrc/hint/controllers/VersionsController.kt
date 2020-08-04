@@ -24,11 +24,21 @@ class VersionsController(private val session: Session,
 
         //Generate new snapshot id and set it as the session variable, and save new snapshot to db
         val newSnapshotId = session.generateNewSnapshotId()
-        snapshotRepository.saveSnapshot(newSnapshotId, versionId)
+        snapshotRepository.saveUserSnapshot(newSnapshotId, versionId, userId())
 
         val snapshot = snapshotRepository.getSnapshot(newSnapshotId)
         val version = Version(versionId, name, listOf(snapshot))
         return SuccessResponse(version).asResponseEntity()
+    }
+
+    @PostMapping("/version/{versionId}/snapshot/")
+    fun newSnapshot(@PathVariable("versionId") versionId: Int,
+                    @RequestBody state: String): ResponseEntity<String>
+    {
+        val newSnapshotId = session.generateNewSnapshotId()
+        val snapshot = snapshotRepository.saveUserSnapshot(newSnapshotId, versionId, userId())
+        snapshotRepository.saveSnapshotState(newSnapshotId, versionId, userId(), state)
+        return SuccessResponse(snapshot).asResponseEntity();
     }
 
     @PostMapping("/version/{versionId}/snapshot/{snapshotId}/state")
