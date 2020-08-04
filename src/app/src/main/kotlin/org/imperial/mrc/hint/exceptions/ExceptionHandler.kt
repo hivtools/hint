@@ -48,6 +48,12 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return translatedError(e.key, e.httpStatus, request)
     }
 
+    @ExceptionHandler(Exception::class)
+    fun handleArbitraryException(e: Exception, request: WebRequest): ResponseEntity<Any> {
+        logger.error(e.message)
+        return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
+    }
+
     private fun getBundle (request: WebRequest): ResourceBundle {
         val language = request.getHeader("Accept-Language") ?: "en"
         return ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))

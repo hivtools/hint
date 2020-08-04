@@ -44,7 +44,7 @@ class LocalFileManagerTests {
             on { saveNewHash(any()) } doReturn true
         }
 
-        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock())
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
@@ -60,7 +60,7 @@ class LocalFileManagerTests {
             on { saveNewHash(any()) } doReturn false
         }
 
-        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock())
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
@@ -78,7 +78,7 @@ class LocalFileManagerTests {
             on { getSnapshotFile(any(), any()) } doReturn SnapshotFile("test", "filename")
         }
 
-        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties)
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock())
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
@@ -89,7 +89,7 @@ class LocalFileManagerTests {
     @Test
     fun `returns null if no file exists`() {
 
-        val sut = LocalFileManager(mockSession, mock(), mockProperties)
+        val sut = LocalFileManager(mockSession, mock(), mockProperties, mock())
         assertThat(sut.getFile(FileType.Survey))
                 .isNull()
     }
@@ -101,7 +101,7 @@ class LocalFileManagerTests {
             on { getHashesForSnapshot("fake-id") } doReturn mapOf("survey" to "hash.csv")
         }
 
-        val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
         val result = sut.getAllHashes()
 
         assertThat(result["survey"]).isEqualTo("$tmpUploadDirectory/hash.csv")
@@ -115,7 +115,7 @@ class LocalFileManagerTests {
             on { getSnapshotFiles("fake-id") } doReturn allFilesMap
         }
 
-        val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
         val result = sut.getFiles()
 
         assertThat(result["survey"]!!.path).isEqualTo("$tmpUploadDirectory/surveyhash")
@@ -134,7 +134,7 @@ class LocalFileManagerTests {
             on { getSnapshotFiles("fake-id") } doReturn allFilesMap
         }
 
-        val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
         val result = sut.getFiles(FileType.ANC, FileType.Programme)
 
         assertThat(result.count()).isEqualTo(2)
@@ -146,7 +146,7 @@ class LocalFileManagerTests {
 
         val stateRepo = mock<SnapshotRepository>()
 
-        val sut = LocalFileManager(mockSession, stateRepo, mockProperties)
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
         val files = mapOf("pjnz" to SnapshotFile("hash1", "file1"))
         sut.setAllFiles(files)
 

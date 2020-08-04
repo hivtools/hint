@@ -7,8 +7,8 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.clients.ADRClientBuilder
-import org.imperial.mrc.hint.clients.HttpClient
 import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.security.Encryption
@@ -38,7 +38,7 @@ class ADRControllerTests {
     @Test
     fun `encrypts key before saving it`() {
         val mockRepo = mock<UserRepository>()
-        val sut = ADRController(mockSession, mockEncryption, mockRepo, mock(), mock(), mock())
+        val sut = ADRController(mockEncryption, mockRepo, mock(), mock(), mock(), mock(), mock(), mockSession,mock())
         sut.saveAPIKey("plainText")
         verify(mockRepo).saveADRKey("test", "encrypted".toByteArray())
     }
@@ -48,7 +48,7 @@ class ADRControllerTests {
         val mockRepo = mock<UserRepository>() {
             on { getADRKey("test") } doReturn "encrypted".toByteArray()
         }
-        val sut = ADRController(mockSession, mockEncryption, mockRepo, mock(), mock(), mock())
+        val sut = ADRController(mockEncryption, mockRepo, mock(), mock(), mock(), mock(), mock(), mockSession,mock())
         val result = sut.getAPIKey()
         val data = objectMapper.readTree(result.body!!)["data"].asText()
         assertThat(data).isEqualTo("decrypted")
@@ -56,7 +56,7 @@ class ADRControllerTests {
 
     @Test
     fun `returns null if key does not exist`() {
-        val sut = ADRController(mockSession, mock(), mock(), mock(), mock(), mock())
+        val sut = ADRController(mock(), mock(), mock(), mock(), mock(), mock(), mock(), mockSession,mock())
         val result = sut.getAPIKey()
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isNull).isTrue()
@@ -65,19 +65,22 @@ class ADRControllerTests {
     @Test
     fun `gets datasets without inaccessible resources by default`() {
         val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
-        val mockClient = mock<HttpClient> {
+        val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
-                mockSession,
                 mock(),
                 mock(),
                 mockBuilder,
                 objectMapper,
-                mockProperties)
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
         val result = sut.getDatasets()
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isArray).isTrue()
@@ -87,19 +90,22 @@ class ADRControllerTests {
     @Test
     fun `gets datasets including inaccessible resources if flag is passed`() {
         val expectedUrl = "package_search?q=type:adr-schema"
-        val mockClient = mock<HttpClient> {
+        val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
-                mockSession,
                 mock(),
                 mock(),
                 mockBuilder,
                 objectMapper,
-                mockProperties)
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
         val result = sut.getDatasets(true)
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isArray).isTrue()
@@ -109,19 +115,22 @@ class ADRControllerTests {
     @Test
     fun `filters datasets to only those with resources`() {
         val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
-        val mockClient = mock<HttpClient> {
+        val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
-                mockSession,
                 mock(),
                 mock(),
                 mockBuilder,
                 objectMapper,
-                mockProperties)
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
         val result = sut.getDatasets()
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isArray).isTrue()
@@ -133,19 +142,22 @@ class ADRControllerTests {
     fun `passes error responses along`() {
         val badResponse = ResponseEntity<String>(HttpStatus.BAD_REQUEST)
         val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
-        val mockClient = mock<HttpClient> {
+        val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn badResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
-                mockSession,
                 mock(),
                 mock(),
                 mockBuilder,
                 objectMapper,
-                mockProperties)
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
         val result = sut.getDatasets()
         assertThat(result).isEqualTo(badResponse)
     }

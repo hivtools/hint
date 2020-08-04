@@ -23,6 +23,11 @@ abstract class HintrController(protected val fileManager: FileManager,
         return validate(sessionFile, type)
     }
 
+    protected fun saveAndValidate(url: String, type: FileType): ResponseEntity<String> {
+        val sessionFile = fileManager.saveFile(url, type)
+        return validate(sessionFile, type)
+    }
+
     protected fun getAndValidate(type: FileType): ResponseEntity<String> {
         val file = fileManager.getFile(type)
         return if (file != null) {

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.AfterEach
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.mock.web.MockMultipartFile
+import org.springframework.web.multipart.MultipartFile
 import java.io.File
 
 abstract class HintrControllerTests {
@@ -32,7 +33,7 @@ abstract class HintrControllerTests {
     protected fun getMockFileManager(type: FileType): FileManager {
         return mock {
             on {
-                saveFile(argWhere {
+                saveFile(argWhere<MultipartFile> {
                     it.originalFilename == "some-file-name.csv"
                 }, eq(type))
             } doReturn SnapshotFileWithPath("test-path", "hash", "some-file-name.csv")

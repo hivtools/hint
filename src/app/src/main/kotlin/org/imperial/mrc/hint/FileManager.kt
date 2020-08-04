@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint
 
 import org.apache.tomcat.util.http.fileupload.FileUtils
+import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.models.SnapshotFile
 import org.imperial.mrc.hint.models.SnapshotFileWithPath
@@ -8,6 +9,7 @@ import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
+import java.io.InputStream
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import javax.xml.bind.DatatypeConverter
@@ -28,6 +30,7 @@ enum class FileType {
 
 interface FileManager {
     fun saveFile(file: MultipartFile, type: FileType): SnapshotFileWithPath
+    fun saveFile(url: String, type: FileType): SnapshotFileWithPath
     fun getFile(type: FileType): SnapshotFileWithPath?
     fun getAllHashes(): Map<String, String>
     fun getFiles(vararg include: FileType): Map<String, SnapshotFileWithPath>
@@ -38,20 +41,29 @@ interface FileManager {
 class LocalFileManager(
         private val session: Session,
         private val snapshotRepository: SnapshotRepository,
-        private val appProperties: AppProperties) : FileManager {
+        private val appProperties: AppProperties,
+        private val adrClientBuilder: ADRClientBuilder) : FileManager {
 
     private val uploadPath = appProperties.uploadDirectory
 
     override fun saveFile(file: MultipartFile, type: FileType): SnapshotFileWithPath {
+        return saveFile(file.inputStream, file.originalFilename!!, type)
+    }
+
+    override fun saveFile(url: String, type: FileType): SnapshotFileWithPath {
+        val originalFilename = url.split("/").last()
+        val adr = adrClientBuilder.build()
+        return saveFile(adr.getInputStream(url), originalFilename, type)
+    }
+
+    private fun saveFile(inputStream: InputStream, originalFilename: String, type: FileType): SnapshotFileWithPath {
         val md = MessageDigest.getInstance("MD5")
-        val bytes = file.inputStream.use {
+        val bytes = inputStream.use {
             DigestInputStream(it, md).readBytes()
         }
-
-        val extension = file.originalFilename!!.split(".").last()
+        val extension = originalFilename.split(".").last()
         val hash = "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
         val path = "${appProperties.uploadDirectory}/$hash"
-        val originalFilename = file.originalFilename!!
         if (snapshotRepository.saveNewHash(hash)) {
             val localFile = File(path)
             FileUtils.forceMkdirParent(localFile)

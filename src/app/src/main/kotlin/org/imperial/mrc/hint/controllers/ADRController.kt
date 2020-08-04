@@ -2,7 +2,11 @@ package org.imperial.mrc.hint.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.FileManager
+import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.ADRClientBuilder
+import org.imperial.mrc.hint.clients.HintrAPIClient
+import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -14,12 +18,16 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/adr")
-class ADRController(private val session: Session,
-                    private val encryption: Encryption,
+class ADRController(private val encryption: Encryption,
                     private val userRepository: UserRepository,
                     private val adrClientBuilder: ADRClientBuilder,
                     private val objectMapper: ObjectMapper,
-                    private val appProperties: AppProperties) {
+                    private val appProperties: AppProperties,
+                    fileManager: FileManager,
+                    apiClient: HintrAPIClient,
+                    session: Session,
+                    snapshotRepository: SnapshotRepository) :
+        HintrController(fileManager, apiClient, session, snapshotRepository) {
 
     @GetMapping("/key")
     fun getAPIKey(): ResponseEntity<String> {
@@ -68,11 +76,40 @@ class ADRController(private val session: Session,
         }
     }
 
-    @PostMapping("/datasets")
-    fun autoPopulateFromDataset(@RequestParam dataset: String) {
-        val adr = adrClientBuilder.build()
-        val response = adr.get("package_show?id=$dataset")
-        val data = objectMapper.readTree(response.body!!)["data"]["results"]
-        
+    @PostMapping("/dataset")
+    fun selectDataset(@RequestParam dataset: String) {
+       // save to db
     }
+
+    @PostMapping("/pjnz")
+    fun uploadPJNZ(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.PJNZ)
+    }
+
+    @PostMapping("/shape")
+    fun uploadShape(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Shape)
+    }
+
+    @PostMapping("/population")
+    fun uploadPopulation(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Population)
+    }
+
+    @PostMapping("/survey")
+    fun uploadSurvey(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Survey)
+    }
+
+    @PostMapping("/programme")
+    fun uploadProgramme(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Programme)
+    }
+
+    @PostMapping("/anc")
+    fun uploadANC(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.ANC)
+    }
+
+
 }
