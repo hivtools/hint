@@ -62,4 +62,12 @@ class ADRController(private val session: Session,
         val data = objectMapper.readTree(response.body!!)["data"]["results"]
         return SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
     }
+
+    @PostMapping("/datasets")
+    fun autoPopulateFromDataset(@RequestParam dataset: String) {
+        val adr = adrClientBuilder.build()
+        val response = adr.get("package_show?id=$dataset")
+        val data = objectMapper.readTree(response.body!!)["data"]["results"]
+        
+    }
 }
