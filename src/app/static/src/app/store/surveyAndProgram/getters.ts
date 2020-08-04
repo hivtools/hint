@@ -33,20 +33,20 @@ export const getters = {
         return res ? res.data : null;
     },
 
-    countryAreaFilterOption: (state: SurveyAndProgramState, getters: any, rootState: RootState): DisplayFilter[] => {
-      const result = [] as DisplayFilter[];
+    // countryAreaFilterOption: (state: SurveyAndProgramState, getters: any, rootState: RootState): DisplayFilter[] => {
+    //   const result = [] as DisplayFilter[];
 
-      if (rootState.baseline.shape) {
-        result.push({
-            id: "area",
-            column_id: "area_id",
-            label: "area",
-            options: [rootState.baseline.shape!!.filters!!.regions as FilterOption],
-            allowMultiple: true
-        });
-    }
-    return result;
-    },
+    //   if (rootState.baseline.shape) {
+    //     result.push({
+    //         id: "area",
+    //         column_id: "area_id",
+    //         label: "area",
+    //         options: [rootState.baseline.shape!!.filters!!.regions as FilterOption],
+    //         allowMultiple: true
+    //     });
+    // }
+    // return result;
+    // },
 
     filters: (state: SurveyAndProgramState, getters: any, rootState: RootState): DisplayFilter[] => {
         const result = [] as DisplayFilter[];
@@ -63,9 +63,20 @@ export const getters = {
                 column_id: "area_id",
                 label: "area",
                 options: rootOptionChildren([rootState.baseline.shape!!.filters!!.regions as FilterOption]),
+                countryAreaFilterOption: [rootState.baseline.shape!!.filters!!.regions as FilterOption],
                 allowMultiple: true
             });
         }
+
+      //   if (rootState.baseline.shape) {
+      //     result.push({
+      //         id: "countryAreaFilterOption",
+      //         column_id: "area_id",
+      //         label: "area",
+      //         options: [rootState.baseline.shape!!.filters!!.regions as FilterOption],
+      //         allowMultiple: true
+      //     });
+      // }
 
         const res = response(state);
         const filters = res ?  res.filters : {} as any;

@@ -51,7 +51,8 @@ export interface Filter {
     id: string,
     column_id: string,
     label: string,
-    options: FilterOption[]
+    options: FilterOption[],
+    countryAreaFilterOption?: FilterOption[]
 }
 
 export interface DisplayFilter extends Filter {
