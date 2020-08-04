@@ -30,3 +30,4 @@ i18next.init({
 });
 
 Vue.use(Vuex);
+Vue.config.productionTip = false;
