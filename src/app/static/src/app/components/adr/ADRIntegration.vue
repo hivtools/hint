@@ -23,11 +23,17 @@
                 (state: RootState) => state.adrKey)
         },
         methods: {
-           fetchADRKey: mapActionByName(null, "fetchADRKey")
+            getDatasets: mapActionByName(null, 'getADRDatasets'),
+            fetchADRKey: mapActionByName(null, "fetchADRKey")
         },
         created() {
             if (this.loggedIn) {
                 this.fetchADRKey();
+            }
+        },
+        watch: {
+            key() {
+                this.getDatasets();
             }
         }
     })

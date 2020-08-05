@@ -27,12 +27,11 @@
 <script lang="ts">
     import Vue from "vue"
     import TreeSelect from '@riophae/vue-treeselect'
-    import {mapActionByName, mapStateProp} from "../../utils";
+    import {mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
 
     interface Methods {
-        getDatasets: () => void
         importDataset: () => void
         toggleModal: () => void
     }
@@ -65,7 +64,6 @@
             }
         },
         methods: {
-            getDatasets: mapActionByName(null, 'getADRDatasets'),
             importDataset() {
                 // set loading spinner
                 // set selected dataset in store
@@ -75,13 +73,6 @@
             },
             toggleModal() {
                 this.open = !this.open;
-            }
-        },
-        watch: {
-            open(newVal: boolean) {
-                if (newVal) {
-                    this.getDatasets()
-                }
             }
         }
     })

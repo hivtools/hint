@@ -1,8 +1,6 @@
 import Vuex, {ActionTree} from "vuex";
 import {mount, shallowMount} from "@vue/test-utils";
-import {RootState} from "../../../app/root";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
-import {RootActions} from "../../../app/store/root/actions";
 import Modal from "../../../app/components/Modal.vue";
 import TreeSelect from '@riophae/vue-treeselect'
 import {mockRootState} from "../../mocks";
@@ -18,10 +16,7 @@ describe("select dataset", () => {
     const store = new Vuex.Store({
         state: mockRootState({
             adrDatasets: fakeDatasets
-        }),
-        actions: {
-            getADRDatasets: jest.fn()
-        } as Partial<RootActions> & ActionTree<RootState, RootState>
+        })
     });
 
     it("renders button", () => {
