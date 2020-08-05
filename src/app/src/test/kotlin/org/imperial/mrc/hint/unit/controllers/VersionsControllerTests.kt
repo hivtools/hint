@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.unit.controllers
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import org.imperial.mrc.hint.controllers.VersionsController
@@ -27,15 +28,15 @@ class VersionsControllerTests {
         on { userIsGuest() } doReturn false
     }
 
+    private val mockSnapshot = Snapshot("testSnapshot", "createdTime", "updatedTime")
+
     private val parser = ObjectMapper()
 
     @Test
     fun `creates new version`()
     {
-
-        val snapshot = Snapshot("testSnapshot", "createdTime", "updatedTime")
         val mockSnapshotRepo = mock<SnapshotRepository> {
-            on { getSnapshot("testSnapshot") } doReturn snapshot
+            on { getSnapshot("testSnapshot") } doReturn mockSnapshot
         }
 
         val mockVersionRepo = mock<VersionRepository> {
@@ -54,9 +55,22 @@ class VersionsControllerTests {
         assertThat(resultJson["name"].asText()).isEqualTo("testVersion")
         val snapshots = resultJson["snapshots"] as ArrayNode
         assertThat(snapshots.count()).isEqualTo(1)
-        assertThat(snapshots[0]["id"].asText()).isEqualTo("testSnapshot")
-        assertThat(snapshots[0]["created"].asText()).isEqualTo("createdTime")
-        assertThat(snapshots[0]["updated"].asText()).isEqualTo("updatedTime")
+        assertExpectedSnapshot(snapshots[0])
+    }
+
+    @Test
+    fun `copies snapshot`()
+    {
+        val mockSnapshotRepo = mock<SnapshotRepository> {
+            on { getSnapshot("testSnapshot") } doReturn mockSnapshot
+        }
+        val sut = VersionsController(mockSession, mockSnapshotRepo, mock())
+        val result = sut.newSnapshot(99, "parentSnapshot")
+
+        verify(mockSnapshotRepo).copySnapshot("parentSnapshot", "testSnapshot",99, "testUser" )
+
+        val resultJson = parser.readTree(result.body)["data"]
+        assertExpectedSnapshot(resultJson)
     }
 
     @Test
@@ -78,9 +92,7 @@ class VersionsControllerTests {
         assertThat(versions[0]["name"].asText()).isEqualTo("testVersion")
         val snapshots = versions[0]["snapshots"] as ArrayNode
         assertThat(snapshots.count()).isEqualTo(1)
-        assertThat(snapshots[0]["id"].asText()).isEqualTo("testSnapshot")
-        assertThat(snapshots[0]["created"].asText()).isEqualTo("createdTime")
-        assertThat(snapshots[0]["updated"].asText()).isEqualTo("updatedTime")
+        assertExpectedSnapshot(snapshots[0])
     }
 
     @Test
@@ -108,5 +120,12 @@ class VersionsControllerTests {
         verify(mockRepo).saveSnapshotState("testSnapshot", 99, "testUser", "testState")
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    private fun assertExpectedSnapshot(node: JsonNode)
+    {
+        assertThat(node["id"].asText()).isEqualTo("testSnapshot")
+        assertThat(node["created"].asText()).isEqualTo("createdTime")
+        assertThat(node["updated"].asText()).isEqualTo("updatedTime")
     }
 }

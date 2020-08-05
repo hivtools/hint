@@ -134,6 +134,74 @@ class SnapshotRepositoryTests {
     }
 
     @Test
+    fun `can copy snapshot`() {
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        val soon = now.plusSeconds(5)
+
+        val uid = setupUser()
+        val versionId = setupVersion(uid)
+        sut.saveSnapshot(snapshotId, versionId)
+        setUpHashAndSnapshotFile("pjnz_hash", "pjnz_file", snapshotId, "pjnz", false)
+        setUpHashAndSnapshotFile("survey_hash", "survey_file", snapshotId, "survey", false)
+        sut.saveSnapshotState(snapshotId, versionId, uid, "TEST STATE")
+
+        sut.copySnapshot(snapshotId, "newSnapshotId", versionId, uid)
+
+        val newSnapshot = sut.getSnapshot("newSnapshotId")
+        assertThat(newSnapshot.id).isEqualTo("newSnapshotId")
+        val created = LocalDateTime.parse(newSnapshot.created, ISO_LOCAL_DATE_TIME)
+        assertThat(created).isBetween(now, soon)
+
+        val updated = LocalDateTime.parse(newSnapshot.updated, ISO_LOCAL_DATE_TIME)
+        assertThat(updated).isBetween(now, soon)
+
+        val newSnapshotRecord = dsl.select(VERSION_SNAPSHOT.STATE, VERSION_SNAPSHOT.VERSION_ID)
+                .from(VERSION_SNAPSHOT)
+                .where(VERSION_SNAPSHOT.ID.eq("newSnapshotId"))
+                .fetchOne()
+
+        assertThat(newSnapshotRecord[VERSION_SNAPSHOT.STATE]).isEqualTo("TEST STATE")
+        assertThat(newSnapshotRecord[VERSION_SNAPSHOT.VERSION_ID]).isEqualTo(versionId)
+
+        val files = sut.getSnapshotFiles("newSnapshotId")
+        assertThat(files.keys.count()).isEqualTo(2)
+        assertThat(files["pjnz"]!!.hash).isEqualTo("pjnz_hash")
+        assertThat(files["pjnz"]!!.filename).isEqualTo("pjnz_file")
+        assertThat(files["survey"]!!.hash).isEqualTo("survey_hash")
+        assertThat(files["survey"]!!.filename).isEqualTo("survey_file")
+    }
+
+    @Test
+    fun `copy snapshot throws error if snapshot does not exist`()
+    {
+        val uid = setupUser()
+        val versionId = setupVersion(uid)
+        assertThatThrownBy{ sut.copySnapshot("nonexistentSnapshot", "newSnapshot", versionId, uid) }
+                .isInstanceOf(SnapshotException::class.java)
+                .hasMessageContaining("snapshotDoesNotExist")
+    }
+
+    @Test
+    fun `copy snapshot throws error if snapshot belongs to another version`()
+    {
+        val uid = setupUser()
+        val versionId = setupVersion(uid)
+        assertThatThrownBy{ sut.copySnapshot(snapshotId, "newSnapshot", versionId+1, uid) }
+                .isInstanceOf(SnapshotException::class.java)
+                .hasMessageContaining("snapshotDoesNotExist")
+    }
+
+    @Test
+    fun `copy snapshot throws error if snapshot belongs to another user`()
+    {
+        val uid = setupUser()
+        val versionId = setupVersion(uid)
+        assertThatThrownBy{ sut.copySnapshot(snapshotId, "newSnapshot", versionId, "not$uid") }
+                .isInstanceOf(SnapshotException::class.java)
+                .hasMessageContaining("snapshotDoesNotExist")
+    }
+
+    @Test
     fun `can get snapshot`()
     {
         val now = LocalDateTime.now(ZoneOffset.UTC)
@@ -362,9 +430,11 @@ class SnapshotRepositoryTests {
         sut.saveSnapshot(snapshotId,null)
     }
 
-    private fun setUpHashAndSnapshotFile(hash: String, filename: String, snapshotId: String, type: String) {
+    private fun setUpHashAndSnapshotFile(hash: String, filename: String, snapshotId: String, type: String, setUpSnapshot: Boolean = true) {
         sut.saveNewHash(hash)
-        setUpSnapshot()
+        if (setUpSnapshot) {
+            setUpSnapshot()
+        }
         dsl.insertInto(SNAPSHOT_FILE)
                 .set(SNAPSHOT_FILE.FILENAME, filename)
 

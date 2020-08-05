@@ -31,6 +31,16 @@ class VersionsController(private val session: Session,
         return SuccessResponse(version).asResponseEntity()
     }
 
+    @PostMapping("/version/{versionId}/snapshot/")
+    fun newSnapshot(@PathVariable("versionId") versionId: Int,
+                    @RequestParam("parent") parentSnapshotId: String): ResponseEntity<String>
+    {
+        val newSnapshotId = session.generateNewSnapshotId()
+        snapshotRepository.copySnapshot(parentSnapshotId, newSnapshotId, versionId, userId())
+        val newSnapshot = snapshotRepository.getSnapshot(newSnapshotId)
+        return SuccessResponse(newSnapshot).asResponseEntity();
+    }
+
     @PostMapping("/version/{versionId}/snapshot/{snapshotId}/state")
     @ResponseBody
     fun uploadState(@PathVariable("versionId") versionId: Int,
