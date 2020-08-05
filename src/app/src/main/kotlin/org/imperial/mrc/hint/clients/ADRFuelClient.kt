@@ -5,6 +5,7 @@ import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 @Component
@@ -13,17 +14,21 @@ class ADRClientBuilder(val appProperties: AppProperties,
                        val session: Session,
                        val userRepository: UserRepository) {
 
-    fun build(): HttpClient {
+    fun build(): ADRClient {
 
         val userId = this.session.getUserProfile().id
         val encryptedKey = this.userRepository.getADRKey(userId)?: throw UserException("noADRKey")
         val apiKey = this.encryption.decrypt(encryptedKey)
-        return ADRClient(this.appProperties, apiKey)
+        return ADRFuelClient(this.appProperties, apiKey)
     }
 }
 
-class ADRClient(appProperties: AppProperties,
-                private val apiKey: String) : FuelClient(appProperties.adrUrl) {
+interface ADRClient {
+    fun get(url: String): ResponseEntity<String>
+}
+
+class ADRFuelClient(appProperties: AppProperties,
+                    private val apiKey: String) : FuelClient(appProperties.adrUrl), ADRClient {
 
     override fun standardHeaders(): Map<String, Any> {
         return mapOf("Authorization" to apiKey)

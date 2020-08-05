@@ -132,9 +132,9 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
     }
 
     @Test
-    fun `does not include original message from psql exceptions`() {
+    fun `does not include original message from arbitrary exceptions`() {
         val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
-        val result = sut.handlePSQLException(PSQLException("some message", mock()), mock())
+        val result = sut.handleArbitraryException(PSQLException("some message", mock()), mock())
         JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
                 unexpectedErrorRegex)
