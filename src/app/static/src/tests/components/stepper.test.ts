@@ -529,9 +529,9 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(ADRKey).length).toBe(1);
     });
 
-    it("show ADR key if on step 2", () => {
+    it("does not show ADR key on step 2", () => {
         const wrapper = getStepperOnStep(2);
-        expect(wrapper.findAll(ADRKey).length).toBe(1);
+        expect(wrapper.findAll(ADRKey).length).toBe(0);
     });
 
     it("does not show ADR key on step 3", () => {

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="loggedIn" class="mb-3">
+    <div v-if="loggedIn" class="mb-5">
         <div class="row">
             <div class="col-8">
                 <div class="d-flex">

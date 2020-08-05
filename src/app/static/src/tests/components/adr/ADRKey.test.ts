@@ -10,6 +10,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {RootActions} from "../../../app/store/root/actions";
 import {RootState} from "../../../app/root";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 
 declare let currentUser: string;
 
@@ -42,6 +43,16 @@ describe("ADR Key", function () {
         currentUser = "guest";
         const rendered = shallowMount(ADRKey, {store: createStore()});
         expect(rendered.findAll("div").length).toBe(0);
+    });
+
+    it("does not render select dataset widget if key is not present", () => {
+        const rendered = shallowMount(ADRKey, {store: createStore()});
+        expect(rendered.findAll(SelectDataset).length).toBe(0);
+    });
+
+    it("renders select dataset widget if key is present", () => {
+        const rendered = shallowMount(ADRKey, {store: createStore("123")});
+        expect(rendered.findAll(SelectDataset).length).toBe(1);
     });
 
     it("fetches ADR key if logged in", () => {
@@ -89,7 +100,8 @@ describe("ADR Key", function () {
         const rendered = mount(ADRKey,
             {
                 store: createStore("123-abc"),
-                attachToDocument: true
+                attachToDocument: true,
+                stubs: ["tree-select"]
             });
         expect(rendered.findAll(".input-group").length).toBe(0);
         const links = rendered.findAll("a")
