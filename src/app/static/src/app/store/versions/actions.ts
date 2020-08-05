@@ -1,4 +1,5 @@
 import {RootMutation} from "../root/mutations";
+import {ErrorsMutation} from "../errors/mutations";
 import {ActionContext, ActionTree, Commit} from "vuex";
 import {VersionsState} from "./versions";
 import {RootState} from "../../root";
@@ -58,10 +59,10 @@ const immediateUploadSnapshotState = (context: ActionContext<VersionsState, Root
     const versionId = state.currentVersion && state.currentVersion.id;
     const snapshotId = state.currentSnapshot && state.currentSnapshot.id;
     if (versionId && snapshotId) {
-        api<VersionsMutations, VersionsMutations>(context)
+        api<VersionsMutations, ErrorsMutation>(context)
             .withSuccess(VersionsMutations.SnapshotUploadSuccess)
-            .withError(VersionsMutations.SnapshotUploadError)
-            .postAndReturn(`/version/${versionId}/snapshot/${snapshotId}/state/`, serialiseState(rootState));
+            .withError(ErrorsMutation.ErrorAdded)
+            .postAndReturn(`/versionx/${versionId}/snapshot/${snapshotId}/state/`, serialiseState(rootState));
     }
 };
 
