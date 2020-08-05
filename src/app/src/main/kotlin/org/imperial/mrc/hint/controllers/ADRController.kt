@@ -9,7 +9,6 @@ import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.HintException
-import org.imperial.mrc.hint.models.ErrorResponse
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
@@ -76,6 +75,17 @@ class ADRController(private val encryption: Encryption,
             val data = objectMapper.readTree(response.body!!)["data"]["results"]
             SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
         }
+    }
+
+    @GetMapping("/schemas")
+    fun getFileTypeMappings(): ResponseEntity<String> {
+        return SuccessResponse(
+                mapOf("anc" to appProperties.adrANC,
+                        "programme" to appProperties.adrART,
+                        "pjnz" to appProperties.adrPJNZ,
+                        "population" to appProperties.adrPop,
+                        "shape" to appProperties.adrShape,
+                        "survey" to appProperties.adrSurvey)).asResponseEntity()
     }
 
     @PostMapping("/file")

@@ -78,7 +78,7 @@ class ADRTests : SecureIntegrationTests() {
             assertThat(data.isArray).isTrue()
             // with the showInaccessible flag set, we can see packages
             // that aren't actually accessible to our fake user
-            assertThat(data.count()).isEqualTo(3)
+            assertThat(data.count()).isGreaterThan(0)
         }
     }
 
@@ -98,7 +98,17 @@ class ADRTests : SecureIntegrationTests() {
                 getPostEntityWithUrl(pjnz, "inputs-unaids-spectrum-file"))
         assertSecureWithError(isAuthorized, result, HttpStatus.INTERNAL_SERVER_ERROR, "OTHER_ERROR")
         //assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
+    }
 
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can get ADR schema types`(isAuthorized: IsAuthorized) {
+        val result = testRestTemplate.getForEntity<String>("/adr/schemas")
+        assertSecureWithSuccess(isAuthorized, result, null)
+        if (isAuthorized == IsAuthorized.TRUE){
+            val data = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(data["pjnz"].textValue()).isEqualTo("inputs-unaids-spectrum-file")
+        }
     }
 
     private fun getPostEntityWithKey(): HttpEntity<LinkedMultiValueMap<String, String>> {
