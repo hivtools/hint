@@ -18,6 +18,9 @@
                         v-translate="'createVersion'">
                 </button>
             </div>
+            <div class="my-3 col-12">
+                <version-history :versions="previousVersions"></version-history>
+            </div>
             <error-alert v-if="hasError" :error="error"></error-alert>
         </div>
         <div v-if="loading" class="text-center">
@@ -35,6 +38,7 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {Version} from "../../types";
+    import VersionHistory from "./VersionHistory.vue";
 
     declare const currentUser: string;
 
@@ -46,6 +50,7 @@
 
     interface Computed {
         currentVersion: Version | null,
+        previousVersions: Version[],
         error: Error,
         hasError: boolean,
         disableCreate: boolean,
@@ -53,8 +58,9 @@
     }
 
     interface Methods {
-        handleCurrentVersionClick: (e: Event) => void,
-        createVersion: (name: string) => void
+        createVersion: (name: string) => void,
+        getVersions: () => void,
+        handleCurrentVersionClick: (e: Event) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -66,6 +72,7 @@
         computed: {
             ...mapStateProps<VersionsState, keyof Computed>(namespace, {
                 currentVersion: state => state.currentVersion,
+                previousVersions: state => state.previousVersions,
                 error: state => state.error,
                 hasError: state => !!state.error,
                 loading: state => state.loading
@@ -79,11 +86,16 @@
                 e.preventDefault();
                 this.$router.push('/');
             },
-            createVersion: mapActionByName(namespace, "createVersion")
+            createVersion: mapActionByName(namespace, "createVersion"),
+            getVersions: mapActionByName(namespace, "getVersions")
+        },
+        mounted() {
+            this.getVersions();
         },
         components: {
             ErrorAlert,
-            LoadingSpinner
+            LoadingSpinner,
+            VersionHistory
         }
     });
 </script>

@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import {mockVersionsState} from "../../mocks";
 import {shallowMount} from "@vue/test-utils";
 import Versions from "../../../app/components/versions/Versions.vue";
+import VersionHistory from "../../../app/components/versions/VersionHistory.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
@@ -38,9 +39,10 @@ describe("Versions component", () => {
     };
 
     const currentVersion = {name: "existingVersion", id: 1, snapshots: []};
+    const previousVersions = ["TEST PREVIOUS VERSION"] as any;
 
     it("renders as expected with no current version", () => {
-        const wrapper = createSut();
+        const wrapper = createSut({previousVersions});
         expect(wrapper.find(LoadingSpinner).exists()).toBe(false);
         expect(wrapper.find("#versions-content").exists()).toBe(true);
 
@@ -48,6 +50,7 @@ describe("Versions component", () => {
         expect(wrapper.find("input").attributes()["placeholder"]).toBe("Version name");
         expect(wrapper.find("button").text()).toBe("Create version");
         expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
+        expect(wrapper.find(VersionHistory).props("versions")).toBe(previousVersions);
         expect(wrapper.find(ErrorAlert).exists()).toBe(false);
     });
 
@@ -95,5 +98,4 @@ describe("Versions component", () => {
         expect(wrapper.find(LoadingSpinner).exists()).toBe(true);
         expect(wrapper.find("#versions-content").exists()).toBe(false);
     });
-
 });

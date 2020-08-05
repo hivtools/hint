@@ -9,6 +9,7 @@ import {Error} from "../../generated";
 export interface VersionsState {
     currentVersion: Version | null,
     currentSnapshot: Snapshot | null,
+    previousVersions: Version[],
     loading: boolean,
     error: Error | null,
     snapshotUploadPending: boolean
@@ -18,6 +19,7 @@ export const initialVersionsState = (): VersionsState => {
     return {
         currentVersion: null,
         currentSnapshot: null,
+        previousVersions: [],
         loading: false,
         error: null,
         snapshotUploadPending: false
