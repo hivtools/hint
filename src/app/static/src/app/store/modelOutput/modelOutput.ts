@@ -39,16 +39,9 @@ export const modelOutputGetters = {
             }
         });
     },
-    countryAreaFilterOption: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): DisplayFilter[] => {
+    countryAreaFilterOption: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): FilterOption => {
       const outputFilters =  outputPlotFilters(rootState) as Filter[];
-      const areaId = "area";
-      return  outputFilters.map(f => {
-          return {
-              ...f,
-              allowMultiple: f.id == areaId,
-              options: f.options
-          }
-      });
+      return  outputFilters[0].options[0]
     }
 };
 

@@ -32,14 +32,11 @@ const propsData = {
             area_id: "MWI_4_2", plhiv: 20, prevalence: 0.3, age: "0:15", sex: "female"
         }
     ],
-    countryAreaFilterOption: [
-      {id: "area", column_id: "area_id", label: "area", options:[
-        { id: "MWI", label: "Malawi", children: [
+    countryAreaFilterOption: { id: "MWI", label: "Malawi", children: [
           {"id": "MWI_3_1", "label": "3.1", "children": [ { "id": "MWI_4_1", "label": "4.1", "children": [] }]},
           { "id": "MWI_3_2", "label": "3.2", "children": [ { "id": "MWI_4_2", "label": "4.2", "children": [] }] }
-        ] }
-      ]}
-    ]
+        ] 
+    }
 }
 
 const getWrapper = (customPropsData: any = {}) => {

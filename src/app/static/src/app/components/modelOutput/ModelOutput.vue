@@ -96,7 +96,7 @@
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
     import TableView from "../plots/table/Table.vue";
     import {BarchartIndicator, Filter} from "@reside-ic/vue-charts/src/bar/types";
-    import {BarChartWithFilters, FilterConfig} from "@reside-ic/vue-charts";
+    import {BarChartWithFilters, FilterConfig, FilterOption} from "@reside-ic/vue-charts";
 
     import {mapGettersByNames, mapMutationByName, mapMutationsByNames, mapStateProp, mapStateProps,} from "../../utils";
     import {ModelRunState} from "../../store/modelRun/modelRun";
@@ -134,7 +134,7 @@
         barchartFilters: Filter[],
         bubblePlotFilters: Filter[],
         choroplethFilters: Filter[],
-        countryAreaFilterOption: Filter[],
+        countryAreaFilterOption: FilterOption,
         barchartIndicators: BarchartIndicator[],
         chartdata: any,
         barchartSelections: BarchartSelections,

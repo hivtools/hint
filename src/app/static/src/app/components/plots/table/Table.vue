@@ -38,6 +38,7 @@ interface Props {
         detail: number | null
     },
     filters: Filter[],
+    countryAreaFilterOption: FilterOption,
     areaFilterId: string
 }
 interface DisplayRow {
@@ -60,6 +61,9 @@ const props = {
     },
     filters: {
         type: Array
+    },
+    countryAreaFilterOption: {
+        type: Object
     },
     indicators: {
         type: Array
@@ -91,26 +95,23 @@ export default Vue.extend<{}, {}, Computed, Props>({
         },
         flattenedAreas() {
           if (this.selections.detail === 0 || !this.selections.detail){
-            return this.areaFilter ? flattenOptions(this.areaFilter.countryAreaFilterOption) : {}
+            return this.areaFilter ? flattenOptions([this.countryAreaFilterOption]) : {};
           }
           return this.areaFilter ? flattenOptions(this.areaFilter.options) : {};
         },
         selectedAreaIds() {
-          console.log('selectedAreaFilterOptions', this.selectedAreaFilterOptions)
             const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
             const areaArray = Array.from(selectedAreaIdSet)
             if (this.selections.detail === 0 || !this.selections.detail){
-              console.log('areaArray', areaArray)
                 return areaArray[0].length === 3 ? [areaArray[0]] : []
             } else return areaArray.filter(val => parseInt(val[4]) === this.selections.detail);
         },
         selectedAreaFilterOptions() {
             const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
-            console.log('areaFilter', this.areaFilter)
             if (selectedOptions && selectedOptions.length > 0) {
                 return selectedOptions
-            } else if (this.selections.detail === 0 || !this.selections.detail){
-              return this.areaFilter ? this.areaFilter.countryAreaFilterOption : []
+            } else if(this.selections.detail === 0 || !this.selections.detail){
+              return this.areaFilter ? [this.countryAreaFilterOption] : []
             } else return this.areaFilter ? this.areaFilter.options : []; //consider all top level areas to be selected if none are
         },
         filtersToDisplay() {

@@ -120,18 +120,10 @@ describe("modelOutput module", () => {
 
     it("gets countryAreaFilterOption", async () => {
       const result = modelOutputGetters.countryAreaFilterOption(mockModelOutputState(), null, rootState, null);
-      expect(result.length).toEqual(3);
-      expect(result[0]).toStrictEqual({
-          id: "area",
-          column_id: "area_id",
-          label: "Area",
-          use_shape_regions: true,
-          allowMultiple: true,
-          options: [{ 
+      expect(result).toStrictEqual({ 
             children: [{id: "child1", label: "child label 1"}],
             id: "id1",
             label: "label 1"
-          }]
       });
   });
 
