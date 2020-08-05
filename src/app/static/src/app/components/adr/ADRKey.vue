@@ -47,16 +47,18 @@
                        v-translate="'cancel'"></a>
                 </div>
             </div>
+            <error-alert v-if="error" :error="error"></error-alert>
         </div>
     </div>
 </template>
 <script lang="ts">
     import Vue from "vue";
-    import {mapMutationByName, mapStateProp} from "../../utils";
-    import {RootMutation} from "../../store/root/mutations";
+    import {mapActionsByNames, mapStateProp} from "../../utils";
+    import {Error} from "../../generated"
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import i18next from "i18next";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     interface Data {
         editableKey: string | null
@@ -64,7 +66,9 @@
     }
 
     interface Methods {
-        updateADRKey: (key: string | null) => void
+        fetchADRKey: () => void
+        saveADRKey: (key: string | null) => void
+        deleteADRKey: () => void
         edit: (e: Event) => void
         remove: (e: Event) => void
         save: (e: Event) => void
@@ -75,7 +79,8 @@
         key: string | null
         currentLanguage: Language
         keyText: string
-        loggedIn: boolean
+        loggedIn: boolean,
+        error: Error | null
     }
 
     declare const currentUser: string;
@@ -95,6 +100,8 @@
                 (state: RootState) => state.adrKey),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
+            error: mapStateProp<RootState, Error | null>(null,
+                (state: RootState) => state.adrKeyError),
             keyText() {
                 if (this.key) {
                     let str = ""
@@ -110,7 +117,7 @@
             }
         },
         methods: {
-            updateADRKey: mapMutationByName(null, RootMutation.UpdateADRKey),
+            ...mapActionsByNames<keyof Methods>(null, ["fetchADRKey", "saveADRKey", "deleteADRKey"]),
             edit(e: Event) {
                 e.preventDefault();
                 this.editing = true;
@@ -120,19 +127,25 @@
                 })
             },
             remove(e: Event) {
-                this.updateADRKey(null);
+                this.deleteADRKey();
                 e.preventDefault();
             },
             save(e: Event) {
                 e.preventDefault();
-                this.updateADRKey(this.editableKey);
+                this.saveADRKey(this.editableKey);
                 this.editing = false;
             },
             cancel(e: Event) {
                 e.preventDefault();
                 this.editing = false;
             }
-        }
+        },
+        created() {
+            if (this.loggedIn) {
+                this.fetchADRKey();
+            }
+        },
+        components: {ErrorAlert}
     });
 
 </script>

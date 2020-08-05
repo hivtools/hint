@@ -5,16 +5,6 @@ describe("Versions mutations", () => {
     const testNow = Date.now();
     global.Date.now = jest.fn(() => testNow);
 
-    it("sets manageVersions", () => {
-        const state = mockVersionsState();
-
-        mutations[VersionsMutations.SetManageVersions](state, {payload: true});
-        expect(state.manageVersions).toBe(true);
-
-        mutations[VersionsMutations.SetManageVersions](state, {payload: false});
-        expect(state.manageVersions).toBe(false);
-    });
-
     it("sets loading", () => {
         const state = mockVersionsState();
 
@@ -35,6 +25,14 @@ describe("Versions mutations", () => {
         expect(state.loading).toBe(false);
     });
 
+    it("sets previous versions", () => {
+        const state = mockVersionsState({loading: true});
+        mutations[VersionsMutations.SetPreviousVersions](state, {payload: ["TEST VERSION"]});
+
+        expect(state.previousVersions).toStrictEqual(["TEST VERSION"]);
+        expect(state.loading).toBe(false);
+    });
+
     it("sets snapshot upload pending", () => {
         const state = mockVersionsState();
         mutations[VersionsMutations.SetSnapshotUploadPending](state, {payload: true});
@@ -42,18 +40,13 @@ describe("Versions mutations", () => {
     });
 
     it("SnapshotUploadError sets snapshotSuccess and snapshotTime", () => {
-        const state = mockVersionsState();
-        mutations[VersionsMutations.SnapshotUploadError](state);
-
-        expect(state.snapshotSuccess).toBe(false);
-        expect(state.snapshotTime!.valueOf()).toEqual(testNow);
+        //TODO!!
     });
 
     it("SnapshotUploadSuccess sets snapshotSuccess and snapshotTime", () => {
         const state = mockVersionsState();
         mutations[VersionsMutations.SnapshotUploadSuccess](state);
 
-        expect(state.snapshotSuccess).toBe(true);
         expect(state.snapshotTime!.valueOf()).toEqual(testNow);
     });
 });

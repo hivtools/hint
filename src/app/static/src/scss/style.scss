@@ -109,4 +109,12 @@ a.down::after {
   max-height: 100px;
 }
 
+.collapsed > .when-open {
+  display: none;
+}
+
+.not-collapsed > .when-closed {
+  display: none;
+}
+
 

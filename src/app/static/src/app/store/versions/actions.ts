@@ -6,9 +6,11 @@ import {api} from "../../apiService";
 import {VersionsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
+import {Version} from "../../types";
 
 export interface VersionsActions {
-    createVersion: (store: ActionContext<VersionsState, RootState>, name: string) => void
+    createVersion: (store: ActionContext<VersionsState, RootState>, name: string) => void,
+    getVersions: (store: ActionContext<VersionsState, RootState>) => void
     uploadSnapshotState: (store: ActionContext<VersionsState, RootState>) => void
 }
 
@@ -26,6 +28,15 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
             .withSuccess(RootMutation.SetVersion, true)
             .withError(VersionsMutations.VersionError)
             .postAndReturn<String>("/version/", qs.stringify({name}));
+    },
+
+    async getVersions(context) {
+        const {commit} = context;
+        commit({type: VersionsMutations.SetLoading, payload: true});
+        await api<VersionsMutations, VersionsMutations>(context)
+            .withSuccess(VersionsMutations.SetPreviousVersions)
+            .withError(VersionsMutations.VersionError)
+            .get<Version[]>("/versions/");
     },
 
     async uploadSnapshotState(context) {

@@ -31,6 +31,7 @@ import {initialLoadState} from "../../app/store/load/load";
 import {initialErrorsState} from "../../app/store/errors/errors";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
+import {router} from '../../app/router';
 
 describe("Root mutations", () => {
 
@@ -207,6 +208,9 @@ describe("Root mutations", () => {
         const state = populatedState();
         state.language = Language.fr;
 
+        const mockRouterPush = jest.fn();
+        router.push = mockRouterPush;
+
         const version = {id: 1, name: "newVersion", snapshots: [{id: "newSnapshot"}]};
         mutations.SetVersion(state, {payload: version});
 
@@ -221,14 +225,26 @@ describe("Root mutations", () => {
         expect(state.baseline.ready).toBe(true);
         expect(state.surveyAndProgram.ready).toBe(true);
         expect(state.modelRun.ready).toBe(true);
+
+        expect(mockRouterPush.mock.calls.length).toBe(1);
+        expect(mockRouterPush.mock.calls[0][0]).toBe("/");
     });
 
     it("can update ADR key", () => {
         const state = mockRootState();
-        mutations[RootMutation.UpdateADRKey](state, "new-key");
+        mutations[RootMutation.UpdateADRKey](state, {payload: "new-key"});
         expect(state.adrKey).toBe("new-key");
 
-        mutations[RootMutation.UpdateADRKey](state, null);
+        mutations[RootMutation.UpdateADRKey](state, {payload: null});
         expect(state.adrKey).toBe(null);
+    });
+
+    it("can set ADR key error", () => {
+        const state = mockRootState();
+        mutations[RootMutation.SetADRKeyError](state, {payload: mockError("whatevs")});
+        expect(state.adrKeyError!!.detail).toBe("whatevs");
+
+        mutations[RootMutation.SetADRKeyError](state, {payload: null});
+        expect(state.adrKeyError).toBe(null);
     });
 });

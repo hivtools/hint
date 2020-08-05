@@ -27,7 +27,10 @@ describe("Versions actions", () => {
             expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
 
             const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
-            expect(commit.mock.calls[1][0]).toStrictEqual({type: VersionsMutations.VersionError, payload: expectedError});
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: VersionsMutations.VersionError,
+                payload: expectedError
+            });
             done();
         });
     });
@@ -52,6 +55,26 @@ describe("Versions actions", () => {
         });
     });
 
+    it("gets versions and commits mutation on successful response", async(done) => {
+        const testVersions = [{id: 1, name: "v1", snapshots: []}];
+        mockAxios.onGet("/versions/")
+            .reply(200, mockSuccess(testVersions));
+
+        const commit = jest.fn();
+        const state = mockVersionsState();
+
+        actions.getVersions({commit, state, rootState} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: VersionsMutations.SetPreviousVersions,
+                payload: testVersions
+            });
+            done();
+        });
+    });
+
     it("if current snapshot, createVersion uploads current snapshot before post to new version endpoint", async (done) => {
         mockAxios.onPost(`/version/`)
             .reply(200, mockSuccess("TestVersion"));
@@ -71,7 +94,26 @@ describe("Versions actions", () => {
             expect(mockAxios.history.post.length).toBe(2);
             expect(mockAxios.history.post[0].url).toBe("/version/1/snapshot/snap-id/state/");
             expect(mockAxios.history.post[1].url).toBe("/version/");
+            done();
+        });
+    });
 
+    it("gets versions and sets error on unsuccessful response", async(done) => {
+        mockAxios.onGet("/versions/")
+            .reply(500, mockFailure("TestError"));
+
+        const commit = jest.fn();
+        const state = mockVersionsState();
+
+        actions.getVersions({commit, state, rootState} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
+            const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: VersionsMutations.VersionError,
+                payload: expectedError
+            });
             done();
         });
     });

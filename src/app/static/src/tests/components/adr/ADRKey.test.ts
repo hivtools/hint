@@ -2,19 +2,32 @@ import Vue from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
-import Vuex from "vuex";
-import {mockRootState} from "../../mocks";
+import Vuex, {ActionTree} from "vuex";
+import {Error} from "../../../app/generated";
+import {mockError, mockRootState} from "../../mocks";
 import {mutations} from "../../../app/store/root/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {RootActions} from "../../../app/store/root/actions";
+import {RootState} from "../../../app/root";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 declare let currentUser: string;
 
 describe("ADR Key", function () {
 
-    const createStore = (key: string = "") => {
+    const fetchStub = jest.fn();
+    const saveStub = jest.fn();
+    const deleteStub = jest.fn();
+
+    const createStore = (key: string = "", error: Error | null = null) => {
         const store = new Vuex.Store({
-            state: mockRootState({adrKey: key}),
-            mutations: mutations
+            state: mockRootState({adrKey: key, adrKeyError: error}),
+            mutations: mutations,
+            actions: {
+                fetchADRKey: fetchStub,
+                saveADRKey: saveStub,
+                deleteADRKey: deleteStub
+            } as Partial<RootActions> & ActionTree<RootState, RootState>
         });
         registerTranslations(store);
         return store;
@@ -22,12 +35,24 @@ describe("ADR Key", function () {
 
     beforeEach(() => {
         currentUser = "some.user@example.com"
+        jest.resetAllMocks();
     })
 
-    it("does not render if current user is guest", () => {
+    it("does not render if not logged in", () => {
         currentUser = "guest";
         const rendered = shallowMount(ADRKey, {store: createStore()});
         expect(rendered.findAll("div").length).toBe(0);
+    });
+
+    it("fetches ADR key if logged in", () => {
+        shallowMount(ADRKey, {store: createStore()});
+        expect(fetchStub.mock.calls.length).toBe(1);
+    });
+
+    it("does not fetch ADR key if not logged in", () => {
+        currentUser = "guest";
+        shallowMount(ADRKey, {store: createStore()});
+        expect(fetchStub.mock.calls.length).toBe(0);
     });
 
     it("shows title", () => {
@@ -80,7 +105,7 @@ describe("ADR Key", function () {
 
         await Vue.nextTick();
 
-        expect(rendered.find("span").text()).toBe("***********");
+        expect(saveStub.mock.calls.length).toBe(1);
     });
 
     it("cannot save empty key", async () => {
@@ -95,7 +120,12 @@ describe("ADR Key", function () {
 
         await Vue.nextTick();
 
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
         expect(rendered.find("button").attributes("disabled")).toBe("disabled");
+        expect(saveStub.mock.calls.length).toBe(0);
     });
 
     it("can cancel editing", async () => {
@@ -124,7 +154,7 @@ describe("ADR Key", function () {
 
         await Vue.nextTick();
 
-        expect(rendered.find("span").text()).toBe("none provided");
+        expect(deleteStub.mock.calls.length).toBe(1);
     });
 
     it("can add key", async () => {
@@ -139,7 +169,17 @@ describe("ADR Key", function () {
 
         await Vue.nextTick();
 
-        expect(rendered.find("span").text()).toBe("***********");
+        expect(saveStub.mock.calls.length).toBe(1);
+    });
+
+    it("displays error if it exists", () => {
+        let rendered = shallowMount(ADRKey, {store: createStore("", null)});
+        expect(rendered.findAll(ErrorAlert).length).toBe(0);
+
+        const fakeError = mockError("whatevs")
+        rendered = shallowMount(ADRKey, {store: createStore("", fakeError)});
+        expect(rendered.findAll(ErrorAlert).length).toBe(1);
+        expect(rendered.find(ErrorAlert).props("error")).toEqual(fakeError);
     });
 
 });
