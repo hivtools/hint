@@ -150,6 +150,25 @@ class ADRControllerTests {
         assertThat(result).isEqualTo(badResponse)
     }
 
+    @Test
+    fun `returns map of names to adr file schemas`() {
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mock(),
+                mock(),
+                objectMapper,
+                mockProperties)
+        val result = sut.getFileTypeMappings()
+        val data = objectMapper.readTree(result.body!!)["data"]
+        assertThat(data["pjnz"].textValue()).isEqualTo("adr-pjnz")
+        assertThat(data["population"].textValue()).isEqualTo("adr-pop")
+        assertThat(data["programme"].textValue()).isEqualTo("adr-art")
+        assertThat(data["anc"].textValue()).isEqualTo("adr-anc")
+        assertThat(data["shape"].textValue()).isEqualTo("adr-shape")
+        assertThat(data["survey"].textValue()).isEqualTo("adr-survey")
+    }
+
     private fun makeFakeSuccessResponse(): ResponseEntity<String> {
         val resultWithResources = mapOf("resources" to listOf(1, 2))
         val resultWithoutResources = mapOf("resources" to listOf<Any>())
