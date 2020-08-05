@@ -22,7 +22,8 @@ describe("Versions component", () => {
                     namespaced: true,
                     state: mockVersionsState(state),
                     actions: {
-                        createVersion: mockCreateVersion
+                        createVersion: mockCreateVersion,
+                        getVersions: jest.fn()
                     }
                 }
             },
