@@ -247,4 +247,10 @@ describe("Root mutations", () => {
         mutations[RootMutation.SetADRKeyError](state, {payload: null});
         expect(state.adrKeyError).toBe(null);
     });
+
+    it("can set ADR datasets", () => {
+        const state = mockRootState();
+        mutations[RootMutation.SetADRDatasets](state, {payload: [1,2,3]});
+        expect(state.adrDatasets).toEqual([1,2,3]);
+    });
 });

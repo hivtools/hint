@@ -1,54 +1,57 @@
 <template>
-    <div class="row mb-3" v-if="loggedIn">
-        <div class="col-8">
-            <div class="d-flex">
-                <label for="key"
-                       class="font-weight-bold align-self-stretch"
-                       v-translate="'adrKey'">
-                </label>
-                <div class="align-self-stretch pl-2">
-                    <div v-if="!editing">
-                        <span class="pr-2">{{keyText}}</span>
-                        <a href="#" v-if="!key"
-                           @click="edit"
-                           v-translate="'add'"></a>
-                        <a href="#" v-if="key"
-                           @click="edit"
-                           v-translate="'edit'"> </a>
-                        <span v-if="key">/</span>
-                        <a href="#"
-                           v-if="key"
-                           @click="remove"
-                           v-translate="'remove'"></a>
-                    </div>
-                    <div class="input-group"
-                         style="margin-top: -11px; min-width: 390px"
-                         v-if="editing">
-                        <input id="key"
-                               ref="keyInput"
-                               class="form-control"
-                               v-model="editableKey"
-                               type="text"
-                               placeholder="Enter key"/>
-                        <div class="input-group-append">
-                            <button class="btn btn-red"
-                                    type="button"
-                                    v-translate="'save'"
-                                    :disabled="!editableKey"
-                                    @click="save">
-                            </button>
+    <div v-if="loggedIn" class="mb-3">
+        <div class="row">
+            <div class="col-8">
+                <div class="d-flex">
+                    <label for="key"
+                           class="font-weight-bold align-self-stretch"
+                           v-translate="'adrKey'">
+                    </label>
+                    <div class="align-self-stretch pl-2">
+                        <div v-if="!editing">
+                            <span class="pr-2">{{keyText}}</span>
+                            <a href="#" v-if="!key"
+                               @click="edit"
+                               v-translate="'add'"></a>
+                            <a href="#" v-if="key"
+                               @click="edit"
+                               v-translate="'edit'"> </a>
+                            <span v-if="key">/</span>
+                            <a href="#"
+                               v-if="key"
+                               @click="remove"
+                               v-translate="'remove'"></a>
+                        </div>
+                        <div class="input-group"
+                             style="margin-top: -11px; min-width: 390px"
+                             v-if="editing">
+                            <input id="key"
+                                   ref="keyInput"
+                                   class="form-control"
+                                   v-model="editableKey"
+                                   type="text"
+                                   placeholder="Enter key"/>
+                            <div class="input-group-append">
+                                <button class="btn btn-red"
+                                        type="button"
+                                        v-translate="'save'"
+                                        :disabled="!editableKey"
+                                        @click="save">
+                                </button>
+                            </div>
                         </div>
                     </div>
+                    <div class="align-self-stretch pl-2">
+                        <a href="#"
+                           v-if="editing"
+                           @click="cancel"
+                           v-translate="'cancel'"></a>
+                    </div>
                 </div>
-                <div class="align-self-stretch pl-2">
-                    <a href="#"
-                       v-if="editing"
-                       @click="cancel"
-                       v-translate="'cancel'"></a>
-                </div>
+                <error-alert v-if="error" :error="error"></error-alert>
             </div>
-            <error-alert v-if="error" :error="error"></error-alert>
         </div>
+        <select-dataset v-if="key"></select-dataset>
     </div>
 </template>
 <script lang="ts">
@@ -59,6 +62,7 @@
     import {Language} from "../../store/translations/locales";
     import i18next from "i18next";
     import ErrorAlert from "../ErrorAlert.vue";
+    import SelectDataset from "./SelectDataset.vue";
 
     interface Data {
         editableKey: string | null
@@ -145,7 +149,7 @@
                 this.fetchADRKey();
             }
         },
-        components: {ErrorAlert}
+        components: {ErrorAlert, SelectDataset}
     });
 
 </script>

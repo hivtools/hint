@@ -37,7 +37,7 @@
         </div>
         <div v-if="!loading" class="content">
             <div class="pt-4">
-                <adr-key v-if="isActive(1) || isActive(2)"></adr-key>
+                <adr-key v-if="isActive(1)"></adr-key>
                 <baseline v-if="isActive(1)"></baseline>
                 <survey-and-program v-if="isActive(2)"></survey-and-program>
                 <model-options v-if="isActive(3)"></model-options>

@@ -31,4 +31,12 @@ describe("Root actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe(RootMutation.UpdateADRKey);
         expect(commit.mock.calls[1][0]["payload"]).toBe(null);
     });
+
+    it("can fetch ADR datasets", async () => {
+        const commit = jest.fn();
+        await actions.getADRDatasets({commit, rootState} as any);
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(RootMutation.SetADRDatasets);
+        expect(commit.mock.calls[1][0]["payload"]).toEqual([]);
+    });
 });
