@@ -163,8 +163,6 @@ describe("Stepper component", () => {
         const steps = wrapper.findAll(Step);
 
         expect(wrapper.findAll(Step).length).toBe(6);
-        console.log("HERE IT IS");
-        console.log(wrapper.html());
         expect(steps.at(0).props().textKey).toBe("uploadBaseline");
         expect(steps.at(0).props().active).toBe(true);
         expect(steps.at(0).props().number).toBe(1);

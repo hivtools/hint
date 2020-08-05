@@ -18,11 +18,13 @@ describe("Model run actions", () => {
     beforeEach(() => {
         // stop apiService logging to console
         console.log = jest.fn();
+        console.info = jest.fn();
         mockAxios.reset();
     });
 
     afterEach(() => {
         (console.log as jest.Mock).mockClear();
+        (console.info as jest.Mock).mockClear();
     });
 
     it("passes model options and version from state", async () => {

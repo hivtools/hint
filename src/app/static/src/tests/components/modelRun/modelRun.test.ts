@@ -57,6 +57,9 @@ describe("Model run component", () => {
 
         mockAxios.onGet(`/model/result/1234`)
             .reply(200, mockSuccess(mockModelResultResponse()));
+
+        mockAxios.onPost(`/model/cancel/123`)
+            .reply(200, mockSuccess(null));
     });
 
     afterEach(() => {
