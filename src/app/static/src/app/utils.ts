@@ -2,6 +2,7 @@ import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
 import {Dict} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
+import moment from 'moment';
 
 export type ComputedWithType<T> = () => T;
 
@@ -155,4 +156,8 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
 export const rootOptionChildren = (filterOptions: FilterOption[]) => {
     const rootOption = filterOptions[0];
     return (rootOption && (rootOption as any).children) || [];
+};
+
+export const formatDateTime = (isoUTCString: string) => {
+    return moment.utc(isoUTCString).local().format('DD/MM/YYYY HH:mm:ss');
 };

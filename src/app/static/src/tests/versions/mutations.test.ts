@@ -22,6 +22,14 @@ describe("Versions mutations", () => {
         expect(state.loading).toBe(false);
     });
 
+    it("sets previous versions", () => {
+        const state = mockVersionsState({loading: true});
+        mutations[VersionsMutations.SetPreviousVersions](state, {payload: ["TEST VERSION"]});
+
+        expect(state.previousVersions).toStrictEqual(["TEST VERSION"]);
+        expect(state.loading).toBe(false);
+    });
+
     it("sets snapshot upload pending", () => {
         const state = mockVersionsState();
         mutations[VersionsMutations.SetSnapshotUploadPending](state, {payload: true});
