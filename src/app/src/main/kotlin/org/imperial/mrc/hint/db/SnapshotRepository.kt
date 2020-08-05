@@ -35,7 +35,6 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
     {
         val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
                 .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
-                .and(VERSION_SNAPSHOT.VERSION_ID.eq(versionId))
                 .firstOrNull()
 
         if (snapshot == null) {
