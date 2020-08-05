@@ -88,21 +88,34 @@ class ADRController(private val encryption: Encryption,
                         "survey" to appProperties.adrSurvey)).asResponseEntity()
     }
 
-    @PostMapping("/file")
-    fun saveFile(@RequestParam url: String, @RequestParam type: String): ResponseEntity<String> {
-        val fileType = when (type) {
-            appProperties.adrANC -> FileType.ANC
-            appProperties.adrART -> FileType.Programme
-            appProperties.adrPJNZ -> FileType.PJNZ
-            appProperties.adrPop -> FileType.Population
-            appProperties.adrShape -> FileType.Shape
-            appProperties.adrSurvey -> FileType.Survey
-            else -> null
-        }
-        if (fileType == null) {
-            throw HintException("Unrecognised ADR file type: $type", HttpStatus.BAD_REQUEST)
-        } else {
-            return saveAndValidate(url, fileType)
-        }
+    @PostMapping("/pjnz")
+    fun importPJNZ(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.PJNZ)
     }
+
+    @PostMapping("/shape")
+    fun importShape(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Shape)
+    }
+
+    @PostMapping("/population")
+    fun importPopulation(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Population)
+    }
+
+    @PostMapping("/survey")
+    fun importSurvey(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Survey)
+    }
+
+    @PostMapping("/programme")
+    fun importProgramme(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Programme)
+    }
+
+    @PostMapping("/anc")
+    fun importANC(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.ANC)
+    }
+
 }

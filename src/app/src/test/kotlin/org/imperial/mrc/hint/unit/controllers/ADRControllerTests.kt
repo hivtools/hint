@@ -44,6 +44,8 @@ class ADRControllerTests {
         on { adrSurvey } doReturn "adr-survey"
     }
 
+    private val mockFileManager = mock<FileManager>()
+
     private val objectMapper = ObjectMapper()
 
     @Test
@@ -196,7 +198,7 @@ class ADRControllerTests {
     }
 
     @Test
-    fun `parses adr file schemas to the appropriate file type`() {
+    fun `imports anc`() {
 
         val mockFileManager = mock<FileManager> {
             on { getFile(FileType.Shape) } doReturn SnapshotFileWithPath("path", "hash", "filename")
@@ -214,27 +216,109 @@ class ADRControllerTests {
                 mockSession,
                 mock())
 
-        sut.saveFile(fakeUrl, "adr-art")
-        verify(mockFileManager).saveFile(fakeUrl, FileType.Programme)
-
-        sut.saveFile(fakeUrl, "adr-anc")
+        sut.importANC(fakeUrl)
         verify(mockFileManager).saveFile(fakeUrl, FileType.ANC)
 
-        sut.saveFile(fakeUrl, "adr-pjnz")
+    }
+
+    @Test
+    fun `imports pjnz`() {
+        val fakeUrl = "http://url"
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mock(),
+                objectMapper,
+                mockProperties,
+                mockFileManager,
+                mock(),
+                mockSession,
+                mock())
+
+        sut.importPJNZ(fakeUrl)
         verify(mockFileManager).saveFile(fakeUrl, FileType.PJNZ)
+    }
 
-        sut.saveFile(fakeUrl, "adr-pop")
+    @Test
+    fun `imports programme`() {
+
+        val mockFileManager = mock<FileManager> {
+            on { getFile(FileType.Shape) } doReturn SnapshotFileWithPath("path", "hash", "filename")
+        }
+
+        val fakeUrl = "http://url"
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mock(),
+                objectMapper,
+                mockProperties,
+                mockFileManager,
+                mock(),
+                mockSession,
+                mock())
+
+        sut.importPJNZ(fakeUrl)
+        verify(mockFileManager).saveFile(fakeUrl, FileType.PJNZ)
+    }
+
+    @Test
+    fun `imports population`() {
+        val fakeUrl = "http://url"
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mock(),
+                objectMapper,
+                mockProperties,
+                mockFileManager,
+                mock(),
+                mockSession,
+                mock())
+
+        sut.importPopulation(fakeUrl)
         verify(mockFileManager).saveFile(fakeUrl, FileType.Population)
+    }
 
-        sut.saveFile(fakeUrl, "adr-shape")
+    @Test
+    fun `imports shape file`() {
+        val fakeUrl = "http://url"
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mock(),
+                objectMapper,
+                mockProperties,
+                mockFileManager,
+                mock(),
+                mockSession,
+                mock())
+
+        sut.importShape(fakeUrl)
         verify(mockFileManager).saveFile(fakeUrl, FileType.Shape)
+    }
 
-        sut.saveFile(fakeUrl, "adr-survey")
+    @Test
+    fun `imports survey`() {
+
+        val mockFileManager = mock<FileManager> {
+            on { getFile(FileType.Shape) } doReturn SnapshotFileWithPath("path", "hash", "filename")
+        }
+
+        val fakeUrl = "http://url"
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mock(),
+                objectMapper,
+                mockProperties,
+                mockFileManager,
+                mock(),
+                mockSession,
+                mock())
+
+        sut.importSurvey(fakeUrl)
         verify(mockFileManager).saveFile(fakeUrl, FileType.Survey)
-
-        assertThatThrownBy {
-            sut.saveFile(fakeUrl, "bad-type")
-        }.isInstanceOf(HintException::class.java)
     }
 
     private fun makeFakeSuccessResponse(): ResponseEntity<String> {
