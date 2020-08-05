@@ -37,7 +37,7 @@ describe("Root actions", () => {
         await actions.saveADRKey({commit, rootState} as any, "1234");
         await actions.getADRDatasets({commit, rootState} as any);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(RootMutation.SetADRDatasets);
-        expect(commit.mock.calls[1][0]["payload"]).toEqual([]);
+        expect(commit.mock.calls[2][0]["type"]).toBe(RootMutation.SetADRDatasets);
+        expect(commit.mock.calls[2][0]["payload"]).toEqual([]);
     });
 });
