@@ -27,11 +27,9 @@ export const mutations: MutationTree<VersionsState> = {
         state.loading = false;
     },
     [VersionsMutations.SnapshotUploadError](state: VersionsState) {
-        state.snapshotSuccess = false;
-        state.snapshotTime = new Date(Date.now());
+        //TODO: set global error
     },
     [VersionsMutations.SnapshotUploadSuccess](state: VersionsState) {
-        state.snapshotSuccess = true;
         state.snapshotTime = new Date(Date.now());
     }
 };

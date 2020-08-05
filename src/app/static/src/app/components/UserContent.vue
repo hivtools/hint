@@ -4,7 +4,6 @@
             <versions v-if="showVersions"></versions>
             <stepper v-if="!showVersions"></stepper>
         </div>
-        <snapshot-status></snapshot-status>
     </div>
 </template>
 
@@ -36,8 +35,7 @@
         },
         components: {
             Stepper,
-            Versions,
-            SnapshotStatus
+            Versions
         },
         computed: {
             ...mapStateProps<VersionsState, keyof Computed>(namespace, {
