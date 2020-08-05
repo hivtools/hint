@@ -37,7 +37,7 @@
         </div>
         <div v-if="!loading" class="content">
             <div class="pt-4">
-                <adr-key v-if="isActive(1)"></adr-key>
+                <adr-integration v-if="isActive(1)"></adr-integration>
                 <baseline v-if="isActive(1)"></baseline>
                 <survey-and-program v-if="isActive(2)"></survey-and-program>
                 <model-options v-if="isActive(3)"></model-options>
@@ -53,7 +53,7 @@
 
     import Vue from "vue";
     import {mapActions} from "vuex";
-    import AdrKey from "./adr/ADRKey.vue";
+    import AdrIntegration from "./adr/ADRIntegration.vue";
     import Step from "./Step.vue";
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
@@ -128,7 +128,7 @@
             }
         },
         components: {
-            AdrKey,
+            AdrIntegration,
             Step,
             Baseline,
             SurveyAndProgram,

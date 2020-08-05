@@ -1,5 +1,4 @@
 <template>
-    <div v-if="loggedIn" class="mb-5">
         <div class="row">
             <div class="col-8">
                 <div class="d-flex">
@@ -51,8 +50,6 @@
                 <error-alert v-if="error" :error="error"></error-alert>
             </div>
         </div>
-        <select-dataset v-if="key"></select-dataset>
-    </div>
 </template>
 <script lang="ts">
     import Vue from "vue";
@@ -62,7 +59,6 @@
     import {Language} from "../../store/translations/locales";
     import i18next from "i18next";
     import ErrorAlert from "../ErrorAlert.vue";
-    import SelectDataset from "./SelectDataset.vue";
 
     interface Data {
         editableKey: string | null
@@ -70,7 +66,6 @@
     }
 
     interface Methods {
-        fetchADRKey: () => void
         saveADRKey: (key: string | null) => void
         deleteADRKey: () => void
         edit: (e: Event) => void
@@ -83,11 +78,8 @@
         key: string | null
         currentLanguage: Language
         keyText: string
-        loggedIn: boolean,
         error: Error | null
     }
-
-    declare const currentUser: string;
 
     export default Vue.extend<Data, Methods, Computed, {}>({
         data() {
@@ -97,9 +89,6 @@
             }
         },
         computed: {
-            loggedIn() {
-                return currentUser != "guest"
-            },
             key: mapStateProp<RootState, string | null>(null,
                 (state: RootState) => state.adrKey),
             currentLanguage: mapStateProp<RootState, Language>(null,
@@ -121,7 +110,7 @@
             }
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(null, ["fetchADRKey", "saveADRKey", "deleteADRKey"]),
+            ...mapActionsByNames<keyof Methods>(null, ["saveADRKey", "deleteADRKey"]),
             edit(e: Event) {
                 e.preventDefault();
                 this.editing = true;
@@ -144,12 +133,7 @@
                 this.editing = false;
             }
         },
-        created() {
-            if (this.loggedIn) {
-                this.fetchADRKey();
-            }
-        },
-        components: {ErrorAlert, SelectDataset}
+        components: {ErrorAlert}
     });
 
 </script>
