@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component
 
 interface SnapshotRepository {
     fun saveSnapshot(snapshotId: String, versionId: Int?)
-    fun saveUserSnapshot(snapshotId: String, versionId: Int, userId: String)
     fun getSnapshot(snapshotId: String): Snapshot
 
     // returns true if a new hash is saved, false if it already exists
@@ -26,6 +25,7 @@ interface SnapshotRepository {
     fun getSnapshotFiles(snapshotId: String): Map<String, SnapshotFile>
     fun setFilesForSnapshot(snapshotId: String, files: Map<String, SnapshotFile?>)
     fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
+    fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, versionId: Int, userId: String)
 }
 
 @Component
@@ -44,12 +44,6 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
                     .set(VERSION_SNAPSHOT.VERSION_ID, versionId)
                     .execute()
         }
-    }
-
-    override fun saveUserSnapshot(snapshotId: String, versionId: Int, userId: String)
-    {
-        checkVersionExists(versionId, userId);
-        saveSnapshot(snapshotId, versionId);
     }
 
     override fun getSnapshot(snapshotId: String): Snapshot
@@ -160,13 +154,20 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
                 .execute()
     }
 
-    private fun checkVersionExists(versionId: Int, userId: String)
+    override fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, versionId: Int, userId: String)
     {
-        dsl.select(VERSION.ID)
-                .from(VERSION)
-                .where(VERSION.ID.eq(versionId))
-                .and(VERSION.USER_ID.eq(userId))
-                .fetchAny() ?: throw SnapshotException("versionDoesNotExist")
+        checkSnapshotExists(parentSnapshotId, versionId, userId)
+
+        dsl.insertInto(VERSION_SNAPSHOT)
+                .set(VERSION_SNAPSHOT.ID, newSnapshotId)
+                .set(VERSION_SNAPSHOT.VERSION_ID, versionId)
+                .set(VERSION_SNAPSHOT.STATE, dsl.select(VERSION_SNAPSHOT.STATE)
+                        .from(VERSION_SNAPSHOT)
+                        .where(VERSION_SNAPSHOT.ID.eq(parentSnapshotId)))
+                .execute()
+
+        val files = getSnapshotFiles(parentSnapshotId)
+        setFilesForSnapshot(newSnapshotId, files)
     }
 
     private fun checkSnapshotExists(snapshotId: String, versionId: Int, userId: String)
