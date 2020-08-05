@@ -31,6 +31,12 @@ class ADRControllerTests {
 
     private val mockProperties = mock<AppProperties> {
         on { adrSchema } doReturn "adr-schema"
+        on { adrANC } doReturn "adr-anc"
+        on { adrART } doReturn "adr-art"
+        on { adrPJNZ } doReturn "adr-pjnz"
+        on { adrPop } doReturn "adr-pop"
+        on { adrShape } doReturn "adr-shape"
+        on { adrSurvey } doReturn "adr-survey"
     }
 
     private val objectMapper = ObjectMapper()
