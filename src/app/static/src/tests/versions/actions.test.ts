@@ -7,7 +7,15 @@ import {serialiseState} from "../../app/localStorageManager";
 
 describe("Versions actions", () => {
     beforeEach(() => {
-        mockAxios.reset();
+        mockAxios.reset();  
+        // stop apiService logging to console
+        console.log = jest.fn();
+        console.info = jest.fn();
+    });
+
+    afterEach(() => {
+        (console.log as jest.Mock).mockClear();
+        (console.info as jest.Mock).mockClear();
     });
 
     const rootState = mockRootState();
