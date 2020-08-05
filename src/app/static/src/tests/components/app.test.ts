@@ -23,6 +23,8 @@ storeOptions.modules!!.baseline!!.actions = baselineActions;
 storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
 storeOptions.modules!!.modelRun!!.actions = modelRunActions;
 
+console.error = jest.fn();
+
 // only import the app after we have replaced action with mocks
 // as the app will call these actions on import
 import {app} from "../../app"
@@ -35,8 +37,9 @@ describe("App", () => {
         console.log = jest.fn();
     });
 
-    afterEach(() => {
+    afterAll(() => {
         (console.log as jest.Mock).mockClear();
+        (console.error as jest.Mock).mockClear();
     });
 
     const getStore = (ready: boolean = false) => {

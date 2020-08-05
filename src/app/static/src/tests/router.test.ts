@@ -17,6 +17,8 @@ storeOptions.modules!!.baseline!!.actions = baselineActions;
 storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
 storeOptions.modules!!.modelRun!!.actions = modelRunActions;
 
+console.error = jest.fn();
+
 // only import the app after we have replaced action with mocks
 // as the app will call these actions on import
 import {app} from "../app";
@@ -24,6 +26,11 @@ import Stepper from "../app/components/Stepper.vue";
 import Versions from "../app/components/versions/Versions.vue";
 
 describe("Router", () => {
+
+    afterAll(() => {
+        (console.error as jest.Mock).mockClear();
+    });
+
     it("has expected properties", () => {
         expect(app.$router).toBe(router);
         expect(router.mode).toBe("history");

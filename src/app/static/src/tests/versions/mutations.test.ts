@@ -2,6 +2,17 @@ import {mockVersionsState} from "../mocks";
 import {mutations, VersionsMutations} from "../../app/store/versions/mutations";
 
 describe("Versions mutations", () => {
+
+    const consoleSpy = jest.fn();
+
+    beforeEach(() => {
+        console.error = consoleSpy;
+    });
+
+    afterEach(() => {
+        (console.error as jest.Mock).mockClear();
+    })
+
     it("sets loading", () => {
         const state = mockVersionsState();
 
@@ -29,8 +40,6 @@ describe("Versions mutations", () => {
     });
 
     it("SnapshotUploadError logs error to console", () => {
-        const consoleSpy = jest.spyOn(console, 'error');
-
         const state = mockVersionsState();
         mutations[VersionsMutations.SnapshotUploadError](state, {payload: "test error"});
 
