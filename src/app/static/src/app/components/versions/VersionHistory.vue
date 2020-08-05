@@ -8,7 +8,7 @@
         </div>
         <hr/>
         <div v-for="v in versions">
-            <div :id="`v-${v.id}`"  class="row">
+            <div :id="`v-${v.id}`"  class="row py-2">
                 <div class="col-md-1 version-cell">
                     <button v-b-toggle="`snapshots-${v.id}`" class="btn btn-xs bg-transparent shadow-none py-0">
                         <chevron-right-icon size="20" class="icon when-closed"></chevron-right-icon>
