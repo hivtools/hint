@@ -4,10 +4,13 @@ import SnapshotStatus from "../../../app/components/versions/SnapshotStatus.vue"
 import {VersionsState} from "../../../app/store/versions/versions";
 import {mockVersionsState} from "../../mocks";
 import {CheckIcon, AlertTriangleIcon} from "vue-feather-icons";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {emptyState} from "../../../app/root";
 
-describe("Stepper component", () => {
+describe("Snapshot status component", () => {
     const getWrapper = (versionsState: Partial<VersionsState> = {}) => {
         const store =  new Vuex.Store({
+            state: emptyState(),
             modules: {
                 versions: {
                     namespaced: true,
@@ -15,6 +18,7 @@ describe("Stepper component", () => {
                 }
             }
         });
+        registerTranslations(store);
         return shallowMount(SnapshotStatus, {store});
     };
     const date = new Date(2020, 8, 1, 12, 45, 59);

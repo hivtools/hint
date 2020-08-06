@@ -11,11 +11,8 @@ import {RootActions} from "../../../app/store/root/actions";
 import {RootState} from "../../../app/root";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
-declare let currentUser: string;
-
 describe("ADR Key", function () {
 
-    const fetchStub = jest.fn();
     const saveStub = jest.fn();
     const deleteStub = jest.fn();
 
@@ -24,7 +21,6 @@ describe("ADR Key", function () {
             state: mockRootState({adrKey: key, adrKeyError: error}),
             mutations: mutations,
             actions: {
-                fetchADRKey: fetchStub,
                 saveADRKey: saveStub,
                 deleteADRKey: deleteStub
             } as Partial<RootActions> & ActionTree<RootState, RootState>
@@ -34,25 +30,7 @@ describe("ADR Key", function () {
     }
 
     beforeEach(() => {
-        currentUser = "some.user@example.com"
         jest.resetAllMocks();
-    })
-
-    it("does not render if not logged in", () => {
-        currentUser = "guest";
-        const rendered = shallowMount(ADRKey, {store: createStore()});
-        expect(rendered.findAll("div").length).toBe(0);
-    });
-
-    it("fetches ADR key if logged in", () => {
-        shallowMount(ADRKey, {store: createStore()});
-        expect(fetchStub.mock.calls.length).toBe(1);
-    });
-
-    it("does not fetch ADR key if not logged in", () => {
-        currentUser = "guest";
-        shallowMount(ADRKey, {store: createStore()});
-        expect(fetchStub.mock.calls.length).toBe(0);
     });
 
     it("shows title", () => {
@@ -89,7 +67,8 @@ describe("ADR Key", function () {
         const rendered = mount(ADRKey,
             {
                 store: createStore("123-abc"),
-                attachToDocument: true
+                attachToDocument: true,
+                stubs: ["tree-select"]
             });
         expect(rendered.findAll(".input-group").length).toBe(0);
         const links = rendered.findAll("a")

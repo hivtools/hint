@@ -1,5 +1,5 @@
 <template>
-    <drop-down :text="currentLanguage" style="flex:none">
+    <drop-down :text="currentLanguage" :right="true" style="flex: none">
         <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('en')">
             EN
         </a>

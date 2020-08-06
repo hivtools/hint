@@ -5,6 +5,16 @@ describe("Versions mutations", () => {
     const testNow = Date.now();
     global.Date.now = jest.fn(() => testNow);
 
+    const consoleSpy = jest.fn();
+
+    beforeEach(() => {
+        console.error = consoleSpy;
+    });
+
+    afterEach(() => {
+        (console.error as jest.Mock).mockClear();
+    });
+
     it("sets loading", () => {
         const state = mockVersionsState();
 

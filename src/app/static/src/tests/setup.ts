@@ -30,3 +30,8 @@ i18next.init({
 });
 
 Vue.use(Vuex);
+Vue.config.productionTip = false;
+
+global.console.error = (message: any) => {
+    throw (message instanceof Error ? message : new Error(message))
+}
