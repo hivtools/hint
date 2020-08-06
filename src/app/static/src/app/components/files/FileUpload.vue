@@ -1,17 +1,19 @@
 <template>
     <div>
-        <button class="btn btn-white" v-on:mousedown="$refs[name].click()">
+        <div class="custom-file">
             <input type="file"
                    style="display:none"
                    :ref="name"
                    :id="name"
                    :accept="accept"
-                   v-on:change="handleFileSelect"
-                   @click="$emit('input-opened')"/>
-            <!-- emit input-opened event so that tests can verify that this
-            is triggered -->
-            Select new file
-        </button>
+                   v-on:change="handleFileSelect"/>
+            <label :for="name"
+                   class="custom-file-label"
+                   :disabled="uploading"
+                   :class="{'uploading': uploading}">
+                <span v-translate="'selectNewFile'"></span>
+            </label>
+        </div>
         <reset-confirmation :continue-editing="uploadSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showUploadConfirmation"></reset-confirmation>
@@ -32,6 +34,7 @@
 
     interface Data {
         showUploadConfirmation: boolean
+        uploading: boolean
     }
 
     interface Computed {
@@ -52,7 +55,8 @@
         },
         data(): Data {
             return {
-                showUploadConfirmation: false
+                showUploadConfirmation: false,
+                uploading: true
             }
         },
         components: {
@@ -75,6 +79,7 @@
                 const selectedFile = fileInput.files!![0]!!;
                 const formData = new FormData();
                 formData.append('file', selectedFile);
+                this.uploading = true;
                 this.$emit("uploading");
                 this.upload(formData);
                 fileInput.value = "";

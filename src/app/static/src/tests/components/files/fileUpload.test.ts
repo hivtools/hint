@@ -64,24 +64,11 @@ describe("File upload component", () => {
         expect(wrapper.find({ref: "test-name"})).toStrictEqual(input);
     });
 
-    it("trigger click on hidden input when dropdown link is clicked", () => {
+    it("renders label", () => {
         const wrapper = createSut({
             name: "test-name"
         });
-        wrapper.find(".dropdown-item").trigger("mousedown");
-
-        expect(wrapper.emitted()['input-opened'].length).toBe(1);
-    });
-
-    it("closes dropdown when file is selected", async () => {
-
-        const wrapper = createSut({name: "test"});
-
-        wrapper.find("input").trigger("change");
-
-        await Vue.nextTick();
-
-        expect(mockHideDropDown).toBeCalledWith(true);
+        expect(wrapper.find(".custom-file-label").text()).toBe("Select new file");
     });
 
     it("calls upload when file is selected", async () => {
@@ -121,7 +108,7 @@ describe("File upload component", () => {
         expect(uploader.mock.calls[0][0] instanceof FormData).toBe(true);
     });
 
-    it("emits uploading event while uploading", async () => {
+    it("disables file select and emits uploading event while uploading", async () => {
         const wrapper = createSut();
 
         (wrapper.vm.$refs as any).pjnz = {
@@ -131,6 +118,7 @@ describe("File upload component", () => {
 
         await Vue.nextTick();
 
+        expect(wrapper.find(".custom-file-label").attributes("disabled")).toBe("disabled");
         expect(wrapper.emitted().uploading.length).toBe(1);
     });
 });
