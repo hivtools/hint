@@ -23,6 +23,7 @@ class VersionTests : SecureIntegrationTests() {
     }
 
     private val versionName = "testVersionEndpoint"
+    private val testState = "{\"state\": \"test\"}"
 
     @Test
     fun `can create new version`()
@@ -41,6 +42,57 @@ class VersionTests : SecureIntegrationTests() {
     }
 
     @Test
+    fun `can create new snapshot from parent`()
+    {
+        val createResult = createVersion()
+        val createVersionData = getResponseData(createResult)
+        val versionId = createVersionData["id"].asInt()
+        val snapshots = createVersionData["snapshots"] as ArrayNode
+        val snapshotId = snapshots[0]["id"].asText()
+        getUpdateSnapshotStateResult(versionId, snapshotId, testState)
+
+        val result = getNewSnapshotResult(versionId, snapshotId)
+        val data = getResponseData(result)
+
+        val newSnapshotId = data["id"].asText()
+        assertThat(newSnapshotId.count()).isGreaterThan(0)
+        LocalDateTime.parse(data["created"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        LocalDateTime.parse(data["updated"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+
+        val savedVersion = dsl.select(VERSION_SNAPSHOT.STATE,
+                VERSION_SNAPSHOT.CREATED,
+                VERSION_SNAPSHOT.UPDATED)
+                .from(VERSION_SNAPSHOT)
+                .where(VERSION_SNAPSHOT.ID.eq(newSnapshotId))
+                .fetchOne()
+
+        assertThat(savedVersion[VERSION_SNAPSHOT.STATE]).isEqualTo(testState)
+        assertThat(savedVersion[VERSION_SNAPSHOT.UPDATED]).isEqualTo(savedVersion[VERSION_SNAPSHOT.CREATED])
+    }
+
+    @Test
+    fun `can return expected English error when copy nonexistent snapshot`()
+    {
+        val result = getNewSnapshotResult(1, "nonExistent")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+
+        val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+        val msg = errors[0]["detail"].asText()
+        assertThat(msg).isEqualTo("Snapshot does not exist.")
+    }
+
+    @Test
+    fun `can return expected French error when copy nonexistent snapshot`()
+    {
+        val result = getNewSnapshotResult(1, "nonExistent","fr")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+
+        val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+        val msg = errors[0]["detail"].asText()
+        assertThat(msg).isEqualTo("L'instantané n'existe pas.")
+    }
+
+    @Test
     fun `can update snapshot state`()
     {
         val createResult = createVersion()
@@ -49,8 +101,7 @@ class VersionTests : SecureIntegrationTests() {
         val snapshots = data["snapshots"] as ArrayNode
         val snapshotId = snapshots[0]["id"].asText()
 
-        val testState = "{\"state\": \"test\"}"
-        val result = getUpdateVersionStateResult(versionId, snapshotId, testState)
+        val result = getUpdateSnapshotStateResult(versionId, snapshotId, testState)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
         val savedVersion = dsl.select(VERSION_SNAPSHOT.STATE,
@@ -67,7 +118,7 @@ class VersionTests : SecureIntegrationTests() {
     @Test
     fun `can return expected English error when update nonexistent snapshot state`()
     {
-        val result = getUpdateVersionStateResult(1, "nonExistent", "testState")
+        val result = getUpdateSnapshotStateResult(1, "nonExistent", "testState")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
 
         val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
@@ -78,7 +129,7 @@ class VersionTests : SecureIntegrationTests() {
     @Test
     fun `can return expected French error when update nonexistent snapshot state`()
     {
-        val result = getUpdateVersionStateResult(1, "nonExistent", "testState",
+        val result = getUpdateSnapshotStateResult(1, "nonExistent", "testState",
                 "fr")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
 
@@ -118,8 +169,25 @@ class VersionTests : SecureIntegrationTests() {
         return testRestTemplate.postForEntity<String>("/version/", httpEntity)
     }
 
-    private fun getUpdateVersionStateResult(versionId: Int, snapshotId: String, state: String,
-                                            language: String? = null): ResponseEntity<String>
+    private fun getUpdateSnapshotStateResult(versionId: Int, snapshotId: String, state: String,
+                                             language: String? = null): ResponseEntity<String>
+    {
+        val headers = getStandardHeaders(language)
+
+        val httpEntity =  HttpEntity(state, headers)
+        val url = "/version/$versionId/snapshot/$snapshotId/state/"
+        return testRestTemplate.postForEntity<String>(url, httpEntity)
+    }
+
+    private fun getNewSnapshotResult(versionId: Int, snapshotId: String, language: String? = null): ResponseEntity<String>
+    {
+        val headers = getStandardHeaders(language)
+        val httpEntity = HttpEntity(null, headers)
+        val url = "/version/$versionId/snapshot/?parent=$snapshotId"
+        return testRestTemplate.postForEntity<String>(url, httpEntity)
+    }
+
+    private fun getStandardHeaders(language: String?): HttpHeaders
     {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
@@ -128,8 +196,6 @@ class VersionTests : SecureIntegrationTests() {
             headers.acceptLanguage = mutableListOf(Locale.LanguageRange(language))
         }
 
-        val httpEntity =  HttpEntity(state, headers)
-        val url = "/version/$versionId/snapshot/$snapshotId/state/"
-        return testRestTemplate.postForEntity<String>(url, httpEntity)
+        return headers
     }
 }

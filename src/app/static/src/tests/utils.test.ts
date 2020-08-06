@@ -1,4 +1,4 @@
-import {addCheckSum, freezer, verifyCheckSum, flattenOptions, flattenToIdSet} from "../app/utils";
+import {addCheckSum, freezer, verifyCheckSum, flattenOptions, flattenToIdSet, formatDateTime} from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 import {rootOptionChildren} from "../app/utils";
 
@@ -126,6 +126,18 @@ describe("utils", () => {
 
         const result = rootOptionChildren(options);
         expect(result).toStrictEqual(regionOptions);
+    });
+
+    it("can format utc datetime as local friendly string", () => {
+        const isoUTCString = "2020-07-30T15:23:39.898939";
+
+        const millis = Date.UTC(2020, 7, 30, 15, 23, 39, 898);
+        const d = new Date(millis);
+        const expected = `${d.getDate()}/07/2020 ${d.getHours()}:${d.getMinutes()}:39`;
+
+        const result = formatDateTime(isoUTCString);
+
+        expect(result).toStrictEqual(expected);
     });
 
 });

@@ -8,7 +8,6 @@ import org.imperial.mrc.hint.models.SnapshotFile
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
-import org.jooq.impl.DSL.count
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Component
 
@@ -26,13 +25,14 @@ interface SnapshotRepository {
     fun getSnapshotFiles(snapshotId: String): Map<String, SnapshotFile>
     fun setFilesForSnapshot(snapshotId: String, files: Map<String, SnapshotFile?>)
     fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
+    fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, versionId: Int, userId: String)
 }
 
 @Component
 class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
 
-    override fun saveSnapshot(snapshotId: String, versionId: Int?) {
-
+    override fun saveSnapshot(snapshotId: String, versionId: Int?)
+    {
         val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
                 .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
                 .firstOrNull()
@@ -153,6 +153,22 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
                 .execute()
     }
 
+    override fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, versionId: Int, userId: String)
+    {
+        checkSnapshotExists(parentSnapshotId, versionId, userId)
+
+        dsl.insertInto(VERSION_SNAPSHOT)
+                .set(VERSION_SNAPSHOT.ID, newSnapshotId)
+                .set(VERSION_SNAPSHOT.VERSION_ID, versionId)
+                .set(VERSION_SNAPSHOT.STATE, dsl.select(VERSION_SNAPSHOT.STATE)
+                        .from(VERSION_SNAPSHOT)
+                        .where(VERSION_SNAPSHOT.ID.eq(parentSnapshotId)))
+                .execute()
+
+        val files = getSnapshotFiles(parentSnapshotId)
+        setFilesForSnapshot(newSnapshotId, files)
+    }
+
     private fun checkSnapshotExists(snapshotId: String, versionId: Int, userId: String)
     {
         dsl.select(VERSION_SNAPSHOT.ID)
@@ -162,7 +178,7 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
                 .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
                 .and(VERSION.ID.eq(versionId))
                 .and(VERSION.USER_ID.eq(userId))
-                .fetchAny() ?: throw SnapshotException("snapshotDoesNotExist");
+                .fetchAny() ?: throw SnapshotException("snapshotDoesNotExist")
     }
 
     private fun getSnapshotFileRecord(snapshotId: String, type: FileType): Record? {

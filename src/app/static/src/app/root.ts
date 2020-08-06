@@ -1,4 +1,5 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
+import {Error} from "./generated";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
 import {versions, VersionsState, initialVersionsState} from "./store/versions/versions";
 import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
@@ -34,6 +35,7 @@ export interface TranslatableState {
 export interface RootState extends TranslatableState {
     version: string,
     adrKey: string | null,
+    adrKeyError: Error | null,
     baseline: BaselineState,
     metadata: MetadataState,
     surveyAndProgram: SurveyAndProgramState,
@@ -96,6 +98,7 @@ const resetState = (store: Store<RootState>) => {
 export const emptyState = (): RootState => {
     return {
         adrKey: null,
+        adrKeyError: null,
         language: Language.en,
         version: '0.0.0',
         baseline: initialBaselineState(),

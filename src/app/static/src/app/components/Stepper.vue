@@ -66,10 +66,15 @@
     import ModelOptions from "./modelOptions/ModelOptions.vue";
 
     import { mapGettersByNames, mapStateProps} from "../utils";
+    import {Version} from "../types";
+    import {VersionsState} from "../store/versions/versions";
+
+    declare const currentUser: string;
 
     interface ComputedState {
         activeStep: number,
         steps: StepDescription[],
+        currentVersion: Version | null
     }
 
     interface ComputedGetters {
@@ -89,6 +94,9 @@
             }),
             ...mapStateProps<LoadState, keyof ComputedState>("load", {
                 loadingFromFile: state => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
+            }),
+            ...mapStateProps<VersionsState, keyof ComputedState>("versions", {
+                currentVersion: state => state.currentVersion
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
             loading: function () {
@@ -111,6 +119,12 @@
             },
             isComplete(num: number) {
                 return !this.loading && this.complete[num];
+            }
+        },
+        created() {
+            //redirect to versions if logged in with no currentVersion
+            if ((currentUser != "guest") && (this.currentVersion == null)) {
+                this.$router.push('/versions');
             }
         },
         components: {

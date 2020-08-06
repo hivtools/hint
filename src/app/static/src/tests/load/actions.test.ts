@@ -9,13 +9,15 @@ const rootState = mockRootState();
 describe("Load actions", () => {
 
     beforeEach(() => {
+        mockAxios.reset();
         // stop apiService logging to console
         console.log = jest.fn();
-        mockAxios.reset();
+        console.info = jest.fn();
     });
 
     afterEach(() => {
         (console.log as jest.Mock).mockClear();
+        (console.info as jest.Mock).mockClear();
     });
 
     it("load reads blob and dispatches setFiles action", (done) => {

@@ -2,15 +2,16 @@ import {mockVersionsState} from "../mocks";
 import {mutations, VersionsMutations} from "../../app/store/versions/mutations";
 
 describe("Versions mutations", () => {
-    it("sets manageVersions", () => {
-        const state = mockVersionsState();
 
-        mutations[VersionsMutations.SetManageVersions](state, {payload: true});
-        expect(state.manageVersions).toBe(true);
+    const consoleSpy = jest.fn();
 
-        mutations[VersionsMutations.SetManageVersions](state, {payload: false});
-        expect(state.manageVersions).toBe(false);
+    beforeEach(() => {
+        console.error = consoleSpy;
     });
+
+    afterEach(() => {
+        (console.error as jest.Mock).mockClear();
+    })
 
     it("sets loading", () => {
         const state = mockVersionsState();
@@ -32,6 +33,14 @@ describe("Versions mutations", () => {
         expect(state.loading).toBe(false);
     });
 
+    it("sets previous versions", () => {
+        const state = mockVersionsState({loading: true});
+        mutations[VersionsMutations.SetPreviousVersions](state, {payload: ["TEST VERSION"]});
+
+        expect(state.previousVersions).toStrictEqual(["TEST VERSION"]);
+        expect(state.loading).toBe(false);
+    });
+
     it("sets snapshot upload pending", () => {
         const state = mockVersionsState();
         mutations[VersionsMutations.SetSnapshotUploadPending](state, {payload: true});
@@ -39,8 +48,6 @@ describe("Versions mutations", () => {
     });
 
     it("SnapshotUploadError logs error to console", () => {
-        const consoleSpy = jest.spyOn(console, 'error');
-
         const state = mockVersionsState();
         mutations[VersionsMutations.SnapshotUploadError](state, {payload: "test error"});
 
