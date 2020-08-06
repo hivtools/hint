@@ -8,7 +8,7 @@ import {
     ValidateBaselineResponse,
     Error
 } from "../../generated";
-import {PayloadWithType} from "../../types";
+import {Dataset, PayloadWithType} from "../../types";
 import {flattenOptions} from "../../utils";
 import {ReadyState} from "../../root";
 
@@ -22,7 +22,8 @@ export enum BaselineMutation {
     Ready = "Ready",
     Validating = "Validating",
     Validated = "Validated",
-    BaselineError = "Error"
+    BaselineError = "Error",
+    SetDataset = "SetDataset"
 }
 
 export const BaselineUpdates = [
@@ -32,6 +33,11 @@ export const BaselineUpdates = [
 ];
 
 export const mutations: MutationTree<BaselineState> = {
+
+    [BaselineMutation.SetDataset](state: BaselineState, payload: Dataset) {
+        console.log(payload);
+        state.selectedDataset = payload;
+    },
 
     [BaselineMutation.PJNZUploadError](state: BaselineState, action: PayloadWithType<Error>) {
         state.pjnzError = action.payload;
