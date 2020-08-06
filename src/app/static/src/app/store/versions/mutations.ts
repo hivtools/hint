@@ -1,6 +1,6 @@
 import {MutationTree} from "vuex";
 import {VersionsState} from "./versions";
-import {PayloadWithType, Version} from "../../types";
+import {PayloadWithType, Snapshot, Version} from "../../types";
 import {Error} from "../../generated";
 
 export enum VersionsMutations {
@@ -8,7 +8,8 @@ export enum VersionsMutations {
     SetPreviousVersions = "SetPreviousVersions",
     SetSnapshotUploadPending = "SetSnapshotUploadPending",
     VersionError = "VersionError",
-    SnapshotUploadError = "SnapshotUploadError"
+    SnapshotUploadError = "SnapshotUploadError",
+    SnapshotCreated = "SnapshotCreated"
 }
 
 export const mutations: MutationTree<VersionsState> = {
@@ -28,5 +29,11 @@ export const mutations: MutationTree<VersionsState> = {
     },
     [VersionsMutations.SnapshotUploadError](state: VersionsState, action: PayloadWithType<Error>) {
         console.error(action.payload);
+    },
+    [VersionsMutations.SnapshotCreated](state: VersionsState, action: PayloadWithType<Snapshot>) {
+        const snapshot = action.payload;
+        alert("setting new snapshot: " + snapshot.id);
+        state.currentVersion!.snapshots.push(snapshot);
+        state.currentSnapshot = snapshot;
     }
 };
