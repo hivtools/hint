@@ -1,5 +1,5 @@
 <template>
-    <div style="flex:auto" class="ml-2 border-left">
+    <div style="flex:auto">
         <drop-down text="file">
             <a class="dropdown-item" v-on:mousedown="save">
                 <span v-translate="'save'"></span>
