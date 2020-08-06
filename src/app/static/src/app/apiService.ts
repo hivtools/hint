@@ -70,9 +70,9 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this;
     };
 
-    withError = (type: E) => {
+    withError = (type: E, root: boolean = false) => {
         this._onError = (failure: Response) => {
-            this._commit({type: type, payload: APIService.getFirstErrorFromFailure(failure)});
+            this._commit({type: type, payload: APIService.getFirstErrorFromFailure(failure)}, {root});
         };
         return this
     };

@@ -24,19 +24,11 @@ describe("Stepper component", () => {
         expect(wrapper.isEmpty()).toBe(true);
     });
 
-    it("renders as expected when snapshotSuccess is true", () => {
-        const wrapper = getWrapper({snapshotSuccess: true, snapshotTime: date});
+    it("renders as expected when snapshotTime is set", () => {
+        const wrapper = getWrapper({snapshotTime: date});
 
-        expect(wrapper.text()).toBe("Saved snapshot at 12:45");
+        expect(wrapper.text()).toBe("Last saved 12:45");
         expect(wrapper.find(CheckIcon).exists()).toBe(true);
         expect(wrapper.find(AlertTriangleIcon).exists()).toBe(false);
-    });
-
-    it("renders as expected when snapshotSuccess is false", () => {
-        const wrapper = getWrapper({snapshotSuccess: false, snapshotTime: date});
-
-        expect(wrapper.text()).toBe("Could not save snapshot at 12:45");
-        expect(wrapper.find(CheckIcon).exists()).toBe(false);
-        expect(wrapper.find(AlertTriangleIcon).exists()).toBe(true);
     });
 });

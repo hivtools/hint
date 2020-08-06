@@ -2,6 +2,7 @@ import {mockAxios, mockFailure, mockRootState, mockSuccess, mockVersionsState} f
 import {actions} from "../../app/store/versions/actions";
 import {VersionsMutations} from "../../app/store/versions/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
+import {ErrorsMutation} from "../../app/store/errors/mutations";
 import {Version} from "../../app/types";
 import {serialiseState} from "../../app/localStorageManager";
 
@@ -178,7 +179,7 @@ describe("Versions actions", () => {
         }, 2500);
     });
 
-    it("uploadSnapshotState commits SnapshotUploadError on error response", async (done) => {
+    it("uploadSnapshotState commits ErrorAdded on error response", async (done) => {
         const commit = jest.fn();
         const state = mockVersionsState({
             currentVersion: mockVersion,
@@ -194,7 +195,7 @@ describe("Versions actions", () => {
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(3);
-            expect(commit.mock.calls[2][0].type).toStrictEqual(VersionsMutations.SnapshotUploadError);
+            expect(commit.mock.calls[2][0].type).toStrictEqual(`errors/${ErrorsMutation.ErrorAdded}`);
             expect(commit.mock.calls[2][0].payload.detail).toStrictEqual("TEST ERROR");
 
             done();

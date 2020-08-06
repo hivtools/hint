@@ -39,6 +39,7 @@ import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {VersionsState} from "../../app/store/versions/versions";
+import SnapshotStatus from "../../app/components/versions/SnapshotStatus.vue";
 
 const localVue = createLocalVue();
 
@@ -209,6 +210,11 @@ describe("Stepper component", () => {
         expect(connectors.length).toBe(5);
         // all should not be enabled at first
         expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(0);
+    });
+
+    it("renders snapshot status", () => {
+        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
+       expect(wrapper.find(SnapshotStatus).exists()).toBe(true);
     });
 
     it("step connector is enabled if next step is", () => {

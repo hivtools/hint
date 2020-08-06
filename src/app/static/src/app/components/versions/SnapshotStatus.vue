@@ -1,6 +1,6 @@
 <template>
     <div v-if="display" class="text-muted small pl-1">
-        <span>Last saved</span> {{formattedTime}}
+        <span v-translate="'lastSaved'"></span> {{formattedTime}}
         <check-icon size="14" class="mb-1"></check-icon>
     </div>
 </template>
