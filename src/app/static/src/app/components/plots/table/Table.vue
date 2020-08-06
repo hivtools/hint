@@ -101,17 +101,18 @@ export default Vue.extend<{}, {}, Computed, Props>({
         },
         selectedAreaIds() {
             const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
-            const areaArray = Array.from(selectedAreaIdSet)
-            if (this.selections.detail === 0 || !this.selections.detail){
-                return areaArray[0].length === 3 ? [areaArray[0]] : []
+            const areaArray = Array.from(selectedAreaIdSet);
+            if (this.selections.detail === 0){
+                return [areaArray[0]]
             } else return areaArray.filter(val => parseInt(val[4]) === this.selections.detail);
         },
         selectedAreaFilterOptions() {
             const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
-            if (selectedOptions && selectedOptions.length > 0) {
+            if(this.selections.detail === 0){
+                return this.countryAreaFilterOption ? [this.countryAreaFilterOption] : []
+            }
+            else if (selectedOptions && selectedOptions.length > 0) {
                 return selectedOptions
-            } else if(this.selections.detail === 0 || !this.selections.detail){
-              return this.areaFilter ? [this.countryAreaFilterOption] : []
             } else return this.areaFilter ? this.areaFilter.options : []; //consider all top level areas to be selected if none are
         },
         filtersToDisplay() {
