@@ -9,7 +9,7 @@
     import Vue from "vue";
     import {VersionsState} from "../../store/versions/versions";
     import {mapStateProp} from "../../utils";
-    import {CheckIcon, AlertTriangleIcon} from "vue-feather-icons";
+    import {CheckIcon} from "vue-feather-icons";
     import moment from 'moment';
 
     const namespace = "versions";
@@ -31,8 +31,7 @@
             time: mapStateProp<VersionsState, Date | null>(namespace, state => state.snapshotTime)
         },
         components: {
-            CheckIcon,
-            AlertTriangleIcon
+            CheckIcon
         }
     });
 </script>
