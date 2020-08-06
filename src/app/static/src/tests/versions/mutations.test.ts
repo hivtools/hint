@@ -39,10 +39,6 @@ describe("Versions mutations", () => {
         expect(state.snapshotUploadPending).toBe(true);
     });
 
-    it("SnapshotUploadError sets snapshotSuccess and snapshotTime", () => {
-        //TODO!!
-    });
-
     it("SnapshotUploadSuccess sets snapshotSuccess and snapshotTime", () => {
         const state = mockVersionsState();
         mutations[VersionsMutations.SnapshotUploadSuccess](state);

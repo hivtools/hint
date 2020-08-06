@@ -61,7 +61,7 @@ const immediateUploadSnapshotState = (context: ActionContext<VersionsState, Root
     if (versionId && snapshotId) {
         api<VersionsMutations, ErrorsMutation>(context)
             .withSuccess(VersionsMutations.SnapshotUploadSuccess)
-            .withError(ErrorsMutation.ErrorAdded)
+            .withError("errors/"+ErrorsMutation.ErrorAdded as ErrorsMutation) //NEED TO DO ROOT TRUE??
             .postAndReturn(`/versionx/${versionId}/snapshot/${snapshotId}/state/`, serialiseState(rootState));
     }
 };
