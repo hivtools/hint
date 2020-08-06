@@ -8,6 +8,7 @@
 @import "partials/header";
 @import "partials/tooltips";
 @import "partials/progress";
+@import "partials/files";
 
 a {
   color: $theme-red;
@@ -68,22 +69,6 @@ a {
 
 }
 
-.custom-file-label.uploading::after {
-  content: "..." !important;
-  width: 78px;
-  text-align: center;
-}
-
-.fr {
-  .custom-file-label:not(.uploading)::after {
-    content: "Parcourir" !important;
-  }
-
-  .custom-file-label.uploading::after {
-    width: 90px;
-  }
-}
-
 .lds-spin.xs {
   margin-top: -15px;
 }
@@ -99,10 +84,6 @@ a {
 
 .reset-password-form {
   width: 30em;
-}
-
-.custom-file, .custom-file label {
-  overflow: hidden;
 }
 
 a.up::after {
@@ -126,6 +107,14 @@ a.down::after {
   width: auto;
   max-width: 230px;
   max-height: 100px;
+}
+
+.collapsed > .when-open {
+  display: none;
+}
+
+.not-collapsed > .when-closed {
+  display: none;
 }
 
 

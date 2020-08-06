@@ -74,3 +74,4 @@ export interface Version {
     name: string,
     snapshots: Snapshot[]
 }
+

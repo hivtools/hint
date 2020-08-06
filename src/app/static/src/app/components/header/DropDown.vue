@@ -6,7 +6,7 @@
            v-on:click="toggle"
            v-translate="text">
         </a>
-        <div class="dropdown-menu" :class="show && 'show'">
+        <div class="dropdown-menu" :class="{'show':show, 'dropdown-menu-right': right}">
             <slot></slot>
         </div>
     </div>
@@ -24,12 +24,12 @@
     }
 
     interface Props {
-        style: string,
         text: string
+        right: boolean
     }
 
-    export default Vue.extend<Data, Methods, {}, "text">({
-        props: ["text"],
+    export default Vue.extend<Data, Methods, {}, keyof Props>({
+        props: ["text", "right"],
         data(): Data {
             return {
                 show: false

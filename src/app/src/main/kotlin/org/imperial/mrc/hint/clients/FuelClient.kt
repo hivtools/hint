@@ -6,11 +6,15 @@ import com.github.kittinunf.fuel.httpPost
 import org.imperial.mrc.hint.asResponseEntity
 import org.springframework.http.ResponseEntity
 
-abstract class FuelClient(protected val baseUrl: String) {
+interface HttpClient {
+    fun get(url: String): ResponseEntity<String>
+}
+
+abstract class FuelClient(protected val baseUrl: String): HttpClient {
 
     abstract fun standardHeaders(): Map<String, Any>
 
-    fun get(url: String): ResponseEntity<String> {
+    override fun get(url: String): ResponseEntity<String> {
         return "$baseUrl/$url".httpGet()
                 .header(standardHeaders())
                 .addTimeouts()

@@ -33,19 +33,18 @@ header {
 
   .dropdown-menu {
     top: 31px;
-    left: -10px;
+  }
+}
 
-    .dropdown-item {
-      color: $theme-red !important;
-      cursor: pointer;
+.dropdown-item {
+  color: $theme-red !important;
+  cursor: pointer;
 
-      &:focus {
-        outline: none !important;
-      }
+  &:focus {
+    outline: none !important;
+  }
 
-      &:hover, &.active, :active {
-        background-color: $gray-200;
-      }
-    }
+  &:hover, &.active, :active {
+    background-color: $gray-200;
   }
 }

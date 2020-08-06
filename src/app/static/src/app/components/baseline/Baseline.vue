@@ -3,17 +3,17 @@
         <div class="row">
             <div class="col-sm-6 col-md-8">
                 <form>
-                    <file-upload label="PJNZ"
-                                 :valid="pjnz.valid"
-                                 :error="pjnz.error || plottingMetadataError"
-                                 :upload="uploadPJNZ"
-                                 :delete-file="deletePJNZ"
-                                 :existingFileName="pjnz.existingFileName"
-                                 accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
-                                 name="pjnz">
+                    <manage-file label="PJNZ"
+                                     :valid="pjnz.valid"
+                                     :error="pjnz.error || plottingMetadataError"
+                                     :upload="uploadPJNZ"
+                                     :delete-file="deletePJNZ"
+                                     :existingFileName="pjnz.existingFileName"
+                                     accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
+                                     name="pjnz">
                         <label v-if="country"><strong v-translate="'country'"></strong>: {{country}}</label>
-                    </file-upload>
-                    <file-upload label="shape"
+                    </manage-file>
+                    <manage-file label="shape"
                                  :valid="shape.valid"
                                  :error="shape.error"
                                  :upload="uploadShape"
@@ -21,8 +21,8 @@
                                  :existingFileName="shape.existingFileName"
                                  accept="geojson,.geojson,GEOJSON,.GEOJSON"
                                  name="shape">
-                    </file-upload>
-                    <file-upload label="population"
+                    </manage-file>
+                    <manage-file label="population"
                                  :valid="population.valid"
                                  :error="population.error"
                                  :upload="uploadPopulation"
@@ -30,7 +30,7 @@
                                  :existingFileName="population.existingFileName"
                                  accept="csv,.csv"
                                  name="population">
-                    </file-upload>
+                    </manage-file>
                 </form>
                 <div v-if="validating" id="baseline-validating">
                     <loading-spinner size="xs"></loading-spinner>
@@ -53,6 +53,7 @@
     import {MetadataState} from "../../store/metadata/metadata";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
+    import ManageFile from "../files/ManageFile.vue";
 
     const namespace: string = 'baseline';
 
@@ -97,7 +98,8 @@
         components: {
             FileUpload,
             ErrorAlert,
-            LoadingSpinner
+            LoadingSpinner,
+            ManageFile
         }
     })
 </script>

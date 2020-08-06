@@ -2,6 +2,7 @@ import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
 import {Dict} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
+import moment from 'moment';
 
 export type ComputedWithType<T> = () => T;
 
@@ -33,9 +34,9 @@ export const mapActionByName = <T>(namespace: string | null, name: string): Acti
     return (!!namespace && mapActions(namespace, [name])[name]) || mapActions([name])[name]
 };
 
-export const mapActionsByNames = <K extends string>(namespace: string, names: string[]) => {
+export const mapActionsByNames = <K extends string>(namespace: string | null, names: string[]) => {
     type R = { [key in K]: any }
-    return mapActions(namespace, names) as R
+    return (!!namespace && mapActions(namespace, names) || mapActions(names)) as R
 };
 
 export const mapMutationsByNames = <K extends string>(namespace: string, names: string[]) => {
@@ -155,4 +156,8 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
 export const rootOptionChildren = (filterOptions: FilterOption[]) => {
     const rootOption = filterOptions[0];
     return (rootOption && (rootOption as any).children) || [];
+};
+
+export const formatDateTime = (isoUTCString: string) => {
+    return moment.utc(isoUTCString).local().format('DD/MM/YYYY HH:mm:ss');
 };
