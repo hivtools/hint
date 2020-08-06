@@ -27,6 +27,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.context.request.WebRequest
 import java.io.File
+import java.lang.reflect.UndeclaredThrowableException
 
 class ExceptionHandlerTests : SecureIntegrationTests() {
 
@@ -139,6 +140,17 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
                 "OTHER_ERROR",
                 unexpectedErrorRegex)
         assertThat(result.body!!.toString()).doesNotContain("trace")
+    }
+
+    @Test
+    fun `handles HintExceptions thrown inside UndeclaredThrowableException`() {
+        val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
+        val fakeError = UndeclaredThrowableException(HintException("some message", HttpStatus.BAD_REQUEST))
+        val result = sut.handleArbitraryException(fakeError, mock())
+        JSONValidator().validateError(result.body!!.toString(),
+                "OTHER_ERROR",
+                "some message")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
 }
