@@ -1,22 +1,17 @@
 <template>
     <div>
-        <b-dropdown text="Select file from" variant="white" :ref="'dropdown-' + name">
-            <li>
-                <a class="dropdown-item" href="#" v-on:mousedown="$refs[name].click()">
-                    <input type="file"
-                           style="display:none"
-                           :ref="name"
-                           :id="name"
-                           :accept="accept"
-                           v-on:change="handleFileSelect"
-                           @click="$emit('input-opened')"/>
-                    <!-- emit input-opened event so that tests can verify that this
-                    is triggered -->
-                    This computer
-                </a>
-            </li>
-            <adr-select></adr-select>
-        </b-dropdown>
+        <button class="btn btn-white" v-on:mousedown="$refs[name].click()">
+            <input type="file"
+                   style="display:none"
+                   :ref="name"
+                   :id="name"
+                   :accept="accept"
+                   v-on:change="handleFileSelect"
+                   @click="$emit('input-opened')"/>
+            <!-- emit input-opened event so that tests can verify that this
+            is triggered -->
+            Select new file
+        </button>
         <reset-confirmation :continue-editing="uploadSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showUploadConfirmation"></reset-confirmation>
@@ -28,7 +23,6 @@
     import {BDropdown} from "bootstrap-vue";
     import {mapGetterByName} from "../../utils";
     import ResetConfirmation from "../ResetConfirmation.vue";
-    import AdrSelect from "./ADRSelect.vue";
 
     interface Methods {
         handleFileSelect: () => void
@@ -63,8 +57,7 @@
         },
         components: {
             BDropdown,
-            ResetConfirmation,
-            AdrSelect
+            ResetConfirmation
         },
         computed: {
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation")
@@ -78,7 +71,6 @@
                 }
             },
             uploadSelectedFile() {
-                (this.$refs[`dropdown-${this.name}`] as BDropdown).hide(true);
                 const fileInput = this.$refs[this.name] as HTMLInputElement;
                 const selectedFile = fileInput.files!![0]!!;
                 const formData = new FormData();

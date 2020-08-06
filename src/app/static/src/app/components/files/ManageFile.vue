@@ -1,7 +1,8 @@
 <template>
     <div class="form-group">
-        <label class="font-weight-bold" v-translate="label"></label>
+        <label class="font-weight-bold mb-0" v-translate="label"></label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
+        <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <br/>
         <slot></slot>
         <label v-if="existingFileName" class="file-name">
@@ -13,7 +14,6 @@
                v-on:click="handleFileDelete"
                v-translate="'remove'"></a>
         </label>
-        <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <file-upload :name="name"
                      :accept="accept"
                      :upload="upload"
