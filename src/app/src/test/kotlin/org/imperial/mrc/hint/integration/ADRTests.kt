@@ -16,7 +16,7 @@ class ADRTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save ADR key`(isAuthorized: IsAuthorized) {
-        val result = testRestTemplate.postForEntity<String>("/adr/key", getPostEntity())
+        val result = testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
         assertSecureWithSuccess(isAuthorized, result, null)
 
         if (isAuthorized == IsAuthorized.TRUE) {
@@ -27,21 +27,21 @@ class ADRTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get ADR key`(isAuthorized: IsAuthorized) {
-        testRestTemplate.postForEntity<String>("/adr/key", getPostEntity())
+        testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
         val result = testRestTemplate.getForEntity<String>("/adr/key")
 
         assertSecureWithSuccess(isAuthorized, result, null)
 
         if (isAuthorized == IsAuthorized.TRUE) {
             val data = ObjectMapper().readTree(result.body!!)["data"].asText()
-            assertThat(data).isEqualTo("testkey")
+            assertThat(data).isEqualTo("4c69b103-4532-4b30-8a37-27a15e56c0bb")
         }
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can delete ADR key`(isAuthorized: IsAuthorized) {
-        val result = testRestTemplate.postForEntity<String>("/adr/key", getPostEntity())
+        val result = testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
         assertSecureWithSuccess(isAuthorized, result, null)
 
         if (isAuthorized == IsAuthorized.TRUE) {
@@ -59,7 +59,7 @@ class ADRTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get ADR datasets`(isAuthorized: IsAuthorized) {
-        testRestTemplate.postForEntity<String>("/adr/key", getPostEntity())
+        testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
         val result = testRestTemplate.getForEntity<String>("/adr/datasets")
 
         assertSecureWithSuccess(isAuthorized, result, null)
@@ -67,18 +67,63 @@ class ADRTests : SecureIntegrationTests() {
         if (isAuthorized == IsAuthorized.TRUE) {
             val data = ObjectMapper().readTree(result.body!!)["data"]
             assertThat(data.isArray).isTrue()
-            // we used a fake key so no results will come back
-            assertThat(data.count()).isEqualTo(0)
+            // the test api key has access to exactly 1 dataset
+            assertThat(data.count()).isEqualTo(1)
         }
+    }
 
-        val resultWithResources = testRestTemplate.getForEntity<String>("/adr/datasets?showInaccessible=true")
-        if (isAuthorized == IsAuthorized.TRUE) {
-            val data = ObjectMapper().readTree(resultWithResources.body!!)["data"]
-            assertThat(data.isArray).isTrue()
-            // with the showInaccessible flag set, we can see packages
-            // that aren't actually accessible to our fake user
-            assertThat(data.count()).isGreaterThan(0)
-        }
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can save pjnz from ADR`(isAuthorized: IsAuthorized) {
+        val pjnz = extractUrl(isAuthorized, "inputs-unaids-spectrum-file")
+        val result = testRestTemplate.postForEntity<String>("/adr/pjnz",
+                getPostEntityWithUrl(pjnz))
+        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can save population from ADR`(isAuthorized: IsAuthorized) {
+        val pjnz = extractUrl(isAuthorized, "inputs-unaids-population")
+        val result = testRestTemplate.postForEntity<String>("/adr/population",
+                getPostEntityWithUrl(pjnz))
+        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can save shape from ADR`(isAuthorized: IsAuthorized) {
+        val pjnz = extractUrl(isAuthorized, "inputs-unaids-geographic")
+        val result = testRestTemplate.postForEntity<String>("/adr/shape",
+                getPostEntityWithUrl(pjnz))
+        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can save survey from ADR`(isAuthorized: IsAuthorized) {
+        val pjnz = extractUrl(isAuthorized, "inputs-unaids-survey")
+        val result = testRestTemplate.postForEntity<String>("/adr/survey",
+                getPostEntityWithUrl(pjnz))
+        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can save ANC from ADR`(isAuthorized: IsAuthorized) {
+        val pjnz = extractUrl(isAuthorized, "inputs-unaids-anc")
+        val result = testRestTemplate.postForEntity<String>("/adr/anc",
+                getPostEntityWithUrl(pjnz))
+        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can save programme from ADR`(isAuthorized: IsAuthorized) {
+        val pjnz = extractUrl(isAuthorized, "inputs-unaids-art")
+        val result = testRestTemplate.postForEntity<String>("/adr/programme",
+                getPostEntityWithUrl(pjnz))
+        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
     @ParameterizedTest
@@ -92,11 +137,32 @@ class ADRTests : SecureIntegrationTests() {
         }
     }
 
-    private fun getPostEntity(): HttpEntity<LinkedMultiValueMap<String, String>> {
+    private fun getPostEntityWithKey(): HttpEntity<LinkedMultiValueMap<String, String>> {
         val map = LinkedMultiValueMap<String, String>()
-        map.add("key", "testkey")
+        // this key is for a test user who has access to 1 fake dataset
+        map.add("key", "4c69b103-4532-4b30-8a37-27a15e56c0bb")
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         return HttpEntity(map, headers)
+    }
+
+    private fun getPostEntityWithUrl(url: String): HttpEntity<LinkedMultiValueMap<String, String>> {
+        val map = LinkedMultiValueMap<String, String>()
+        map.add("url", url)
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        return HttpEntity(map, headers)
+    }
+
+    private fun extractUrl(isAuthorized: IsAuthorized, type: String): String {
+        return if (isAuthorized == IsAuthorized.TRUE) {
+            testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
+            val resultWithResources = testRestTemplate.getForEntity<String>("/adr/datasets?showInaccessible=true")
+            val data = ObjectMapper().readTree(resultWithResources.body!!)["data"]
+            val resource = data[0]["resources"].find { it["resource_type"].textValue() == type }
+            resource!!["url"].textValue()
+        } else {
+            "fake"
+        }
     }
 }
