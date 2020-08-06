@@ -67,4 +67,15 @@ class ADRController(private val session: Session,
             SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
         }
     }
+
+    @GetMapping("/schemas")
+    fun getFileTypeMappings(): ResponseEntity<String> {
+        return SuccessResponse(
+                mapOf("anc" to appProperties.adrANC,
+                        "programme" to appProperties.adrART,
+                        "pjnz" to appProperties.adrPJNZ,
+                        "population" to appProperties.adrPop,
+                        "shape" to appProperties.adrShape,
+                        "survey" to appProperties.adrSurvey)).asResponseEntity()
+    }
 }
