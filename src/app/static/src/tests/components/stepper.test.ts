@@ -1,4 +1,4 @@
-import {createLocalVue, mount, shallowMount, Wrapper} from '@vue/test-utils';
+import {createLocalVue, shallowMount, Wrapper} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
@@ -24,7 +24,7 @@ import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations
 import {mutations as stepperMutations} from '../../app/store/stepper/mutations';
 import {mutations as loadMutations} from '../../app/store/load/mutations';
 import {modelRunGetters, ModelRunState} from "../../app/store/modelRun/modelRun";
-import ADRKey from "../../app/components/adr/ADRKey.vue";
+import ADRIntegration from "../../app/components/adr/ADRIntegration.vue";
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
@@ -522,37 +522,34 @@ describe("Stepper component", () => {
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });
 
-    it("show ADR key if on step 1", () => {
+    it("show ADR integration if on step 1", () => {
         const wrapper = getStepperOnStep(1);
-        expect(wrapper.findAll(ADRKey).length).toBe(1);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(1);
     });
 
-    it("show ADR key if on step 2", () => {
+    it("does not show ADR integration on step 2", () => {
         const wrapper = getStepperOnStep(2);
-        expect(wrapper.findAll(ADRKey).length).toBe(1);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
-    it("does not show ADR key on step 3", () => {
+    it("does not show ADR integration on step 3", () => {
         const wrapper = getStepperOnStep(3);
-        expect(wrapper.findAll(ADRKey).length).toBe(0);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
-
-    it("does not show ADR key on step 4", () => {
+    it("does not show ADR keintegrationy on step 4", () => {
         const wrapper = getStepperOnStep(4);
-        expect(wrapper.findAll(ADRKey).length).toBe(0);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
-
-    it("does not show ADR key on step 5", () => {
+    it("does not show ADR integration on step 5", () => {
         const wrapper = getStepperOnStep(5);
-        expect(wrapper.findAll(ADRKey).length).toBe(0);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
-
-    it("does not show ADR key on step 6", () => {
+    it("does not show ADR integration on step 6", () => {
         const wrapper = getStepperOnStep(6);
-        expect(wrapper.findAll(ADRKey).length).toBe(0);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
     const getStepperOnStep = (step: number) => {

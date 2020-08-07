@@ -5,7 +5,7 @@
                 <div class="navbar-header">
                     {{title}}
                 </div>
-                <router-link v-if="!isGuest" to="/versions" class="ml-2" v-translate="'versions'"
+                <router-link v-if="!isGuest" to="/versions" class="ml-2 pr-2 border-right" v-translate="'versions'"
                              style="flex:none"></router-link>
                 <file-menu :title="title"></file-menu>
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-light">

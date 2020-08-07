@@ -54,6 +54,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                     bubblePlotFilters: jest.fn().mockReturnValue(["TEST BUBBLE FILTERS"]),
                     choroplethFilters: jest.fn().mockReturnValue(["TEST CHORO FILTERS"]),
                     choroplethIndicators: jest.fn().mockReturnValue(["TEST CHORO INDICATORS"]),
+                    countryAreaFilterOption: jest.fn().mockReturnValue({TEST: "TEST countryAreaFilterOption"}),
                     ...partialGetters
                 },
                 mutations: modelOutputMutations
@@ -277,6 +278,7 @@ describe("ModelOutput component", () => {
         expect(table.props().selections).toStrictEqual({test: "TEST CHORO SELECTIONS"});
         expect(table.props().indicators).toStrictEqual(["TEST CHORO INDICATORS"]);
         expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+        expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
     });
 
     it("renders choropleth table with correct indicator props", () => {
@@ -308,6 +310,7 @@ describe("ModelOutput component", () => {
         expect(table.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
         expect(table.props().indicators).toStrictEqual(["TEST BUBBLE INDICATORS", "TEST BUBBLE INDICATORS"]);
         expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+        expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
     });
 
     it("renders bubble plot table with correct indicator props", () => {
@@ -361,6 +364,7 @@ describe("ModelOutput component", () => {
                 age: {id: "a1", label: "0-4"}
             }});
         expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+        expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
     });
 
     it("renders barchart table with correct indicator props", () => {
