@@ -6,11 +6,13 @@
                 <div>
                     <tr>
                         <th v-translate="'area'"></th>
+                        <th>Area Hierarchy</th>
                         <th v-for="f in filtersToDisplay" v-translate="f.label"></th>
                         <th v-for="i in indicators">{{ i.name }}</th>
                     </tr>
                     <tr v-for="row in filteredData">
                         <td>{{ row.areaLabel }}</td>
+                        <td>{{ row.areaHierarchy }}</td>
                         <td v-for="f in filtersToDisplay">{{ row.filterLabels[f.id] }}</td>
                         <td v-for="i in indicators">{{ row.indicatorValues[i.indicator] }}</td>
                     </tr>
@@ -18,9 +20,6 @@
             </table>
         </div>
         <div v-else>No data are available for these selections.</div>
-        <ul>
-          <li v-for="x in flattenedAreas">{{ x }}</li>
-        </ul>
     </div>
     
 </template>
@@ -57,7 +56,8 @@ interface Computed {
     filteredData: DisplayRow[],
     flattenedAreas: Dict<NestedFilterOption>,
     selectedAreaIds: string[],
-    selectedAreaFilterOptions: FilterOption[]
+    selectedAreaFilterOptions: FilterOption[],
+    // areaHierarchy: string
 }
 const props = {
     tabledata: {
@@ -123,6 +123,17 @@ export default Vue.extend<{}, {}, Computed, Props>({
             return this.nonAreaFilters.filter(f => f.options.length > 0)
         },
         filteredData() {
+            function findPath(id: string, obj: any): any {
+                for(var key in obj) {                                         
+                    if(obj.hasOwnProperty(key)) {                         
+                        if(id === obj[key]) return obj.label;                      
+                        else if(obj[key] && typeof obj[key] === "object") {   
+                            var path = findPath(id, obj[key]);               
+                            if(path) return obj.label + "/" + path;               
+                        }
+                    }
+                }
+            }
             const filteredValues: any[] = [];
             iterateDataValues(this.tabledata,
                 this.indicators,
@@ -142,6 +153,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
                     if (!(key in displayRows)) {
                         const areaLabel =  this.flattenedAreas[current.areaId].label;
+                        const areaHierarchy = findPath(current.areaId, this.countryAreaFilterOption).replace(/undefined\//g, "")
                         const filterLabels: Dict<string> = {};
                         Object.keys(current.filterValues).forEach(k => {
                             const selectedOptions =  this.selections.selectedFilterOptions[k];
@@ -149,6 +161,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                         });
                         displayRows[key] = {
                             areaLabel,
+                            areaHierarchy,
                             filterLabels,
                             indicatorValues: {}
                         }
