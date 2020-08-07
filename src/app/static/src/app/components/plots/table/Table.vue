@@ -86,52 +86,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
           
       }
     },
-    mounted(){
-        // const start = "MWI_4_7"
-        // const level = parseInt(start[4])
-        // const hArray = []
-
-        // for (let index = level; index > 0; index--) {
-        //   const currentId = start.slice(0,4) + index + start.slice(5)
-        //   const subLevel = parseInt(currentId.slice(6))
-        //   console.log('currentId', currentId)
-        //   if (this.flattenedAreas[currentId]){
-        //     hArray.unshift(this.flattenedAreas[currentId].label)
-        //   } else {
-        //     for (let i = subLevel; i > 0; i--) {
-        //       const currentId2 = currentId.slice(0,6) + i
-        //       console.log('currentId2', currentId2)
-        //       if (this.flattenedAreas[currentId2]){
-        //         hArray.unshift(this.flattenedAreas[currentId2].label)
-        //         break;
-        //       }
-        //     }
-        //   }
-          
-          
-        // }
-        // console.log('this.flattenedAreas[start]', this.flattenedAreas[start])
-        // console.log('level', level)
-        // console.log('hArray', hArray)
-        console.log('this.filters', this.filters[0].options)
-
-        const obj = this.filters[0].options
-
-        function findPath(id, obj) {
-            for(var key in obj) {                                         // for each key in the object obj
-                if(obj.hasOwnProperty(key)) {                             // if it's an owned key
-                    if(id === obj[key]) return obj.label;                        // if the item beign searched is at this key then return this key as the path
-                    else if(obj[key] && typeof obj[key] === "object") {   // otherwise if the item at this key is also an object
-                        var path = findPath(id, obj[key]);                 // search for the item a in that object
-                        if(path) return obj.label + "/" + path;                 // if found then the path is this key followed by the result of the search
-                    }
-                }
-            }
-        }
-        console.log('path', findPath('MWI_4_7', obj))
-        console.log('path', findPath("MWI_4_7", obj).replace(/undefined\//g, ""))
-        
-    },
     computed: {
         nonAreaFilters() {
              return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
@@ -174,7 +128,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
                         }});
                     filteredValues.push({areaId, filterValues, indicatorMeta, value});
                 });
-                console.log('filteredValues', filteredValues)
                 const displayRows: Dict<any> = {};
                 filteredValues.forEach(current => {
                     const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
@@ -193,23 +146,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     }
                     displayRows[key].indicatorValues[current.indicatorMeta.indicator] = current.value;
                 });
-                console.log('filteredData', Object.values(displayRows))
-
-                // const start = "MWI_4_7"
-        // const level = parseInt(start[4])
-        // const hArray = []
-
-        // for (let index = level; index > 0; index--) {
-        //   const currentId = start.slice(0,4) + index + start.slice(5)
-        //   console.log('start.slice(0,4)', start.slice(0,4))
-        //   console.log('currentId', currentId)
-        //   hArray.unshift(this.flattenedAreas[currentId].id)
-          
-        // }
-        // console.log('this.flattenedAreas[start]', this.flattenedAreas[start])
-        // console.log('level', level)
-        // console.log('hArray', hArray)
-
                 return Object.values(displayRows);
         }
     }
