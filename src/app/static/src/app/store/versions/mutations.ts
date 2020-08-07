@@ -32,7 +32,6 @@ export const mutations: MutationTree<VersionsState> = {
     },
     [VersionsMutations.SnapshotCreated](state: VersionsState, action: PayloadWithType<Snapshot>) {
         const snapshot = action.payload;
-        alert("setting new snapshot: " + snapshot.id);
         state.currentVersion!.snapshots.push(snapshot);
         state.currentSnapshot = snapshot;
     }

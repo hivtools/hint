@@ -7,6 +7,7 @@ import {VersionsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
 import {Version} from "../../types";
+import {ErrorsMutation} from "../errors/mutations";
 
 export interface VersionsActions {
     createVersion: (store: ActionContext<VersionsState, RootState>, name: string) => void,
@@ -53,15 +54,14 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
     },
 
     async newSnapshot(context) {
-        const {state, commit} = context;
+        const {state} = context;
         await immediateUploadSnapshotState(context);
 
         const versionId = state.currentVersion && state.currentVersion.id;
         const snapshotId = state.currentSnapshot && state.currentSnapshot.id;
-        //TODO: what if this fails? We don't know as failjust gets added to global errors (not merged yet)
-        api<VersionsMutations, VersionsMutations>(context)
-            .ignoreErrors() //?
+        api<VersionsMutations, ErrorsMutation>(context)
             .withSuccess(VersionsMutations.SnapshotCreated)
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`version/${versionId}/snapshot/?parent=${snapshotId}`)
     }
 };
