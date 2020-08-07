@@ -53,4 +53,20 @@ describe("Versions mutations", () => {
 
         expect(consoleSpy).toHaveBeenCalledWith("test error");
     });
+
+    it("sets created snapshot as current", () => {
+        const mockVersion = {
+            id: 1,
+            name: "v1",
+            snapshots: [{id: "OLD SNAPSHOT", created: "old created time", updated: "old updated time"}]
+        };
+        const state = mockVersionsState({currentVersion: mockVersion});
+
+        const newSnapshot = {id: "NEW SNAPSHOT", created: "new time", updated: "new time"};
+        mutations[VersionsMutations.SnapshotCreated](state, {payload: newSnapshot});
+
+        expect(state.currentSnapshot).toBe(newSnapshot);
+        expect(state.currentVersion!.snapshots.length).toBe(2);
+        expect(state.currentVersion!.snapshots[1]).toBe(newSnapshot);
+    });
 });

@@ -81,7 +81,7 @@
                 return (currentUser === "guest");
             },
             errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
-                return state.errors.length;
+                return state.errors ? state.errors.length : 0;
             }),
         },
         methods: {

@@ -7,6 +7,9 @@ import {mockFile} from "../../mocks";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 
+declare let currentUser: string;
+currentUser = "guest";
+
 describe("File upload component", () => {
 
     const mockGetters = {
@@ -21,7 +24,13 @@ describe("File upload component", () => {
                 stepper: {
                     namespaced: true,
                     getters: mockGetters
-                }
+                },
+                versions: {
+                    namespaced: true
+                },
+                errors: {
+                    namespaced: true
+                },
             }
         });
         registerTranslations(store);

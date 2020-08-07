@@ -85,6 +85,9 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
     return store;
 }
 
+declare let currentUser: string;
+currentUser = "guest";
+
 describe("ModelOutput component", () => {
     beforeAll(async () => {
         inactiveFeatures.splice(0, inactiveFeatures.length);

@@ -12,6 +12,9 @@ import {DynamicForm} from "@reside-ic/vue-dynamic-form";
 import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 
+declare var currentUser: string;
+currentUser = "guest";
+
 describe("Model options component when edit confirmation is required", () => {
 
     const mockActions = {
@@ -45,6 +48,12 @@ describe("Model options component when edit confirmation is required", () => {
                 stepper: {
                     namespaced: true,
                     getters: mockGetters
+                },
+                versions: {
+                    namespaced: true
+                },
+                errors: {
+                    namespaced: true
                 }
             }
         });
