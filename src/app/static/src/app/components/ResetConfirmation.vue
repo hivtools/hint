@@ -13,8 +13,7 @@
 
             <p v-if="guestUser"  v-translate="'savePrompt'"></p>
             <p v-if="!guestUser">
-                These steps will automatically be saved in a snapshot. You will be able to reload this snapshot from
-                the Versions page.
+                These steps will automatically be saved in a snapshot. You will be able to reload this snapshot from the Versions page.
             </p>
 
             <template v-if="!waitingForSnapshot" v-slot:footer>
@@ -32,7 +31,7 @@
 
             <div v-if="waitingForSnapshot" class="text-center">
                 <loading-spinner size="sm"></loading-spinner>
-                <h4>Saving snapshot</h4>
+                <h4 id="spinner-text">Saving snapshot</h4>
             </div>
         </modal>
     </div>
