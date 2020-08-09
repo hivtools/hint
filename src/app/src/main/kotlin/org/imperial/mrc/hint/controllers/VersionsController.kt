@@ -53,7 +53,7 @@ class VersionsController(private val session: Session,
 
     @GetMapping("version/{versionId}/snapshot/{snapshotId}")
     @ResponseBody
-    fun getSnapshot(@PathVariable("versionId") versionId: Int,
+    fun getSnapshotDetails(@PathVariable("versionId") versionId: Int,
                     @PathVariable("snapshotId") snapshotId: String): ResponseEntity<String>
     {
         val snapshotDetails = snapshotRepository.getSnapshotDetails(snapshotId, versionId, userId())
