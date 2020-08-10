@@ -78,7 +78,6 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
-    import FileUpload from "../FileUpload.vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import TableView from "../plots/table/Table.vue";
     import Filters from "../plots/Filters.vue";
@@ -86,7 +85,7 @@
     import {RootState} from "../../root";
     import {DataType} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
-    import {Metadata, ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
+    import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
     import {mapGettersByNames} from "../../utils";
     import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
     import ManageFile from "../files/ManageFile.vue";
@@ -179,7 +178,6 @@
         created() {
         },
         components: {
-            FileUpload,
             Choropleth,
             Filters,
             TableView,

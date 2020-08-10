@@ -11,7 +11,7 @@
                                      :existingFileName="pjnz.existingFileName"
                                      accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
                                      name="pjnz">
-                        <label v-if="country"><strong v-translate="'country'"></strong>: {{country}}</label>
+                        <label class="mb-0" v-if="country"><strong v-translate="'country'"></strong>: {{country}}</label>
                     </manage-file>
                     <manage-file label="shape"
                                  :valid="shape.valid"
@@ -48,7 +48,6 @@
     import {mapActions, mapState} from "vuex";
 
     import {BaselineState} from "../../store/baseline/baseline";
-    import FileUpload from "../FileUpload.vue";
     import {PartialFileUploadProps} from "../../types";
     import {MetadataState} from "../../store/metadata/metadata";
     import ErrorAlert from "../ErrorAlert.vue";
@@ -96,7 +95,6 @@
             })
         },
         components: {
-            FileUpload,
             ErrorAlert,
             LoadingSpinner,
             ManageFile

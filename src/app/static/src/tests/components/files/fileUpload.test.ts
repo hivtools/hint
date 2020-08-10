@@ -36,6 +36,7 @@ describe("File upload component", () => {
         return shallowMount(FileUpload, {
             store: createStore(),
             propsData: {
+                uploading: false,
                 upload: jest.fn(),
                 name: "pjnz",
                 accept: "csv",
@@ -64,24 +65,11 @@ describe("File upload component", () => {
         expect(wrapper.find({ref: "test-name"})).toStrictEqual(input);
     });
 
-    it("trigger click on hidden input when dropdown link is clicked", () => {
+    it("renders label", () => {
         const wrapper = createSut({
             name: "test-name"
         });
-        wrapper.find(".dropdown-item").trigger("mousedown");
-
-        expect(wrapper.emitted()['input-opened'].length).toBe(1);
-    });
-
-    it("closes dropdown when file is selected", async () => {
-
-        const wrapper = createSut({name: "test"});
-
-        wrapper.find("input").trigger("change");
-
-        await Vue.nextTick();
-
-        expect(mockHideDropDown).toBeCalledWith(true);
+        expect(wrapper.find(".custom-file-label").text()).toBe("Select new file");
     });
 
     it("calls upload when file is selected", async () => {
@@ -132,5 +120,15 @@ describe("File upload component", () => {
         await Vue.nextTick();
 
         expect(wrapper.emitted().uploading.length).toBe(1);
+    });
+
+    it("file input is disabled and label has uploading class when uploading is true", async () => {
+        let wrapper = createSut();
+        expect(wrapper.find("input").attributes("disabled")).toBeUndefined();
+        expect(wrapper.find(".custom-file-label").classes()).not.toContain("uploading");
+
+        wrapper = createSut({uploading: true});
+        expect(wrapper.find("input").attributes("disabled")).toBe("disabled");
+        expect(wrapper.find(".custom-file-label").classes()).toContain("uploading");
     });
 });
