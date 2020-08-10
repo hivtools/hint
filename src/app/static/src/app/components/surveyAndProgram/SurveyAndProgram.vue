@@ -63,6 +63,7 @@
                         <table-view :tabledata="data"
                                     :area-filter-id="areaFilterId"
                                     :filters="filters"
+                                    :countryAreaFilterOption="countryAreaFilterOption"
                                     :indicators="filterTableIndicators"
                                     :selections="plottingSelections"
 
@@ -75,7 +76,6 @@
 </template>
 
 <script lang="ts">
-
     import Vue from "vue";
     import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
@@ -85,20 +85,19 @@
     import {RootState} from "../../root";
     import {DataType} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
-    import {ChoroplethIndicatorMetadata} from "../../generated";
+    import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
     import {mapGettersByNames} from "../../utils";
     import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
     import ManageFile from "../files/ManageFile.vue";
 
     const namespace: string = 'surveyAndProgram';
-
     interface Data {
         areaFilterId: string
     }
-
     interface Computed {
         selectedDataType: DataType,
         filters: Filter[],
+        countryAreaFilterOption: FilterOption,
         data: any,
         sapIndicatorsMetadata: ChoroplethIndicatorMetadata[],
         showChoropleth: boolean,
@@ -111,7 +110,6 @@
         selectedIndicator: any[],
         filterTableIndicators: any[]
     }
-
     export default Vue.extend<Data, {}, Computed, {}>({
         name: "SurveyAndProgram",
         data: () => {
@@ -158,7 +156,7 @@
                 featureLevels: ({baseline}) => baseline.shape ? baseline.shape.filters.level_labels : [],
                 plottingSelections: ({plottingSelections}) => plottingSelections.sapChoropleth
             }),
-            ...mapGettersByNames(namespace, ["data", "filters"]),
+            ...mapGettersByNames(namespace, ["data", "filters", "countryAreaFilterOption"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
             ...mapGetters("plottingSelections", ["selectedSAPColourScales"])
         },

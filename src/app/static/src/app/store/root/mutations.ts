@@ -5,11 +5,11 @@ import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
 import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
-import {initialLoadState, LoadState} from "../load/load";
+import {initialLoadState} from "../load/load";
 import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
-import {initialSurveyAndProgramState, DataType} from "../surveyAndProgram/surveyAndProgram";
+import {DataType, initialSurveyAndProgramState} from "../surveyAndProgram/surveyAndProgram";
 import {PayloadWithType, Version} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialVersionsState} from "../versions/versions";
@@ -22,7 +22,8 @@ export enum RootMutation {
     ResetOutputs = "ResetOutputs",
     SetADRKeyError = "ADRKeyError",
     SetVersion = "SetVersion",
-    UpdateADRKey = "UpdateADRKey"
+    UpdateADRKey = "UpdateADRKey",
+    SetADRDatasets = "SetADRDatasets"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -34,6 +35,10 @@ export const mutations: MutationTree<RootState> = {
         state.adrKeyError = action.payload;
     },
 
+    [RootMutation.SetADRDatasets](state: RootState, action: PayloadWithType<any[]>) {
+        state.adrDatasets = action.payload;
+    },
+
     [RootMutation.Reset](state: RootState, action: PayloadWithType<number>) {
 
         const maxValidStep = action.payload;
@@ -41,6 +46,7 @@ export const mutations: MutationTree<RootState> = {
         //We treat the final group of steps 4-6 together - all rely on modelRun and its result. If we're calling Reset
         //at all we assume that these steps will be invalidated but earlier steps may be retainable
         const resetState: RootState = {
+            adrDatasets: state.adrDatasets,
             version: state.version,
             language: state.language,
             adrKey: state.adrKey,
@@ -59,7 +65,7 @@ export const mutations: MutationTree<RootState> = {
         };
         Object.assign(state, resetState);
 
-        const maxAccessibleStep = maxValidStep < 4 ? Math.max(maxValidStep,1) : 4;
+        const maxAccessibleStep = maxValidStep < 4 ? Math.max(maxValidStep, 1) : 4;
         if (state.stepper.activeStep > maxAccessibleStep) {
             state.stepper.activeStep = maxAccessibleStep;
         }

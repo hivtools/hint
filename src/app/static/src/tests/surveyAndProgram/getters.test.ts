@@ -40,6 +40,9 @@ describe("survey and program getters", () => {
         expect(filters[0]).toStrictEqual({id: "area", column_id: "area_id", label: "area", allowMultiple: true, options: ["REGION OPTIONS"]});
         expect(filters[1]).toStrictEqual({id: "year", column_id: "year", label: "year", allowMultiple: false, options: [`${DataType[dataType]} year`]});
 
+        const countryAreaFilterOption = getters.countryAreaFilterOption(testState, null, testRootState as any);
+        expect(countryAreaFilterOption).toStrictEqual({ children: ["REGION OPTIONS"] });
+
         const sexFilterOptions = shouldIncludeSexOptions ?
              [{id: "both", label: "both"},{id: "female", label: "female"},{id: "male", label: "male"}] : [];
         expect(filters[2]).toStrictEqual({id: "sex", column_id: "sex", label: "sex", allowMultiple: false, options: sexFilterOptions});

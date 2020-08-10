@@ -81,6 +81,17 @@ class ADRTests : SecureIntegrationTests() {
         }
     }
 
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can get ADR schema types`(isAuthorized: IsAuthorized) {
+        val result = testRestTemplate.getForEntity<String>("/adr/schemas")
+        assertSecureWithSuccess(isAuthorized, result, null)
+        if (isAuthorized == IsAuthorized.TRUE) {
+            val data = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(data["pjnz"].textValue()).isEqualTo("inputs-unaids-spectrum-file")
+        }
+    }
+
     private fun getPostEntity(): HttpEntity<LinkedMultiValueMap<String, String>> {
         val map = LinkedMultiValueMap<String, String>()
         map.add("key", "testkey")

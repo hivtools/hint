@@ -34,6 +34,7 @@ export interface TranslatableState {
 
 export interface RootState extends TranslatableState {
     version: string,
+    adrDatasets: any[],
     adrKey: string | null,
     adrKeyError: Error | null,
     baseline: BaselineState,
@@ -99,6 +100,7 @@ export const emptyState = (): RootState => {
     return {
         adrKey: null,
         adrKeyError: null,
+        adrDatasets: [],
         language: Language.en,
         version: '0.0.0',
         baseline: initialBaselineState(),
