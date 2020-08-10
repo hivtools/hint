@@ -172,9 +172,6 @@
                 areaFilterId: "area"
             }
         },
-        mounted(){
-          console.log('chartdata', this.chartdata)
-        },
         computed: {
             filteredChoroplethIndicators(){
                 return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
