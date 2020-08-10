@@ -8,7 +8,7 @@ import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.clients.ADRClientBuilder
-import org.imperial.mrc.hint.clients.HttpClient
+import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.security.Encryption
@@ -71,7 +71,7 @@ class ADRControllerTests {
     @Test
     fun `gets datasets without inaccessible resources by default`() {
         val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
-        val mockClient = mock<HttpClient> {
+        val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
         val mockBuilder = mock<ADRClientBuilder> {
@@ -93,7 +93,7 @@ class ADRControllerTests {
     @Test
     fun `gets datasets including inaccessible resources if flag is passed`() {
         val expectedUrl = "package_search?q=type:adr-schema"
-        val mockClient = mock<HttpClient> {
+        val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
         val mockBuilder = mock<ADRClientBuilder> {
@@ -115,7 +115,7 @@ class ADRControllerTests {
     @Test
     fun `filters datasets to only those with resources`() {
         val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
-        val mockClient = mock<HttpClient> {
+        val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
         val mockBuilder = mock<ADRClientBuilder> {
@@ -139,7 +139,7 @@ class ADRControllerTests {
     fun `passes error responses along`() {
         val badResponse = ResponseEntity<String>(HttpStatus.BAD_REQUEST)
         val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
-        val mockClient = mock<HttpClient> {
+        val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn badResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {
