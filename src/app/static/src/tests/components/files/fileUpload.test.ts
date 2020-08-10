@@ -36,6 +36,7 @@ describe("File upload component", () => {
         return shallowMount(FileUpload, {
             store: createStore(),
             propsData: {
+                uploading: false,
                 upload: jest.fn(),
                 name: "pjnz",
                 accept: "csv",
@@ -108,7 +109,7 @@ describe("File upload component", () => {
         expect(uploader.mock.calls[0][0] instanceof FormData).toBe(true);
     });
 
-    it("disables file select and emits uploading event while uploading", async () => {
+    it("emits uploading event while uploading", async () => {
         const wrapper = createSut();
 
         (wrapper.vm.$refs as any).pjnz = {
@@ -118,7 +119,16 @@ describe("File upload component", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(".custom-file-label").attributes("disabled")).toBe("disabled");
         expect(wrapper.emitted().uploading.length).toBe(1);
+    });
+
+    it("file input is disabled and label has uploading class when uploading is true", async () => {
+        let wrapper = createSut();
+        expect(wrapper.find("input").attributes("disabled")).toBeUndefined();
+        expect(wrapper.find(".custom-file-label").classes()).not.toContain("uploading");
+
+        wrapper = createSut({uploading: true});
+        expect(wrapper.find("input").attributes("disabled")).toBe("disabled");
+        expect(wrapper.find(".custom-file-label").classes()).toContain("uploading");
     });
 });
