@@ -168,6 +168,8 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     }
                     displayRows[key].indicatorValues[current.indicatorMeta.indicator] = current.value;
                 });
+                console.log('filtered values', Object.values(filteredValues))
+                console.log('filtered data', Object.values(displayRows))
                 return Object.values(displayRows);
         }
     }
