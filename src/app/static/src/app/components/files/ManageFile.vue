@@ -17,6 +17,7 @@
         <file-upload :name="name"
                      :accept="accept"
                      :upload="upload"
+                     :uploading="uploading"
                      @uploading="handleUploading"></file-upload>
         <error-alert v-if="hasError" :error="error"></error-alert>
         <reset-confirmation :continue-editing="deleteSelectedFile"

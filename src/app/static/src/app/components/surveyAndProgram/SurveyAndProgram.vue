@@ -85,7 +85,7 @@
     import {RootState} from "../../root";
     import {DataType} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
-    import {Metadata, ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
+    import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
     import {mapGettersByNames} from "../../utils";
     import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
     import ManageFile from "../files/ManageFile.vue";

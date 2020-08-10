@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import java.lang.reflect.UndeclaredThrowableException
 import java.text.MessageFormat
 import java.util.*
 
@@ -34,10 +35,18 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return unexpectedError(status, request, e.message)
     }
 
-    @ExceptionHandler(PSQLException::class)
-    fun handlePSQLException(e: PSQLException, request: WebRequest): ResponseEntity<Any> {
-        logger.error(e.message)
-        // for security reasons we should not return arbitrary db errors to the frontend
+    @ExceptionHandler(Exception::class)
+    fun handleArbitraryException(e: Exception, request: WebRequest): ResponseEntity<Any> {
+        val error = if (e is UndeclaredThrowableException) {
+            e.cause
+        } else {
+            e
+        }
+        if (error is HintException) {
+            return handleHintException(e.cause as HintException, request)
+        }
+        logger.error(error)
+        // for security reasons we should not return arbitrary errors to the frontend
         // so do not pass the original error message here
         return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
     }

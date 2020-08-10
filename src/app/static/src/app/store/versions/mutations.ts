@@ -8,7 +8,7 @@ export enum VersionsMutations {
     SetPreviousVersions = "SetPreviousVersions",
     SetSnapshotUploadPending = "SetSnapshotUploadPending",
     VersionError = "VersionError",
-    SnapshotUploadError = "SnapshotUploadError"
+    SnapshotUploadSuccess = "SnapshotUploadSuccess"
 }
 
 export const mutations: MutationTree<VersionsState> = {
@@ -26,7 +26,7 @@ export const mutations: MutationTree<VersionsState> = {
         state.error = action.payload;
         state.loading = false;
     },
-    [VersionsMutations.SnapshotUploadError](state: VersionsState, action: PayloadWithType<Error>) {
-        console.error(action.payload);
+    [VersionsMutations.SnapshotUploadSuccess](state: VersionsState) {
+        state.snapshotTime = new Date(Date.now());
     }
 };

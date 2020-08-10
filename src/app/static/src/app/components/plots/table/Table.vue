@@ -57,7 +57,6 @@ interface Computed {
     flattenedAreas: Dict<NestedFilterOption>,
     selectedAreaIds: string[],
     selectedAreaFilterOptions: FilterOption[],
-    // areaHierarchy: string
 }
 const props = {
     tabledata: {

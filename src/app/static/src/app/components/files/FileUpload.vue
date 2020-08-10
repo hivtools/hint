@@ -6,10 +6,10 @@
                    :ref="name"
                    :id="name"
                    :accept="accept"
+                   :disabled="uploading"
                    v-on:change="handleFileSelect"/>
             <label :for="name"
                    class="custom-file-label"
-                   :disabled="uploading"
                    :class="{'uploading': uploading}">
                 <span v-translate="'selectNewFile'"></span>
             </label>
@@ -34,7 +34,6 @@
 
     interface Data {
         showUploadConfirmation: boolean
-        uploading: boolean
     }
 
     interface Computed {
@@ -45,18 +44,19 @@
         upload: (formData: FormData) => void,
         accept: string,
         name: string
+        uploading: boolean
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         props: {
             "upload": Function,
             "accept": String,
-            "name": String
+            "name": String,
+            "uploading": Boolean
         },
         data(): Data {
             return {
-                showUploadConfirmation: false,
-                uploading: true
+                showUploadConfirmation: false
             }
         },
         components: {
@@ -79,7 +79,6 @@
                 const selectedFile = fileInput.files!![0]!!;
                 const formData = new FormData();
                 formData.append('file', selectedFile);
-                this.uploading = true;
                 this.$emit("uploading");
                 this.upload(formData);
                 fileInput.value = "";
