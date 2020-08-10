@@ -195,6 +195,28 @@ describe("ApiService", () => {
         expect(committedOptions).toStrictEqual({root: true});
     });
 
+    it("commits the error response with the specified type with root options", async () => {
+        mockAxios.onGet(`/baseline/`)
+            .reply(500, mockFailure("TEST"));
+
+        let committedType: any = false;
+        let committedPayload: any = false;
+        let committedOptions: any = null;
+        const commit = ({type, payload}: any, options?: any) => {
+            committedType = type;
+            committedPayload = payload;
+            committedOptions = options;
+        };
+
+        const response = await api({commit, rootState} as any)
+            .withError("TEST_TYPE", true)
+            .get("/baseline/");
+
+        expect(committedType).toBe("TEST_TYPE");
+        expect(committedPayload.detail).toBe("TEST");
+        expect(committedOptions).toStrictEqual({root: true});
+    });
+
     it("returns the response object", async () => {
 
         mockAxios.onGet(`/baseline/`)
