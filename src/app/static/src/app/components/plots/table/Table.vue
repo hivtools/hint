@@ -6,13 +6,16 @@
                 <div>
                     <tr>
                         <th v-translate="'area'"></th>
-                        <th>Area Hierarchy</th>
+                        <!-- <th>Area Hierarchy</th> -->
                         <th v-for="f in filtersToDisplay" v-translate="f.label"></th>
                         <th v-for="i in indicators">{{ i.name }}</th>
                     </tr>
                     <tr v-for="row in filteredData">
-                        <td>{{ row.areaLabel }}</td>
-                        <td>{{ row.areaHierarchy }}</td>
+                        <td>
+                          <div>{{ row.areaLabel }}</div>
+                          <div class="small">{{ row.areaHierarchy }}</div>
+                        </td>
+                        <!-- <td>{{ row.areaHierarchy }}</td> -->
                         <td v-for="f in filtersToDisplay">{{ row.filterLabels[f.id] }}</td>
                         <td v-for="i in indicators">{{ row.indicatorValues[i.indicator] }}</td>
                     </tr>
@@ -152,7 +155,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
                     if (!(key in displayRows)) {
                         const areaLabel =  this.flattenedAreas[current.areaId].label;
-                        const areaHierarchy = findPath(current.areaId, this.countryAreaFilterOption).replace(/undefined\//g, "")
+                        const areaHierarchy = findPath(current.areaId, this.countryAreaFilterOption).replace(/undefined\//g, "").replace(/[^\/]*\//, "").replace(/[^\/]*$/, "")
                         const filterLabels: Dict<string> = {};
                         Object.keys(current.filterValues).forEach(k => {
                             const selectedOptions =  this.selections.selectedFilterOptions[k];
