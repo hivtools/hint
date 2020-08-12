@@ -158,3 +158,19 @@ const roundToPlaces = function (value: number, decPl: number) {
     const roundingNum = Math.pow(10, decPl);
     return Math.round(value * roundingNum) / roundingNum;
 };
+
+// Iteratively passes through the layers of a FilterOption object to find the regional hierarchy above the supplied id
+// Takes param any for obj and returns any because it will iterate through both objects (the NestedFilterOption) and arrays (the array of child options), treating array indices as keys
+export const findPath = function (id: string, obj: any): any {
+  for(var key in obj) {                                         
+      if(obj.hasOwnProperty(key)) {                         
+          if(id === obj[key]) return obj.label;                      
+          else if(obj[key] && typeof obj[key] === "object") {   
+              var path = findPath(id, obj[key]);               
+              if (path) {
+                return (obj.label ? obj.label + "/": "") + path;   
+              }              
+          }
+      }
+  }
+}

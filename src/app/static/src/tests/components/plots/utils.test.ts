@@ -3,7 +3,7 @@ import {
     getColor,
     getIndicatorRange,
     toIndicatorNameLookup,
-    roundToContext, colourScaleStepFromMetadata, roundRange, iterateDataValues
+    roundToContext, colourScaleStepFromMetadata, roundRange, iterateDataValues, findPath
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 import {Filter} from "../../../app/generated";
@@ -428,4 +428,42 @@ describe("plot utils", () => {
 
         expect(result).toStrictEqual([12, 0.5, 14, 0.6, 14]);
     });
+
+    it("findPath produces expected result", () => {
+      const result = findPath('MWI111', {
+              id: 'MWI1',
+              label: 'Malawi',
+              children: [
+                {
+                  id: 'MWI11',
+                  label: 'Region 1',
+                  children: [
+                    {
+                      id: 'MWI111',
+                      label: 'City 1',
+                      children: []
+                    },
+                    {
+                      id: 'MWI112',
+                      label: 'City 2',
+                      children: []
+                    }
+                  ]
+                },
+                {
+                  id: 'MWI12',
+                  label: 'Region 2',
+                  children: [
+                    {
+                      id: 'MWI121',
+                      label: 'City 3',
+                      children: []
+                    }
+                  ]
+                }
+              ]
+          });
+
+      expect(result).toEqual("Malawi/Region 1/City 1");
+  });
 });
