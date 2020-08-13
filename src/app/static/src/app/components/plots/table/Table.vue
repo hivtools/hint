@@ -7,12 +7,14 @@
                     <tr>
                         <th v-translate="'area'"></th>
                         <th v-for="f in filtersToDisplay" v-translate="f.label"></th>
-                        <th v-for="i in indicators">{{ i.name }}</th>
+                        <!-- <th v-for="i in indicators">{{ i.name }}</th> -->
+                        <template v-for="i in indicators"><th>{{ i.name }}</th><th v-if="i.error_high_column">{{i.error_high_column}}</th><th>Lower</th></template>
                     </tr>
                     <tr v-for="row in filteredData">
                         <td>{{ row.areaLabel }}</td>
                         <td v-for="f in filtersToDisplay">{{ row.filterLabels[f.id] }}</td>
-                        <td v-for="i in indicators">{{ row.indicatorValues[i.indicator] }}</td>
+                        <!-- <td v-for="i in indicators">{{ row.indicatorValues[i.indicator] }}</td> -->
+                        <template v-for="i in indicators"><td>{{ row.indicatorValues[i.indicator].value }}</td><td v-if="i.error_high_column">{{ row.indicatorValues[i.indicator].upper }}</td><td>{{ row.indicatorValues[i.indicator].lower }}</td></template>
                     </tr>
                 </div>
             </table>
@@ -122,6 +124,8 @@ export default Vue.extend<{}, {}, Computed, Props>({
         },
         filteredData() {
             const filteredValues: any[] = [];
+            console.log('tabledata', this.tabledata)
+            console.log('indicators', this.indicators)
             iterateDataValues(this.tabledata,
                 this.indicators,
                 this.selectedAreaIds,
@@ -133,7 +137,9 @@ export default Vue.extend<{}, {}, Computed, Props>({
                         if (row[f.column_id]) {
                         filterValues[f.id] = row[f.column_id]
                         }});
-                    filteredValues.push({areaId, filterValues, indicatorMeta, value});
+                    const upper = row.upper
+                    const lower = row.lower
+                    filteredValues.push({areaId, filterValues, indicatorMeta, value, upper, lower});
                 });
                 console.log('filteredValues', filteredValues)
                 const displayRows: Dict<any> = {};
@@ -152,7 +158,11 @@ export default Vue.extend<{}, {}, Computed, Props>({
                             indicatorValues: {}
                         }
                     }
-                    displayRows[key].indicatorValues[current.indicatorMeta.indicator] = current.value;
+                    displayRows[key].indicatorValues[current.indicatorMeta.indicator] = {
+                      value: current.value,
+                      upper: current.upper,
+                      lower: current.lower
+                    }
                 });
                 console.log('filteredData', Object.values(displayRows))
                 return Object.values(displayRows);
