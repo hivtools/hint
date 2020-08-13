@@ -171,6 +171,7 @@ export interface Filter {
 export interface FilterOption {
   label: string;
   id: string;
+  children?: any[];
 }
 export interface HintrVersionResponse {
   [k: string]: string;

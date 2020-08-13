@@ -164,10 +164,10 @@ const roundToPlaces = function (value: number, decPl: number) {
 export const findPath = function (id: string, obj: any): any {
   for(var key in obj) {                                         
       if(obj.hasOwnProperty(key)) {                         
-          if(id === obj[key]) return obj.label;                      
+          if(id === obj[key]) return "";                      
           else if(obj[key] && typeof obj[key] === "object") {   
               var path = findPath(id, obj[key]);               
-              if (path) {
+              if (path != undefined) {
                 return (obj.label ? obj.label + "/": "") + path;   
               }              
           }

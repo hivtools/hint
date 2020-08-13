@@ -143,9 +143,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
                     if (!(key in displayRows)) {
                         const areaLabel =  this.flattenedAreas[current.areaId].label;
-                        // The first replace removes the first layer of the path (ie, the country level)
-                        // The second replace removes the last element in the path (ie, the current area selected); returns an empty string at detail levels 0 and 1
-                        const areaHierarchy = findPath(current.areaId, this.countryAreaFilterOption).replace(/[^\/]*\//, "").replace(/[^\/]*$/, "")
+                        const areaHierarchy = findPath(current.areaId, this.countryAreaFilterOption.children)
                         const filterLabels: Dict<string> = {};
                         Object.keys(current.filterValues).forEach(k => {
                             const selectedOptions =  this.selections.selectedFilterOptions[k];
