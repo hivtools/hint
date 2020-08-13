@@ -1,4 +1,5 @@
 import {RootMutation} from "../root/mutations";
+import {ErrorsMutation} from "../errors/mutations";
 import {ActionContext, ActionTree, Commit} from "vuex";
 import {VersionsState} from "./versions";
 import {RootState} from "../../root";
@@ -6,9 +7,11 @@ import {api} from "../../apiService";
 import {VersionsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
+import {Version} from "../../types";
 
 export interface VersionsActions {
-    createVersion: (store: ActionContext<VersionsState, RootState>, name: string) => void
+    createVersion: (store: ActionContext<VersionsState, RootState>, name: string) => void,
+    getVersions: (store: ActionContext<VersionsState, RootState>) => void
     uploadSnapshotState: (store: ActionContext<VersionsState, RootState>) => void
 }
 
@@ -26,6 +29,15 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
             .withSuccess(RootMutation.SetVersion, true)
             .withError(VersionsMutations.VersionError)
             .postAndReturn<String>("/version/", qs.stringify({name}));
+    },
+
+    async getVersions(context) {
+        const {commit} = context;
+        commit({type: VersionsMutations.SetLoading, payload: true});
+        await api<VersionsMutations, VersionsMutations>(context)
+            .withSuccess(VersionsMutations.SetPreviousVersions)
+            .withError(VersionsMutations.VersionError)
+            .get<Version[]>("/versions/");
     },
 
     async uploadSnapshotState(context) {
@@ -47,9 +59,9 @@ const immediateUploadSnapshotState = (context: ActionContext<VersionsState, Root
     const versionId = state.currentVersion && state.currentVersion.id;
     const snapshotId = state.currentSnapshot && state.currentSnapshot.id;
     if (versionId && snapshotId) {
-        api<VersionsMutations, VersionsMutations>(context)
-            .ignoreSuccess()
-            .withError(VersionsMutations.SnapshotUploadError)
+        api<VersionsMutations, ErrorsMutation>(context)
+            .withSuccess(VersionsMutations.SnapshotUploadSuccess)
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`/version/${versionId}/snapshot/${snapshotId}/state/`, serialiseState(rootState));
     }
 };

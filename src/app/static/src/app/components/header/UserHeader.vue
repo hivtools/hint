@@ -5,13 +5,8 @@
                 <div class="navbar-header">
                     {{title}}
                 </div>
-                <a v-if="!isGuest"
-                   id="versions-link"
-                   href="#"
-                   v-translate="'versions'"
-                   style="flex:none"
-                   class="ml-2"
-                   @click="handleVersionsClick"></a>
+                <router-link v-if="!isGuest" to="/versions" class="ml-2 pr-2 border-right" v-translate="'versions'"
+                             style="flex:none"></router-link>
                 <file-menu :title="title"></file-menu>
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-light">
                     <span v-translate="'loggedInAs'"></span> {{user}}
@@ -63,12 +58,7 @@
         isGuest: boolean
     }
 
-    interface Methods {
-        handleVersionsClick: (e: Event) => void,
-        setManageVersions: (manageVersions: PayloadWithType<boolean>) => void
-    }
-
-    export default Vue.extend<{}, Methods, Computed, Props>({
+    export default Vue.extend<{}, {}, Computed, Props>({
         computed: {
             helpFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {
@@ -89,13 +79,6 @@
             isGuest() {
                 return this.user == "guest"
             }
-        },
-        methods: {
-            handleVersionsClick: function(e: Event) {
-                e.preventDefault();
-                this.setManageVersions({type:  VersionsMutations.SetManageVersions, payload: true});
-            },
-            setManageVersions: mapMutationByName("versions", VersionsMutations.SetManageVersions),
         },
         props: {
             title: String,

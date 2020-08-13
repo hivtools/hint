@@ -1,12 +1,11 @@
 import Vuex from "vuex";
-import {createLocalVue, shallowMount} from "@vue/test-utils";
+import {createLocalVue, RouterLinkStub, shallowMount} from "@vue/test-utils";
 import UserHeader from "../../../app/components/header/UserHeader.vue";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
 import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import {Language} from "../../../app/store/translations/locales";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {initialVersionsState} from "../../../app/store/versions/versions";
 
 const localVue = createLocalVue();
 
@@ -26,7 +25,7 @@ describe("user header", () => {
     registerTranslations(store);
 
     const getWrapper = (user: string = "someone@email.com") => {
-        return shallowMount(UserHeader, {propsData: {user, title: "Naomi"}, store});
+        return shallowMount(UserHeader, {propsData: {user, title: "Naomi"}, store, stubs: ["router-link"]});
     };
 
     it("contains logout link if current user is not guest", () => {
@@ -52,29 +51,29 @@ describe("user header", () => {
     });
 
     it("renders file menu", () => {
-        const wrapper = shallowMount(UserHeader, {store});
+        const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.findAll(FileMenu).length).toBe(1);
     });
 
     it("renders language menu", () => {
-        const wrapper = shallowMount(UserHeader, {store});
+        const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.findAll(LanguageMenu).length).toBe(1);
     });
 
     it("contains bug report link", () => {
-        const wrapper = shallowMount(UserHeader, {store});
+        const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         const bugLink = wrapper.find("a[href='https://forms.gle/QxCT1b4ScLqKPg6a7']");
         expect(bugLink.text()).toBe("Report a bug");
     });
 
     it("computes language", () => {
-        const wrapper = shallowMount(UserHeader, {localVue, store});
+        const wrapper = shallowMount(UserHeader, {localVue, store, stubs: ["router-link"]});
         const vm = (wrapper as any).vm;
         expect(vm.helpFilename).toStrictEqual("Naomi-basic-instructions.pdf");
         expect(vm.troubleFilename).toStrictEqual("index-en.html");
 
         const frStore = createFrenchStore();
-        const frWrapper = shallowMount(UserHeader, {localVue, store: frStore});
+        const frWrapper = shallowMount(UserHeader, {localVue, store: frStore, stubs: ["router-link"]});
         const frVm = (frWrapper as any).vm;
         expect(frVm.helpFilename).toStrictEqual("Naomi-instructions-de-base.pdf");
         expect(frVm.troubleFilename).toStrictEqual("index-fr.html");
@@ -83,43 +82,27 @@ describe("user header", () => {
     it("contains help document links", () => {
         // Reset translations
         registerTranslations(store);
-        const wrapper = shallowMount(UserHeader, {store});
+        const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Help");
         expect(wrapper.find("a[href='https://mrc-ide.github.io/naomi-troubleshooting/index-en.html']").text()).toBe("Troubleshooting");
 
         const frStore = createFrenchStore();
-        const frWrapper = shallowMount(UserHeader, {store: frStore});
+        const frWrapper = shallowMount(UserHeader, {store: frStore, stubs: ["router-link"]});
         expect(frWrapper.find("a[href='public/resources/Naomi-instructions-de-base.pdf']").text()).toBe("Aide");
         expect(frWrapper.find("a[href='https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html']").text()).toBe("Dépannage");
     });
 
-    it("renders Versions link if user is not guest", () => {
+    it("renders Versions link as expected if user is not guest", () => {
         const wrapper = getWrapper();
-        expect(wrapper.find("#versions-link").text()).toBe("Versions");
+
+        const link = wrapper.find("router-link-stub");
+        expect(link.attributes("to")).toBe("/versions");
+        expect(link.text()).toBe("Versions");
     });
 
     it("does not render Versions link if current user is guest", () => {
         const wrapper = getWrapper("guest");
         expect(wrapper.find("#versions-link").exists()).toBe(false);
-    });
-
-    it("clicking Versions link sets manageVersions", () => {
-        const mockSetManageVersions = jest.fn();
-        const versionsStore = new Vuex.Store({
-            modules: {
-                versions: {
-                    namespaced: true,
-                    state: initialVersionsState(),
-                    mutations: {
-                        SetManageVersions: mockSetManageVersions
-                    }
-                }
-            }
-        });
-        const wrapper =  shallowMount(UserHeader, {propsData: {user: "testUser"}, store: versionsStore});
-        wrapper.find("#versions-link").trigger("click");
-        expect(mockSetManageVersions.mock.calls.length).toBe(1);
-        expect(mockSetManageVersions.mock.calls[0][1].payload).toBe(true);
     });
 
 });

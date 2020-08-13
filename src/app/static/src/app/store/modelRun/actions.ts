@@ -74,6 +74,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
         commit({type: "RunCancelled", payload: null});
         const apiService = api<ModelRunMutation, ModelRunMutation>(context)
+                    .ignoreSuccess()
                     .ignoreErrors();
 
         await makeCancelRunRequest(apiService,modelRunId)

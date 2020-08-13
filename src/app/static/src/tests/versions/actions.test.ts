@@ -2,12 +2,21 @@ import {mockAxios, mockFailure, mockRootState, mockSuccess, mockVersionsState} f
 import {actions} from "../../app/store/versions/actions";
 import {VersionsMutations} from "../../app/store/versions/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
+import {ErrorsMutation} from "../../app/store/errors/mutations";
 import {Version} from "../../app/types";
 import {serialiseState} from "../../app/localStorageManager";
 
 describe("Versions actions", () => {
     beforeEach(() => {
-        mockAxios.reset();
+        mockAxios.reset();  
+        // stop apiService logging to console
+        console.log = jest.fn();
+        console.info = jest.fn();
+    });
+
+    afterEach(() => {
+        (console.log as jest.Mock).mockClear();
+        (console.info as jest.Mock).mockClear();
     });
 
     const rootState = mockRootState();
@@ -27,7 +36,10 @@ describe("Versions actions", () => {
             expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
 
             const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
-            expect(commit.mock.calls[1][0]).toStrictEqual({type: VersionsMutations.VersionError, payload: expectedError});
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: VersionsMutations.VersionError,
+                payload: expectedError
+            });
             done();
         });
     });
@@ -52,6 +64,26 @@ describe("Versions actions", () => {
         });
     });
 
+    it("gets versions and commits mutation on successful response", async(done) => {
+        const testVersions = [{id: 1, name: "v1", snapshots: []}];
+        mockAxios.onGet("/versions/")
+            .reply(200, mockSuccess(testVersions));
+
+        const commit = jest.fn();
+        const state = mockVersionsState();
+
+        actions.getVersions({commit, state, rootState} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: VersionsMutations.SetPreviousVersions,
+                payload: testVersions
+            });
+            done();
+        });
+    });
+
     it("if current snapshot, createVersion uploads current snapshot before post to new version endpoint", async (done) => {
         mockAxios.onPost(`/version/`)
             .reply(200, mockSuccess("TestVersion"));
@@ -71,7 +103,26 @@ describe("Versions actions", () => {
             expect(mockAxios.history.post.length).toBe(2);
             expect(mockAxios.history.post[0].url).toBe("/version/1/snapshot/snap-id/state/");
             expect(mockAxios.history.post[1].url).toBe("/version/");
+            done();
+        });
+    });
 
+    it("gets versions and sets error on unsuccessful response", async(done) => {
+        mockAxios.onGet("/versions/")
+            .reply(500, mockFailure("TestError"));
+
+        const commit = jest.fn();
+        const state = mockVersionsState();
+
+        actions.getVersions({commit, state, rootState} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
+            const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: VersionsMutations.VersionError,
+                payload: expectedError
+            });
             done();
         });
     });
@@ -106,7 +157,7 @@ describe("Versions actions", () => {
         }, 2500);
     });
 
-    it("uploadSnapshotState sets pending then unsets and uploads state", async (done) => {
+    it("uploadSnapshotState sets pending then unsets and uploads state, and commits SnapshotUploadSuccess", async (done) => {
         const commit = jest.fn();
         const state = mockVersionsState({
             currentVersion: mockVersion,
@@ -123,19 +174,20 @@ describe("Versions actions", () => {
             {type: VersionsMutations.SetSnapshotUploadPending, payload: true});
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
+            expect(commit.mock.calls.length).toBe(3);
             expect(commit.mock.calls[1][0]).toStrictEqual(
                 {type: VersionsMutations.SetSnapshotUploadPending, payload: false});
+            expect(commit.mock.calls[2][0].type).toStrictEqual(VersionsMutations.SnapshotUploadSuccess);
 
             expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe(url)
+            expect(mockAxios.history.post[0].url).toBe(url);
             const posted = mockAxios.history.post[0].data;
             expect(JSON.parse(posted)).toStrictEqual(serialiseState(rootState));
             done();
         }, 2500);
     });
 
-    it("uploadSnapshotState commits SnapshotUploadError on error response", async (done) => {
+    it("uploadSnapshotState commits ErrorAdded on error response", async (done) => {
         const commit = jest.fn();
         const state = mockVersionsState({
             currentVersion: mockVersion,
@@ -151,7 +203,7 @@ describe("Versions actions", () => {
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(3);
-            expect(commit.mock.calls[2][0].type).toStrictEqual(VersionsMutations.SnapshotUploadError);
+            expect(commit.mock.calls[2][0].type).toStrictEqual(`errors/${ErrorsMutation.ErrorAdded}`);
             expect(commit.mock.calls[2][0].payload.detail).toStrictEqual("TEST ERROR");
 
             done();

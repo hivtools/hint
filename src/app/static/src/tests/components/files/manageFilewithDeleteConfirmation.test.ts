@@ -1,10 +1,11 @@
 import Vuex from "vuex";
 import {mount, Slots, Wrapper} from '@vue/test-utils';
-import FileUpload from "../../app/components/FileUpload.vue";
-import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
-import {mockFile} from "../mocks";
-import {emptyState} from "../../app/root";
-import registerTranslations from "../../app/store/translations/registerTranslations";
+import FileUpload from "../../../app/components/files/FileUpload.vue";
+import ManageFile from "../../../app/components/files/ManageFile.vue";
+import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
+import {mockFile} from "../../mocks";
+import {emptyState} from "../../../app/root";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 describe("File upload component", () => {
 
@@ -28,7 +29,7 @@ describe("File upload component", () => {
     };
 
     const createSut = (props?: any, slots?: Slots) => {
-        return mount(FileUpload, {
+        return mount(ManageFile, {
             store: createStore(),
             propsData: {
                 error: null,
@@ -46,10 +47,6 @@ describe("File upload component", () => {
 
     const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
 
-    function uploadConfirmationModal(wrapper: Wrapper<FileUpload>) {
-        return wrapper.findAll(ResetConfirmation).at(0)
-    }
-
     function deleteConfirmationModal(wrapper: Wrapper<FileUpload>) {
         return wrapper.findAll(ResetConfirmation).at(1)
     }
@@ -57,7 +54,7 @@ describe("File upload component", () => {
     it("opens confirmation modal when remove is clicked", () => {
         const removeHandler = jest.fn();
         const wrapper = createSut({
-            valid: true,
+            existingFileName: "test.pjnz",
             deleteFile: removeHandler
         });
         const removeLink = wrapper.find("a");
@@ -69,7 +66,7 @@ describe("File upload component", () => {
     it("deletes file if user confirms edit", () => {
         const removeHandler = jest.fn();
         const wrapper = createSut({
-            valid: true,
+            existingFileName: "test.pjnz",
             deleteFile: removeHandler
         });
         const removeLink = wrapper.find("a");
@@ -83,7 +80,7 @@ describe("File upload component", () => {
     it("does not delete file if user cancels edit", () => {
         const removeHandler = jest.fn();
         const wrapper = createSut({
-            valid: true,
+            existingFileName: "test.pjnz",
             deleteFile: removeHandler
         });
         const removeLink = wrapper.find("a");
@@ -92,55 +89,6 @@ describe("File upload component", () => {
         deleteConfirmationModal(wrapper).find(".btn-red").trigger("click");
         expect(removeHandler.mock.calls.length).toBe(0);
         expect(deleteConfirmationModal(wrapper).props("open")).toBe(false);
-    });
-
-    it("opens confirmation modal when new file is selected", () => {
-        const wrapper = createSut();
-        (wrapper.vm.$refs as any).pjnz = {
-            files: [testFile]
-        };
-        (wrapper.vm as any).handleFileSelect();
-        expect(uploadConfirmationModal(wrapper).props("open")).toBe(true);
-    });
-
-    it("uploads file if user confirms edit", (done) => {
-        const uploader = jest.fn();
-        const wrapper = createSut({
-            upload: uploader
-        });
-
-        (wrapper.vm.$refs as any).pjnz = {
-            files: [testFile]
-        };
-
-        (wrapper.vm as any).handleFileSelect();
-        uploadConfirmationModal(wrapper).find(".btn-white").trigger("click");
-
-        setTimeout(() => {
-            expect(uploader.mock.calls.length).toBe(1);
-            expect(uploadConfirmationModal(wrapper).props("open")).toBe(false);
-            done();
-        });
-    });
-
-    it("does not upload file if user cancels edit", (done) => {
-        const uploader = jest.fn();
-        const wrapper = createSut({
-            upload: uploader
-        });
-
-        (wrapper.vm.$refs as any).pjnz = {
-            files: [testFile]
-        };
-
-        (wrapper.vm as any).handleFileSelect();
-        uploadConfirmationModal(wrapper).find(".btn-red").trigger("click");
-
-        setTimeout(() => {
-            expect(uploader.mock.calls.length).toBe(0);
-            expect(uploadConfirmationModal(wrapper).props("open")).toBe(false);
-            done();
-        });
     });
 
 });

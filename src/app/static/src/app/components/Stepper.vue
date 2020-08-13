@@ -36,8 +36,9 @@
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
         </div>
         <div v-if="!loading" class="content">
+            <snapshot-status class="float-right"></snapshot-status>
             <div class="pt-4">
-                <adr-key v-if="isActive(1) || isActive(2)"></adr-key>
+                <adr-integration v-if="isActive(1)"></adr-integration>
                 <baseline v-if="isActive(1)"></baseline>
                 <survey-and-program v-if="isActive(2)"></survey-and-program>
                 <model-options v-if="isActive(3)"></model-options>
@@ -53,7 +54,7 @@
 
     import Vue from "vue";
     import {mapActions} from "vuex";
-    import AdrKey from "./adr/ADRKey.vue";
+    import AdrIntegration from "./adr/ADRIntegration.vue";
     import Step from "./Step.vue";
     import Baseline from "./baseline/Baseline.vue";
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
@@ -64,12 +65,17 @@
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
-
+    import SnapshotStatus from "./versions/SnapshotStatus.vue";
     import { mapGettersByNames, mapStateProps} from "../utils";
+    import {Version} from "../types";
+    import {VersionsState} from "../store/versions/versions";
+
+    declare const currentUser: string;
 
     interface ComputedState {
         activeStep: number,
         steps: StepDescription[],
+        currentVersion: Version | null
     }
 
     interface ComputedGetters {
@@ -89,6 +95,9 @@
             }),
             ...mapStateProps<LoadState, keyof ComputedState>("load", {
                 loadingFromFile: state => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
+            }),
+            ...mapStateProps<VersionsState, keyof ComputedState>("versions", {
+                currentVersion: state => state.currentVersion
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
             loading: function () {
@@ -113,8 +122,14 @@
                 return !this.loading && this.complete[num];
             }
         },
+        created() {
+            //redirect to versions if logged in with no currentVersion
+            if ((currentUser != "guest") && (this.currentVersion == null)) {
+                this.$router.push('/versions');
+            }
+        },
         components: {
-            AdrKey,
+            AdrIntegration,
             Step,
             Baseline,
             SurveyAndProgram,
@@ -122,7 +137,8 @@
             ModelRun,
             ModelOutput,
             ModelOptions,
-            DownloadResults
+            DownloadResults,
+            SnapshotStatus
         },
         watch: {
             ready: function (newVal) {

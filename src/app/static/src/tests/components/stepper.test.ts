@@ -1,4 +1,4 @@
-import {createLocalVue, mount, shallowMount, Wrapper} from '@vue/test-utils';
+import {createLocalVue, shallowMount, Wrapper} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex, {Store} from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
@@ -10,10 +10,11 @@ import {
     mockModelRunState,
     mockPlottingMetadataResponse,
     mockPopulationResponse,
-    mockShapeResponse,
-    mockStepperState,
+    mockShapeResponse, mockStepperState,
     mockSurveyAndProgramState,
-    mockValidateBaselineResponse
+    mockValidateBaselineResponse,
+    mockVersionsState
+
 } from "../mocks";
 import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {getters as surveyAndProgramGetters} from "../../app/store/surveyAndProgram/getters";
@@ -23,7 +24,7 @@ import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations
 import {mutations as stepperMutations} from '../../app/store/stepper/mutations';
 import {mutations as loadMutations} from '../../app/store/load/mutations';
 import {modelRunGetters, ModelRunState} from "../../app/store/modelRun/modelRun";
-import ADRKey from "../../app/components/adr/ADRKey.vue";
+import ADRIntegration from "../../app/components/adr/ADRIntegration.vue";
 import Stepper from "../../app/components/Stepper.vue";
 import Step from "../../app/components/Step.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
@@ -37,8 +38,12 @@ import {ModelStatusResponse} from "../../app/generated";
 import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
+import {VersionsState} from "../../app/store/versions/versions";
+import SnapshotStatus from "../../app/components/versions/SnapshotStatus.vue";
 
 const localVue = createLocalVue();
+
+declare var currentUser: string; // set in jest config, or on the index page when run for real
 
 describe("Stepper component", () => {
     const createSut = (baselineState?: Partial<BaselineState>,
@@ -46,7 +51,9 @@ describe("Stepper component", () => {
                        metadataState?: Partial<MetadataState>,
                        modelRunState?: Partial<ModelRunState>,
                        stepperState?: Partial<StepperState>,
-                       loadState?: Partial<LoadState>) => {
+                       loadState?: Partial<LoadState>,
+                       versionsState?: Partial<VersionsState>,
+                       mockRouterPush = jest.fn()) => {
 
         const store = new Vuex.Store({
             actions: rootActions,
@@ -91,11 +98,22 @@ describe("Stepper component", () => {
                     namespaced: true,
                     state: mockLoadState(loadState),
                     mutations: loadMutations
+                },
+                versions: {
+                    namespaced: true,
+                    state: mockVersionsState(versionsState)
                 }
             }
         });
         registerTranslations(store);
-        return store;
+
+        const mocks = {
+            $router: {
+                push: mockRouterPush
+            }
+        };
+
+        return shallowMount(Stepper, {store, localVue, mocks});
     };
 
     const completedBaselineState = {
@@ -113,8 +131,7 @@ describe("Stepper component", () => {
 
     it("renders loading spinner while states are not ready", () => {
 
-        const store = createSut();
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut();
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
         expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
@@ -122,14 +139,13 @@ describe("Stepper component", () => {
 
     it("renders loading spinner while ready but loadingFromFile", () => {
 
-        const store = createSut(
+        const wrapper = createSut(
             {ready: true},
             {ready: true},
             {},
             {ready: true},
             {},
             {loadingState: LoadingState.SettingFiles});
-        const wrapper = shallowMount(Stepper, {store, localVue});
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
@@ -137,50 +153,48 @@ describe("Stepper component", () => {
     });
 
     it("does not render loading spinner once states are ready", () => {
-        const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAll(".content").length).toBe(1);
         expect(wrapper.findAll("#loading-message").length).toBe(0);
     });
 
     it("renders steps", () => {
-        const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
-        const wrapper = mount(Stepper, {store, localVue});
+        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
         const steps = wrapper.findAll(Step);
 
         expect(wrapper.findAll(Step).length).toBe(6);
-        expect(steps.at(0).find(".text-center").text()).toBe("Upload baseline data");
+        expect(steps.at(0).props().textKey).toBe("uploadBaseline");
         expect(steps.at(0).props().active).toBe(true);
         expect(steps.at(0).props().number).toBe(1);
         expect(steps.at(0).props().complete).toBe(false);
         expect(steps.at(0).props().enabled).toBe(true);
 
-        expect(steps.at(1).find(".text-center").text()).toBe("Upload survey and programme data");
+        expect(steps.at(1).props().textKey).toBe("uploadSurvey");
         expect(steps.at(1).props().active).toBe(false);
         expect(steps.at(1).props().number).toBe(2);
         expect(steps.at(1).props().complete).toBe(false);
         expect(steps.at(1).props().enabled).toBe(false);
 
-        expect(steps.at(2).find(".text-center").text()).toBe("Model options");
+        expect(steps.at(2).props().textKey).toBe("modelOptions");
         expect(steps.at(2).props().active).toBe(false);
         expect(steps.at(2).props().number).toBe(3);
         expect(steps.at(2).props().complete).toBe(false);
         expect(steps.at(2).props().enabled).toBe(false);
 
-        expect(steps.at(3).find(".text-center").text()).toBe("Run model");
+        expect(steps.at(3).props().textKey).toBe("runModel");
         expect(steps.at(3).props().active).toBe(false);
         expect(steps.at(3).props().number).toBe(4);
         expect(steps.at(3).props().complete).toBe(false);
         expect(steps.at(3).props().enabled).toBe(false);
 
-        expect(steps.at(4).find(".text-center").text()).toBe("Review output");
+        expect(steps.at(4).props().textKey).toBe("reviewOutput");
         expect(steps.at(4).props().active).toBe(false);
         expect(steps.at(4).props().number).toBe(5);
         expect(steps.at(4).props().complete).toBe(false);
         expect(steps.at(4).props().enabled).toBe(false);
 
-        expect(steps.at(5).find(".text-center").text()).toBe("Download results");
+        expect(steps.at(5).props().textKey).toBe("downloadResults");
         expect(steps.at(5).props().active).toBe(false);
         expect(steps.at(5).props().number).toBe(6);
         expect(steps.at(5).props().complete).toBe(false);
@@ -188,8 +202,7 @@ describe("Stepper component", () => {
     });
 
     it("renders step connectors", () => {
-        const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
         const connectors = wrapper.findAll(".step-connector");
 
         expect(connectors.length).toBe(5);
@@ -197,12 +210,16 @@ describe("Stepper component", () => {
         expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(0);
     });
 
+    it("renders snapshot status", () => {
+        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
+       expect(wrapper.find(SnapshotStatus).exists()).toBe(true);
+    });
+
     it("step connector is enabled if next step is", () => {
-        const store = createSut({ready: true},
+        const wrapper = createSut({ready: true},
             {ready: true, survey: true, program: true, shape: true} as any,
             {},
             {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
         const connectors = wrapper.findAll(".step-connector");
 
         expect(connectors.at(0).classes()).toContain("enabled");
@@ -210,19 +227,17 @@ describe("Stepper component", () => {
     });
 
     it("all steps except baseline are disabled initially", () => {
-        const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
         expect([1, 2, 3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
     });
 
     it("upload surveys step is enabled when baseline step is complete", () => {
-        const store = createSut(completedBaselineState,
+        const wrapper = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
         expect(steps.at(1).props().enabled).toBe(true);
@@ -231,11 +246,10 @@ describe("Stepper component", () => {
     });
 
     it("upload surveys step is not enabled if metadata state is not complete", () => {
-        const store = createSut(completedBaselineState,
+        const wrapper = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: null},
             {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
         expect(steps.at(1).props().enabled).toBe(false);
@@ -244,11 +258,10 @@ describe("Stepper component", () => {
     });
 
     it("updates active step when jump event is emitted", () => {
-        const store = createSut(completedBaselineState,
+        const wrapper = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
         const steps = wrapper.findAll(Step);
         steps.at(1).vm.$emit("jump", 2);
         expect(steps.at(0).props().complete).toBe(true);
@@ -256,8 +269,7 @@ describe("Stepper component", () => {
     });
 
     it("cannot continue when the active step is not complete", () => {
-        const store = createSut({country: "", ready: true}, {ready: true}, {}, {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut({country: "", ready: true}, {ready: true}, {}, {ready: true});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).toContain("disabled");
 
@@ -268,11 +280,10 @@ describe("Stepper component", () => {
 
 
     it("can continue when the active step is complete", () => {
-        const store = createSut(completedBaselineState,
+        const wrapper = createSut(completedBaselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).not.toContain("disabled");
 
@@ -283,14 +294,13 @@ describe("Stepper component", () => {
 
 
     it("cannot go back from the first step", () => {
-        const store = createSut({country: "", ready: true}, {ready: true}, {}, {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut({country: "", ready: true}, {ready: true}, {}, {ready: true});
         const backLink = wrapper.find("#back");
         expect(backLink.classes()).toContain("disabled");
     });
 
     it("can go back from later steps", () => {
-        const store = createSut({
+        const wrapper = createSut({
                 country: "testCountry",
                 iso3: "TTT",
                 shape: mockShapeResponse(),
@@ -301,7 +311,7 @@ describe("Stepper component", () => {
             {plottingMetadata: "TEST DATA" as any},
             {ready: true},
             {activeStep: 2});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+
         const backLink = wrapper.find("#back");
         expect(backLink.classes()).not.toContain("disabled");
 
@@ -318,16 +328,15 @@ describe("Stepper component", () => {
             shape: mockShapeResponse(),
             ready: true
         };
-        const store = createSut(baselineState,
+        const wrapper = createSut(baselineState,
             {ready: true},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).toContain("disabled");
 
         //invoke the mutation
-        store.commit("baseline/Validated", {
+        wrapper.vm.$store.commit("baseline/Validated", {
             "type": "Validated",
             "payload": mockValidateBaselineResponse()
         });
@@ -340,73 +349,71 @@ describe("Stepper component", () => {
 
     it("active step only becomes active once state becomes ready", async () => {
 
-        const store = createSut(completedBaselineState,
+        const wrapper = createSut(completedBaselineState,
             {},
             {plottingMetadata: mockPlottingMetadataResponse()},
             {ready: true},
             {activeStep: 2});
 
-        const wrapper = shallowMount(Stepper, {store, localVue});
         let steps = wrapper.findAll(Step);
         expect(steps.filter(s => s.props().active).length).toBe(0);
 
-        await makeReady(store, wrapper);
+        await makeReady(wrapper);
         steps = wrapper.findAll(Step);
         expect(steps.at(1).props().active).toBe(true);
     });
 
     it("complete steps only shown as complete once state becomes ready", async () => {
 
-        const store = createSut(
+        const wrapper = createSut(
             completedBaselineState,
             {},
             {
                 plottingMetadata: "TEST DATA" as any
             },
             {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+
         let steps = wrapper.findAll(Step);
         expect(steps.filter(s => s.props().complete).length).toBe(0);
 
-        await makeReady(store, wrapper);
+        await makeReady(wrapper);
         steps = wrapper.findAll(Step);
         expect(steps.at(0).props().complete).toBe(true);
     });
 
     it("steps only shown as enabled once state becomes ready, and not loading", async () => {
 
-        const store = createSut(completedBaselineState,
+        const wrapper = createSut(completedBaselineState,
             {},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
         let steps = wrapper.findAll(Step);
         expect(steps.filter(s => s.props().enabled).length).toBe(0);
 
-        await makeReady(store, wrapper);
+        await makeReady(wrapper);
         steps = wrapper.findAll(Step);
         expect(steps.at(1).props().enabled).toBe(true);
     });
 
     it("steps not shown as enabled if state becomes ready, but is also loading", async () => {
 
-        const store = createSut(completedBaselineState,
+        const wrapper = createSut(completedBaselineState,
             {},
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+
         let steps = wrapper.findAll(Step);
         expect(steps.filter(s => s.props().enabled).length).toBe(0);
 
-        await makeReady(store, wrapper);
-        await makeLoading(store, wrapper);
+        await makeReady(wrapper);
+        await makeLoading(wrapper);
         steps = wrapper.findAll(Step);
         expect(steps.at(1).props().enabled).toBe(false);
     });
 
-    async function makeReady(store: Store<any>, wrapper: Wrapper<any>) {
+    async function makeReady(wrapper: Wrapper<any>) {
 
-        store.commit("surveyAndProgram/Ready", {
+        wrapper.vm.$store.commit("surveyAndProgram/Ready", {
             "type": "Ready",
             "payload": true
         });
@@ -415,9 +422,9 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
     }
 
-    async function makeLoading(store: Store<any>, wrapper: Wrapper<any>) {
+    async function makeLoading(wrapper: Wrapper<any>) {
 
-        store.commit("load/SettingFiles", {
+        wrapper.vm.$store.commit("load/SettingFiles", {
             "type": "SettingFiles",
             "payload": null
         });
@@ -427,15 +434,13 @@ describe("Stepper component", () => {
     }
 
     it("model run step is not complete without success", () => {
-        const store = createSut({ready: true}, {ready: true}, {}, {ready: true, result: "TEST" as any});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true, result: "TEST" as any});
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(false);
     });
 
     it("model run step is not complete without result", () => {
-        const store = createSut({ready: true}, {ready: true}, {}, {ready: true, status: {success: true} as any});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true, status: {success: true} as any});
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(false);
     });
@@ -446,8 +451,7 @@ describe("Stepper component", () => {
             result: "TEST" as any,
             errors: ["TEST" as any]
         };
-        const store = createSut({ready: true}, {ready: true}, {}, modelRunState);
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut({ready: true}, {ready: true}, {}, modelRunState);
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(false);
     });
@@ -458,17 +462,15 @@ describe("Stepper component", () => {
             result: "TEST" as any,
             status: {success: true} as ModelStatusResponse
         };
-        const store = createSut({ready: true}, {ready: true}, {}, modelRunState);
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut({ready: true}, {ready: true}, {}, modelRunState);
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(true);
     });
 
     it("model run step becomes complete on success and result fetched", async () => {
-        const store = createSut({ready: true}, {ready: true}, {}, {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
 
-        store.commit("modelRun/RunStatusUpdated", {
+        wrapper.vm.$store.commit("modelRun/RunStatusUpdated", {
             "type": "RunStatusUpdated",
             "payload": {
                 id: "1234",
@@ -481,7 +483,7 @@ describe("Stepper component", () => {
             }
         });
 
-        store.commit("modelRun/RunResultFetched", {
+        wrapper.vm.$store.commit("modelRun/RunResultFetched", {
             "type": "RunResultFetched",
             "payload": "TEST"
         });
@@ -494,55 +496,75 @@ describe("Stepper component", () => {
 
     it("validates state once ready", async () => {
         const spy = jest.spyOn(rootActions as any, "validate");
-        const store = createSut({ready: true}, {}, {}, {ready: true});
-        const wrapper = shallowMount(Stepper, {store, localVue});
+        const wrapper = createSut({ready: true}, {}, {}, {ready: true});
         expect(spy).not.toHaveBeenCalled();
 
-        await makeReady(store, wrapper);
+        await makeReady(wrapper);
         expect(spy).toHaveBeenCalled();
     });
 
-    it("show ADR key if on step 1", () => {
+    it("pushes router to versions if logged in user and currentVersion not set", () => {
+        const mockRouterPush = jest.fn();
+        //current user is set in jest.config and currentVersion is not set be default in the wrapper
+        const wrapper = createSut({}, {}, {}, {}, {}, {}, {},  mockRouterPush);
+
+        expect(mockRouterPush.mock.calls.length).toBe(1);
+        expect(mockRouterPush.mock.calls[0][0]).toBe("/versions");
+    });
+
+    it("does not push router to versions if guest user", () => {
+        currentUser = "guest";
+        const mockRouterPush = jest.fn();
+        const wrapper = createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush);
+
+        expect(mockRouterPush.mock.calls.length).toBe(0);
+    });
+
+    it("does not push router to logged in user and currentVersion set", () => {
+        const mockRouterPush = jest.fn();
+        const versionsState = {currentVersion: {id: 1, name: "testVersion", snapshots: []}};
+        const wrapper =  createSut({}, {}, {}, {}, {}, {}, versionsState, mockRouterPush);
+
+        expect(mockRouterPush.mock.calls.length).toBe(0);
+    });
+
+    it("show ADR integration if on step 1", () => {
         const wrapper = getStepperOnStep(1);
-        expect(wrapper.findAll(ADRKey).length).toBe(1);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(1);
     });
 
-    it("show ADR key if on step 2", () => {
+    it("does not show ADR integration on step 2", () => {
         const wrapper = getStepperOnStep(2);
-        expect(wrapper.findAll(ADRKey).length).toBe(1);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
-    it("does not show ADR key on step 3", () => {
+    it("does not show ADR integration on step 3", () => {
         const wrapper = getStepperOnStep(3);
-        expect(wrapper.findAll(ADRKey).length).toBe(0);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
-
-    it("does not show ADR key on step 4", () => {
+    it("does not show ADR keintegrationy on step 4", () => {
         const wrapper = getStepperOnStep(4);
-        expect(wrapper.findAll(ADRKey).length).toBe(0);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
-
-    it("does not show ADR key on step 5", () => {
+    it("does not show ADR integration on step 5", () => {
         const wrapper = getStepperOnStep(5);
-        expect(wrapper.findAll(ADRKey).length).toBe(0);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
-
-    it("does not show ADR key on step 6", () => {
+    it("does not show ADR integration on step 6", () => {
         const wrapper = getStepperOnStep(6);
-        expect(wrapper.findAll(ADRKey).length).toBe(0);
+        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
     const getStepperOnStep = (step: number) => {
-        const store = createSut(
+        return createSut(
             {ready: true},
             {ready: true},
             {},
             {ready: true, result: "TEST" as any},
             {activeStep: step});
-        return shallowMount(Stepper, {store, localVue});
-    }
+    };
 
 });

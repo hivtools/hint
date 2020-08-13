@@ -7,6 +7,13 @@ import java.net.URL
 import java.util.*
 
 interface AppProperties {
+    val adrANCSchema: String
+    val adrARTSchema: String
+    val adrPJNZSchema: String
+    val adrPopSchema: String
+    val adrShapeSchema: String
+    val adrSurveySchema: String
+    val adrDatasetSchema: String
     val adrUrl: String
     val apiUrl: String
     val applicationTitle: String
@@ -26,10 +33,17 @@ interface AppProperties {
 }
 
 //prevent auto-wiring of default Properties
-class HintProperties: Properties()
+class HintProperties : Properties()
 
 @Component
-class ConfiguredAppProperties(private val props: HintProperties = properties): AppProperties {
+class ConfiguredAppProperties(private val props: HintProperties = properties) : AppProperties {
+    override val adrANCSchema = propString("adr_anc_schema")
+    override val adrARTSchema = propString("adr_art_schema")
+    override val adrPJNZSchema= propString("adr_pjnz_schema")
+    override val adrPopSchema = propString("adr_pop_schema")
+    override val adrShapeSchema = propString("adr_shape_schema")
+    override val adrSurveySchema = propString("adr_survey_schema")
+    override val adrDatasetSchema = propString("adr_schema")
     override val adrUrl = propString("adr_url")
     override val apiUrl = propString("hintr_url")
     override val applicationTitle = propString("application_title")

@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.clients.ADRFuelClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.security.Encryption
@@ -38,7 +39,7 @@ class ADRClientBuilderTests {
     @Test
     fun `creates client with correct auth header`() {
         val sut = ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mockRepo)
-        val result = sut.build()
+        val result = sut.build() as ADRFuelClient
         val headers = result.standardHeaders()
         Assertions.assertThat(headers["Authorization"]).isEqualTo(TEST_KEY)
     }

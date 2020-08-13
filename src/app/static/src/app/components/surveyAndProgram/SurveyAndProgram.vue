@@ -3,7 +3,7 @@
         <div class="row">
             <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
                 <form>
-                    <file-upload label="survey"
+                    <manage-file label="survey"
                                  :valid="survey.valid"
                                  :error="survey.error"
                                  :upload="uploadSurvey"
@@ -11,8 +11,8 @@
                                  :existingFileName="survey.existingFileName"
                                  accept="csv,.csv"
                                  name="survey">
-                    </file-upload>
-                    <file-upload label="ART"
+                    </manage-file>
+                    <manage-file label="ART"
                                  :valid="programme.valid"
                                  :error="programme.error"
                                  :upload="uploadProgram"
@@ -20,8 +20,8 @@
                                  :existingFileName="programme.existingFileName"
                                  accept="csv,.csv"
                                  name="program">
-                    </file-upload>
-                    <file-upload label="ANC"
+                    </manage-file>
+                    <manage-file label="ANC"
                                  :valid="anc.valid"
                                  :error="anc.error"
                                  :upload="uploadANC"
@@ -29,7 +29,7 @@
                                  :existingFileName="anc.existingFileName"
                                  accept="csv,.csv"
                                  name="anc">
-                    </file-upload>
+                    </manage-file>
                 </form>
                 <filters v-if="showChoropleth"
                          :filters="filters"
@@ -63,6 +63,7 @@
                         <table-view :tabledata="data"
                                     :area-filter-id="areaFilterId"
                                     :filters="filters"
+                                    :countryAreaFilterOption="countryAreaFilterOption"
                                     :indicators="filterTableIndicators"
                                     :selections="plottingSelections"
 
@@ -75,10 +76,8 @@
 </template>
 
 <script lang="ts">
-
     import Vue from "vue";
     import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
-    import FileUpload from "../FileUpload.vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import TableView from "../plots/table/Table.vue";
     import Filters from "../plots/Filters.vue";
@@ -86,19 +85,19 @@
     import {RootState} from "../../root";
     import {DataType} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
-    import {Metadata, ChoroplethIndicatorMetadata} from "../../generated";
+    import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
     import {mapGettersByNames} from "../../utils";
     import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
+    import ManageFile from "../files/ManageFile.vue";
 
     const namespace: string = 'surveyAndProgram';
-
     interface Data {
         areaFilterId: string
     }
-
     interface Computed {
         selectedDataType: DataType,
         filters: Filter[],
+        countryAreaFilterOption: FilterOption,
         data: any,
         sapIndicatorsMetadata: ChoroplethIndicatorMetadata[],
         showChoropleth: boolean,
@@ -111,7 +110,6 @@
         selectedIndicator: any[],
         filterTableIndicators: any[]
     }
-
     export default Vue.extend<Data, {}, Computed, {}>({
         name: "SurveyAndProgram",
         data: () => {
@@ -158,7 +156,7 @@
                 featureLevels: ({baseline}) => baseline.shape ? baseline.shape.filters.level_labels : [],
                 plottingSelections: ({plottingSelections}) => plottingSelections.sapChoropleth
             }),
-            ...mapGettersByNames(namespace, ["data", "filters"]),
+            ...mapGettersByNames(namespace, ["data", "filters", "countryAreaFilterOption"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
             ...mapGetters("plottingSelections", ["selectedSAPColourScales"])
         },
@@ -180,10 +178,10 @@
         created() {
         },
         components: {
-            FileUpload,
             Choropleth,
             Filters,
-            TableView
+            TableView,
+            ManageFile
         }
     })
 </script>

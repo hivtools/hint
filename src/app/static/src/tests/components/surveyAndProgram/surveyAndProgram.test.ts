@@ -5,7 +5,8 @@ import Vuex from 'vuex';
 import SurveyAndProgram from "../../../app/components/surveyAndProgram/SurveyAndProgram.vue";
 import {
     mockAncResponse,
-    mockBaselineState, mockPlottingSelections,
+    mockBaselineState,
+    mockPlottingSelections,
     mockProgramResponse,
     mockSurveyAndProgramState,
     mockSurveyResponse
@@ -17,11 +18,19 @@ import {actions} from "../../../app/store/surveyAndProgram/actions";
 import {mutations} from "../../../app/store/surveyAndProgram/mutations";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {mutations as selectionsMutations} from "../../../app/store/plottingSelections/mutations";
-import {ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
+import {ColourScaleSelections, ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 
 const localVue = createLocalVue();
 
 describe("Survey and programme component", () => {
+
+    beforeAll(() => {
+        Vue.config.silent = true;
+    });
+
+    afterAll(() => {
+        Vue.config.silent = false;
+    })
 
     testUploadComponent("surveys", 0);
     testUploadComponent("program", 1);
@@ -46,19 +55,32 @@ describe("Survey and programme component", () => {
                             filters: {
                                 level_labels: "TEST LEVEL LABELS",
                                 regions: {id: "country", children: [{id: "region 1"}, {id: "region 2"}]}
-                            } as any} as any
+                            } as any
+                        } as any
                     })
                 },
                 plottingSelections: {
                     namespaced: true,
                     state: mockPlottingSelections({
-                        sapChoropleth: {selectedFilterOptions: "TEST SELECTIONS"} as any}),
+                        sapChoropleth: {selectedFilterOptions: "TEST SELECTIONS"} as any
+                    }),
+                    getters: {
+                        selectedSAPColourScales: () => {
+                            return {prevalence: {
+                                    type: ColourScaleType.Custom,
+                                    customMin: 1,
+                                    customMax: 2
+                                }} as ColourScaleSelections
+                        }
+                    },
                     mutations: selectionsMutations
                 },
                 metadata: {
                     namespaced: true,
                     getters: {
-                        sapIndicatorsMetadata: () => {return ["TEST INDICATORS"]}
+                        sapIndicatorsMetadata: () => {
+                            return ["TEST INDICATORS"]
+                        }
                     }
                 }
             }
@@ -91,7 +113,8 @@ describe("Survey and programme component", () => {
                 "filters": {
                     "year": "TEST YEAR FILTERS"
                 }
-            } as any,});
+            } as any,
+        });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         const choro = wrapper.find("choropleth-stub");
         expect(choro.props().includeFilters).toBe(false);
@@ -115,6 +138,11 @@ describe("Survey and programme component", () => {
         expect(choro.props().featureLevels).toBe("TEST LEVEL LABELS");
         expect(choro.props().indicators).toStrictEqual(["TEST INDICATORS"]);
         expect(choro.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
+        expect(choro.props().colourScales).toEqual({prevalence: {
+            type: ColourScaleType.Custom,
+                customMin: 1,
+                customMax: 2
+        }});
 
     });
 
@@ -126,7 +154,8 @@ describe("Survey and programme component", () => {
                 "filters": {
                     "year": "TEST YEAR FILTERS"
                 }
-            } as any,});
+            } as any,
+        });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         const filters = wrapper.find("filters-stub");
         expect(filters.props().filters[0]).toStrictEqual({
@@ -226,7 +255,8 @@ describe("Survey and programme component", () => {
                 "filters": {
                     "year": "TEST YEAR FILTERS"
                 }
-            } as any,});
+            } as any,
+        });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         const table = wrapper.find("table-view-stub");
         expect(table.props().areaFilterId).toBe("area");
@@ -247,7 +277,19 @@ describe("Survey and programme component", () => {
         });
         expect(table.props().indicators).toStrictEqual(["TEST INDICATORS"]);
         expect(table.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
-
+        expect(table.props().countryAreaFilterOption).toStrictEqual(
+                {
+                  "children":[
+                    {
+                      "id": "region 1",
+                    },
+                    {
+                      "id": "region 2",
+                    },
+                  ],
+                  "id": "country",
+                }
+        );
     });
 
 });
