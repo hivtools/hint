@@ -311,4 +311,41 @@ describe('Table from testdata', () => {
     expect(wrapper.findAll('td').at(3).text()).toBe('0.5');
     expect(wrapper.findAll('tr').length).toBe(2);
 });
+it('renders correct markup when uncertainty ranges are added', () => {
+  const wrapper = getWrapper({
+    tabledata: [
+      {
+        ...propsData.tabledata[0], upper: 100, lower: 0
+      },
+      {
+        ...propsData.tabledata[1], upper: 99, lower: 1
+      },
+      {
+        ...propsData.tabledata[2], upper: 98, lower: 2
+      },
+      {
+        ...propsData.tabledata[3], upper: 97, lower: 3
+      },
+      {
+        ...propsData.tabledata[4], upper: 96, lower: 4
+      },
+      {
+        ...propsData.tabledata[5], upper: 95, lower: 5
+      }
+    ]
+    });
+  expect(wrapper.find('th').text()).toBe('Area');
+  expect(wrapper.find('td').text()).toBe('4.1');
+  expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+  expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
+  expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+  expect(wrapper.findAll('td').at(2).text()).toBe('Female');
+  expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
+  expect(wrapper.findAll('td').at(3).text()).toBe('0.1');
+  expect(wrapper.findAll('th').at(4).text()).toBe('Upper');
+  expect(wrapper.findAll('td').at(4).text()).toBe('99');
+  expect(wrapper.findAll('th').at(5).text()).toBe('Lower');
+  expect(wrapper.findAll('td').at(5).text()).toBe('1');
+  expect(wrapper.findAll('tr').length).toBe(3);
+});
 })

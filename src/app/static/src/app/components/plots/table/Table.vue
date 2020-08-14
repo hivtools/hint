@@ -7,14 +7,25 @@
                     <tr>
                         <th v-translate="'area'"></th>
                         <th v-for="f in filtersToDisplay" v-translate="f.label"></th>
-                        <!-- <th v-for="i in indicators">{{ i.name }}</th> -->
-                        <template v-for="i in indicators"><th>{{ i.name }}</th><th v-if="i.error_high_column">{{i.error_high_column}}</th><th>Lower</th></template>
+                        <template v-for="i in indicators">
+                          <th>{{ i.name }}</th>
+                          <!-- ideally I would put "i.error_high_column"/""i.error_high_column"" as the column header 
+                          instead of "Upper"/"Lower" and use them to control the v-if statements here and for the rows below,
+                          but I'll need Rob to pass them into indicators for the choropleth/bubbleplot from the backend first.
+                          Currently they are only available for the indicators of the barchart. I'll also need to add a v-translate  
+                          for upper/lower-->
+                          <th v-if="filteredData[0].indicatorValues[i.indicator].upper">Upper</th>
+                          <th v-if="filteredData[0].indicatorValues[i.indicator].lower">Lower</th>
+                        </template>
                     </tr>
                     <tr v-for="row in filteredData">
                         <td>{{ row.areaLabel }}</td>
                         <td v-for="f in filtersToDisplay">{{ row.filterLabels[f.id] }}</td>
-                        <!-- <td v-for="i in indicators">{{ row.indicatorValues[i.indicator] }}</td> -->
-                        <template v-for="i in indicators"><td>{{ row.indicatorValues[i.indicator].value }}</td><td v-if="i.error_high_column">{{ row.indicatorValues[i.indicator].upper }}</td><td>{{ row.indicatorValues[i.indicator].lower }}</td></template>
+                        <template v-for="i in indicators">
+                          <td>{{ row.indicatorValues[i.indicator].value }}</td>
+                          <td v-if="filteredData[0].indicatorValues[i.indicator].upper">{{ row.indicatorValues[i.indicator].upper }}</td>
+                          <td v-if="filteredData[0].indicatorValues[i.indicator].lower">{{ row.indicatorValues[i.indicator].lower }}</td>
+                        </template>
                     </tr>
                 </div>
             </table>
@@ -124,8 +135,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
         },
         filteredData() {
             const filteredValues: any[] = [];
-            console.log('tabledata', this.tabledata)
-            console.log('indicators', this.indicators)
             iterateDataValues(this.tabledata,
                 this.indicators,
                 this.selectedAreaIds,
@@ -141,7 +150,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     const lower = row.lower
                     filteredValues.push({areaId, filterValues, indicatorMeta, value, upper, lower});
                 });
-                console.log('filteredValues', filteredValues)
                 const displayRows: Dict<any> = {};
                 filteredValues.forEach(current => {
                     const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
@@ -164,7 +172,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
                       lower: current.lower
                     }
                 });
-                console.log('filteredData', Object.values(displayRows))
                 return Object.values(displayRows);
         }
     }
