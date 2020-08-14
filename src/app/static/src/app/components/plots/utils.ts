@@ -168,7 +168,7 @@ export const findPath = function (id: string, obj: any): any {
           else if(obj[key] && typeof obj[key] === "object") {   
               var path = findPath(id, obj[key]);               
               if (path != undefined) {
-                return (obj.label ? obj.label + "/": "") + path;   
+                return ((obj.label ? obj.label + "/": "") + path).replace(/\/$/, '');   
               }              
           }
       }
