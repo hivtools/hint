@@ -135,6 +135,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
         },
         filteredData() {
             const filteredValues: any[] = [];
+            console.log("indicators", this.indicators)
             iterateDataValues(this.tabledata,
                 this.indicators,
                 this.selectedAreaIds,

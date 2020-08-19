@@ -1,0 +1,9 @@
+{
+  "type": "programme",
+  "file": {
+    "path": "testdata/programme.csv",
+    "filename": "original.csv",
+    "hash": "12345"
+  },
+  "shape": "testdata/malawi.geojson"
+}

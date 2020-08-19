@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "pjnz_response": {
+      "type": "object",
+      "properties": {
+        "hash": { "$ref": "FileName.schema.json" },
+        "filename" : { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [ "pjnz" ]
+        },
+        "data": { "$ref": "PjnzResponseData.schema.json" },
+        "filters": { "type": "null" }
+      },
+      "additionalProperties": false,
+      "required": ["filename", "hash", "type", "data"]
+    },
+
+    "shape_response": {
+      "type": "object",
+      "properties": {
+        "hash": { "$ref": "FileName.schema.json" },
+        "filename" : { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [ "shape" ]
+        },
+        "data": { "$ref": "ShapeResponseData.schema.json" },
+        "filters": {
+          "type": "object",
+          "properties" : {
+            "level_labels": {
+              "type": "array",
+              "items": { "$ref": "LevelLabels.schema.json"}
+            },
+            "regions": { "$ref": "NestedFilterOption.schema.json" }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": ["filename", "hash", "type", "data", "filters"]
+    },
+
+    "population_response": {
+      "type": "object",
+      "properties": {
+        "hash": { "$ref": "FileName.schema.json" },
+        "filename" : { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [ "population" ]
+        },
+        "data": { "$ref": "PopulationResponseData.schema.json" },
+        "filters": { "type": "null" }
+      },
+      "additionalProperties": false,
+      "required": ["filename", "hash", "type", "data"]
+    },
+
+    "programme_response": {
+      "type": "object",
+      "properties": {
+        "hash": { "$ref": "FileName.schema.json" },
+        "filename" : { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [ "programme" ]
+        },
+        "data": { "$ref": "ProgrammeResponseData.schema.json" },
+        "filters": { "$ref": "ProgrammeFilters.schema.json" }
+      },
+      "additionalProperties": false,
+      "required": ["filename", "hash", "type", "data", "filters"]
+    },
+
+    "anc_response": {
+      "type": "object",
+      "properties": {
+        "hash": { "$ref": "FileName.schema.json" },
+        "filename" : { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [ "anc" ]
+        },
+        "data": { "$ref": "AncResponseData.schema.json" },
+        "filters": { "$ref": "AncFilters.schema.json" }
+      },
+      "additionalProperties": false,
+      "required": ["filename", "hash", "type", "data", "filters"]
+    },
+
+    "survey_response": {
+      "type": "object",
+      "properties": {
+        "hash": { "$ref": "FileName.schema.json" },
+        "filename" : { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [ "survey" ]
+        },
+        "data": { "$ref": "SurveyResponseData.schema.json" },
+        "filters": { "$ref": "SurveyFilters.schema.json" }
+      },
+      "additionalProperties": false,
+      "required": ["filename", "hash", "type", "data", "filters"]
+    }
+  },
+
+  "oneOf": [
+    {"$ref": "#/definitions/pjnz_response"},
+    {"$ref": "#/definitions/shape_response"},
+    {"$ref": "#/definitions/population_response"},
+    {"$ref": "#/definitions/programme_response"},
+    {"$ref": "#/definitions/anc_response"},
+    {"$ref": "#/definitions/survey_response"}
+  ]
+}
+
