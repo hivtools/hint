@@ -42,7 +42,7 @@ interface Props {
         detail: number | null
     },
     filters: Filter[],
-    countryAreaFilterOption: FilterOption,
+    countryAreaFilterOption: NestedFilterOption,
     areaFilterId: string
 }
 interface DisplayRow {
