@@ -111,6 +111,8 @@ export interface BarchartMetadata {
 export interface ChoroplethIndicatorMetadata {
   indicator: string;
   value_column: string;
+  error_low_column?: string;
+  error_high_column?: string;
   indicator_column?: string;
   indicator_value?: string;
   name: string;
@@ -123,6 +125,8 @@ export interface ChoroplethMetadata {
   indicators: {
     indicator: string;
     value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
     indicator_column?: string;
     indicator_value?: string;
     name: string;
@@ -147,6 +151,7 @@ export interface ChoroplethMetadata {
 export interface Data {
   placeholder?: boolean;
 }
+export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -154,7 +159,6 @@ export interface Error {
   trace?: string[];
   [k: string]: any;
 }
-export type ErrorCode = string;
 export type FileName = string;
 export type FilePath = string | null;
 export interface Filter {
@@ -277,6 +281,8 @@ export interface ModelResultResponse {
       indicators: {
         indicator: string;
         value_column: string;
+        error_low_column?: string;
+        error_high_column?: string;
         indicator_column?: string;
         indicator_value?: string;
         name: string;
@@ -387,12 +393,36 @@ export interface ModelStatusResponse {
   }[];
 }
 export interface ModelSubmitData {
-  pjnz: string | null;
-  shape: string | null;
-  population: string | null;
-  survey: string | null;
-  programme: string | null;
-  anc: string | null;
+  pjnz: {
+    path: string | null;
+    hash: string;
+    filename: string;
+  };
+  shape: {
+    path: string | null;
+    hash: string;
+    filename: string;
+  };
+  population: {
+    path: string | null;
+    hash: string;
+    filename: string;
+  };
+  survey: {
+    path: string | null;
+    hash: string;
+    filename: string;
+  };
+  programme: {
+    path: string | null;
+    hash: string;
+    filename: string;
+  };
+  anc: {
+    path: string | null;
+    hash: string;
+    filename: string;
+  };
 }
 export interface ModelSubmitInputOptions {
   programme: boolean;
@@ -400,12 +430,36 @@ export interface ModelSubmitInputOptions {
 }
 export interface ModelSubmitRequest {
   data: {
-    pjnz: string | null;
-    shape: string | null;
-    population: string | null;
-    survey: string | null;
-    programme: string | null;
-    anc: string | null;
+    pjnz: {
+      path: string | null;
+      hash: string;
+      filename: string;
+    };
+    shape: {
+      path: string | null;
+      hash: string;
+      filename: string;
+    };
+    population: {
+      path: string | null;
+      hash: string;
+      filename: string;
+    };
+    survey: {
+      path: string | null;
+      hash: string;
+      filename: string;
+    };
+    programme: {
+      path: string | null;
+      hash: string;
+      filename: string;
+    };
+    anc: {
+      path: string | null;
+      hash: string;
+      filename: string;
+    };
   };
   options: {
     [k: string]: any;
@@ -434,6 +488,8 @@ export interface PjnzResponseData {
 export type ChoroplethMetadata = {
   indicator: string;
   value_column: string;
+  error_low_column?: string;
+  error_high_column?: string;
   indicator_column?: string;
   indicator_value?: string;
   name: string;
