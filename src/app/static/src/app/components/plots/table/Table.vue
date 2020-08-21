@@ -58,6 +58,7 @@
             possible to filter formatted data (referred to as scoped fields in the documentation). With regard to the filter,
             it depends how granualar you want to go with the filtering. Currently I have the filter just search for anything matching
             the supplied value in any column. See here for an example of a more complex filter: https://bootstrap-vue.org/docs/components/table#complete-example 
+            Will also need to rethink how areaHierachies get added to the table. 
             Finally, I need to find a way of getting the translations to the label props for the generatedFields-->
               <!-- <template v-for="f in filtersToDisplay" v-slot:[`cell(${f.label})`]="data">
                 {{ data.item.filterLabels[f.label] }}
