@@ -53,7 +53,7 @@ describe('Table from testdata', () => {
     it('renders correct markup', () => {
         const wrapper = getWrapper();
         expect(wrapper.find('th').text()).toBe('Area');
-        expect(wrapper.find('td').text()).toBe('4.1');
+        expect(wrapper.find('td').text()).toBe('4.1 3.1');
         expect(wrapper.findAll('th').at(1).text()).toBe('Age');
         expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
@@ -72,7 +72,7 @@ describe('Table from testdata', () => {
         }
         });
         expect(wrapper.find('th').text()).toBe('Area');
-        expect(wrapper.find('td').text()).toBe('4.2');
+        expect(wrapper.find('td').text()).toBe('4.2 3.2');
         expect(wrapper.findAll('th').at(1).text()).toBe('Age');
         expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
@@ -120,7 +120,7 @@ describe('Table from testdata', () => {
                 indicator: "plhiv", value_column: "plhiv", name: "PLHIV" }]
         });
         expect(wrapper.find('th').text()).toBe('Area');
-        expect(wrapper.find('td').text()).toBe('4.1');
+        expect(wrapper.find('td').text()).toBe('4.1 3.1');
         expect(wrapper.findAll('th').at(1).text()).toBe('Age');
         expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
@@ -150,7 +150,7 @@ describe('Table from testdata', () => {
         ]
         });
         expect(wrapper.find('th').text()).toBe('Area');
-        expect(wrapper.find('td').text()).toBe('4.2');
+        expect(wrapper.find('td').text()).toBe('4.2 3.2');
         expect(wrapper.findAll('th').at(1).text()).toBe('Age');
         expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex');

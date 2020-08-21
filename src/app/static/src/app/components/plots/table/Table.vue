@@ -10,7 +10,10 @@
                         <th v-for="i in indicators">{{ i.name }}</th>
                     </tr>
                     <tr v-for="row in filteredData">
-                        <td>{{ row.areaLabel }}</td>
+                        <td>
+                          <div>{{ row.areaLabel }}</div>
+                          <div class="small">{{ row.areaHierarchy }}</div>
+                        </td>
                         <td v-for="f in filtersToDisplay">{{ row.filterLabels[f.id] }}</td>
                         <td v-for="i in indicators">{{ row.indicatorValues[i.indicator] }}</td>
                     </tr>
@@ -70,12 +73,13 @@
         </div>
         <div v-else>No data are available for these selections.</div>
     </div>
+    
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Filters from "../Filters.vue";
-import {iterateDataValues} from "../utils";
+import {iterateDataValues, findPath} from "../utils";
 import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
 import {Dict, Filter} from "../../../types";
 import {ChoroplethSelections} from "../../../store/plottingSelections/plottingSelections";
@@ -98,11 +102,12 @@ interface Props {
         detail: number | null
     },
     filters: Filter[],
-    countryAreaFilterOption: FilterOption,
+    countryAreaFilterOption: NestedFilterOption,
     areaFilterId: string
 }
 interface DisplayRow {
     areaLabel: string,
+    areaHierarchy: string,
     filterLabels: Dict<string>,
     indicatorValues: Dict<string>
 }
@@ -209,6 +214,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
                     if (!(key in displayRows)) {
                         const areaLabel =  this.flattenedAreas[current.areaId].label;
+                        const areaHierarchy = findPath(current.areaId, this.countryAreaFilterOption.children)
                         const filterLabels: Dict<string> = {};
                         Object.keys(current.filterValues).forEach(k => {
                             const selectedOptions =  this.selections.selectedFilterOptions[k];
@@ -216,6 +222,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                         });
                         displayRows[key] = {
                             areaLabel,
+                            areaHierarchy,
                             filterLabels,
                             indicatorValues: {}
                         }
