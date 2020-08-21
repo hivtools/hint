@@ -16,6 +16,56 @@
                     </tr>
                 </div>
             </table>
+            <b-form-group
+              label="Filter"
+              label-cols-sm="3"
+              label-align-sm="right"
+              label-size="sm"
+              label-for="filterInput"
+              class="mb-0"
+            >
+              <b-input-group size="sm">
+                <b-form-input
+                  v-model="filter"
+                  type="search"
+                  id="filterInput"
+                  placeholder="Type to Search"
+                ></b-form-input>
+                <b-input-group-append>
+                  <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
+            <b-table striped hover 
+            :fields="generatedFields" 
+            :items="flatFilteredData"
+            :sort-by.sync="sortBy"
+            :sort-desc.sync="sortDesc"
+            :filter="filter"
+            responsive="sm"
+            >
+            <!-- Originally I tried to use the filteredData in the items property. However because this contains nested data
+            in the filterLabels and indicatorValues objects, I needed to format the table data with the below commented 
+            out templates. Unfortunately the default sort-compare routine only looks at the original data passed 
+            to the items property, not the formatted data shown in the table, so the sort feature would not work here.
+            It is possible to supply the sort-compare property with a custom routine but after looking into this I realised it was
+            much more straight forward to pass a flattend filteredData object to the items property instead. This approach could
+            run into trouble when keys of the same name are used (ie, uncertainties). The question is whether to go down this route 
+            and refactor the filteredData object to be flat or to use a custom sort-compare instead. I also don't think it is 
+            possible to filter formatted data (referred to as scoped fields in the documentation). With regard to the filter,
+            it depends how granualar you want to go with the filtering. Currently I have the filter just search for anything matching
+            that value in any column. See here for an example of a more complex filter: https://bootstrap-vue.org/docs/components/table#complete-example -->
+              <!-- <template v-for="f in filtersToDisplay" v-slot:[`cell(${f.label})`]="data">
+                {{ data.item.filterLabels[f.label] }}
+              </template>
+              <template v-for="i in indicators" v-slot:[`cell(${i.indicator})`]="data">
+                {{ data.item.indicatorValues[i.indicator] }}
+              </template> -->
+            </b-table>
+            <div>
+              Sorting By: <b>{{ sortBy }}</b>, Sort Direction:
+              <b>{{ sortDesc ? 'Descending' : 'Ascending' }}</b>
+            </div>
         </div>
         <div v-else>No data are available for these selections.</div>
     </div>
@@ -29,6 +79,15 @@ import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../
 import {Dict, Filter} from "../../../types";
 import {ChoroplethSelections} from "../../../store/plottingSelections/plottingSelections";
 import {flattenOptions, flattenToIdSet} from "../../../utils";
+import { BTable, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BButton } from 'bootstrap-vue';
+
+Vue.component('b-table', BTable)
+Vue.component('b-form-group', BFormGroup)
+Vue.component('b-form-input', BFormInput)
+Vue.component('b-input-group', BInputGroup)
+Vue.component('b-button', BButton)
+Vue.component('b-input-group-append', BInputGroupAppend)
+
 interface Props {
     tabledata: any[],
     indicators: ChoroplethIndicatorMetadata[],
@@ -53,7 +112,9 @@ interface Computed {
     filteredData: DisplayRow[],
     flattenedAreas: Dict<NestedFilterOption>,
     selectedAreaIds: string[],
-    selectedAreaFilterOptions: FilterOption[]
+    selectedAreaFilterOptions: FilterOption[],
+    generatedFields: any[],
+    flatFilteredData: any[]
 }
 const props = {
     tabledata: {
@@ -83,8 +144,17 @@ export default Vue.extend<{}, {}, Computed, Props>({
     props: props,
     data() {
       return {
-          
+        sortBy: '',
+        sortDesc: false,
+        filter: null,
+        // fields: this.generatedFields
+          // items: [...this.filteredData]
       }
+    },
+    mounted(){
+      console.log('filteredData', this.filteredData)
+      console.log('filtersToDisplay', this.filtersToDisplay)
+      console.log('indicators', this.indicators)
     },
     computed: {
         nonAreaFilters() {
@@ -154,6 +224,37 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     displayRows[key].indicatorValues[current.indicatorMeta.indicator] = current.value;
                 });
                 return Object.values(displayRows);
+        },
+        generatedFields(){
+          const fields: any[] = [];
+          fields.push({key: 'areaLabel'})
+          this.filtersToDisplay.map(value =>{
+            const field: Dict<any> = {};
+            field.key = value.label
+            fields.push(field)
+          })
+          this.indicators.map(value =>{
+            const field: Dict<any> = {};
+            field.key = value.indicator
+            field.label = value.name
+            fields.push(field)
+          })
+          fields.map(field => {
+            field.sortable = true
+            field.sortByFormatted = true
+          })
+          console.log('fields', fields)
+          return fields
+        },
+        flatFilteredData(){
+          const values: any[] = [];
+          this.filteredData.map(value => {
+            let row: Dict<any> = {};
+            row = {...value.filterLabels, ...value.indicatorValues}
+            row.areaLabel = value.areaLabel
+            values.push(row)
+          })
+          return values
         }
     }
 });
