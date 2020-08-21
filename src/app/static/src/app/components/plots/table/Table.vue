@@ -2,7 +2,7 @@
     <div>
         <br>
         <div v-if="filteredData.length > 0">
-            <table class="table">
+            <!-- <table class="table">
                 <div>
                     <tr>
                         <th v-translate="'area'"></th>
@@ -15,11 +15,11 @@
                         <td v-for="i in indicators">{{ row.indicatorValues[i.indicator] }}</td>
                     </tr>
                 </div>
-            </table>
+            </table> -->
             <b-form-group
               label="Filter"
               label-cols-sm="3"
-              label-align-sm="right"
+              label-align-sm="left"
               label-size="sm"
               label-for="filterInput"
               class="mb-0"
@@ -44,17 +44,18 @@
             :filter="filter"
             responsive="sm"
             >
-            <!-- Originally I tried to use the filteredData in the items property. However because this contains nested data
+            <!-- Originally I tried to use the filteredData (as is) in the items property. However because this contains nested data
             in the filterLabels and indicatorValues objects, I needed to format the table data with the below commented 
             out templates. Unfortunately the default sort-compare routine only looks at the original data passed 
             to the items property, not the formatted data shown in the table, so the sort feature would not work here.
             It is possible to supply the sort-compare property with a custom routine but after looking into this I realised it was
             much more straight forward to pass a flattend filteredData object to the items property instead. This approach could
-            run into trouble when keys of the same name are used (ie, uncertainties). The question is whether to go down this route 
+            run into trouble when keys of the same name are used however (eg, uncertainties). The question is whether to go down this route 
             and refactor the filteredData object to be flat or to use a custom sort-compare instead. I also don't think it is 
             possible to filter formatted data (referred to as scoped fields in the documentation). With regard to the filter,
             it depends how granualar you want to go with the filtering. Currently I have the filter just search for anything matching
-            that value in any column. See here for an example of a more complex filter: https://bootstrap-vue.org/docs/components/table#complete-example -->
+            the supplied value in any column. See here for an example of a more complex filter: https://bootstrap-vue.org/docs/components/table#complete-example 
+            Finally, I need to find a way of getting the translations to the label props for the generatedFields-->
               <!-- <template v-for="f in filtersToDisplay" v-slot:[`cell(${f.label})`]="data">
                 {{ data.item.filterLabels[f.label] }}
               </template>
@@ -146,9 +147,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
       return {
         sortBy: '',
         sortDesc: false,
-        filter: null,
-        // fields: this.generatedFields
-          // items: [...this.filteredData]
+        filter: null
       }
     },
     mounted(){
@@ -230,7 +229,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
           fields.push({key: 'areaLabel'})
           this.filtersToDisplay.map(value =>{
             const field: Dict<any> = {};
-            field.key = value.label
+            field.key = value.id
             fields.push(field)
           })
           this.indicators.map(value =>{
