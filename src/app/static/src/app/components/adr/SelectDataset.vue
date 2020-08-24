@@ -100,7 +100,7 @@
                     id: fullMetaData.id,
                     title: fullMetaData.title,
                     revision_id: fullMetaData.revision_id,
-                    url: `${fullMetaData.type}/${fullMetaData.name}`
+                    url: `https://adr.unaids.org/${fullMetaData.type}/${fullMetaData.name}`
                 }
             },
             selectText() {
