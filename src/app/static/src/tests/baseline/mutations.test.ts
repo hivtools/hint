@@ -203,7 +203,7 @@ describe("Baseline mutations", () => {
             revision_id: "456",
             url: "www.something.com"
         }
-        mutations[BaselineMutation.SetDataset](testState, {payload: fakeDataset});
+        mutations[BaselineMutation.SetDataset](testState, fakeDataset);
 
         expect(testState.selectedDataset).toEqual(fakeDataset);
     });
