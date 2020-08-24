@@ -23,21 +23,21 @@ class BaselineControllerTests : HintrControllerTests() {
 
     @Test
     fun `validates pjnz file`() {
-        assertValidates(FileType.PJNZ) { sut ->
+        assertSavesAndValidates(FileType.PJNZ) { sut ->
             (sut as BaselineController).uploadPJNZ(mockFile)
         }
     }
 
     @Test
     fun `validates shape file`() {
-        assertValidates(FileType.Shape) { sut ->
+        assertSavesAndValidates(FileType.Shape) { sut ->
             (sut as BaselineController).uploadShape(mockFile)
         }
     }
 
     @Test
     fun `validates population file`() {
-        assertValidates(FileType.Population) { sut ->
+        assertSavesAndValidates(FileType.Population) { sut ->
             (sut as BaselineController).uploadPopulation(mockFile)
         }
     }
