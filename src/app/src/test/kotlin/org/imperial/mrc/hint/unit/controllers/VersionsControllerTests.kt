@@ -13,6 +13,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.models.Snapshot
+import org.imperial.mrc.hint.models.SnapshotDetails
+import org.imperial.mrc.hint.models.SnapshotFile
 import org.imperial.mrc.hint.models.Version
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
@@ -120,6 +122,24 @@ class VersionsControllerTests {
         verify(mockRepo).saveSnapshotState("testSnapshot", 99, "testUser", "testState")
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `can get snapshot details`()
+    {
+        val mockDetails = SnapshotDetails("TEST STATE", mapOf("pjnz" to SnapshotFile("hash1", "filename1")))
+        val mockRepo = mock<SnapshotRepository> {
+          on { getSnapshotDetails("testSnapshot", 99, "testUser") }  doReturn mockDetails
+        };
+
+        val sut = VersionsController(mockSession, mockRepo, mock())
+        val result = sut.getSnapshotDetails(99, "testSnapshot")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        val resultJson = parser.readTree(result.body)["data"]
+        assertThat(resultJson["state"].asText()).isEqualTo("TEST STATE");
+        val filesJson = resultJson["files"]
+        assertThat(filesJson["pjnz"]["hash"].asText()).isEqualTo("hash1")
+        assertThat(filesJson["pjnz"]["filename"].asText()).isEqualTo("filename1")
     }
 
     private fun assertExpectedSnapshot(node: JsonNode)

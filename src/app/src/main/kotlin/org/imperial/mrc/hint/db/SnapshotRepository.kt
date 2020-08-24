@@ -4,6 +4,7 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.Tables.*
 import org.imperial.mrc.hint.exceptions.SnapshotException
 import org.imperial.mrc.hint.models.Snapshot
+import org.imperial.mrc.hint.models.SnapshotDetails
 import org.imperial.mrc.hint.models.SnapshotFile
 import org.jooq.DSLContext
 import org.jooq.Record
@@ -26,6 +27,8 @@ interface SnapshotRepository {
     fun setFilesForSnapshot(snapshotId: String, files: Map<String, SnapshotFile?>)
     fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
     fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, versionId: Int, userId: String)
+
+    fun getSnapshotDetails(snapshotId: String, versionId: Int, userId: String): SnapshotDetails
 }
 
 @Component
@@ -55,6 +58,18 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
                 .fetchOne()
 
         return Snapshot(result[VERSION_SNAPSHOT.ID], result[VERSION_SNAPSHOT.CREATED], result[VERSION_SNAPSHOT.UPDATED])
+    }
+
+    override fun getSnapshotDetails(snapshotId: String, versionId: Int, userId: String): SnapshotDetails
+    {
+        checkSnapshotExists(snapshotId, versionId, userId)
+        val files = getSnapshotFiles(snapshotId)
+        val state = dsl.select(VERSION_SNAPSHOT.STATE)
+                .from(VERSION_SNAPSHOT)
+                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
+                .fetchOne()[VERSION_SNAPSHOT.STATE]
+
+        return SnapshotDetails(state, files)
     }
 
     override fun saveNewHash(hash: String): Boolean {
