@@ -27,6 +27,8 @@ describe("select dataset", () => {
         url: "https://adr.unaids.org/naomi-data/some-data"
     }
 
+    const setDatasetMock = jest.fn();
+
     const getStore = (props: Partial<BaselineState> = {}) => {
         return new Vuex.Store({
             state: mockRootState({
@@ -37,7 +39,7 @@ describe("select dataset", () => {
                     namespaced: true,
                     state: mockBaselineState(props),
                     mutations: {
-                        [BaselineMutation.SetDataset]: jest.fn()
+                        [BaselineMutation.SetDataset]: setDatasetMock
                     }
                 }
             }
@@ -109,18 +111,32 @@ describe("select dataset", () => {
         expect(select.props("options")).toStrictEqual(expectedOptions);
     });
 
-    it("renders loading spinner while importing data", async () => {
+    it("sets current dataset", async (done) => {
         const rendered = mount(SelectDataset, {store: getStore(), sync: false, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
         await Vue.nextTick();
 
         expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"});
         rendered.find(Modal).find("button").trigger("click");
 
         await Vue.nextTick();
+        expect(setDatasetMock.mock.calls[0][1]).toEqual(fakeDataset);
+
+        // loading spinner should render and buttons temporarily disabled
+        const buttons = rendered.find(Modal).findAll("button");
         expect(rendered.findAll(TreeSelect).length).toBe(0);
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(buttons.at(0).attributes("disabled")).toBe("disabled");
+        expect(buttons.at(1).attributes("disabled")).toBe("disabled");
+
+        setTimeout(() => {
+            // loading spinner should clear and modal closed
+            expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+            expect(rendered.find(Modal).props("open")).toBe(false);
+            done();
+        }, 200)
     });
 
 });
