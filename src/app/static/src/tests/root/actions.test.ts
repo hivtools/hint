@@ -246,5 +246,20 @@ describe("root actions", () => {
             });
     });
 
+    it("fetches ADR datasets", async () => {
+        mockAxios.onGet(`/adr/datasets/`)
+            .reply(200, mockSuccess([1]));
+
+        const commit = jest.fn();
+
+        await actions.getADRDatasets({commit, rootState} as any);
+
+        expect(commit.mock.calls[0][0])
+            .toStrictEqual({
+                type: RootMutation.SetADRDatasets,
+                payload: [1]
+            });
+    });
+
 
 });

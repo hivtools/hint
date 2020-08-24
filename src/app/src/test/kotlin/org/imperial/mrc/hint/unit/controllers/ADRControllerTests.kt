@@ -35,13 +35,13 @@ class ADRControllerTests {
     }
 
     private val mockProperties = mock<AppProperties> {
-        on { adrSchema } doReturn "adr-schema"
-        on { adrANC } doReturn "adr-anc"
-        on { adrART } doReturn "adr-art"
-        on { adrPJNZ } doReturn "adr-pjnz"
-        on { adrPop } doReturn "adr-pop"
-        on { adrShape } doReturn "adr-shape"
-        on { adrSurvey } doReturn "adr-survey"
+        on { adrDatasetSchema } doReturn "adr-schema"
+        on { adrANCSchema } doReturn "adr-anc"
+        on { adrARTSchema } doReturn "adr-art"
+        on { adrPJNZSchema } doReturn "adr-pjnz"
+        on { adrPopSchema } doReturn "adr-pop"
+        on { adrShapeSchema } doReturn "adr-shape"
+        on { adrSurveySchema } doReturn "adr-survey"
     }
 
     private val mockFileManager = mock<FileManager>()

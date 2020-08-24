@@ -12,7 +12,8 @@ export interface VersionsState {
     previousVersions: Version[],
     loading: boolean,
     error: Error | null,
-    snapshotUploadPending: boolean
+    snapshotUploadPending: boolean,
+    snapshotTime: Date | null
 }
 
 export const initialVersionsState = (): VersionsState => {
@@ -22,7 +23,8 @@ export const initialVersionsState = (): VersionsState => {
         previousVersions: [],
         loading: false,
         error: null,
-        snapshotUploadPending: false
+        snapshotUploadPending: false,
+        snapshotTime: null
     }
 };
 

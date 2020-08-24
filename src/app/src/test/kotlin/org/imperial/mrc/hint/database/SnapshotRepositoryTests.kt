@@ -403,6 +403,39 @@ class SnapshotRepositoryTests {
 
     }
 
+    @Test
+    fun `can get snapshot details`() {
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        val soon = now.plusSeconds(5)
+
+        val uid = setupUser()
+        val versionId = setupVersion(uid)
+        sut.saveSnapshot(snapshotId, versionId)
+        setUpHashAndSnapshotFile("pjnz_hash", "pjnz_file", snapshotId, "pjnz", false)
+        setUpHashAndSnapshotFile("survey_hash", "survey_file", snapshotId, "survey", false)
+        sut.saveSnapshotState(snapshotId, versionId, uid, "TEST STATE")
+
+        val result = sut.getSnapshotDetails(snapshotId, versionId, uid)
+        assertThat(result.state).isEqualTo("TEST STATE")
+
+        val files = result.files
+        assertThat(files.keys.count()).isEqualTo(2)
+        assertThat(files["pjnz"]!!.hash).isEqualTo("pjnz_hash")
+        assertThat(files["pjnz"]!!.filename).isEqualTo("pjnz_file")
+        assertThat(files["survey"]!!.hash).isEqualTo("survey_hash")
+        assertThat(files["survey"]!!.filename).isEqualTo("survey_file")
+    }
+
+    @Test
+    fun `get snapshot details throws error if snapshot does not exist`()
+    {
+        val uid = setupUser()
+        val versionId = setupVersion(uid)
+        assertThatThrownBy{ sut.getSnapshotDetails("nonexistentSnapshot", versionId, uid) }
+                .isInstanceOf(SnapshotException::class.java)
+                .hasMessageContaining("snapshotDoesNotExist")
+    }
+
     private fun assertSnapshotFileExists(hash: String) {
         val records = dsl.selectFrom(SNAPSHOT_FILE)
                 .where(SNAPSHOT_FILE.HASH.eq(hash))
