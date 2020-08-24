@@ -46,4 +46,29 @@ describe("Versions actions", () => {
             done();
         }, 2500);
     });
+
+    it("can create new snapshot", async (done) => {
+        const commit = jest.fn();
+        const state = initialVersionsState();
+        await actions.createVersion({commit, rootState: emptyState(), state} as any, "v1");
+
+        const createdVersion = commit.mock.calls[1][0]["payload"];
+        state.currentVersion = createdVersion;
+        state.currentSnapshot = createdVersion.snapshots[0];
+
+        await actions.newSnapshot({commit, rootState: emptyState(), state} as any);
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(5);
+            expect(commit.mock.calls[2][0]["type"]).toBe(VersionsMutations.SetSnapshotUploadPending);
+            expect(commit.mock.calls[2][0]["payload"]).toBe(false);
+            expect(commit.mock.calls[3][0]["type"]).toBe(VersionsMutations.SnapshotUploadSuccess);
+            expect(commit.mock.calls[4][0]["type"]).toBe(VersionsMutations.SnapshotCreated);
+
+            const newSnapshot = commit.mock.calls[4][0]["payload"];
+            expect(newSnapshot.id).toBeTruthy();
+            expect(newSnapshot.id).not.toEqual(createdVersion.snapshots[0].id);
+
+            done();
+        }, 500);
+    });
 });

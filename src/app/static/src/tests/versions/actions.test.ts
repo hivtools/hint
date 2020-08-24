@@ -209,4 +209,69 @@ describe("Versions actions", () => {
             done();
         }, 2500);
     });
+
+    it("newSnapshot uploads current snapshot state then requests new snapshot, commits SnapshotCreated", async (done) => {
+        const commit = jest.fn();
+        const state = mockVersionsState({
+            currentVersion: mockVersion,
+            currentSnapshot: mockVersion.snapshots[0]
+        });
+
+        const stateUrl = "/version/1/snapshot/snap-id/state/";
+        mockAxios.onPost(stateUrl)
+            .reply(200, mockSuccess("OK"));
+
+        const newSnapshot = {id: "new-snap-id", created: "new time", updated: "new time"};
+        const url = "version/1/snapshot/?parent=snap-id";
+        mockAxios.onPost(url)
+            .reply(200, mockSuccess(newSnapshot));
+
+        actions.newSnapshot({commit, state, rootState} as any);
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(2);
+
+            expect(mockAxios.history.post[0].url).toBe(stateUrl);
+            const postedState = mockAxios.history.post[0].data;
+            expect(JSON.parse(postedState)).toStrictEqual(serialiseState(rootState));
+
+            expect(mockAxios.history.post[1].url).toBe(url);
+
+            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls[0][0].type).toBe(VersionsMutations.SetSnapshotUploadPending);
+            expect(commit.mock.calls[0][0].payload).toBe(false);
+            expect(commit.mock.calls[1][0].type).toBe(VersionsMutations.SnapshotUploadSuccess);
+            expect(commit.mock.calls[2][0].type).toBe(VersionsMutations.SnapshotCreated);
+            expect(commit.mock.calls[2][0].payload).toStrictEqual(newSnapshot);
+
+            done();
+        });
+    });
+
+    it("newSnapshot adds error on error response", async (done) => {
+        const commit = jest.fn();
+        const state = mockVersionsState({
+            currentVersion: mockVersion,
+            currentSnapshot: mockVersion.snapshots[0]
+        });
+
+        const stateUrl = "/version/1/snapshot/snap-id/state/";
+        mockAxios.onPost(stateUrl)
+            .reply(200, mockSuccess("OK"));
+
+        const url = "version/1/snapshot/?parent=snap-id";
+        mockAxios.onPost(url)
+            .reply(500, mockFailure("TEST ERROR"));
+
+        actions.newSnapshot({commit, state, rootState} as any);
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(2);
+
+            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls[2][0].type).toBe("errors/ErrorAdded");
+            expect(commit.mock.calls[2][0].payload.detail).toStrictEqual("TEST ERROR");
+            expect(commit.mock.calls[2][1]).toStrictEqual({root: true});
+
+            done();
+        });
+    });
 });

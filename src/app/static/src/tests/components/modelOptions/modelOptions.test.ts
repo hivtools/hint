@@ -13,6 +13,9 @@ import {ModelOptionsActions} from "../../../app/store/modelOptions/actions";
 import {RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 
+declare let currentUser: string;
+currentUser = "guest";
+
 describe("Model options component", () => {
 
     const mockActions = {
@@ -44,6 +47,12 @@ describe("Model options component", () => {
                 stepper: {
                     namespaced: true,
                     getters: mockGetters
+                },
+                versions: {
+                    namespaced: true
+                },
+                errors:  {
+                    namespaced: true
                 }
             }
         });
