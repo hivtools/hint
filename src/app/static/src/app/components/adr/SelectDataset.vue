@@ -50,7 +50,7 @@
     import {Dataset} from "../../types";
 
     interface Methods {
-        setDataset: (dataset: any) => void
+        setDataset: (dataset: Dataset) => void
         importDataset: () => void
         toggleModal: () => void
     }
@@ -117,9 +117,10 @@
             importDataset() {
                 this.loading = true;
                 this.setDataset(this.newDataset);
-                // import each file
-                // await all
+                // TODO import each file
+                // TODO await all
                 setTimeout(() => {
+                    // mock importing of files with a timeout
                     this.loading = false;
                     this.open = false;
                 }, 200)

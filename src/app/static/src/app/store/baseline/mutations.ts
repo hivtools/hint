@@ -35,7 +35,6 @@ export const BaselineUpdates = [
 export const mutations: MutationTree<BaselineState> = {
 
     [BaselineMutation.SetDataset](state: BaselineState, payload: Dataset) {
-        console.log(payload);
         state.selectedDataset = payload;
     },
 
