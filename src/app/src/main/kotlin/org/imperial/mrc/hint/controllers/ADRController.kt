@@ -51,7 +51,7 @@ class ADRController(private val session: Session,
     @GetMapping("/datasets")
     fun getDatasets(@RequestParam showInaccessible: Boolean = false): ResponseEntity<String> {
         val adr = adrClientBuilder.build()
-        var url = "package_search?q=type:${appProperties.adrSchema}"
+        var url = "package_search?q=type:${appProperties.adrDatasetSchema}"
         url = if (showInaccessible) {
             // this flag is used for testing but will never
             // actually be passed by the front-end
@@ -66,5 +66,16 @@ class ADRController(private val session: Session,
             val data = objectMapper.readTree(response.body!!)["data"]["results"]
             SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
         }
+    }
+
+    @GetMapping("/schemas")
+    fun getFileTypeMappings(): ResponseEntity<String> {
+        return SuccessResponse(
+                mapOf("anc" to appProperties.adrANCSchema,
+                        "programme" to appProperties.adrARTSchema,
+                        "pjnz" to appProperties.adrPJNZSchema,
+                        "population" to appProperties.adrPopSchema,
+                        "shape" to appProperties.adrShapeSchema,
+                        "survey" to appProperties.adrSurveySchema)).asResponseEntity()
     }
 }

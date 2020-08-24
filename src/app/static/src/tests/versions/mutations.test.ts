@@ -2,6 +2,8 @@ import {mockVersionsState} from "../mocks";
 import {mutations, VersionsMutations} from "../../app/store/versions/mutations";
 
 describe("Versions mutations", () => {
+    const testNow = Date.now();
+    global.Date.now = jest.fn(() => testNow);
 
     const consoleSpy = jest.fn();
 
@@ -11,7 +13,7 @@ describe("Versions mutations", () => {
 
     afterEach(() => {
         (console.error as jest.Mock).mockClear();
-    })
+    });
 
     it("sets loading", () => {
         const state = mockVersionsState();
@@ -47,11 +49,11 @@ describe("Versions mutations", () => {
         expect(state.snapshotUploadPending).toBe(true);
     });
 
-    it("SnapshotUploadError logs error to console", () => {
+    it("SnapshotUploadSuccess sets snapshotTime", () => {
         const state = mockVersionsState();
-        mutations[VersionsMutations.SnapshotUploadError](state, {payload: "test error"});
+        mutations[VersionsMutations.SnapshotUploadSuccess](state);
 
-        expect(consoleSpy).toHaveBeenCalledWith("test error");
+        expect(state.snapshotTime!.valueOf()).toEqual(testNow);
     });
 
     it("sets created snapshot as current", () => {

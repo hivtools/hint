@@ -36,11 +36,12 @@ describe("Versions actions", () => {
 
         await actions.uploadSnapshotState({commit, rootState: emptyState(), state} as any);
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(4);
+            expect(commit.mock.calls.length).toBe(5);
             expect(commit.mock.calls[2][0]["type"]).toBe(VersionsMutations.SetSnapshotUploadPending);
             expect(commit.mock.calls[2][0]["payload"]).toBe(true);
             expect(commit.mock.calls[3][0]["type"]).toBe(VersionsMutations.SetSnapshotUploadPending);
             expect(commit.mock.calls[3][0]["payload"]).toBe(false);
+            expect(commit.mock.calls[4][0]["type"]).toBe(VersionsMutations.SnapshotUploadSuccess);
 
             done();
         }, 2500);

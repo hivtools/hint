@@ -5,3 +5,19 @@
     display: inline;
   }
 }
+
+.custom-file-label.uploading::after {
+  content: "..." !important;
+  width: 78px;
+  text-align: center;
+}
+
+.fr {
+  .custom-file-label:not(.uploading)::after {
+    content: "Parcourir" !important;
+  }
+
+  .custom-file-label.uploading::after {
+    width: 90px;
+  }
+}

@@ -3,7 +3,7 @@ import {
     getColor,
     getIndicatorRange,
     toIndicatorNameLookup,
-    roundToContext, colourScaleStepFromMetadata, roundRange, iterateDataValues
+    roundToContext, colourScaleStepFromMetadata, roundRange, iterateDataValues, findPath
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 import {Filter} from "../../../app/generated";
@@ -428,4 +428,55 @@ describe("plot utils", () => {
 
         expect(result).toStrictEqual([12, 0.5, 14, 0.6, 14]);
     });
+
+    const dataset = {
+      id: 'MWI1',
+      label: 'Malawi',
+      children: [
+        {
+          id: 'MWI11',
+          label: 'Region 1',
+          children: [
+            {
+              id: 'MWI111',
+              label: 'City 1',
+              children: []
+            },
+            {
+              id: 'MWI112',
+              label: 'City 2',
+              children: []
+            }
+          ]
+        },
+        {
+          id: 'MWI12',
+          label: 'Region 2',
+          children: [
+            {
+              id: 'MWI121',
+              label: 'City 3',
+              children: []
+            }
+          ]
+        }
+      ]
+  }
+
+  it("findPath produces expected result when MWI111 selected", () => {
+    const result = findPath('MWI111', dataset);
+    expect(result).toEqual("Malawi/Region 1");
+  });
+  it("findPath produces expected result when MWI1 selected", () => {
+    const result = findPath('MWI1', dataset);
+    expect(result).toEqual("");
+  });
+  it("findPath produces expected result when MWI12 selected", () => {
+    const result = findPath('MWI12', dataset);
+    expect(result).toEqual("Malawi");
+  });
+  it("findPath produces expected result when MWI111 selected and begins in children array", () => {
+    const result = findPath('MWI111', {...dataset.children});
+    expect(result).toEqual("Region 1");
+  });
 });

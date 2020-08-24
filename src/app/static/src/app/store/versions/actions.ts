@@ -1,4 +1,5 @@
 import {RootMutation} from "../root/mutations";
+import {ErrorsMutation} from "../errors/mutations";
 import {ActionContext, ActionTree, Commit} from "vuex";
 import {VersionsState} from "./versions";
 import {RootState} from "../../root";
@@ -7,7 +8,6 @@ import {VersionsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
 import {Version} from "../../types";
-import {ErrorsMutation} from "../errors/mutations";
 
 export interface VersionsActions {
     createVersion: (store: ActionContext<VersionsState, RootState>, name: string) => void,
@@ -72,10 +72,10 @@ async function immediateUploadSnapshotState(context: ActionContext<VersionsState
     const versionId = state.currentVersion && state.currentVersion.id;
     const snapshotId = state.currentSnapshot && state.currentSnapshot.id;
     if (versionId && snapshotId) {
-        await api<VersionsMutations, VersionsMutations>(context)
-            .ignoreSuccess()
-            .withError(VersionsMutations.SnapshotUploadError)
+        await api<VersionsMutations, ErrorsMutation>(context)
+            .withSuccess(VersionsMutations.SnapshotUploadSuccess)
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`/version/${versionId}/snapshot/${snapshotId}/state/`, serialiseState(rootState));
     }
-};
+}
 

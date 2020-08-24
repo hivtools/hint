@@ -9,13 +9,14 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import com.fasterxml.jackson.databind.node.ObjectNode
+import org.springframework.boot.test.web.client.exchange
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class VersionTests : SecureIntegrationTests() {
+class VersionTests : SnapshotFileTests() {
     @BeforeEach
     fun setup() {
         authorize()
@@ -157,6 +158,52 @@ class VersionTests : SecureIntegrationTests() {
         assertThat(snapshots[0]["id"]).isEqualTo(createSnapshots[0]["id"])
         assertThat(snapshots[0]["created"]).isEqualTo(createSnapshots[0]["created"])
         assertThat(snapshots[0]["updated"]).isEqualTo(createSnapshots[0]["updated"])
+    }
+
+    @Test
+    fun `can get snapshot details`()
+    {
+        val createResult = createVersion()
+        val createVersionData = getResponseData(createResult)
+        val versionId = createVersionData["id"].asInt()
+        val snapshots = createVersionData["snapshots"] as ArrayNode
+        val snapshotId = snapshots[0]["id"].asText()
+        getUpdateSnapshotStateResult(versionId, snapshotId, "TEST STATE")
+
+        val pjnzHash = setUpSnapshotFileAndGetHash("Botswana2018.PJNZ", "/baseline/pjnz/")
+
+        val result = testRestTemplate.getForEntity<String>("/version/$versionId/snapshot/$snapshotId")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+
+        val data = getResponseData(result)
+        assertThat(data["state"].asText()).isEqualTo("TEST STATE")
+        assertThat(data["files"]["pjnz"]["hash"].asText()).isEqualTo(pjnzHash)
+        assertThat(data["files"]["pjnz"]["filename"].asText()).isEqualTo("Botswana2018.PJNZ")
+    }
+
+    @Test
+    fun `can return expected English error when get nonexistent snapshot details`()
+    {
+        val result = testRestTemplate.getForEntity<String>("/version/99/snapshot/nosnapshot")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+
+        val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+        val msg = errors[0]["detail"].asText()
+        assertThat(msg).isEqualTo("Snapshot does not exist.")
+    }
+
+    @Test
+    fun `can return expected French error when get nonexistent snapshot details`()
+    {
+        val headers = getStandardHeaders("fr")
+        val httpEntity =  HttpEntity<String>(headers)
+
+        val result = testRestTemplate.exchange<String>("/version/99/snapshot/nosnapshot", HttpMethod.GET, httpEntity)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+
+        val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+        val msg = errors[0]["detail"].asText()
+        assertThat(msg).isEqualTo("L'instantané n'existe pas.")
     }
 
     private fun createVersion(): ResponseEntity<String>

@@ -83,8 +83,8 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     };
 
     ignoreSuccess = () => {
-      this._ignoreSuccess = true;
-      return this;
+        this._ignoreSuccess = true;
+        return this;
     };
 
     withSuccess = (type: S, root: boolean = false) => {

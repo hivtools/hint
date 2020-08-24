@@ -1,22 +1,19 @@
 <template>
     <div>
-        <b-dropdown text="Select file from" variant="white" :ref="'dropdown-' + name">
-            <li>
-                <a class="dropdown-item" href="#" v-on:mousedown="$refs[name].click()">
-                    <input type="file"
-                           style="display:none"
-                           :ref="name"
-                           :id="name"
-                           :accept="accept"
-                           v-on:change="handleFileSelect"
-                           @click="$emit('input-opened')"/>
-                    <!-- emit input-opened event so that tests can verify that this
-                    is triggered -->
-                    This computer
-                </a>
-            </li>
-            <adr-select></adr-select>
-        </b-dropdown>
+        <div class="custom-file">
+            <input type="file"
+                   style="display:none"
+                   :ref="name"
+                   :id="name"
+                   :accept="accept"
+                   :disabled="uploading"
+                   v-on:change="handleFileSelect"/>
+            <label :for="name"
+                   class="custom-file-label"
+                   :class="{'uploading': uploading}">
+                <span v-translate="'selectNewFile'"></span>
+            </label>
+        </div>
         <reset-confirmation :continue-editing="uploadSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showUploadConfirmation"></reset-confirmation>
@@ -28,7 +25,6 @@
     import {BDropdown} from "bootstrap-vue";
     import {mapGetterByName} from "../../utils";
     import ResetConfirmation from "../ResetConfirmation.vue";
-    import AdrSelect from "./ADRSelect.vue";
 
     interface Methods {
         handleFileSelect: () => void
@@ -48,13 +44,15 @@
         upload: (formData: FormData) => void,
         accept: string,
         name: string
+        uploading: boolean
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         props: {
             "upload": Function,
             "accept": String,
-            "name": String
+            "name": String,
+            "uploading": Boolean
         },
         data(): Data {
             return {
@@ -63,8 +61,7 @@
         },
         components: {
             BDropdown,
-            ResetConfirmation,
-            AdrSelect
+            ResetConfirmation
         },
         computed: {
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation")
@@ -78,7 +75,6 @@
                 }
             },
             uploadSelectedFile() {
-                (this.$refs[`dropdown-${this.name}`] as BDropdown).hide(true);
                 const fileInput = this.$refs[this.name] as HTMLInputElement;
                 const selectedFile = fileInput.files!![0]!!;
                 const formData = new FormData();

@@ -10,7 +10,10 @@
                         <th v-for="i in indicators">{{ i.name }}</th>
                     </tr>
                     <tr v-for="row in filteredData">
-                        <td>{{ row.areaLabel }}</td>
+                        <td>
+                          <div>{{ row.areaLabel }}</div>
+                          <div class="small">{{ row.areaHierarchy }}</div>
+                        </td>
                         <td v-for="f in filtersToDisplay">{{ row.filterLabels[f.id] }}</td>
                         <td v-for="i in indicators">{{ row.indicatorValues[i.indicator] }}</td>
                     </tr>
@@ -19,12 +22,13 @@
         </div>
         <div v-else>No data are available for these selections.</div>
     </div>
+    
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Filters from "../Filters.vue";
-import {iterateDataValues} from "../utils";
+import {iterateDataValues, findPath} from "../utils";
 import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
 import {Dict, Filter} from "../../../types";
 import {ChoroplethSelections} from "../../../store/plottingSelections/plottingSelections";
@@ -38,10 +42,12 @@ interface Props {
         detail: number | null
     },
     filters: Filter[],
+    countryAreaFilterOption: NestedFilterOption,
     areaFilterId: string
 }
 interface DisplayRow {
     areaLabel: string,
+    areaHierarchy: string,
     filterLabels: Dict<string>,
     indicatorValues: Dict<string>
 }
@@ -61,9 +67,12 @@ const props = {
     filters: {
         type: Array
     },
+    countryAreaFilterOption: {
+        type: Object
+    },
     indicators: {
-            type: Array
-        },
+        type: Array
+    },
     areaFilterId: {
         type: String
     },
@@ -85,26 +94,33 @@ export default Vue.extend<{}, {}, Computed, Props>({
     computed: {
         nonAreaFilters() {
              return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
-         },
+        },
         areaFilter() {
-                 return this.filters.find((f: Filter) => f.id == this.areaFilterId)!!;
-             },
+          return this.filters.find((f: Filter) => f.id == this.areaFilterId)!!;
+        },
         flattenedAreas() {
-                 return this.areaFilter ? flattenOptions(this.areaFilter.options) : {};
-             },
+          if (this.selections.detail === 0 || !this.selections.detail){
+            return this.areaFilter ? flattenOptions([this.countryAreaFilterOption]) : {};
+          }
+          return this.areaFilter ? flattenOptions(this.areaFilter.options) : {};
+        },
         selectedAreaIds() {
             const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
-            const areaArray = Array.from(selectedAreaIdSet)
-            if (this.selections.detail === 0 || !this.selections.detail){
+            const areaArray = Array.from(selectedAreaIdSet);
+            if (this.selections.detail === 0){
                 return [areaArray[0]]
+            } else if (!this.selections.detail){
+              return this.selections.selectedFilterOptions.area.map(row => row.id)
             } else return areaArray.filter(val => parseInt(val[4]) === this.selections.detail);
         },
         selectedAreaFilterOptions() {
             const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
-            if (selectedOptions && selectedOptions.length > 0) {
-                return selectedOptions
+            if(this.selections.detail === 0){
+                return this.countryAreaFilterOption ? [this.countryAreaFilterOption] : []
             }
-            return this.areaFilter ? this.areaFilter.options : []; //consider all top level areas to be selected if none are
+            else if (selectedOptions && selectedOptions.length > 0) {
+                return selectedOptions
+            } else return this.areaFilter ? this.areaFilter.options : []; //consider all top level areas to be selected if none are
         },
         filtersToDisplay() {
             return this.nonAreaFilters.filter(f => f.options.length > 0)
@@ -129,6 +145,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
                     if (!(key in displayRows)) {
                         const areaLabel =  this.flattenedAreas[current.areaId].label;
+                        const areaHierarchy = findPath(current.areaId, this.countryAreaFilterOption.children)
                         const filterLabels: Dict<string> = {};
                         Object.keys(current.filterValues).forEach(k => {
                             const selectedOptions =  this.selections.selectedFilterOptions[k];
@@ -136,6 +153,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                         });
                         displayRows[key] = {
                             areaLabel,
+                            areaHierarchy,
                             filterLabels,
                             indicatorValues: {}
                         }

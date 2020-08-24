@@ -33,6 +33,10 @@ export const getters = {
         return res ? res.data : null;
     },
 
+    countryAreaFilterOption: (state: SurveyAndProgramState, getters: any, rootState: RootState): FilterOption => {
+    return rootState.baseline.shape!!.filters!!.regions as FilterOption;
+    },
+
     filters: (state: SurveyAndProgramState, getters: any, rootState: RootState): DisplayFilter[] => {
         const result = [] as DisplayFilter[];
 

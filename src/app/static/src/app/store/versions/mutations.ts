@@ -8,8 +8,8 @@ export enum VersionsMutations {
     SetPreviousVersions = "SetPreviousVersions",
     SetSnapshotUploadPending = "SetSnapshotUploadPending",
     VersionError = "VersionError",
-    SnapshotUploadError = "SnapshotUploadError",
-    SnapshotCreated = "SnapshotCreated"
+    SnapshotCreated = "SnapshotCreated",
+    SnapshotUploadSuccess = "SnapshotUploadSuccess"
 }
 
 export const mutations: MutationTree<VersionsState> = {
@@ -27,12 +27,12 @@ export const mutations: MutationTree<VersionsState> = {
         state.error = action.payload;
         state.loading = false;
     },
-    [VersionsMutations.SnapshotUploadError](state: VersionsState, action: PayloadWithType<Error>) {
-        console.error(action.payload);
-    },
     [VersionsMutations.SnapshotCreated](state: VersionsState, action: PayloadWithType<Snapshot>) {
         const snapshot = action.payload;
         state.currentVersion!.snapshots.push(snapshot);
         state.currentSnapshot = snapshot;
+    },
+    [VersionsMutations.SnapshotUploadSuccess](state: VersionsState) {
+        state.snapshotTime = new Date(Date.now());
     }
 };
