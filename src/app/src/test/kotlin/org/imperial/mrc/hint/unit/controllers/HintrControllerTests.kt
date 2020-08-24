@@ -11,15 +11,18 @@ import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.models.SnapshotFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
+import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.mock.web.MockMultipartFile
+import org.springframework.web.multipart.MultipartFile
 import java.io.File
 
 abstract class HintrControllerTests {
 
     protected val tmpUploadDirectory = "tmp"
     protected val sessionId = "sid"
+    protected val fakeUrl = "test-url"
 
     @AfterEach
     fun tearDown() {
@@ -32,9 +35,13 @@ abstract class HintrControllerTests {
     protected fun getMockFileManager(type: FileType): FileManager {
         return mock {
             on {
-                saveFile(argWhere {
+                saveFile(argWhere<MultipartFile> {
                     it.originalFilename == "some-file-name.csv"
                 }, eq(type))
+            } doReturn SnapshotFileWithPath("test-path", "hash", "some-file-name.csv")
+
+            on {
+                saveFile(any<String>(), eq(type))
             } doReturn SnapshotFileWithPath("test-path", "hash", "some-file-name.csv")
 
             on {
@@ -58,8 +65,8 @@ abstract class HintrControllerTests {
     abstract fun getSut(mockFileManager: FileManager, mockAPIClient: HintrAPIClient,
                         mockSession: Session, mockSnapshotRepository: SnapshotRepository): HintrController
 
-    protected fun assertValidates(fileType: FileType,
-                                  uploadAction: (sut: HintrController) -> ResponseEntity<String>) {
+    protected fun assertSavesAndValidates(fileType: FileType,
+                                          uploadAction: (sut: HintrController) -> ResponseEntity<String>) {
 
         val mockFileManager = getMockFileManager(fileType)
         val mockApiClient = getMockAPIClient(fileType)
@@ -68,6 +75,26 @@ abstract class HintrControllerTests {
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
         verify(mockFileManager).saveFile(mockFile, fileType)
+
+        when (fileType) {
+            FileType.PJNZ, FileType.Population, FileType.Shape -> verify(mockApiClient)
+                    .validateBaselineIndividual(
+                            SnapshotFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
+            else -> verify(mockApiClient)
+                    .validateSurveyAndProgramme(SnapshotFileWithPath("test-path", "hash", "some-file-name.csv"), "shape-path", fileType)
+        }
+    }
+
+    protected fun assertSavesAndValidatesUrl(fileType: FileType,
+                                             uploadAction: (sut: HintrController) -> ResponseEntity<String>) {
+
+        val mockFileManager = getMockFileManager(fileType)
+        val mockApiClient = getMockAPIClient(fileType)
+        val sut = getSut(mockFileManager, mockApiClient, mock(), mock())
+        val result = uploadAction(sut)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
+        verify(mockFileManager).saveFile(fakeUrl, fileType)
 
         when (fileType) {
             FileType.PJNZ, FileType.Population, FileType.Shape -> verify(mockApiClient)

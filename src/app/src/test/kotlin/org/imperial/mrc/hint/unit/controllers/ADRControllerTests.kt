@@ -6,16 +6,16 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.clients.ADRClientBuilder
+import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.ADRController
+import org.imperial.mrc.hint.controllers.HintrController
+import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.UserRepository
-import org.imperial.mrc.hint.exceptions.HintException
-import org.imperial.mrc.hint.models.SnapshotFileWithPath
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
@@ -23,11 +23,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
-class ADRControllerTests {
-
-    private val mockSession = mock<Session> {
-        on { getUserProfile() } doReturn CommonProfile().apply { id = "test" }
-    }
+class ADRControllerTests: HintrControllerTests() {
 
     private val mockEncryption = mock<Encryption> {
         on { encrypt(any()) } doReturn "encrypted".toByteArray()
@@ -48,6 +44,14 @@ class ADRControllerTests {
 
     private val objectMapper = ObjectMapper()
 
+    private val mockUserRepo = mock<UserRepository>() {
+        on { getADRKey("test") } doReturn "encrypted".toByteArray()
+    }
+
+    private val mockSession = mock<Session> {
+        on { getUserProfile() } doReturn CommonProfile().apply { id = "test" }
+    }
+
     @Test
     fun `encrypts key before saving it`() {
         val mockRepo = mock<UserRepository>()
@@ -58,10 +62,8 @@ class ADRControllerTests {
 
     @Test
     fun `decrypts key before returning it`() {
-        val mockRepo = mock<UserRepository>() {
-            on { getADRKey("test") } doReturn "encrypted".toByteArray()
-        }
-        val sut = ADRController(mockEncryption, mockRepo, mock(), mock(), mock(), mock(), mock(), mockSession, mock())
+
+        val sut = ADRController(mockEncryption, mockUserRepo, mock(), mock(), mock(), mock(), mock(), mockSession, mock())
         val result = sut.getAPIKey()
         val data = objectMapper.readTree(result.body!!)["data"].asText()
         assertThat(data).isEqualTo("decrypted")
@@ -197,128 +199,62 @@ class ADRControllerTests {
         assertThat(data["survey"].textValue()).isEqualTo("adr-survey")
     }
 
-    @Test
-    fun `imports anc`() {
-
-        val mockFileManager = mock<FileManager> {
-            on { getFile(FileType.Shape) } doReturn SnapshotFileWithPath("path", "hash", "filename")
-        }
-
-        val fakeUrl = "http://url"
-        val sut = ADRController(
-                mock(),
-                mock(),
+    // used for the import{FileType} tests below
+    override fun getSut(mockFileManager: FileManager,
+                        mockAPIClient: HintrAPIClient,
+                        mockSession: Session,
+                        mockSnapshotRepository: SnapshotRepository): HintrController {
+        return ADRController(mockEncryption,
+                mockUserRepo,
                 mock(),
                 objectMapper,
                 mockProperties,
                 mockFileManager,
-                mock(),
+                mockAPIClient,
                 mockSession,
-                mock())
+                mockSnapshotRepository)
+    }
 
-        sut.importANC(fakeUrl)
-        verify(mockFileManager).saveFile(fakeUrl, FileType.ANC)
-
+    @Test
+    fun `imports anc`() {
+        assertSavesAndValidatesUrl(FileType.ANC) { sut ->
+            (sut as ADRController).importANC(fakeUrl)
+        }
     }
 
     @Test
     fun `imports pjnz`() {
-        val fakeUrl = "http://url"
-        val sut = ADRController(
-                mock(),
-                mock(),
-                mock(),
-                objectMapper,
-                mockProperties,
-                mockFileManager,
-                mock(),
-                mockSession,
-                mock())
-
-        sut.importPJNZ(fakeUrl)
-        verify(mockFileManager).saveFile(fakeUrl, FileType.PJNZ)
+        assertSavesAndValidatesUrl(FileType.PJNZ) { sut ->
+            (sut as ADRController).importPJNZ(fakeUrl)
+        }
     }
 
     @Test
     fun `imports programme`() {
-
-        val mockFileManager = mock<FileManager> {
-            on { getFile(FileType.Shape) } doReturn SnapshotFileWithPath("path", "hash", "filename")
+        assertSavesAndValidatesUrl(FileType.Programme) { sut ->
+            (sut as ADRController).importProgramme(fakeUrl)
         }
-
-        val fakeUrl = "http://url"
-        val sut = ADRController(
-                mock(),
-                mock(),
-                mock(),
-                objectMapper,
-                mockProperties,
-                mockFileManager,
-                mock(),
-                mockSession,
-                mock())
-
-        sut.importPJNZ(fakeUrl)
-        verify(mockFileManager).saveFile(fakeUrl, FileType.PJNZ)
     }
 
     @Test
     fun `imports population`() {
-        val fakeUrl = "http://url"
-        val sut = ADRController(
-                mock(),
-                mock(),
-                mock(),
-                objectMapper,
-                mockProperties,
-                mockFileManager,
-                mock(),
-                mockSession,
-                mock())
-
-        sut.importPopulation(fakeUrl)
-        verify(mockFileManager).saveFile(fakeUrl, FileType.Population)
+        assertSavesAndValidatesUrl(FileType.Population) { sut ->
+            (sut as ADRController).importPopulation(fakeUrl)
+        }
     }
 
     @Test
     fun `imports shape file`() {
-        val fakeUrl = "http://url"
-        val sut = ADRController(
-                mock(),
-                mock(),
-                mock(),
-                objectMapper,
-                mockProperties,
-                mockFileManager,
-                mock(),
-                mockSession,
-                mock())
-
-        sut.importShape(fakeUrl)
-        verify(mockFileManager).saveFile(fakeUrl, FileType.Shape)
+        assertSavesAndValidatesUrl(FileType.Shape) { sut ->
+            (sut as ADRController).importShape(fakeUrl)
+        }
     }
 
     @Test
     fun `imports survey`() {
-
-        val mockFileManager = mock<FileManager> {
-            on { getFile(FileType.Shape) } doReturn SnapshotFileWithPath("path", "hash", "filename")
+        assertSavesAndValidatesUrl(FileType.Survey) { sut ->
+            (sut as ADRController).importSurvey(fakeUrl)
         }
-
-        val fakeUrl = "http://url"
-        val sut = ADRController(
-                mock(),
-                mock(),
-                mock(),
-                objectMapper,
-                mockProperties,
-                mockFileManager,
-                mock(),
-                mockSession,
-                mock())
-
-        sut.importSurvey(fakeUrl)
-        verify(mockFileManager).saveFile(fakeUrl, FileType.Survey)
     }
 
     private fun makeFakeSuccessResponse(): ResponseEntity<String> {
