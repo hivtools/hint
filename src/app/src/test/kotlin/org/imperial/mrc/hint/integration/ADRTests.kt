@@ -8,7 +8,10 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
-import org.springframework.http.*
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import org.springframework.util.LinkedMultiValueMap
 
 class ADRTests : SecureIntegrationTests() {
@@ -84,45 +87,51 @@ class ADRTests : SecureIntegrationTests() {
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save population from ADR`(isAuthorized: IsAuthorized) {
-        val pjnz = extractUrl(isAuthorized, "inputs-unaids-population")
+        val population = extractUrl(isAuthorized, "inputs-unaids-population")
         val result = testRestTemplate.postForEntity<String>("/adr/population",
-                getPostEntityWithUrl(pjnz))
+                getPostEntityWithUrl(population))
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save shape from ADR`(isAuthorized: IsAuthorized) {
-        val pjnz = extractUrl(isAuthorized, "inputs-unaids-geographic")
+        val shape = extractUrl(isAuthorized, "inputs-unaids-geographic")
         val result = testRestTemplate.postForEntity<String>("/adr/shape",
-                getPostEntityWithUrl(pjnz))
+                getPostEntityWithUrl(shape))
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save survey from ADR`(isAuthorized: IsAuthorized) {
-        val pjnz = extractUrl(isAuthorized, "inputs-unaids-survey")
+        importShapeFile(isAuthorized)
+
+        val survey = extractUrl(isAuthorized, "inputs-unaids-survey")
         val result = testRestTemplate.postForEntity<String>("/adr/survey",
-                getPostEntityWithUrl(pjnz))
+                getPostEntityWithUrl(survey))
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save ANC from ADR`(isAuthorized: IsAuthorized) {
-        val pjnz = extractUrl(isAuthorized, "inputs-unaids-anc")
+        importShapeFile(isAuthorized)
+
+        val anc = extractUrl(isAuthorized, "inputs-unaids-anc")
         val result = testRestTemplate.postForEntity<String>("/adr/anc",
-                getPostEntityWithUrl(pjnz))
+                getPostEntityWithUrl(anc))
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save programme from ADR`(isAuthorized: IsAuthorized) {
-        val pjnz = extractUrl(isAuthorized, "inputs-unaids-art")
+        importShapeFile(isAuthorized)
+
+        val programme = extractUrl(isAuthorized, "inputs-unaids-art")
         val result = testRestTemplate.postForEntity<String>("/adr/programme",
-                getPostEntityWithUrl(pjnz))
+                getPostEntityWithUrl(programme))
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
@@ -144,6 +153,12 @@ class ADRTests : SecureIntegrationTests() {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         return HttpEntity(map, headers)
+    }
+
+    private fun importShapeFile(isAuthorized: IsAuthorized) {
+        val shape = extractUrl(isAuthorized, "inputs-unaids-geographic")
+        testRestTemplate.postForEntity<String>("/adr/shape",
+                getPostEntityWithUrl(shape))
     }
 
     private fun getPostEntityWithUrl(url: String): HttpEntity<LinkedMultiValueMap<String, String>> {
