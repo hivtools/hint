@@ -41,7 +41,7 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `saves file if file is new and returns path`() {
+    fun `saves file if file is new and returns details`() {
 
         val mockStateRepository = mock<SnapshotRepository> {
             on { saveNewHash(any()) } doReturn true
@@ -54,10 +54,13 @@ class LocalFileManagerTests {
         val file = sut.saveFile(mockFile, FileType.Survey)
         val savedFile = File(file.path)
         assertThat(savedFile.readLines().first()).isEqualTo("pjnz content")
+        assertThat(file.path).isEqualTo("tmp/C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
+        assertThat(file.filename).isEqualTo("some-file-name.pjnz")
+        assertThat(file.hash).isEqualTo("C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
     }
 
     @Test
-    fun `does not save file if file matches an existing hash and returns path`() {
+    fun `does not save file if file matches an existing hash and returns details`() {
 
         val mockStateRepository = mock<SnapshotRepository> {
             on { saveNewHash(any()) } doReturn false
@@ -68,13 +71,14 @@ class LocalFileManagerTests {
                 "application/zip", "pjnz content".toByteArray())
 
         val file = sut.saveFile(mockFile, FileType.Survey)
+        assertThat(File(file.path).exists()).isFalse() // shouldn't have actually saved the file
         assertThat(file.path).isEqualTo("tmp/C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
         assertThat(file.filename).isEqualTo("some-file-name.pjnz")
         assertThat(file.hash).isEqualTo("C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
     }
 
     @Test
-    fun `saves file from ADR if file is new and returns path`() {
+    fun `saves file from ADR if file is new and returns details`() {
 
         val mockStateRepository = mock<SnapshotRepository> {
             on { saveNewHash(any()) } doReturn true
@@ -96,7 +100,7 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `does not save file from ADR if file matches an existing hash and returns path`() {
+    fun `does not save file from ADR if file matches an existing hash and returns details`() {
 
         val mockStateRepository = mock<SnapshotRepository> {
             on { saveNewHash(any()) } doReturn false
@@ -109,6 +113,7 @@ class LocalFileManagerTests {
         }
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder)
         val file = sut.saveFile("some-url/name.csv", FileType.Survey)
+        assertThat(File(file.path).exists()).isFalse() // shouldn't have actually saved the file
         assertThat(file.path).isEqualTo("tmp/9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.filename).isEqualTo("name.csv")
         assertThat(file.hash).isEqualTo("9473FDD0D880A43C21B7778D34872157.csv")
