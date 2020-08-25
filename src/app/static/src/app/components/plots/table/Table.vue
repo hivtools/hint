@@ -2,7 +2,7 @@
     <div>
         <br>
         <div v-if="filteredData.length > 0">
-            <!-- <table class="table">
+          <!-- <table class="table">
                 <div>
                     <tr>
                         <th v-translate="'area'"></th>
@@ -20,11 +20,6 @@
                 </div>
             </table> -->
             <b-form-group
-              label="Filter"
-              label-cols-sm="3"
-              label-align-sm="left"
-              label-size="sm"
-              label-for="filterInput"
               class="mb-0"
             >
               <b-input-group size="sm">
@@ -51,30 +46,7 @@
               <div>{{ data.item.areaLabel }}</div>
               <div class="small">{{ data.item.areaHierarchy }}</div>
             </template>
-            <!-- Originally I tried to use the filteredData (as is) in the items property. However because this contains nested data
-            in the filterLabels and indicatorValues objects, I needed to format the table data with the below commented 
-            out templates. Unfortunately the default sort-compare routine only looks at the original data passed 
-            to the items property, not the formatted data shown in the table, so the sort feature would not work here.
-            It is possible to supply the sort-compare property with a custom routine but after looking into this I realised it was
-            much more straight forward to pass a flattend filteredData object to the items property instead. This approach could
-            run into trouble when keys of the same name are used however (eg, uncertainties). The question is whether to go down this route 
-            and refactor the filteredData object to be flat or to use a custom sort-compare instead. I also don't think it is 
-            possible to filter formatted data (referred to as scoped fields in the documentation). With regard to the filter,
-            it depends how granualar you want to go with the filtering. Currently I have the filter just search for anything matching
-            the supplied value in any column. See here for an example of a more complex filter: https://bootstrap-vue.org/docs/components/table#complete-example 
-            Will also need to rethink how areaHierachies get added to the table. 
-            Finally, I need to find a way of getting the translations to the label props for the generatedFields-->
-              <!-- <template v-for="f in filtersToDisplay" v-slot:[`cell(${f.label})`]="data">
-                {{ data.item.filterLabels[f.label] }}
-              </template>
-              <template v-for="i in indicators" v-slot:[`cell(${i.indicator})`]="data">
-                {{ data.item.indicatorValues[i.indicator] }}
-              </template> -->
             </b-table>
-            <div>
-              Sorting By: <b>{{ sortBy }}</b>, Sort Direction:
-              <b>{{ sortDesc ? 'Descending' : 'Ascending' }}</b>
-            </div>
         </div>
         <div v-else>No data are available for these selections.</div>
     </div>
@@ -94,13 +66,6 @@ import { BTable, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BButton
 import {RootState} from "../../../root";
 import {Language} from "../../../store/translations/locales";
 
-Vue.component('b-table', BTable)
-Vue.component('b-form-group', BFormGroup)
-Vue.component('b-form-input', BFormInput)
-Vue.component('b-input-group', BInputGroup)
-Vue.component('b-button', BButton)
-Vue.component('b-input-group-append', BInputGroupAppend)
-
 interface Props {
     tabledata: any[],
     indicators: ChoroplethIndicatorMetadata[],
@@ -119,6 +84,13 @@ interface DisplayRow {
     filterLabels: Dict<string>,
     indicatorValues: Dict<string>
 }
+interface Field {
+    key: string,
+    label?: string
+}
+interface TableItem {
+    areaLabel: string
+}
 interface Computed {
     nonAreaFilters: Filter[],
     filtersToDisplay: Filter[],
@@ -127,8 +99,8 @@ interface Computed {
     flattenedAreas: Dict<NestedFilterOption>,
     selectedAreaIds: string[],
     selectedAreaFilterOptions: FilterOption[],
-    generatedFields: any[],
-    flatFilteredData: any[],
+    generatedFields: Array<Field>,
+    flatFilteredData: Array<TableItem>,
     currentLanguage: Language
 }
 const props = {
@@ -163,11 +135,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
         sortDesc: false,
         filter: null
       }
-    },
-    mounted(){
-      console.log('filteredData', this.filteredData)
-      console.log('filtersToDisplay', this.filtersToDisplay)
-      console.log('indicators', this.indicators)
     },
     computed: {
         nonAreaFilters() {
@@ -238,6 +205,8 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     }
                     displayRows[key].indicatorValues[current.indicatorMeta.indicator] = current.value;
                 });
+                // console.log('filtereddata', Object.values(displayRows))
+                // console.log('filters to display', this.filtersToDisplay)
                 return Object.values(displayRows);
         },
         generatedFields(){
@@ -249,7 +218,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
           this.filtersToDisplay.map(value =>{
             const field: Dict<any> = {};
             field.key = value.id
-            field.label = i18next.t(value.id, this.currentLanguage)
+            field.label = i18next.t(value.label.toLowerCase(), this.currentLanguage)
             fields.push(field)
           })
           this.indicators.map(value =>{
@@ -262,7 +231,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
             field.sortable = true
             field.sortByFormatted = true
           })
-          console.log('fields', fields)
           return fields
         },
         flatFilteredData(){
@@ -278,18 +246,14 @@ export default Vue.extend<{}, {}, Computed, Props>({
         },
         currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language)
-            // selectText() {
-            //     return i18next.t("select", this.currentLanguage)
-            // },
-            // requiredText() {
-            //     return i18next.t("required", this.currentLanguage)
-            // },
-            // laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
-            // editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
-            // ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
-            //     loading: s => s.fetching,
-            //     valid: s => s.valid
-            // }),
+    },
+    components: {
+      BTable,
+      BFormGroup,
+      BFormInput,
+      BInputGroup,
+      BButton,
+      BInputGroupAppend
     }
 });
 </script>
