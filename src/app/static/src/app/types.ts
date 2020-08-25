@@ -75,3 +75,9 @@ export interface Version {
     snapshots: Snapshot[]
 }
 
+export interface Dataset {
+    id: string
+    title: string
+    revision_id: string,
+    url: string
+}
