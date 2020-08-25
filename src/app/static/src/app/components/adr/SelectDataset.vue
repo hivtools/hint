@@ -2,7 +2,7 @@
     <div class="d-flex">
         <div v-if="selectedDataset" style="margin-top:8px">
             <span class="font-weight-bold">Selected dataset:</span>
-            <a :href="selectedDataset.url">{{selectedDataset.title}}</a>
+            <a :href="selectedDataset.url" target="_blank">{{selectedDataset.title}}</a>
         </div>
         <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{selectText}}</button>
         <modal id="dataset" :open="open">
