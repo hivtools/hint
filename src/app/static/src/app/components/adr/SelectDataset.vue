@@ -47,7 +47,7 @@
     import {BaselineMutation} from "../../store/baseline/mutations";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {Dataset} from "../../types";
+    import {ADRSchemas, Dataset} from "../../types";
 
     interface Methods {
         setDataset: (dataset: Dataset) => void
@@ -62,6 +62,7 @@
     }
 
     interface Computed {
+        schemas: ADRSchemas
         datasets: any[]
         datasetOptions: any[]
         selectedDataset: Dataset | null
@@ -85,6 +86,8 @@
         },
         components: {Modal, TreeSelect, LoadingSpinner},
         computed: {
+            schemas: mapStateProp<RootState, ADRSchemas>(null,
+                (state: RootState) => state.adrSchemas!!),
             selectedDataset: mapStateProp<BaselineState, Dataset | null>("baseline",
                 (state: BaselineState) => state.selectedDataset),
             datasets: mapStateProp<RootState, any[]>(null,
@@ -106,7 +109,7 @@
                     id: fullMetaData.id,
                     title: fullMetaData.title,
                     revision_id: fullMetaData.revision_id,
-                    url: `https://adr.unaids.org/${fullMetaData.type}/${fullMetaData.name}`
+                    url: `${this.schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`
                 }
             },
             selectText() {

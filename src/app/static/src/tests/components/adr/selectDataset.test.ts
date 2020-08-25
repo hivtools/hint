@@ -24,7 +24,7 @@ describe("select dataset", () => {
         id: "id1",
         title: "Some data",
         revision_id: "456",
-        url: "https://adr.unaids.org/naomi-data/some-data"
+        url: "www.adr.com/naomi-data/some-data"
     }
 
     const setDatasetMock = jest.fn();
@@ -32,6 +32,15 @@ describe("select dataset", () => {
     const getStore = (props: Partial<BaselineState> = {}) => {
         return new Vuex.Store({
             state: mockRootState({
+                adrSchemas: {
+                    baseUrl: "www.adr.com/",
+                    anc: "anc",
+                    programme: "prog",
+                    pjnz: "pjnz",
+                    population: "pop",
+                    shape: "shape",
+                    survey: "survey"
+                },
                 adrDatasets: fakeDatasets
             }),
             modules: {
@@ -68,7 +77,7 @@ describe("select dataset", () => {
         });
         expect(rendered.find(".font-weight-bold").text()).toBe("Selected dataset:");
         expect(rendered.find("a").text()).toBe("Some data");
-        expect(rendered.find("a").attributes("href")).toBe("https://adr.unaids.org/naomi-data/some-data");
+        expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
     });
 
     it("does not render selected dataset if it doesn't exist", () => {

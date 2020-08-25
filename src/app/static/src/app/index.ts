@@ -30,11 +30,13 @@ export const app = new Vue({
     methods: {
         ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
         ...mapActions({loadSurveyAndProgram: 'surveyAndProgram/getSurveyAndProgramData'}),
-        ...mapActions({loadModelRun: 'modelRun/getResult'})
+        ...mapActions({loadModelRun: 'modelRun/getResult'}),
+        ...mapActions({getADRSchemas: 'getADRSchemas'})
     },
     beforeMount: function () {
         this.loadBaseline();
         this.loadSurveyAndProgram();
         this.loadModelRun();
+        this.getADRSchemas();
     }
 });
