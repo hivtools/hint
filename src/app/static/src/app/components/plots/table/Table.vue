@@ -47,6 +47,10 @@
             :filter="filter"
             responsive="sm"
             >
+            <template v-slot:cell(areaLabel)="data">
+              <div>{{ data.item.areaLabel }}</div>
+              <div class="small">{{ data.item.areaHierarchy }}</div>
+            </template>
             <!-- Originally I tried to use the filteredData (as is) in the items property. However because this contains nested data
             in the filterLabels and indicatorValues objects, I needed to format the table data with the below commented 
             out templates. Unfortunately the default sort-compare routine only looks at the original data passed 
@@ -79,13 +83,16 @@
 
 <script lang="ts">
 import Vue from "vue";
+import i18next from "i18next";
 import Filters from "../Filters.vue";
 import {iterateDataValues, findPath} from "../utils";
 import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
 import {Dict, Filter} from "../../../types";
 import {ChoroplethSelections} from "../../../store/plottingSelections/plottingSelections";
-import {flattenOptions, flattenToIdSet} from "../../../utils";
+import {flattenOptions, flattenToIdSet, mapStateProp, mapStateProps} from "../../../utils";
 import { BTable, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BButton } from 'bootstrap-vue';
+import {RootState} from "../../../root";
+import {Language} from "../../../store/translations/locales";
 
 Vue.component('b-table', BTable)
 Vue.component('b-form-group', BFormGroup)
@@ -121,7 +128,8 @@ interface Computed {
     selectedAreaIds: string[],
     selectedAreaFilterOptions: FilterOption[],
     generatedFields: any[],
-    flatFilteredData: any[]
+    flatFilteredData: any[],
+    currentLanguage: Language
 }
 const props = {
     tabledata: {
@@ -234,10 +242,14 @@ export default Vue.extend<{}, {}, Computed, Props>({
         },
         generatedFields(){
           const fields: any[] = [];
-          fields.push({key: 'areaLabel'})
+          fields.push({
+            key: 'areaLabel',
+            label: i18next.t('area', this.currentLanguage)
+            })
           this.filtersToDisplay.map(value =>{
             const field: Dict<any> = {};
             field.key = value.id
+            field.label = i18next.t(value.id, this.currentLanguage)
             fields.push(field)
           })
           this.indicators.map(value =>{
@@ -259,10 +271,25 @@ export default Vue.extend<{}, {}, Computed, Props>({
             let row: Dict<any> = {};
             row = {...value.filterLabels, ...value.indicatorValues}
             row.areaLabel = value.areaLabel
+            row.areaHierarchy = value.areaHierarchy
             values.push(row)
           })
           return values
-        }
+        },
+        currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language)
+            // selectText() {
+            //     return i18next.t("select", this.currentLanguage)
+            // },
+            // requiredText() {
+            //     return i18next.t("required", this.currentLanguage)
+            // },
+            // laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
+            // editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
+            // ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
+            //     loading: s => s.fetching,
+            //     valid: s => s.valid
+            // }),
     }
 });
 </script>
