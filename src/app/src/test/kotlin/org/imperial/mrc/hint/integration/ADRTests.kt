@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.integration
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.db.Tables.ADR_KEY
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.exchange
@@ -135,15 +136,12 @@ class ADRTests : SecureIntegrationTests() {
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can get ADR schema types`(isAuthorized: IsAuthorized) {
+    @Test
+    fun `can get ADR schema types`() {
         val result = testRestTemplate.getForEntity<String>("/adr/schemas")
-        assertSecureWithSuccess(isAuthorized, result, null)
-        if (isAuthorized == IsAuthorized.TRUE) {
-            val data = ObjectMapper().readTree(result.body!!)["data"]
-            assertThat(data["pjnz"].textValue()).isEqualTo("inputs-unaids-spectrum-file")
-        }
+        assertSuccess(result, null)
+        val data = ObjectMapper().readTree(result.body!!)["data"]
+        assertThat(data["pjnz"].textValue()).isEqualTo("inputs-unaids-spectrum-file")
     }
 
     private fun getPostEntityWithKey(): HttpEntity<LinkedMultiValueMap<String, String>> {
