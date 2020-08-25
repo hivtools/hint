@@ -1,5 +1,5 @@
 <template>
-        <div class="row">
+        <div class="row mb-2">
             <div class="col-8">
                 <div class="d-flex">
                     <label for="key"
@@ -22,7 +22,7 @@
                                v-translate="'remove'"></a>
                         </div>
                         <div class="input-group"
-                             style="margin-top: -11px; min-width: 390px"
+                             style="margin-top: -8px; min-width: 390px"
                              v-if="editing">
                             <input id="key"
                                    ref="keyInput"
