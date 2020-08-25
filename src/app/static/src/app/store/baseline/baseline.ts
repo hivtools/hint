@@ -3,9 +3,10 @@ import {actions} from './actions';
 import {mutations} from './mutations';
 import {ReadyState, RootState} from "../../root";
 import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse, Error} from "../../generated";
-import {Dict} from "../../types";
+import {Dataset, Dict} from "../../types";
 
 export interface BaselineState extends ReadyState {
+    selectedDataset: Dataset | null
     pjnzError: Error | null
     country: string
     iso3: string
@@ -23,6 +24,7 @@ export interface BaselineState extends ReadyState {
 
 export const initialBaselineState = (): BaselineState => {
     return {
+        selectedDataset: null,
         country: "",
         iso3: "",
         pjnzError: null,
