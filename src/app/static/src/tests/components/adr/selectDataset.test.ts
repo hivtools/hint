@@ -33,7 +33,7 @@ describe("select dataset", () => {
         return new Vuex.Store({
             state: mockRootState({
                 adrSchemas: {
-                    baselineUrl: "www.adr.com/",
+                    baseUrl: "www.adr.com/",
                     anc: "anc",
                     programme: "prog",
                     pjnz: "pjnz",

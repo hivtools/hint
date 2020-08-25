@@ -83,7 +83,7 @@ export interface Dataset {
 }
 
 export interface ADRSchemas {
-    baselineUrl: string
+    baseUrl: string
     anc: string
     programme: string
     pjnz: string

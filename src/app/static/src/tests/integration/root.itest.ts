@@ -1,6 +1,7 @@
 import {actions} from "../../app/store/root/actions";
 import {login, rootState} from "./integrationTest";
 import {RootMutation} from "../../app/store/root/mutations";
+import {ADRSchemas} from "../../app/types";
 
 describe("Root actions", () => {
 
@@ -46,7 +47,7 @@ describe("Root actions", () => {
         await actions.getADRSchemas({commit, rootState} as any);
 
         expect(commit.mock.calls[0][0]["type"]).toBe(RootMutation.SetADRSchemas);
-        const payload = commit.mock.calls[0][0]["payload"]
+        const payload = commit.mock.calls[0][0]["payload"] as ADRSchemas;
         expect(payload.baseUrl).toBe("https://dev.adr.fjelltopp.org/")
     });
 });

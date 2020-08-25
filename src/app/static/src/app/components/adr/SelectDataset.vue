@@ -103,7 +103,7 @@
                     id: fullMetaData.id,
                     title: fullMetaData.title,
                     revision_id: fullMetaData.revision_id,
-                    url: `${this.schemas.baselineUrl}${fullMetaData.type}/${fullMetaData.name}`
+                    url: `${this.schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`
                 }
             },
             selectText() {
