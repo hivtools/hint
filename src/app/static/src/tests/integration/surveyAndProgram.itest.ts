@@ -16,6 +16,44 @@ describe("Survey and programme actions", () => {
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
     });
 
+    it("can import survey", async () => {
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        await actions.importSurvey({commit, dispatch, rootState} as any,
+            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/survey.csv");
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
+            .toBe("survey.csv")
+    }, 7000);
+
+    it("can import programme", async () => {
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        await actions.importProgram({commit, dispatch, rootState} as any,
+            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/programme.csv");
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
+            .toBe("programme.csv")
+    }, 7000);
+
+    it("can import anc", async () => {
+
+        const commit = jest.fn();
+
+        await actions.importANC({commit, rootState} as any,
+            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/anc.csv");
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
+            .toBe("anc.csv");
+    }, 7000);
+
     it("can upload survey", async () => {
 
         const commit = jest.fn();
