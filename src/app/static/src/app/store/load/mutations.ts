@@ -17,6 +17,7 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
         state.loadingState = LoadingState.SettingFiles;
     },
     UpdatingState(state: LoadState) {
+       //alert("Updating state");
         state.loadingState = LoadingState.UpdatingState;
     },
     LoadFailed(state: LoadState, action: PayloadWithType<Error>) {

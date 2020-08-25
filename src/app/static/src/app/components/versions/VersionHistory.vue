@@ -37,7 +37,8 @@
     import {BCollapse} from "bootstrap-vue";
     import { VBToggle } from 'bootstrap-vue';
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
-    import {formatDateTime, mapActionByName} from "../../utils"
+    import {formatDateTime, mapActionByName, mapStateProp} from "../../utils"
+    import {LoadState, LoadingState} from "../../store/load/load";
 
     interface Props {
         versions: Version[];
@@ -55,16 +56,29 @@
                 type: Array
             }
        },
-        methods: {
+       methods: {
            format(date: string) {
                return formatDateTime(date);
            },
            loadSnapshot(event: Event, versionId: number, snapshotId: string) {
                 event.preventDefault();
-                //TODO: we should navigate to home but only on success? watch loading state - means have got snapshot
                this.loadAction({versionId, snapshotId});
            },
            loadAction: mapActionByName<SnapshotIds>("versions", "loadSnapshot"),
+        },
+        computed: {
+            loadingState: mapStateProp<LoadState, boolean>("load", state => {
+                return state.loadingState === LoadingState.UpdatingState || state.loadingState === LoadingState.SettingFiles;
+            }),
+        },
+        watch: {
+           loadingState: function(newVal) {
+               if (newVal) {
+                   //If loading state has started that means the snapshot contents were successfully fetched and we should
+                   //navigate to the home screen
+                   //this.$router.push('/');
+               }
+           }
         },
        components: {
            BCollapse,

@@ -76,7 +76,7 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
             .get<any>(`version/${snapshot.versionId}/snapshot/${snapshot.snapshotId}`)
             .then((response: any) => {
                 if (state.error === null) {
-                    dispatch("load/loadFromSnapshot", response, {root: true})
+                    dispatch("load/loadFromSnapshot", response.data, {root: true})
                 }
             });
     }

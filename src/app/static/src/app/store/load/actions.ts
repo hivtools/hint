@@ -5,6 +5,7 @@ import {api} from "../../apiService";
 import {verifyCheckSum} from "../../utils";
 import {Dict, LocalSessionFile} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
+import {router} from "../../router";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError"
 export type LoadErrorActionTypes = "LoadFailed"
@@ -46,18 +47,32 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         await getFilesAndLoad(context, files, savedState)
     },
 
-    loadFromSnapshot(context, snapshotContents) {
+    async loadFromSnapshot(context, snapshotContents) {
         const {commit} = context;
         commit({type: "SettingFiles", payload: null});
-        getFilesAndLoad(context, snapshotContents.files, snapshotContents.state)
+        console.log("LOADING SNAPSHOT CONTENTS:");
+        console.log(JSON.stringify(snapshotContents));
+
+        router.push("/", () => {
+            getFilesAndLoad(context, snapshotContents.files, JSON.parse(snapshotContents.state));
+        });
+
     },
 
     async updateStoreState({commit, dispatch, state}, savedState) {
         //File hashes have now been set for session in backend so we save the state from the file we're loading into local
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
         //NB load state is not included in the saved state so we will default back to NotLoading on page reload.
-        localStorageManager.savePartialState(savedState);
-        location.reload();
+
+
+            //alert("completed root push to router");
+            //alert("saving partial state");
+            //console.log("SAVING PARTIAL STATE: "  + JSON.stringify(savedState));
+            localStorageManager.savePartialState(savedState);
+            //alert("Saved partial state");
+            //alert("Reloading " + location.href);
+            //location.reload();
+
     },
 
     async clearLoadState({commit}) {
@@ -67,12 +82,14 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, files: any, savedState: any) {
     const {dispatch, state} = context;
+    console.log("posting files: " +  JSON.stringify(files));
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
         .withError("LoadFailed")
         .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
         .then(() => {
             if (state.loadingState == LoadingState.UpdatingState) {
+                //alert("dispatching...");
                 dispatch("updateStoreState", savedState);
             }
         });
