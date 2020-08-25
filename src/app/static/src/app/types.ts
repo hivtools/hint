@@ -81,3 +81,13 @@ export interface Dataset {
     revision_id: string,
     url: string
 }
+
+export interface ADRSchemas {
+    baselineUrl: string
+    anc: string
+    programme: string
+    pjnz: string
+    population: string
+    shape: string
+    survey: string
+}

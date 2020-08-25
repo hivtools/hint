@@ -27,6 +27,7 @@ import {
 } from "./store/plottingSelections/plottingSelections";
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 import {Language} from "./store/translations/locales";
+import {ADRSchemas} from "./types";
 
 export interface TranslatableState {
     language: Language
@@ -37,6 +38,7 @@ export interface RootState extends TranslatableState {
     adrDatasets: any[],
     adrKey: string | null,
     adrKeyError: Error | null,
+    adrSchemas: ADRSchemas | null,
     baseline: BaselineState,
     metadata: MetadataState,
     surveyAndProgram: SurveyAndProgramState,
@@ -101,6 +103,7 @@ export const emptyState = (): RootState => {
         adrKey: null,
         adrKeyError: null,
         adrDatasets: [],
+        adrSchemas: null,
         language: Language.en,
         version: '0.0.0',
         baseline: initialBaselineState(),
