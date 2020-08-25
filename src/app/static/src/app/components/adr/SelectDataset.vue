@@ -2,9 +2,9 @@
     <div class="d-flex">
         <div v-if="selectedDataset" style="margin-top:8px">
             <span class="font-weight-bold">Selected dataset:</span>
-            <a :href="selectedDataset.url" target="_blank">{{selectedDataset.title}}</a>
+            <a :href="selectedDataset.url" target="_blank">{{ selectedDataset.title }}</a>
         </div>
-        <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{selectText}}</button>
+        <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{ selectText }}</button>
         <modal id="dataset" :open="open">
             <h4>Browse ADR</h4>
             <div v-if="!loading">
@@ -41,7 +41,7 @@
 <script lang="ts">
     import Vue from "vue"
     import TreeSelect from '@riophae/vue-treeselect'
-    import {mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
+    import {mapMutationByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
     import {BaselineMutation} from "../../store/baseline/mutations";
@@ -53,12 +53,6 @@
         setDataset: (dataset: Dataset) => void
         importDataset: () => void
         toggleModal: () => void
-        importPJNZ: (url: string) => Promise<void>
-        importShape: (url: string) => Promise<void>
-        importPopulation: (url: string) => Promise<void>
-        importSurvey: (url: string) => Promise<void>
-        importProgram: (url: string) => Promise<void>
-        importANC: (url: string) => Promise<void>
     }
 
     interface Computed {
@@ -113,46 +107,25 @@
                 }
             },
             selectText() {
-                if (this.selectedDataset){
+                if (this.selectedDataset) {
                     return "Edit"
-                }
-                else {
+                } else {
                     return "Select ADR dataset"
                 }
             }
         },
         methods: {
             setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
-            importPJNZ: mapActionByName("baseline", "importPJNZ"),
-            importShape: mapActionByName("baseline", "importShape"),
-            importPopulation: mapActionByName("baseline", "importPopulation"),
-            importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
-            importProgram: mapActionByName("surveyAndProgram", "importProgram"),
-            importANC: mapActionByName("surveyAndProgram", "importANC"),
-            async importDataset() {
+            importDataset() {
                 this.loading = true;
                 this.setDataset(this.newDataset);
-                const d = this.datasets.find(d => d.id = this.newDatasetId);
-                const pjnz = d.resources.find((r: any) => r.resource_type == this.schemas.pjnz);
-                const shape = d.resources.find((r: any) => r.resource_type == this.schemas.shape);
-                const pop = d.resources.find((r: any) => r.resource_type == this.schemas.population);
-                const survey = d.resources.find((r: any) => r.resource_type == this.schemas.survey);
-                const program = d.resources.find((r: any) => r.resource_type == this.schemas.programme);
-                const anc = d.resources.find((r: any) => r.resource_type == this.schemas.anc);
-
-                await Promise.all([
-                      pjnz && this.importPJNZ(pjnz.url),
-                      pop && this.importPopulation(pop.url),
-                      shape && await this.importShape(shape.url)]);
-
-                shape && await Promise.all([
-                      survey && this.importSurvey(survey.url),
-                      program && this.importProgram(program.url),
-                      anc && this.importANC(anc.url)
-                ])
-
-                this.loading = false;
-                this.open = false;
+                // TODO import each file
+                // TODO await all
+                setTimeout(() => {
+                    // mock importing of files with a timeout
+                    this.loading = false;
+                    this.open = false;
+                }, 200)
             },
             toggleModal() {
                 this.open = !this.open;
