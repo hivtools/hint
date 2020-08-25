@@ -133,12 +133,12 @@
                 this.loading = true;
                 this.setDataset(this.newDataset);
                 const d = this.datasets.find(d => d.id = this.newDatasetId);
-                const pjnz = d.resources.find((r: any) => r.resource_type == "inputs-unaids-spectrum-file");
-                const shape = d.resources.find((r: any) => r.resource_type == "inputs-unaids-geographic");
-                const pop = d.resources.find((r: any) => r.resource_type == "inputs-unaids-population");
-                const survey = d.resources.find((r: any) => r.resource_type == "inputs-unaids-survey");
-                const program = d.resources.find((r: any) => r.resource_type == "inputs-unaids-art");
-                const anc = d.resources.find((r: any) => r.resource_type == "inputs-unaids-anc");
+                const pjnz = d.resources.find((r: any) => r.resource_type == this.schemas.pjnz);
+                const shape = d.resources.find((r: any) => r.resource_type == this.schemas.shape);
+                const pop = d.resources.find((r: any) => r.resource_type == this.schemas.population);
+                const survey = d.resources.find((r: any) => r.resource_type == this.schemas.survey);
+                const program = d.resources.find((r: any) => r.resource_type == this.schemas.programme);
+                const anc = d.resources.find((r: any) => r.resource_type == this.schemas.anc);
 
                 await Promise.all([
                       pjnz && this.importPJNZ(pjnz.url),

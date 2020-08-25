@@ -1,4 +1,4 @@
-import {ActionContext, ActionTree} from 'vuex';
+import {ActionContext, ActionTree, Dispatch} from 'vuex';
 import {BaselineState} from "./baseline";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
@@ -21,16 +21,28 @@ export interface BaselineActions {
     validate: (store: ActionContext<BaselineState, RootState>) => void
 }
 
+const uploadCallback = (dispatch: Dispatch, response: any) => {
+    if (response) {
+        dispatch('validate');
+    }
+    dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+}
+
+interface UploadImportOptions {
+    url: string
+    payload: FormData | string
+}
+
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
-    async importPJNZ(context, url) {
+    async uploadOrImportPJNZ(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions) {
         const {commit, dispatch, state} = context;
         commit({type: BaselineMutation.PJNZUpdated, payload: null});
         await api<BaselineMutation, BaselineMutation>(context)
             .withSuccess(BaselineMutation.PJNZUpdated)
             .withError(BaselineMutation.PJNZUploadError)
             .freezeResponse()
-            .postAndReturn<PjnzResponse>("/adr/pjnz/", qs.stringify({url}))
+            .postAndReturn<PjnzResponse>(options.url, options.payload)
             .then((response) => {
                 if (response) {
                     dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
@@ -38,87 +50,62 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
                 }
                 dispatch("surveyAndProgram/deleteAll", {}, {root: true});
             });
+    },
+
+    async uploadOrImportPopulation(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions) {
+        const {commit, dispatch} = context;
+        commit({type: BaselineMutation.PopulationUpdated, payload: null});
+        await api<BaselineMutation, BaselineMutation>(context)
+            .withSuccess(BaselineMutation.PopulationUpdated)
+            .withError(BaselineMutation.PopulationUploadError)
+            .freezeResponse()
+            .postAndReturn<PopulationResponse>(options.url, options.payload)
+            .then((response) => {
+                uploadCallback(dispatch, response);
+            });
+    },
+
+    async uploadOrImportShape(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions) {
+        const {commit, dispatch} = context;
+        commit({type: BaselineMutation.ShapeUpdated, payload: null});
+        await api<BaselineMutation, BaselineMutation>(context)
+            .withSuccess(BaselineMutation.ShapeUpdated)
+            .withError(BaselineMutation.ShapeUploadError)
+            .freezeResponse()
+            .postAndReturn<ShapeResponse>(options.url, options.payload)
+            .then((response) => {
+                uploadCallback(dispatch, response);
+            });
+    },
+
+    async importPJNZ(context, url) {
+        const {dispatch} = context;
+        await dispatch("uploadOrImportPJNZ", {url: "/adr/pjnz/", payload: qs.stringify({url})})
     },
 
     async importPopulation(context, url) {
-        const {commit, dispatch} = context;
-        commit({type: BaselineMutation.PopulationUpdated, payload: null});
-        await api<BaselineMutation, BaselineMutation>(context)
-            .withSuccess(BaselineMutation.PopulationUpdated)
-            .withError(BaselineMutation.PopulationUploadError)
-            .freezeResponse()
-            .postAndReturn<PopulationResponse>("/adr/population/", qs.stringify({url}))
-            .then((response) => {
-                if (response) {
-                    dispatch('validate');
-                }
-                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
-            });
+        const {dispatch} = context;
+        await dispatch("uploadOrImportPopulation", {url: "/adr/population/", payload: qs.stringify({url})})
     },
 
     async importShape(context, url) {
-        const {commit, dispatch} = context;
-        commit({type: BaselineMutation.ShapeUpdated, payload: null});
-        await api<BaselineMutation, BaselineMutation>(context)
-            .withSuccess(BaselineMutation.ShapeUpdated)
-            .withError(BaselineMutation.ShapeUploadError)
-            .freezeResponse()
-            .postAndReturn<ShapeResponse>("/adr/shape/", qs.stringify({url}))
-            .then((response) => {
-                if (response) {
-                    dispatch('validate');
-                }
-                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
-            });
+        const {dispatch} = context;
+        await dispatch("uploadOrImportShape", {url: "/adr/shape/", payload: qs.stringify({url})})
     },
 
     async uploadPJNZ(context, formData) {
-        const {commit, dispatch, state} = context;
-        commit({type: BaselineMutation.PJNZUpdated, payload: null});
-        await api<BaselineMutation, BaselineMutation>(context)
-            .withSuccess(BaselineMutation.PJNZUpdated)
-            .withError(BaselineMutation.PJNZUploadError)
-            .freezeResponse()
-            .postAndReturn<PjnzResponse>("/baseline/pjnz/", formData)
-            .then((response) => {
-                if (response) {
-                    dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
-                    dispatch('validate');
-                }
-                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
-            });
+        const {dispatch} = context;
+        await dispatch("uploadOrImportPJNZ", {url: "/baseline/pjnz/", payload: formData})
     },
 
     async uploadShape(context, formData) {
-        const {commit, dispatch} = context;
-        commit({type: BaselineMutation.ShapeUpdated, payload: null});
-        await api<BaselineMutation, BaselineMutation>(context)
-            .withSuccess(BaselineMutation.ShapeUpdated)
-            .withError(BaselineMutation.ShapeUploadError)
-            .freezeResponse()
-            .postAndReturn<ShapeResponse>("/baseline/shape/", formData)
-            .then((response) => {
-                if (response) {
-                    dispatch('validate');
-                }
-                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
-            });
+        const {dispatch} = context;
+        await dispatch("uploadOrImportShape", {url: "/baseline/shape/", payload: formData})
     },
 
     async uploadPopulation(context, formData) {
-        const {commit, dispatch} = context;
-        commit({type: BaselineMutation.PopulationUpdated, payload: null});
-        await api<BaselineMutation, BaselineMutation>(context)
-            .withSuccess(BaselineMutation.PopulationUpdated)
-            .withError(BaselineMutation.PopulationUploadError)
-            .freezeResponse()
-            .postAndReturn<PopulationResponse>("/baseline/population/", formData)
-            .then((response) => {
-                if (response) {
-                    dispatch('validate');
-                }
-                dispatch("surveyAndProgram/deleteAll", {}, {root: true});
-            });
+        const {dispatch} = context;
+        await dispatch("uploadOrImportPopulation", {url: "/baseline/population/", payload: formData})
     },
 
     async deletePJNZ(context) {
