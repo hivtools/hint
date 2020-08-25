@@ -4,8 +4,12 @@ import {SurveyAndProgramState, DataType} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
+import qs from 'qs';
 
 export interface SurveyAndProgramActions {
+    importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: String) => void,
+    importProgram: (store: ActionContext<SurveyAndProgramState, RootState>, url: String) => void,
+    importANC: (store: ActionContext<SurveyAndProgramState, RootState>, url: String) => void,
     uploadSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
     uploadProgram: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
     uploadANC: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void
@@ -23,6 +27,55 @@ function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
 }
 
 export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndProgramActions = {
+
+    async importANC(context, url) {
+        const {commit} = context;
+        commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
+
+        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+            .withError(SurveyAndProgramMutation.ANCError)
+            .withSuccess(SurveyAndProgramMutation.ANCUpdated)
+            .freezeResponse()
+            .postAndReturn<ProgrammeResponse>("/adr/anc/", qs.stringify({url}))
+            .then((response) => {
+                if (response) {
+                    commitSelectedDataTypeUpdated(commit, DataType.ANC);
+                }
+            });
+    },
+
+    async importProgram(context, url) {
+        const {commit} = context;
+        commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
+
+        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+            .withError(SurveyAndProgramMutation.ProgramError)
+            .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
+            .freezeResponse()
+            .postAndReturn<ProgrammeResponse>("/adr/programme/", qs.stringify({url}))
+            .then((response) => {
+                if (response) {
+                    commitSelectedDataTypeUpdated(commit, DataType.Program);
+                }
+            });
+    },
+
+    importSurvey: async function (context, url) {
+        const {commit} = context;
+        commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
+
+        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+            .withError(SurveyAndProgramMutation.SurveyError)
+            .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
+            .freezeResponse()
+            .postAndReturn<SurveyResponse>("/adr/survey/", qs.stringify({url}))
+            .then((response) => {
+                if (response) {
+                    commitSelectedDataTypeUpdated(commit, DataType.Survey);
+                }
+            });
+    },
+
     selectDataType(context, payload) {
         const {commit} = context;
         commitSelectedDataTypeUpdated(commit, payload);
