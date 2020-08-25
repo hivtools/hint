@@ -9,7 +9,7 @@ import {
     mockModelOptionsState,
     mockModelRunState,
     mockPlottingMetadataResponse,
-    mockPopulationResponse,
+    mockPopulationResponse, mockRootState,
     mockShapeResponse, mockStepperState,
     mockSurveyAndProgramState,
     mockValidateBaselineResponse,
@@ -58,6 +58,7 @@ describe("Stepper component", () => {
         const store = new Vuex.Store({
             actions: rootActions,
             mutations: rootMutations,
+            state: mockRootState({adrSchemas: {baseUrl: "whatever"} as any}),
             modules: {
                 baseline: {
                     namespaced: true,
