@@ -12,6 +12,7 @@ export type LoadErrorActionTypes = "LoadFailed"
 export interface LoadActions {
     load: (store: ActionContext<LoadState, RootState>, file: File) => void
     setFiles: (store: ActionContext<LoadState, RootState>, savedFileContents: string) => void
+    loadFromSnapshot: (store: ActionContext<LoadState, RootState>, snapshotContents: any) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
 }
@@ -26,7 +27,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     },
 
     async setFiles(context, savedFileContents) {
-        const {commit, dispatch, state} = context;
+        const {commit} = context;
         commit({type: "SettingFiles", payload: null});
 
         const objectContents = verifyCheckSum(savedFileContents);
@@ -42,15 +43,13 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const files = objectContents.files;
         const savedState = objectContents.state;
 
-        await api<LoadActionTypes, LoadErrorActionTypes>(context)
-            .withSuccess("UpdatingState")
-            .withError("LoadFailed")
-            .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
-            .then(() => {
-                if (state.loadingState == LoadingState.UpdatingState) {
-                    dispatch("updateStoreState", savedState);
-                }
-            });
+        await getFilesAndLoad(context, files, savedState)
+    },
+
+    loadFromSnapshot(context, snapshotContents) {
+        const {commit} = context;
+        commit({type: "SettingFiles", payload: null});
+        getFilesAndLoad(context, snapshotContents.files, snapshotContents.state)
     },
 
     async updateStoreState({commit, dispatch, state}, savedState) {
@@ -65,3 +64,16 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         commit({type: "LoadStateCleared", payload: null});
     }
 };
+
+async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, files: any, savedState: any) {
+    const {dispatch, state} = context;
+    await api<LoadActionTypes, LoadErrorActionTypes>(context)
+        .withSuccess("UpdatingState")
+        .withError("LoadFailed")
+        .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
+        .then(() => {
+            if (state.loadingState == LoadingState.UpdatingState) {
+                dispatch("updateStoreState", savedState);
+            }
+        });
+}

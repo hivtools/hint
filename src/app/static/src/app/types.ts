@@ -75,3 +75,13 @@ export interface Version {
     snapshots: Snapshot[]
 }
 
+export interface SnapshotContents {
+    files: any,
+    state: any
+}
+
+export interface SnapshotIds {
+    versionId: number,
+    snapshotId: string
+}
+
