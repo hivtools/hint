@@ -57,6 +57,7 @@ class VersionsController(private val session: Session,
                     @PathVariable("snapshotId") snapshotId: String): ResponseEntity<String>
     {
         val snapshotDetails = snapshotRepository.getSnapshotDetails(snapshotId, versionId, userId())
+        session.setSnapshotId(snapshotId)
         return SuccessResponse(snapshotDetails).asResponseEntity();
     }
 

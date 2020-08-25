@@ -30,8 +30,6 @@ export class LocalStorageManager {
     };
 
     savePartialState = (partialState: Partial<RootState>) => {
-        console.log("SAVING PARTIAL STATE");
-        console.log("VERSIONS: " + JSON.stringify(partialState.versions));
         window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
     };
 

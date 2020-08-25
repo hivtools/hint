@@ -50,8 +50,6 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     async loadFromSnapshot(context, snapshotContents) {
         const {commit} = context;
         commit({type: "SettingFiles", payload: null});
-        console.log("LOADING SNAPSHOT CONTENTS:");
-        console.log(JSON.stringify(snapshotContents));
 
         router.push("/", () => {
             getFilesAndLoad(context, snapshotContents.files, JSON.parse(snapshotContents.state));
@@ -63,15 +61,8 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         //File hashes have now been set for session in backend so we save the state from the file we're loading into local
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
         //NB load state is not included in the saved state so we will default back to NotLoading on page reload.
-
-
-            //alert("completed root push to router");
-            //alert("saving partial state");
-            //console.log("SAVING PARTIAL STATE: "  + JSON.stringify(savedState));
-            localStorageManager.savePartialState(savedState);
-            //alert("Saved partial state");
-            //alert("Reloading " + location.href);
-            //location.reload();
+        localStorageManager.savePartialState(savedState);
+        location.reload();
 
     },
 
@@ -89,7 +80,6 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, fil
         .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
         .then(() => {
             if (state.loadingState == LoadingState.UpdatingState) {
-                //alert("dispatching...");
                 dispatch("updateStoreState", savedState);
             }
         });
