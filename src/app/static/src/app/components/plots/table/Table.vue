@@ -2,23 +2,6 @@
     <div>
         <br>
         <div v-if="filteredData.length > 0">
-          <!-- <table class="table">
-                <div>
-                    <tr>
-                        <th v-translate="'area'"></th>
-                        <th v-for="f in filtersToDisplay" v-translate="f.label"></th>
-                        <th v-for="i in indicators">{{ i.name }}</th>
-                    </tr>
-                    <tr v-for="row in filteredData">
-                        <td>
-                          <div>{{ row.areaLabel }}</div>
-                          <div class="small">{{ row.areaHierarchy }}</div>
-                        </td>
-                        <td v-for="f in filtersToDisplay">{{ row.filterLabels[f.id] }}</td>
-                        <td v-for="i in indicators">{{ row.indicatorValues[i.indicator] }}</td>
-                    </tr>
-                </div>
-            </table> -->
             <b-form-group
               class="mb-0"
             >
@@ -36,7 +19,7 @@
             </b-form-group>
             <b-table striped hover 
             :fields="generatedFields" 
-            :items="flatFilteredData"
+            :items="filteredData"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             :filter="filter"
@@ -80,16 +63,11 @@ interface Props {
 }
 interface DisplayRow {
     areaLabel: string,
-    areaHierarchy: string,
-    filterLabels: Dict<string>,
-    indicatorValues: Dict<string>
+    areaHierarchy: string
 }
 interface Field {
     key: string,
     label?: string
-}
-interface TableItem {
-    areaLabel: string
 }
 interface Computed {
     nonAreaFilters: Filter[],
@@ -100,7 +78,6 @@ interface Computed {
     selectedAreaIds: string[],
     selectedAreaFilterOptions: FilterOption[],
     generatedFields: Array<Field>,
-    flatFilteredData: Array<TableItem>,
     currentLanguage: Language
 }
 const props = {
@@ -199,26 +176,23 @@ export default Vue.extend<{}, {}, Computed, Props>({
                         displayRows[key] = {
                             areaLabel,
                             areaHierarchy,
-                            filterLabels,
-                            indicatorValues: {}
+                            ...filterLabels,
                         }
                     }
-                    displayRows[key].indicatorValues[current.indicatorMeta.indicator] = current.value;
+                    displayRows[key][current.indicatorMeta.indicator] = current.value;
                 });
-                // console.log('filtereddata', Object.values(displayRows))
-                // console.log('filters to display', this.filtersToDisplay)
                 return Object.values(displayRows);
         },
         generatedFields(){
           const fields: any[] = [];
           fields.push({
             key: 'areaLabel',
-            label: i18next.t('area', this.currentLanguage)
+            label: i18next.t("area",{lng: this.currentLanguage}) 
             })
           this.filtersToDisplay.map(value =>{
             const field: Dict<any> = {};
             field.key = value.id
-            field.label = i18next.t(value.label.toLowerCase(), this.currentLanguage)
+            field.label = i18next.t(value.label.toLowerCase(), {lng: this.currentLanguage})
             fields.push(field)
           })
           this.indicators.map(value =>{
@@ -232,17 +206,6 @@ export default Vue.extend<{}, {}, Computed, Props>({
             field.sortByFormatted = true
           })
           return fields
-        },
-        flatFilteredData(){
-          const values: any[] = [];
-          this.filteredData.map(value => {
-            let row: Dict<any> = {};
-            row = {...value.filterLabels, ...value.indicatorValues}
-            row.areaLabel = value.areaLabel
-            row.areaHierarchy = value.areaHierarchy
-            values.push(row)
-          })
-          return values
         },
         currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language)

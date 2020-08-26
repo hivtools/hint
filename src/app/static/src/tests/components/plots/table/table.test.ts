@@ -1,15 +1,25 @@
-import {createLocalVue, shallowMount} from "@vue/test-utils";
+import {mount} from "@vue/test-utils";
 import Table from "../../../../app/components/plots/table/Table.vue";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
-import {emptyState} from "../../../../app/root";
 import {testData} from "../testHelpers";
+import {Language} from "../../../../app/store/translations/locales";
 
-const localVue = createLocalVue();
-const store = new Vuex.Store({
-    state: emptyState()
-});
-registerTranslations(store);
+const createStore = () => {
+  const store = new Vuex.Store({
+      state: {language: Language.en}
+  });
+  registerTranslations(store);
+  return store as any;
+};
+
+const createStoreFr = () => {
+  const store = new Vuex.Store({
+      state: {language: Language.fr}
+  });
+  registerTranslations(store);
+  return store as any;
+};
 
 const propsData = {
     ...testData,
@@ -40,25 +50,31 @@ const propsData = {
 }
 
 const getWrapper = (customPropsData: any = {}) => {
-    return shallowMount(Table, {propsData: {...propsData, ...customPropsData}, localVue});
+  const store = createStore();
+  return mount(Table, {store, propsData: {...propsData, ...customPropsData}});
+};
+
+const getWrapperFr = (customPropsData: any = {}) => {
+  const store = createStoreFr();
+  return mount(Table, {store, propsData: {...propsData, ...customPropsData}});
 };
 
 describe('Table from testdata', () => {
     it('renders a table', () => {
         const wrapper = getWrapper();
         expect(wrapper.contains('div')).toBe(true);
-        // expect(wrapper.contains('table')).toBe(true);
+        expect(wrapper.contains('table')).toBe(true);
         expect(wrapper.contains('br')).toBe(true);
     });
     it('renders correct markup', () => {
         const wrapper = getWrapper();
-        expect(wrapper.find('th').text()).toBe('Area');
+        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
         expect(wrapper.find('td').text()).toBe('4.1 3.1');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
+        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(3).text()).toBe('0.1');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
@@ -71,13 +87,13 @@ describe('Table from testdata', () => {
             }
         }
         });
-        expect(wrapper.find('th').text()).toBe('Area');
+        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
         expect(wrapper.find('td').text()).toBe('4.2 3.2');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Male');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
+        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(3).text()).toBe('0.1');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
@@ -86,13 +102,13 @@ describe('Table from testdata', () => {
             ...propsData.selections,
             detail: 3,
         } });
-        expect(wrapper.find('th').text()).toBe('Area');
+        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
         expect(wrapper.find('td').text()).toBe('3.1');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
+        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(3).text()).toBe('0.01');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
@@ -119,13 +135,13 @@ describe('Table from testdata', () => {
                 ...propsData.indicators,
                 indicator: "plhiv", value_column: "plhiv", name: "PLHIV" }]
         });
-        expect(wrapper.find('th').text()).toBe('Area');
+        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
         expect(wrapper.find('td').text()).toBe('4.1 3.1');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('PLHIV');
+        expect(wrapper.findAll('th').at(3).text()).toBe('PLHIV (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(3).text()).toBe('10');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
@@ -149,13 +165,13 @@ describe('Table from testdata', () => {
             {...propsData.filters[2]}
         ]
         });
-        expect(wrapper.find('th').text()).toBe('Area');
+        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
         expect(wrapper.find('td').text()).toBe('4.2 3.2');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
+        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(3).text()).toBe('0.3');
         expect(wrapper.findAll('tr').length).toBe(2);
     });
@@ -180,13 +196,13 @@ describe('Table from testdata', () => {
             {...propsData.filters[2]}
         ]
         });
-        expect(wrapper.find('th').text()).toBe('Area');
+        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
         expect(wrapper.find('td').text()).toBe('3.2');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
+        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(3).text()).toBe('0');
         expect(wrapper.findAll('tr').length).toBe(2);
     });
@@ -216,13 +232,13 @@ describe('Table from testdata', () => {
             {...propsData.filters[2]}
         ]
     });
-      expect(wrapper.find('th').text()).toBe('Area');
+      expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
       expect(wrapper.find('td').text()).toBe('Malawi');
-      expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+      expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
       expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-      expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+      expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
       expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-      expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
+      expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
       expect(wrapper.findAll('td').at(3).text()).toBe('0.5');
       expect(wrapper.findAll('tr').length).toBe(2);
   });
@@ -261,13 +277,13 @@ describe('Table from testdata', () => {
           {...propsData.filters[2]}
       ]
   });
-    expect(wrapper.find('th').text()).toBe('Area');
+    expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
     expect(wrapper.find('td').text()).toBe('Malawi');
-    expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+    expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
     expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-    expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+    expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
     expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-    expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
+    expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
     expect(wrapper.findAll('td').at(3).text()).toBe('0.5');
     expect(wrapper.findAll('tr').length).toBe(2);
 });
@@ -301,14 +317,27 @@ describe('Table from testdata', () => {
           {...propsData.filters[2]}
       ]
   });
-    expect(wrapper.find('th').text()).toBe('Area');
+    expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
     expect(wrapper.find('td').text()).toBe('Malawi');
-    expect(wrapper.findAll('th').at(1).text()).toBe('Age');
+    expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
     expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-    expect(wrapper.findAll('th').at(2).text()).toBe('Sex');
+    expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
     expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-    expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
+    expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
     expect(wrapper.findAll('td').at(3).text()).toBe('0.5');
     expect(wrapper.findAll('tr').length).toBe(2);
+});
+
+it('renders correct markup in French', () => {
+  const wrapper = getWrapperFr();
+  expect(wrapper.find('th').text()).toBe('Zone (Click to sort Ascending)');
+  expect(wrapper.find('td').text()).toBe('4.1 3.1');
+  expect(wrapper.findAll('th').at(1).text()).toBe('Âge (Click to sort Ascending)');
+  expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
+  expect(wrapper.findAll('th').at(2).text()).toBe('Sexe (Click to sort Ascending)');
+  expect(wrapper.findAll('td').at(2).text()).toBe('Female');
+  expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
+  expect(wrapper.findAll('td').at(3).text()).toBe('0.1');
+  expect(wrapper.findAll('tr').length).toBe(3);
 });
 })
