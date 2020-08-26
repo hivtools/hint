@@ -8,6 +8,8 @@ import {mockBaselineState, mockRootState} from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {BaselineMutation} from "../../../app/store/baseline/mutations";
+import {BaselineActions} from "../../../app/store/baseline/actions";
+import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 
 describe("select dataset", () => {
 
@@ -29,6 +31,18 @@ describe("select dataset", () => {
 
     const setDatasetMock = jest.fn();
 
+    const baselineActions: Partial<BaselineActions> = {
+        importShape: jest.fn(),
+        importPopulation: jest.fn(),
+        importPJNZ: jest.fn()
+    }
+
+    const surveyProgramActions: Partial<SurveyAndProgramActions> = {
+        importSurvey: jest.fn(),
+        importProgram: jest.fn(),
+        importANC: jest.fn()
+    }
+
     const getStore = (props: Partial<BaselineState> = {}) => {
         return new Vuex.Store({
             state: mockRootState({
@@ -47,9 +61,14 @@ describe("select dataset", () => {
                 baseline: {
                     namespaced: true,
                     state: mockBaselineState(props),
+                    actions: baselineActions,
                     mutations: {
                         [BaselineMutation.SetDataset]: setDatasetMock
                     }
+                },
+                surveyAndProgram: {
+                    namespaced: true,
+                    actions: surveyProgramActions
                 }
             }
         });
