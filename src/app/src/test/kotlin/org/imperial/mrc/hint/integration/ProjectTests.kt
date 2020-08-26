@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class VersionTests : SnapshotFileTests() {
+class ProjectTests : SnapshotFileTests() {
     @BeforeEach
     fun setup() {
         authorize()

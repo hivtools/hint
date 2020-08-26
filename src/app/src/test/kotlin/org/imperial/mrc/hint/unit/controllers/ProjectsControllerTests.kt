@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.unit.controllers
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
-import org.imperial.mrc.hint.controllers.VersionsController
+import org.imperial.mrc.hint.controllers.ProjectsController
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import com.nhaarman.mockito_kotlin.doReturn
@@ -11,15 +11,15 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.db.SnapshotRepository
-import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.models.Snapshot
 import org.imperial.mrc.hint.models.SnapshotDetails
 import org.imperial.mrc.hint.models.SnapshotFile
-import org.imperial.mrc.hint.models.Version
+import org.imperial.mrc.hint.models.Project
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 
-class VersionsControllerTests {
+class ProjectsControllerTests {
     private val mockProfile = mock<CommonProfile> {
         on { id } doReturn "testUser"
     }
@@ -41,11 +41,11 @@ class VersionsControllerTests {
             on { getSnapshot("testSnapshot") } doReturn mockSnapshot
         }
 
-        val mockVersionRepo = mock<VersionRepository> {
-            on { saveNewVersion("testUser", "testVersion") } doReturn 99
+        val mockVersionRepo = mock<ProjectRepository> {
+            on { saveNewProject("testUser", "testVersion") } doReturn 99
         }
 
-        val sut = VersionsController(mockSession, mockSnapshotRepo, mockVersionRepo)
+        val sut = ProjectsController(mockSession, mockSnapshotRepo, mockVersionRepo)
 
         val result = sut.newVersion("testVersion")
 
@@ -66,7 +66,7 @@ class VersionsControllerTests {
         val mockSnapshotRepo = mock<SnapshotRepository> {
             on { getSnapshot("testSnapshot") } doReturn mockSnapshot
         }
-        val sut = VersionsController(mockSession, mockSnapshotRepo, mock())
+        val sut = ProjectsController(mockSession, mockSnapshotRepo, mock())
         val result = sut.newSnapshot(99, "parentSnapshot")
 
         verify(mockSnapshotRepo).copySnapshot("parentSnapshot", "testSnapshot",99, "testUser" )
@@ -79,12 +79,12 @@ class VersionsControllerTests {
     fun `gets versions`()
     {
         val mockSnapshots = listOf(Snapshot("testSnapshot", "createdTime", "updatedTime"))
-        val mockVersions = listOf(Version(99, "testVersion", mockSnapshots))
-        val mockVersionRepo = mock<VersionRepository>{
-            on { getVersions("testUser") } doReturn mockVersions
+        val mockVersions = listOf(Project(99, "testVersion", mockSnapshots))
+        val mockVersionRepo = mock<ProjectRepository>{
+            on { getProjects("testUser") } doReturn mockVersions
         }
 
-        val sut = VersionsController(mockSession, mock(), mockVersionRepo)
+        val sut = ProjectsController(mockSession, mock(), mockVersionRepo)
         val result = sut.getVersions()
 
         val resultJson = parser.readTree(result.body)["data"]
@@ -103,7 +103,7 @@ class VersionsControllerTests {
         val guestSession = mock<Session> {
             on { userIsGuest() } doReturn true
         }
-        val sut = VersionsController(guestSession, mock(), mock())
+        val sut = ProjectsController(guestSession, mock(), mock())
         val result = sut.getVersions()
 
         val resultJson = parser.readTree(result.body)["data"]
@@ -115,7 +115,7 @@ class VersionsControllerTests {
     fun `can upload state`()
     {
         val mockRepo = mock<SnapshotRepository>();
-        val sut = VersionsController(mockSession, mockRepo, mock())
+        val sut = ProjectsController(mockSession, mockRepo, mock())
 
         val result = sut.uploadState(99, "testSnapshot", "testState")
 
@@ -132,7 +132,7 @@ class VersionsControllerTests {
           on { getSnapshotDetails("testSnapshot", 99, "testUser") }  doReturn mockDetails
         };
 
-        val sut = VersionsController(mockSession, mockRepo, mock())
+        val sut = ProjectsController(mockSession, mockRepo, mock())
         val result = sut.getSnapshotDetails(99, "testSnapshot")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         val resultJson = parser.readTree(result.body)["data"]
