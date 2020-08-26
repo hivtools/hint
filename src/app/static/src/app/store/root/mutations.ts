@@ -10,7 +10,7 @@ import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
 import {DataType, initialSurveyAndProgramState} from "../surveyAndProgram/surveyAndProgram";
-import {PayloadWithType, Version} from "../../types";
+import {ADRSchemas, PayloadWithType, Version} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialVersionsState} from "../versions/versions";
 import {router} from '../../router';
@@ -23,7 +23,8 @@ export enum RootMutation {
     SetADRKeyError = "ADRKeyError",
     SetVersion = "SetVersion",
     UpdateADRKey = "UpdateADRKey",
-    SetADRDatasets = "SetADRDatasets"
+    SetADRDatasets = "SetADRDatasets",
+    SetADRSchemas = "SetADRSchemas"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -39,6 +40,10 @@ export const mutations: MutationTree<RootState> = {
         state.adrDatasets = action.payload;
     },
 
+    [RootMutation.SetADRSchemas](state: RootState, action: PayloadWithType<ADRSchemas>) {
+        state.adrSchemas = action.payload;
+    },
+
     [RootMutation.Reset](state: RootState, action: PayloadWithType<number>) {
 
         const maxValidStep = action.payload;
@@ -47,6 +52,7 @@ export const mutations: MutationTree<RootState> = {
         //at all we assume that these steps will be invalidated but earlier steps may be retainable
         const resetState: RootState = {
             adrDatasets: state.adrDatasets,
+            adrSchemas: state.adrSchemas,
             version: state.version,
             language: state.language,
             adrKey: state.adrKey,

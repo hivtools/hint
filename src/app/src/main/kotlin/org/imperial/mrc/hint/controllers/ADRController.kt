@@ -8,7 +8,6 @@ import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.UserRepository
-import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
@@ -80,7 +79,8 @@ class ADRController(private val encryption: Encryption,
     @GetMapping("/schemas")
     fun getFileTypeMappings(): ResponseEntity<String> {
         return SuccessResponse(
-                mapOf("anc" to appProperties.adrANCSchema,
+                mapOf("baseUrl" to appProperties.adrUrl,
+                        "anc" to appProperties.adrANCSchema,
                         "programme" to appProperties.adrARTSchema,
                         "pjnz" to appProperties.adrPJNZSchema,
                         "population" to appProperties.adrPopSchema,

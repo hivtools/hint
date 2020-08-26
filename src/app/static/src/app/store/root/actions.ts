@@ -14,6 +14,7 @@ export interface RootActions extends LanguageActions<RootState> {
     saveADRKey: (store: ActionContext<RootState, RootState>, key: string) => void;
     deleteADRKey: (store: ActionContext<RootState, RootState>) => void;
     getADRDatasets: (store: ActionContext<RootState, RootState>) => void;
+    getADRSchemas: (store: ActionContext<RootState, RootState>) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -88,6 +89,13 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             .ignoreErrors()
             .withSuccess(RootMutation.SetADRDatasets)
             .get("/adr/datasets/")
+    },
+
+    async getADRSchemas(context) {
+        await api<RootMutation, RootMutation>(context)
+            .ignoreErrors()
+            .withSuccess(RootMutation.SetADRSchemas)
+            .get("/adr/schemas/")
     }
 
 };

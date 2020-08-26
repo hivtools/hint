@@ -31,7 +31,8 @@ interface ADRClient {
 }
 
 class ADRFuelClient(appProperties: AppProperties,
-                    private val apiKey: String) : FuelClient(appProperties.adrUrl), ADRClient {
+                    private val apiKey: String)
+    : FuelClient(appProperties.adrUrl + "api/3/action"), ADRClient {
 
     override fun standardHeaders(): Map<String, Any> {
         return mapOf("Authorization" to apiKey)

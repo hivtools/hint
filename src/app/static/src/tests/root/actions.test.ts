@@ -261,5 +261,19 @@ describe("root actions", () => {
             });
     });
 
+    it("fetches ADR schemas", async () => {
+        mockAxios.onGet(`/adr/schemas/`)
+            .reply(200, mockSuccess({baseUrl: "adr.com"}));
+
+        const commit = jest.fn();
+
+        await actions.getADRSchemas({commit, rootState} as any);
+
+        expect(commit.mock.calls[0][0])
+            .toEqual({
+                type: RootMutation.SetADRSchemas,
+                payload: {baseUrl: "adr.com"}
+            });
+    });
 
 });

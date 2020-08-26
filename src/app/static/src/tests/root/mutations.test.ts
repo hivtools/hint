@@ -253,4 +253,10 @@ describe("Root mutations", () => {
         mutations[RootMutation.SetADRDatasets](state, {payload: [1,2,3]});
         expect(state.adrDatasets).toEqual([1,2,3]);
     });
+
+    it("can set ADR schemas", () => {
+        const state = mockRootState();
+        mutations[RootMutation.SetADRSchemas](state, {payload: {baseUrl: "adr.com"}});
+        expect(state.adrSchemas).toEqual({baseUrl: "adr.com"});
+    });
 });
