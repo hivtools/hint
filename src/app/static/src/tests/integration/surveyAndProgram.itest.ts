@@ -3,6 +3,7 @@ import {actions as baselineActions} from "../../app/store/baseline/actions"
 import {login, rootState} from "./integrationTest";
 import {getFormData} from "./helpers";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
+import {actions as rootActions} from "../../app/store/root/actions";
 
 describe("Survey and programme actions", () => {
 
@@ -14,6 +15,7 @@ describe("Survey and programme actions", () => {
         const formData = getFormData("malawi.geojson");
 
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
+        await rootActions.saveADRKey({commit: jest.fn(), rootState} as any, "123");
     });
 
     it("can import survey", async () => {

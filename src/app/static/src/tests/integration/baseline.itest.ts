@@ -8,7 +8,7 @@ describe("Baseline actions", () => {
 
     beforeAll(async () => {
         await login();
-        await rootActions.saveADRKey({commit: jest.fn(), rootState} as any, "1234");
+        await rootActions.saveADRKey({commit: jest.fn(), rootState} as any, "123");
     });
 
     it("can import PJNZ file", async () => {
