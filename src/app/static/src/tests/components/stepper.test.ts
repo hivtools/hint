@@ -520,9 +520,17 @@ describe("Stepper component", () => {
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });
 
-    it("does not push router to logged in user and currentVersion set", () => {
+    it("does not push router to versions if logged in user and currentVersion set", () => {
         const mockRouterPush = jest.fn();
         const versionsState = {currentVersion: {id: 1, name: "testVersion", snapshots: []}};
+        const wrapper =  createSut({}, {}, {}, {}, {}, {}, versionsState, mockRouterPush);
+
+        expect(mockRouterPush.mock.calls.length).toBe(0);
+    });
+
+    it("does not push router to versions if version is loading", () => {
+        const mockRouterPush = jest.fn();
+        const versionsState = {loading: true};
         const wrapper =  createSut({}, {}, {}, {}, {}, {}, versionsState, mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(0);

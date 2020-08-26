@@ -24,7 +24,9 @@
                 <div v-for="s in v.snapshots" :id="`s-${s.id}`" class="row font-italic bg-light py-2">
                     <div class="col-md-4 snapshot-cell"></div>
                     <div class="col-md-3 snapshot-cell">{{format(s.updated)}}</div>
-                    <div class="col-md-4 snapshot-cell"><a @click="loadSnapshot($event, v.id, s.id)" href="">Load</a></div>
+                    <div class="col-md-4 snapshot-cell">
+                        <a @click="loadSnapshot($event, v.id, s.id)" href="" v-translate="'load'"></a>
+                    </div>
                 </div>
             </b-collapse>
         </div>
@@ -37,8 +39,7 @@
     import {BCollapse} from "bootstrap-vue";
     import { VBToggle } from 'bootstrap-vue';
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
-    import {formatDateTime, mapActionByName, mapStateProp} from "../../utils"
-    import {LoadState, LoadingState} from "../../store/load/load";
+    import {formatDateTime, mapActionByName, mapStateProp} from "../../utils";
 
     interface Props {
         versions: Version[];
@@ -65,21 +66,7 @@
                this.loadAction({versionId, snapshotId});
            },
            loadAction: mapActionByName<SnapshotIds>("versions", "loadSnapshot"),
-        },
-        computed: {
-            loadingState: mapStateProp<LoadState, boolean>("load", state => {
-                return state.loadingState === LoadingState.UpdatingState || state.loadingState === LoadingState.SettingFiles;
-            }),
-        },
-        watch: {
-           loadingState: function(newVal) {
-               if (newVal) {
-                   //If loading state has started that means the snapshot contents were successfully fetched and we should
-                   //navigate to the home screen
-                   //this.$router.push('/');
-               }
-           }
-        },
+       },
        components: {
            BCollapse,
            ChevronDownIcon,

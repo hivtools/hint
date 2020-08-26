@@ -77,7 +77,7 @@ export interface Version {
 
 export interface SnapshotContents {
     files: any,
-    state: any
+    state: string
 }
 
 export interface SnapshotIds {
