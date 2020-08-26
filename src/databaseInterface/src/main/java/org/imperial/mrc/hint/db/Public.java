@@ -13,12 +13,12 @@ import javax.annotation.Generated;
 import org.imperial.mrc.hint.db.tables.AdrKey;
 import org.imperial.mrc.hint.db.tables.File;
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
+import org.imperial.mrc.hint.db.tables.Project;
+import org.imperial.mrc.hint.db.tables.ProjectVersion;
 import org.imperial.mrc.hint.db.tables.SessionFile;
-import org.imperial.mrc.hint.db.tables.SnapshotFile;
 import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
-import org.imperial.mrc.hint.db.tables.Version;
-import org.imperial.mrc.hint.db.tables.VersionSnapshot;
+import org.imperial.mrc.hint.db.tables.VersionFile;
 import org.jooq.Catalog;
 import org.jooq.Sequence;
 import org.jooq.Table;
@@ -38,7 +38,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 1183024912;
+    private static final long serialVersionUID = -1947663047;
 
     /**
      * The reference instance of <code>public</code>
@@ -61,14 +61,19 @@ public class Public extends SchemaImpl {
     public final OnetimeToken ONETIME_TOKEN = org.imperial.mrc.hint.db.tables.OnetimeToken.ONETIME_TOKEN;
 
     /**
+     * The table <code>public.project</code>.
+     */
+    public final Project PROJECT = org.imperial.mrc.hint.db.tables.Project.PROJECT;
+
+    /**
+     * The table <code>public.project_version</code>.
+     */
+    public final ProjectVersion PROJECT_VERSION = org.imperial.mrc.hint.db.tables.ProjectVersion.PROJECT_VERSION;
+
+    /**
      * The table <code>public.session_file</code>.
      */
     public final SessionFile SESSION_FILE = org.imperial.mrc.hint.db.tables.SessionFile.SESSION_FILE;
-
-    /**
-     * The table <code>public.snapshot_file</code>.
-     */
-    public final SnapshotFile SNAPSHOT_FILE = org.imperial.mrc.hint.db.tables.SnapshotFile.SNAPSHOT_FILE;
 
     /**
      * The table <code>public.user_session</code>.
@@ -81,14 +86,9 @@ public class Public extends SchemaImpl {
     public final Users USERS = org.imperial.mrc.hint.db.tables.Users.USERS;
 
     /**
-     * The table <code>public.version</code>.
+     * The table <code>public.version_file</code>.
      */
-    public final Version VERSION = org.imperial.mrc.hint.db.tables.Version.VERSION;
-
-    /**
-     * The table <code>public.version_snapshot</code>.
-     */
-    public final VersionSnapshot VERSION_SNAPSHOT = org.imperial.mrc.hint.db.tables.VersionSnapshot.VERSION_SNAPSHOT;
+    public final VersionFile VERSION_FILE = org.imperial.mrc.hint.db.tables.VersionFile.VERSION_FILE;
 
     /**
      * No further instances allowed
@@ -115,7 +115,7 @@ public class Public extends SchemaImpl {
 
     private final List<Sequence<?>> getSequences0() {
         return Arrays.<Sequence<?>>asList(
-            Sequences.VERSION_ID_SEQ);
+            Sequences.PROJECT_ID_SEQ);
     }
 
     @Override
@@ -130,11 +130,11 @@ public class Public extends SchemaImpl {
             AdrKey.ADR_KEY,
             File.FILE,
             OnetimeToken.ONETIME_TOKEN,
+            Project.PROJECT,
+            ProjectVersion.PROJECT_VERSION,
             SessionFile.SESSION_FILE,
-            SnapshotFile.SNAPSHOT_FILE,
             UserSession.USER_SESSION,
             Users.USERS,
-            Version.VERSION,
-            VersionSnapshot.VERSION_SNAPSHOT);
+            VersionFile.VERSION_FILE);
     }
 }

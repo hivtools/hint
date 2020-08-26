@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.integration
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.db.Tables.VERSION_SNAPSHOT
+import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
@@ -60,15 +60,15 @@ class VersionTests : SnapshotFileTests() {
         LocalDateTime.parse(data["created"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         LocalDateTime.parse(data["updated"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
-        val savedVersion = dsl.select(VERSION_SNAPSHOT.STATE,
-                VERSION_SNAPSHOT.CREATED,
-                VERSION_SNAPSHOT.UPDATED)
-                .from(VERSION_SNAPSHOT)
-                .where(VERSION_SNAPSHOT.ID.eq(newSnapshotId))
+        val savedVersion = dsl.select(PROJECT_VERSION.STATE,
+                PROJECT_VERSION.CREATED,
+                PROJECT_VERSION.UPDATED)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(newSnapshotId))
                 .fetchOne()
 
-        assertThat(savedVersion[VERSION_SNAPSHOT.STATE]).isEqualTo(testState)
-        assertThat(savedVersion[VERSION_SNAPSHOT.UPDATED]).isEqualTo(savedVersion[VERSION_SNAPSHOT.CREATED])
+        assertThat(savedVersion[PROJECT_VERSION.STATE]).isEqualTo(testState)
+        assertThat(savedVersion[PROJECT_VERSION.UPDATED]).isEqualTo(savedVersion[PROJECT_VERSION.CREATED])
     }
 
     @Test
@@ -105,15 +105,15 @@ class VersionTests : SnapshotFileTests() {
         val result = getUpdateSnapshotStateResult(versionId, snapshotId, testState)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
-        val savedVersion = dsl.select(VERSION_SNAPSHOT.STATE,
-                VERSION_SNAPSHOT.CREATED,
-                VERSION_SNAPSHOT.UPDATED)
-                .from(VERSION_SNAPSHOT)
-                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
+        val savedVersion = dsl.select(PROJECT_VERSION.STATE,
+                PROJECT_VERSION.CREATED,
+                PROJECT_VERSION.UPDATED)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(snapshotId))
                 .fetchOne()
 
-        assertThat(savedVersion[VERSION_SNAPSHOT.STATE]).isEqualTo(testState)
-        assertThat(savedVersion[VERSION_SNAPSHOT.UPDATED]).isAfter(savedVersion[VERSION_SNAPSHOT.CREATED])
+        assertThat(savedVersion[PROJECT_VERSION.STATE]).isEqualTo(testState)
+        assertThat(savedVersion[PROJECT_VERSION.UPDATED]).isAfter(savedVersion[PROJECT_VERSION.CREATED])
     }
 
     @Test
