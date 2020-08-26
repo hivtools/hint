@@ -23,7 +23,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
-class ADRControllerTests: HintrControllerTests() {
+class ADRControllerTests : HintrControllerTests() {
 
     private val mockEncryption = mock<Encryption> {
         on { encrypt(any()) } doReturn "encrypted".toByteArray()
@@ -31,6 +31,7 @@ class ADRControllerTests: HintrControllerTests() {
     }
 
     private val mockProperties = mock<AppProperties> {
+        on { adrUrl } doReturn "adr-url"
         on { adrDatasetSchema } doReturn "adr-schema"
         on { adrANCSchema } doReturn "adr-anc"
         on { adrARTSchema } doReturn "adr-art"
@@ -197,6 +198,7 @@ class ADRControllerTests: HintrControllerTests() {
         assertThat(data["anc"].textValue()).isEqualTo("adr-anc")
         assertThat(data["shape"].textValue()).isEqualTo("adr-shape")
         assertThat(data["survey"].textValue()).isEqualTo("adr-survey")
+        assertThat(data["baseUrl"].textValue()).isEqualTo("adr-url")
     }
 
     // used for the import{FileType} tests below

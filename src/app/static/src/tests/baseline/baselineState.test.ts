@@ -2,18 +2,15 @@ import {localStorageManager} from "../../app/localStorageManager";
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 localStorage.setItem("user", currentUser);
 localStorageManager.saveState({
-    stepper: {
-        activeStep: 4
+    baseline: {
+        selectedDataset: {id: "123"}
     },
-    surveyAndProgram: {
-        selectedDataType: null
-    },
-    baseline: {}
+    surveyAndProgram: {}
 } as any);
 
-import {stepper, StepperState} from "../../app/store/stepper/stepper";
+import {baseline, BaselineState} from "../../app/store/baseline/baseline";
 
 it("loads initial state from local storage", () => {
-    const state = stepper.state as StepperState;
-    expect(state.activeStep).toBe(4);
+    const state = baseline.state as BaselineState;
+    expect(state.selectedDataset).toEqual({id: "123"})
 });
