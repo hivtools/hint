@@ -1,4 +1,5 @@
 import {
+    mockBaselineState,
     mockError,
     mockMetadataState,
     mockModelOptionsState,
@@ -6,7 +7,8 @@ import {
     mockModelRunState,
     mockPlottingSelections,
     mockStepperState,
-    mockSurveyAndProgramState, mockVersionsState
+    mockSurveyAndProgramState,
+    mockVersionsState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -17,6 +19,7 @@ declare const currentUser: string; // set in jest config, or on the index page w
 describe("LocalStorageManager", () => {
     it("serialiseState removes errors, saves selected data type", async () => {
         const mockRoot = {
+            baseline: mockBaselineState(),
             modelRun: mockModelRunState({
                 errors: [mockError("modelRunError1"), mockError("modelRunError2")]
             }),
@@ -31,6 +34,7 @@ describe("LocalStorageManager", () => {
 
         const result = serialiseState(mockRoot);
         expect(result).toStrictEqual({
+            baseline: {selectedDataset: null},
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
@@ -38,6 +42,47 @@ describe("LocalStorageManager", () => {
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: DataType.Survey},
+            versions: mockVersionsState()
+        });
+    });
+
+    it("serialiseState saves selectedDataset from baseline", async () => {
+        const mockRoot = {
+            baseline: mockBaselineState({
+                selectedDataset: {
+                    id: "123",
+                    revision_id: "456",
+                    title: "Some data",
+                    url: "www.some.url"
+                }
+            }),
+            modelRun: mockModelRunState(),
+            modelOptions: mockModelOptionsState(),
+            modelOutput: mockModelOutputState(),
+            stepper: mockStepperState(),
+            metadata: mockMetadataState(),
+            plottingSelections: mockPlottingSelections(),
+            surveyAndProgram: mockSurveyAndProgramState(),
+            versions: mockVersionsState()
+        } as RootState;
+
+        const result = serialiseState(mockRoot);
+        expect(result).toStrictEqual({
+            baseline: {
+                selectedDataset: {
+                    id: "123",
+                    revision_id: "456",
+                    title: "Some data",
+                    url: "www.some.url"
+                }
+            },
+            modelRun: mockModelRunState(),
+            modelOptions: mockModelOptionsState(),
+            modelOutput: mockModelOutputState(),
+            stepper: mockStepperState(),
+            metadata: mockMetadataState(),
+            plottingSelections: mockPlottingSelections(),
+            surveyAndProgram: {selectedDataType: null},
             versions: mockVersionsState()
         });
     });
