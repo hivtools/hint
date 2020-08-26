@@ -47,16 +47,19 @@ class LocalFileManager(
     private val uploadPath = appProperties.uploadDirectory
 
     override fun saveFile(file: MultipartFile, type: FileType): SnapshotFileWithPath {
-        return saveFile(file.inputStream, file.originalFilename!!, type)
+        return saveFile(file.inputStream, file.originalFilename!!, type, false)
     }
 
     override fun saveFile(url: String, type: FileType): SnapshotFileWithPath {
         val originalFilename = url.split("/").last()
         val adr = adrClientBuilder.build()
-        return saveFile(adr.getInputStream(url), originalFilename, type)
+        return saveFile(adr.getInputStream(url), originalFilename, type, true)
     }
 
-    private fun saveFile(inputStream: InputStream, originalFilename: String, type: FileType): SnapshotFileWithPath {
+    private fun saveFile(inputStream: InputStream,
+                         originalFilename: String,
+                         type: FileType,
+                         fromADR: Boolean): SnapshotFileWithPath {
         val md = MessageDigest.getInstance("MD5")
         val bytes = inputStream.use {
             DigestInputStream(it, md).readBytes()
@@ -69,8 +72,8 @@ class LocalFileManager(
             FileUtils.forceMkdirParent(localFile)
             localFile.writeBytes(bytes)
         }
-        snapshotRepository.saveSnapshotFile(session.getSnapshotId(), type, hash, originalFilename)
-        return SnapshotFileWithPath(path, hash, originalFilename)
+        snapshotRepository.saveSnapshotFile(session.getSnapshotId(), type, hash, originalFilename, fromADR)
+        return SnapshotFileWithPath(path, hash, originalFilename, fromADR)
     }
 
     override fun getFile(type: FileType): SnapshotFileWithPath? {

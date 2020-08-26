@@ -19,7 +19,7 @@ interface SnapshotRepository {
     // returns true if a new hash is saved, false if it already exists
     fun saveNewHash(hash: String): Boolean
 
-    fun saveSnapshotFile(snapshotId: String, type: FileType, hash: String, fileName: String)
+    fun saveSnapshotFile(snapshotId: String, type: FileType, hash: String, fileName: String, fromADR: Boolean)
     fun removeSnapshotFile(snapshotId: String, type: FileType)
     fun getSnapshotFile(snapshotId: String, type: FileType): SnapshotFile?
     fun getHashesForSnapshot(snapshotId: String): Map<String, String>
@@ -34,8 +34,7 @@ interface SnapshotRepository {
 @Component
 class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
 
-    override fun saveSnapshot(snapshotId: String, versionId: Int?)
-    {
+    override fun saveSnapshot(snapshotId: String, versionId: Int?) {
         val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
                 .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
                 .firstOrNull()
@@ -48,9 +47,8 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         }
     }
 
-    override fun getSnapshot(snapshotId: String): Snapshot
-    {
-        val result =  dsl.select(VERSION_SNAPSHOT.ID,
+    override fun getSnapshot(snapshotId: String): Snapshot {
+        val result = dsl.select(VERSION_SNAPSHOT.ID,
                 VERSION_SNAPSHOT.CREATED,
                 VERSION_SNAPSHOT.UPDATED)
                 .from(VERSION_SNAPSHOT)
@@ -60,8 +58,7 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         return Snapshot(result[VERSION_SNAPSHOT.ID], result[VERSION_SNAPSHOT.CREATED], result[VERSION_SNAPSHOT.UPDATED])
     }
 
-    override fun getSnapshotDetails(snapshotId: String, versionId: Int, userId: String): SnapshotDetails
-    {
+    override fun getSnapshotDetails(snapshotId: String, versionId: Int, userId: String): SnapshotDetails {
         checkSnapshotExists(snapshotId, versionId, userId)
         val files = getSnapshotFiles(snapshotId)
         val state = dsl.select(VERSION_SNAPSHOT.STATE)
@@ -88,7 +85,11 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         }
     }
 
-    override fun saveSnapshotFile(snapshotId: String, type: FileType, hash: String, fileName: String) {
+    override fun saveSnapshotFile(snapshotId: String,
+                                  type: FileType,
+                                  hash: String,
+                                  fileName: String,
+                                  fromADR: Boolean) {
 
         if (getSnapshotFileRecord(snapshotId, type) == null) {
             dsl.insertInto(SNAPSHOT_FILE)
@@ -96,11 +97,13 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
                     .set(SNAPSHOT_FILE.TYPE, type.toString())
                     .set(SNAPSHOT_FILE.SNAPSHOT, snapshotId)
                     .set(SNAPSHOT_FILE.FILENAME, fileName)
+                    .set(SNAPSHOT_FILE.FROM_ADR, fromADR)
                     .execute()
         } else {
             dsl.update(SNAPSHOT_FILE)
                     .set(SNAPSHOT_FILE.HASH, hash)
                     .set(SNAPSHOT_FILE.FILENAME, fileName)
+                    .set(SNAPSHOT_FILE.FROM_ADR, fromADR)
                     .where(SNAPSHOT_FILE.SNAPSHOT.eq(snapshotId))
                     .and(SNAPSHOT_FILE.TYPE.eq(type.toString()))
                     .execute()
@@ -127,10 +130,13 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
     }
 
     override fun getSnapshotFiles(snapshotId: String): Map<String, SnapshotFile> {
-        return dsl.select(SNAPSHOT_FILE.HASH, SNAPSHOT_FILE.FILENAME,SNAPSHOT_FILE.TYPE)
+        return dsl.select(SNAPSHOT_FILE.HASH, SNAPSHOT_FILE.FILENAME, SNAPSHOT_FILE.TYPE, SNAPSHOT_FILE.FROM_ADR)
                 .from(SNAPSHOT_FILE)
                 .where(SNAPSHOT_FILE.SNAPSHOT.eq(snapshotId))
-                .associate { it[SNAPSHOT_FILE.TYPE] to SnapshotFile(it[SNAPSHOT_FILE.HASH], it[SNAPSHOT_FILE.FILENAME]) }
+                .associate {
+                    it[SNAPSHOT_FILE.TYPE] to
+                            SnapshotFile(it[SNAPSHOT_FILE.HASH], it[SNAPSHOT_FILE.FILENAME], it[SNAPSHOT_FILE.FROM_ADR])
+                }
     }
 
     override fun setFilesForSnapshot(snapshotId: String, files: Map<String, SnapshotFile?>) {
@@ -159,8 +165,7 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         }
     }
 
-    override fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
-    {
+    override fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String) {
         checkSnapshotExists(snapshotId, versionId, userId)
         dsl.update(VERSION_SNAPSHOT)
                 .set(VERSION_SNAPSHOT.STATE, state)
@@ -168,8 +173,7 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
                 .execute()
     }
 
-    override fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, versionId: Int, userId: String)
-    {
+    override fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, versionId: Int, userId: String) {
         checkSnapshotExists(parentSnapshotId, versionId, userId)
 
         dsl.insertInto(VERSION_SNAPSHOT)
@@ -184,8 +188,7 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         setFilesForSnapshot(newSnapshotId, files)
     }
 
-    private fun checkSnapshotExists(snapshotId: String, versionId: Int, userId: String)
-    {
+    private fun checkSnapshotExists(snapshotId: String, versionId: Int, userId: String) {
         dsl.select(VERSION_SNAPSHOT.ID)
                 .from(VERSION_SNAPSHOT)
                 .join(VERSION)
@@ -197,7 +200,7 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
     }
 
     private fun getSnapshotFileRecord(snapshotId: String, type: FileType): Record? {
-        return dsl.select(SNAPSHOT_FILE.HASH, SNAPSHOT_FILE.FILENAME)
+        return dsl.select(SNAPSHOT_FILE.HASH, SNAPSHOT_FILE.FILENAME, SNAPSHOT_FILE.FROM_ADR)
                 .from(SNAPSHOT_FILE)
                 .where(SNAPSHOT_FILE.SNAPSHOT.eq(snapshotId))
                 .and(SNAPSHOT_FILE.TYPE.eq(type.toString()))

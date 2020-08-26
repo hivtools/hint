@@ -1,8 +1,8 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
+import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.models.SnapshotFileWithPath
@@ -39,7 +39,8 @@ abstract class HintrController(protected val fileManager: FileManager,
 
     private fun validate(file: SnapshotFileWithPath, type: FileType): ResponseEntity<String> {
         return when (type) {
-            FileType.PJNZ, FileType.Population, FileType.Shape -> apiClient.validateBaselineIndividual(file, type)
+            FileType.PJNZ, FileType.Population, FileType.Shape ->
+                apiClient.validateBaselineIndividual(file, type)
             else -> {
                 val shapePath = fileManager.getFile(FileType.Shape)?.path
                         ?: throw HintException("missingShapeFile",

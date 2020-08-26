@@ -38,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SnapshotFile extends TableImpl<SnapshotFileRecord> {
 
-    private static final long serialVersionUID = 605760824;
+    private static final long serialVersionUID = 1786506386;
 
     /**
      * The reference instance of <code>public.snapshot_file</code>
@@ -72,6 +72,11 @@ public class SnapshotFile extends TableImpl<SnapshotFileRecord> {
      * The column <code>public.snapshot_file.filename</code>.
      */
     public final TableField<SnapshotFileRecord, String> FILENAME = createField("filename", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>public.snapshot_file.from_adr</code>.
+     */
+    public final TableField<SnapshotFileRecord, Boolean> FROM_ADR = createField("from_adr", org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>public.snapshot_file</code> table reference
