@@ -7,7 +7,7 @@ import {api} from "../../apiService";
 import {VersionsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
-import {SnapshotContents, SnapshotIds, Version} from "../../types";
+import {SnapshotDetails, SnapshotIds, Version} from "../../types";
 
 export interface VersionsActions {
     createVersion: (store: ActionContext<VersionsState, RootState>, name: string) => void,
@@ -73,7 +73,7 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
         await api<VersionsMutations, VersionsMutations>(context)
             .ignoreSuccess()
             .withError(VersionsMutations.VersionError)
-            .get<SnapshotContents>(`version/${snapshot.versionId}/snapshot/${snapshot.snapshotId}`)
+            .get<SnapshotDetails>(`version/${snapshot.versionId}/snapshot/${snapshot.snapshotId}`)
             .then((response: any) => {
                 if (state.error === null) {
                     dispatch("load/loadFromSnapshot", response.data, {root: true})

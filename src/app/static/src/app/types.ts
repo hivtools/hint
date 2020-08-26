@@ -75,7 +75,7 @@ export interface Version {
     snapshots: Snapshot[]
 }
 
-export interface SnapshotContents {
+export interface SnapshotDetails {
     files: any,
     state: string
 }
