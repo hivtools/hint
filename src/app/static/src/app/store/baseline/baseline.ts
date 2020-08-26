@@ -4,6 +4,7 @@ import {mutations} from './mutations';
 import {ReadyState, RootState} from "../../root";
 import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse, Error} from "../../generated";
 import {Dataset, Dict} from "../../types";
+import {localStorageManager} from "../../localStorageManager";
 
 export interface BaselineState extends ReadyState {
     selectedDataset: Dataset | null
@@ -53,9 +54,11 @@ const getters = baselineGetters;
 
 const namespaced: boolean = true;
 
+const existingState = localStorageManager.getState();
+
 export const baseline: Module<BaselineState, RootState> = {
     namespaced,
-    state: initialBaselineState(),
+    state: {...initialBaselineState(), ...existingState && existingState.baseline},
     getters,
     actions,
     mutations

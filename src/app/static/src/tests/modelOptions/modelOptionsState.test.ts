@@ -5,7 +5,8 @@ localStorageManager.saveState({
     modelOptions: {
         options: "TEST"
     },
-    surveyAndProgram: {}
+    surveyAndProgram: {},
+    baseline: {}
 } as any);
 
 import {modelOptions, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
