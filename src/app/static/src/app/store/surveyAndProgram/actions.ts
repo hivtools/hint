@@ -1,11 +1,15 @@
 import {ActionContext, ActionTree, Commit} from 'vuex';
 import {RootState} from "../../root";
-import {SurveyAndProgramState, DataType} from "./surveyAndProgram";
+import {DataType, SurveyAndProgramState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
+import qs from 'qs';
 
 export interface SurveyAndProgramActions {
+    importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: String) => void,
+    importProgram: (store: ActionContext<SurveyAndProgramState, RootState>, url: String) => void,
+    importANC: (store: ActionContext<SurveyAndProgramState, RootState>, url: String) => void,
     uploadSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
     uploadProgram: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
     uploadANC: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void
@@ -22,58 +26,88 @@ function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
         {type: "SelectedDataTypeUpdated", payload: dataType}, {root: true})
 }
 
+interface UploadImportOptions {
+    url: string
+    payload: FormData | string
+}
+
+async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions) {
+    const {commit} = context;
+    commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
+
+    await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+        .withError(SurveyAndProgramMutation.ANCError)
+        .withSuccess(SurveyAndProgramMutation.ANCUpdated)
+        .freezeResponse()
+        .postAndReturn<ProgrammeResponse>(options.url, options.payload)
+        .then((response) => {
+            if (response) {
+                commitSelectedDataTypeUpdated(commit, DataType.ANC);
+            }
+        });
+}
+
+async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions) {
+    const {commit} = context;
+    commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
+
+    await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+        .withError(SurveyAndProgramMutation.ProgramError)
+        .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
+        .freezeResponse()
+        .postAndReturn<ProgrammeResponse>(options.url, options.payload)
+        .then((response) => {
+            if (response) {
+                commitSelectedDataTypeUpdated(commit, DataType.Program);
+            }
+        });
+}
+
+async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions) {
+    const {commit} = context;
+    commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
+
+    await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+        .withError(SurveyAndProgramMutation.SurveyError)
+        .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
+        .freezeResponse()
+        .postAndReturn<SurveyResponse>(options.url, options.payload)
+        .then((response) => {
+            if (response) {
+                commitSelectedDataTypeUpdated(commit, DataType.Survey);
+            }
+        });
+}
+
 export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndProgramActions = {
+
     selectDataType(context, payload) {
         const {commit} = context;
         commitSelectedDataTypeUpdated(commit, payload);
     },
 
-    async uploadSurvey(context, formData) {
-        const {commit} = context;
-        commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
+    async importSurvey(context, url) {
+        await uploadOrImportSurvey(context, {url: "/adr/survey/", payload: qs.stringify({url})});
+    },
 
-        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
-            .withError(SurveyAndProgramMutation.SurveyError)
-            .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
-            .freezeResponse()
-            .postAndReturn<SurveyResponse>("/disease/survey/", formData)
-            .then((response) => {
-                if (response) {
-                    commitSelectedDataTypeUpdated(commit, DataType.Survey);
-                }
-            });
+    async importProgram(context, url) {
+        await uploadOrImportProgram(context, {url: "/adr/programme/", payload: qs.stringify({url})})
+    },
+
+    async importANC(context, url) {
+        await uploadOrImportANC(context, {url: "/adr/anc/", payload: qs.stringify({url})})
+    },
+
+    async uploadSurvey(context, formData) {
+        await uploadOrImportSurvey(context, {url: "/disease/survey/", payload: formData})
     },
 
     async uploadProgram(context, formData) {
-        const {commit} = context;
-        commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
-
-        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
-            .withError(SurveyAndProgramMutation.ProgramError)
-            .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
-            .freezeResponse()
-            .postAndReturn<ProgrammeResponse>("/disease/programme/", formData)
-            .then((response) => {
-                if (response) {
-                    commitSelectedDataTypeUpdated(commit, DataType.Program);
-                }
-            });
+        await uploadOrImportProgram(context, {url: "/disease/programme/", payload: formData})
     },
 
     async uploadANC(context, formData) {
-        const {commit} = context;
-        commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
-
-        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
-            .withError(SurveyAndProgramMutation.ANCError)
-            .withSuccess(SurveyAndProgramMutation.ANCUpdated)
-            .freezeResponse()
-            .postAndReturn<ProgrammeResponse>("/disease/anc/", formData)
-            .then((response) => {
-                if (response) {
-                    commitSelectedDataTypeUpdated(commit, DataType.ANC);
-                }
-            });
+        await uploadOrImportANC(context, {url: "/disease/anc/", payload: formData})
     },
 
     async deleteSurvey(context) {
