@@ -138,9 +138,14 @@ class ADRTests : SecureIntegrationTests() {
 
     @Test
     fun `can get ADR schema types`() {
-        val result = testRestTemplate.getForEntity<String>("/adr/schemas")
+        var result = testRestTemplate.getForEntity<String>("/adr/schemas")
         assertSuccess(result, null)
-        val data = ObjectMapper().readTree(result.body!!)["data"]
+        var data = ObjectMapper().readTree(result.body!!)["data"]
+        assertThat(data["pjnz"].textValue()).isEqualTo("inputs-unaids-spectrum-file")
+
+        result = testRestTemplate.getForEntity<String>("/adr/schemas/")
+        assertSuccess(result, null)
+        data = ObjectMapper().readTree(result.body!!)["data"]
         assertThat(data["pjnz"].textValue()).isEqualTo("inputs-unaids-spectrum-file")
     }
 
