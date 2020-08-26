@@ -146,13 +146,13 @@
                 await Promise.all([
                     pjnz && this.importPJNZ(pjnz.url),
                     pop && this.importPopulation(pop.url),
-                    shape && await this.importShape(shape.url)]);
+                    shape && this.importShape(shape.url)]);
 
                 shape && await Promise.all([
                     survey && this.importSurvey(survey.url),
                     program && this.importProgram(program.url),
                     anc && this.importANC(anc.url)
-                ])
+                ]);
 
                 this.loading = false;
                 this.open = false;

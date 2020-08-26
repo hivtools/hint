@@ -1,4 +1,4 @@
-import Vuex from "vuex";
+import Vuex, {ActionTree} from "vuex";
 import Vue from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
@@ -10,16 +10,37 @@ import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {BaselineMutation} from "../../../app/store/baseline/mutations";
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
+import {ADRSchemas} from "../../../app/types";
+import {RootState} from "../../../app/root";
+import Mock = jest.Mock;
 
 describe("select dataset", () => {
 
-    const fakeDatasets = [{
+    const schemas: ADRSchemas = {
+        baseUrl: "www.adr.com/",
+        anc: "anc",
+        programme: "prog",
+        pjnz: "pjnz",
+        population: "pop",
+        shape: "shape",
+        survey: "survey"
+    }
+
+    const pjnz = {resource_type: schemas.pjnz, url: "pjnz.pjnz"}
+    const shape = {resource_type: schemas.shape, url: "shape.geojson"}
+    const pop = {resource_type: schemas.population, url: "pop.csv"}
+    const survey = {resource_type: schemas.survey, url: "survey.csv"}
+    const program = {resource_type: schemas.programme, url: "program.csv"}
+    const anc = {resource_type: schemas.anc, url: "anc.csv"}
+
+    const fakeRawDatasets = [{
         id: "id1",
         title: "Some data",
         organization: {title: "org"},
         name: "some-data",
         revision_id: "456",
-        type: "naomi-data"
+        type: "naomi-data",
+        resources: []
     }]
 
     const fakeDataset = {
@@ -31,36 +52,29 @@ describe("select dataset", () => {
 
     const setDatasetMock = jest.fn();
 
-    const baselineActions: Partial<BaselineActions> = {
+    const baselineActions: Partial<BaselineActions> & ActionTree<any, any> = {
         importShape: jest.fn(),
         importPopulation: jest.fn(),
         importPJNZ: jest.fn()
     }
 
-    const surveyProgramActions: Partial<SurveyAndProgramActions> = {
+    const surveyProgramActions: Partial<SurveyAndProgramActions> & ActionTree<any, any> = {
         importSurvey: jest.fn(),
         importProgram: jest.fn(),
         importANC: jest.fn()
     }
 
-    const getStore = (props: Partial<BaselineState> = {}) => {
+    const getStore = (baselineProps: Partial<BaselineState> = {}, rootProps: Partial<RootState> = {}) => {
         return new Vuex.Store({
             state: mockRootState({
-                adrSchemas: {
-                    baseUrl: "www.adr.com/",
-                    anc: "anc",
-                    programme: "prog",
-                    pjnz: "pjnz",
-                    population: "pop",
-                    shape: "shape",
-                    survey: "survey"
-                },
-                adrDatasets: fakeDatasets
+                adrSchemas: schemas,
+                adrDatasets: fakeRawDatasets,
+                ...rootProps
             }),
             modules: {
                 baseline: {
                     namespaced: true,
-                    state: mockBaselineState(props),
+                    state: mockBaselineState(baselineProps),
                     actions: baselineActions,
                     mutations: {
                         [BaselineMutation.SetDataset]: setDatasetMock
@@ -73,6 +87,10 @@ describe("select dataset", () => {
             }
         });
     }
+
+    afterEach(() => {
+        jest.resetAllMocks();
+    })
 
     it("renders select dataset button when no dataset is selected", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
@@ -139,7 +157,7 @@ describe("select dataset", () => {
         expect(select.props("options")).toStrictEqual(expectedOptions);
     });
 
-    it("sets current dataset", async (done) => {
+    it("sets current dataset", async () => {
         const rendered = mount(SelectDataset, {store: getStore(), sync: false, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -159,12 +177,161 @@ describe("select dataset", () => {
         expect(buttons.at(0).attributes("disabled")).toBe("disabled");
         expect(buttons.at(1).attributes("disabled")).toBe("disabled");
 
-        setTimeout(() => {
-            // loading spinner should clear and modal closed
-            expect(rendered.findAll(LoadingSpinner).length).toBe(0);
-            expect(rendered.find(Modal).props("open")).toBe(false);
-            done();
-        }, 200)
+        await Vue.nextTick();
+        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("imports baseline files if they exist", async () => {
+        const store = getStore({}, {
+            adrDatasets: [{...fakeRawDatasets[0], resources: [pjnz, pop, shape]}]
+        })
+        const rendered = mount(SelectDataset, {store, sync: false, stubs: ["tree-select"]});
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"});
+        rendered.find(Modal).find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+
+        await Vue.nextTick();
+
+        expect((baselineActions.importPJNZ as Mock).mock.calls[0][1]).toBe("pjnz.pjnz");
+        expect((baselineActions.importPopulation as Mock).mock.calls[0][1]).toBe("pop.csv");
+        expect((baselineActions.importShape as Mock).mock.calls[0][1]).toBe("shape.geojson");
+
+        await Vue.nextTick(); // once for baseline actions to return
+        await Vue.nextTick(); // once for survey actions to return
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("does not import baseline file if it doesn't exist", async () => {
+        const store = getStore({}, {
+            adrDatasets: [{...fakeRawDatasets[0], resources: [pjnz]}]
+        })
+        const rendered = mount(SelectDataset, {store, sync: false, stubs: ["tree-select"]});
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"});
+        rendered.find(Modal).find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+
+        await Vue.nextTick();
+
+        expect((baselineActions.importPJNZ as Mock).mock.calls[0][1]).toBe("pjnz.pjnz");
+        expect((baselineActions.importPopulation as Mock).mock.calls.length).toBe(0);
+        expect((baselineActions.importShape as Mock).mock.calls.length).toBe(0);
+
+        await Vue.nextTick();
+        // await just one tick for baseline actions to return, survey actions will not fire
+        // because shape is not present
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("imports survey and program files if they exist and shape file exists", async () => {
+        const store = getStore({}, {
+            adrDatasets: [{...fakeRawDatasets[0], resources: [shape, survey, program, anc]}]
+        })
+        const rendered = mount(SelectDataset, {store, sync: false, stubs: ["tree-select"]});
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"});
+        rendered.find(Modal).find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+
+        await Vue.nextTick();
+
+        expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
+        expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.csv");
+        expect((surveyProgramActions.importANC as Mock).mock.calls[0][1]).toBe("anc.csv");
+
+        await Vue.nextTick(); // once for baseline actions to return
+        await Vue.nextTick(); // once for survey actions to return
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("does not import survey and program file if it doesn't exist", async () => {
+        const store = getStore({}, {
+            adrDatasets: [{...fakeRawDatasets[0], resources: [shape, survey]}]
+        })
+        const rendered = mount(SelectDataset, {store, sync: false, stubs: ["tree-select"]});
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"});
+        rendered.find(Modal).find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+
+        await Vue.nextTick();
+
+        expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
+        expect((surveyProgramActions.importProgram as Mock).mock.calls.length).toBe(0);
+        expect((surveyProgramActions.importANC as Mock).mock.calls.length).toBe(0);
+
+        await Vue.nextTick(); // once for baseline actions to return
+        await Vue.nextTick(); // once for survey actions to return
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("does not import any survey and program files if shape file doesn't exist", async () => {
+        const store = getStore({}, {
+            adrDatasets: [{...fakeRawDatasets[0], resources: [survey, program, anc]}]
+        })
+        const rendered = mount(SelectDataset, {store, sync: false, stubs: ["tree-select"]});
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"});
+        rendered.find(Modal).find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+
+        await Vue.nextTick();
+
+        expect((surveyProgramActions.importSurvey as Mock).mock.calls.length).toBe(0);
+        expect((surveyProgramActions.importProgram as Mock).mock.calls.length).toBe(0);
+        expect((surveyProgramActions.importANC as Mock).mock.calls.length).toBe(0);
+
+        await Vue.nextTick();
+        // await just one tick for baseline actions to return, survey actions will not fire
+        // because shape is not present
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
 });
