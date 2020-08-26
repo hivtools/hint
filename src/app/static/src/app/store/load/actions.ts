@@ -73,7 +73,6 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, files: any, savedState: any) {
     const {dispatch, state} = context;
-    console.log("posting files: " +  JSON.stringify(files));
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
         .withError("LoadFailed")

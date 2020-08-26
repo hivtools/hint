@@ -274,4 +274,39 @@ describe("Versions actions", () => {
             done();
         });
     });
+
+    it("loadSnapshot fetches snapshot details and invokes load state action", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = {error: null};
+        const mockSnapshotDetails = {state: "{}", files: "files"};
+        mockAxios.onGet("version/1/snapshot/testSnapshot")
+            .reply(200, mockSuccess(mockSnapshotDetails));
+
+        actions.loadSnapshot({commit, dispatch, state, rootState} as any, {versionId: 1, snapshotId: "testSnapshot"});
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
+            expect(dispatch.mock.calls[0][0]).toBe("load/loadFromSnapshot");
+            expect(dispatch.mock.calls[0][1]).toStrictEqual(mockSnapshotDetails);
+            expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+            done();
+        });
+    });
+
+    it("loadSnapshot commits error if cannot fetch snapshot details", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = {error: "test error"};
+        mockAxios.onGet("version/1/snapshot/testSnapshot")
+            .reply(2500, mockFailure("test error"));
+
+        actions.loadSnapshot({commit, dispatch, state, rootState} as any, {versionId: 1, snapshotId: "testSnapshot"});
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
+            const expectedError = {detail: "test error", error: "OTHER_ERROR"};
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: VersionsMutations.VersionError, payload: expectedError});
+            expect(dispatch.mock.calls.length).toBe(0);
+            done();
+        });
+    });
 });

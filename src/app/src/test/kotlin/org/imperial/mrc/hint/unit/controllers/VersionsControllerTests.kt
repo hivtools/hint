@@ -133,7 +133,7 @@ class VersionsControllerTests {
         };
 
         val sut = VersionsController(mockSession, mockRepo, mock())
-        val result = sut.getSnapshotDetails(99, "testSnapshot")
+        val result = sut.loadSnapshotDetails(99, "testSnapshot")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         val resultJson = parser.readTree(result.body)["data"]
         assertThat(resultJson["state"].asText()).isEqualTo("TEST STATE");
