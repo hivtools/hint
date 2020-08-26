@@ -67,7 +67,7 @@ class ProjectRepositoryTests {
 
         val v1Id = insertProject("v1", userId)
         val v2Id = insertProject("v2", userId)
-        val anotherVersion = insertProject("v2", anotherUserId) //should not be returned
+        val anotherProject = insertProject("v2", anotherUserId) //should not be returned
 
         insertSnapshot("v1s1", v1Id, ago_4h, ago_3h, false)
         insertSnapshot("v1s2", v1Id, ago_2h, ago_2h, false)
@@ -75,7 +75,7 @@ class ProjectRepositoryTests {
         insertSnapshot("deletedSnap", v2Id, ago_1h, now(), true) //should not be returned
         insertSnapshot("v2s1", v2Id, ago_3h, ago_1h, false)
 
-        insertSnapshot("anotherSnap", anotherVersion, ago_1h, ago_1h, false)
+        insertSnapshot("anotherSnap", anotherProject, ago_1h, ago_1h, false)
 
         val projects = sut.getProjects(userId)
         assertThat(projects.count()).isEqualTo(2)

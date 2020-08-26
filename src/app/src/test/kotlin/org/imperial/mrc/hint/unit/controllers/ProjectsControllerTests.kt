@@ -35,26 +35,26 @@ class ProjectsControllerTests {
     private val parser = ObjectMapper()
 
     @Test
-    fun `creates new version`()
+    fun `creates new project`()
     {
         val mockSnapshotRepo = mock<SnapshotRepository> {
             on { getSnapshot("testSnapshot") } doReturn mockSnapshot
         }
 
-        val mockVersionRepo = mock<ProjectRepository> {
-            on { saveNewProject("testUser", "testVersion") } doReturn 99
+        val mockProjectRepo = mock<ProjectRepository> {
+            on { saveNewProject("testUser", "testProect") } doReturn 99
         }
 
-        val sut = ProjectsController(mockSession, mockSnapshotRepo, mockVersionRepo)
+        val sut = ProjectsController(mockSession, mockSnapshotRepo, mockProjectRepo)
 
-        val result = sut.newVersion("testVersion")
+        val result = sut.newProject("testProject")
 
         verify(mockSnapshotRepo).saveSnapshot("testSnapshot", 99)
 
         val resultJson = parser.readTree(result.body)["data"]
 
         assertThat(resultJson["id"].asInt()).isEqualTo(99)
-        assertThat(resultJson["name"].asText()).isEqualTo("testVersion")
+        assertThat(resultJson["name"].asText()).isEqualTo("testProject")
         val snapshots = resultJson["snapshots"] as ArrayNode
         assertThat(snapshots.count()).isEqualTo(1)
         assertExpectedSnapshot(snapshots[0])
@@ -76,35 +76,35 @@ class ProjectsControllerTests {
     }
 
     @Test
-    fun `gets versions`()
+    fun `gets Projects`()
     {
         val mockSnapshots = listOf(Snapshot("testSnapshot", "createdTime", "updatedTime"))
-        val mockVersions = listOf(Project(99, "testVersion", mockSnapshots))
-        val mockVersionRepo = mock<ProjectRepository>{
-            on { getProjects("testUser") } doReturn mockVersions
+        val mockProjects = listOf(Project(99, "testVProject", mockSnapshots))
+        val mockProjectRepo = mock<ProjectRepository>{
+            on { getProjects("testUser") } doReturn mockProjects
         }
 
-        val sut = ProjectsController(mockSession, mock(), mockVersionRepo)
-        val result = sut.getVersions()
+        val sut = ProjectsController(mockSession, mock(), mockProjectRepo)
+        val result = sut.getProjects()
 
         val resultJson = parser.readTree(result.body)["data"]
-        val versions = resultJson as ArrayNode
-        assertThat(versions.count()).isEqualTo(1)
-        assertThat(versions[0]["id"].asInt()).isEqualTo(99)
-        assertThat(versions[0]["name"].asText()).isEqualTo("testVersion")
-        val snapshots = versions[0]["snapshots"] as ArrayNode
+        val projects = resultJson as ArrayNode
+        assertThat(projects.count()).isEqualTo(1)
+        assertThat(projects[0]["id"].asInt()).isEqualTo(99)
+        assertThat(projects[0]["name"].asText()).isEqualTo("testProject")
+        val snapshots = projects[0]["snapshots"] as ArrayNode
         assertThat(snapshots.count()).isEqualTo(1)
         assertExpectedSnapshot(snapshots[0])
     }
 
     @Test
-    fun `gets empty versions list if user is guest`()
+    fun `gets empty projects list if user is guest`()
     {
         val guestSession = mock<Session> {
             on { userIsGuest() } doReturn true
         }
         val sut = ProjectsController(guestSession, mock(), mock())
-        val result = sut.getVersions()
+        val result = sut.getProjects()
 
         val resultJson = parser.readTree(result.body)["data"]
         val versions = resultJson as ArrayNode
