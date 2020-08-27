@@ -1,3 +1,0 @@
-#!/usr/bin/env Rscript
-rrq <- rrq::rrq_controller("hintr", redux::hiredis())
-rrq$message_send("STOP")
