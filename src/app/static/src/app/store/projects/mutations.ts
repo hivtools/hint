@@ -14,11 +14,12 @@ export enum ProjectsMutations {
 
 export const mutations: MutationTree<ProjectsState> = {
     [ProjectsMutations.SetLoading](state: ProjectsState, action: PayloadWithType<boolean>) {
+        state.error = null;
         state.loading = action.payload;
     },
     [ProjectsMutations.SetPreviousProjects](state: ProjectsState, action: PayloadWithType<Project[]>) {
-    state.previousProjects = action.payload;
-    state.loading = false;
+        state.previousProjects = action.payload;
+        state.loading = false;
     },
     [ProjectsMutations.SetSnapshotUploadPending](state: ProjectsState, action: PayloadWithType<boolean>) {
         state.snapshotUploadPending = action.payload;

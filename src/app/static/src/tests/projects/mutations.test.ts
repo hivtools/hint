@@ -16,10 +16,11 @@ describe("Projects mutations", () => {
     });
 
     it("sets loading", () => {
-        const state = mockProjectsState();
+        const state = mockProjectsState({error: "test error"} as any);
 
         mutations[ProjectsMutations.SetLoading](state, {payload: true});
         expect(state.loading).toBe(true);
+        expect(state.error).toBe(null);
 
         mutations[ProjectsMutations.SetLoading](state, {payload: false});
         expect(state.loading).toBe(false);

@@ -75,6 +75,16 @@ export interface Project {
     snapshots: Snapshot[]
 }
 
+export interface SnapshotDetails {
+    files: any,
+    state: string
+}
+
+export interface SnapshotIds {
+    versionId: number,
+    snapshotId: string
+}
+
 export interface Dataset {
     id: string
     title: string

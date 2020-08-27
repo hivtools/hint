@@ -71,4 +71,30 @@ describe("Projects actions", () => {
             done();
         }, 500);
     });
+
+    it("can load snapshot", async(done) => {
+        const state = initialProjectsState();
+        const commit = jest.fn();
+        await actions.createProject({commit, rootState, state} as any, "v1");
+
+        const createdProject = commit.mock.calls[1][0]["payload"];
+        state.currentProject = createdProject;
+        state.currentSnapshot = createdProject.snapshots[0];
+
+        await actions.uploadSnapshotState({commit, rootState: emptyState(), state} as any);
+
+        const dispatch = jest.fn();
+        const versionId = createdProject.id;
+        const snapshotId = createdProject.snapshots[0].id;
+        setTimeout(() => {
+            actions.loadSnapshot({commit, dispatch, state, rootState} as any, {versionId, snapshotId});
+            setTimeout(() => {
+                expect(dispatch.mock.calls[0][0]).toBe("load/loadFromSnapshot");
+                const fetchedSnapshot = dispatch.mock.calls[0][1];
+                expect(fetchedSnapshot.state).toBeTruthy();
+                expect(fetchedSnapshot.files).toBeTruthy();
+                done();
+            }, 400);
+        }, 2400);
+    });
 });

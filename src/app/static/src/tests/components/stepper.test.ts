@@ -521,9 +521,17 @@ describe("Stepper component", () => {
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });
 
-    it("does not push router to logged in user and currentProject set", () => {
+    it("does not push router to projects if logged in user and currentProject set", () => {
         const mockRouterPush = jest.fn();
         const projectsState = {currentProject: {id: 1, name: "testProject", snapshots: []}};
+        const wrapper =  createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
+
+        expect(mockRouterPush.mock.calls.length).toBe(0);
+    });
+
+    it("does not push router to projects if project is loading", () => {
+        const mockRouterPush = jest.fn();
+        const projectsState = {loading: true};
         const wrapper =  createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(0);

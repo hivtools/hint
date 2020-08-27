@@ -76,6 +76,7 @@
         activeStep: number,
         steps: StepDescription[],
         currentProject: Project | null
+        projectLoading: boolean
     }
 
     interface ComputedGetters {
@@ -97,7 +98,8 @@
                 loadingFromFile: state => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
             }),
             ...mapStateProps<ProjectsState, keyof ComputedState>("projects", {
-                currentProject: state => state.currentProject
+                currentProject: state => state.currentProject,
+                projectLoading: state => state.loading
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
             loading: function () {
@@ -124,7 +126,7 @@
         },
         created() {
             //redirect to Projects if logged in with no currentProject
-            if ((currentUser != "guest") && (this.currentProject== null)) {
+            if ((currentUser != "guest") && (this.currentProject== null) && (!this.projectLoading)) {
                 this.$router.push('/projects');
             }
         },

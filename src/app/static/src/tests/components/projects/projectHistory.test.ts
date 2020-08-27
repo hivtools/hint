@@ -3,6 +3,7 @@ import ProjectHistory from "../../../app/components/projects/ProjectHistory.vue"
 import {formatDateTime} from "../../../app/utils";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
+import Vue from "vue";
 import {emptyState} from "../../../app/root";
 
 describe("Projects component", () => {
@@ -12,10 +13,10 @@ describe("Projects component", () => {
         "2020-07-31T10:00:00.000000",
         "2020-08-01T11:00:00.000000"];
 
-    const store = new Vuex.Store({
+    const testStore = new Vuex.Store({
         state: emptyState()
     });
-    registerTranslations(store);
+    registerTranslations(testStore);
 
     const testPropsData = {
         projects: [
@@ -31,7 +32,7 @@ describe("Projects component", () => {
         ]
     };
 
-    const getWrapper = (propsData = testPropsData) => {
+    const getWrapper = (propsData = testPropsData, store = testStore) => {
         return mount(ProjectHistory, {store, propsData});
     };
 
@@ -57,6 +58,8 @@ describe("Projects component", () => {
         let cells = row.findAll(".snapshot-cell");
         expect(cells.at(0).text()).toBe("");
         expect(cells.at(1).text()).toBe(formatDateTime(updatedIsoDate));
+        const loadLink = cells.at(2).find("a");
+        expect(loadLink.text()).toBe("Load");
     };
 
     it("renders as expected ", () => {
@@ -113,5 +116,26 @@ describe("Projects component", () => {
     it("does not render if no previous projects", () => {
         const wrapper = getWrapper({projects: []});
         expect(wrapper.findAll("div").length).toBe(0);
+    });
+
+    it("clicking snapshot load link invokes loadSnapshot action", async () => {
+        const mockLoad = jest.fn();
+        const mockStore = new Vuex.Store({
+            state: emptyState(),
+            modules: {
+                versions: {
+                    namespaced: true,
+                    actions: {
+                        loadSnapshot: mockLoad
+                    }
+                }
+            }
+        });
+        const wrapper = getWrapper(testPropsData, mockStore);
+        const snapshotLink = wrapper.find("#snapshots-1").find("a");
+        snapshotLink.trigger("click");
+        await Vue.nextTick();
+        expect(mockLoad.mock.calls.length).toBe(1);
+        expect(mockLoad.mock.calls[0][1]).toStrictEqual({versionId: 1, snapshotId: "s11"});
     });
 });
