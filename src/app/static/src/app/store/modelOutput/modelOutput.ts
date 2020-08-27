@@ -20,13 +20,13 @@ export const modelOutputGetters = {
         return outputPlotFilters(rootState);
     },
     bubblePlotIndicators: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): ChoroplethIndicatorMetadata[] => {
-        return rootGetters['metadata/outputIndicatorsMetadata'];
+        return rootState.modelRun.result!!.plottingMetadata.choropleth.indicators;
     },
     bubblePlotFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): Filter[] => {
         return  outputPlotFilters(rootState);
     },
     choroplethIndicators: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): ChoroplethIndicatorMetadata[] => {
-        return rootGetters['metadata/outputIndicatorsMetadata'];
+        return rootState.modelRun.result!!.plottingMetadata.choropleth.indicators;
     },
     choroplethFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): DisplayFilter[] => {
         const outputFilters =  outputPlotFilters(rootState) as Filter[];

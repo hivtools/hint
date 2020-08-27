@@ -332,7 +332,8 @@ it('renders correct markup when uncertainty ranges are added', () => {
       {
         ...propsData.tabledata[5], upper: 95, lower: 5
       }
-    ]
+    ],
+    indicators: [{ ...propsData.indicators[0], error_low_column: "lower", error_high_column: "upper"}]
     });
   expect(wrapper.find('th').text()).toBe('Area');
   expect(wrapper.find('td').text()).toBe('4.1');
@@ -342,10 +343,10 @@ it('renders correct markup when uncertainty ranges are added', () => {
   expect(wrapper.findAll('td').at(2).text()).toBe('Female');
   expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence');
   expect(wrapper.findAll('td').at(3).text()).toBe('0.1');
-  expect(wrapper.findAll('th').at(4).text()).toBe('Upper');
-  expect(wrapper.findAll('td').at(4).text()).toBe('99');
-  expect(wrapper.findAll('th').at(5).text()).toBe('Lower');
-  expect(wrapper.findAll('td').at(5).text()).toBe('1');
+  expect(wrapper.findAll('th').at(4).text()).toBe('Lower');
+  expect(wrapper.findAll('td').at(4).text()).toBe('1');
+  expect(wrapper.findAll('th').at(5).text()).toBe('Upper');
+  expect(wrapper.findAll('td').at(5).text()).toBe('99');
   expect(wrapper.findAll('tr').length).toBe(3);
 });
 })
