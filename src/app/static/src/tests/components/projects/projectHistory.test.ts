@@ -123,7 +123,7 @@ describe("Projects component", () => {
         const mockStore = new Vuex.Store({
             state: emptyState(),
             modules: {
-                versions: {
+                projects: {
                     namespaced: true,
                     actions: {
                         loadSnapshot: mockLoad
