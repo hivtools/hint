@@ -42,7 +42,7 @@ class ProjectsControllerTests {
         }
 
         val mockProjectRepo = mock<ProjectRepository> {
-            on { saveNewProject("testUser", "testProect") } doReturn 99
+            on { saveNewProject("testUser", "testProject") } doReturn 99
         }
 
         val sut = ProjectsController(mockSession, mockSnapshotRepo, mockProjectRepo)
@@ -79,7 +79,7 @@ class ProjectsControllerTests {
     fun `gets Projects`()
     {
         val mockSnapshots = listOf(Snapshot("testSnapshot", "createdTime", "updatedTime"))
-        val mockProjects = listOf(Project(99, "testVProject", mockSnapshots))
+        val mockProjects = listOf(Project(99, "testProject", mockSnapshots))
         val mockProjectRepo = mock<ProjectRepository>{
             on { getProjects("testUser") } doReturn mockProjects
         }
