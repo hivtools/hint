@@ -13,7 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Component
 
 interface SnapshotRepository {
-    fun saveSnapshot(snapshotId: String, versionId: Int?)
+    fun saveSnapshot(snapshotId: String, projectId: Int?)
     fun getSnapshot(snapshotId: String): Snapshot
 
     // returns true if a new hash is saved, false if it already exists
@@ -25,16 +25,16 @@ interface SnapshotRepository {
     fun getHashesForSnapshot(snapshotId: String): Map<String, String>
     fun getSnapshotFiles(snapshotId: String): Map<String, SnapshotFile>
     fun setFilesForSnapshot(snapshotId: String, files: Map<String, SnapshotFile?>)
-    fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
-    fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, versionId: Int, userId: String)
+    fun saveSnapshotState(snapshotId: String, projectId: Int, userId: String, state: String)
+    fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, projectId: Int, userId: String)
 
-    fun getSnapshotDetails(snapshotId: String, versionId: Int, userId: String): SnapshotDetails
+    fun getSnapshotDetails(snapshotId: String, projectId: Int, userId: String): SnapshotDetails
 }
 
 @Component
 class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
 
-    override fun saveSnapshot(snapshotId: String, versionId: Int?)
+    override fun saveSnapshot(snapshotId: String, projectId: Int?)
     {
         val snapshot = dsl.selectFrom(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(snapshotId))
@@ -43,7 +43,7 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         if (snapshot == null) {
             dsl.insertInto(PROJECT_VERSION)
                     .set(PROJECT_VERSION.ID, snapshotId)
-                    .set(PROJECT_VERSION.PROJECT_ID, versionId)
+                    .set(PROJECT_VERSION.PROJECT_ID, projectId)
                     .execute()
         }
     }
@@ -60,9 +60,9 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         return Snapshot(result[PROJECT_VERSION.ID], result[PROJECT_VERSION.CREATED], result[PROJECT_VERSION.UPDATED])
     }
 
-    override fun getSnapshotDetails(snapshotId: String, versionId: Int, userId: String): SnapshotDetails
+    override fun getSnapshotDetails(snapshotId: String, projectId: Int, userId: String): SnapshotDetails
     {
-        checkSnapshotExists(snapshotId, versionId, userId)
+        checkSnapshotExists(snapshotId, projectId, userId)
         val files = getSnapshotFiles(snapshotId)
         val state = dsl.select(PROJECT_VERSION.STATE)
                 .from(PROJECT_VERSION)
@@ -159,22 +159,22 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         }
     }
 
-    override fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
+    override fun saveSnapshotState(snapshotId: String, projectId: Int, userId: String, state: String)
     {
-        checkSnapshotExists(snapshotId, versionId, userId)
+        checkSnapshotExists(snapshotId, projectId, userId)
         dsl.update(PROJECT_VERSION)
                 .set(PROJECT_VERSION.STATE, state)
                 .where(PROJECT_VERSION.ID.eq(snapshotId))
                 .execute()
     }
 
-    override fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, versionId: Int, userId: String)
+    override fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, projectId: Int, userId: String)
     {
-        checkSnapshotExists(parentSnapshotId, versionId, userId)
+        checkSnapshotExists(parentSnapshotId, projectId, userId)
 
         dsl.insertInto(PROJECT_VERSION)
                 .set(PROJECT_VERSION.ID, newSnapshotId)
-                .set(PROJECT_VERSION.PROJECT_ID, versionId)
+                .set(PROJECT_VERSION.PROJECT_ID, projectId)
                 .set(PROJECT_VERSION.STATE, dsl.select(PROJECT_VERSION.STATE)
                         .from(PROJECT_VERSION)
                         .where(PROJECT_VERSION.ID.eq(parentSnapshotId)))
@@ -184,14 +184,14 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         setFilesForSnapshot(newSnapshotId, files)
     }
 
-    private fun checkSnapshotExists(snapshotId: String, versionId: Int, userId: String)
+    private fun checkSnapshotExists(snapshotId: String, projectId: Int, userId: String)
     {
         dsl.select(PROJECT_VERSION.ID)
                 .from(PROJECT_VERSION)
                 .join(PROJECT)
                 .on(PROJECT_VERSION.PROJECT_ID.eq(PROJECT.ID))
                 .where(PROJECT_VERSION.ID.eq(snapshotId))
-                .and(PROJECT.ID.eq(versionId))
+                .and(PROJECT.ID.eq(projectId))
                 .and(PROJECT.USER_ID.eq(userId))
                 .fetchAny() ?: throw SnapshotException("snapshotDoesNotExist")
     }

@@ -7,7 +7,7 @@ import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.db.Tables.VERSION_FILE
 import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
-import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.exceptions.SnapshotException
 import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.models.SnapshotFile
@@ -30,7 +30,7 @@ class SnapshotRepositoryTests {
     private lateinit var sut: SnapshotRepository
 
     @Autowired
-    private lateinit var versionRepo: VersionRepository
+    private lateinit var projectRepo: ProjectRepository
 
     @Autowired
     private lateinit var userRepo: UserLogic
@@ -42,29 +42,29 @@ class SnapshotRepositoryTests {
     private val testEmail = "test.user@test.com"
 
     @Test
-    fun `can save snapshot without version id`() {
+    fun `can save snapshot without project id`() {
         sut.saveSnapshot(snapshotId, null)
 
         val snapshot = dsl.selectFrom(PROJECT_VERSION)
                 .fetchOne()
         assertThat(snapshot[PROJECT_VERSION.ID]).isEqualTo(snapshotId)
 
-        val versionId: Int? = snapshot[PROJECT_VERSION.PROJECT_ID]
-        assertThat(versionId).isEqualTo(null)
+        val projectId: Int? = snapshot[PROJECT_VERSION.PROJECT_ID]
+        assertThat(projectId).isEqualTo(null)
     }
 
     @Test
-    fun `can save snapshot with version id`()
+    fun `can save snapshot with project id`()
     {
         val uid = setupUser()
-        val versionId = setupVersion(uid)
-        sut.saveSnapshot(snapshotId, versionId)
+        val projectId = setupProject(uid)
+        sut.saveSnapshot(snapshotId, projectId)
 
         val snapshot = dsl.selectFrom(PROJECT_VERSION)
                 .fetchOne()
 
         assertThat(snapshot[PROJECT_VERSION.ID]).isEqualTo(snapshotId)
-        assertThat(snapshot[PROJECT_VERSION.PROJECT_ID]).isEqualTo(versionId)
+        assertThat(snapshot[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
     }
 
     @Test
@@ -81,14 +81,14 @@ class SnapshotRepositoryTests {
     @Test
     fun `can save snapshot state`() {
         val uid = setupUser()
-        val versionId = setupVersion(uid)
-        sut.saveSnapshot(snapshotId, versionId)
+        val projectId = setupProject(uid)
+        sut.saveSnapshot(snapshotId, projectId)
 
         val anotherId = "another snapshot id"
-        sut.saveSnapshot(anotherId, versionId)
+        sut.saveSnapshot(anotherId, projectId)
 
         val testState = "{\"state\": \"testState\"}";
-        sut.saveSnapshotState(snapshotId, versionId, uid, testState)
+        sut.saveSnapshotState(snapshotId, projectId, uid, testState)
 
         val savedSnapshot = dsl.select(PROJECT_VERSION.STATE)
                 .from(PROJECT_VERSION)
@@ -107,18 +107,18 @@ class SnapshotRepositoryTests {
     fun `save snapshot state throws error if snapshot does not exist`()
     {
         val uid = setupUser()
-        val versionId = setupVersion(uid)
-        assertThatThrownBy{ sut.saveSnapshotState("nonexistentSnapshot", versionId, uid, "testState") }
+        val projectId = setupProject(uid)
+        assertThatThrownBy{ sut.saveSnapshotState("nonexistentSnapshot", projectId, uid, "testState") }
                 .isInstanceOf(SnapshotException::class.java)
                 .hasMessageContaining("snapshotDoesNotExist")
     }
 
     @Test
-    fun `save snapshot state throws error if snapshot belongs to another version`()
+    fun `save snapshot state throws error if snapshot belongs to another project`()
     {
         val uid = setupUser()
-        val versionId = setupVersion(uid)
-        assertThatThrownBy{ sut.saveSnapshotState(snapshotId, versionId+1, uid, "testState") }
+        val projectId = setupProject(uid)
+        assertThatThrownBy{ sut.saveSnapshotState(snapshotId, projectId+1, uid, "testState") }
                 .isInstanceOf(SnapshotException::class.java)
                 .hasMessageContaining("snapshotDoesNotExist")
     }
@@ -127,8 +127,8 @@ class SnapshotRepositoryTests {
     fun `save snapshot state throws error if snapshot belongs to another user`()
     {
         val uid = setupUser()
-        val versionId = setupVersion(uid)
-        assertThatThrownBy{ sut.saveSnapshotState(snapshotId, versionId, "not$uid", "testState") }
+        val projectId = setupProject(uid)
+        assertThatThrownBy{ sut.saveSnapshotState(snapshotId, projectId, "not$uid", "testState") }
                 .isInstanceOf(SnapshotException::class.java)
                 .hasMessageContaining("snapshotDoesNotExist")
     }
@@ -139,13 +139,13 @@ class SnapshotRepositoryTests {
         val soon = now.plusSeconds(5)
 
         val uid = setupUser()
-        val versionId = setupVersion(uid)
-        sut.saveSnapshot(snapshotId, versionId)
+        val projectId = setupProject(uid)
+        sut.saveSnapshot(snapshotId, projectId)
         setUpHashAndSnapshotFile("pjnz_hash", "pjnz_file", snapshotId, "pjnz", false)
         setUpHashAndSnapshotFile("survey_hash", "survey_file", snapshotId, "survey", false)
-        sut.saveSnapshotState(snapshotId, versionId, uid, "TEST STATE")
+        sut.saveSnapshotState(snapshotId, projectId, uid, "TEST STATE")
 
-        sut.copySnapshot(snapshotId, "newSnapshotId", versionId, uid)
+        sut.copySnapshot(snapshotId, "newSnapshotId", projectId, uid)
 
         val newSnapshot = sut.getSnapshot("newSnapshotId")
         assertThat(newSnapshot.id).isEqualTo("newSnapshotId")
@@ -161,7 +161,7 @@ class SnapshotRepositoryTests {
                 .fetchOne()
 
         assertThat(newSnapshotRecord[PROJECT_VERSION.STATE]).isEqualTo("TEST STATE")
-        assertThat(newSnapshotRecord[PROJECT_VERSION.PROJECT_ID]).isEqualTo(versionId)
+        assertThat(newSnapshotRecord[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
 
         val files = sut.getSnapshotFiles("newSnapshotId")
         assertThat(files.keys.count()).isEqualTo(2)
@@ -175,18 +175,18 @@ class SnapshotRepositoryTests {
     fun `copy snapshot throws error if snapshot does not exist`()
     {
         val uid = setupUser()
-        val versionId = setupVersion(uid)
-        assertThatThrownBy{ sut.copySnapshot("nonexistentSnapshot", "newSnapshot", versionId, uid) }
+        val projectId = setupProject(uid)
+        assertThatThrownBy{ sut.copySnapshot("nonexistentSnapshot", "newSnapshot", projectId, uid) }
                 .isInstanceOf(SnapshotException::class.java)
                 .hasMessageContaining("snapshotDoesNotExist")
     }
 
     @Test
-    fun `copy snapshot throws error if snapshot belongs to another version`()
+    fun `copy snapshot throws error if snapshot belongs to another project`()
     {
         val uid = setupUser()
-        val versionId = setupVersion(uid)
-        assertThatThrownBy{ sut.copySnapshot(snapshotId, "newSnapshot", versionId+1, uid) }
+        val projectId = setupProject(uid)
+        assertThatThrownBy{ sut.copySnapshot(snapshotId, "newSnapshot", projectId+1, uid) }
                 .isInstanceOf(SnapshotException::class.java)
                 .hasMessageContaining("snapshotDoesNotExist")
     }
@@ -195,8 +195,8 @@ class SnapshotRepositoryTests {
     fun `copy snapshot throws error if snapshot belongs to another user`()
     {
         val uid = setupUser()
-        val versionId = setupVersion(uid)
-        assertThatThrownBy{ sut.copySnapshot(snapshotId, "newSnapshot", versionId, "not$uid") }
+        val projectId = setupProject(uid)
+        assertThatThrownBy{ sut.copySnapshot(snapshotId, "newSnapshot", projectId, "not$uid") }
                 .isInstanceOf(SnapshotException::class.java)
                 .hasMessageContaining("snapshotDoesNotExist")
     }
@@ -409,13 +409,13 @@ class SnapshotRepositoryTests {
         val soon = now.plusSeconds(5)
 
         val uid = setupUser()
-        val versionId = setupVersion(uid)
-        sut.saveSnapshot(snapshotId, versionId)
+        val projectId = setupProject(uid)
+        sut.saveSnapshot(snapshotId, projectId)
         setUpHashAndSnapshotFile("pjnz_hash", "pjnz_file", snapshotId, "pjnz", false)
         setUpHashAndSnapshotFile("survey_hash", "survey_file", snapshotId, "survey", false)
-        sut.saveSnapshotState(snapshotId, versionId, uid, "TEST STATE")
+        sut.saveSnapshotState(snapshotId, projectId, uid, "TEST STATE")
 
-        val result = sut.getSnapshotDetails(snapshotId, versionId, uid)
+        val result = sut.getSnapshotDetails(snapshotId, projectId, uid)
         assertThat(result.state).isEqualTo("TEST STATE")
 
         val files = result.files
@@ -430,8 +430,8 @@ class SnapshotRepositoryTests {
     fun `get snapshot details throws error if snapshot does not exist`()
     {
         val uid = setupUser()
-        val versionId = setupVersion(uid)
-        assertThatThrownBy{ sut.getSnapshotDetails("nonexistentSnapshot", versionId, uid) }
+        val projectId = setupProject(uid)
+        assertThatThrownBy{ sut.getSnapshotDetails("nonexistentSnapshot", projectId, uid) }
                 .isInstanceOf(SnapshotException::class.java)
                 .hasMessageContaining("snapshotDoesNotExist")
     }
@@ -449,9 +449,9 @@ class SnapshotRepositoryTests {
         return userRepo.getUser(testEmail)!!.id
     }
 
-    private fun setupVersion(userId: String): Int
+    private fun setupProject(userId: String): Int
     {
-       return versionRepo.saveNewVersion(userId, "testVersion")
+       return projectRepo.saveNewProject(userId, "testProject")
     }
 
     private fun setUpSnapshotAndHash() {

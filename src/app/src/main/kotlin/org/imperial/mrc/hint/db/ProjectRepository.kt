@@ -4,28 +4,28 @@ import org.jooq.DSLContext
 import org.imperial.mrc.hint.db.Tables.PROJECT
 import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
 import org.imperial.mrc.hint.models.Snapshot
-import org.imperial.mrc.hint.models.Version
+import org.imperial.mrc.hint.models.Project
 import org.springframework.stereotype.Component
 
-interface VersionRepository
+interface ProjectRepository
 {
-    fun saveNewVersion(userId: String, versionName: String): Int
-    fun getVersions(userId: String): List<Version>
+    fun saveNewProject(userId: String, projectName: String): Int
+    fun getProjects(userId: String): List<Project>
 }
 
 @Component
-class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
-    override fun saveNewVersion(userId: String, versionName: String): Int
+class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
+    override fun saveNewProject(userId: String, projectName: String): Int
     {
         val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME)
-                .values(userId, versionName)
+                .values(userId, projectName)
                 .returning(PROJECT.ID)
                 .fetchOne();
 
         return result[PROJECT.ID]
     }
 
-    override fun getVersions(userId: String): List<Version> {
+    override fun getProjects(userId: String): List<Project> {
         val result =
                 dsl.select(
                         PROJECT.ID,
@@ -43,7 +43,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
 
         return result.groupBy { it[PROJECT.ID] }
                 .map { v ->
-                    Version(v.key, v.value[0][PROJECT.NAME],
+                    Project(v.key, v.value[0][PROJECT.NAME],
                             v.value.map { s ->
                                 Snapshot(s[PROJECT_VERSION.ID], s[PROJECT_VERSION.CREATED],
                                         s[PROJECT_VERSION.UPDATED])

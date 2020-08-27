@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.unit.controllers
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
-import org.imperial.mrc.hint.controllers.VersionsController
+import org.imperial.mrc.hint.controllers.ProjectsController
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import com.nhaarman.mockito_kotlin.doReturn
@@ -11,15 +11,15 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.db.SnapshotRepository
-import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.models.Snapshot
 import org.imperial.mrc.hint.models.SnapshotDetails
 import org.imperial.mrc.hint.models.SnapshotFile
-import org.imperial.mrc.hint.models.Version
+import org.imperial.mrc.hint.models.Project
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 
-class VersionsControllerTests {
+class ProjectsControllerTests {
     private val mockProfile = mock<CommonProfile> {
         on { id } doReturn "testUser"
     }
@@ -35,26 +35,26 @@ class VersionsControllerTests {
     private val parser = ObjectMapper()
 
     @Test
-    fun `creates new version`()
+    fun `creates new project`()
     {
         val mockSnapshotRepo = mock<SnapshotRepository> {
             on { getSnapshot("testSnapshot") } doReturn mockSnapshot
         }
 
-        val mockVersionRepo = mock<VersionRepository> {
-            on { saveNewVersion("testUser", "testVersion") } doReturn 99
+        val mockProjectRepo = mock<ProjectRepository> {
+            on { saveNewProject("testUser", "testProject") } doReturn 99
         }
 
-        val sut = VersionsController(mockSession, mockSnapshotRepo, mockVersionRepo)
+        val sut = ProjectsController(mockSession, mockSnapshotRepo, mockProjectRepo)
 
-        val result = sut.newVersion("testVersion")
+        val result = sut.newProject("testProject")
 
         verify(mockSnapshotRepo).saveSnapshot("testSnapshot", 99)
 
         val resultJson = parser.readTree(result.body)["data"]
 
         assertThat(resultJson["id"].asInt()).isEqualTo(99)
-        assertThat(resultJson["name"].asText()).isEqualTo("testVersion")
+        assertThat(resultJson["name"].asText()).isEqualTo("testProject")
         val snapshots = resultJson["snapshots"] as ArrayNode
         assertThat(snapshots.count()).isEqualTo(1)
         assertExpectedSnapshot(snapshots[0])
@@ -66,7 +66,7 @@ class VersionsControllerTests {
         val mockSnapshotRepo = mock<SnapshotRepository> {
             on { getSnapshot("testSnapshot") } doReturn mockSnapshot
         }
-        val sut = VersionsController(mockSession, mockSnapshotRepo, mock())
+        val sut = ProjectsController(mockSession, mockSnapshotRepo, mock())
         val result = sut.newSnapshot(99, "parentSnapshot")
 
         verify(mockSnapshotRepo).copySnapshot("parentSnapshot", "testSnapshot",99, "testUser" )
@@ -76,35 +76,35 @@ class VersionsControllerTests {
     }
 
     @Test
-    fun `gets versions`()
+    fun `gets Projects`()
     {
         val mockSnapshots = listOf(Snapshot("testSnapshot", "createdTime", "updatedTime"))
-        val mockVersions = listOf(Version(99, "testVersion", mockSnapshots))
-        val mockVersionRepo = mock<VersionRepository>{
-            on { getVersions("testUser") } doReturn mockVersions
+        val mockProjects = listOf(Project(99, "testProject", mockSnapshots))
+        val mockProjectRepo = mock<ProjectRepository>{
+            on { getProjects("testUser") } doReturn mockProjects
         }
 
-        val sut = VersionsController(mockSession, mock(), mockVersionRepo)
-        val result = sut.getVersions()
+        val sut = ProjectsController(mockSession, mock(), mockProjectRepo)
+        val result = sut.getProjects()
 
         val resultJson = parser.readTree(result.body)["data"]
-        val versions = resultJson as ArrayNode
-        assertThat(versions.count()).isEqualTo(1)
-        assertThat(versions[0]["id"].asInt()).isEqualTo(99)
-        assertThat(versions[0]["name"].asText()).isEqualTo("testVersion")
-        val snapshots = versions[0]["snapshots"] as ArrayNode
+        val projects = resultJson as ArrayNode
+        assertThat(projects.count()).isEqualTo(1)
+        assertThat(projects[0]["id"].asInt()).isEqualTo(99)
+        assertThat(projects[0]["name"].asText()).isEqualTo("testProject")
+        val snapshots = projects[0]["snapshots"] as ArrayNode
         assertThat(snapshots.count()).isEqualTo(1)
         assertExpectedSnapshot(snapshots[0])
     }
 
     @Test
-    fun `gets empty versions list if user is guest`()
+    fun `gets empty projects list if user is guest`()
     {
         val guestSession = mock<Session> {
             on { userIsGuest() } doReturn true
         }
-        val sut = VersionsController(guestSession, mock(), mock())
-        val result = sut.getVersions()
+        val sut = ProjectsController(guestSession, mock(), mock())
+        val result = sut.getProjects()
 
         val resultJson = parser.readTree(result.body)["data"]
         val versions = resultJson as ArrayNode
@@ -115,7 +115,7 @@ class VersionsControllerTests {
     fun `can upload state`()
     {
         val mockRepo = mock<SnapshotRepository>();
-        val sut = VersionsController(mockSession, mockRepo, mock())
+        val sut = ProjectsController(mockSession, mockRepo, mock())
 
         val result = sut.uploadState(99, "testSnapshot", "testState")
 
@@ -132,7 +132,7 @@ class VersionsControllerTests {
           on { getSnapshotDetails("testSnapshot", 99, "testUser") }  doReturn mockDetails
         };
 
-        val sut = VersionsController(mockSession, mockRepo, mock())
+        val sut = ProjectsController(mockSession, mockRepo, mock())
         val result = sut.getSnapshotDetails(99, "testSnapshot")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         val resultJson = parser.readTree(result.body)["data"]
