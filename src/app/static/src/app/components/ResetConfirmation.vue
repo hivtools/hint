@@ -74,7 +74,7 @@
         },
         computed: {
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
-            currentSnapshotId: mapStateProp<ProjectsState, string | null>("versions", state => {
+            currentSnapshotId: mapStateProp<ProjectsState, string | null>("projects", state => {
                 return state.currentSnapshot && state.currentSnapshot.id;
             }),
             guestUser: function() {

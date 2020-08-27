@@ -1,12 +1,12 @@
-import {mockAxios, mockFailure, mockRootState, mockSuccess, mockVersionsState} from "../mocks";
+import {mockAxios, mockFailure, mockRootState, mockSuccess, mockProjectsState} from "../mocks";
 import {actions} from "../../app/store/projects/actions";
-import {VersionsMutations} from "../../app/store/projects/mutations";
+import {ProjectsMutations} from "../../app/store/projects/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
 import {ErrorsMutation} from "../../app/store/errors/mutations";
 import {Project} from "../../app/types";
 import {serialiseState} from "../../app/localStorageManager";
 
-describe("Versions actions", () => {
+describe("Projects actions", () => {
     beforeEach(() => {
         mockAxios.reset();  
         // stop apiService logging to console
@@ -21,83 +21,83 @@ describe("Versions actions", () => {
 
     const rootState = mockRootState();
 
-    const mockVersion: Project = {id: 1, name: "testVersion", snapshots: [{id: "snap-id", created: "", updated: ""}]};
+    const mockProject: Project = {id: 1, name: "testProject", snapshots: [{id: "snap-id", created: "", updated: ""}]};
 
-    it("createVersion posts to new version endpoint and sets error on unsuccessful response", async (done) => {
+    it("createProject posts to new project endpoint and sets error on unsuccessful response", async (done) => {
         mockAxios.onPost(`/project/`)
             .reply(500, mockFailure("TestError"));
 
         const commit = jest.fn();
-        const state = mockVersionsState({error: "TEST ERROR" as any});
+        const state = mockProjectsState({error: "TEST ERROR" as any});
 
-        actions.createVersion({commit, state, rootState} as any, "newVersion");
+        actions.createProject({commit, state, rootState} as any, "newProject");
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
 
             const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
             expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: VersionsMutations.VersionError,
+                type: ProjectsMutations.ProjectError,
                 payload: expectedError
             });
             done();
         });
     });
 
-    it("createVersion posts to new version endpoint and resets version with root on successful response", async (done) => {
+    it("createProject posts to new project endpoint and resets project with root on successful response", async (done) => {
         mockAxios.onPost(`/project/`)
-            .reply(200, mockSuccess("TestVersion"));
+            .reply(200, mockSuccess("TestProject"));
 
         const commit = jest.fn();
-        const state = mockVersionsState();
+        const state = mockProjectsState();
 
-        actions.createVersion({commit, state, rootState} as any, "newVersion");
+        actions.createProject({commit, state, rootState} as any, "newProject");
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
 
             const posted = mockAxios.history.post[0].data;
-            expect(posted).toEqual("name=newVersion");
-            expect(commit.mock.calls[1][0]).toStrictEqual({type: RootMutation.SetVersion, payload: "TestVersion"});
+            expect(posted).toEqual("name=newProject");
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: RootMutation.SetProject, payload: "TestProject"});
             expect(commit.mock.calls[1][1]).toStrictEqual({root: true});
             done();
         });
     });
 
-    it("gets versions and commits mutation on successful response", async(done) => {
-        const testVersions = [{id: 1, name: "v1", snapshots: []}];
+    it("gets projects and commits mutation on successful response", async(done) => {
+        const testProjects = [{id: 1, name: "v1", snapshots: []}];
         mockAxios.onGet("/projects/")
-            .reply(200, mockSuccess(testVersions));
+            .reply(200, mockSuccess(testProjects));
 
         const commit = jest.fn();
-        const state = mockVersionsState();
+        const state = mockProjectsState();
 
-        actions.getVersions({commit, state, rootState} as any);
+        actions.getProjects({commit, state, rootState} as any);
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
             expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: VersionsMutations.SetPreviousVersions,
-                payload: testVersions
+                type: ProjectsMutations.SetPreviousProjects,
+                payload: testProjects
             });
             done();
         });
     });
 
-    it("if current snapshot, createVersion uploads current snapshot before post to new version endpoint", async (done) => {
+    it("if current snapshot, createProject uploads current snapshot before post to new project endpoint", async (done) => {
         mockAxios.onPost(`/project/`)
-            .reply(200, mockSuccess("TestVersion"));
+            .reply(200, mockSuccess("TestProject"));
         mockAxios.onPost( "/project/1/snapshot/snap-id/state/")
             .reply(200, mockSuccess("ok"));
 
         const commit = jest.fn();
-        const state = mockVersionsState({
-            currentVersion: mockVersion,
-            currentSnapshot: mockVersion.snapshots[0],
+        const state = mockProjectsState({
+            currentProject: mockProject,
+            currentSnapshot: mockProject.snapshots[0],
             snapshotUploadPending: true
         });
 
-        actions.createVersion({commit, state, rootState} as any, "newVersion");
+        actions.createProject({commit, state, rootState} as any, "newProject");
 
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(2);
@@ -107,20 +107,20 @@ describe("Versions actions", () => {
         });
     });
 
-    it("gets versions and sets error on unsuccessful response", async(done) => {
+    it("gets projects and sets error on unsuccessful response", async(done) => {
         mockAxios.onGet("/projects/")
             .reply(500, mockFailure("TestError"));
 
         const commit = jest.fn();
-        const state = mockVersionsState();
+        const state = mockProjectsState();
 
-        actions.getVersions({commit, state, rootState} as any);
+        actions.getProjects({commit, state, rootState} as any);
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: VersionsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
             const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
             expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: VersionsMutations.VersionError,
+                type: ProjectsMutations.ProjectError,
                 payload: expectedError
             });
             done();
@@ -129,7 +129,7 @@ describe("Versions actions", () => {
 
     it("uploadSnapshotState does nothing if no current snapshot", async (done) => {
         const commit = jest.fn();
-        const state = mockVersionsState();
+        const state = mockProjectsState();
 
         actions.uploadSnapshotState({commit, state, rootState} as any);
 
@@ -142,9 +142,9 @@ describe("Versions actions", () => {
 
     it("uploadSnapshotState does nothing if no snapshot upload is pending", async (done) => {
         const commit = jest.fn();
-        const state = mockVersionsState({
-            currentVersion: mockVersion,
-            currentSnapshot: mockVersion.snapshots[0],
+        const state = mockProjectsState({
+            currentProject: mockProject,
+            currentSnapshot: mockProject.snapshots[0],
             snapshotUploadPending: true
         });
 
@@ -159,9 +159,9 @@ describe("Versions actions", () => {
 
     it("uploadSnapshotState sets pending then unsets and uploads state, and commits SnapshotUploadSuccess", async (done) => {
         const commit = jest.fn();
-        const state = mockVersionsState({
-            currentVersion: mockVersion,
-            currentSnapshot: mockVersion.snapshots[0],
+        const state = mockProjectsState({
+            currentProject: mockProject,
+            currentSnapshot: mockProject.snapshots[0],
             snapshotUploadPending: false
         });
 
@@ -171,13 +171,13 @@ describe("Versions actions", () => {
 
         actions.uploadSnapshotState({commit, state, rootState} as any);
         expect(commit.mock.calls[0][0]).toStrictEqual(
-            {type: VersionsMutations.SetSnapshotUploadPending, payload: true});
+            {type: ProjectsMutations.SetSnapshotUploadPending, payload: true});
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(3);
             expect(commit.mock.calls[1][0]).toStrictEqual(
-                {type: VersionsMutations.SetSnapshotUploadPending, payload: false});
-            expect(commit.mock.calls[2][0].type).toStrictEqual(VersionsMutations.SnapshotUploadSuccess);
+                {type: ProjectsMutations.SetSnapshotUploadPending, payload: false});
+            expect(commit.mock.calls[2][0].type).toStrictEqual(ProjectsMutations.SnapshotUploadSuccess);
 
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe(url);
@@ -189,9 +189,9 @@ describe("Versions actions", () => {
 
     it("uploadSnapshotState commits ErrorAdded on error response", async (done) => {
         const commit = jest.fn();
-        const state = mockVersionsState({
-            currentVersion: mockVersion,
-            currentSnapshot: mockVersion.snapshots[0],
+        const state = mockProjectsState({
+            currentProject: mockProject,
+            currentSnapshot: mockProject.snapshots[0],
             snapshotUploadPending: false
         });
 
@@ -212,9 +212,9 @@ describe("Versions actions", () => {
 
     it("newSnapshot uploads current snapshot state then requests new snapshot, commits SnapshotCreated", async (done) => {
         const commit = jest.fn();
-        const state = mockVersionsState({
-            currentVersion: mockVersion,
-            currentSnapshot: mockVersion.snapshots[0]
+        const state = mockProjectsState({
+            currentProject: mockProject,
+            currentSnapshot: mockProject.snapshots[0]
         });
 
         const stateUrl = "/project/1/snapshot/snap-id/state/";
@@ -237,10 +237,10 @@ describe("Versions actions", () => {
             expect(mockAxios.history.post[1].url).toBe(url);
 
             expect(commit.mock.calls.length).toBe(3);
-            expect(commit.mock.calls[0][0].type).toBe(VersionsMutations.SetSnapshotUploadPending);
+            expect(commit.mock.calls[0][0].type).toBe(ProjectsMutations.SetSnapshotUploadPending);
             expect(commit.mock.calls[0][0].payload).toBe(false);
-            expect(commit.mock.calls[1][0].type).toBe(VersionsMutations.SnapshotUploadSuccess);
-            expect(commit.mock.calls[2][0].type).toBe(VersionsMutations.SnapshotCreated);
+            expect(commit.mock.calls[1][0].type).toBe(ProjectsMutations.SnapshotUploadSuccess);
+            expect(commit.mock.calls[2][0].type).toBe(ProjectsMutations.SnapshotCreated);
             expect(commit.mock.calls[2][0].payload).toStrictEqual(newSnapshot);
 
             done();
@@ -249,9 +249,9 @@ describe("Versions actions", () => {
 
     it("newSnapshot adds error on error response", async (done) => {
         const commit = jest.fn();
-        const state = mockVersionsState({
-            currentVersion: mockVersion,
-            currentSnapshot: mockVersion.snapshots[0]
+        const state = mockProjectsState({
+            currentProject: mockProject,
+            currentSnapshot: mockProject.snapshots[0]
         });
 
         const stateUrl = "/project/1/snapshot/snap-id/state/";

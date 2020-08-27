@@ -12,7 +12,7 @@
     import {CheckIcon} from "vue-feather-icons";
     import moment from 'moment';
 
-    const namespace = "versions";
+    const namespace = "projects";
 
     interface Computed {
         time: Date | null,

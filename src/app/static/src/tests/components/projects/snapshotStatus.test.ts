@@ -1,20 +1,20 @@
 import Vuex from 'vuex';
 import {shallowMount} from '@vue/test-utils';
 import SnapshotStatus from "../../../app/components/projects/SnapshotStatus.vue";
-import {VersionsState} from "../../../app/store/projects/projects";
-import {mockVersionsState} from "../../mocks";
+import {ProjectsState} from "../../../app/store/projects/projects";
+import {mockProjectsState} from "../../mocks";
 import {CheckIcon} from "vue-feather-icons";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 
 describe("Snapshot status component", () => {
-    const getWrapper = (versionsState: Partial<VersionsState> = {}) => {
+    const getWrapper = (projectsState: Partial<ProjectsState> = {}) => {
         const store =  new Vuex.Store({
             state: emptyState(),
             modules: {
-                versions: {
+                projects: {
                     namespaced: true,
-                    state: mockVersionsState(versionsState),
+                    state: mockProjectsState(projectsState),
                 }
             }
         });

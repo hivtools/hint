@@ -133,7 +133,7 @@ export const storeOptions: StoreOptions<RootState> = {
         stepper,
         load,
         errors,
-        versions: projects
+        projects
     },
     actions: actions,
     mutations: mutations,

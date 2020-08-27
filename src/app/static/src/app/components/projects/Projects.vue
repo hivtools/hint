@@ -3,29 +3,29 @@
         <div v-if="!loading" id="projects-content" class="row">
             <div id="projects-header" class="lead col-12">
                 <span v-translate="'projectsHeaderCreate'"></span>
-                <span v-if="currentproject">
+                <span v-if="currentProject">
                     <span v-translate="'or'"></span>
                     <a v-translate="'projectsHeaderReturn'"
                        href="#" @click="handleCurrentprojectClick"></a> ({{currentProject.name}})
                 </span>
             </div>
             <div class="my-3 col-6 clearfix">
-                <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newprojectName">
+                <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
                 <button type="button"
                         class="btn btn-red mt-2 float-right"
                         :disabled="disableCreate"
-                        @click="createproject(newprojectName)"
-                        v-translate="'createproject'">
+                        @click="createProject(newprojectName)"
+                        v-translate="'createProject'">
                 </button>
             </div>
             <div class="my-3 col-12">
-                <project-history :projects="previousprojects"></project-history>
+                <project-history :projects="previousProjects"></project-history>
             </div>
             <error-alert v-if="hasError" :error="error"></error-alert>
         </div>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
-            <h2 id="loading-message" v-translate="'loadingproject'"></h2>
+            <h2 id="loading-message" v-translate="'loadingProject'"></h2>
         </div>
     </div>
 </template>
@@ -38,7 +38,7 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {Project} from "../../types";
-    import projectHistory from "./ProjectHistory.vue";
+    import ProjectHistory from "./ProjectHistory.vue";
 
     declare const currentUser: string;
 
@@ -71,8 +71,8 @@
         },
         computed: {
             ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
-                currentproject: state => state.currentProject,
-                previousprojects: state => state.previousProjects,
+                currentProject: state => state.currentProject,
+                previousProjects: state => state.previousProjects,
                 error: state => state.error,
                 hasError: state => !!state.error,
                 loading: state => state.loading
@@ -95,7 +95,7 @@
         components: {
             ErrorAlert,
             LoadingSpinner,
-            projectHistory
+            ProjectHistory
         }
     });
 </script>
