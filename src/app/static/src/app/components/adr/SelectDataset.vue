@@ -2,9 +2,9 @@
     <div class="d-flex">
         <div v-if="selectedDataset" style="margin-top:8px">
             <span class="font-weight-bold">Selected dataset:</span>
-            <a :href="selectedDataset.url" target="_blank">{{selectedDataset.title}}</a>
+            <a :href="selectedDataset.url" target="_blank">{{ selectedDataset.title }}</a>
         </div>
-        <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{selectText}}</button>
+        <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{ selectText }}</button>
         <modal id="dataset" :open="open">
             <h4>Browse ADR</h4>
             <div v-if="!loading">
@@ -107,10 +107,9 @@
                 }
             },
             selectText() {
-                if (this.selectedDataset){
+                if (this.selectedDataset) {
                     return "Edit"
-                }
-                else {
+                } else {
                     return "Select ADR dataset"
                 }
             }

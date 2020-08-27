@@ -5,8 +5,8 @@ import org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.logic.UserLogic
-import org.imperial.mrc.hint.db.Tables.SNAPSHOT_FILE
-import org.imperial.mrc.hint.db.Tables.VERSION_SNAPSHOT
+import org.imperial.mrc.hint.db.Tables.VERSION_FILE
+import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.SnapshotException
 import org.imperial.mrc.hint.helpers.TranslationAssert
@@ -45,11 +45,11 @@ class SnapshotRepositoryTests {
     fun `can save snapshot without version id`() {
         sut.saveSnapshot(snapshotId, null)
 
-        val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
+        val snapshot = dsl.selectFrom(PROJECT_VERSION)
                 .fetchOne()
-        assertThat(snapshot[VERSION_SNAPSHOT.ID]).isEqualTo(snapshotId)
+        assertThat(snapshot[PROJECT_VERSION.ID]).isEqualTo(snapshotId)
 
-        val versionId: Int? = snapshot[VERSION_SNAPSHOT.VERSION_ID]
+        val versionId: Int? = snapshot[PROJECT_VERSION.PROJECT_ID]
         assertThat(versionId).isEqualTo(null)
     }
 
@@ -60,11 +60,11 @@ class SnapshotRepositoryTests {
         val versionId = setupVersion(uid)
         sut.saveSnapshot(snapshotId, versionId)
 
-        val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
+        val snapshot = dsl.selectFrom(PROJECT_VERSION)
                 .fetchOne()
 
-        assertThat(snapshot[VERSION_SNAPSHOT.ID]).isEqualTo(snapshotId)
-        assertThat(snapshot[VERSION_SNAPSHOT.VERSION_ID]).isEqualTo(versionId)
+        assertThat(snapshot[PROJECT_VERSION.ID]).isEqualTo(snapshotId)
+        assertThat(snapshot[PROJECT_VERSION.PROJECT_ID]).isEqualTo(versionId)
     }
 
     @Test
@@ -72,10 +72,10 @@ class SnapshotRepositoryTests {
 
         sut.saveSnapshot(snapshotId, null)
         sut.saveSnapshot(snapshotId, null)
-        val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
+        val snapshot = dsl.selectFrom(PROJECT_VERSION)
                 .fetchOne()
 
-        assertThat(snapshot[VERSION_SNAPSHOT.ID]).isEqualTo(snapshotId)
+        assertThat(snapshot[PROJECT_VERSION.ID]).isEqualTo(snapshotId)
     }
 
     @Test
@@ -90,17 +90,17 @@ class SnapshotRepositoryTests {
         val testState = "{\"state\": \"testState\"}";
         sut.saveSnapshotState(snapshotId, versionId, uid, testState)
 
-        val savedSnapshot = dsl.select(VERSION_SNAPSHOT.STATE)
-                .from(VERSION_SNAPSHOT)
-                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
+        val savedSnapshot = dsl.select(PROJECT_VERSION.STATE)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(snapshotId))
                 .fetchOne()
-        assertThat(savedSnapshot[VERSION_SNAPSHOT.STATE]).isEqualTo(testState)
+        assertThat(savedSnapshot[PROJECT_VERSION.STATE]).isEqualTo(testState)
 
-        val anotherSnapshot = dsl.select(VERSION_SNAPSHOT.STATE)
-                .from(VERSION_SNAPSHOT)
-                .where(VERSION_SNAPSHOT.ID.eq(anotherId))
+        val anotherSnapshot = dsl.select(PROJECT_VERSION.STATE)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(anotherId))
                 .fetchOne()
-        assertThat(anotherSnapshot[VERSION_SNAPSHOT.STATE]).isEqualTo(null)
+        assertThat(anotherSnapshot[PROJECT_VERSION.STATE]).isEqualTo(null)
     }
 
     @Test
@@ -155,13 +155,13 @@ class SnapshotRepositoryTests {
         val updated = LocalDateTime.parse(newSnapshot.updated, ISO_LOCAL_DATE_TIME)
         assertThat(updated).isBetween(now, soon)
 
-        val newSnapshotRecord = dsl.select(VERSION_SNAPSHOT.STATE, VERSION_SNAPSHOT.VERSION_ID)
-                .from(VERSION_SNAPSHOT)
-                .where(VERSION_SNAPSHOT.ID.eq("newSnapshotId"))
+        val newSnapshotRecord = dsl.select(PROJECT_VERSION.STATE, PROJECT_VERSION.PROJECT_ID)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq("newSnapshotId"))
                 .fetchOne()
 
-        assertThat(newSnapshotRecord[VERSION_SNAPSHOT.STATE]).isEqualTo("TEST STATE")
-        assertThat(newSnapshotRecord[VERSION_SNAPSHOT.VERSION_ID]).isEqualTo(versionId)
+        assertThat(newSnapshotRecord[PROJECT_VERSION.STATE]).isEqualTo("TEST STATE")
+        assertThat(newSnapshotRecord[PROJECT_VERSION.PROJECT_ID]).isEqualTo(versionId)
 
         val files = sut.getSnapshotFiles("newSnapshotId")
         assertThat(files.keys.count()).isEqualTo(2)
@@ -236,13 +236,13 @@ class SnapshotRepositoryTests {
         setUpSnapshotAndHash()
         sut.saveSnapshotFile(snapshotId, FileType.PJNZ, "newhash", "original.pjnz")
 
-        val record = dsl.selectFrom(SNAPSHOT_FILE)
+        val record = dsl.selectFrom(VERSION_FILE)
                 .fetchOne()
 
-        assertThat(record[SNAPSHOT_FILE.FILENAME]).isEqualTo("original.pjnz")
-        assertThat(record[SNAPSHOT_FILE.HASH]).isEqualTo("newhash")
-        assertThat(record[SNAPSHOT_FILE.SNAPSHOT]).isEqualTo(snapshotId)
-        assertThat(record[SNAPSHOT_FILE.TYPE]).isEqualTo("pjnz")
+        assertThat(record[VERSION_FILE.FILENAME]).isEqualTo("original.pjnz")
+        assertThat(record[VERSION_FILE.HASH]).isEqualTo("newhash")
+        assertThat(record[VERSION_FILE.VERSION]).isEqualTo(snapshotId)
+        assertThat(record[VERSION_FILE.TYPE]).isEqualTo("pjnz")
     }
 
     @Test
@@ -262,8 +262,8 @@ class SnapshotRepositoryTests {
 
         // correct details
         sut.removeSnapshotFile(snapshotId, FileType.PJNZ)
-        val records = dsl.selectFrom(SNAPSHOT_FILE)
-                .where(SNAPSHOT_FILE.HASH.eq(hash))
+        val records = dsl.selectFrom(VERSION_FILE)
+                .where(VERSION_FILE.HASH.eq(hash))
 
         assertThat(records.count()).isEqualTo(0)
     }
@@ -276,14 +276,14 @@ class SnapshotRepositoryTests {
         sut.saveNewHash("anotherhash")
         sut.saveSnapshotFile(snapshotId, FileType.PJNZ, "anotherhash", "anotherfilename.pjnz")
 
-        val records = dsl.selectFrom(SNAPSHOT_FILE)
+        val records = dsl.selectFrom(VERSION_FILE)
                 .fetch()
 
         assertThat(records.count()).isEqualTo(1)
-        assertThat(records[0][SNAPSHOT_FILE.FILENAME]).isEqualTo("anotherfilename.pjnz")
-        assertThat(records[0][SNAPSHOT_FILE.HASH]).isEqualTo("anotherhash")
-        assertThat(records[0][SNAPSHOT_FILE.SNAPSHOT]).isEqualTo(snapshotId)
-        assertThat(records[0][SNAPSHOT_FILE.TYPE]).isEqualTo("pjnz")
+        assertThat(records[0][VERSION_FILE.FILENAME]).isEqualTo("anotherfilename.pjnz")
+        assertThat(records[0][VERSION_FILE.HASH]).isEqualTo("anotherhash")
+        assertThat(records[0][VERSION_FILE.VERSION]).isEqualTo(snapshotId)
+        assertThat(records[0][VERSION_FILE.TYPE]).isEqualTo("pjnz")
     }
 
     @Test
@@ -333,21 +333,21 @@ class SnapshotRepositoryTests {
                 "population" to null //should not attempt to save a null file
         ));
 
-        val records = dsl.selectFrom(SNAPSHOT_FILE)
-                .orderBy(SNAPSHOT_FILE.TYPE)
+        val records = dsl.selectFrom(VERSION_FILE)
+                .orderBy(VERSION_FILE.TYPE)
                 .fetch()
 
         assertThat(records.count()).isEqualTo(2);
 
-        assertThat(records[0][SNAPSHOT_FILE.FILENAME]).isEqualTo("pjnz_file")
-        assertThat(records[0][SNAPSHOT_FILE.HASH]).isEqualTo("pjnz_hash")
-        assertThat(records[0][SNAPSHOT_FILE.SNAPSHOT]).isEqualTo(snapshotId)
-        assertThat(records[0][SNAPSHOT_FILE.TYPE]).isEqualTo("pjnz")
+        assertThat(records[0][VERSION_FILE.FILENAME]).isEqualTo("pjnz_file")
+        assertThat(records[0][VERSION_FILE.HASH]).isEqualTo("pjnz_hash")
+        assertThat(records[0][VERSION_FILE.VERSION]).isEqualTo(snapshotId)
+        assertThat(records[0][VERSION_FILE.TYPE]).isEqualTo("pjnz")
 
-        assertThat(records[1][SNAPSHOT_FILE.FILENAME]).isEqualTo("shape_file")
-        assertThat(records[1][SNAPSHOT_FILE.HASH]).isEqualTo("shape_hash")
-        assertThat(records[1][SNAPSHOT_FILE.SNAPSHOT]).isEqualTo(snapshotId)
-        assertThat(records[1][SNAPSHOT_FILE.TYPE]).isEqualTo("shape")
+        assertThat(records[1][VERSION_FILE.FILENAME]).isEqualTo("shape_file")
+        assertThat(records[1][VERSION_FILE.HASH]).isEqualTo("shape_hash")
+        assertThat(records[1][VERSION_FILE.VERSION]).isEqualTo(snapshotId)
+        assertThat(records[1][VERSION_FILE.TYPE]).isEqualTo("shape")
     }
 
     @Test
@@ -361,21 +361,21 @@ class SnapshotRepositoryTests {
         sut.setFilesForSnapshot(snapshotId, mapOf(
                 "shape" to SnapshotFile("shape_hash", "shape_file")))
 
-        val records = dsl.selectFrom(SNAPSHOT_FILE)
-                .orderBy(SNAPSHOT_FILE.SNAPSHOT)
+        val records = dsl.selectFrom(VERSION_FILE)
+                .orderBy(VERSION_FILE.VERSION)
                 .fetch()
 
         assertThat(records.count()).isEqualTo(2)
 
-        assertThat(records[0][SNAPSHOT_FILE.FILENAME]).isEqualTo("shape_file")
-        assertThat(records[0][SNAPSHOT_FILE.HASH]).isEqualTo("shape_hash")
-        assertThat(records[0][SNAPSHOT_FILE.SNAPSHOT]).isEqualTo(snapshotId)
-        assertThat(records[0][SNAPSHOT_FILE.TYPE]).isEqualTo("shape")
+        assertThat(records[0][VERSION_FILE.FILENAME]).isEqualTo("shape_file")
+        assertThat(records[0][VERSION_FILE.HASH]).isEqualTo("shape_hash")
+        assertThat(records[0][VERSION_FILE.VERSION]).isEqualTo(snapshotId)
+        assertThat(records[0][VERSION_FILE.TYPE]).isEqualTo("shape")
 
-        assertThat(records[1][SNAPSHOT_FILE.FILENAME]).isEqualTo("other_shape_file")
-        assertThat(records[1][SNAPSHOT_FILE.HASH]).isEqualTo("other_shape_hash")
-        assertThat(records[1][SNAPSHOT_FILE.SNAPSHOT]).isEqualTo("sid2")
-        assertThat(records[1][SNAPSHOT_FILE.TYPE]).isEqualTo("shape")
+        assertThat(records[1][VERSION_FILE.FILENAME]).isEqualTo("other_shape_file")
+        assertThat(records[1][VERSION_FILE.HASH]).isEqualTo("other_shape_hash")
+        assertThat(records[1][VERSION_FILE.VERSION]).isEqualTo("sid2")
+        assertThat(records[1][VERSION_FILE.TYPE]).isEqualTo("shape")
     }
 
     @Test
@@ -390,16 +390,16 @@ class SnapshotRepositoryTests {
                 .isInstanceOf(SnapshotException::class.java)
                 .hasTranslatedMessage("Unable to load files for session. Specified files do not exist on the server.")
 
-        val records = dsl.selectFrom(SNAPSHOT_FILE)
-                .orderBy(SNAPSHOT_FILE.SNAPSHOT)
+        val records = dsl.selectFrom(VERSION_FILE)
+                .orderBy(VERSION_FILE.VERSION)
                 .fetch();
 
         assertThat(records.count()).isEqualTo(1);
 
-        assertThat(records[0][SNAPSHOT_FILE.FILENAME]).isEqualTo("pjnz_file")
-        assertThat(records[0][SNAPSHOT_FILE.HASH]).isEqualTo("pjnz_hash")
-        assertThat(records[0][SNAPSHOT_FILE.SNAPSHOT]).isEqualTo(snapshotId)
-        assertThat(records[0][SNAPSHOT_FILE.TYPE]).isEqualTo("pjnz")
+        assertThat(records[0][VERSION_FILE.FILENAME]).isEqualTo("pjnz_file")
+        assertThat(records[0][VERSION_FILE.HASH]).isEqualTo("pjnz_hash")
+        assertThat(records[0][VERSION_FILE.VERSION]).isEqualTo(snapshotId)
+        assertThat(records[0][VERSION_FILE.TYPE]).isEqualTo("pjnz")
 
     }
 
@@ -437,8 +437,8 @@ class SnapshotRepositoryTests {
     }
 
     private fun assertSnapshotFileExists(hash: String) {
-        val records = dsl.selectFrom(SNAPSHOT_FILE)
-                .where(SNAPSHOT_FILE.HASH.eq(hash))
+        val records = dsl.selectFrom(VERSION_FILE)
+                .where(VERSION_FILE.HASH.eq(hash))
 
         assertThat(records.count()).isEqualTo(1)
     }
@@ -468,12 +468,12 @@ class SnapshotRepositoryTests {
         if (setUpSnapshot) {
             setUpSnapshot()
         }
-        dsl.insertInto(SNAPSHOT_FILE)
-                .set(SNAPSHOT_FILE.FILENAME, filename)
+        dsl.insertInto(VERSION_FILE)
+                .set(VERSION_FILE.FILENAME, filename)
 
-                .set(SNAPSHOT_FILE.HASH, hash)
-                .set(SNAPSHOT_FILE.SNAPSHOT, snapshotId)
-                .set(SNAPSHOT_FILE.TYPE, type)
+                .set(VERSION_FILE.HASH, hash)
+                .set(VERSION_FILE.VERSION, snapshotId)
+                .set(VERSION_FILE.TYPE, type)
                 .execute()
     }
 

@@ -1,4 +1,4 @@
-import {actions} from "../../app/store/root/actions";
+import {actions as rootActions, actions} from "../../app/store/root/actions";
 import {login, rootState} from "./integrationTest";
 import {RootMutation} from "../../app/store/root/mutations";
 import {ADRSchemas} from "../../app/types";
@@ -9,12 +9,16 @@ describe("Root actions", () => {
         await login();
     });
 
+    beforeEach(async () => {
+        await rootActions.saveADRKey({commit: jest.fn(), rootState} as any, "123");
+    });
+
     it("can fetch ADR key", async () => {
         const commit = jest.fn();
         await actions.fetchADRKey({commit, rootState} as any);
 
         expect(commit.mock.calls[0][0]["type"]).toBe(RootMutation.UpdateADRKey);
-        expect(commit.mock.calls[0][0]["payload"]).toBe(null);
+        expect(commit.mock.calls[0][0]["payload"]).toBe("123");
     });
 
     it("can save ADR key", async () => {
@@ -35,11 +39,10 @@ describe("Root actions", () => {
 
     it("can fetch ADR datasets", async () => {
         const commit = jest.fn();
-        await actions.saveADRKey({commit, rootState} as any, "1234");
         await actions.getADRDatasets({commit, rootState} as any);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe(RootMutation.SetADRDatasets);
-        expect(commit.mock.calls[2][0]["payload"]).toEqual([]);
+        expect(commit.mock.calls[0][0]["type"]).toBe(RootMutation.SetADRDatasets);
+        expect(commit.mock.calls[0][0]["payload"]).toEqual([]);
     });
 
     it("can fetch ADR schemas", async () => {
