@@ -29,7 +29,7 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
         await api<RootMutation, VersionsMutations>(context)
             .withSuccess(RootMutation.SetVersion, true)
             .withError(VersionsMutations.VersionError)
-            .postAndReturn<String>("/version/", qs.stringify({name}));
+            .postAndReturn<String>("/project/", qs.stringify({name}));
     },
 
     async getVersions(context) {
@@ -38,7 +38,7 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
         await api<VersionsMutations, VersionsMutations>(context)
             .withSuccess(VersionsMutations.SetPreviousVersions)
             .withError(VersionsMutations.VersionError)
-            .get<Version[]>("/versions/");
+            .get<Version[]>("/projects/");
     },
 
     async uploadSnapshotState(context) {
@@ -62,7 +62,7 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
         api<VersionsMutations, ErrorsMutation>(context)
             .withSuccess(VersionsMutations.SnapshotCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`version/${versionId}/snapshot/?parent=${snapshotId}`)
+            .postAndReturn(`project/${versionId}/snapshot/?parent=${snapshotId}`)
     }
 };
 
@@ -75,7 +75,7 @@ async function immediateUploadSnapshotState(context: ActionContext<VersionsState
         await api<VersionsMutations, ErrorsMutation>(context)
             .withSuccess(VersionsMutations.SnapshotUploadSuccess)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`/version/${versionId}/snapshot/${snapshotId}/state/`, serialiseState(rootState));
+            .postAndReturn(`/project/${versionId}/snapshot/${snapshotId}/state/`, serialiseState(rootState));
     }
 }
 
