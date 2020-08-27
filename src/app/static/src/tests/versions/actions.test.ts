@@ -280,7 +280,7 @@ describe("Versions actions", () => {
         const dispatch = jest.fn();
         const state = {error: null};
         const mockSnapshotDetails = {state: "{}", files: "files"};
-        mockAxios.onGet("version/1/snapshot/testSnapshot")
+        mockAxios.onGet("project/1/snapshot/testSnapshot")
             .reply(200, mockSuccess(mockSnapshotDetails));
 
         actions.loadSnapshot({commit, dispatch, state, rootState} as any, {versionId: 1, snapshotId: "testSnapshot"});
