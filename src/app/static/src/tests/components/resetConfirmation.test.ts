@@ -5,7 +5,7 @@ import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {emptyState} from "../../app/root";
-import {mockErrorsState, mockVersionsState} from "../mocks";
+import {mockErrorsState, mockProjectsState} from "../mocks";
 import {mutations as versionsMutations} from "../../app/store/projects/mutations";
 import {mutations as errorMutations} from "../../app/store/errors/mutations";
 
@@ -26,9 +26,9 @@ const createStore = (newSnapshot = jest.fn()) => {
                 state: mockErrorsState(),
                 mutations: errorMutations
             },
-            versions: {
+            projects: {
                 namespaced: true,
-                state: mockVersionsState({currentVersion: {id: 1, name: "v1", snapshots: []}}),
+                state: mockProjectsState({currentProject: {id: 1, name: "v1", snapshots: []}}),
                 actions: {
                     newSnapshot
                 },
@@ -82,7 +82,7 @@ describe("Reset confirmation modal", () => {
         expect(rendered.find("p").text())
             .toContain("Changing this will result in the following steps being discarded:");
         expect(rendered.findAll("p").at(1).text())
-            .toBe("These steps will automatically be saved in a snapshot. You will be able to reload this snapshot from the Versions page.");
+            .toBe("These steps will automatically be saved in a snapshot. You will be able to reload this snapshot from the Projects page.");
 
         expectRenderedSteps(rendered);
 
@@ -160,7 +160,7 @@ describe("Reset confirmation modal", () => {
             store: createStore()
         });
 
-        rendered.vm.$store.commit("versions/SnapshotCreated", {id: "newSnapshotId"});
+        rendered.vm.$store.commit("projects/SnapshotCreated", {id: "newSnapshotId"});
         await Vue.nextTick();
 
         expect((rendered.vm as any).waitingForSnapshot).toBe(false);
@@ -199,7 +199,7 @@ describe("Reset confirmation modal", () => {
             store: createStore()
         });
 
-        rendered.vm.$store.commit("versions/SnapshotCreated", {id: "newSnapshotId"});
+        rendered.vm.$store.commit("projects/SnapshotCreated", {id: "newSnapshotId"});
         await Vue.nextTick();
 
         expect((rendered.vm as any).waitingForSnapshot).toBe(false);

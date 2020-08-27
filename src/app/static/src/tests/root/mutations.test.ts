@@ -215,13 +215,13 @@ describe("Root mutations", () => {
         router.push = mockRouterPush;
 
         const version = {id: 1, name: "newVersion", snapshots: [{id: "newSnapshot"}]};
-        mutations.SetVersion(state, {payload: version});
+        mutations.SetProject(state, {payload: version});
 
         testOnlyExpectedModulesArePopulated([], state);
         expect(state.stepper.activeStep).toBe(1);
 
-        expect(state.versions.currentVersion).toBe(version);
-        expect(state.versions.currentSnapshot).toBe(version.snapshots[0]);
+        expect(state.projects.currentProject).toBe(version);
+        expect(state.projects.currentSnapshot).toBe(version.snapshots[0]);
 
         expect(state.language).toBe(Language.fr);
         expect(state.adrDatasets).toStrictEqual(["TEST DATASETA"]);

@@ -25,7 +25,7 @@ describe("File upload component", () => {
                     namespaced: true,
                     getters: mockGetters
                 },
-                versions: {
+                projects: {
                     namespaced: true
                 },
                 errors: {

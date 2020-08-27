@@ -6,7 +6,7 @@
                 <span v-if="currentProject">
                     <span v-translate="'or'"></span>
                     <a v-translate="'projectsHeaderReturn'"
-                       href="#" @click="handleCurrentprojectClick"></a> ({{currentProject.name}})
+                       href="#" @click="handleCurrentProjectClick"></a> ({{currentProject.name}})
                 </span>
             </div>
             <div class="my-3 col-6 clearfix">
@@ -14,7 +14,7 @@
                 <button type="button"
                         class="btn btn-red mt-2 float-right"
                         :disabled="disableCreate"
-                        @click="createProject(newprojectName)"
+                        @click="createProject(newProjectName)"
                         v-translate="'createProject'">
                 </button>
             </div>
