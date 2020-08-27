@@ -2,8 +2,8 @@ package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.db.VersionRepository
-import org.imperial.mrc.hint.db.tables.Version.VERSION
-import org.imperial.mrc.hint.db.tables.VersionSnapshot.VERSION_SNAPSHOT
+import org.imperial.mrc.hint.db.tables.Project.PROJECT
+import org.imperial.mrc.hint.db.tables.ProjectVersion.PROJECT_VERSION
 import org.imperial.mrc.hint.logic.UserLogic
 import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
@@ -42,12 +42,12 @@ class VersionRepositoryTests {
 
         val versionId = sut.saveNewVersion(uid, "testVersionRepo")
 
-        val version = dsl.selectFrom(VERSION)
-                .where(VERSION.ID.eq(versionId))
+        val version = dsl.selectFrom(PROJECT)
+                .where(PROJECT.ID.eq(versionId))
                 .fetchOne()
 
-        assertThat(version[VERSION.USER_ID]).isEqualTo(uid)
-        assertThat(version[VERSION.NAME]).isEqualTo("testVersionRepo")
+        assertThat(version[PROJECT.USER_ID]).isEqualTo(uid)
+        assertThat(version[PROJECT.NAME]).isEqualTo("testVersionRepo")
     }
 
     @Test
@@ -108,22 +108,22 @@ class VersionRepositoryTests {
 
     private fun insertVersion(name: String, userId: String): Int
     {
-        val saved = dsl.insertInto(VERSION, VERSION.USER_ID, VERSION.NAME)
+        val saved = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME)
                 .values(userId, name)
-                .returning(VERSION.ID)
+                .returning(PROJECT.ID)
                 .fetchOne()
 
-        return saved[VERSION.ID]
+        return saved[PROJECT.ID]
     }
 
     private fun insertSnapshot(snapshotId: String, versionId: Int, created: Instant, updated: Instant, deleted: Boolean)
     {
-        dsl.insertInto(VERSION_SNAPSHOT,
-                VERSION_SNAPSHOT.ID,
-                VERSION_SNAPSHOT.VERSION_ID,
-                VERSION_SNAPSHOT.CREATED,
-                VERSION_SNAPSHOT.UPDATED,
-                VERSION_SNAPSHOT.DELETED)
+        dsl.insertInto(PROJECT_VERSION,
+                PROJECT_VERSION.ID,
+                PROJECT_VERSION.PROJECT_ID,
+                PROJECT_VERSION.CREATED,
+                PROJECT_VERSION.UPDATED,
+                PROJECT_VERSION.DELETED)
                 .values(snapshotId, versionId, Timestamp.from(created), Timestamp.from(updated), deleted)
                 .execute()
     }

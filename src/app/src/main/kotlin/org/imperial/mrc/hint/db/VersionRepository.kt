@@ -1,8 +1,8 @@
 package org.imperial.mrc.hint.db
 
 import org.jooq.DSLContext
-import org.imperial.mrc.hint.db.Tables.VERSION
-import org.imperial.mrc.hint.db.Tables.VERSION_SNAPSHOT
+import org.imperial.mrc.hint.db.Tables.PROJECT
+import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
 import org.imperial.mrc.hint.models.Snapshot
 import org.imperial.mrc.hint.models.Version
 import org.springframework.stereotype.Component
@@ -17,36 +17,36 @@ interface VersionRepository
 class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
     override fun saveNewVersion(userId: String, versionName: String): Int
     {
-        val result = dsl.insertInto(VERSION, VERSION.USER_ID, VERSION.NAME)
+        val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME)
                 .values(userId, versionName)
-                .returning(VERSION.ID)
+                .returning(PROJECT.ID)
                 .fetchOne();
 
-        return result[VERSION.ID]
+        return result[PROJECT.ID]
     }
 
     override fun getVersions(userId: String): List<Version> {
         val result =
                 dsl.select(
-                        VERSION.ID,
-                        VERSION.NAME,
-                        VERSION_SNAPSHOT.ID,
-                        VERSION_SNAPSHOT.CREATED,
-                        VERSION_SNAPSHOT.UPDATED)
-                        .from(VERSION)
-                        .join(VERSION_SNAPSHOT)
-                        .on(VERSION.ID.eq(VERSION_SNAPSHOT.VERSION_ID))
-                        .where(VERSION.USER_ID.eq(userId))
-                        .and(VERSION_SNAPSHOT.DELETED.eq(false))
-                        .orderBy(VERSION_SNAPSHOT.UPDATED.desc())
+                        PROJECT.ID,
+                        PROJECT.NAME,
+                        PROJECT_VERSION.ID,
+                        PROJECT_VERSION.CREATED,
+                        PROJECT_VERSION.UPDATED)
+                        .from(PROJECT)
+                        .join(PROJECT_VERSION)
+                        .on(PROJECT.ID.eq(PROJECT_VERSION.PROJECT_ID))
+                        .where(PROJECT.USER_ID.eq(userId))
+                        .and(PROJECT_VERSION.DELETED.eq(false))
+                        .orderBy(PROJECT_VERSION.UPDATED.desc())
                         .fetch()
 
-        return result.groupBy { it[VERSION.ID] }
+        return result.groupBy { it[PROJECT.ID] }
                 .map { v ->
-                    Version(v.key, v.value[0][VERSION.NAME],
+                    Version(v.key, v.value[0][PROJECT.NAME],
                             v.value.map { s ->
-                                Snapshot(s[VERSION_SNAPSHOT.ID], s[VERSION_SNAPSHOT.CREATED],
-                                        s[VERSION_SNAPSHOT.UPDATED])
+                                Snapshot(s[PROJECT_VERSION.ID], s[PROJECT_VERSION.CREATED],
+                                        s[PROJECT_VERSION.UPDATED])
                             })
                 }
                 .sortedByDescending { it.snapshots[0].updated }
