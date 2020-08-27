@@ -1,9 +1,9 @@
-import {VersionsState} from "../../../app/store/versions/versions";
+import {VersionsState} from "../../../app/store/projects/projects";
 import Vuex from "vuex";
 import {mockVersionsState} from "../../mocks";
 import {shallowMount} from "@vue/test-utils";
-import Versions from "../../../app/components/versions/Versions.vue";
-import VersionHistory from "../../../app/components/versions/VersionHistory.vue";
+import Versions from "../../../app/components/projects/Projects.vue";
+import VersionHistory from "../../../app/components/projects/ProjectHistory.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
@@ -48,7 +48,7 @@ describe("Versions component", () => {
         expect(wrapper.find("#versions-content").exists()).toBe(true);
 
         expect(wrapper.find("#versions-header").text()).toBe("Create a new version");
-        expect(wrapper.find("input").attributes()["placeholder"]).toBe("Version name");
+        expect(wrapper.find("input").attributes()["placeholder"]).toBe("Project name");
         expect(wrapper.find("button").text()).toBe("Create version");
         expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
         expect(wrapper.find(VersionHistory).props("versions")).toBe(previousVersions);

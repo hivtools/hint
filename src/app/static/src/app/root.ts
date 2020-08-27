@@ -1,7 +1,7 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
 import {Error} from "./generated";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
-import {versions, VersionsState, initialVersionsState} from "./store/versions/versions";
+import {projects, initialProjectsState, ProjectsState} from "./store/projects/projects";
 import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
 import {
     initialSurveyAndProgramState,
@@ -49,7 +49,7 @@ export interface RootState extends TranslatableState {
     stepper: StepperState,
     load: LoadState,
     errors: ErrorsState,
-    versions: VersionsState
+    projects: ProjectsState
 }
 
 export interface ReadyState {
@@ -63,8 +63,8 @@ const persistState = (store: Store<RootState>) => {
 
         const {dispatch} = store;
         const type = stripNamespace(mutation.type);
-        if (type[0] !== "versions" && type[0] !== "errors") {
-            dispatch("versions/uploadSnapshotState", {root: true});
+        if (type[0] !== "projects" && type[0] !== "errors") {
+            dispatch("projects/uploadSnapshotState", {root: true});
         }
     })
 };
@@ -116,7 +116,7 @@ export const emptyState = (): RootState => {
         load: initialLoadState(),
         plottingSelections: initialPlottingSelectionsState(),
         errors: initialErrorsState(),
-        versions: initialVersionsState()
+        projects: initialProjectsState()
     }
 };
 
@@ -133,7 +133,7 @@ export const storeOptions: StoreOptions<RootState> = {
         stepper,
         load,
         errors,
-        versions
+        versions: projects
     },
     actions: actions,
     mutations: mutations,

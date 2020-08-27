@@ -6,7 +6,7 @@ import Vuex from "vuex";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {emptyState} from "../../app/root";
 import {mockErrorsState, mockVersionsState} from "../mocks";
-import {mutations as versionsMutations} from "../../app/store/versions/mutations";
+import {mutations as versionsMutations} from "../../app/store/projects/mutations";
 import {mutations as errorMutations} from "../../app/store/errors/mutations";
 
 const createStore = (newSnapshot = jest.fn()) => {

@@ -10,9 +10,9 @@ import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
 import {DataType, initialSurveyAndProgramState} from "../surveyAndProgram/surveyAndProgram";
-import {ADRSchemas, PayloadWithType, Version} from "../../types";
+import {ADRSchemas, PayloadWithType, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
-import {initialVersionsState} from "../versions/versions";
+import {initialProjectsState} from "../projects/projects";
 import {router} from '../../router';
 
 export enum RootMutation {
@@ -21,7 +21,7 @@ export enum RootMutation {
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
     SetADRKeyError = "ADRKeyError",
-    SetVersion = "SetVersion",
+    SetProject = "SetProject",
     UpdateADRKey = "UpdateADRKey",
     SetADRDatasets = "SetADRDatasets",
     SetADRSchemas = "SetADRSchemas"
@@ -67,7 +67,7 @@ export const mutations: MutationTree<RootState> = {
             stepper: state.stepper,
             load: initialLoadState(),
             errors: initialErrorsState(),
-            versions: initialVersionsState()
+            projects: initialProjectsState()
         };
         Object.assign(state, resetState);
 
@@ -81,16 +81,16 @@ export const mutations: MutationTree<RootState> = {
         state.modelRun.ready = true;
     },
 
-    [RootMutation.SetVersion](state: RootState, action: PayloadWithType<Version>) {
+    [RootMutation.SetProject](state: RootState, action: PayloadWithType<Project>) {
         const resetState: RootState = {
             ...emptyState(),
             language: state.language,
             adrDatasets: state.adrDatasets,
             adrSchemas: state.adrSchemas,
             adrKey: state.adrKey,
-            versions: {
-                ...initialVersionsState(),
-                currentVersion: action.payload,
+            projects: {
+                ...initialProjectsState(),
+                currentProject: action.payload,
                 currentSnapshot: action.payload.snapshots[0]
             }
         };

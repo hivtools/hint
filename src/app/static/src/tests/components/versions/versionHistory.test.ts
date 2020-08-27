@@ -1,5 +1,5 @@
 import {mount, Wrapper} from "@vue/test-utils";
-import VersionHistory from "../../../app/components/versions/VersionHistory.vue";
+import VersionHistory from "../../../app/components/projects/ProjectHistory.vue";
 import {formatDateTime} from "../../../app/utils";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
@@ -62,12 +62,12 @@ describe("Versions component", () => {
     it("renders as expected ", () => {
         const wrapper = getWrapper();
 
-        expect(wrapper.find("h5").text()).toBe("Version history");
+        expect(wrapper.find("h5").text()).toBe("Project history");
 
         const headers = wrapper.find("#headers").findAll(".header-cell");
         expect(headers.length).toBe(3);
         expect(headers.at(0).text()).toBe("");
-        expect(headers.at(1).text()).toBe("Version name");
+        expect(headers.at(1).text()).toBe("Project name");
         expect(headers.at(2).text()).toBe("Last updated");
 
         testRendersVersion(wrapper, 1, "v1", isoDates[1]);

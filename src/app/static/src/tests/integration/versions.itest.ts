@@ -1,8 +1,8 @@
-import {actions} from "../../app/store/versions/actions";
+import {actions} from "../../app/store/projects/actions";
 import {login, rootState} from "./integrationTest";
-import {VersionsMutations} from "../../app/store/versions/mutations";
+import {VersionsMutations} from "../../app/store/projects/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
-import {initialVersionsState} from "../../app/store/versions/versions";
+import {initialVersionsState} from "../../app/store/projects/projects";
 import {emptyState} from "../../app/root";
 
 describe("Versions actions", () => {

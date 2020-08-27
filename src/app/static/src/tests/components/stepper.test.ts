@@ -38,8 +38,8 @@ import {ModelStatusResponse} from "../../app/generated";
 import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {VersionsState} from "../../app/store/versions/versions";
-import SnapshotStatus from "../../app/components/versions/SnapshotStatus.vue";
+import {VersionsState} from "../../app/store/projects/projects";
+import SnapshotStatus from "../../app/components/projects/SnapshotStatus.vue";
 
 const localVue = createLocalVue();
 
@@ -504,9 +504,9 @@ describe("Stepper component", () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("pushes router to versions if logged in user and currentVersion not set", () => {
+    it("pushes router to versions if logged in user and currentProject not set", () => {
         const mockRouterPush = jest.fn();
-        //current user is set in jest.config and currentVersion is not set be default in the wrapper
+        //current user is set in jest.config and currentProject is not set be default in the wrapper
         const wrapper = createSut({}, {}, {}, {}, {}, {}, {},  mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(1);
@@ -521,7 +521,7 @@ describe("Stepper component", () => {
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });
 
-    it("does not push router to logged in user and currentVersion set", () => {
+    it("does not push router to logged in user and currentProject set", () => {
         const mockRouterPush = jest.fn();
         const versionsState = {currentVersion: {id: 1, name: "testVersion", snapshots: []}};
         const wrapper =  createSut({}, {}, {}, {}, {}, {}, versionsState, mockRouterPush);

@@ -28,7 +28,7 @@ console.error = jest.fn();
 // as the app will call these actions on import
 import {app} from "../app";
 import Stepper from "../app/components/Stepper.vue";
-import Versions from "../app/components/versions/Versions.vue";
+import Versions from "../app/components/projects/Projects.vue";
 
 describe("Router", () => {
 

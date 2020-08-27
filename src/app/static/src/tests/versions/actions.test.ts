@@ -1,9 +1,9 @@
 import {mockAxios, mockFailure, mockRootState, mockSuccess, mockVersionsState} from "../mocks";
-import {actions} from "../../app/store/versions/actions";
-import {VersionsMutations} from "../../app/store/versions/mutations";
+import {actions} from "../../app/store/projects/actions";
+import {VersionsMutations} from "../../app/store/projects/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
 import {ErrorsMutation} from "../../app/store/errors/mutations";
-import {Version} from "../../app/types";
+import {Project} from "../../app/types";
 import {serialiseState} from "../../app/localStorageManager";
 
 describe("Versions actions", () => {
@@ -21,7 +21,7 @@ describe("Versions actions", () => {
 
     const rootState = mockRootState();
 
-    const mockVersion: Version = {id: 1, name: "testVersion", snapshots: [{id: "snap-id", created: "", updated: ""}]};
+    const mockVersion: Project = {id: 1, name: "testVersion", snapshots: [{id: "snap-id", created: "", updated: ""}]};
 
     it("createVersion posts to new version endpoint and sets error on unsuccessful response", async (done) => {
         mockAxios.onPost(`/project/`)

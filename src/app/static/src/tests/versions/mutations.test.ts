@@ -1,5 +1,5 @@
 import {mockVersionsState} from "../mocks";
-import {mutations, VersionsMutations} from "../../app/store/versions/mutations";
+import {mutations, VersionsMutations} from "../../app/store/projects/mutations";
 
 describe("Versions mutations", () => {
     const testNow = Date.now();

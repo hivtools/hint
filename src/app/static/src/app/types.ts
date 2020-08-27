@@ -69,7 +69,7 @@ export interface Snapshot {
     updated: string
 }
 
-export interface Version {
+export interface Project {
     id: number,
     name: string,
     snapshots: Snapshot[]
