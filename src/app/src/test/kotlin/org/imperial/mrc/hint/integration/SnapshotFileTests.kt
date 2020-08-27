@@ -15,14 +15,14 @@ class SnapshotFileTests : SecureIntegrationTests() {
     }
 
     protected fun assertSnapshotFileExists(fileType: FileType) {
-        val records = dsl.selectFrom(Tables.SNAPSHOT_FILE)
-                .where(Tables.SNAPSHOT_FILE.TYPE.eq(fileType.toString()))
+        val records = dsl.selectFrom(Tables.VERSION_FILE)
+                .where(Tables.VERSION_FILE.TYPE.eq(fileType.toString()))
         AssertionsForClassTypes.assertThat(records.count()).isEqualTo(1)
     }
 
     protected fun assertSnapshotFileDoesNotExist(fileType: FileType) {
-        val records = dsl.selectFrom(Tables.SNAPSHOT_FILE)
-                .where(Tables.SNAPSHOT_FILE.TYPE.eq(fileType.toString()))
+        val records = dsl.selectFrom(Tables.VERSION_FILE)
+                .where(Tables.VERSION_FILE.TYPE.eq(fileType.toString()))
         AssertionsForClassTypes.assertThat(records.count()).isEqualTo(0)
     }
 

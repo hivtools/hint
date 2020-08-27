@@ -85,6 +85,9 @@ export const mutations: MutationTree<RootState> = {
         const resetState: RootState = {
             ...emptyState(),
             language: state.language,
+            adrDatasets: state.adrDatasets,
+            adrSchemas: state.adrSchemas,
+            adrKey: state.adrKey,
             versions: {
                 ...initialVersionsState(),
                 currentVersion: action.payload,

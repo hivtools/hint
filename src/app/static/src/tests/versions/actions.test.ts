@@ -24,7 +24,7 @@ describe("Versions actions", () => {
     const mockVersion: Version = {id: 1, name: "testVersion", snapshots: [{id: "snap-id", created: "", updated: ""}]};
 
     it("createVersion posts to new version endpoint and sets error on unsuccessful response", async (done) => {
-        mockAxios.onPost(`/version/`)
+        mockAxios.onPost(`/project/`)
             .reply(500, mockFailure("TestError"));
 
         const commit = jest.fn();
@@ -45,7 +45,7 @@ describe("Versions actions", () => {
     });
 
     it("createVersion posts to new version endpoint and resets version with root on successful response", async (done) => {
-        mockAxios.onPost(`/version/`)
+        mockAxios.onPost(`/project/`)
             .reply(200, mockSuccess("TestVersion"));
 
         const commit = jest.fn();
@@ -66,7 +66,7 @@ describe("Versions actions", () => {
 
     it("gets versions and commits mutation on successful response", async(done) => {
         const testVersions = [{id: 1, name: "v1", snapshots: []}];
-        mockAxios.onGet("/versions/")
+        mockAxios.onGet("/projects/")
             .reply(200, mockSuccess(testVersions));
 
         const commit = jest.fn();
@@ -85,9 +85,9 @@ describe("Versions actions", () => {
     });
 
     it("if current snapshot, createVersion uploads current snapshot before post to new version endpoint", async (done) => {
-        mockAxios.onPost(`/version/`)
+        mockAxios.onPost(`/project/`)
             .reply(200, mockSuccess("TestVersion"));
-        mockAxios.onPost( "/version/1/snapshot/snap-id/state/")
+        mockAxios.onPost( "/project/1/snapshot/snap-id/state/")
             .reply(200, mockSuccess("ok"));
 
         const commit = jest.fn();
@@ -101,14 +101,14 @@ describe("Versions actions", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(2);
-            expect(mockAxios.history.post[0].url).toBe("/version/1/snapshot/snap-id/state/");
-            expect(mockAxios.history.post[1].url).toBe("/version/");
+            expect(mockAxios.history.post[0].url).toBe("/project/1/snapshot/snap-id/state/");
+            expect(mockAxios.history.post[1].url).toBe("/project/");
             done();
         });
     });
 
     it("gets versions and sets error on unsuccessful response", async(done) => {
-        mockAxios.onGet("/versions/")
+        mockAxios.onGet("/projects/")
             .reply(500, mockFailure("TestError"));
 
         const commit = jest.fn();
@@ -165,7 +165,7 @@ describe("Versions actions", () => {
             snapshotUploadPending: false
         });
 
-        const url = "/version/1/snapshot/snap-id/state/";
+        const url = "/project/1/snapshot/snap-id/state/";
         mockAxios.onPost(url)
             .reply(200, mockSuccess("ok"));
 
@@ -195,7 +195,7 @@ describe("Versions actions", () => {
             snapshotUploadPending: false
         });
 
-        const url = "/version/1/snapshot/snap-id/state/";
+        const url = "/project/1/snapshot/snap-id/state/";
         mockAxios.onPost(url)
             .reply(500, mockFailure("TEST ERROR"));
 
@@ -217,12 +217,12 @@ describe("Versions actions", () => {
             currentSnapshot: mockVersion.snapshots[0]
         });
 
-        const stateUrl = "/version/1/snapshot/snap-id/state/";
+        const stateUrl = "/project/1/snapshot/snap-id/state/";
         mockAxios.onPost(stateUrl)
             .reply(200, mockSuccess("OK"));
 
         const newSnapshot = {id: "new-snap-id", created: "new time", updated: "new time"};
-        const url = "version/1/snapshot/?parent=snap-id";
+        const url = "project/1/snapshot/?parent=snap-id";
         mockAxios.onPost(url)
             .reply(200, mockSuccess(newSnapshot));
 
@@ -254,11 +254,11 @@ describe("Versions actions", () => {
             currentSnapshot: mockVersion.snapshots[0]
         });
 
-        const stateUrl = "/version/1/snapshot/snap-id/state/";
+        const stateUrl = "/project/1/snapshot/snap-id/state/";
         mockAxios.onPost(stateUrl)
             .reply(200, mockSuccess("OK"));
 
-        const url = "version/1/snapshot/?parent=snap-id";
+        const url = "project/1/snapshot/?parent=snap-id";
         mockAxios.onPost(url)
             .reply(500, mockFailure("TEST ERROR"));
 

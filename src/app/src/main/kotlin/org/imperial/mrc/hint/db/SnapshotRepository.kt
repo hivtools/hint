@@ -13,7 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Component
 
 interface SnapshotRepository {
-    fun saveSnapshot(snapshotId: String, versionId: Int?)
+    fun saveSnapshot(snapshotId: String, projectId: Int?)
     fun getSnapshot(snapshotId: String): Snapshot
 
     // returns true if a new hash is saved, false if it already exists
@@ -25,49 +25,49 @@ interface SnapshotRepository {
     fun getHashesForSnapshot(snapshotId: String): Map<String, String>
     fun getSnapshotFiles(snapshotId: String): Map<String, SnapshotFile>
     fun setFilesForSnapshot(snapshotId: String, files: Map<String, SnapshotFile?>)
-    fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
-    fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, versionId: Int, userId: String)
+    fun saveSnapshotState(snapshotId: String, projectId: Int, userId: String, state: String)
+    fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, projectId: Int, userId: String)
 
-    fun getSnapshotDetails(snapshotId: String, versionId: Int, userId: String): SnapshotDetails
+    fun getSnapshotDetails(snapshotId: String, projectId: Int, userId: String): SnapshotDetails
 }
 
 @Component
 class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
 
-    override fun saveSnapshot(snapshotId: String, versionId: Int?)
+    override fun saveSnapshot(snapshotId: String, projectId: Int?)
     {
-        val snapshot = dsl.selectFrom(VERSION_SNAPSHOT)
-                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
+        val snapshot = dsl.selectFrom(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(snapshotId))
                 .firstOrNull()
 
         if (snapshot == null) {
-            dsl.insertInto(VERSION_SNAPSHOT)
-                    .set(VERSION_SNAPSHOT.ID, snapshotId)
-                    .set(VERSION_SNAPSHOT.VERSION_ID, versionId)
+            dsl.insertInto(PROJECT_VERSION)
+                    .set(PROJECT_VERSION.ID, snapshotId)
+                    .set(PROJECT_VERSION.PROJECT_ID, projectId)
                     .execute()
         }
     }
 
     override fun getSnapshot(snapshotId: String): Snapshot
     {
-        val result =  dsl.select(VERSION_SNAPSHOT.ID,
-                VERSION_SNAPSHOT.CREATED,
-                VERSION_SNAPSHOT.UPDATED)
-                .from(VERSION_SNAPSHOT)
-                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
+        val result =  dsl.select(PROJECT_VERSION.ID,
+                PROJECT_VERSION.CREATED,
+                PROJECT_VERSION.UPDATED)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(snapshotId))
                 .fetchOne()
 
-        return Snapshot(result[VERSION_SNAPSHOT.ID], result[VERSION_SNAPSHOT.CREATED], result[VERSION_SNAPSHOT.UPDATED])
+        return Snapshot(result[PROJECT_VERSION.ID], result[PROJECT_VERSION.CREATED], result[PROJECT_VERSION.UPDATED])
     }
 
-    override fun getSnapshotDetails(snapshotId: String, versionId: Int, userId: String): SnapshotDetails
+    override fun getSnapshotDetails(snapshotId: String, projectId: Int, userId: String): SnapshotDetails
     {
-        checkSnapshotExists(snapshotId, versionId, userId)
+        checkSnapshotExists(snapshotId, projectId, userId)
         val files = getSnapshotFiles(snapshotId)
-        val state = dsl.select(VERSION_SNAPSHOT.STATE)
-                .from(VERSION_SNAPSHOT)
-                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
-                .fetchOne()[VERSION_SNAPSHOT.STATE]
+        val state = dsl.select(PROJECT_VERSION.STATE)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(snapshotId))
+                .fetchOne()[PROJECT_VERSION.STATE]
 
         return SnapshotDetails(state, files)
     }
@@ -91,27 +91,27 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
     override fun saveSnapshotFile(snapshotId: String, type: FileType, hash: String, fileName: String) {
 
         if (getSnapshotFileRecord(snapshotId, type) == null) {
-            dsl.insertInto(SNAPSHOT_FILE)
-                    .set(SNAPSHOT_FILE.HASH, hash)
-                    .set(SNAPSHOT_FILE.TYPE, type.toString())
-                    .set(SNAPSHOT_FILE.SNAPSHOT, snapshotId)
-                    .set(SNAPSHOT_FILE.FILENAME, fileName)
+            dsl.insertInto(VERSION_FILE)
+                    .set(VERSION_FILE.HASH, hash)
+                    .set(VERSION_FILE.TYPE, type.toString())
+                    .set(VERSION_FILE.VERSION, snapshotId)
+                    .set(VERSION_FILE.FILENAME, fileName)
                     .execute()
         } else {
-            dsl.update(SNAPSHOT_FILE)
-                    .set(SNAPSHOT_FILE.HASH, hash)
-                    .set(SNAPSHOT_FILE.FILENAME, fileName)
-                    .where(SNAPSHOT_FILE.SNAPSHOT.eq(snapshotId))
-                    .and(SNAPSHOT_FILE.TYPE.eq(type.toString()))
+            dsl.update(VERSION_FILE)
+                    .set(VERSION_FILE.HASH, hash)
+                    .set(VERSION_FILE.FILENAME, fileName)
+                    .where(VERSION_FILE.VERSION.eq(snapshotId))
+                    .and(VERSION_FILE.TYPE.eq(type.toString()))
                     .execute()
         }
 
     }
 
     override fun removeSnapshotFile(snapshotId: String, type: FileType) {
-        dsl.deleteFrom(SNAPSHOT_FILE)
-                .where(SNAPSHOT_FILE.SNAPSHOT.eq(snapshotId))
-                .and(SNAPSHOT_FILE.TYPE.eq(type.toString()))
+        dsl.deleteFrom(VERSION_FILE)
+                .where(VERSION_FILE.VERSION.eq(snapshotId))
+                .and(VERSION_FILE.TYPE.eq(type.toString()))
                 .execute()
     }
 
@@ -120,17 +120,17 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
     }
 
     override fun getHashesForSnapshot(snapshotId: String): Map<String, String> {
-        return dsl.select(SNAPSHOT_FILE.HASH, SNAPSHOT_FILE.TYPE)
-                .from(SNAPSHOT_FILE)
-                .where(SNAPSHOT_FILE.SNAPSHOT.eq(snapshotId))
-                .associate { it[SNAPSHOT_FILE.TYPE] to it[SNAPSHOT_FILE.HASH] }
+        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.TYPE)
+                .from(VERSION_FILE)
+                .where(VERSION_FILE.VERSION.eq(snapshotId))
+                .associate { it[VERSION_FILE.TYPE] to it[VERSION_FILE.HASH] }
     }
 
     override fun getSnapshotFiles(snapshotId: String): Map<String, SnapshotFile> {
-        return dsl.select(SNAPSHOT_FILE.HASH, SNAPSHOT_FILE.FILENAME,SNAPSHOT_FILE.TYPE)
-                .from(SNAPSHOT_FILE)
-                .where(SNAPSHOT_FILE.SNAPSHOT.eq(snapshotId))
-                .associate { it[SNAPSHOT_FILE.TYPE] to SnapshotFile(it[SNAPSHOT_FILE.HASH], it[SNAPSHOT_FILE.FILENAME]) }
+        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME,VERSION_FILE.TYPE)
+                .from(VERSION_FILE)
+                .where(VERSION_FILE.VERSION.eq(snapshotId))
+                .associate { it[VERSION_FILE.TYPE] to SnapshotFile(it[VERSION_FILE.HASH], it[VERSION_FILE.FILENAME]) }
     }
 
     override fun setFilesForSnapshot(snapshotId: String, files: Map<String, SnapshotFile?>) {
@@ -138,17 +138,17 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
             dsl.transaction { config ->
                 val transaction = DSL.using(config)
 
-                transaction.deleteFrom(SNAPSHOT_FILE)
-                        .where(SNAPSHOT_FILE.SNAPSHOT.eq(snapshotId))
+                transaction.deleteFrom(VERSION_FILE)
+                        .where(VERSION_FILE.VERSION.eq(snapshotId))
                         .execute()
 
                 files.forEach { (fileType, snapshotFile) ->
                     if (snapshotFile != null) {
-                        transaction.insertInto(SNAPSHOT_FILE)
-                                .set(SNAPSHOT_FILE.HASH, snapshotFile.hash)
-                                .set(SNAPSHOT_FILE.TYPE, fileType)
-                                .set(SNAPSHOT_FILE.SNAPSHOT, snapshotId)
-                                .set(SNAPSHOT_FILE.FILENAME, snapshotFile.filename)
+                        transaction.insertInto(VERSION_FILE)
+                                .set(VERSION_FILE.HASH, snapshotFile.hash)
+                                .set(VERSION_FILE.TYPE, fileType)
+                                .set(VERSION_FILE.VERSION, snapshotId)
+                                .set(VERSION_FILE.FILENAME, snapshotFile.filename)
                                 .execute()
                     }
                 }
@@ -159,48 +159,48 @@ class JooqSnapshotRepository(private val dsl: DSLContext) : SnapshotRepository {
         }
     }
 
-    override fun saveSnapshotState(snapshotId: String, versionId: Int, userId: String, state: String)
+    override fun saveSnapshotState(snapshotId: String, projectId: Int, userId: String, state: String)
     {
-        checkSnapshotExists(snapshotId, versionId, userId)
-        dsl.update(VERSION_SNAPSHOT)
-                .set(VERSION_SNAPSHOT.STATE, state)
-                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
+        checkSnapshotExists(snapshotId, projectId, userId)
+        dsl.update(PROJECT_VERSION)
+                .set(PROJECT_VERSION.STATE, state)
+                .where(PROJECT_VERSION.ID.eq(snapshotId))
                 .execute()
     }
 
-    override fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, versionId: Int, userId: String)
+    override fun copySnapshot(parentSnapshotId: String, newSnapshotId: String, projectId: Int, userId: String)
     {
-        checkSnapshotExists(parentSnapshotId, versionId, userId)
+        checkSnapshotExists(parentSnapshotId, projectId, userId)
 
-        dsl.insertInto(VERSION_SNAPSHOT)
-                .set(VERSION_SNAPSHOT.ID, newSnapshotId)
-                .set(VERSION_SNAPSHOT.VERSION_ID, versionId)
-                .set(VERSION_SNAPSHOT.STATE, dsl.select(VERSION_SNAPSHOT.STATE)
-                        .from(VERSION_SNAPSHOT)
-                        .where(VERSION_SNAPSHOT.ID.eq(parentSnapshotId)))
+        dsl.insertInto(PROJECT_VERSION)
+                .set(PROJECT_VERSION.ID, newSnapshotId)
+                .set(PROJECT_VERSION.PROJECT_ID, projectId)
+                .set(PROJECT_VERSION.STATE, dsl.select(PROJECT_VERSION.STATE)
+                        .from(PROJECT_VERSION)
+                        .where(PROJECT_VERSION.ID.eq(parentSnapshotId)))
                 .execute()
 
         val files = getSnapshotFiles(parentSnapshotId)
         setFilesForSnapshot(newSnapshotId, files)
     }
 
-    private fun checkSnapshotExists(snapshotId: String, versionId: Int, userId: String)
+    private fun checkSnapshotExists(snapshotId: String, projectId: Int, userId: String)
     {
-        dsl.select(VERSION_SNAPSHOT.ID)
-                .from(VERSION_SNAPSHOT)
-                .join(VERSION)
-                .on(VERSION_SNAPSHOT.VERSION_ID.eq(VERSION.ID))
-                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
-                .and(VERSION.ID.eq(versionId))
-                .and(VERSION.USER_ID.eq(userId))
+        dsl.select(PROJECT_VERSION.ID)
+                .from(PROJECT_VERSION)
+                .join(PROJECT)
+                .on(PROJECT_VERSION.PROJECT_ID.eq(PROJECT.ID))
+                .where(PROJECT_VERSION.ID.eq(snapshotId))
+                .and(PROJECT.ID.eq(projectId))
+                .and(PROJECT.USER_ID.eq(userId))
                 .fetchAny() ?: throw SnapshotException("snapshotDoesNotExist")
     }
 
     private fun getSnapshotFileRecord(snapshotId: String, type: FileType): Record? {
-        return dsl.select(SNAPSHOT_FILE.HASH, SNAPSHOT_FILE.FILENAME)
-                .from(SNAPSHOT_FILE)
-                .where(SNAPSHOT_FILE.SNAPSHOT.eq(snapshotId))
-                .and(SNAPSHOT_FILE.TYPE.eq(type.toString()))
+        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME)
+                .from(VERSION_FILE)
+                .where(VERSION_FILE.VERSION.eq(snapshotId))
+                .and(VERSION_FILE.TYPE.eq(type.toString()))
                 .fetchAny()
     }
 

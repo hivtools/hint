@@ -1,10 +1,10 @@
 package org.imperial.mrc.hint.controllers
 
 import org.imperial.mrc.hint.db.SnapshotRepository
-import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.models.SuccessResponse
-import org.imperial.mrc.hint.models.Version
+import org.imperial.mrc.hint.models.Project
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
@@ -12,66 +12,66 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.bind.annotation.PostMapping
 
 @RestController
-class VersionsController(private val session: Session,
+class ProjectsController(private val session: Session,
                          private val snapshotRepository: SnapshotRepository,
-                         private val versionRepository: VersionRepository)
+                         private val projectRepository: ProjectRepository)
 {
-    @PostMapping("/version/")
+    @PostMapping("/project/")
     @ResponseBody
-    fun newVersion(@RequestParam("name") name: String): ResponseEntity<String>
+    fun newProject(@RequestParam("name") name: String): ResponseEntity<String>
     {
-        val versionId = versionRepository.saveNewVersion(userId(), name)
+        val projectId = projectRepository.saveNewProject(userId(), name)
 
         //Generate new snapshot id and set it as the session variable, and save new snapshot to db
         val newSnapshotId = session.generateNewSnapshotId()
-        snapshotRepository.saveSnapshot(newSnapshotId, versionId)
+        snapshotRepository.saveSnapshot(newSnapshotId, projectId)
 
         val snapshot = snapshotRepository.getSnapshot(newSnapshotId)
-        val version = Version(versionId, name, listOf(snapshot))
-        return SuccessResponse(version).asResponseEntity()
+        val project = Project(projectId, name, listOf(snapshot))
+        return SuccessResponse(project).asResponseEntity()
     }
 
-    @PostMapping("/version/{versionId}/snapshot/")
-    fun newSnapshot(@PathVariable("versionId") versionId: Int,
+    @PostMapping("/project/{projectId}/snapshot/")
+    fun newSnapshot(@PathVariable("projectId") projectId: Int,
                     @RequestParam("parent") parentSnapshotId: String): ResponseEntity<String>
     {
         val newSnapshotId = session.generateNewSnapshotId()
-        snapshotRepository.copySnapshot(parentSnapshotId, newSnapshotId, versionId, userId())
+        snapshotRepository.copySnapshot(parentSnapshotId, newSnapshotId,projectId, userId())
         val newSnapshot = snapshotRepository.getSnapshot(newSnapshotId)
         return SuccessResponse(newSnapshot).asResponseEntity();
     }
 
-    @PostMapping("/version/{versionId}/snapshot/{snapshotId}/state")
+    @PostMapping("/project/{projectId}/snapshot/{snapshotId}/state")
     @ResponseBody
-    fun uploadState(@PathVariable("versionId") versionId: Int,
+    fun uploadState(@PathVariable("projectId") projectId: Int,
                     @PathVariable("snapshotId") snapshotId: String,
                     @RequestBody state: String): ResponseEntity<String>
     {
-        snapshotRepository.saveSnapshotState(snapshotId, versionId, userId(), state)
+        snapshotRepository.saveSnapshotState(snapshotId, projectId, userId(), state)
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @GetMapping("version/{versionId}/snapshot/{snapshotId}")
+    @GetMapping("project/{projectId}/snapshot/{snapshotId}")
     @ResponseBody
-    fun loadSnapshotDetails(@PathVariable("versionId") versionId: Int,
+    fun loadSnapshotDetails(@PathVariable("projectId") projectId: Int,
                             @PathVariable("snapshotId") snapshotId: String): ResponseEntity<String>
     {
-        val snapshotDetails = snapshotRepository.getSnapshotDetails(snapshotId, versionId, userId())
+        val snapshotDetails = snapshotRepository.getSnapshotDetails(snapshotId, projectId, userId())
         session.setSnapshotId(snapshotId)
         return SuccessResponse(snapshotDetails).asResponseEntity();
     }
 
-    @GetMapping("/versions/")
+    @GetMapping("/projects/")
     @ResponseBody
-    fun getVersions(): ResponseEntity<String>
+    fun getProjects(): ResponseEntity<String>
     {
-        val versions =
+        val projects =
                 if (session.userIsGuest()) {
-                    listOf<Version>()
+                    listOf<Project>()
                 } else {
-                    versionRepository.getVersions(userId())
+                    projectRepository.getProjects(userId())
                 }
-        return SuccessResponse(versions).asResponseEntity()
+        return SuccessResponse(projects).asResponseEntity()
     }
 
     private fun userId(): String
