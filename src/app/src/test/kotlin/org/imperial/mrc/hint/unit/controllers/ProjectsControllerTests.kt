@@ -133,13 +133,15 @@ class ProjectsControllerTests {
         };
 
         val sut = ProjectsController(mockSession, mockRepo, mock())
-        val result = sut.getSnapshotDetails(99, "testSnapshot")
+        val result = sut.loadSnapshotDetails(99, "testSnapshot")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         val resultJson = parser.readTree(result.body)["data"]
         assertThat(resultJson["state"].asText()).isEqualTo("TEST STATE");
         val filesJson = resultJson["files"]
         assertThat(filesJson["pjnz"]["hash"].asText()).isEqualTo("hash1")
         assertThat(filesJson["pjnz"]["filename"].asText()).isEqualTo("filename1")
+
+        verify(mockSession).setSnapshotId("testSnapshot")
     }
 
     private fun assertExpectedSnapshot(node: JsonNode)

@@ -53,10 +53,11 @@ class ProjectsController(private val session: Session,
 
     @GetMapping("project/{projectId}/snapshot/{snapshotId}")
     @ResponseBody
-    fun getSnapshotDetails(@PathVariable("projectId") projectId: Int,
-                    @PathVariable("snapshotId") snapshotId: String): ResponseEntity<String>
+    fun loadSnapshotDetails(@PathVariable("projectId") projectId: Int,
+                            @PathVariable("snapshotId") snapshotId: String): ResponseEntity<String>
     {
         val snapshotDetails = snapshotRepository.getSnapshotDetails(snapshotId, projectId, userId())
+        session.setSnapshotId(snapshotId)
         return SuccessResponse(snapshotDetails).asResponseEntity();
     }
 

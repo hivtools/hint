@@ -7,13 +7,14 @@ import {api} from "../../apiService";
 import {VersionsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
-import {Version} from "../../types";
+import {SnapshotDetails, SnapshotIds, Version} from "../../types";
 
 export interface VersionsActions {
     createVersion: (store: ActionContext<VersionsState, RootState>, name: string) => void,
     getVersions: (store: ActionContext<VersionsState, RootState>) => void
     uploadSnapshotState: (store: ActionContext<VersionsState, RootState>) => void,
-    newSnapshot: (store: ActionContext<VersionsState, RootState>) => void
+    newSnapshot: (store: ActionContext<VersionsState, RootState>) => void,
+    loadSnapshot: (store: ActionContext<VersionsState, RootState>, snapshot: SnapshotIds) => void
 }
 
 export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
@@ -63,6 +64,21 @@ export const actions: ActionTree<VersionsState, RootState> & VersionsActions = {
             .withSuccess(VersionsMutations.SnapshotCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`project/${versionId}/snapshot/?parent=${snapshotId}`)
+    },
+
+    async loadSnapshot(context, snapshot) {
+        const {commit, dispatch, state} = context;
+
+        commit({type: VersionsMutations.SetLoading, payload: true});
+        await api<VersionsMutations, VersionsMutations>(context)
+            .ignoreSuccess()
+            .withError(VersionsMutations.VersionError)
+            .get<SnapshotDetails>(`project/${snapshot.versionId}/snapshot/${snapshot.snapshotId}`)
+            .then((response: any) => {
+                if (state.error === null) {
+                    dispatch("load/loadFromSnapshot", response.data, {root: true})
+                }
+            });
     }
 };
 
