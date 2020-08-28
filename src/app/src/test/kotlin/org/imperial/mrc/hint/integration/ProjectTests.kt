@@ -3,37 +3,38 @@ package org.imperial.mrc.hint.integration
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.db.Tables.VERSION_SNAPSHOT
+import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import com.fasterxml.jackson.databind.node.ObjectNode
+import org.springframework.boot.test.web.client.exchange
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class VersionTests : SecureIntegrationTests() {
+class ProjectTests : SnapshotFileTests() {
     @BeforeEach
     fun setup() {
         authorize()
         testRestTemplate.getForEntity<String>("/")
     }
 
-    private val versionName = "testVersionEndpoint"
+    private val projectName = "testProjectEndpoint"
     private val testState = "{\"state\": \"test\"}"
 
     @Test
-    fun `can create new version`()
+    fun `can create new project`()
     {
-        val result = createVersion()
+        val result = createProject()
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         val data = getResponseData(result)
 
         assertThat(data["id"].asInt()).isGreaterThan(0)
-        assertThat(data["name"].asText()).isEqualTo("testVersion")
+        assertThat(data["name"].asText()).isEqualTo("testProject")
         val snapshots = data["snapshots"] as ArrayNode
         assertThat(snapshots.count()).isEqualTo(1)
         assertThat(snapshots[0]["id"].asText().count()).isGreaterThan(0)
@@ -44,14 +45,14 @@ class VersionTests : SecureIntegrationTests() {
     @Test
     fun `can create new snapshot from parent`()
     {
-        val createResult = createVersion()
-        val createVersionData = getResponseData(createResult)
-        val versionId = createVersionData["id"].asInt()
-        val snapshots = createVersionData["snapshots"] as ArrayNode
+        val createResult = createProject()
+        val createProjectData = getResponseData(createResult)
+        val projectId = createProjectData["id"].asInt()
+        val snapshots = createProjectData["snapshots"] as ArrayNode
         val snapshotId = snapshots[0]["id"].asText()
-        getUpdateSnapshotStateResult(versionId, snapshotId, testState)
+        getUpdateSnapshotStateResult(projectId, snapshotId, testState)
 
-        val result = getNewSnapshotResult(versionId, snapshotId)
+        val result = getNewSnapshotResult(projectId, snapshotId)
         val data = getResponseData(result)
 
         val newSnapshotId = data["id"].asText()
@@ -59,15 +60,15 @@ class VersionTests : SecureIntegrationTests() {
         LocalDateTime.parse(data["created"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         LocalDateTime.parse(data["updated"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
-        val savedVersion = dsl.select(VERSION_SNAPSHOT.STATE,
-                VERSION_SNAPSHOT.CREATED,
-                VERSION_SNAPSHOT.UPDATED)
-                .from(VERSION_SNAPSHOT)
-                .where(VERSION_SNAPSHOT.ID.eq(newSnapshotId))
+        val savedProject = dsl.select(PROJECT_VERSION.STATE,
+                PROJECT_VERSION.CREATED,
+                PROJECT_VERSION.UPDATED)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(newSnapshotId))
                 .fetchOne()
 
-        assertThat(savedVersion[VERSION_SNAPSHOT.STATE]).isEqualTo(testState)
-        assertThat(savedVersion[VERSION_SNAPSHOT.UPDATED]).isEqualTo(savedVersion[VERSION_SNAPSHOT.CREATED])
+        assertThat(savedProject[PROJECT_VERSION.STATE]).isEqualTo(testState)
+        assertThat(savedProject[PROJECT_VERSION.UPDATED]).isEqualTo(savedProject[PROJECT_VERSION.CREATED])
     }
 
     @Test
@@ -95,24 +96,24 @@ class VersionTests : SecureIntegrationTests() {
     @Test
     fun `can update snapshot state`()
     {
-        val createResult = createVersion()
+        val createResult = createProject()
         val data = getResponseData(createResult)
-        val versionId = data["id"].asInt()
+        val projectId = data["id"].asInt()
         val snapshots = data["snapshots"] as ArrayNode
         val snapshotId = snapshots[0]["id"].asText()
 
-        val result = getUpdateSnapshotStateResult(versionId, snapshotId, testState)
+        val result = getUpdateSnapshotStateResult(projectId, snapshotId, testState)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
-        val savedVersion = dsl.select(VERSION_SNAPSHOT.STATE,
-                VERSION_SNAPSHOT.CREATED,
-                VERSION_SNAPSHOT.UPDATED)
-                .from(VERSION_SNAPSHOT)
-                .where(VERSION_SNAPSHOT.ID.eq(snapshotId))
+        val savedProject = dsl.select(PROJECT_VERSION.STATE,
+                PROJECT_VERSION.CREATED,
+                PROJECT_VERSION.UPDATED)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(snapshotId))
                 .fetchOne()
 
-        assertThat(savedVersion[VERSION_SNAPSHOT.STATE]).isEqualTo(testState)
-        assertThat(savedVersion[VERSION_SNAPSHOT.UPDATED]).isAfter(savedVersion[VERSION_SNAPSHOT.CREATED])
+        assertThat(savedProject[PROJECT_VERSION.STATE]).isEqualTo(testState)
+        assertThat(savedProject[PROJECT_VERSION.UPDATED]).isAfter(savedProject[PROJECT_VERSION.CREATED])
     }
 
     @Test
@@ -139,18 +140,18 @@ class VersionTests : SecureIntegrationTests() {
     }
 
     @Test
-    fun `can get versions`()
+    fun `can get projects`()
     {
-        val createResult = createVersion()
+        val createResult = createProject()
 
-        val result = testRestTemplate.getForEntity<String>("/versions/")
+        val result = testRestTemplate.getForEntity<String>("/projects/")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
         val data = getResponseData(result) as ArrayNode
         val createData = getResponseData(createResult) as ObjectNode
         assertThat(data.count()).isEqualTo(1)
         assertThat(data[0]["id"]).isEqualTo(createData["id"])
-        assertThat(data[0]["name"].asText()).isEqualTo("testVersion")
+        assertThat(data[0]["name"].asText()).isEqualTo("testProject")
         val snapshots = data[0]["snapshots"] as ArrayNode
         assertThat(snapshots.count()).isEqualTo(1)
         val createSnapshots = createData["snapshots"] as ArrayNode
@@ -159,31 +160,77 @@ class VersionTests : SecureIntegrationTests() {
         assertThat(snapshots[0]["updated"]).isEqualTo(createSnapshots[0]["updated"])
     }
 
-    private fun createVersion(): ResponseEntity<String>
+    @Test
+    fun `can get snapshot details`()
+    {
+        val createResult = createProject()
+        val createProjectData = getResponseData(createResult)
+        val projectId = createProjectData["id"].asInt()
+        val snapshots = createProjectData["snapshots"] as ArrayNode
+        val snapshotId = snapshots[0]["id"].asText()
+        getUpdateSnapshotStateResult(projectId, snapshotId, "TEST STATE")
+
+        val pjnzHash = setUpSnapshotFileAndGetHash("Botswana2018.PJNZ", "/baseline/pjnz/")
+
+        val result = testRestTemplate.getForEntity<String>("/project/$projectId/snapshot/$snapshotId")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+
+        val data = getResponseData(result)
+        assertThat(data["state"].asText()).isEqualTo("TEST STATE")
+        assertThat(data["files"]["pjnz"]["hash"].asText()).isEqualTo(pjnzHash)
+        assertThat(data["files"]["pjnz"]["filename"].asText()).isEqualTo("Botswana2018.PJNZ")
+    }
+
+    @Test
+    fun `can return expected English error when get nonexistent snapshot details`()
+    {
+        val result = testRestTemplate.getForEntity<String>("/project/99/snapshot/nosnapshot")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+
+        val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+        val msg = errors[0]["detail"].asText()
+        assertThat(msg).isEqualTo("Snapshot does not exist.")
+    }
+
+    @Test
+    fun `can return expected French error when get nonexistent snapshot details`()
+    {
+        val headers = getStandardHeaders("fr")
+        val httpEntity =  HttpEntity<String>(headers)
+
+        val result = testRestTemplate.exchange<String>("/project/99/snapshot/nosnapshot", HttpMethod.GET, httpEntity)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+
+        val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+        val msg = errors[0]["detail"].asText()
+        assertThat(msg).isEqualTo("L'instantané n'existe pas.")
+    }
+
+    private fun createProject(): ResponseEntity<String>
     {
         val map = LinkedMultiValueMap<String, String>()
-        map.add("name", "testVersion")
+        map.add("name", "testProject")
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         val httpEntity =  HttpEntity(map, headers)
-        return testRestTemplate.postForEntity<String>("/version/", httpEntity)
+        return testRestTemplate.postForEntity<String>("/project/", httpEntity)
     }
 
-    private fun getUpdateSnapshotStateResult(versionId: Int, snapshotId: String, state: String,
+    private fun getUpdateSnapshotStateResult(projectId: Int, snapshotId: String, state: String,
                                              language: String? = null): ResponseEntity<String>
     {
         val headers = getStandardHeaders(language)
 
         val httpEntity =  HttpEntity(state, headers)
-        val url = "/version/$versionId/snapshot/$snapshotId/state/"
+        val url = "/project/$projectId/snapshot/$snapshotId/state/"
         return testRestTemplate.postForEntity<String>(url, httpEntity)
     }
 
-    private fun getNewSnapshotResult(versionId: Int, snapshotId: String, language: String? = null): ResponseEntity<String>
+    private fun getNewSnapshotResult(projectId: Int, snapshotId: String, language: String? = null): ResponseEntity<String>
     {
         val headers = getStandardHeaders(language)
         val httpEntity = HttpEntity(null, headers)
-        val url = "/version/$versionId/snapshot/?parent=$snapshotId"
+        val url = "/project/$projectId/snapshot/?parent=$snapshotId"
         return testRestTemplate.postForEntity<String>(url, httpEntity)
     }
 

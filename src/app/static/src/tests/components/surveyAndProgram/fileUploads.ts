@@ -18,6 +18,9 @@ export function testUploadComponent(name: string, position: number) {
     const createSut = (state?: Partial<SurveyAndProgramState>) => {
 
         actions = {
+            importANC: jest.fn(),
+            importProgram: jest.fn(),
+            importSurvey: jest.fn(),
             uploadSurvey: jest.fn(),
             uploadProgram: jest.fn(),
             uploadANC: jest.fn(),

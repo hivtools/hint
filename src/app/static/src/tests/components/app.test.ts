@@ -19,9 +19,14 @@ const modelRunActions = {
     getResult: jest.fn()
 };
 
+const actions = {
+    getADRSchemas: jest.fn()
+}
+
 storeOptions.modules!!.baseline!!.actions = baselineActions;
 storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
 storeOptions.modules!!.modelRun!!.actions = modelRunActions;
+storeOptions.actions = actions
 
 console.error = jest.fn();
 
@@ -63,6 +68,7 @@ describe("App", () => {
             expect(baselineActions.getBaselineData).toHaveBeenCalled();
             expect(surveyAndProgramActions.getSurveyAndProgramData).toHaveBeenCalled();
             expect(modelRunActions.getResult).toHaveBeenCalled();
+            expect(actions.getADRSchemas).toHaveBeenCalled();
             done();
         });
     });

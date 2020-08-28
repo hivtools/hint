@@ -75,7 +75,8 @@
     interface ComputedState {
         activeStep: number,
         steps: StepDescription[],
-        currentVersion: Version | null
+        currentVersion: Version | null,
+        versionLoading: boolean
     }
 
     interface ComputedGetters {
@@ -97,7 +98,8 @@
                 loadingFromFile: state => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
             }),
             ...mapStateProps<VersionsState, keyof ComputedState>("versions", {
-                currentVersion: state => state.currentVersion
+                currentVersion: state => state.currentVersion,
+                versionLoading: state => state.loading
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
             loading: function () {
@@ -123,8 +125,8 @@
             }
         },
         created() {
-            //redirect to versions if logged in with no currentVersion
-            if ((currentUser != "guest") && (this.currentVersion == null)) {
+            //redirect to versions if logged in with no currentVersion, unless we've started loading a version
+            if ((currentUser != "guest") && (this.currentVersion == null) && (!this.versionLoading)) {
                 this.$router.push('/versions');
             }
         },

@@ -22,21 +22,21 @@ class DiseaseControllerTests: HintrControllerTests() {
 
     @Test
     fun `validates survey file`() {
-        assertValidates(FileType.Survey) {
+        assertSavesAndValidates(FileType.Survey) {
             sut ->  (sut as DiseaseController).uploadSurvey(mockFile)
         }
     }
 
     @Test
     fun `validates program file`() {
-        assertValidates(FileType.Programme) {
+        assertSavesAndValidates(FileType.Programme) {
             sut ->  (sut as DiseaseController).uploadProgramme(mockFile)
         }
     }
 
     @Test
     fun `validates anc file`() {
-        assertValidates(FileType.ANC) {
+        assertSavesAndValidates(FileType.ANC) {
             sut ->  (sut as DiseaseController).uploadANC(mockFile)
         }
     }

@@ -3,9 +3,11 @@ import {actions} from './actions';
 import {mutations} from './mutations';
 import {ReadyState, RootState} from "../../root";
 import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse, Error} from "../../generated";
-import {Dict} from "../../types";
+import {Dataset, Dict} from "../../types";
+import {localStorageManager} from "../../localStorageManager";
 
 export interface BaselineState extends ReadyState {
+    selectedDataset: Dataset | null
     pjnzError: Error | null
     country: string
     iso3: string
@@ -23,6 +25,7 @@ export interface BaselineState extends ReadyState {
 
 export const initialBaselineState = (): BaselineState => {
     return {
+        selectedDataset: null,
         country: "",
         iso3: "",
         pjnzError: null,
@@ -51,9 +54,11 @@ const getters = baselineGetters;
 
 const namespaced: boolean = true;
 
+const existingState = localStorageManager.getState();
+
 export const baseline: Module<BaselineState, RootState> = {
     namespaced,
-    state: initialBaselineState(),
+    state: {...initialBaselineState(), ...existingState && existingState.baseline},
     getters,
     actions,
     mutations

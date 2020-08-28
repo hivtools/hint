@@ -3,6 +3,7 @@ import {actions as baselineActions} from "../../app/store/baseline/actions"
 import {login, rootState} from "./integrationTest";
 import {getFormData} from "./helpers";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
+import {actions as rootActions} from "../../app/store/root/actions";
 
 describe("Survey and programme actions", () => {
 
@@ -14,7 +15,46 @@ describe("Survey and programme actions", () => {
         const formData = getFormData("malawi.geojson");
 
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
+        await rootActions.saveADRKey({commit: jest.fn(), rootState} as any, "123");
     });
+
+    it("can import survey", async () => {
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        await actions.importSurvey({commit, dispatch, rootState} as any,
+            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/survey.csv");
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
+            .toBe("survey.csv")
+    }, 7000);
+
+    it("can import programme", async () => {
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        await actions.importProgram({commit, dispatch, rootState} as any,
+            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/programme.csv");
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
+            .toBe("programme.csv")
+    }, 7000);
+
+    it("can import anc", async () => {
+
+        const commit = jest.fn();
+
+        await actions.importANC({commit, rootState} as any,
+            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/anc.csv");
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
+            .toBe("anc.csv");
+    }, 7000);
 
     it("can upload survey", async () => {
 

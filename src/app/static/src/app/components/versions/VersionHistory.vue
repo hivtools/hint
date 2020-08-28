@@ -24,6 +24,9 @@
                 <div v-for="s in v.snapshots" :id="`s-${s.id}`" class="row font-italic bg-light py-2">
                     <div class="col-md-4 snapshot-cell"></div>
                     <div class="col-md-3 snapshot-cell">{{format(s.updated)}}</div>
+                    <div class="col-md-4 snapshot-cell">
+                        <a @click="loadSnapshot($event, v.id, s.id)" href="" v-translate="'load'"></a>
+                    </div>
                 </div>
             </b-collapse>
         </div>
@@ -32,27 +35,38 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {Version} from "../../types";
+    import {SnapshotIds, Version} from "../../types";
     import {BCollapse} from "bootstrap-vue";
     import { VBToggle } from 'bootstrap-vue';
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
-    import {formatDateTime} from "../../utils"
+    import {formatDateTime, mapActionByName, mapStateProp} from "../../utils";
 
     interface Props {
         versions: Version[];
     }
 
-    export default Vue.extend<{}, {}, {}, Props>({
+    interface Methods {
+        format: (date: string) => void,
+        loadSnapshot: (event: Event, versionId: number, snapshotId: string) => void,
+        loadAction: (snapshot: SnapshotIds) => void
+    }
+
+    export default Vue.extend<{}, Methods, {}, Props>({
        props: {
             versions: {
                 type: Array
             }
        },
-        methods: {
+       methods: {
            format(date: string) {
                return formatDateTime(date);
-           }
-        },
+           },
+           loadSnapshot(event: Event, versionId: number, snapshotId: string) {
+                event.preventDefault();
+               this.loadAction({versionId, snapshotId});
+           },
+           loadAction: mapActionByName<SnapshotIds>("versions", "loadSnapshot"),
+       },
        components: {
            BCollapse,
            ChevronDownIcon,

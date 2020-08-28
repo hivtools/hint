@@ -2,7 +2,11 @@ package org.imperial.mrc.hint.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.FileManager
+import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.ADRClientBuilder
+import org.imperial.mrc.hint.clients.HintrAPIClient
+import org.imperial.mrc.hint.db.SnapshotRepository
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -14,12 +18,16 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/adr")
-class ADRController(private val session: Session,
-                    private val encryption: Encryption,
+class ADRController(private val encryption: Encryption,
                     private val userRepository: UserRepository,
                     private val adrClientBuilder: ADRClientBuilder,
                     private val objectMapper: ObjectMapper,
-                    private val appProperties: AppProperties) {
+                    private val appProperties: AppProperties,
+                    fileManager: FileManager,
+                    apiClient: HintrAPIClient,
+                    session: Session,
+                    snapshotRepository: SnapshotRepository) :
+        HintrController(fileManager, apiClient, session, snapshotRepository) {
 
     @GetMapping("/key")
     fun getAPIKey(): ResponseEntity<String> {
@@ -71,11 +79,42 @@ class ADRController(private val session: Session,
     @GetMapping("/schemas")
     fun getFileTypeMappings(): ResponseEntity<String> {
         return SuccessResponse(
-                mapOf("anc" to appProperties.adrANCSchema,
+                mapOf("baseUrl" to appProperties.adrUrl,
+                        "anc" to appProperties.adrANCSchema,
                         "programme" to appProperties.adrARTSchema,
                         "pjnz" to appProperties.adrPJNZSchema,
                         "population" to appProperties.adrPopSchema,
                         "shape" to appProperties.adrShapeSchema,
                         "survey" to appProperties.adrSurveySchema)).asResponseEntity()
+    }
+
+    @PostMapping("/pjnz")
+    fun importPJNZ(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.PJNZ)
+    }
+
+    @PostMapping("/shape")
+    fun importShape(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Shape)
+    }
+
+    @PostMapping("/population")
+    fun importPopulation(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Population)
+    }
+
+    @PostMapping("/survey")
+    fun importSurvey(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Survey)
+    }
+
+    @PostMapping("/programme")
+    fun importProgramme(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.Programme)
+    }
+
+    @PostMapping("/anc")
+    fun importANC(@RequestParam url: String): ResponseEntity<String> {
+        return saveAndValidate(url, FileType.ANC)
     }
 }

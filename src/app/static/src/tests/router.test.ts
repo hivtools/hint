@@ -13,9 +13,14 @@ const modelRunActions = {
     getResult: jest.fn()
 };
 
+const actions = {
+    getADRSchemas: jest.fn()
+}
+
 storeOptions.modules!!.baseline!!.actions = baselineActions;
 storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
 storeOptions.modules!!.modelRun!!.actions = modelRunActions;
+storeOptions.actions = actions
 
 console.error = jest.fn();
 

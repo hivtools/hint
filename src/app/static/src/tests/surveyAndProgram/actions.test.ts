@@ -12,6 +12,7 @@ import {
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {expectEqualsFrozen} from "../testHelpers";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import Mock = jest.Mock;
 
 const FormData = require("form-data");
 const rootState = mockRootState();
@@ -36,6 +37,21 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         await actions.uploadSurvey({commit, rootState} as any, new FormData());
 
+        checkSurveyImportUpload(commit);
+    });
+
+    it("sets data after surveys file import", async () => {
+
+        mockAxios.onPost(`/adr/survey/`)
+            .reply(200, mockSuccess({data: "SOME DATA"}));
+
+        const commit = jest.fn();
+        await actions.importSurvey({commit, rootState} as any, "some-url");
+
+        checkSurveyImportUpload(commit);
+    });
+
+    const checkSurveyImportUpload = (commit: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.SurveyUpdated,
             payload: null
@@ -49,7 +65,7 @@ describe("Survey and programme actions", () => {
         //Should also have set selectedDataType
         expect(commit.mock.calls[2][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
         expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
-    });
+    }
 
     it("sets error message after failed surveys upload", async () => {
 
@@ -59,6 +75,21 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         await actions.uploadSurvey({commit, rootState} as any, new FormData());
 
+        checkFailedSurveyImportUpload(commit);
+    });
+
+    it("sets error message after failed surveys import", async () => {
+
+        mockAxios.onPost(`/adr/survey/`)
+            .reply(500, mockFailure("error message"));
+
+        const commit = jest.fn();
+        await actions.importSurvey({commit, rootState} as any, "some-url");
+
+        checkFailedSurveyImportUpload(commit);
+    });
+
+    const checkFailedSurveyImportUpload = (commit: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.SurveyUpdated,
             payload: null
@@ -70,7 +101,7 @@ describe("Survey and programme actions", () => {
 
         //Should not have set selectedDataType
         expect(commit.mock.calls.length).toEqual(2);
-    });
+    }
 
     it("sets data after programme file upload", async () => {
 
@@ -80,6 +111,21 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         await actions.uploadProgram({commit, rootState} as any, new FormData());
 
+        checkProgrammeImportUpload(commit)
+    });
+
+    it("sets data after programme file import", async () => {
+
+        mockAxios.onPost(`/adr/programme/`)
+            .reply(200, mockSuccess("TEST"));
+
+        const commit = jest.fn();
+        await actions.importProgram({commit, rootState} as any,"some-url");
+
+        checkProgrammeImportUpload(commit)
+    });
+
+    const checkProgrammeImportUpload = (commit: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramUpdated,
             payload: null
@@ -93,7 +139,7 @@ describe("Survey and programme actions", () => {
         //Should also have set selectedDataType
         expect(commit.mock.calls[2][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
         expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
-    });
+    }
 
     it("sets error message after failed programme upload", async () => {
 
@@ -102,6 +148,22 @@ describe("Survey and programme actions", () => {
 
         const commit = jest.fn();
         await actions.uploadProgram({commit, rootState} as any, new FormData());
+
+        checkFailedProgramImportUpload(commit);
+    });
+
+    it("sets error message after failed programme import", async () => {
+
+        mockAxios.onPost(`/adr/programme/`)
+            .reply(500, mockFailure("error message"));
+
+        const commit = jest.fn();
+        await actions.importProgram({commit, rootState} as any, "some-url");
+
+        checkFailedProgramImportUpload(commit);
+    });
+
+    const checkFailedProgramImportUpload = (commit: Mock) => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramUpdated,
@@ -115,7 +177,7 @@ describe("Survey and programme actions", () => {
 
         //Should not have set selectedDataType
         expect(commit.mock.calls.length).toEqual(2);
-    });
+    }
 
     it("sets data after anc file upload", async () => {
 
@@ -125,6 +187,21 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         await actions.uploadANC({commit, rootState} as any, new FormData());
 
+        checkANCImportUpload(commit);
+    });
+
+    it("sets data after anc file import", async () => {
+
+        mockAxios.onPost(`/adr/anc/`)
+            .reply(200, mockSuccess("TEST"));
+
+        const commit = jest.fn();
+        await actions.importANC({commit, rootState} as any, "some-url");
+
+        checkANCImportUpload(commit);
+    });
+
+    const checkANCImportUpload = (commit: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCUpdated,
             payload: null
@@ -138,7 +215,7 @@ describe("Survey and programme actions", () => {
         //Should also have set selectedDataType
         expect(commit.mock.calls[2][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
         expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.ANC});
-    });
+    }
 
     it("sets error message after failed anc upload", async () => {
 
@@ -148,6 +225,21 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         await actions.uploadANC({commit, rootState} as any, new FormData());
 
+        checkFailedANCImportUpload(commit);
+    });
+
+    it("sets error message after failed anc import", async () => {
+
+        mockAxios.onPost(`/adr/anc/`)
+            .reply(500, mockFailure("error message"));
+
+        const commit = jest.fn();
+        await actions.importANC({commit, rootState} as any, "some-url");
+
+        checkFailedANCImportUpload(commit);
+    });
+
+    const checkFailedANCImportUpload = (commit: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCUpdated,
             payload: null
@@ -160,7 +252,7 @@ describe("Survey and programme actions", () => {
 
         //Should not have set selectedDataType
         expect(commit.mock.calls.length).toEqual(2);
-    });
+    }
 
     it("gets data, commits it and marks state ready", async () => {
 
