@@ -63,7 +63,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.SnapshotCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`project/${projectId}/snapshot/?parent=${snapshotId}`)
+            .postAndReturn(`project/${projectId}/version/?parent=${snapshotId}`)
     },
 
     async loadSnapshot(context, snapshot) {
@@ -73,7 +73,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<ProjectsMutations, ProjectsMutations>(context)
             .ignoreSuccess()
             .withError(ProjectsMutations.ProjectError)
-            .get<SnapshotDetails>(`project/${snapshot.projectId}/snapshot/${snapshot.snapshotId}`)
+            .get<SnapshotDetails>(`project/${snapshot.projectId}/version/${snapshot.snapshotId}`)
             .then((response: any) => {
                 if (state.error === null) {
                     dispatch("load/loadFromSnapshot", response.data, {root: true})
@@ -91,7 +91,7 @@ async function immediateUploadSnapshotState(context: ActionContext<ProjectsState
         await api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.SnapshotUploadSuccess)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`/project/${projectId}/snapshot/${snapshotId}/state/`, serialiseState(rootState));
+            .postAndReturn(`/project/${projectId}/version/${snapshotId}/state/`, serialiseState(rootState));
     }
 }
 

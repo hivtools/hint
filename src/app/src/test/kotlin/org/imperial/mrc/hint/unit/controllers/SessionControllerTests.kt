@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.controllers.SessionController
-import org.imperial.mrc.hint.models.SnapshotFile
+import org.imperial.mrc.hint.models.VersionFile
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.toJsonString
 import org.junit.jupiter.api.Test
@@ -16,7 +16,7 @@ class SessionControllerTests {
         val mockFileManager = mock<FileManager>()
 
         val sut = SessionController(mockFileManager)
-        val files = mapOf("pjnz" to SnapshotFile("hash1", "file1"))
+        val files = mapOf("pjnz" to VersionFile("hash1", "file1"))
         val result = sut.postFiles(files)
 
         verify(mockFileManager).setAllFiles(files)

@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.db
 import org.jooq.DSLContext
 import org.imperial.mrc.hint.db.Tables.PROJECT
 import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
-import org.imperial.mrc.hint.models.Snapshot
+import org.imperial.mrc.hint.models.Version
 import org.imperial.mrc.hint.models.Project
 import org.springframework.stereotype.Component
 
@@ -45,10 +45,10 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
                 .map { v ->
                     Project(v.key, v.value[0][PROJECT.NAME],
                             v.value.map { s ->
-                                Snapshot(s[PROJECT_VERSION.ID], s[PROJECT_VERSION.CREATED],
+                                Version(s[PROJECT_VERSION.ID], s[PROJECT_VERSION.CREATED],
                                         s[PROJECT_VERSION.UPDATED])
                             })
                 }
-                .sortedByDescending { it.snapshots[0].updated }
+                .sortedByDescending { it.versions[0].updated }
     }
 }

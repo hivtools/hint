@@ -10,8 +10,8 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.LocalFileManager
 import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.clients.ADRClientBuilder
-import org.imperial.mrc.hint.db.SnapshotRepository
-import org.imperial.mrc.hint.models.SnapshotFile
+import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.models.VersionFile
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -28,11 +28,11 @@ class LocalFileManagerTests {
     }
 
     private val mockSession = mock<Session> {
-        on { getSnapshotId() } doReturn "fake-id"
+        on { getVersionId() } doReturn "fake-id"
     }
 
     private val allFilesMap = FileType.values().associate {
-        it.toString() to SnapshotFile("${it}hash", "${it}filename")
+        it.toString() to VersionFile("${it}hash", "${it}filename")
     }
 
     @AfterEach
@@ -43,7 +43,7 @@ class LocalFileManagerTests {
     @Test
     fun `saves file if file is new and returns details`() {
 
-        val mockStateRepository = mock<SnapshotRepository> {
+        val mockStateRepository = mock<VersionRepository> {
             on { saveNewHash(any()) } doReturn true
         }
 
@@ -62,7 +62,7 @@ class LocalFileManagerTests {
     @Test
     fun `does not save file if file matches an existing hash and returns details`() {
 
-        val mockStateRepository = mock<SnapshotRepository> {
+        val mockStateRepository = mock<VersionRepository> {
             on { saveNewHash(any()) } doReturn false
         }
 
@@ -80,7 +80,7 @@ class LocalFileManagerTests {
     @Test
     fun `saves file from ADR if file is new and returns details`() {
 
-        val mockStateRepository = mock<SnapshotRepository> {
+        val mockStateRepository = mock<VersionRepository> {
             on { saveNewHash(any()) } doReturn true
         }
         val mockClient = mock<ADRClient> {
@@ -102,7 +102,7 @@ class LocalFileManagerTests {
     @Test
     fun `does not save file from ADR if file matches an existing hash and returns details`() {
 
-        val mockStateRepository = mock<SnapshotRepository> {
+        val mockStateRepository = mock<VersionRepository> {
             on { saveNewHash(any()) } doReturn false
         }
         val mockClient = mock<ADRClient> {
@@ -122,9 +122,9 @@ class LocalFileManagerTests {
     @Test
     fun `gets file if it exists`() {
 
-        val mockStateRepository = mock<SnapshotRepository> {
+        val mockStateRepository = mock<VersionRepository> {
             on { saveNewHash(any()) } doReturn true
-            on { getSnapshotFile(any(), any()) } doReturn SnapshotFile("test", "filename")
+            on { getVersionFile(any(), any()) } doReturn VersionFile("test", "filename")
         }
 
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock())
@@ -146,8 +146,8 @@ class LocalFileManagerTests {
     @Test
     fun `gets all file paths`() {
 
-        val stateRepo = mock<SnapshotRepository> {
-            on { getHashesForSnapshot("fake-id") } doReturn mapOf("survey" to "hash.csv")
+        val stateRepo = mock<VersionRepository> {
+            on { getHashesForVersion("fake-id") } doReturn mapOf("survey" to "hash.csv")
         }
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
@@ -160,8 +160,8 @@ class LocalFileManagerTests {
     @Test
     fun `gets all files`() {
 
-        val stateRepo = mock<SnapshotRepository> {
-            on { getSnapshotFiles("fake-id") } doReturn allFilesMap
+        val stateRepo = mock<VersionRepository> {
+            on { getVersionFiles("fake-id") } doReturn allFilesMap
         }
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
@@ -179,8 +179,8 @@ class LocalFileManagerTests {
     @Test
     fun `only gets files that match the given includes`() {
 
-        val stateRepo = mock<SnapshotRepository> {
-            on { getSnapshotFiles("fake-id") } doReturn allFilesMap
+        val stateRepo = mock<VersionRepository> {
+            on { getVersionFiles("fake-id") } doReturn allFilesMap
         }
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
@@ -193,13 +193,13 @@ class LocalFileManagerTests {
     @Test
     fun `sets files for session`() {
 
-        val stateRepo = mock<SnapshotRepository>()
+        val stateRepo = mock<VersionRepository>()
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
-        val files = mapOf("pjnz" to SnapshotFile("hash1", "file1"))
+        val files = mapOf("pjnz" to VersionFile("hash1", "file1"))
         sut.setAllFiles(files)
 
-        verify(stateRepo).setFilesForSnapshot("fake-id", files)
+        verify(stateRepo).setFilesForVersion("fake-id", files)
     }
 
 }

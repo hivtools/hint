@@ -69,13 +69,13 @@ class ProjectRepositoryTests {
         val v2Id = insertProject("v2", userId)
         val anotherProject = insertProject("v2", anotherUserId) //should not be returned
 
-        insertSnapshot("v1s1", v1Id, ago_4h, ago_3h, false)
-        insertSnapshot("v1s2", v1Id, ago_2h, ago_2h, false)
+        insertVersion("v1s1", v1Id, ago_4h, ago_3h, false)
+        insertVersion("v1s2", v1Id, ago_2h, ago_2h, false)
 
-        insertSnapshot("deletedSnap", v2Id, ago_1h, now(), true) //should not be returned
-        insertSnapshot("v2s1", v2Id, ago_3h, ago_1h, false)
+        insertVersion("deletedVersion", v2Id, ago_1h, now(), true) //should not be returned
+        insertVersion("v2s1", v2Id, ago_3h, ago_1h, false)
 
-        insertSnapshot("anotherSnap", anotherProject, ago_1h, ago_1h, false)
+        insertVersion("anotherVersion", anotherProject, ago_1h, ago_1h, false)
 
         val projects = sut.getProjects(userId)
         assertThat(projects.count()).isEqualTo(2)
@@ -83,21 +83,21 @@ class ProjectRepositoryTests {
         val p2 = projects[0]
         assertThat(p2.id).isEqualTo(v2Id)
         assertThat(p2.name).isEqualTo("v2")
-        assertThat(p2.snapshots.count()).isEqualTo(1)
-        assertThat(p2.snapshots[0].id).isEqualTo("v2s1")
-        assertThat(p2.snapshots[0].created).isEqualTo(format(ago_3h))
-        assertThat(p2.snapshots[0].updated).isEqualTo(format(ago_1h))
+        assertThat(p2.versions.count()).isEqualTo(1)
+        assertThat(p2.versions[0].id).isEqualTo("v2s1")
+        assertThat(p2.versions[0].created).isEqualTo(format(ago_3h))
+        assertThat(p2.versions[0].updated).isEqualTo(format(ago_1h))
 
         val p1 = projects[1]
         assertThat(p1.id).isEqualTo(v1Id)
         assertThat(p1.name).isEqualTo("v1")
-        assertThat(p1.snapshots.count()).isEqualTo(2)
-        assertThat(p1.snapshots[0].id).isEqualTo("v1s2")
-        assertThat(p1.snapshots[0].created).isEqualTo(format(ago_2h))
-        assertThat(p1.snapshots[0].updated).isEqualTo(format(ago_2h))
-        assertThat(p1.snapshots[1].id).isEqualTo("v1s1")
-        assertThat(p1.snapshots[1].created).isEqualTo(format(ago_4h))
-        assertThat(p1.snapshots[1].updated).isEqualTo(format(ago_3h))
+        assertThat(p1.versions.count()).isEqualTo(2)
+        assertThat(p1.versions[0].id).isEqualTo("v1s2")
+        assertThat(p1.versions[0].created).isEqualTo(format(ago_2h))
+        assertThat(p1.versions[0].updated).isEqualTo(format(ago_2h))
+        assertThat(p1.versions[1].id).isEqualTo("v1s1")
+        assertThat(p1.versions[1].created).isEqualTo(format(ago_4h))
+        assertThat(p1.versions[1].updated).isEqualTo(format(ago_3h))
     }
 
     private fun format(time: Instant): String
@@ -116,7 +116,7 @@ class ProjectRepositoryTests {
         return saved[PROJECT.ID]
     }
 
-    private fun insertSnapshot(snapshotId: String, projectId: Int, created: Instant, updated: Instant, deleted: Boolean)
+    private fun insertVersion(versionId: String, projectId: Int, created: Instant, updated: Instant, deleted: Boolean)
     {
         dsl.insertInto(PROJECT_VERSION,
                 PROJECT_VERSION.ID,
@@ -124,7 +124,7 @@ class ProjectRepositoryTests {
                 PROJECT_VERSION.CREATED,
                 PROJECT_VERSION.UPDATED,
                 PROJECT_VERSION.DELETED)
-                .values(snapshotId, projectId, Timestamp.from(created), Timestamp.from(updated), deleted)
+                .values(versionId, projectId, Timestamp.from(created), Timestamp.from(updated), deleted)
                 .execute()
     }
 }
