@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.db
 import org.jooq.DSLContext
 import org.imperial.mrc.hint.db.Tables.PROJECT
 import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
+import org.imperial.mrc.hint.exceptions.ProjectException
 import org.imperial.mrc.hint.models.Version
 import org.imperial.mrc.hint.models.Project
 import org.springframework.stereotype.Component
@@ -11,6 +12,7 @@ interface ProjectRepository
 {
     fun saveNewProject(userId: String, projectName: String): Int
     fun getProjects(userId: String): List<Project>
+    fun deleteProject(projectId: Int, userId: String)
 }
 
 @Component
@@ -50,5 +52,22 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
                             })
                 }
                 .sortedByDescending { it.versions[0].updated }
+    }
+
+    override fun deleteProject(projectId: Int, userId: String)
+    {
+        checkProjectExists(projectId, userId)
+        dsl.update(PROJECT_VERSION)
+                .set(PROJECT_VERSION.DELETED, true)
+                .where(PROJECT_VERSION.PROJECT_ID.eq(projectId))
+                .execute()
+    }
+
+    private fun checkProjectExists(projectId: Int, userId: String)
+    {
+        dsl.select(PROJECT.ID)
+                .where(PROJECT.ID.eq(projectId))
+                .and(PROJECT.USER_ID.eq(userId))
+                .fetchAny() ?: throw ProjectException("projectDoesNotExist")
     }
 }
