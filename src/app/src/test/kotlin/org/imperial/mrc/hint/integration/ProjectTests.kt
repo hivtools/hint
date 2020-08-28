@@ -90,7 +90,7 @@ class ProjectTests : VersionFileTests() {
 
         val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
         val msg = errors[0]["detail"].asText()
-        assertThat(msg).isEqualTo("L'instantané n'existe pas.")
+        assertThat(msg).isEqualTo("La version n'existe pas.")
     }
 
     @Test
@@ -136,7 +136,7 @@ class ProjectTests : VersionFileTests() {
 
         val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
         val msg = errors[0]["detail"].asText()
-        assertThat(msg).isEqualTo("L'instantané n'existe pas.")
+        assertThat(msg).isEqualTo("La version n'existe pas.")
     }
 
     @Test
@@ -203,7 +203,7 @@ class ProjectTests : VersionFileTests() {
 
         val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
         val msg = errors[0]["detail"].asText()
-        assertThat(msg).isEqualTo("L'instantané n'existe pas.")
+        assertThat(msg).isEqualTo("La version n'existe pas.")
     }
 
     private fun createProject(): ResponseEntity<String>
