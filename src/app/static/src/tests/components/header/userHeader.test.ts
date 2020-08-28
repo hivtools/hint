@@ -92,17 +92,17 @@ describe("user header", () => {
         expect(frWrapper.find("a[href='https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html']").text()).toBe("Dépannage");
     });
 
-    it("renders Versions link as expected if user is not guest", () => {
+    it("renders Projects link as expected if user is not guest", () => {
         const wrapper = getWrapper();
 
         const link = wrapper.find("router-link-stub");
-        expect(link.attributes("to")).toBe("/versions");
-        expect(link.text()).toBe("Versions");
+        expect(link.attributes("to")).toBe("/projects");
+        expect(link.text()).toBe("Projets");
     });
 
-    it("does not render Versions link if current user is guest", () => {
+    it("does not render Projects link if current user is guest", () => {
         const wrapper = getWrapper("guest");
-        expect(wrapper.find("#versions-link").exists()).toBe(false);
+        expect(wrapper.find("#projects-link").exists()).toBe(false);
     });
 
 });

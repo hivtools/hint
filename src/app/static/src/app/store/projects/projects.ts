@@ -3,24 +3,24 @@ import {localStorageManager} from "../../localStorageManager";
 import {RootState} from "../../root";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
-import {Snapshot, Version} from "../../types";
+import {Snapshot, Project} from "../../types";
 import {Error} from "../../generated";
 
-export interface VersionsState {
-    currentVersion: Version | null,
+export interface ProjectsState {
+    currentProject: Project | null,
     currentSnapshot: Snapshot | null,
-    previousVersions: Version[],
+    previousProjects: Project[],
     loading: boolean,
     error: Error | null,
     snapshotUploadPending: boolean,
     snapshotTime: Date | null
 }
 
-export const initialVersionsState = (): VersionsState => {
+export const initialProjectsState = (): ProjectsState => {
     return {
-        currentVersion: null,
+        currentProject: null,
         currentSnapshot: null,
-        previousVersions: [],
+        previousProjects: [],
         loading: false,
         error: null,
         snapshotUploadPending: false,
@@ -32,9 +32,9 @@ const namespaced: boolean = true;
 
 const existingState = localStorageManager.getState();
 
-export const versions: Module<VersionsState, RootState> = {
+export const projects: Module<ProjectsState, RootState> = {
     namespaced,
-    state: {...initialVersionsState(), ...existingState && existingState.versions},
+    state: {...initialProjectsState(), ...existingState && existingState.projects},
     mutations,
     actions
 };

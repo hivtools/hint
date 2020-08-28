@@ -1,24 +1,24 @@
 <template>
-    <div v-if="versions.length > 0">
-        <h5 v-translate="'versionHistory'"></h5>
+    <div v-if="projects.length > 0">
+        <h5 v-translate="'projectHistory'"></h5>
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
-            <div class="col-md-3 header-cell" v-translate="'versionName'"></div>
+            <div class="col-md-3 header-cell" v-translate="'projectName'"></div>
             <div class="col-md-3 header-cell" v-translate="'lastUpdated'"></div>
         </div>
         <hr/>
-        <div v-for="v in versions">
+        <div v-for="v in projects">
             <div :id="`v-${v.id}`"  class="row py-2">
-                <div class="col-md-1 version-cell">
+                <div class="col-md-1 project-cell">
                     <button v-b-toggle="`snapshots-${v.id}`" class="btn btn-xs bg-transparent shadow-none py-0">
                         <chevron-right-icon size="20" class="icon when-closed"></chevron-right-icon>
                         <chevron-down-icon size="20" class="icon when-open"></chevron-down-icon>
                     </button>
                 </div>
-                <div class="col-md-3 version-cell">
+                <div class="col-md-3 project-cell">
                     {{v.name}}
                 </div>
-                <div class="col-md-3 version-cell">{{format(v.snapshots[0].updated)}}</div>
+                <div class="col-md-3 project-cell">{{format(v.snapshots[0].updated)}}</div>
             </div>
             <b-collapse :id="`snapshots-${v.id}`">
                 <div v-for="s in v.snapshots" :id="`s-${s.id}`" class="row font-italic bg-light py-2">
@@ -35,25 +35,25 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {SnapshotIds, Version} from "../../types";
+    import {SnapshotIds, Project} from "../../types";
     import {BCollapse} from "bootstrap-vue";
     import { VBToggle } from 'bootstrap-vue';
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
     import {formatDateTime, mapActionByName, mapStateProp} from "../../utils";
 
     interface Props {
-        versions: Version[];
+        projects: Project[];
     }
 
     interface Methods {
         format: (date: string) => void,
-        loadSnapshot: (event: Event, versionId: number, snapshotId: string) => void,
+        loadSnapshot: (event: Event, projectId: number, snapshotId: string) => void,
         loadAction: (snapshot: SnapshotIds) => void
     }
 
     export default Vue.extend<{}, Methods, {}, Props>({
        props: {
-            versions: {
+            projects: {
                 type: Array
             }
        },
@@ -61,11 +61,11 @@
            format(date: string) {
                return formatDateTime(date);
            },
-           loadSnapshot(event: Event, versionId: number, snapshotId: string) {
+           loadSnapshot(event: Event, projectId: number, snapshotId: string) {
                 event.preventDefault();
-               this.loadAction({versionId, snapshotId});
+               this.loadAction({projectId, snapshotId});
            },
-           loadAction: mapActionByName<SnapshotIds>("versions", "loadSnapshot"),
+           loadAction: mapActionByName<SnapshotIds>("projects", "loadSnapshot"),
        },
        components: {
            BCollapse,

@@ -1,12 +1,12 @@
 import {mount, Wrapper} from "@vue/test-utils";
-import VersionHistory from "../../../app/components/versions/VersionHistory.vue";
+import ProjectHistory from "../../../app/components/projects/ProjectHistory.vue";
 import {formatDateTime} from "../../../app/utils";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
 import Vue from "vue";
 import {emptyState} from "../../../app/root";
 
-describe("Versions component", () => {
+describe("Projects component", () => {
 
     const isoDates = ["2020-07-30T15:00:00.000000",
         "2020-07-31T09:00:00.000000",
@@ -19,7 +19,7 @@ describe("Versions component", () => {
     registerTranslations(testStore);
 
     const testPropsData = {
-        versions: [
+        projects: [
             {
                 id: 1, name: "v1", snapshots: [
                     {id: "s11", created: isoDates[0], updated: isoDates[1]},
@@ -33,11 +33,11 @@ describe("Versions component", () => {
     };
 
     const getWrapper = (propsData = testPropsData, store = testStore) => {
-        return mount(VersionHistory, {store, propsData});
+        return mount(ProjectHistory, {store, propsData});
     };
 
-    const testRendersVersion = (wrapper: Wrapper<any>, id: number, name: string, updatedIsoDate: string) => {
-        const v = wrapper.find(`#v-${id}`).findAll(".version-cell");
+    const testRendersProject = (wrapper: Wrapper<any>, id: number, name: string, updatedIsoDate: string) => {
+        const v = wrapper.find(`#v-${id}`).findAll(".project-cell");
         const button = v.at(0).find("button");
         expect(button.classes()).toContain("collapsed");
         const svg = button.findAll("svg");
@@ -65,29 +65,29 @@ describe("Versions component", () => {
     it("renders as expected ", () => {
         const wrapper = getWrapper();
 
-        expect(wrapper.find("h5").text()).toBe("Version history");
+        expect(wrapper.find("h5").text()).toBe("Project history");
 
         const headers = wrapper.find("#headers").findAll(".header-cell");
         expect(headers.length).toBe(3);
         expect(headers.at(0).text()).toBe("");
-        expect(headers.at(1).text()).toBe("Version name");
+        expect(headers.at(1).text()).toBe("Project name");
         expect(headers.at(2).text()).toBe("Last updated");
 
-        testRendersVersion(wrapper, 1, "v1", isoDates[1]);
+        testRendersProject(wrapper, 1, "v1", isoDates[1]);
         const v1Snapshots = wrapper.find("#snapshots-1");
         const v1SnapshotRows = v1Snapshots.findAll(".row");
         expect(v1SnapshotRows.length).toBe(2);
         testRendersSnapshot(v1SnapshotRows.at(0), "s11", isoDates[1]);
         testRendersSnapshot(v1SnapshotRows.at(1), "s12", isoDates[2]);
 
-        testRendersVersion(wrapper, 2, "v2", isoDates[3]);
+        testRendersProject(wrapper, 2, "v2", isoDates[3]);
         const v2Snapshots = wrapper.find("#snapshots-2");
         const v2SnapshotRows = v2Snapshots.findAll(".row");
         expect(v2SnapshotRows.length).toBe(1);
         testRendersSnapshot(v2SnapshotRows.at(0), "s21", isoDates[3]);
     });
 
-    it("can expand version row", async (done) => {
+    it("can expand project row", async (done) => {
         const wrapper = getWrapper();
         const button = wrapper.find("#v-1 button");
         button.trigger("click");
@@ -98,7 +98,7 @@ describe("Versions component", () => {
         });
     });
 
-    it("can collapse version row", async (done) => {
+    it("can collapse project row", async (done) => {
         const wrapper = getWrapper();
         const button = wrapper.find("#v-1 button");
         button.trigger("click");
@@ -113,8 +113,8 @@ describe("Versions component", () => {
         });
     });
 
-    it("does not render if no previous versions", () => {
-        const wrapper = getWrapper({versions: []});
+    it("does not render if no previous projects", () => {
+        const wrapper = getWrapper({projects: []});
         expect(wrapper.findAll("div").length).toBe(0);
     });
 
@@ -123,7 +123,7 @@ describe("Versions component", () => {
         const mockStore = new Vuex.Store({
             state: emptyState(),
             modules: {
-                versions: {
+                projects: {
                     namespaced: true,
                     actions: {
                         loadSnapshot: mockLoad
@@ -136,6 +136,6 @@ describe("Versions component", () => {
         snapshotLink.trigger("click");
         await Vue.nextTick();
         expect(mockLoad.mock.calls.length).toBe(1);
-        expect(mockLoad.mock.calls[0][1]).toStrictEqual({versionId: 1, snapshotId: "s11"});
+        expect(mockLoad.mock.calls[0][1]).toStrictEqual({projectId: 1, snapshotId: "s11"});
     });
 });

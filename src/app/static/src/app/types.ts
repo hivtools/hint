@@ -69,7 +69,7 @@ export interface Snapshot {
     updated: string
 }
 
-export interface Version {
+export interface Project {
     id: number,
     name: string,
     snapshots: Snapshot[]
@@ -81,7 +81,7 @@ export interface SnapshotDetails {
 }
 
 export interface SnapshotIds {
-    versionId: number,
+    projectId: number,
     snapshotId: string
 }
 

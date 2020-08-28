@@ -13,7 +13,7 @@ import {
     mockShapeResponse, mockStepperState,
     mockSurveyAndProgramState,
     mockValidateBaselineResponse,
-    mockVersionsState
+    mockProjectsState
 
 } from "../mocks";
 import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
@@ -38,8 +38,8 @@ import {ModelStatusResponse} from "../../app/generated";
 import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {VersionsState} from "../../app/store/versions/versions";
-import SnapshotStatus from "../../app/components/versions/SnapshotStatus.vue";
+import {ProjectsState} from "../../app/store/projects/projects";
+import SnapshotStatus from "../../app/components/projects/SnapshotStatus.vue";
 
 const localVue = createLocalVue();
 
@@ -52,7 +52,7 @@ describe("Stepper component", () => {
                        modelRunState?: Partial<ModelRunState>,
                        stepperState?: Partial<StepperState>,
                        loadState?: Partial<LoadState>,
-                       versionsState?: Partial<VersionsState>,
+                       projectsState?: Partial<ProjectsState>,
                        mockRouterPush = jest.fn()) => {
 
         const store = new Vuex.Store({
@@ -100,9 +100,9 @@ describe("Stepper component", () => {
                     state: mockLoadState(loadState),
                     mutations: loadMutations
                 },
-                versions: {
+                projects: {
                     namespaced: true,
-                    state: mockVersionsState(versionsState)
+                    state: mockProjectsState(projectsState)
                 }
             }
         });
@@ -504,16 +504,16 @@ describe("Stepper component", () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("pushes router to versions if logged in user and currentVersion not set", () => {
+    it("pushes router to projects if logged in user and currentProject not set", () => {
         const mockRouterPush = jest.fn();
-        //current user is set in jest.config and currentVersion is not set be default in the wrapper
+        //current user is set in jest.config and currentProject is not set be default in the wrapper
         const wrapper = createSut({}, {}, {}, {}, {}, {}, {},  mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(1);
-        expect(mockRouterPush.mock.calls[0][0]).toBe("/versions");
+        expect(mockRouterPush.mock.calls[0][0]).toBe("/projects");
     });
 
-    it("does not push router to versions if guest user", () => {
+    it("does not push router to projects if guest user", () => {
         currentUser = "guest";
         const mockRouterPush = jest.fn();
         const wrapper = createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush);
@@ -521,18 +521,18 @@ describe("Stepper component", () => {
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });
 
-    it("does not push router to versions if logged in user and currentVersion set", () => {
+    it("does not push router to projects if logged in user and currentProject set", () => {
         const mockRouterPush = jest.fn();
-        const versionsState = {currentVersion: {id: 1, name: "testVersion", snapshots: []}};
-        const wrapper =  createSut({}, {}, {}, {}, {}, {}, versionsState, mockRouterPush);
+        const projectsState = {currentProject: {id: 1, name: "testProject", snapshots: []}};
+        const wrapper =  createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });
 
-    it("does not push router to versions if version is loading", () => {
+    it("does not push router to projects if project is loading", () => {
         const mockRouterPush = jest.fn();
-        const versionsState = {loading: true};
-        const wrapper =  createSut({}, {}, {}, {}, {}, {}, versionsState, mockRouterPush);
+        const projectsState = {loading: true};
+        const wrapper =  createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });

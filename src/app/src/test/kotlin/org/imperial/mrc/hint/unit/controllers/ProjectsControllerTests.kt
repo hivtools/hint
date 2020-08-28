@@ -107,8 +107,8 @@ class ProjectsControllerTests {
         val result = sut.getProjects()
 
         val resultJson = parser.readTree(result.body)["data"]
-        val versions = resultJson as ArrayNode
-        assertThat(versions.count()).isEqualTo(0)
+        val projects = resultJson as ArrayNode
+        assertThat(projects.count()).isEqualTo(0)
     }
 
     @Test

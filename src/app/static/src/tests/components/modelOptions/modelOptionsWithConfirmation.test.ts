@@ -49,7 +49,7 @@ describe("Model options component when edit confirmation is required", () => {
                     namespaced: true,
                     getters: mockGetters
                 },
-                versions: {
+                projects: {
                     namespaced: true
                 },
                 errors: {

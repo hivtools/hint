@@ -7,12 +7,12 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {VersionsState} from "../../store/versions/versions";
+    import {ProjectsState} from "../../store/projects/projects";
     import {mapStateProp} from "../../utils";
     import {CheckIcon} from "vue-feather-icons";
     import moment from 'moment';
 
-    const namespace = "versions";
+    const namespace = "projects";
 
     interface Computed {
         time: Date | null,
@@ -28,7 +28,7 @@
             formattedTime: function() {
                 return this.time ? moment(this.time).format('HH:mm') : '';
             },
-            time: mapStateProp<VersionsState, Date | null>(namespace, state => state.snapshotTime)
+            time: mapStateProp<ProjectsState, Date | null>(namespace, state => state.snapshotTime)
         },
         components: {
             CheckIcon

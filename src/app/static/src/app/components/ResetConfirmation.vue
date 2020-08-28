@@ -13,7 +13,7 @@
 
             <p v-if="guestUser"  v-translate="'savePrompt'"></p>
             <p v-if="!guestUser">
-                These steps will automatically be saved in a snapshot. You will be able to reload this snapshot from the Versions page.
+                These steps will automatically be saved in a snapshot. You will be able to reload this snapshot from the Projects page.
             </p>
 
             <template v-if="!waitingForSnapshot" v-slot:footer>
@@ -43,7 +43,7 @@
     import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
     import {StepDescription} from "../store/stepper/stepper";
     import LoadingSpinner from "./LoadingSpinner.vue";
-    import {VersionsState} from "../store/versions/versions";
+    import {ProjectsState} from "../store/projects/projects";
     import {ErrorsState} from "../store/errors/errors";
 
     declare const currentUser: string;
@@ -74,7 +74,7 @@
         },
         computed: {
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
-            currentSnapshotId: mapStateProp<VersionsState, string | null>("versions", state => {
+            currentSnapshotId: mapStateProp<ProjectsState, string | null>("projects", state => {
                 return state.currentSnapshot && state.currentSnapshot.id;
             }),
             guestUser: function() {
@@ -93,7 +93,7 @@
                     this.newSnapshot();
                 }
             },
-            newSnapshot: mapActionByName("versions", "newSnapshot")
+            newSnapshot: mapActionByName("projects", "newSnapshot")
         },
         watch: {
             currentSnapshotId: function() {

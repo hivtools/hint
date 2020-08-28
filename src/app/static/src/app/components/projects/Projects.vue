@@ -1,31 +1,31 @@
 <template>
     <div>
-        <div v-if="!loading" id="versions-content" class="row">
-            <div id="versions-header" class="lead col-12">
-                <span v-translate="'versionsHeaderCreate'"></span>
-                <span v-if="currentVersion">
+        <div v-if="!loading" id="projects-content" class="row">
+            <div id="projects-header" class="lead col-12">
+                <span v-translate="'projectsHeaderCreate'"></span>
+                <span v-if="currentProject">
                     <span v-translate="'or'"></span>
-                    <a v-translate="'versionsHeaderReturn'"
-                       href="#" @click="handleCurrentVersionClick"></a> ({{currentVersion.name}})
+                    <a v-translate="'projectsHeaderReturn'"
+                       href="#" @click="handleCurrentProjectClick"></a> ({{currentProject.name}})
                 </span>
             </div>
             <div class="my-3 col-6 clearfix">
-                <input type="text" class="form-control" v-translate:placeholder="'versionName'" v-model="newVersionName">
+                <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
                 <button type="button"
                         class="btn btn-red mt-2 float-right"
                         :disabled="disableCreate"
-                        @click="createVersion(newVersionName)"
-                        v-translate="'createVersion'">
+                        @click="createProject(newProjectName)"
+                        v-translate="'createProject'">
                 </button>
             </div>
             <div class="my-3 col-12">
-                <version-history :versions="previousVersions"></version-history>
+                <project-history :projects="previousProjects"></project-history>
             </div>
             <error-alert v-if="hasError" :error="error"></error-alert>
         </div>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
-            <h2 id="loading-message" v-translate="'loadingVersion'"></h2>
+            <h2 id="loading-message" v-translate="'loadingProject'"></h2>
         </div>
     </div>
 </template>
@@ -33,24 +33,24 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapActionByName, mapStateProps} from "../../utils";
-    import {VersionsState} from "../../store/versions/versions";
+    import {ProjectsState} from "../../store/projects/projects";
     import {Error} from "../../generated";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import {Version} from "../../types";
-    import VersionHistory from "./VersionHistory.vue";
+    import {Project} from "../../types";
+    import ProjectHistory from "./ProjectHistory.vue";
 
     declare const currentUser: string;
 
-    const namespace = "versions";
+    const namespace = "projects";
 
     interface Data {
-        newVersionName: string
+        newProjectName: string
     }
 
     interface Computed {
-        currentVersion: Version | null,
-        previousVersions: Version[],
+        currentProject: Project | null,
+        previousProjects: Project[],
         error: Error,
         hasError: boolean,
         disableCreate: boolean,
@@ -58,44 +58,44 @@
     }
 
     interface Methods {
-        createVersion: (name: string) => void,
-        getVersions: () => void,
-        handleCurrentVersionClick: (e: Event) => void
+        createProject: (name: string) => void,
+        getProjects: () => void,
+        handleCurrentProjectClick: (e: Event) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
         data: function(){
             return {
-                newVersionName: ""
+                newProjectName: ""
             }
         },
         computed: {
-            ...mapStateProps<VersionsState, keyof Computed>(namespace, {
-                currentVersion: state => state.currentVersion,
-                previousVersions: state => state.previousVersions,
+            ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
+                currentProject: state => state.currentProject,
+                previousProjects: state => state.previousProjects,
                 error: state => state.error,
                 hasError: state => !!state.error,
                 loading: state => state.loading
             }),
             disableCreate: function() {
-                return !this.newVersionName;
+                return !this.newProjectName;
             }
         },
         methods: {
-            handleCurrentVersionClick: function(e: Event) {
+            handleCurrentProjectClick: function(e: Event) {
                 e.preventDefault();
                 this.$router.push('/');
             },
-            createVersion: mapActionByName(namespace, "createVersion"),
-            getVersions: mapActionByName(namespace, "getVersions")
+            createProject: mapActionByName(namespace, "createProject"),
+            getProjects: mapActionByName(namespace, "getProjects")
         },
         mounted() {
-            this.getVersions();
+            this.getProjects();
         },
         components: {
             ErrorAlert,
             LoadingSpinner,
-            VersionHistory
+            ProjectHistory
         }
     });
 </script>
