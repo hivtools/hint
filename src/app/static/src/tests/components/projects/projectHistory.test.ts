@@ -37,7 +37,7 @@ describe("Projects component", () => {
     };
 
     const testRendersProject = (wrapper: Wrapper<any>, id: number, name: string, updatedIsoDate: string) => {
-        const v = wrapper.find(`#v-${id}`).findAll(".project-cell");
+        const v = wrapper.find(`#p-${id}`).findAll(".project-cell");
         const button = v.at(0).find("button");
         expect(button.classes()).toContain("collapsed");
         const svg = button.findAll("svg");
@@ -47,6 +47,8 @@ describe("Projects component", () => {
         expect(svg.at(1).classes()).toContain("feather-chevron-down");
         expect(v.at(1).text()).toBe(name);
         expect(v.at(2).text()).toBe(formatDateTime(updatedIsoDate));
+        expect(v.at(3).text()).toBe("Load last updated");
+        expect(v.at(3).find("a").attributes("href")).toBe("");
 
         const versions = wrapper.find(`#versions-${id}`);
         expect(versions.classes()).toContain("collapse");
@@ -54,7 +56,7 @@ describe("Projects component", () => {
     };
 
     const testRendersVersion = (row: Wrapper<any>, id: string, updatedIsoDate: string) => {
-        expect(row.attributes("id")).toBe(`s-${id}`);
+        expect(row.attributes("id")).toBe(`v-${id}`);
         let cells = row.findAll(".version-cell");
         expect(cells.at(0).text()).toBe("");
         expect(cells.at(1).text()).toBe(formatDateTime(updatedIsoDate));
@@ -89,7 +91,7 @@ describe("Projects component", () => {
 
     it("can expand project row", async (done) => {
         const wrapper = getWrapper();
-        const button = wrapper.find("#v-1 button");
+        const button = wrapper.find("#p-1 button");
         button.trigger("click");
         setTimeout(() => {
             expect(button.classes()).toContain("not-collapsed");
@@ -100,7 +102,7 @@ describe("Projects component", () => {
 
     it("can collapse project row", async (done) => {
         const wrapper = getWrapper();
-        const button = wrapper.find("#v-1 button");
+        const button = wrapper.find("#p-1 button");
         button.trigger("click");
         setTimeout(() => {
             expect(button.classes()).toContain("not-collapsed");
@@ -119,6 +121,14 @@ describe("Projects component", () => {
     });
 
     it("clicking version load link invokes loadVersion action", async () => {
+        await testLoadVersionLink("#versions-1", 1, "s11");
+    });
+
+    it("clicking project load latest link invokes loadVersion action", async () => {
+        await testLoadVersionLink("#p-1", 1, "s11");
+    });
+
+    const testLoadVersionLink = async function(elementId: string, projectId: number, versionId: string) {
         const mockLoad = jest.fn();
         const mockStore = new Vuex.Store({
             state: emptyState(),
@@ -137,5 +147,7 @@ describe("Projects component", () => {
         await Vue.nextTick();
         expect(mockLoad.mock.calls.length).toBe(1);
         expect(mockLoad.mock.calls[0][1]).toStrictEqual({projectId: 1, versionId: "s11"});
-    });
+    };
 });
+
+
