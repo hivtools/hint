@@ -36,7 +36,7 @@
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
         </div>
         <div v-if="!loading" class="content">
-            <snapshot-status class="float-right"></snapshot-status>
+            <version-status class="float-right"></version-status>
             <div class="pt-4">
                 <adr-integration v-if="isActive(1)"></adr-integration>
                 <baseline v-if="isActive(1)"></baseline>
@@ -65,7 +65,7 @@
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
-    import SnapshotStatus from "./projects/SnapshotStatus.vue";
+    import VersionStatus from "./projects/VersionStatus.vue";
     import { mapGettersByNames, mapStateProps} from "../utils";
     import {Project} from "../types";
     import {ProjectsState} from "../store/projects/projects";
@@ -140,7 +140,7 @@
             ModelOutput,
             ModelOptions,
             DownloadResults,
-            SnapshotStatus
+            VersionStatus
         },
         watch: {
             ready: function (newVal) {

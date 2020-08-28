@@ -6,7 +6,7 @@ import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.DiseaseController
 import org.imperial.mrc.hint.controllers.HintrController
-import org.imperial.mrc.hint.db.SnapshotRepository
+import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.security.Session
@@ -16,8 +16,8 @@ import org.springframework.http.HttpStatus
 class DiseaseControllerTests: HintrControllerTests() {
 
     override fun getSut(mockFileManager: FileManager, mockAPIClient: HintrAPIClient,
-                        mockSession: Session, mockSnapshotRepository: SnapshotRepository): HintrController {
-        return DiseaseController(mockFileManager, mockAPIClient, mockSession, mockSnapshotRepository)
+                        mockSession: Session, mockVersionRepository: VersionRepository): HintrController {
+        return DiseaseController(mockFileManager, mockAPIClient, mockSession, mockVersionRepository)
     }
 
     @Test

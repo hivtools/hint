@@ -10,7 +10,7 @@
         <div v-for="v in projects">
             <div :id="`v-${v.id}`"  class="row py-2">
                 <div class="col-md-1 project-cell">
-                    <button v-b-toggle="`snapshots-${v.id}`" class="btn btn-xs bg-transparent shadow-none py-0">
+                    <button v-b-toggle="`versions-${v.id}`" class="btn btn-xs bg-transparent shadow-none py-0">
                         <chevron-right-icon size="20" class="icon when-closed"></chevron-right-icon>
                         <chevron-down-icon size="20" class="icon when-open"></chevron-down-icon>
                     </button>
@@ -18,14 +18,14 @@
                 <div class="col-md-3 project-cell">
                     {{v.name}}
                 </div>
-                <div class="col-md-3 project-cell">{{format(v.snapshots[0].updated)}}</div>
+                <div class="col-md-3 project-cell">{{format(v.versions[0].updated)}}</div>
             </div>
-            <b-collapse :id="`snapshots-${v.id}`">
-                <div v-for="s in v.snapshots" :id="`s-${s.id}`" class="row font-italic bg-light py-2">
-                    <div class="col-md-4 snapshot-cell"></div>
-                    <div class="col-md-3 snapshot-cell">{{format(s.updated)}}</div>
-                    <div class="col-md-4 snapshot-cell">
-                        <a @click="loadSnapshot($event, v.id, s.id)" href="" v-translate="'load'"></a>
+            <b-collapse :id="`versions-${v.id}`">
+                <div v-for="s in v.versions" :id="`s-${s.id}`" class="row font-italic bg-light py-2">
+                    <div class="col-md-4 version-cell"></div>
+                    <div class="col-md-3 version-cell">{{format(s.updated)}}</div>
+                    <div class="col-md-4 version-cell">
+                        <a @click="loadVersion($event, v.id, s.id)" href="" v-translate="'load'"></a>
                     </div>
                 </div>
             </b-collapse>
@@ -35,7 +35,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {SnapshotIds, Project} from "../../types";
+    import {VersionIds, Project} from "../../types";
     import {BCollapse} from "bootstrap-vue";
     import { VBToggle } from 'bootstrap-vue';
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
@@ -47,8 +47,8 @@
 
     interface Methods {
         format: (date: string) => void,
-        loadSnapshot: (event: Event, projectId: number, snapshotId: string) => void,
-        loadAction: (snapshot: SnapshotIds) => void
+        loadVersion: (event: Event, projectId: number, versionId: string) => void,
+        loadAction: (version: VersionIds) => void
     }
 
     export default Vue.extend<{}, Methods, {}, Props>({
@@ -61,11 +61,11 @@
            format(date: string) {
                return formatDateTime(date);
            },
-           loadSnapshot(event: Event, projectId: number, snapshotId: string) {
+           loadVersion(event: Event, projectId: number, versionId: string) {
                 event.preventDefault();
-               this.loadAction({projectId, snapshotId});
+               this.loadAction({projectId, versionId});
            },
-           loadAction: mapActionByName<SnapshotIds>("projects", "loadSnapshot"),
+           loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
        },
        components: {
            BCollapse,

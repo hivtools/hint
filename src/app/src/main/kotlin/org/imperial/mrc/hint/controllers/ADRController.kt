@@ -6,7 +6,7 @@ import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
-import org.imperial.mrc.hint.db.SnapshotRepository
+import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -26,8 +26,8 @@ class ADRController(private val encryption: Encryption,
                     fileManager: FileManager,
                     apiClient: HintrAPIClient,
                     session: Session,
-                    snapshotRepository: SnapshotRepository) :
-        HintrController(fileManager, apiClient, session, snapshotRepository) {
+                    versionRepository: VersionRepository) :
+        HintrController(fileManager, apiClient, session, versionRepository) {
 
     @GetMapping("/key")
     fun getAPIKey(): ResponseEntity<String> {

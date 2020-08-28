@@ -44,32 +44,32 @@ describe("Projects mutations", () => {
         expect(state.loading).toBe(false);
     });
 
-    it("sets snapshot upload pending", () => {
+    it("sets version upload pending", () => {
         const state = mockProjectsState();
-        mutations[ProjectsMutations.SetSnapshotUploadPending](state, {payload: true});
-        expect(state.snapshotUploadPending).toBe(true);
+        mutations[ProjectsMutations.SetVersionUploadPending](state, {payload: true});
+        expect(state.versionUploadPending).toBe(true);
     });
 
-    it("SnapshotUploadSuccess sets snapshotTime", () => {
+    it("VersionUploadSuccess sets versionTime", () => {
         const state = mockProjectsState();
-        mutations[ProjectsMutations.SnapshotUploadSuccess](state);
+        mutations[ProjectsMutations.VersionUploadSuccess](state);
 
-        expect(state.snapshotTime!.valueOf()).toEqual(testNow);
+        expect(state.versionTime!.valueOf()).toEqual(testNow);
     });
 
-    it("sets created snapshot as current", () => {
+    it("sets created version as current", () => {
         const mockProject = {
             id: 1,
             name: "v1",
-            snapshots: [{id: "OLD SNAPSHOT", created: "old created time", updated: "old updated time"}]
+            versions: [{id: "OLD VERSION", created: "old created time", updated: "old updated time"}]
         };
         const state = mockProjectsState({currentProject: mockProject});
 
-        const newSnapshot = {id: "NEW SNAPSHOT", created: "new time", updated: "new time"};
-        mutations[ProjectsMutations.SnapshotCreated](state, {payload: newSnapshot});
+        const newVersion = {id: "NEW VERSION", created: "new time", updated: "new time"};
+        mutations[ProjectsMutations.VersionCreated](state, {payload: newVersion});
 
-        expect(state.currentSnapshot).toBe(newSnapshot);
-        expect(state.currentProject!.snapshots.length).toBe(2);
-        expect(state.currentProject!.snapshots[1]).toBe(newSnapshot);
+        expect(state.currentVersion).toBe(newVersion);
+        expect(state.currentProject!.versions.length).toBe(2);
+        expect(state.currentProject!.versions[1]).toBe(newVersion);
     });
 });

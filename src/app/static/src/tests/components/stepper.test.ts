@@ -39,7 +39,7 @@ import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {ProjectsState} from "../../app/store/projects/projects";
-import SnapshotStatus from "../../app/components/projects/SnapshotStatus.vue";
+import VersionStatus from "../../app/components/projects/VersionStatus.vue";
 
 const localVue = createLocalVue();
 
@@ -211,9 +211,9 @@ describe("Stepper component", () => {
         expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(0);
     });
 
-    it("renders snapshot status", () => {
+    it("renders version status", () => {
         const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
-       expect(wrapper.find(SnapshotStatus).exists()).toBe(true);
+       expect(wrapper.find(VersionStatus).exists()).toBe(true);
     });
 
     it("step connector is enabled if next step is", () => {
@@ -523,7 +523,7 @@ describe("Stepper component", () => {
 
     it("does not push router to projects if logged in user and currentProject set", () => {
         const mockRouterPush = jest.fn();
-        const projectsState = {currentProject: {id: 1, name: "testProject", snapshots: []}};
+        const projectsState = {currentProject: {id: 1, name: "testProject", versions: []}};
         const wrapper =  createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(0);

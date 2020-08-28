@@ -14,7 +14,7 @@ import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.controllers.HintrController
-import org.imperial.mrc.hint.db.SnapshotRepository
+import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
@@ -205,7 +205,7 @@ class ADRControllerTests : HintrControllerTests() {
     override fun getSut(mockFileManager: FileManager,
                         mockAPIClient: HintrAPIClient,
                         mockSession: Session,
-                        mockSnapshotRepository: SnapshotRepository): HintrController {
+                        mockVersionRepository: VersionRepository): HintrController {
         return ADRController(mockEncryption,
                 mockUserRepo,
                 mock(),
@@ -214,7 +214,7 @@ class ADRControllerTests : HintrControllerTests() {
                 mockFileManager,
                 mockAPIClient,
                 mockSession,
-                mockSnapshotRepository)
+                mockVersionRepository)
     }
 
     @Test

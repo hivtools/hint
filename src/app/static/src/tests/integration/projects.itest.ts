@@ -22,77 +22,77 @@ describe("Projects actions", () => {
         const createdProject = commit.mock.calls[1][0]["payload"];
         expect(createdProject.id).toBeTruthy();
         expect(createdProject.name).toBe("v1");
-        expect(createdProject.snapshots.length).toBe(1);
+        expect(createdProject.versions.length).toBe(1);
     });
 
-    it("can save snapshot", async (done) => {
+    it("can save version", async (done) => {
         const commit = jest.fn();
         const state = initialProjectsState();
         await actions.createProject({commit, rootState, state} as any, "v1");
 
         const createdProject = commit.mock.calls[1][0]["payload"];
         state.currentProject = createdProject;
-        state.currentSnapshot = createdProject.snapshots[0];
+        state.currentVersion = createdProject.versions[0];
 
-        await actions.uploadSnapshotState({commit, rootState: emptyState(), state} as any);
+        await actions.uploadVersionState({commit, rootState: emptyState(), state} as any);
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(5);
-            expect(commit.mock.calls[2][0]["type"]).toBe(ProjectsMutations.SetSnapshotUploadPending);
+            expect(commit.mock.calls[2][0]["type"]).toBe(ProjectsMutations.SetVersionUploadPending);
             expect(commit.mock.calls[2][0]["payload"]).toBe(true);
-            expect(commit.mock.calls[3][0]["type"]).toBe(ProjectsMutations.SetSnapshotUploadPending);
+            expect(commit.mock.calls[3][0]["type"]).toBe(ProjectsMutations.SetVersionUploadPending);
             expect(commit.mock.calls[3][0]["payload"]).toBe(false);
-            expect(commit.mock.calls[4][0]["type"]).toBe(ProjectsMutations.SnapshotUploadSuccess);
+            expect(commit.mock.calls[4][0]["type"]).toBe(ProjectsMutations.VersionUploadSuccess);
 
             done();
         }, 2500);
     });
 
-    it("can create new snapshot", async (done) => {
+    it("can create new version", async (done) => {
         const commit = jest.fn();
         const state = initialProjectsState();
         await actions.createProject({commit, rootState: emptyState(), state} as any, "v1");
 
         const createdProject = commit.mock.calls[1][0]["payload"];
         state.currentProject = createdProject;
-        state.currentSnapshot = createdProject.snapshots[0];
+        state.currentVersion = createdProject.versions[0];
 
-        await actions.newSnapshot({commit, rootState: emptyState(), state} as any);
+        await actions.newVersion({commit, rootState: emptyState(), state} as any);
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(5);
-            expect(commit.mock.calls[2][0]["type"]).toBe(ProjectsMutations.SetSnapshotUploadPending);
+            expect(commit.mock.calls[2][0]["type"]).toBe(ProjectsMutations.SetVersionUploadPending);
             expect(commit.mock.calls[2][0]["payload"]).toBe(false);
-            expect(commit.mock.calls[3][0]["type"]).toBe(ProjectsMutations.SnapshotUploadSuccess);
-            expect(commit.mock.calls[4][0]["type"]).toBe(ProjectsMutations.SnapshotCreated);
+            expect(commit.mock.calls[3][0]["type"]).toBe(ProjectsMutations.VersionUploadSuccess);
+            expect(commit.mock.calls[4][0]["type"]).toBe(ProjectsMutations.VersionCreated);
 
-            const newSnapshot = commit.mock.calls[4][0]["payload"];
-            expect(newSnapshot.id).toBeTruthy();
-            expect(newSnapshot.id).not.toEqual(createdProject.snapshots[0].id);
+            const newVersion = commit.mock.calls[4][0]["payload"];
+            expect(newVersion.id).toBeTruthy();
+            expect(newVersion.id).not.toEqual(createdProject.versions[0].id);
 
             done();
         }, 500);
     });
 
-    it("can load snapshot", async(done) => {
+    it("can load version", async(done) => {
         const state = initialProjectsState();
         const commit = jest.fn();
         await actions.createProject({commit, rootState, state} as any, "v1");
 
         const createdProject = commit.mock.calls[1][0]["payload"];
         state.currentProject = createdProject;
-        state.currentSnapshot = createdProject.snapshots[0];
+        state.currentVersion = createdProject.versions[0];
 
-        await actions.uploadSnapshotState({commit, rootState: emptyState(), state} as any);
+        await actions.uploadVersionState({commit, rootState: emptyState(), state} as any);
 
         const dispatch = jest.fn();
         const projectId = createdProject.id;
-        const snapshotId = createdProject.snapshots[0].id;
+        const versionId = createdProject.versions[0].id;
         setTimeout(() => {
-            actions.loadSnapshot({commit, dispatch, state, rootState} as any, {projectId: projectId, snapshotId});
+            actions.loadVersion({commit, dispatch, state, rootState} as any, {projectId: projectId, versionId});
             setTimeout(() => {
-                expect(dispatch.mock.calls[0][0]).toBe("load/loadFromSnapshot");
-                const fetchedSnapshot = dispatch.mock.calls[0][1];
-                expect(fetchedSnapshot.state).toBeTruthy();
-                expect(fetchedSnapshot.files).toBeTruthy();
+                expect(dispatch.mock.calls[0][0]).toBe("load/loadFromVersion");
+                const fetchedVersion = dispatch.mock.calls[0][1];
+                expect(fetchedVersion.state).toBeTruthy();
+                expect(fetchedVersion.files).toBeTruthy();
                 done();
             }, 400);
         }, 2400);

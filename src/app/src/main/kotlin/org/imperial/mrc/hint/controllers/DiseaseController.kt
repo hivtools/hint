@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.controllers
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.db.SnapshotRepository
+import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Session
@@ -16,8 +16,8 @@ import org.springframework.web.multipart.MultipartFile
 class DiseaseController(fileManager: FileManager,
                         apiClient: HintrAPIClient,
                         session: Session,
-                        snapshotRepository: SnapshotRepository) :
-        HintrController(fileManager, apiClient, session, snapshotRepository) {
+                        versionRepository: VersionRepository) :
+        HintrController(fileManager, apiClient, session, versionRepository) {
 
     @PostMapping("/survey/")
     @ResponseBody
@@ -58,21 +58,21 @@ class DiseaseController(fileManager: FileManager,
     @DeleteMapping("/survey/")
     @ResponseBody
     fun removeSurvey(): ResponseEntity<String> {
-        snapshotRepository.removeSnapshotFile(session.getSnapshotId(), FileType.Survey)
+        versionRepository.removeVersionFile(session.getVersionId(), FileType.Survey)
         return EmptySuccessResponse.asResponseEntity()
     }
 
     @DeleteMapping("/programme/")
     @ResponseBody
     fun removeProgramme(): ResponseEntity<String> {
-        snapshotRepository.removeSnapshotFile(session.getSnapshotId(), FileType.Programme)
+        versionRepository.removeVersionFile(session.getVersionId(), FileType.Programme)
         return EmptySuccessResponse.asResponseEntity()
     }
 
     @DeleteMapping("/anc/")
     @ResponseBody
     fun removeANC(): ResponseEntity<String> {
-        snapshotRepository.removeSnapshotFile(session.getSnapshotId(), FileType.ANC)
+        versionRepository.removeVersionFile(session.getVersionId(), FileType.ANC)
         return EmptySuccessResponse.asResponseEntity()
     }
 

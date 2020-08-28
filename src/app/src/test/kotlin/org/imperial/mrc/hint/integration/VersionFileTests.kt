@@ -6,35 +6,35 @@ import org.imperial.mrc.hint.db.Tables
 import org.imperial.mrc.hint.helpers.getTestEntity
 import org.springframework.boot.test.web.client.postForEntity
 
-class SnapshotFileTests : SecureIntegrationTests() {
+class VersionFileTests : SecureIntegrationTests() {
 
-    protected fun assertSnapshotFileExists(isAuthorized: IsAuthorized, fileType: FileType) {
+    protected fun assertVersionFileExists(isAuthorized: IsAuthorized, fileType: FileType) {
         if (isAuthorized == IsAuthorized.TRUE) {
-            assertSnapshotFileExists(fileType)
+            assertVersionFileExists(fileType)
         }
     }
 
-    protected fun assertSnapshotFileExists(fileType: FileType) {
+    protected fun assertVersionFileExists(fileType: FileType) {
         val records = dsl.selectFrom(Tables.VERSION_FILE)
                 .where(Tables.VERSION_FILE.TYPE.eq(fileType.toString()))
         AssertionsForClassTypes.assertThat(records.count()).isEqualTo(1)
     }
 
-    protected fun assertSnapshotFileDoesNotExist(fileType: FileType) {
+    protected fun assertVersionFileDoesNotExist(fileType: FileType) {
         val records = dsl.selectFrom(Tables.VERSION_FILE)
                 .where(Tables.VERSION_FILE.TYPE.eq(fileType.toString()))
         AssertionsForClassTypes.assertThat(records.count()).isEqualTo(0)
     }
 
-    protected fun setUpSnapshotFileAndGetHash(isAuthorized: IsAuthorized, filename: String, url: String): String {
+    protected fun setUpVersionFileAndGetHash(isAuthorized: IsAuthorized, filename: String, url: String): String {
         return if (isAuthorized == IsAuthorized.TRUE) {
-            setUpSnapshotFileAndGetHash(filename, url)
+            setUpVersionFileAndGetHash(filename, url)
         } else {
             "hash"
         }
     }
 
-    protected fun setUpSnapshotFileAndGetHash(filename: String, url: String): String {
+    protected fun setUpVersionFileAndGetHash(filename: String, url: String): String {
         val postEntity = getTestEntity(filename)
         val entity = testRestTemplate.postForEntity<String>(url, postEntity)
         return getResponseData(entity)["hash"].textValue()

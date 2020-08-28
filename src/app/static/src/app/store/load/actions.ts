@@ -3,7 +3,7 @@ import {LoadingState, LoadState} from "./load";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {verifyCheckSum} from "../../utils";
-import {Dict, LocalSessionFile, SnapshotDetails} from "../../types";
+import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 
@@ -13,7 +13,7 @@ export type LoadErrorActionTypes = "LoadFailed"
 export interface LoadActions {
     load: (store: ActionContext<LoadState, RootState>, file: File) => void
     setFiles: (store: ActionContext<LoadState, RootState>, savedFileContents: string) => void
-    loadFromSnapshot: (store: ActionContext<LoadState, RootState>, snapshotDetails: SnapshotDetails) => void
+    loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
 }
@@ -47,12 +47,12 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         await getFilesAndLoad(context, files, savedState)
     },
 
-    async loadFromSnapshot(context, snapshotDetails) {
+    async loadFromVersion(context, versionDetails) {
         const {commit} = context;
         commit({type: "SettingFiles", payload: null});
 
         router.push("/", () => {
-            getFilesAndLoad(context, snapshotDetails.files, JSON.parse(snapshotDetails.state));
+            getFilesAndLoad(context, versionDetails.files, JSON.parse(versionDetails.state));
         });
 
     },
