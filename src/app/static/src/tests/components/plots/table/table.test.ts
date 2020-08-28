@@ -379,4 +379,18 @@ it('renders correct markup when filtering by 4.2', () => {
   expect(wrapper.findAll('td').at(3).text()).toBe('0.3');
   expect(wrapper.findAll('tr').length).toBe(2);
 });
+it('clicking clear button clears filter and resets table', () => {
+  const wrapper = getWrapper();
+  wrapper.setData({ filter: '4.2' })
+  wrapper.find('button').trigger('click')
+  expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
+  expect(wrapper.find('td').text()).toBe('4.1 3.1');
+  expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
+  expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
+  expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
+  expect(wrapper.findAll('td').at(2).text()).toBe('Female');
+  expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
+  expect(wrapper.findAll('td').at(3).text()).toBe('0.1');
+  expect(wrapper.findAll('tr').length).toBe(3);
+});
 })

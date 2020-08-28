@@ -32,6 +32,7 @@
             </b-table>
         </div>
         <div v-else>No data are available for these selections.</div>
+        <!-- <div v-if="filteredData.length > 0 && ">Test</div> -->
     </div>
     
 </template>
