@@ -149,5 +149,3 @@ describe("Projects component", () => {
         expect(mockLoad.mock.calls[0][1]).toStrictEqual({projectId: 1, versionId: "s11"});
     };
 });
-
-
