@@ -136,6 +136,6 @@ describe("Projects component", () => {
         snapshotLink.trigger("click");
         await Vue.nextTick();
         expect(mockLoad.mock.calls.length).toBe(1);
-        expect(mockLoad.mock.calls[0][1]).toStrictEqual({versionId: 1, snapshotId: "s11"});
+        expect(mockLoad.mock.calls[0][1]).toStrictEqual({projectId: 1, snapshotId: "s11"});
     });
 });

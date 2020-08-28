@@ -84,10 +84,10 @@ describe("Projects actions", () => {
         await actions.uploadSnapshotState({commit, rootState: emptyState(), state} as any);
 
         const dispatch = jest.fn();
-        const versionId = createdProject.id;
+        const projectId = createdProject.id;
         const snapshotId = createdProject.snapshots[0].id;
         setTimeout(() => {
-            actions.loadSnapshot({commit, dispatch, state, rootState} as any, {versionId, snapshotId});
+            actions.loadSnapshot({commit, dispatch, state, rootState} as any, {projectId: projectId, snapshotId});
             setTimeout(() => {
                 expect(dispatch.mock.calls[0][0]).toBe("load/loadFromSnapshot");
                 const fetchedSnapshot = dispatch.mock.calls[0][1];

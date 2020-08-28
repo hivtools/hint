@@ -47,7 +47,7 @@
 
     interface Methods {
         format: (date: string) => void,
-        loadSnapshot: (event: Event, versionId: number, snapshotId: string) => void,
+        loadSnapshot: (event: Event, projectId: number, snapshotId: string) => void,
         loadAction: (snapshot: SnapshotIds) => void
     }
 
@@ -61,9 +61,9 @@
            format(date: string) {
                return formatDateTime(date);
            },
-           loadSnapshot(event: Event, versionId: number, snapshotId: string) {
+           loadSnapshot(event: Event, projectId: number, snapshotId: string) {
                 event.preventDefault();
-               this.loadAction({versionId, snapshotId});
+               this.loadAction({projectId, snapshotId});
            },
            loadAction: mapActionByName<SnapshotIds>("projects", "loadSnapshot"),
        },

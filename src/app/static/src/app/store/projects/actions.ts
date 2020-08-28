@@ -73,7 +73,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<ProjectsMutations, ProjectsMutations>(context)
             .ignoreSuccess()
             .withError(ProjectsMutations.ProjectError)
-            .get<SnapshotDetails>(`project/${snapshot.versionId}/snapshot/${snapshot.snapshotId}`)
+            .get<SnapshotDetails>(`project/${snapshot.projectId}/snapshot/${snapshot.snapshotId}`)
             .then((response: any) => {
                 if (state.error === null) {
                     dispatch("load/loadFromSnapshot", response.data, {root: true})
