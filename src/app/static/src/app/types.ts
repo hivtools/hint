@@ -63,7 +63,7 @@ export interface NumericRange {
     max: number
 }
 
-export interface Snapshot {
+export interface Version {
     id: string,
     created: string,
     updated: string
@@ -72,17 +72,17 @@ export interface Snapshot {
 export interface Project {
     id: number,
     name: string,
-    snapshots: Snapshot[]
+    versions: Version[]
 }
 
-export interface SnapshotDetails {
+export interface VersionDetails {
     files: any,
     state: string
 }
 
-export interface SnapshotIds {
+export interface VersionIds {
     projectId: number,
-    snapshotId: string
+    versionId: string
 }
 
 export interface Dataset {

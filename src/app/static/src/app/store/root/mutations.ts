@@ -91,7 +91,7 @@ export const mutations: MutationTree<RootState> = {
             projects: {
                 ...initialProjectsState(),
                 currentProject: action.payload,
-                currentSnapshot: action.payload.snapshots[0]
+                currentVersion: action.payload.versions[0]
             }
         };
 

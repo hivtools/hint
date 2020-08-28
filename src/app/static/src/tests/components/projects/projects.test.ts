@@ -39,7 +39,7 @@ describe("Projects component", () => {
         return shallowMount(Projects, {store, mocks});
     };
 
-    const currentProject = {name: "existingProject", id: 1, snapshots: []};
+    const currentProject = {name: "existingProject", id: 1, versions: []};
     const previousProjects = ["TEST PREVIOUS VERSION"] as any;
 
     it("renders as expected with no current project", () => {

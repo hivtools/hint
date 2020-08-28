@@ -1,15 +1,15 @@
 import {MutationTree} from "vuex";
 import {ProjectsState} from "./projects";
-import {PayloadWithType, Snapshot, Project} from "../../types";
+import {PayloadWithType, Version, Project} from "../../types";
 import {Error} from "../../generated";
 
 export enum ProjectsMutations {
     SetLoading = "SetLoading",
     SetPreviousProjects = "SetPreviousProjects",
-    SetSnapshotUploadPending = "SetSnapshotUploadPending",
+    SetVersionUploadPending = "SetVersionUploadPending",
     ProjectError = "ProjectError",
-    SnapshotCreated = "SnapshotCreated",
-    SnapshotUploadSuccess = "SnapshotUploadSuccess"
+    VersionCreated = "VersionCreated",
+    VersionUploadSuccess = "VersionUploadSuccess"
 }
 
 export const mutations: MutationTree<ProjectsState> = {
@@ -21,19 +21,19 @@ export const mutations: MutationTree<ProjectsState> = {
         state.previousProjects = action.payload;
         state.loading = false;
     },
-    [ProjectsMutations.SetSnapshotUploadPending](state: ProjectsState, action: PayloadWithType<boolean>) {
-        state.snapshotUploadPending = action.payload;
+    [ProjectsMutations.SetVersionUploadPending](state: ProjectsState, action: PayloadWithType<boolean>) {
+        state.versionUploadPending = action.payload;
     },
     [ProjectsMutations.ProjectError](state: ProjectsState, action: PayloadWithType<Error>) {
         state.error = action.payload;
         state.loading = false;
     },
-    [ProjectsMutations.SnapshotCreated](state: ProjectsState, action: PayloadWithType<Snapshot>) {
-        const snapshot = action.payload;
-        state.currentProject!.snapshots.push(snapshot);
-        state.currentSnapshot = snapshot;
+    [ProjectsMutations.VersionCreated](state: ProjectsState, action: PayloadWithType<Version>) {
+        const version = action.payload;
+        state.currentProject!.versions.push(version);
+        state.currentVersion = version;
     },
-    [ProjectsMutations.SnapshotUploadSuccess](state: ProjectsState) {
-        state.snapshotTime = new Date(Date.now());
+    [ProjectsMutations.VersionUploadSuccess](state: ProjectsState) {
+        state.versionTime = new Date(Date.now());
     }
 };

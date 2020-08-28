@@ -64,7 +64,7 @@ const persistState = (store: Store<RootState>) => {
         const {dispatch} = store;
         const type = stripNamespace(mutation.type);
         if (type[0] !== "projects" && type[0] !== "errors") {
-            dispatch("projects/uploadSnapshotState", {root: true});
+            dispatch("projects/uploadVersionState", {root: true});
         }
     })
 };

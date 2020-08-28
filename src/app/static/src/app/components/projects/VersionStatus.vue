@@ -28,7 +28,7 @@
             formattedTime: function() {
                 return this.time ? moment(this.time).format('HH:mm') : '';
             },
-            time: mapStateProp<ProjectsState, Date | null>(namespace, state => state.snapshotTime)
+            time: mapStateProp<ProjectsState, Date | null>(namespace, state => state.versionTime)
         },
         components: {
             CheckIcon

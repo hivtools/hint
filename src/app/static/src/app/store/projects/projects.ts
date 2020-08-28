@@ -3,28 +3,28 @@ import {localStorageManager} from "../../localStorageManager";
 import {RootState} from "../../root";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
-import {Snapshot, Project} from "../../types";
+import {Version, Project} from "../../types";
 import {Error} from "../../generated";
 
 export interface ProjectsState {
     currentProject: Project | null,
-    currentSnapshot: Snapshot | null,
+    currentVersion: Version | null,
     previousProjects: Project[],
     loading: boolean,
     error: Error | null,
-    snapshotUploadPending: boolean,
-    snapshotTime: Date | null
+    versionUploadPending: boolean,
+    versionTime: Date | null
 }
 
 export const initialProjectsState = (): ProjectsState => {
     return {
         currentProject: null,
-        currentSnapshot: null,
+        currentVersion: null,
         previousProjects: [],
         loading: false,
         error: null,
-        snapshotUploadPending: false,
-        snapshotTime: null
+        versionUploadPending: false,
+        versionTime: null
     }
 };
 

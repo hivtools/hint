@@ -2,7 +2,7 @@
     <div>
         <modal :open="open">
             <h4 v-if="guestUser" v-translate="'haveYouSaved'"></h4>
-            <h4 v-if="!guestUser">Save snapshot?</h4>
+            <h4 v-if="!guestUser">Save version?</h4>
 
             <p v-translate="'discardWarning'"></p>
             <ul>
@@ -13,14 +13,14 @@
 
             <p v-if="guestUser"  v-translate="'savePrompt'"></p>
             <p v-if="!guestUser">
-                These steps will automatically be saved in a snapshot. You will be able to reload this snapshot from the Projects page.
+                These steps will automatically be saved in a version. You will be able to reload this version from the Projects page.
             </p>
 
-            <template v-if="!waitingForSnapshot" v-slot:footer>
+            <template v-if="!waitingForVersion" v-slot:footer>
                 <button type="button"
                         class="btn btn-white"
                         @click="handleConfirm"
-                        v-translate="guestUser? 'discardSteps' : 'saveSnapshotConfirm'">
+                        v-translate="guestUser? 'discardSteps' : 'saveVersionConfirm'">
                 </button>
                 <button type="button"
                         class="btn btn-red"
@@ -29,9 +29,9 @@
                 </button>
             </template>
 
-            <div v-if="waitingForSnapshot" class="text-center">
+            <div v-if="waitingForVersion" class="text-center">
                 <loading-spinner size="sm"></loading-spinner>
-                <h4 id="spinner-text">Saving snapshot</h4>
+                <h4 id="spinner-text">Saving version</h4>
             </div>
         </modal>
     </div>
@@ -51,7 +51,7 @@
     interface Computed {
         laterCompleteSteps: StepDescription[],
         guestUser: boolean,
-        currentSnapshotId: string | null,
+        currentVersionId: string | null,
         errorsCount: number
     }
 
@@ -62,20 +62,20 @@
     }
 
     interface Data {
-        waitingForSnapshot:  boolean
+        waitingForVersion:  boolean
     }
 
     export default Vue.extend<Data, {}, Computed, any>({
         props: ["open", "continueEditing", "cancelEditing"],
         data: function() {
             return {
-                waitingForSnapshot: false
+                waitingForVersion: false
             }
         },
         computed: {
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
-            currentSnapshotId: mapStateProp<ProjectsState, string | null>("projects", state => {
-                return state.currentSnapshot && state.currentSnapshot.id;
+            currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
+                return state.currentVersion && state.currentVersion.id;
             }),
             guestUser: function() {
                 return (currentUser === "guest");
@@ -89,22 +89,22 @@
                 if (this.guestUser) {
                     this.continueEditing();
                 } else {
-                    this.waitingForSnapshot = true;
-                    this.newSnapshot();
+                    this.waitingForVersion = true;
+                    this.newVersion();
                 }
             },
-            newSnapshot: mapActionByName("projects", "newSnapshot")
+            newVersion: mapActionByName("projects", "newVersion")
         },
         watch: {
-            currentSnapshotId: function() {
-                if (this.waitingForSnapshot) {
-                    this.waitingForSnapshot = false;
+            currentVersionId: function() {
+                if (this.waitingForVersion) {
+                    this.waitingForVersion = false;
                     this.continueEditing();
                 }
             },
             errorsCount: function(newVal, oldVal) {
-                if (this.waitingForSnapshot && (newVal > oldVal)) {
-                    this.waitingForSnapshot = false;
+                if (this.waitingForVersion && (newVal > oldVal)) {
+                    this.waitingForVersion = false;
                     this.cancelEditing();
                 }
             }

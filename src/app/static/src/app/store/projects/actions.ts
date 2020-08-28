@@ -7,23 +7,23 @@ import {api} from "../../apiService";
 import {ProjectsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
-import {Project, SnapshotDetails, SnapshotIds} from "../../types";
+import {Project, VersionDetails, VersionIds} from "../../types";
 
 export interface ProjectsActions {
     createProject: (store: ActionContext<ProjectsState, RootState>, name: string) => void,
     getProjects: (store: ActionContext<ProjectsState, RootState>) => void
-    uploadSnapshotState: (store: ActionContext<ProjectsState, RootState>) => void,
-    newSnapshot: (store: ActionContext<ProjectsState, RootState>) => void,
-    loadSnapshot: (store: ActionContext<ProjectsState, RootState>, snapshot: SnapshotIds) => void
+    uploadVersionState: (store: ActionContext<ProjectsState, RootState>) => void,
+    newVersion: (store: ActionContext<ProjectsState, RootState>) => void,
+    loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
 }
 
 export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     async createProject(context, name) {
         const {commit, state} = context;
 
-        //Ensure we have saved the current snapshot
-        if (state.currentSnapshot) {
-            immediateUploadSnapshotState(context);
+        //Ensure we have saved the current version
+        if (state.currentVersion) {
+            immediateUploadVersionState(context);
         }
 
         commit({type: ProjectsMutations.SetLoading, payload: true});
@@ -42,56 +42,56 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .get<Project[]>("/projects/");
     },
 
-    async uploadSnapshotState(context) {
+    async uploadVersionState(context) {
         const {state, commit} = context;
-        if (state.currentSnapshot) {
-            if (!state.snapshotUploadPending) {
-                commit({type: ProjectsMutations.SetSnapshotUploadPending, payload: true});
+        if (state.currentVersion) {
+            if (!state.versionUploadPending) {
+                commit({type: ProjectsMutations.SetVersionUploadPending, payload: true});
                 setTimeout(() => {
-                    immediateUploadSnapshotState(context);
+                    immediateUploadVersionState(context);
                 }, 2000);
             }
         }
     },
 
-    async newSnapshot(context) {
+    async newVersion(context) {
         const {state} = context;
-        await immediateUploadSnapshotState(context);
+        await immediateUploadVersionState(context);
 
         const projectId = state.currentProject && state.currentProject.id;
-        const snapshotId = state.currentSnapshot && state.currentSnapshot.id;
+        const versionId = state.currentVersion && state.currentVersion.id;
         api<ProjectsMutations, ErrorsMutation>(context)
-            .withSuccess(ProjectsMutations.SnapshotCreated)
+            .withSuccess(ProjectsMutations.VersionCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`project/${projectId}/version/?parent=${snapshotId}`)
+            .postAndReturn(`project/${projectId}/version/?parent=${versionId}`)
     },
 
-    async loadSnapshot(context, snapshot) {
+    async loadVersion(context, version) {
         const {commit, dispatch, state} = context;
 
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<ProjectsMutations, ProjectsMutations>(context)
             .ignoreSuccess()
             .withError(ProjectsMutations.ProjectError)
-            .get<SnapshotDetails>(`project/${snapshot.projectId}/version/${snapshot.snapshotId}`)
+            .get<VersionDetails>(`project/${version.projectId}/version/${version.versionId}`)
             .then((response: any) => {
                 if (state.error === null) {
-                    dispatch("load/loadFromSnapshot", response.data, {root: true})
+                    dispatch("load/loadFromVersion", response.data, {root: true})
                 }
             });
     }
 };
 
-async function immediateUploadSnapshotState(context: ActionContext<ProjectsState, RootState>) {
+async function immediateUploadVersionState(context: ActionContext<ProjectsState, RootState>) {
     const {state, commit, rootState} = context;
-    commit({type: ProjectsMutations.SetSnapshotUploadPending, payload: false});
+    commit({type: ProjectsMutations.SetVersionUploadPending, payload: false});
     const projectId = state.currentProject && state.currentProject.id;
-    const snapshotId = state.currentSnapshot && state.currentSnapshot.id;
-    if (projectId && snapshotId) {
+    const versionId = state.currentVersion && state.currentVersion.id;
+    if (projectId && versionId) {
         await api<ProjectsMutations, ErrorsMutation>(context)
-            .withSuccess(ProjectsMutations.SnapshotUploadSuccess)
+            .withSuccess(ProjectsMutations.VersionUploadSuccess)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`/project/${projectId}/version/${snapshotId}/state/`, serialiseState(rootState));
+            .postAndReturn(`/project/${projectId}/version/${versionId}/state/`, serialiseState(rootState));
     }
 }
 
