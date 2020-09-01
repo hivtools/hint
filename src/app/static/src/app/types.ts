@@ -85,11 +85,24 @@ export interface VersionIds {
     versionId: string
 }
 
+export interface DatasetResource {
+    revisionId: string
+    url: string
+    outOfDate: boolean
+}
+
 export interface Dataset {
     id: string
     title: string
-    revision_id: string,
-    url: string
+    url: string,
+    resources: {
+        pjnz: DatasetResource | null,
+        pop: DatasetResource | null,
+        program: DatasetResource | null,
+        anc: DatasetResource | null,
+        shape: DatasetResource | null,
+        survey: DatasetResource | null
+    }
 }
 
 export interface ADRSchemas {

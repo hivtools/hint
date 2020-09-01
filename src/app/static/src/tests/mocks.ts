@@ -33,6 +33,7 @@ import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutpu
 import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
 import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
+import {Dataset, DatasetResource} from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
 
 export const mockAxios = new MockAdapter(axios);
@@ -312,6 +313,32 @@ export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResp
         survey: {
             choropleth: {}
         },
+        ...props
+    }
+};
+
+export const mockDataset = (props: Partial<Dataset> = {}): Dataset => {
+    return {
+        id: "123",
+        title: "Some data",
+        url: "www.some.url",
+        resources: {
+            pjnz: null,
+            program: null,
+            pop: null,
+            survey: null,
+            shape: null,
+            anc: null
+        },
+        ...props
+    }
+};
+
+export const mockDatasetResource = (props: Partial<DatasetResource> = {}): DatasetResource => {
+    return {
+        url: "www.something.com",
+        revisionId: "1234",
+        outOfDate: false,
         ...props
     }
 };
