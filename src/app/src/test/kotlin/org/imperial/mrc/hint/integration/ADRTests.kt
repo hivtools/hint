@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.integration
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.nhaarman.mockito_kotlin.isA
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.db.Tables.ADR_KEY
 import org.junit.jupiter.api.Test
@@ -73,6 +74,27 @@ class ADRTests : SecureIntegrationTests() {
             assertThat(data.isArray).isTrue()
             // the test api key has access to exactly 1 dataset
             assertThat(data.count()).isEqualTo(1)
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can get individual ADR dataset`(isAuthorized: IsAuthorized) {
+        testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
+        val datasets = testRestTemplate.getForEntity<String>("/adr/datasets")
+
+        val id = if (isAuthorized == IsAuthorized.TRUE) {
+            val data = ObjectMapper().readTree(datasets.body!!)["data"]
+            data.first()["id"].textValue()
+        }
+        else "fake-id"
+
+        val result = testRestTemplate.getForEntity<String>("/adr/datasets/$id")
+        assertSecureWithSuccess(isAuthorized, result, null)
+
+        if (isAuthorized == IsAuthorized.TRUE) {
+            val data = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(data["id"].textValue()).isEqualTo(id)
         }
     }
 
