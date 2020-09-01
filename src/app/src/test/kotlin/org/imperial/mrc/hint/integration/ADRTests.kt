@@ -91,6 +91,11 @@ class ADRTests : SecureIntegrationTests() {
 
         val result = testRestTemplate.getForEntity<String>("/adr/datasets/$id")
         assertSecureWithSuccess(isAuthorized, result, null)
+
+        if (isAuthorized == IsAuthorized.TRUE) {
+            val data = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(data["id"].textValue()).isEqualTo(id)
+        }
     }
 
     @ParameterizedTest
