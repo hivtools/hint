@@ -2,6 +2,7 @@ export interface Translations {
     add: string,
     adjustScale: string,
     adrKey: string,
+    adrTooltip: string,
     age: string,
     ANC: string,
     area: string,
@@ -122,6 +123,8 @@ const en: Translations = {
     add: "add",
     adjustScale: "Adjust scale",
     adrKey: "ADR access key",
+    adrTooltip: "To import data from the ADR you have to provide your ADR access key. " +
+        "This can be found on your ADR profile page",
     age: "Age",
     ANC: "ANC Testing",
     area: "Area",

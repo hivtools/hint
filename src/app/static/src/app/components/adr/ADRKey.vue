@@ -72,7 +72,6 @@
     interface Data {
         editableKey: string | null
         editing: boolean
-        tooltipContent: string
     }
 
     interface Methods {
@@ -90,15 +89,14 @@
         currentLanguage: Language
         keyText: string
         error: Error | null
+        tooltipContent: string
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
         data() {
             return {
                 editableKey: "",
-                editing: false,
-                tooltipContent: "To import data from the ADR you have to provide your ADR access key. " +
-                    "This can be found on your ADR profile page"
+                editing: false
             }
         },
         computed: {
@@ -120,8 +118,11 @@
                     }
                     return str;
                 } else {
-                    return i18next.t("noneProvided", this.currentLanguage)
+                    return i18next.t("noneProvided", {lng: this.currentLanguage})
                 }
+            },
+            tooltipContent() {
+                return i18next.t("adrTooltip", {lng: this.currentLanguage})
             }
         },
         methods: {

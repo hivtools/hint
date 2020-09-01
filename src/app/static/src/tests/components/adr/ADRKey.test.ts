@@ -63,12 +63,18 @@ describe("ADR Key", function () {
         expect(links.at(0).text()).toBe("add");
     });
 
-    it("shows link to ADR if key does not exist", () => {
-        const rendered = shallowMount(ADRKey, {store: createStore()});
+    it("shows link to ADR with tooltip if key does not exist", () => {
+        const mockTooltipDirective = jest.fn();
+        const rendered = shallowMount(ADRKey, {store: createStore(), directives: {"tooltip": mockTooltipDirective}});
         const links = rendered.findAll("a");
         expect(links.length).toBe(2);
         expect(links.at(1).text()).toBe("get access key from ADR");
         expect(links.at(1).attributes("href")).toBe("www.adr.com");
+        expect(mockTooltipDirective.mock.calls[0][0].innerHTML)
+            .toBe("get access key from ADR");
+        expect(mockTooltipDirective.mock.calls[0][1].value)
+            .toBe("To import data from the ADR you have to provide your ADR access key. " +
+                "This can be found on your ADR profile page");
     });
 
     it("can edit key", async () => {
