@@ -3,6 +3,7 @@
         <div v-if="selectedDataset" style="margin-top:8px">
             <span class="font-weight-bold">Selected dataset:</span>
             <a :href="selectedDataset.url" target="_blank">{{ selectedDataset.title }}</a>
+            <span v-if="outOfDateMessage">{{outOfDateMessage}}</span>
         </div>
         <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{ selectText }}</button>
         <modal id="dataset" :open="open">
@@ -68,7 +69,8 @@
         datasetOptions: any[]
         selectedDataset: Dataset | null
         newDataset: Dataset
-        selectText: string
+        selectText: string,
+        outOfDateMessage: string
     }
 
     interface Data {
@@ -126,6 +128,34 @@
                 } else {
                     return "Select ADR dataset"
                 }
+            },
+            outOfDateMessage() {
+                if (!this.selectedDataset) return "";
+                const resources = this.selectedDataset.resources;
+                const outOfDateResources = []
+                if (resources.pjnz && resources.pjnz.outOfDate){
+                    outOfDateResources.push("PJNZ")
+                }
+                if (resources.pop && resources.pop.outOfDate){
+                    outOfDateResources.push("Population")
+                }
+                if (resources.shape && resources.shape.outOfDate){
+                    outOfDateResources.push("Shape file")
+                }
+                if (resources.survey && resources.survey.outOfDate){
+                    outOfDateResources.push("Survey")
+                }
+                if (resources.program && resources.program.outOfDate){
+                    outOfDateResources.push("ART")
+                }
+                if (resources.anc && resources.anc.outOfDate){
+                    outOfDateResources.push("ANC")
+                }
+                if (outOfDateResources.length == 0){
+                    return ""
+                }
+                return "The following files have been updated in the ADR since you last imported them: "
+                + outOfDateResources.join(",") + ". Use the refresh button to import the latest files."
             }
         },
         methods: {

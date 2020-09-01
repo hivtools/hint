@@ -5,8 +5,11 @@ import {api} from "../../apiService";
 import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
 import {BaselineMutation} from "./mutations";
 import qs from "qs";
+import axios, {AxiosError, AxiosResponse} from "axios";
+import {findResource} from "../../utils";
 
 export interface BaselineActions {
+    refreshDatasetMetadata: (store: ActionContext<BaselineState, RootState>) => void
     importPJNZ: (store: ActionContext<BaselineState, RootState>, url: String) => void
     importShape: (store: ActionContext<BaselineState, RootState>, url: String) => void,
     importPopulation: (store: ActionContext<BaselineState, RootState>, url: String) => void,
@@ -78,6 +81,27 @@ async function uploadOrImportShape(context: ActionContext<BaselineState, RootSta
 }
 
 export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
+
+    async refreshDatasetMetadata(context) {
+        const {commit, state, rootState} = context
+        if (state.selectedDataset) {
+            const schemas = rootState.adrSchemas!!
+            await axios
+                .get(`${schemas.baseUrl}/api/3/action/package_show?id=${state.selectedDataset.id}`)
+                .then((axiosResponse: AxiosResponse) => {
+                    const success = axiosResponse && axiosResponse.data;
+                    const metadata = success.result;
+                    const pjnz = findResource(metadata, schemas.pjnz);
+                    const pop = findResource(metadata, schemas.population);
+                    const shape = findResource(metadata, schemas.shape);
+                    const survey = findResource(metadata, schemas.survey);
+                    const program = findResource(metadata, schemas.programme);
+                    const anc = findResource(metadata, schemas.anc);
+
+                    commit(BaselineMutation.UpdateDatasetResources, {pjnz, pop, shape, survey, program, anc})
+                })
+        }
+    },
 
     async importPJNZ(context, url) {
         await uploadOrImportPJNZ(context, {url: "/adr/pjnz/", payload: qs.stringify({url})});

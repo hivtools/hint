@@ -23,7 +23,8 @@ export enum BaselineMutation {
     Validating = "Validating",
     Validated = "Validated",
     BaselineError = "Error",
-    SetDataset = "SetDataset"
+    SetDataset = "SetDataset",
+    UpdateDatasetResources = "UpdateDatasetResources"
 }
 
 export const BaselineUpdates = [
@@ -33,6 +34,19 @@ export const BaselineUpdates = [
 ];
 
 export const mutations: MutationTree<BaselineState> = {
+
+    [BaselineMutation.UpdateDatasetResources](state: BaselineState, payload: any) {
+        if (state.selectedDataset) {
+            const resources = state.selectedDataset.resources
+            const {pjnz, pop, shape, survey, program, anc} = payload;
+            resources.pjnz && (resources.pjnz.outOfDate = resources.pjnz.revisionId != pjnz.revisionId);
+            resources.shape && (resources.shape.outOfDate = resources.shape.revisionId != shape.revisionId);
+            resources.pop && (resources.pop.outOfDate = resources.pop.revisionId != pop.revisionId);
+            resources.survey && (resources.survey.outOfDate = resources.survey.revisionId != survey.revisionId);
+            resources.program && (resources.program.outOfDate = resources.program.revisionId != program.revisionId);
+            resources.anc && (resources.anc.outOfDate = resources.anc.revisionId != anc.revisionId);
+        }
+    },
 
     [BaselineMutation.SetDataset](state: BaselineState, payload: Dataset) {
         state.selectedDataset = payload;
