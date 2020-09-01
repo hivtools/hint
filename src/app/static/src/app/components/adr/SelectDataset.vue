@@ -41,7 +41,7 @@
 <script lang="ts">
     import Vue from "vue"
     import TreeSelect from '@riophae/vue-treeselect'
-    import {mapMutationByName, mapStateProp} from "../../utils";
+    import {mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
     import {BaselineMutation} from "../../store/baseline/mutations";
@@ -53,6 +53,13 @@
         setDataset: (dataset: Dataset) => void
         importDataset: () => void
         toggleModal: () => void
+        importPJNZ: (url: string) => Promise<void>
+        importShape: (url: string) => Promise<void>
+        importPopulation: (url: string) => Promise<void>
+        importSurvey: (url: string) => Promise<void>
+        importProgram: (url: string) => Promise<void>
+        importANC: (url: string) => Promise<void>
+        findResource: (datasetWithResources: any, resourceType: string) => any
     }
 
     interface Computed {
@@ -116,16 +123,39 @@
         },
         methods: {
             setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
-            importDataset() {
+            importPJNZ: mapActionByName("baseline", "importPJNZ"),
+            importShape: mapActionByName("baseline", "importShape"),
+            importPopulation: mapActionByName("baseline", "importPopulation"),
+            importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
+            importProgram: mapActionByName("surveyAndProgram", "importProgram"),
+            importANC: mapActionByName("surveyAndProgram", "importANC"),
+            findResource(datasetWithResources: any, resourceType: string): any {
+                return datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
+            },
+            async importDataset() {
                 this.loading = true;
                 this.setDataset(this.newDataset);
-                // TODO import each file
-                // TODO await all
-                setTimeout(() => {
-                    // mock importing of files with a timeout
-                    this.loading = false;
-                    this.open = false;
-                }, 200)
+                const datasetWithResources = this.datasets.find(d => d.id = this.newDatasetId);
+                const pjnz = this.findResource(datasetWithResources, this.schemas.pjnz);
+                const shape = this.findResource(datasetWithResources, this.schemas.shape);
+                const pop = this.findResource(datasetWithResources, this.schemas.population);
+                const survey = this.findResource(datasetWithResources, this.schemas.survey);
+                const program = this.findResource(datasetWithResources, this.schemas.programme);
+                const anc = this.findResource(datasetWithResources, this.schemas.anc);
+
+                await Promise.all([
+                    pjnz && this.importPJNZ(pjnz.url),
+                    pop && this.importPopulation(pop.url),
+                    shape && this.importShape(shape.url)]);
+
+                shape && await Promise.all([
+                    survey && this.importSurvey(survey.url),
+                    program && this.importProgram(program.url),
+                    anc && this.importANC(anc.url)
+                ]);
+
+                this.loading = false;
+                this.open = false;
             },
             toggleModal() {
                 this.open = !this.open;
