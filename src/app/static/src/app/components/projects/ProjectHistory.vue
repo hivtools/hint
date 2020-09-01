@@ -7,25 +7,28 @@
             <div class="col-md-3 header-cell" v-translate="'lastUpdated'"></div>
         </div>
         <hr/>
-        <div v-for="v in projects">
-            <div :id="`v-${v.id}`"  class="row py-2">
+        <div v-for="p in projects">
+            <div :id="`p-${p.id}`"  class="row py-2">
                 <div class="col-md-1 project-cell">
-                    <button v-b-toggle="`versions-${v.id}`" class="btn btn-xs bg-transparent shadow-none py-0">
+                    <button v-b-toggle="`versions-${p.id}`" class="btn btn-xs bg-transparent shadow-none py-0">
                         <chevron-right-icon size="20" class="icon when-closed"></chevron-right-icon>
                         <chevron-down-icon size="20" class="icon when-open"></chevron-down-icon>
                     </button>
                 </div>
                 <div class="col-md-3 project-cell">
-                    {{v.name}}
+                    {{p.name}}
                 </div>
-                <div class="col-md-3 project-cell">{{format(v.versions[0].updated)}}</div>
+                <div class="col-md-3 project-cell">{{format(p.versions[0].updated)}}</div>
+                <div class="col-md-4 project-cell">
+                    <a @click="loadVersion($event, p.id, p.versions[0].id)" href="" v-translate="'loadLastUpdated'"></a>
+                </div>
             </div>
-            <b-collapse :id="`versions-${v.id}`">
-                <div v-for="s in v.versions" :id="`s-${s.id}`" class="row font-italic bg-light py-2">
+            <b-collapse :id="`versions-${p.id}`">
+                <div v-for="v in p.versions" :id="`v-${v.id}`" class="row font-italic bg-light py-2">
                     <div class="col-md-4 version-cell"></div>
-                    <div class="col-md-3 version-cell">{{format(s.updated)}}</div>
+                    <div class="col-md-3 version-cell">{{format(v.updated)}}</div>
                     <div class="col-md-4 version-cell">
-                        <a @click="loadVersion($event, v.id, s.id)" href="" v-translate="'load'"></a>
+                        <a @click="loadVersion($event, p.id, v.id)" href="" v-translate="'load'"></a>
                     </div>
                 </div>
             </b-collapse>
