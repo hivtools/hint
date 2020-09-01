@@ -436,6 +436,39 @@ class VersionRepositoryTests {
                 .hasMessageContaining("versionDoesNotExist")
     }
 
+    @Test
+    fun `can delete version`()
+    {
+        val uid = setupUser()
+        val projectId = setupProject(uid)
+        sut.saveVersion(versionId, projectId)
+        sut.saveVersion("another version", projectId)
+
+        sut.deleteVersion(versionId, projectId, uid)
+
+        val deleted = dsl.select(PROJECT_VERSION.DELETED)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(versionId))
+                .fetchOne()[PROJECT_VERSION.DELETED]
+        assertThat(deleted).isTrue()
+
+        val notDeleted =  dsl.select(PROJECT_VERSION.DELETED)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq("another version"))
+                .fetchOne()[PROJECT_VERSION.DELETED]
+        assertThat(notDeleted).isFalse()
+    }
+
+    @Test
+    fun `delete version throws error if version does not exist`()
+    {
+        val uid = setupUser()
+        val projectId = setupProject(uid)
+        assertThatThrownBy{ sut.deleteVersion("nonexistentVersion", projectId, uid) }
+                .isInstanceOf(VersionException::class.java)
+                .hasMessageContaining("versionDoesNotExist")
+    }
+
     private fun assertVersionFileExists(hash: String) {
         val records = dsl.selectFrom(VERSION_FILE)
                 .where(VERSION_FILE.HASH.eq(hash))

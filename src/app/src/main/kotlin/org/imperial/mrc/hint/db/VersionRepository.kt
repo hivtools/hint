@@ -191,6 +191,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
         checkVersionExists(versionId, projectId, userId);
         dsl.update(PROJECT_VERSION)
                 .set(PROJECT_VERSION.DELETED, true)
+                .where(PROJECT_VERSION.ID.eq(versionId))
                 .execute()
     }
 

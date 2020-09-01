@@ -66,6 +66,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
     private fun checkProjectExists(projectId: Int, userId: String)
     {
         dsl.select(PROJECT.ID)
+                .from(PROJECT)
                 .where(PROJECT.ID.eq(projectId))
                 .and(PROJECT.USER_ID.eq(userId))
                 .fetchAny() ?: throw ProjectException("projectDoesNotExist")

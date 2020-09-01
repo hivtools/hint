@@ -74,7 +74,7 @@ class ProjectsController(private val session: Session,
         return SuccessResponse(projects).asResponseEntity()
     }
 
-    @DeleteMapping("/project/{projectId}/version{versionId}")
+    @DeleteMapping("/project/{projectId}/version/{versionId}")
     @ResponseBody
     fun deleteVersion(@PathVariable("projectId") projectId: Int,
                       @PathVariable("versionId") versionId: String): ResponseEntity<String>
