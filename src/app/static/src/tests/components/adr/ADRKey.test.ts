@@ -93,6 +93,7 @@ describe("ADR Key", function () {
         expect(rendered.find("button").text()).toBe("Save");
         expect(rendered.find("input").element).toBe(document.activeElement);
 
+        expect((rendered.find("input").element as HTMLInputElement).placeholder).toBe("Enter key");
         rendered.find("input").setValue("new-key-456");
         rendered.find("button").trigger("click");
 

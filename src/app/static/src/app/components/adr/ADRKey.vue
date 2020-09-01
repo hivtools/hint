@@ -37,7 +37,7 @@
                                class="form-control"
                                v-model="editableKey"
                                type="text"
-                               placeholder="Enter key"/>
+                               v-translate:placeholder="'enterKey'"/>
                         <div class="input-group-append">
                             <button class="btn btn-red"
                                     type="button"
