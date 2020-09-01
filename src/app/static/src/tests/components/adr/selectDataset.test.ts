@@ -4,7 +4,7 @@ import {mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import Modal from "../../../app/components/Modal.vue";
 import TreeSelect from '@riophae/vue-treeselect'
-import {mockBaselineState, mockRootState} from "../../mocks";
+import {mockBaselineState, mockDatasetResource, mockRootState} from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {BaselineMutation} from "../../../app/store/baseline/mutations";
@@ -26,12 +26,12 @@ describe("select dataset", () => {
         survey: "survey"
     }
 
-    const pjnz = {resource_type: schemas.pjnz, url: "pjnz.pjnz"}
-    const shape = {resource_type: schemas.shape, url: "shape.geojson"}
-    const pop = {resource_type: schemas.population, url: "pop.csv"}
-    const survey = {resource_type: schemas.survey, url: "survey.csv"}
-    const program = {resource_type: schemas.programme, url: "program.csv"}
-    const anc = {resource_type: schemas.anc, url: "anc.csv"}
+    const pjnz = {resource_type: schemas.pjnz, url: "pjnz.pjnz", revision_id: "pj1234"}
+    const shape = {resource_type: schemas.shape, url: "shape.geojson",revision_id: "sh1234"}
+    const pop = {resource_type: schemas.population, url: "pop.csv", revision_id: "po1234"}
+    const survey = {resource_type: schemas.survey, url: "survey.csv", revision_id: "su1234"}
+    const program = {resource_type: schemas.programme, url: "program.csv", revision_id: "pr1234"}
+    const anc = {resource_type: schemas.anc, url: "anc.csv", revision_id: "an1234"}
 
     const fakeRawDatasets = [{
         id: "id1",
@@ -46,8 +46,15 @@ describe("select dataset", () => {
     const fakeDataset = {
         id: "id1",
         title: "Some data",
-        revision_id: "456",
-        url: "www.adr.com/naomi-data/some-data"
+        url: "www.adr.com/naomi-data/some-data",
+        resources: {
+            pjnz: null,
+            program: null,
+            pop: null,
+            survey: null,
+            shape: mockDatasetResource({url: "shape.geojson", revisionId: "sh1234"}),
+            anc: null
+        }
     }
 
     const setDatasetMock = jest.fn();
@@ -158,7 +165,11 @@ describe("select dataset", () => {
     });
 
     it("sets current dataset", async () => {
-        const rendered = mount(SelectDataset, {store: getStore(), sync: false, stubs: ["tree-select"]});
+        const rendered = mount(SelectDataset, {
+            store: getStore({},
+                {adrDatasets: [{...fakeRawDatasets[0], resources: [shape]}]}
+            ), sync: false, stubs: ["tree-select"]
+        });
         rendered.find("button").trigger("click");
 
         await Vue.nextTick();
@@ -178,6 +189,9 @@ describe("select dataset", () => {
         expect(buttons.at(1).attributes("disabled")).toBe("disabled");
 
         await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+
         expect(rendered.findAll(LoadingSpinner).length).toBe(0);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });

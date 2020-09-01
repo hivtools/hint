@@ -1,6 +1,6 @@
 import {BaselineMutation, mutations} from "../../app/store/baseline/mutations";
 import {
-    mockBaselineState, mockError,
+    mockBaselineState, mockDataset, mockError,
     mockPJNZResponse,
     mockPopulationResponse,
     mockRootState,
@@ -11,7 +11,6 @@ import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline"
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
 import {expectAllMutationsDefined} from "../testHelpers";
-import {Dataset} from "../../app/types";
 
 describe("Baseline mutations", () => {
 
@@ -197,12 +196,7 @@ describe("Baseline mutations", () => {
 
     it("SetDataset sets current dataset", () => {
         const testState = mockBaselineState();
-        const fakeDataset: Dataset = {
-            id: "123",
-            title: "ADR dataset 1",
-            revision_id: "456",
-            url: "www.something.com"
-        }
+        const fakeDataset = mockDataset();
         mutations[BaselineMutation.SetDataset](testState, fakeDataset);
 
         expect(testState.selectedDataset).toEqual(fakeDataset);

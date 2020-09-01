@@ -1,5 +1,5 @@
 import {
-    mockBaselineState,
+    mockBaselineState, mockDataset,
     mockError,
     mockMetadataState,
     mockModelOptionsState,
@@ -47,14 +47,10 @@ describe("LocalStorageManager", () => {
     });
 
     it("serialiseState saves selectedDataset from baseline", async () => {
+        const dataset = mockDataset();
         const mockRoot = {
             baseline: mockBaselineState({
-                selectedDataset: {
-                    id: "123",
-                    revision_id: "456",
-                    title: "Some data",
-                    url: "www.some.url"
-                }
+                selectedDataset: dataset
             }),
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
@@ -69,12 +65,7 @@ describe("LocalStorageManager", () => {
         const result = serialiseState(mockRoot);
         expect(result).toStrictEqual({
             baseline: {
-                selectedDataset: {
-                    id: "123",
-                    revision_id: "456",
-                    title: "Some data",
-                    url: "www.some.url"
-                }
+                selectedDataset: dataset
             },
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
