@@ -144,6 +144,28 @@ class ProjectsControllerTests {
         verify(mockSession).setVersionId("testVersion")
     }
 
+    @Test
+    fun `can delete version`()
+    {
+        val mockRepo = mock<VersionRepository>()
+        val sut = ProjectsController(mockSession, mockRepo, mock())
+        val result = sut.deleteVersion(1, "testVersion")
+
+        verify(mockRepo).deleteVersion("testVersion", 1, "testUser")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `can delete project`()
+    {
+        val mockRepo = mock<ProjectRepository>()
+        val sut = ProjectsController(mockSession, mock(), mockRepo)
+        val result = sut.deleteProject(1)
+
+        verify(mockRepo).deleteProject(1, "testUser")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
     private fun assertExpectedVersion(node: JsonNode)
     {
         assertThat(node["id"].asText()).isEqualTo("testVersion")

@@ -206,6 +206,103 @@ class ProjectTests : VersionFileTests() {
         assertThat(msg).isEqualTo("La version n'existe pas.")
     }
 
+    @Test
+    fun `can delete project`()
+    {
+        val createResult = createProject()
+        val createProjectData = getResponseData(createResult)
+        val projectId = createProjectData["id"].asInt()
+        createProjectData["versions"] as ArrayNode
+
+        var result = testRestTemplate.getForEntity<String>("/projects/")
+        var data = getResponseData(result) as ArrayNode
+        assertThat(data.count()).isEqualTo(1)
+
+        testRestTemplate.delete("/project/$projectId")
+
+        result = testRestTemplate.getForEntity<String>("/projects/")
+        data = getResponseData(result) as ArrayNode
+        assertThat(data.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `can return expected English error when delete nonexistent project`()
+    {
+        val headers = getStandardHeaders("en")
+        val httpEntity =  HttpEntity<String>(headers)
+
+        val result = testRestTemplate.exchange<String>("/project/99/", HttpMethod.DELETE, httpEntity)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+
+        val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+        val msg = errors[0]["detail"].asText()
+        assertThat(msg).isEqualTo("Project does not exist.")
+    }
+
+    @Test
+    fun `can return expected French error when delete nonexistent project`()
+    {
+        val headers = getStandardHeaders("fr")
+        val httpEntity =  HttpEntity<String>(headers)
+
+        val result = testRestTemplate.exchange<String>("/project/99", HttpMethod.DELETE, httpEntity)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+
+        val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+        val msg = errors[0]["detail"].asText()
+        assertThat(msg).isEqualTo("Le projet n'existe pas.")
+    }
+
+    @Test
+    fun `can delete version`()
+    {
+        val createResult = createProject()
+        val createProjectData = getResponseData(createResult)
+        val projectId = createProjectData["id"].asInt()
+        val versions = createProjectData["versions"] as ArrayNode
+        val versionId1 = versions[0]["id"].asText()
+        val newVersionResult = getNewVersionResult(projectId, versionId1)
+        val newVersionData = getResponseData(newVersionResult)
+        val versionId2 = newVersionData["id"].asText()
+
+        testRestTemplate.delete("/project/$projectId/version/$versionId1")
+
+        val result = testRestTemplate.getForEntity<String>("/projects/")
+        val data = getResponseData(result) as ArrayNode
+        assertThat(data.count()).isEqualTo(1)
+        val versionsData = data[0]["versions"] as ArrayNode
+        assertThat(versionsData.count()).isEqualTo(1)
+        assertThat(versionsData[0]["id"].asText()).isEqualTo(versionId2)
+    }
+
+    @Test
+    fun `can return expected English error when delete nonexistent version`()
+    {
+        val headers = getStandardHeaders("en")
+        val httpEntity =  HttpEntity<String>(headers)
+
+        val result = testRestTemplate.exchange<String>("/project/99/version/nonexistent", HttpMethod.DELETE, httpEntity)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+
+        val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+        val msg = errors[0]["detail"].asText()
+        assertThat(msg).isEqualTo("Version does not exist.")
+    }
+
+    @Test
+    fun `can return expected French error when delete nonexistent version`()
+    {
+        val headers = getStandardHeaders("fr")
+        val httpEntity =  HttpEntity<String>(headers)
+
+        val result = testRestTemplate.exchange<String>("/project/99/version/nonexistent", HttpMethod.DELETE, httpEntity)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+
+        val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+        val msg = errors[0]["detail"].asText()
+        assertThat(msg).isEqualTo("La version n'existe pas.")
+    }
+
     private fun createProject(): ResponseEntity<String>
     {
         val map = LinkedMultiValueMap<String, String>()

@@ -74,6 +74,23 @@ class ProjectsController(private val session: Session,
         return SuccessResponse(projects).asResponseEntity()
     }
 
+    @DeleteMapping("/project/{projectId}/version/{versionId}")
+    @ResponseBody
+    fun deleteVersion(@PathVariable("projectId") projectId: Int,
+                      @PathVariable("versionId") versionId: String): ResponseEntity<String>
+    {
+        versionRepository.deleteVersion(versionId, projectId, userId())
+        return EmptySuccessResponse.asResponseEntity()
+    }
+
+    @DeleteMapping("/project/{projectId}")
+    @ResponseBody
+    fun deleteProject(@PathVariable("projectId") projectId: Int): ResponseEntity<String>
+    {
+        projectRepository.deleteProject(projectId, userId())
+        return EmptySuccessResponse.asResponseEntity()
+    }
+
     private fun userId(): String
     {
         return session.getUserProfile().id

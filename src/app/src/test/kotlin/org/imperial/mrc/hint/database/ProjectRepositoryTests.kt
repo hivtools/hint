@@ -1,9 +1,12 @@
 package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.AssertionsForClassTypes
 import org.imperial.mrc.hint.db.ProjectRepository
+import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.db.tables.Project.PROJECT
 import org.imperial.mrc.hint.db.tables.ProjectVersion.PROJECT_VERSION
+import org.imperial.mrc.hint.exceptions.ProjectException
 import org.imperial.mrc.hint.logic.UserLogic
 import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
@@ -30,6 +33,9 @@ class ProjectRepositoryTests {
     private lateinit var userRepo: UserLogic
 
     @Autowired
+    private lateinit var versionRepo: VersionRepository
+
+    @Autowired
     private lateinit var dsl: DSLContext
 
     private val testEmail = "test@test.com"
@@ -37,8 +43,7 @@ class ProjectRepositoryTests {
     @Test
     fun `can save new project`()
     {
-        userRepo.addUser(testEmail, "pw")
-        val uid = userRepo.getUser(testEmail)!!.id
+        val uid = setupUser()
 
         val projectId = sut.saveNewProject(uid, "testProjectRepo")
 
@@ -51,10 +56,46 @@ class ProjectRepositoryTests {
     }
 
     @Test
+    fun `delete project throws error if project does not exist`()
+    {
+        val uid = setupUser()
+        AssertionsForClassTypes.assertThatThrownBy { sut.deleteProject(9999, uid) }
+                .isInstanceOf(ProjectException::class.java)
+                .hasMessageContaining("projectDoesNotExist")
+    }
+
+    @Test
+    fun `can delete project`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        val versionId1 = "testVersion"
+        val versionId2= "testVersion2"
+        versionRepo.saveVersion(versionId1, projectId)
+        versionRepo.saveVersion(versionId2, projectId)
+
+        sut.deleteProject(projectId, uid)
+
+        val savedVersion1 = dsl.select(PROJECT_VERSION.DELETED)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(versionId1))
+                .and(PROJECT_VERSION.PROJECT_ID.eq(projectId))
+                .fetchOne()
+        assertThat(savedVersion1[PROJECT_VERSION.DELETED]).isTrue()
+
+        val savedVersion2 = dsl.select(PROJECT_VERSION.DELETED)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(versionId2))
+                .and(PROJECT_VERSION.PROJECT_ID.eq(projectId))
+                .fetchOne()
+        assertThat(savedVersion2[PROJECT_VERSION.DELETED]).isTrue()
+    }
+
+    @Test
     fun `can get projects for user`()
     {
-        userRepo.addUser(testEmail, "pw")
-        val userId = userRepo.getUser(testEmail)!!.id
+        val userId = setupUser()
 
         userRepo.addUser("another.user@example.com", "pw")
         val anotherUserId = userRepo.getUser("another.user@example.com")!!.id
@@ -98,6 +139,12 @@ class ProjectRepositoryTests {
         assertThat(p1.versions[1].id).isEqualTo("v1s1")
         assertThat(p1.versions[1].created).isEqualTo(format(ago_4h))
         assertThat(p1.versions[1].updated).isEqualTo(format(ago_3h))
+    }
+
+    private fun setupUser(): String
+    {
+        userRepo.addUser(testEmail, "pw")
+       return userRepo.getUser(testEmail)!!.id
     }
 
     private fun format(time: Instant): String
