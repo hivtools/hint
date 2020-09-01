@@ -8,8 +8,8 @@ import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.BaselineController
 import org.imperial.mrc.hint.controllers.HintrController
-import org.imperial.mrc.hint.db.SnapshotRepository
-import org.imperial.mrc.hint.models.SnapshotFileWithPath
+import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.springframework.http.ResponseEntity
@@ -17,8 +17,8 @@ import org.springframework.http.ResponseEntity
 class BaselineControllerTests : HintrControllerTests() {
 
     override fun getSut(mockFileManager: FileManager, mockAPIClient: HintrAPIClient,
-                        mockSession: Session, mockSnapshotRepository: SnapshotRepository): HintrController {
-        return BaselineController(mockFileManager, mockAPIClient, mockSession, mockSnapshotRepository)
+                        mockSession: Session, mockVersionRepository: VersionRepository): HintrController {
+        return BaselineController(mockFileManager, mockAPIClient, mockSession, mockVersionRepository)
     }
 
     @Test
@@ -86,9 +86,9 @@ class BaselineControllerTests : HintrControllerTests() {
 
     @Test
     fun `validates combined files`() {
-        val mockPjnz = SnapshotFileWithPath("pjnzPath", "pjnzHash", "pjnzFile")
-        val mockShape = SnapshotFileWithPath("shapePath", "shapeHash", "shapeFile")
-        val mockPop = SnapshotFileWithPath("popPath", "pjnzHash", "popFile")
+        val mockPjnz = VersionFileWithPath("pjnzPath", "pjnzHash", "pjnzFile")
+        val mockShape = VersionFileWithPath("shapePath", "shapeHash", "shapeFile")
+        val mockPop = VersionFileWithPath("popPath", "pjnzHash", "popFile")
 
         val mockFileManager = mock<FileManager> {
             on { getFile(FileType.PJNZ) } doReturn mockPjnz

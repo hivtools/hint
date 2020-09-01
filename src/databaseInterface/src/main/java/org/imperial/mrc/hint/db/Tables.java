@@ -9,12 +9,12 @@ import javax.annotation.Generated;
 import org.imperial.mrc.hint.db.tables.AdrKey;
 import org.imperial.mrc.hint.db.tables.File;
 import org.imperial.mrc.hint.db.tables.OnetimeToken;
+import org.imperial.mrc.hint.db.tables.Project;
+import org.imperial.mrc.hint.db.tables.ProjectVersion;
 import org.imperial.mrc.hint.db.tables.SessionFile;
-import org.imperial.mrc.hint.db.tables.SnapshotFile;
 import org.imperial.mrc.hint.db.tables.UserSession;
 import org.imperial.mrc.hint.db.tables.Users;
-import org.imperial.mrc.hint.db.tables.Version;
-import org.imperial.mrc.hint.db.tables.VersionSnapshot;
+import org.imperial.mrc.hint.db.tables.VersionFile;
 
 
 /**
@@ -46,14 +46,19 @@ public class Tables {
     public static final OnetimeToken ONETIME_TOKEN = org.imperial.mrc.hint.db.tables.OnetimeToken.ONETIME_TOKEN;
 
     /**
+     * The table <code>public.project</code>.
+     */
+    public static final Project PROJECT = org.imperial.mrc.hint.db.tables.Project.PROJECT;
+
+    /**
+     * The table <code>public.project_version</code>.
+     */
+    public static final ProjectVersion PROJECT_VERSION = org.imperial.mrc.hint.db.tables.ProjectVersion.PROJECT_VERSION;
+
+    /**
      * The table <code>public.session_file</code>.
      */
     public static final SessionFile SESSION_FILE = org.imperial.mrc.hint.db.tables.SessionFile.SESSION_FILE;
-
-    /**
-     * The table <code>public.snapshot_file</code>.
-     */
-    public static final SnapshotFile SNAPSHOT_FILE = org.imperial.mrc.hint.db.tables.SnapshotFile.SNAPSHOT_FILE;
 
     /**
      * The table <code>public.user_session</code>.
@@ -66,12 +71,7 @@ public class Tables {
     public static final Users USERS = org.imperial.mrc.hint.db.tables.Users.USERS;
 
     /**
-     * The table <code>public.version</code>.
+     * The table <code>public.version_file</code>.
      */
-    public static final Version VERSION = org.imperial.mrc.hint.db.tables.Version.VERSION;
-
-    /**
-     * The table <code>public.version_snapshot</code>.
-     */
-    public static final VersionSnapshot VERSION_SNAPSHOT = org.imperial.mrc.hint.db.tables.VersionSnapshot.VERSION_SNAPSHOT;
+    public static final VersionFile VERSION_FILE = org.imperial.mrc.hint.db.tables.VersionFile.VERSION_FILE;
 }

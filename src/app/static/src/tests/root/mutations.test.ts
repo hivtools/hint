@@ -207,20 +207,26 @@ describe("Root mutations", () => {
     it("can reset for new version", () => {
         const state = populatedState();
         state.language = Language.fr;
+        state.adrDatasets = ["TEST DATASETA"];
+        state.adrSchemas = ["TEST SCHEMAS"] as any;
+        state.adrKey = "TEST KEY";
 
         const mockRouterPush = jest.fn();
         router.push = mockRouterPush;
 
-        const version = {id: 1, name: "newVersion", snapshots: [{id: "newSnapshot"}]};
-        mutations.SetVersion(state, {payload: version});
+        const version = {id: 1, name: "newVersion", versions: [{id: "newVersion"}]};
+        mutations.SetProject(state, {payload: version});
 
         testOnlyExpectedModulesArePopulated([], state);
         expect(state.stepper.activeStep).toBe(1);
 
-        expect(state.versions.currentVersion).toBe(version);
-        expect(state.versions.currentSnapshot).toBe(version.snapshots[0]);
+        expect(state.projects.currentProject).toBe(version);
+        expect(state.projects.currentVersion).toBe(version.versions[0]);
 
         expect(state.language).toBe(Language.fr);
+        expect(state.adrDatasets).toStrictEqual(["TEST DATASETA"]);
+        expect(state.adrSchemas).toStrictEqual(["TEST SCHEMAS"]);
+        expect(state.adrKey).toBe("TEST KEY");
 
         expect(state.baseline.ready).toBe(true);
         expect(state.surveyAndProgram.ready).toBe(true);

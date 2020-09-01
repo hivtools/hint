@@ -40,6 +40,27 @@ describe("Load actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "LoadStateCleared", payload: null});
     });
 
+    it("loadVersion sets files and updates store state", async(done) => {
+        mockAxios.onPost(`/session/files/`)
+            .reply(200, mockSuccess({}));
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockLoadState({loadingState: LoadingState.UpdatingState});
+
+        await actions.loadFromVersion({commit, dispatch, state, rootState} as any, {files: "files", state: "{}"});
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: "UpdatingState", payload: {}});
+
+            expect(mockAxios.history.post[0].url).toBe("/session/files/");
+            expect(mockAxios.history.post[0].data).toBe("files");
+
+            expect(dispatch.mock.calls[0][0]).toBe("updateStoreState");
+            expect(dispatch.mock.calls[0][1]).toStrictEqual({});
+            done();
+        });
+    });
+
     it("updates store state after successful setFiles post", async () => {
 
         mockAxios.onPost(`/session/files/`)

@@ -33,8 +33,8 @@ import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutpu
 import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
 import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
-import {initialVersionsState, VersionsState} from "../app/store/versions/versions";
 import {Dataset, DatasetResource} from "../app/types";
+import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -122,9 +122,9 @@ export const mockColourScales = (props?: Partial<ColourScalesState>) => {
     }
 };
 
-export const mockVersionsState = (props?: Partial<VersionsState>) => {
+export const mockProjectsState = (props?: Partial<ProjectsState>) => {
     return {
-        ...initialVersionsState(),
+        ...initialProjectsState(),
         ...props
     }
 };
@@ -148,7 +148,7 @@ export const mockSuccess = (data: any, version?: any): Response => {
         data,
         status: "success",
         errors: [],
-        version: version
+        version
     }
 };
 
@@ -332,7 +332,7 @@ export const mockDataset = (props: Partial<Dataset> = {}): Dataset => {
         },
         ...props
     }
-}
+};
 
 export const mockDatasetResource = (props: Partial<DatasetResource> = {}): DatasetResource => {
     return {
@@ -341,4 +341,4 @@ export const mockDatasetResource = (props: Partial<DatasetResource> = {}): Datas
         outOfDate: false,
         ...props
     }
-}
+};

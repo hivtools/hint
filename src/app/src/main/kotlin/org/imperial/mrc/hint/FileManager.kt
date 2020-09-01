@@ -2,9 +2,9 @@ package org.imperial.mrc.hint
 
 import org.apache.tomcat.util.http.fileupload.FileUtils
 import org.imperial.mrc.hint.clients.ADRClientBuilder
-import org.imperial.mrc.hint.db.SnapshotRepository
-import org.imperial.mrc.hint.models.SnapshotFile
-import org.imperial.mrc.hint.models.SnapshotFileWithPath
+import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.models.VersionFile
+import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
@@ -29,34 +29,34 @@ enum class FileType {
 }
 
 interface FileManager {
-    fun saveFile(file: MultipartFile, type: FileType): SnapshotFileWithPath
-    fun saveFile(url: String, type: FileType): SnapshotFileWithPath
-    fun getFile(type: FileType): SnapshotFileWithPath?
+    fun saveFile(file: MultipartFile, type: FileType): VersionFileWithPath
+    fun saveFile(url: String, type: FileType): VersionFileWithPath
+    fun getFile(type: FileType): VersionFileWithPath?
     fun getAllHashes(): Map<String, String>
-    fun getFiles(vararg include: FileType): Map<String, SnapshotFileWithPath>
-    fun setAllFiles(files: Map<String, SnapshotFile?>)
+    fun getFiles(vararg include: FileType): Map<String, VersionFileWithPath>
+    fun setAllFiles(files: Map<String, VersionFile?>)
 }
 
 @Component
 class LocalFileManager(
         private val session: Session,
-        private val snapshotRepository: SnapshotRepository,
+        private val versionRepository: VersionRepository,
         private val appProperties: AppProperties,
         private val adrClientBuilder: ADRClientBuilder) : FileManager {
 
     private val uploadPath = appProperties.uploadDirectory
 
-    override fun saveFile(file: MultipartFile, type: FileType): SnapshotFileWithPath {
+    override fun saveFile(file: MultipartFile, type: FileType): VersionFileWithPath {
         return saveFile(file.inputStream, file.originalFilename!!, type)
     }
 
-    override fun saveFile(url: String, type: FileType): SnapshotFileWithPath {
+    override fun saveFile(url: String, type: FileType): VersionFileWithPath {
         val originalFilename = url.split("/").last()
         val adr = adrClientBuilder.build()
         return saveFile(adr.getInputStream(url), originalFilename, type)
     }
 
-    private fun saveFile(inputStream: InputStream, originalFilename: String, type: FileType): SnapshotFileWithPath {
+    private fun saveFile(inputStream: InputStream, originalFilename: String, type: FileType): VersionFileWithPath {
         val md = MessageDigest.getInstance("MD5")
         val bytes = inputStream.use {
             DigestInputStream(it, md).readBytes()
@@ -64,33 +64,33 @@ class LocalFileManager(
         val extension = originalFilename.split(".").last()
         val hash = "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
         val path = "${appProperties.uploadDirectory}/$hash"
-        if (snapshotRepository.saveNewHash(hash)) {
+        if (versionRepository.saveNewHash(hash)) {
             val localFile = File(path)
             FileUtils.forceMkdirParent(localFile)
             localFile.writeBytes(bytes)
         }
-        snapshotRepository.saveSnapshotFile(session.getSnapshotId(), type, hash, originalFilename)
-        return SnapshotFileWithPath(path, hash, originalFilename)
+        versionRepository.saveVersionFile(session.getVersionId(), type, hash, originalFilename)
+        return VersionFileWithPath(path, hash, originalFilename)
     }
 
-    override fun getFile(type: FileType): SnapshotFileWithPath? {
-        return snapshotRepository.getSnapshotFile(session.getSnapshotId(), type)
-                ?.toSnapshotFileWithPath(uploadPath)
+    override fun getFile(type: FileType): VersionFileWithPath? {
+        return versionRepository.getVersionFile(session.getVersionId(), type)
+                ?.toVersionFileWithPath(uploadPath)
     }
 
     override fun getAllHashes(): Map<String, String> {
-        val hashes = snapshotRepository.getHashesForSnapshot(session.getSnapshotId())
+        val hashes = versionRepository.getHashesForVersion(session.getVersionId())
         return hashes.mapValues { "$uploadPath/${it.value}" }
     }
 
-    override fun getFiles(vararg include: FileType): Map<String, SnapshotFileWithPath> {
-        val files = snapshotRepository.getSnapshotFiles(session.getSnapshotId())
+    override fun getFiles(vararg include: FileType): Map<String, VersionFileWithPath> {
+        val files = versionRepository.getVersionFiles(session.getVersionId())
         val includeKeys = include.map { it.toString() }
         return files.filterKeys { includeKeys.count() == 0 || includeKeys.contains(it) }
-                .mapValues { it.value.toSnapshotFileWithPath(uploadPath) }
+                .mapValues { it.value.toVersionFileWithPath(uploadPath) }
     }
 
-    override fun setAllFiles(files: Map<String, SnapshotFile?>) {
-        snapshotRepository.setFilesForSnapshot(session.getSnapshotId(), files);
+    override fun setAllFiles(files: Map<String, VersionFile?>) {
+        versionRepository.setFilesForVersion(session.getVersionId(), files);
     }
 }

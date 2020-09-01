@@ -36,7 +36,7 @@
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
         </div>
         <div v-if="!loading" class="content">
-            <snapshot-status class="float-right"></snapshot-status>
+            <version-status class="float-right"></version-status>
             <div class="pt-4">
                 <adr-integration v-if="isActive(1)"></adr-integration>
                 <baseline v-if="isActive(1)"></baseline>
@@ -65,17 +65,18 @@
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
-    import SnapshotStatus from "./versions/SnapshotStatus.vue";
+    import VersionStatus from "./projects/VersionStatus.vue";
     import { mapGettersByNames, mapStateProps} from "../utils";
-    import {Version} from "../types";
-    import {VersionsState} from "../store/versions/versions";
+    import {Project} from "../types";
+    import {ProjectsState} from "../store/projects/projects";
 
     declare const currentUser: string;
 
     interface ComputedState {
         activeStep: number,
         steps: StepDescription[],
-        currentVersion: Version | null
+        currentProject: Project | null
+        projectLoading: boolean
     }
 
     interface ComputedGetters {
@@ -96,8 +97,9 @@
             ...mapStateProps<LoadState, keyof ComputedState>("load", {
                 loadingFromFile: state => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
             }),
-            ...mapStateProps<VersionsState, keyof ComputedState>("versions", {
-                currentVersion: state => state.currentVersion
+            ...mapStateProps<ProjectsState, keyof ComputedState>("projects", {
+                currentProject: state => state.currentProject,
+                projectLoading: state => state.loading
             }),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
             loading: function () {
@@ -123,9 +125,9 @@
             }
         },
         created() {
-            //redirect to versions if logged in with no currentVersion
-            if ((currentUser != "guest") && (this.currentVersion == null)) {
-                this.$router.push('/versions');
+            //redirect to Projects if logged in with no currentProject
+            if ((currentUser != "guest") && (this.currentProject== null) && (!this.projectLoading)) {
+                this.$router.push('/projects');
             }
         },
         components: {
@@ -138,7 +140,7 @@
             ModelOutput,
             ModelOptions,
             DownloadResults,
-            SnapshotStatus
+            VersionStatus
         },
         watch: {
             ready: function (newVal) {

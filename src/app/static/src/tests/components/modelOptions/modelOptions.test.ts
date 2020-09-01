@@ -48,7 +48,7 @@ describe("Model options component", () => {
                     namespaced: true,
                     getters: mockGetters
                 },
-                versions: {
+                projects: {
                     namespaced: true
                 },
                 errors:  {
