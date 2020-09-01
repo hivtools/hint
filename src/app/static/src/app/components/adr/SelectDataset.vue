@@ -3,8 +3,12 @@
         <div v-if="selectedDataset" style="margin-top:8px">
             <span class="font-weight-bold">Selected dataset:</span>
             <a :href="selectedDataset.url" target="_blank">{{ selectedDataset.title }}</a>
-            <span v-if="outOfDateMessage">{{outOfDateMessage}}</span>
+            <info-icon size="20"
+                       v-if="outOfDateMessage"
+                       v-tooltip="outOfDateMessage"
+                       style="vertical-align: text-bottom;stroke: #e31837;"></info-icon>
         </div>
+        <button v-if="selectedDataset" class="btn btn-white ml-2" @click="refresh">Refresh</button>
         <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{ selectText }}</button>
         <modal id="dataset" :open="open">
             <h4>Browse ADR</h4>
@@ -49,6 +53,8 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {BaselineState} from "../../store/baseline/baseline";
     import {ADRSchemas, Dataset, DatasetResource} from "../../types";
+    import {InfoIcon} from "vue-feather-icons";
+    import {VTooltip} from "v-tooltip";
 
     interface Methods {
         setDataset: (dataset: Dataset) => void
@@ -61,6 +67,7 @@
         importProgram: (url: string) => Promise<void>
         importANC: (url: string) => Promise<void>
         findResource: (datasetWithResources: any, resourceType: string) => DatasetResource | null
+        refresh: () => void
     }
 
     interface Computed {
@@ -70,7 +77,8 @@
         selectedDataset: Dataset | null
         newDataset: Dataset
         selectText: string,
-        outOfDateMessage: string
+        outOfDateMessage: string,
+        outOfDateResources: any
     }
 
     interface Data {
@@ -87,7 +95,8 @@
                 newDatasetId: null
             }
         },
-        components: {Modal, TreeSelect, LoadingSpinner},
+        components: {Modal, TreeSelect, LoadingSpinner, InfoIcon},
+        directives: {"tooltip": VTooltip},
         computed: {
             schemas: mapStateProp<RootState, ADRSchemas>(null,
                 (state: RootState) => state.adrSchemas!!),
@@ -129,33 +138,38 @@
                     return "Select ADR dataset"
                 }
             },
-            outOfDateMessage() {
-                if (!this.selectedDataset) return "";
+            outOfDateResources() {
+                if (!this.selectedDataset) return [];
                 const resources = this.selectedDataset.resources;
                 const outOfDateResources = []
-                if (resources.pjnz && resources.pjnz.outOfDate){
+                if (resources.pjnz && resources.pjnz.outOfDate) {
                     outOfDateResources.push("PJNZ")
                 }
-                if (resources.pop && resources.pop.outOfDate){
+                if (resources.pop && resources.pop.outOfDate) {
                     outOfDateResources.push("Population")
                 }
-                if (resources.shape && resources.shape.outOfDate){
+                if (resources.shape && resources.shape.outOfDate) {
                     outOfDateResources.push("Shape file")
                 }
-                if (resources.survey && resources.survey.outOfDate){
+                if (resources.survey && resources.survey.outOfDate) {
                     outOfDateResources.push("Survey")
                 }
-                if (resources.program && resources.program.outOfDate){
+                if (resources.program && resources.program.outOfDate) {
                     outOfDateResources.push("ART")
                 }
-                if (resources.anc && resources.anc.outOfDate){
+                if (resources.anc && resources.anc.outOfDate) {
                     outOfDateResources.push("ANC")
                 }
-                if (outOfDateResources.length == 0){
+                return outOfDateResources
+            },
+            outOfDateMessage() {
+                if (!this.selectedDataset) return "";
+
+                if (this.outOfDateResources.length == 0) {
                     return ""
                 }
                 return "The following files have been updated in the ADR since you last imported them: "
-                + outOfDateResources.join(",") + ". Use the refresh button to import the latest files."
+                    + this.outOfDateResources.join(", ") + ". Use the refresh button to import the latest files."
             }
         },
         methods: {
@@ -189,6 +203,9 @@
 
                 this.loading = false;
                 this.open = false;
+            },
+            refresh() {
+                const {pjnz, pop, shape, survey, program, anc} = this.selectedDataset!!.resources
             },
             toggleModal() {
                 this.open = !this.open;

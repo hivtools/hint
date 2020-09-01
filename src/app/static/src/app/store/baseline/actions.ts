@@ -5,7 +5,6 @@ import {api} from "../../apiService";
 import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
 import {BaselineMutation} from "./mutations";
 import qs from "qs";
-import axios, {AxiosError, AxiosResponse} from "axios";
 import {findResource} from "../../utils";
 
 export interface BaselineActions {
@@ -86,20 +85,23 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         const {commit, state, rootState} = context
         if (state.selectedDataset) {
             const schemas = rootState.adrSchemas!!
-            await axios
-                .get(`${schemas.baseUrl}/api/3/action/package_show?id=${state.selectedDataset.id}`)
-                .then((axiosResponse: AxiosResponse) => {
-                    const success = axiosResponse && axiosResponse.data;
-                    const metadata = success.result;
-                    const pjnz = findResource(metadata, schemas.pjnz);
-                    const pop = findResource(metadata, schemas.population);
-                    const shape = findResource(metadata, schemas.shape);
-                    const survey = findResource(metadata, schemas.survey);
-                    const program = findResource(metadata, schemas.programme);
-                    const anc = findResource(metadata, schemas.anc);
+            await api(context)
+                .ignoreErrors()
+                .ignoreSuccess()
+                .get(`/adr/datasets/${state.selectedDataset.id}`)
+                .then((response) => {
+                    if (response) {
+                        const metadata = response.data;
+                        const pjnz = findResource(metadata, schemas.pjnz);
+                        const pop = findResource(metadata, schemas.population);
+                        const shape = findResource(metadata, schemas.shape);
+                        const survey = findResource(metadata, schemas.survey);
+                        const program = findResource(metadata, schemas.programme);
+                        const anc = findResource(metadata, schemas.anc);
 
-                    commit(BaselineMutation.UpdateDatasetResources, {pjnz, pop, shape, survey, program, anc})
-                })
+                        commit(BaselineMutation.UpdateDatasetResources, {pjnz, pop, shape, survey, program, anc})
+                    }
+                });
         }
     },
 
