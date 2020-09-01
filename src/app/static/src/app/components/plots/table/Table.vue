@@ -2,48 +2,44 @@
     <div>
         <br>
         <div v-if="filteredData.length > 0">
-            <b-form-group
-              class="mb-0"
-            >
-              <b-input-group size="sm">
-                <b-form-input
-                  v-model="filter"
-                  type="search"
-                  id="filterInput"
-                  :placeholder="translate('typeSearch')"
-                ></b-form-input>
-                <b-input-group-append>
-                  <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
-                </b-input-group-append>
-              </b-input-group>
+            <b-form-group class="mb-0">
+                <b-input-group size="sm">
+                    <b-form-input
+                        v-model="filter"
+                        type="search"
+                        id="filterInput"
+                        :placeholder="translate('typeSearch')"
+                    ></b-form-input>
+                    <b-input-group-append>
+                        <b-button :disabled="!filter" @click="filter = ''" v-translate="'clearText'"></b-button>
+                    </b-input-group-append>
+                </b-input-group>
             </b-form-group>
-            <b-table striped hover 
-            :fields="generatedFields" 
-            :items="filteredData"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="sortDesc"
-            :filter="filter"
-            responsive="sm"
-            show-empty
+            <b-table 
+                striped hover 
+                :fields="generatedFields" 
+                :items="filteredData"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :filter="filter"
+                responsive="sm"
+                show-empty
             >
-            <template v-slot:cell(areaLabel)="data">
-              <div>{{ data.item.areaLabel }}</div>
-              <div class="small">{{ data.item.areaHierarchy }}</div>
-            </template>
-            <template v-for="i in indicators" v-slot:[`cell(${i.indicator})`]="data">
-              <div>{{ data.item[i.indicator] }}</div>
-              <div class="small" v-if="data.item[`${i.indicator}_lower`]">({{ data.item[`${i.indicator}_lower`] }} – {{ data.item[`${i.indicator}_upper`] }})</div>
-            </template>
-            <template v-slot:emptyfiltered="scope">
-              <p class="text-center" v-translate="'noRecords'"></p>
-            </template>
+                <template v-slot:cell(areaLabel)="data">
+                    <div>{{ data.item.areaLabel }}</div>
+                    <div class="small">{{ data.item.areaHierarchy }}</div>
+                </template>
+                <template v-for="i in indicators" v-slot:[`cell(${i.indicator})`]="data">
+                    <div>{{ data.item[i.indicator] }}</div>
+                    <div class="small" v-if="data.item[`${i.indicator}_lower`]">({{ data.item[`${i.indicator}_lower`] }} – {{ data.item[`${i.indicator}_upper`] }})</div>
+                </template>
+                <template v-slot:emptyfiltered="scope">
+                    <p class="text-center" v-translate="'noRecords'"></p>
+                </template>
             </b-table>
-            <!-- <div v-if="sortDesc === true" >Test</div> -->
         </div>
         <div v-else v-translate="'noData'"></div>
-        <!-- <div v-if="filteredData.length > 0 && ">Test</div> -->
     </div>
-    
 </template>
 
 <script lang="ts">
@@ -117,8 +113,6 @@ const props = {
     }
 }
 
-// const table = document.getElementsByClassName('b-table')[0].rows.length
-
 export default Vue.extend<{}, {}, Computed, Props>({
     name: "table-view",
     props: props,
@@ -188,9 +182,7 @@ export default Vue.extend<{}, {}, Computed, Props>({
                 const displayRows: Dict<any> = {};
                 filteredValues.forEach(current => {
                     const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
-                    // let indicatorNum = 2
                     if (!(key in displayRows)) {
-                        // indicatorNum = 1
                         const areaLabel =  this.flattenedAreas[current.areaId].label;
                         const areaHierarchy = findPath(current.areaId, this.countryAreaFilterOption.children)
                         const filterLabels: Dict<string> = {};
@@ -207,31 +199,23 @@ export default Vue.extend<{}, {}, Computed, Props>({
                     displayRows[key][current.indicatorMeta.indicator] = current.value;
                     current.lower ? displayRows[key][`${current.indicatorMeta.indicator}_lower`] = current.lower : '';
                     current.upper ? displayRows[key][`${current.indicatorMeta.indicator}_upper`] = current.upper: '';
-                    // displayRows[key][`indicator_${indicatorNum}`] = current.value;
-                    // current.lower ? displayRows[key][`indicator_${indicatorNum}_lower`] = current.lower : '';
-                    // current.upper ? displayRows[key][`indicator_${indicatorNum}_upper`] = current.upper: '';
                 });
-                console.log('filtereddata', Object.values(displayRows))
                 return Object.values(displayRows);
         },
         generatedFields(){
           const fields: any[] = [];
           fields.push({
             key: 'areaLabel',
-            // label: this.translate('area')
             label: i18next.t('area',{lng: this.currentLanguage})
             })
           this.filtersToDisplay.map(value =>{
             const field: Dict<any> = {};
             field.key = value.id
-            // field.label = this.translate(value.label.toLowerCase())
             field.label = i18next.t(value.label.toLowerCase(),{lng: this.currentLanguage})
             fields.push(field)
           })
           this.indicators.map((value, index) =>{
             const field: Dict<any> = {};
-            // field.key = `indicator_${index + 1}`
-            // field.key = `indicator_${value.indicator}`
             field.key = value.indicator
             field.label = value.name
             fields.push(field)
