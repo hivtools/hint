@@ -29,8 +29,8 @@
                 </template>
                 <template v-for="i in indicators" v-slot:[`cell(${i.indicator})`]="data">
                     <div>{{ data.item[i.indicator] }}</div>
-                    <div class="small" v-if="data.item[`${i.indicator}_lower`]">({{ data.item[`${i.indicator}_lower`] }}
-                        – {{ data.item[`${i.indicator}_upper`] }})
+                    <div class="small" v-if="data.item[`${i.indicator}_lower`]">
+                        ({{ data.item[`${i.indicator}_lower`] }} – {{ data.item[`${i.indicator}_upper`] }})
                     </div>
                 </template>
                 <template v-slot:emptyfiltered="scope">

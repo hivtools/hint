@@ -511,7 +511,8 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.1 (1 – 99)');
+        expect(wrapper.findAll('td').at(3).find("div").text()).toBe('0.1');
+        expect(wrapper.findAll('td').at(3).find(".small").text()).toBe('(1 – 99)');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
 })
