@@ -18,7 +18,7 @@ describe("ADR Key", function () {
 
     const createStore = (key: string = "", error: Error | null = null) => {
         const store = new Vuex.Store({
-            state: mockRootState({adrKey: key, adrKeyError: error}),
+            state: mockRootState({adrKey: key, adrKeyError: error, adrSchemas: {baseUrl: "www.adr.com"} as any}),
             mutations: mutations,
             actions: {
                 saveADRKey: saveStub,
@@ -35,7 +35,7 @@ describe("ADR Key", function () {
 
     it("shows title", () => {
         const rendered = shallowMount(ADRKey, {store: createStore()});
-        expect(rendered.find("label").text()).toBe("ADR API Key");
+        expect(rendered.find("label").text()).toBe("ADR access key");
     });
 
     it("shows asterisks if key exists", () => {
@@ -56,11 +56,25 @@ describe("ADR Key", function () {
         expect(links.at(1).text()).toBe("remove");
     });
 
-    it("shows add link if key does not exists", () => {
+    it("shows add link if key does not exist", () => {
         const rendered = shallowMount(ADRKey, {store: createStore()});
         const links = rendered.findAll("a");
-        expect(links.length).toBe(1);
+        expect(links.length).toBe(2);
         expect(links.at(0).text()).toBe("add");
+    });
+
+    it("shows link to ADR with tooltip if key does not exist", () => {
+        const mockTooltipDirective = jest.fn();
+        const rendered = shallowMount(ADRKey, {store: createStore(), directives: {"tooltip": mockTooltipDirective}});
+        const links = rendered.findAll("a");
+        expect(links.length).toBe(2);
+        expect(links.at(1).text()).toBe("get access key from ADR");
+        expect(links.at(1).attributes("href")).toBe("www.adr.com");
+        expect(mockTooltipDirective.mock.calls[0][0].innerHTML)
+            .toBe("get access key from ADR");
+        expect(mockTooltipDirective.mock.calls[0][1].value)
+            .toBe("To import data from the ADR you have to provide your ADR access key. " +
+                "This can be found on your ADR profile page");
     });
 
     it("can edit key", async () => {
@@ -79,6 +93,7 @@ describe("ADR Key", function () {
         expect(rendered.find("button").text()).toBe("Save");
         expect(rendered.find("input").element).toBe(document.activeElement);
 
+        expect((rendered.find("input").element as HTMLInputElement).placeholder).toBe("Enter key");
         rendered.find("input").setValue("new-key-456");
         rendered.find("button").trigger("click");
 
