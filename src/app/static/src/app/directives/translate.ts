@@ -17,10 +17,14 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
 
     function _translateText(lng: Language, el: HTMLElement, binding: DirectiveBinding) {
         const attribute = binding.arg;
+        let translatedText = i18next.t(binding.value, {lng});
+        if (binding.modifiers.lowercase){
+            translatedText = translatedText.toLowerCase()
+        }
         if (attribute) {
-            el.setAttribute(attribute, i18next.t(binding.value, {lng}));
+            el.setAttribute(attribute, translatedText);
         } else {
-            el.innerHTML = i18next.t(binding.value, {lng});
+            el.innerHTML = translatedText;
         }
     }
 
