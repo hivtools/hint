@@ -52,7 +52,7 @@
                     <a href="#"
                        v-if="editing"
                        @click="cancel"
-                       v-translate="'cancel'"></a>
+                       v-translate.lowercase="'cancel'"></a>
                 </div>
             </div>
             <error-alert v-if="error" :error="error"></error-alert>
