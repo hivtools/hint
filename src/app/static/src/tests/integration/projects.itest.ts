@@ -97,4 +97,45 @@ describe("Projects actions", () => {
             }, 400);
         }, 2400);
     });
+
+    it("can delete project", async(done) => {
+        const state = initialProjectsState();
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.createProject({commit, rootState, state} as any, "v1");
+        expect(commit.mock.calls.length).toBe(2);
+
+        const createdProject = commit.mock.calls[1][0]["payload"];
+        state.currentProject = createdProject;
+        state.currentVersion = createdProject.versions[0];
+
+        await actions.deleteProject({commit, dispatch, state, rootState} as any, state.currentProject!.id);
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            done();
+        });
+    });
+
+    it("can delete version", async(done) => {
+        const state = initialProjectsState();
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.createProject({commit, rootState, state} as any, "v1");
+        expect(commit.mock.calls.length).toBe(2);
+
+        const createdProject = commit.mock.calls[1][0]["payload"];
+        state.currentProject = createdProject;
+        state.currentVersion = createdProject.versions[0];
+
+        const ids = {projectId: state.currentProject!.id, versionId: state.currentVersion!.id};
+        await actions.deleteVersion({commit, dispatch, state, rootState} as any, ids);
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            done();
+        });
+    });
 });
