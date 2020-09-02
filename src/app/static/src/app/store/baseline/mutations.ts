@@ -1,14 +1,14 @@
 import {MutationTree} from 'vuex';
 import {BaselineState} from "./baseline";
 import {
+    Error,
     NestedFilterOption,
     PjnzResponse,
     PopulationResponse,
     ShapeResponse,
-    ValidateBaselineResponse,
-    Error
+    ValidateBaselineResponse
 } from "../../generated";
-import {Dataset, PayloadWithType} from "../../types";
+import {Dataset, DatasetResourceSet, PayloadWithType} from "../../types";
 import {flattenOptions} from "../../utils";
 import {ReadyState} from "../../root";
 
@@ -35,16 +35,35 @@ export const BaselineUpdates = [
 
 export const mutations: MutationTree<BaselineState> = {
 
-    [BaselineMutation.UpdateDatasetResources](state: BaselineState, payload: any) {
+    [BaselineMutation.UpdateDatasetResources](state: BaselineState, payload: DatasetResourceSet) {
         if (state.selectedDataset) {
-            const resources = state.selectedDataset.resources
-            const {pjnz, pop, shape, survey, program, anc} = payload;
-            resources.pjnz && (resources.pjnz.outOfDate = resources.pjnz.revisionId != pjnz.revisionId);
-            resources.shape && (resources.shape.outOfDate = resources.shape.revisionId != shape.revisionId);
-            resources.pop && (resources.pop.outOfDate = resources.pop.revisionId != pop.revisionId);
-            resources.survey && (resources.survey.outOfDate = resources.survey.revisionId != survey.revisionId);
-            resources.program && (resources.program.outOfDate = resources.program.revisionId != program.revisionId);
-            resources.anc && (resources.anc.outOfDate = resources.anc.revisionId != anc.revisionId);
+            const resources = state.selectedDataset.resources;
+            console.log(resources.pjnz, payload.pjnz)
+            Object.keys(resources).map((k: string) => {
+                const key = k as keyof DatasetResourceSet;
+                if (!resources[key] && !payload[key]) {
+                    // data was null and is still null
+                    return;
+                }
+                if (!resources[key] && payload[key]) {
+                    // data was null, file now exists
+                    // so update resource and mark as out of date
+                    resources[key] = payload[key];
+                    resources[key]!!.outOfDate = true;
+                }
+                if (resources[key] && payload[key] && resources[key]!!.revisionId != payload[key]!!.revisionId) {
+                    // data exists but the revision id has changed
+                    // so update resource and mark as out of date
+                    resources[key] = payload[key];
+                    console.log(key, "out of date")
+                    resources[key]!!.outOfDate = true;
+                }
+                if (resources[key] && payload[key] && resources[key]!!.revisionId == payload[key]!!.revisionId) {
+                    // data matches the new payload
+                    // so mark as not out of date
+                    resources[key]!!.outOfDate = false;
+                }
+            })
         }
     },
 

@@ -91,18 +91,20 @@ export interface DatasetResource {
     outOfDate: boolean
 }
 
+export interface DatasetResourceSet {
+    pjnz: DatasetResource | null,
+    pop: DatasetResource | null,
+    program: DatasetResource | null,
+    anc: DatasetResource | null,
+    shape: DatasetResource | null,
+    survey: DatasetResource | null
+}
+
 export interface Dataset {
     id: string
     title: string
     url: string,
-    resources: {
-        pjnz: DatasetResource | null,
-        pop: DatasetResource | null,
-        program: DatasetResource | null,
-        anc: DatasetResource | null,
-        shape: DatasetResource | null,
-        survey: DatasetResource | null
-    }
+    resources:  DatasetResourceSet
 }
 
 export interface ADRSchemas {

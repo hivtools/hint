@@ -8,10 +8,11 @@
                        v-tooltip="outOfDateMessage"
                        style="vertical-align: text-bottom;stroke: #e31837;"></info-icon>
         </div>
-        <button v-if="selectedDataset" class="btn btn-white ml-2" @click="refresh">Refresh</button>
+        <button v-if="outOfDateMessage" class="btn btn-white ml-2" @click="refresh">Refresh</button>
         <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{ selectText }}</button>
         <modal id="dataset" :open="open">
             <h4>Browse ADR</h4>
+            <p v-if="loading">Importing files - this may take several minutes. Please do not close your browser.</p>
             <div v-if="!loading">
                 <tree-select :multiple="false"
                              :searchable="true"
@@ -52,7 +53,7 @@
     import {BaselineMutation} from "../../store/baseline/mutations";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {ADRSchemas, Dataset, DatasetResource} from "../../types";
+    import {ADRSchemas, Dataset, DatasetResource, DatasetResourceSet} from "../../types";
     import {InfoIcon} from "vue-feather-icons";
     import {VTooltip} from "v-tooltip";
 
@@ -68,6 +69,7 @@
         importANC: (url: string) => Promise<void>
         findResource: (datasetWithResources: any, resourceType: string) => DatasetResource | null
         refresh: () => void
+        refreshDatasetMetadata: () => void
     }
 
     interface Computed {
@@ -78,7 +80,8 @@
         newDataset: Dataset
         selectText: string,
         outOfDateMessage: string,
-        outOfDateResources: any
+        outOfDateResources: { [k in keyof DatasetResourceSet]?: true }
+        hasShapeFile: boolean
     }
 
     interface Data {
@@ -98,6 +101,8 @@
         components: {Modal, TreeSelect, LoadingSpinner, InfoIcon},
         directives: {"tooltip": VTooltip},
         computed: {
+            hasShapeFile: mapStateProp<BaselineState, boolean>("baseline",
+                (state: BaselineState) => !!state.shape),
             schemas: mapStateProp<RootState, ADRSchemas>(null,
                 (state: RootState) => state.adrSchemas!!),
             selectedDataset: mapStateProp<BaselineState, Dataset | null>("baseline",
@@ -139,41 +144,31 @@
                 }
             },
             outOfDateResources() {
-                if (!this.selectedDataset) return [];
+                const outOfDateResources: { [k in keyof DatasetResourceSet]?: true } = {};
+                if (!this.selectedDataset) {
+                    return outOfDateResources;
+                }
                 const resources = this.selectedDataset.resources;
-                const outOfDateResources = []
-                if (resources.pjnz && resources.pjnz.outOfDate) {
-                    outOfDateResources.push("PJNZ")
-                }
-                if (resources.pop && resources.pop.outOfDate) {
-                    outOfDateResources.push("Population")
-                }
-                if (resources.shape && resources.shape.outOfDate) {
-                    outOfDateResources.push("Shape file")
-                }
-                if (resources.survey && resources.survey.outOfDate) {
-                    outOfDateResources.push("Survey")
-                }
-                if (resources.program && resources.program.outOfDate) {
-                    outOfDateResources.push("ART")
-                }
-                if (resources.anc && resources.anc.outOfDate) {
-                    outOfDateResources.push("ANC")
-                }
+                Object.keys(resources).map((k) => {
+                    const key = k as keyof DatasetResourceSet;
+                    if (resources[key] && resources[key]!!.outOfDate) {
+                        outOfDateResources[key] = true;
+                    }
+                });
                 return outOfDateResources
             },
             outOfDateMessage() {
                 if (!this.selectedDataset) return "";
-
-                if (this.outOfDateResources.length == 0) {
+                const outOfDateResourceNames = Object.keys(this.outOfDateResources);
+                if (outOfDateResourceNames.length == 0) {
                     return ""
                 }
-                return "The following files have been updated in the ADR since you last imported them: "
-                    + this.outOfDateResources.join(", ") + ". Use the refresh button to import the latest files."
+                return "This dataset has been updated in the ADR. Use the refresh button to import the latest files."
             }
         },
         methods: {
             setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
+            refreshDatasetMetadata: mapActionByName("baseline", "refreshDatasetMetadata"),
             importPJNZ: mapActionByName("baseline", "importPJNZ"),
             importShape: mapActionByName("baseline", "importShape"),
             importPopulation: mapActionByName("baseline", "importPopulation"),
@@ -195,7 +190,7 @@
                     pop && this.importPopulation(pop.url),
                     shape && this.importShape(shape.url)]);
 
-                shape && await Promise.all([
+                (shape || this.hasShapeFile) && await Promise.all([
                     survey && this.importSurvey(survey.url),
                     program && this.importProgram(program.url),
                     anc && this.importANC(anc.url)
@@ -204,12 +199,38 @@
                 this.loading = false;
                 this.open = false;
             },
-            refresh() {
-                const {pjnz, pop, shape, survey, program, anc} = this.selectedDataset!!.resources
+            async refresh() {
+                this.loading = true;
+                this.open = true;
+                const {pjnz, pop, shape, survey, program, anc} = this.selectedDataset!!.resources;
+                await Promise.all([
+                    this.outOfDateResources["pjnz"] && pjnz && this.importPJNZ(pjnz.url),
+                    this.outOfDateResources["pop"] && pop && this.importPopulation(pop.url),
+                    this.outOfDateResources["shape"] && shape && this.importShape(shape.url)]);
+
+                const baselineUpdated = this.outOfDateResources["pjnz"] ||
+                    this.outOfDateResources["pop"] ||
+                    this.outOfDateResources["shape"];
+
+                // if baseline files are updated, we have to re-import all survey & program files,
+                // regardless of whether they have changed, since updating the baseline files will
+                // have wiped these
+                (shape || this.hasShapeFile) && await Promise.all([
+                    (baselineUpdated || this.outOfDateResources["survey"]) && survey && this.importSurvey(survey.url),
+                    (baselineUpdated || this.outOfDateResources["program"]) && program && this.importProgram(program.url),
+                    (baselineUpdated || this.outOfDateResources["anc"]) && anc && this.importANC(anc.url)
+                ]);
+
+                await this.refreshDatasetMetadata();
+                this.loading = false;
+                this.open = false;
             },
             toggleModal() {
                 this.open = !this.open;
             }
+        },
+        mounted() {
+            this.refreshDatasetMetadata();
         }
     })
 </script>

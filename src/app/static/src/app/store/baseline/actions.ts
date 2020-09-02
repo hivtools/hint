@@ -6,6 +6,7 @@ import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineRespons
 import {BaselineMutation} from "./mutations";
 import qs from "qs";
 import {findResource} from "../../utils";
+import {DatasetResourceSet} from "../../types";
 
 export interface BaselineActions {
     refreshDatasetMetadata: (store: ActionContext<BaselineState, RootState>) => void
@@ -99,7 +100,8 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
                         const program = findResource(metadata, schemas.programme);
                         const anc = findResource(metadata, schemas.anc);
 
-                        commit(BaselineMutation.UpdateDatasetResources, {pjnz, pop, shape, survey, program, anc})
+                        commit(BaselineMutation.UpdateDatasetResources,
+                            {pjnz, pop, shape, survey, program, anc} as DatasetResourceSet)
                     }
                 });
         }
