@@ -29,6 +29,8 @@ interface VersionRepository {
     fun copyVersion(parentVersionId: String, newVersionId: String, projectId: Int, userId: String)
 
     fun getVersionDetails(versionId: String, projectId: Int, userId: String): VersionDetails
+
+    fun deleteVersion(versionId: String, projectId: Int, userId: String)
 }
 
 @Component
@@ -182,6 +184,15 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
 
         val files = getVersionFiles(parentVersionId)
         setFilesForVersion(newVersionId, files)
+    }
+
+    override fun deleteVersion(versionId: String, projectId: Int, userId: String)
+    {
+        checkVersionExists(versionId, projectId, userId);
+        dsl.update(PROJECT_VERSION)
+                .set(PROJECT_VERSION.DELETED, true)
+                .where(PROJECT_VERSION.ID.eq(versionId))
+                .execute()
     }
 
     private fun checkVersionExists(versionId: String, projectId: Int, userId: String)
