@@ -5,6 +5,12 @@ describe("Projects mutations", () => {
     const testNow = Date.now();
     global.Date.now = jest.fn(() => testNow);
 
+    const mockProject = {
+        id: 1,
+        name: "v1",
+        versions: [{id: "OLD VERSION", created: "old created time", updated: "old updated time"}]
+    };
+
     const consoleSpy = jest.fn();
 
     beforeEach(() => {
@@ -58,11 +64,6 @@ describe("Projects mutations", () => {
     });
 
     it("sets created version as current", () => {
-        const mockProject = {
-            id: 1,
-            name: "v1",
-            versions: [{id: "OLD VERSION", created: "old created time", updated: "old updated time"}]
-        };
         const state = mockProjectsState({currentProject: mockProject});
 
         const newVersion = {id: "NEW VERSION", created: "new time", updated: "new time"};
@@ -71,5 +72,13 @@ describe("Projects mutations", () => {
         expect(state.currentVersion).toBe(newVersion);
         expect(state.currentProject!.versions.length).toBe(2);
         expect(state.currentProject!.versions[1]).toBe(newVersion);
+    });
+
+    it("clears current version", () => {
+        const state = mockProjectsState({currentProject: mockProject, currentVersion: mockProject.versions[0]});
+
+        mutations[ProjectsMutations.ClearCurrentVersion](state);
+        expect(state.currentProject).toBeNull();
+        expect(state.currentVersion).toBeNull();
     });
 });
