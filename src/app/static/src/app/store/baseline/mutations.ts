@@ -24,7 +24,8 @@ export enum BaselineMutation {
     Validated = "Validated",
     BaselineError = "Error",
     SetDataset = "SetDataset",
-    UpdateDatasetResources = "UpdateDatasetResources"
+    UpdateDatasetResources = "UpdateDatasetResources",
+    MarkDatasetResourcesUpdated = "MarkDatasetResourcesUpdated"
 }
 
 export const BaselineUpdates = [
@@ -35,33 +36,31 @@ export const BaselineUpdates = [
 
 export const mutations: MutationTree<BaselineState> = {
 
+    [BaselineMutation.MarkDatasetResourcesUpdated](state: BaselineState) {
+        if (state.selectedDataset) {
+            const resources = state.selectedDataset.resources;
+            Object.keys(resources).map((k: string) => {
+                const key = k as keyof DatasetResourceSet;
+                if (resources[key]) {
+                    resources[key]!!.outOfDate = false;
+                }
+            });
+        }
+    },
+
     [BaselineMutation.UpdateDatasetResources](state: BaselineState, payload: DatasetResourceSet) {
         if (state.selectedDataset) {
             const resources = state.selectedDataset.resources;
-            console.log(resources.pjnz, payload.pjnz)
             Object.keys(resources).map((k: string) => {
                 const key = k as keyof DatasetResourceSet;
-                if (!resources[key] && !payload[key]) {
-                    // data was null and is still null
+                if (!payload[key]) {
                     return;
                 }
-                if (!resources[key] && payload[key]) {
-                    // data was null, file now exists
-                    // so update resource and mark as out of date
+                if (!resources[key] || (resources[key]!!.revisionId != payload[key]!!.revisionId)) {
+                    // previous data was null OR has a different revision id
+                    // so update metadata and mark as out of date
                     resources[key] = payload[key];
                     resources[key]!!.outOfDate = true;
-                }
-                if (resources[key] && payload[key] && resources[key]!!.revisionId != payload[key]!!.revisionId) {
-                    // data exists but the revision id has changed
-                    // so update resource and mark as out of date
-                    resources[key] = payload[key];
-                    console.log(key, "out of date")
-                    resources[key]!!.outOfDate = true;
-                }
-                if (resources[key] && payload[key] && resources[key]!!.revisionId == payload[key]!!.revisionId) {
-                    // data matches the new payload
-                    // so mark as not out of date
-                    resources[key]!!.outOfDate = false;
                 }
             })
         }

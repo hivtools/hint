@@ -11,7 +11,7 @@
         <button v-if="outOfDateMessage" class="btn btn-white ml-2" @click="refresh">Refresh</button>
         <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{ selectText }}</button>
         <modal id="dataset" :open="open">
-            <h4>Browse ADR</h4>
+            <h4 v-if="!loading">Browse ADR</h4>
             <p v-if="loading">Importing files - this may take several minutes. Please do not close your browser.</p>
             <div v-if="!loading">
                 <tree-select :multiple="false"
@@ -27,17 +27,15 @@
             <div class="text-center" v-if="loading">
                 <loading-spinner size="sm"></loading-spinner>
             </div>
-            <template v-slot:footer>
+            <template v-slot:footer v-if="!loading">
                 <button type="button"
                         class="btn btn-white"
-                        @click="importDataset"
-                        :disabled="loading">
+                        @click="importDataset">
                     Import
                 </button>
                 <button type="button"
                         class="btn btn-white"
-                        @click="toggleModal"
-                        :disabled="loading">
+                        @click="toggleModal">
                     Cancel
                 </button>
             </template>
@@ -70,6 +68,7 @@
         findResource: (datasetWithResources: any, resourceType: string) => DatasetResource | null
         refresh: () => void
         refreshDatasetMetadata: () => void
+        markResourcesUpdated: () => void
     }
 
     interface Computed {
@@ -144,11 +143,11 @@
                 }
             },
             outOfDateResources() {
-                const outOfDateResources: { [k in keyof DatasetResourceSet]?: true } = {};
                 if (!this.selectedDataset) {
-                    return outOfDateResources;
+                    return {};
                 }
                 const resources = this.selectedDataset.resources;
+                const outOfDateResources: { [k in keyof DatasetResourceSet]?: true } = {};
                 Object.keys(resources).map((k) => {
                     const key = k as keyof DatasetResourceSet;
                     if (resources[key] && resources[key]!!.outOfDate) {
@@ -158,9 +157,7 @@
                 return outOfDateResources
             },
             outOfDateMessage() {
-                if (!this.selectedDataset) return "";
-                const outOfDateResourceNames = Object.keys(this.outOfDateResources);
-                if (outOfDateResourceNames.length == 0) {
+                if (Object.keys(this.outOfDateResources).length == 0) {
                     return ""
                 }
                 return "This dataset has been updated in the ADR. Use the refresh button to import the latest files."
@@ -169,6 +166,7 @@
         methods: {
             setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
             refreshDatasetMetadata: mapActionByName("baseline", "refreshDatasetMetadata"),
+            markResourcesUpdated: mapMutationByName("baseline", BaselineMutation.MarkDatasetResourcesUpdated),
             importPJNZ: mapActionByName("baseline", "importPJNZ"),
             importShape: mapActionByName("baseline", "importShape"),
             importPopulation: mapActionByName("baseline", "importPopulation"),
@@ -208,7 +206,8 @@
                     this.outOfDateResources["pop"] && pop && this.importPopulation(pop.url),
                     this.outOfDateResources["shape"] && shape && this.importShape(shape.url)]);
 
-                const baselineUpdated = this.outOfDateResources["pjnz"] ||
+                const baselineUpdated =
+                    this.outOfDateResources["pjnz"] ||
                     this.outOfDateResources["pop"] ||
                     this.outOfDateResources["shape"];
 
@@ -221,7 +220,7 @@
                     (baselineUpdated || this.outOfDateResources["anc"]) && anc && this.importANC(anc.url)
                 ]);
 
-                await this.refreshDatasetMetadata();
+                this.markResourcesUpdated();
                 this.loading = false;
                 this.open = false;
             },
