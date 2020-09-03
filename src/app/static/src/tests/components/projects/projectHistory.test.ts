@@ -6,7 +6,7 @@ import Vuex from "vuex";
 import Vue from "vue";
 import {emptyState} from "../../../app/root";
 
-describe("Projects component", () => {
+describe("Project history component", () => {
 
     const isoDates = ["2020-07-30T15:00:00.000000",
         "2020-07-31T09:00:00.000000",
@@ -49,6 +49,8 @@ describe("Projects component", () => {
         expect(v.at(2).text()).toBe(formatDateTime(updatedIsoDate));
         expect(v.at(3).text()).toBe("Load last updated");
         expect(v.at(3).find("a").attributes("href")).toBe("");
+        expect(v.at(4).text()).toBe("Delete");
+        expect(v.at(4).find("a").attributes("href")).toBe("");
 
         const versions = wrapper.find(`#versions-${id}`);
         expect(versions.classes()).toContain("collapse");
@@ -62,6 +64,8 @@ describe("Projects component", () => {
         expect(cells.at(1).text()).toBe(formatDateTime(updatedIsoDate));
         const loadLink = cells.at(2).find("a");
         expect(loadLink.text()).toBe("Load");
+        const deleteLink = cells.at(3).find("a");
+        expect(deleteLink.text()).toBe("Delete");
     };
 
     it("renders as expected ", () => {
@@ -87,6 +91,9 @@ describe("Projects component", () => {
         const v2VersionRows = v2Versions.findAll(".row");
         expect(v2VersionRows.length).toBe(1);
         testRendersVersion(v2VersionRows.at(0), "s21", isoDates[3]);
+
+        const modal = wrapper.find(".modal");
+        expect(modal.classes).not.toContain("show");
     });
 
     it("can expand project row", async (done) => {
@@ -126,6 +133,113 @@ describe("Projects component", () => {
 
     it("clicking project load latest link invokes loadVersion action", async () => {
         await testLoadVersionLink("#p-1", 1, "s11");
+    });
+
+    it("shows modal when click delete project link", async () => {
+        const wrapper = getWrapper();
+        const deleteLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("a");
+        deleteLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.find(".modal");
+        expect(modal.classes()).toContain("show");
+        expect(modal.find(".modal-body").text()).toBe("Delete project?");
+        const buttons = modal.find(".modal-footer").findAll("button");
+        expect(buttons.at(0).text()).toBe("OK");
+        expect(buttons.at(1).text()).toBe("Cancel");
+    });
+
+    it("shows modal when click delete version link", async () => {
+        const wrapper = getWrapper();
+        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(3).find("a");
+        deleteLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.find(".modal");
+        expect(modal.classes()).toContain("show");
+        expect(modal.find(".modal-body").text()).toBe("Delete version?");
+        const buttons = modal.find(".modal-footer").findAll("button");
+        expect(buttons.at(0).text()).toBe("OK");
+        expect(buttons.at(1).text()).toBe("Cancel");
+    });
+
+    it("invokes deleteProject action when confirm delete", async () => {
+        const mockDeleteProject = jest.fn();
+        const mockStore = new Vuex.Store({
+            state: emptyState(),
+            modules: {
+                projects: {
+                    namespaced: true,
+                    actions: {
+                        deleteProject: mockDeleteProject
+                    }
+                }
+            }
+        });
+        const wrapper = getWrapper(testPropsData, mockStore);
+        const deleteLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("a");
+        deleteLink.trigger("click");
+        await Vue.nextTick();
+
+        const okButton = wrapper.find(".modal").findAll("button").at(0);
+        okButton.trigger("click");
+        await Vue.nextTick();
+
+        expect(mockDeleteProject.mock.calls.length).toBe(1);
+        expect(mockDeleteProject.mock.calls[0][1]).toBe(1);
+    });
+
+    it("invokes deleteVersion action when confirm delete", async () => {
+        const mockDeleteVersion = jest.fn();
+        const mockStore = new Vuex.Store({
+            state: emptyState(),
+            modules: {
+                projects: {
+                    namespaced: true,
+                    actions: {
+                        deleteVersion: mockDeleteVersion
+                    }
+                }
+            }
+        });
+        const wrapper = getWrapper(testPropsData, mockStore);
+        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(3).find("a");
+        deleteLink.trigger("click");
+        await Vue.nextTick();
+
+        const okButton = wrapper.find(".modal").findAll("button").at(0);
+        okButton.trigger("click");
+        await Vue.nextTick();
+
+        expect(mockDeleteVersion.mock.calls.length).toBe(1);
+        expect(mockDeleteVersion.mock.calls[0][1]).toStrictEqual({projectId: 1, versionId: "s11"});
+    });
+
+    it("hides modal and does not invoke action when click cancel", async () => {
+        const mockDeleteVersion = jest.fn();
+        const mockStore = new Vuex.Store({
+            state: emptyState(),
+            modules: {
+                projects: {
+                    namespaced: true,
+                    actions: {
+                        deleteVersion: mockDeleteVersion
+                    }
+                }
+            }
+        });
+        const wrapper = getWrapper(testPropsData, mockStore);
+        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(3).find("a");
+        deleteLink.trigger("click");
+        await Vue.nextTick();
+
+        const cancelButton = wrapper.find(".modal").findAll("button").at(1);
+        cancelButton.trigger("click");
+        await Vue.nextTick();
+
+        expect(mockDeleteVersion.mock.calls.length).toBe(0);
+        const modal = wrapper.find(".modal");
+        expect(modal.classes).not.toContain("show");
     });
 
     const testLoadVersionLink = async function(elementId: string, projectId: number, versionId: string) {
