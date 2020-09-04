@@ -4,6 +4,7 @@
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
             <div class="col-md-3 header-cell" v-translate="'projectName'"></div>
+            <div class="col-md-1 header-cell">Versions</div>
             <div class="col-md-3 header-cell" v-translate="'lastUpdated'"></div>
         </div>
         <hr/>
@@ -18,6 +19,7 @@
                 <div class="col-md-3 project-cell">
                     {{p.name}}
                 </div>
+                <div class="col-md-1 project-cell"><small class="text-muted">1 vers</small></div>
                 <div class="col-md-3 project-cell">{{format(p.versions[0].updated)}}</div>
                 <div class="col-md-4 project-cell">
                     <a @click="loadVersion($event, p.id, p.versions[0].id)" href="" v-translate="'loadLastUpdated'"></a>
@@ -26,6 +28,7 @@
             <b-collapse :id="`versions-${p.id}`">
                 <div v-for="v in p.versions" :id="`v-${v.id}`" class="row font-italic bg-light py-2">
                     <div class="col-md-4 version-cell"></div>
+                    <div class="col-md-1 project-cell">v1</div>
                     <div class="col-md-3 version-cell">{{format(v.updated)}}</div>
                     <div class="col-md-4 version-cell">
                         <a @click="loadVersion($event, p.id, v.id)" href="" v-translate="'load'"></a>
