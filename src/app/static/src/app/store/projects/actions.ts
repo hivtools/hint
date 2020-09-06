@@ -15,6 +15,8 @@ export interface ProjectsActions {
     uploadVersionState: (store: ActionContext<ProjectsState, RootState>) => void,
     newVersion: (store: ActionContext<ProjectsState, RootState>) => void,
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
+    deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
+    deleteVersion: (store: ActionContext<ProjectsState, RootState>, versionIds: VersionIds) => void
 }
 
 export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
@@ -78,6 +80,38 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
                 if (state.error === null) {
                     dispatch("load/loadFromVersion", response.data, {root: true})
                 }
+            });
+    },
+
+    async deleteProject(context, projectId) {
+        const {commit, dispatch, state} = context;
+
+        if (state.currentProject && state.currentProject.id === projectId) {
+            commit({type: ProjectsMutations.ClearCurrentVersion});
+        }
+        await api<ProjectsMutations, ProjectsMutations>(context)
+            .ignoreSuccess()
+            .withError(ProjectsMutations.ProjectError)
+            .delete(`project/${projectId}`)
+            .then(() => {
+                dispatch("getProjects");
+            });
+    },
+
+    async deleteVersion(context, versionIds) {
+        const versionId = versionIds.versionId;
+        const projectId = versionIds.projectId;
+        const {commit, dispatch, state} = context;
+
+        if (state.currentVersion && state.currentVersion.id === versionId) {
+            commit({type: ProjectsMutations.ClearCurrentVersion});
+        }
+        await api<ProjectsMutations, ProjectsMutations>(context)
+            .ignoreSuccess()
+            .withError(ProjectsMutations.ProjectError)
+            .delete(`project/${projectId}/version/${versionId}`)
+            .then(() => {
+                dispatch("getProjects");
             });
     }
 };

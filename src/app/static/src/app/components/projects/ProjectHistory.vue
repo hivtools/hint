@@ -21,8 +21,11 @@
                 </div>
                 <div class="col-md-1 project-cell"><small class="text-muted">{{versionCountLabel(p)}}</small></div>
                 <div class="col-md-3 project-cell">{{format(p.versions[0].updated)}}</div>
-                <div class="col-md-4 project-cell">
+                <div class="col-md-2 project-cell">
                     <a @click="loadVersion($event, p.id, p.versions[0].id)" href="" v-translate="'loadLastUpdated'"></a>
+                </div>
+                <div class="col-md-2 project-cell">
+                    <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
                 </div>
             </div>
             <b-collapse :id="`versions-${p.id}`">
@@ -30,12 +33,31 @@
                     <div class="col-md-4 version-cell"></div>
                     <div class="col-md-1 project-cell">{{`v${v.versionNumber}`}}</div>
                     <div class="col-md-3 version-cell">{{format(v.updated)}}</div>
-                    <div class="col-md-4 version-cell">
+                    <div class="col-md-2 version-cell">
                         <a @click="loadVersion($event, p.id, v.id)" href="" v-translate="'load'"></a>
+                    </div>
+                    <div class="col-md-2 version-cell">
+                        <a @click="deleteVersion($event, p.id, v.id)" href="" v-translate="'delete'"></a>
                     </div>
                 </div>
             </b-collapse>
         </div>
+        <modal :open="projectToDelete || versionToDelete">
+            <h4 v-if="projectToDelete" v-translate="'deleteProject'"></h4>
+            <h4 v-if="versionToDelete" v-translate="'deleteVersion'"></h4>
+            <template v-slot:footer>
+                <button type="button"
+                        class="btn btn-white"
+                        @click="confirmDelete"
+                        v-translate="'ok'">
+                </button>
+                <button type="button"
+                         class="btn btn-red"
+                        @click="cancelDelete"
+                        v-translate="'cancel'">
+                </button>
+            </template>
+        </modal>
     </div>
 </template>
 
@@ -45,7 +67,13 @@
     import {BCollapse} from "bootstrap-vue";
     import { VBToggle } from 'bootstrap-vue';
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
-    import {formatDateTime, mapActionByName, mapStateProp} from "../../utils";
+    import Modal from "../Modal.vue"
+    import {formatDateTime, mapActionByName} from "../../utils";
+
+    interface Data {
+        projectToDelete: number | null,
+        versionToDelete: VersionIds | null
+    }
 
     interface Props {
         projects: Project[];
@@ -56,31 +84,67 @@
         loadVersion: (event: Event, projectId: number, versionId: string) => void,
         loadAction: (version: VersionIds) => void,
         versionCountLabel: (project: Project) => string
+        deleteProject: (event: Event, projectId: number) => void,
+        deleteVersion: (event: Event, projectId: number, versionId: string) => void
+        cancelDelete: () => void
+        confirmDelete: () => void,
+        deleteProjectAction: (projectId: number) => void,
+        deleteVersionAction: (versionIds: VersionIds) => void
     }
 
-    export default Vue.extend<{}, Methods, {}, Props>({
+    export default Vue.extend<Data, Methods, {}, Props>({
        props: {
             projects: {
                 type: Array
             }
+       },
+       data() {
+           return {
+               projectToDelete: null,
+               versionToDelete: null
+           }
        },
        methods: {
            format(date: string) {
                return formatDateTime(date);
            },
            loadVersion(event: Event, projectId: number, versionId: string) {
-                event.preventDefault();
+               event.preventDefault();
                this.loadAction({projectId, versionId});
            },
-           loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
+           deleteProject(event: Event, projectId: number) {
+               event.preventDefault();
+               this.projectToDelete = projectId;
+           },
+           deleteVersion(event: Event, projectId: number, versionId: string) {
+               event.preventDefault();
+               this.versionToDelete = {projectId, versionId};
+           },
+           cancelDelete() {
+               this.versionToDelete = null;
+               this.projectToDelete = null;
+           },
+           confirmDelete() {
+                if (this.projectToDelete) {
+                    this.deleteProjectAction(this.projectToDelete);
+                    this.projectToDelete = null;
+                } else if (this.versionToDelete) {
+                    this.deleteVersionAction(this.versionToDelete);
+                    this.versionToDelete = null;
+                }
+           },
            versionCountLabel(project: Project) {
                return project.versions.length == 1 ? "1 version" : `${project.versions.length} versions`
-           }
+           },
+           loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
+           deleteProjectAction: mapActionByName<number>("projects", "deleteProject"),
+           deleteVersionAction: mapActionByName<VersionIds>("projects", "deleteVersion")
        },
        components: {
            BCollapse,
            ChevronDownIcon,
-           ChevronRightIcon
+           ChevronRightIcon,
+           Modal
        },
        directives: {
            'b-toggle': VBToggle
