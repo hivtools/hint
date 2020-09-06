@@ -19,7 +19,7 @@
                 <div class="col-md-3 project-cell">
                     {{p.name}}
                 </div>
-                <div class="col-md-1 project-cell"><small class="text-muted">1 vers</small></div>
+                <div class="col-md-1 project-cell"><small class="text-muted">{{versionCountLabel(p)}}</small></div>
                 <div class="col-md-3 project-cell">{{format(p.versions[0].updated)}}</div>
                 <div class="col-md-4 project-cell">
                     <a @click="loadVersion($event, p.id, p.versions[0].id)" href="" v-translate="'loadLastUpdated'"></a>
@@ -28,7 +28,7 @@
             <b-collapse :id="`versions-${p.id}`">
                 <div v-for="v in p.versions" :id="`v-${v.id}`" class="row font-italic bg-light py-2">
                     <div class="col-md-4 version-cell"></div>
-                    <div class="col-md-1 project-cell">v1</div>
+                    <div class="col-md-1 project-cell">{{`v${v.versionNumber}`}}</div>
                     <div class="col-md-3 version-cell">{{format(v.updated)}}</div>
                     <div class="col-md-4 version-cell">
                         <a @click="loadVersion($event, p.id, v.id)" href="" v-translate="'load'"></a>
@@ -54,7 +54,8 @@
     interface Methods {
         format: (date: string) => void,
         loadVersion: (event: Event, projectId: number, versionId: string) => void,
-        loadAction: (version: VersionIds) => void
+        loadAction: (version: VersionIds) => void,
+        versionCountLabel: (project: Project) => string
     }
 
     export default Vue.extend<{}, Methods, {}, Props>({
@@ -72,6 +73,9 @@
                this.loadAction({projectId, versionId});
            },
            loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
+           versionCountLabel(project: Project) {
+               return project.versions.length == 1 ? "1 version" : `${project.versions.length} versions`
+           }
        },
        components: {
            BCollapse,
