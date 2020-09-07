@@ -37,6 +37,7 @@ describe("Model run actions", () => {
         await actions.run({commit, rootState: mockState} as any);
 
         expect(commit.mock.calls[0][0]["type"]).toBe("ModelRunError");
+        expect(commit.mock.calls[0][0]["payload"]["error"]).toBe("INVALID_INPUT");
     });
 
     it("can get model run status", (done) => {
