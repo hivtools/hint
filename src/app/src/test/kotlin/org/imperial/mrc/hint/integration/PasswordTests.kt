@@ -4,6 +4,10 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.emails.WriteToDiskEmailManager
 import org.imperial.mrc.hint.helpers.AuthInterceptor
+import org.imperial.mrc.hint.models.ErrorDetail
+import org.imperial.mrc.hint.models.ErrorResponse
+import org.imperial.mrc.hint.models.SuccessResponse
+import org.imperial.mrc.hint.models.toJsonString
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -28,11 +32,10 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
         }
     }
 
-    private val expectedSuccessResponse = "{\"errors\":[],\"status\":\"success\",\"data\":true}"
+    private val expectedSuccessResponse = SuccessResponse(true).toJsonString()
 
     private fun expectedErrorResponse(errorMessage: String): String {
-        return "{\"data\":{},\"status\":\"failure\"," +
-                "\"errors\":[{\"detail\":\"$errorMessage\",\"error\":\"OTHER_ERROR\"}]}"
+        return ErrorResponse(listOf(ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage))).toJsonString()
     }
 
     @AfterEach

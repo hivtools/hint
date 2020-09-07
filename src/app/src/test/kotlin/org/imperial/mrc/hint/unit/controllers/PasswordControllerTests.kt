@@ -10,6 +10,8 @@ import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.helpers.TranslationAssert
+import org.imperial.mrc.hint.models.SuccessResponse
+import org.imperial.mrc.hint.models.toJsonString
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
@@ -27,7 +29,7 @@ class PasswordControllerTests {
 
     val mockEmailManager = mock<EmailManager>()
 
-    val expectedSuccessResponse = "{\"errors\":[],\"status\":\"success\",\"data\":true}"
+    val expectedSuccessResponse = SuccessResponse(true).toJsonString()
 
     private val mockProps = mock<AppProperties> {
         on {applicationTitle} doReturn "AppTitle"
