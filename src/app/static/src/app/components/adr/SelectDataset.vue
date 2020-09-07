@@ -3,10 +3,12 @@
         <div v-if="selectedDataset" style="margin-top:8px">
             <span class="font-weight-bold">Selected dataset:</span>
             <a :href="selectedDataset.url" target="_blank">{{ selectedDataset.title }}</a>
-            <info-icon size="20"
-                       v-if="outOfDateMessage"
-                       v-tooltip="outOfDateMessage"
-                       style="vertical-align: text-bottom;stroke: #e31837;"></info-icon>
+            <span class="color-red">
+                <info-icon size="20"
+                           v-if="outOfDateMessage"
+                           v-tooltip="outOfDateMessage"
+                           style="vertical-align: text-bottom;"></info-icon>
+            </span>
         </div>
         <button v-if="outOfDateMessage" class="btn btn-white ml-2" @click="refresh">Refresh</button>
         <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{ selectText }}</button>
