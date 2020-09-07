@@ -6,7 +6,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 
 data class SuccessResponse(val data: Any?) {
-    val errors = arrayOf<Any>()
+    val errors = null
     val status = "success"
 }
 
@@ -19,7 +19,7 @@ fun SuccessResponse.asResponseEntity() = ResponseEntity
 val EmptySuccessResponse = SuccessResponse(true)
 
 data class ErrorResponse(val errors: List<ErrorDetail>) {
-    val data = mapOf<Any, Any>()
+    val data = null
     val status = "failure"
 }
 fun ErrorResponse.toJsonString() = ObjectMapper().apply {

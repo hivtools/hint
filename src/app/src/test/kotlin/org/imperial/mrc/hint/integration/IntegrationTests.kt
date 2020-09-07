@@ -48,6 +48,12 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
     protected val parser = ObjectMapper()
 
     protected fun uploadMinimalFiles() {
+        testRestTemplate.postForEntity<String>("/baseline/PJNZ/",
+                getTestEntity("Malawi2019.PJNZ"))
+
+        testRestTemplate.postForEntity<String>("/baseline/population/",
+                getTestEntity("population.csv"))
+
         testRestTemplate.postForEntity<String>("/baseline/shape/",
                 getTestEntity("malawi.geojson"))
 

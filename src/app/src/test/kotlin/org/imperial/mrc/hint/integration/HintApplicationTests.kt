@@ -3,6 +3,9 @@ package org.imperial.mrc.hint.integration
 import org.apache.http.impl.client.HttpClients
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.helpers.getTestEntity
+import org.imperial.mrc.hint.models.ErrorResponse
+import org.imperial.mrc.hint.models.SuccessResponse
+import org.imperial.mrc.hint.models.toJsonString
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
@@ -55,10 +58,10 @@ class HintApplicationTests : SecureIntegrationTests() {
         val entity = testRestTemplate.getForEntity<String>("/baseline/pjnz/")
         if (isAuthorized == IsAuthorized.TRUE) {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-            assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
+            assertThat(entity.body!!).isEqualTo(ErrorResponse(listOf()).toJsonString())
         } else {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-            assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
+            assertThat(entity.body!!).isEqualTo(SuccessResponse(null).toJsonString())
         }
     }
 
