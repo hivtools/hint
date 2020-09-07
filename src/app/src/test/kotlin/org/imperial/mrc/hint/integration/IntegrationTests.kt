@@ -51,6 +51,12 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
         testRestTemplate.postForEntity<String>("/baseline/shape/",
                 getTestEntity("malawi.geojson"))
 
+        testRestTemplate.postForEntity<String>("/baseline/pjnz/",
+                getTestEntity("Malawi2019.PJNZ"))
+
+        testRestTemplate.postForEntity<String>("/baseline/population/",
+                getTestEntity("population.csv"))
+
         testRestTemplate.postForEntity<String>("/disease/survey/",
                 getTestEntity("survey.csv"))
     }
