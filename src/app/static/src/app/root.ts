@@ -50,6 +50,7 @@ export interface RootState extends TranslatableState {
     load: LoadState,
     errors: ErrorsState,
     projects: ProjectsState
+    currentUser: string
 }
 
 export interface ReadyState {
@@ -98,6 +99,8 @@ const resetState = (store: Store<RootState>) => {
     })
 };
 
+declare const currentUser: string;
+
 export const emptyState = (): RootState => {
     return {
         adrKey: null,
@@ -116,7 +119,8 @@ export const emptyState = (): RootState => {
         load: initialLoadState(),
         plottingSelections: initialPlottingSelectionsState(),
         errors: initialErrorsState(),
-        projects: initialProjectsState()
+        projects: initialProjectsState(),
+        currentUser: currentUser
     }
 };
 
