@@ -15,6 +15,7 @@ import {initialModelOutputState, modelOutput, ModelOutputState} from "./store/mo
 import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations, RootMutation} from "./store/root/mutations";
+import {getters} from "./store/root/getters";
 import {initialModelOptionsState, modelOptions, ModelOptionsState} from "./store/modelOptions/modelOptions";
 import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mutations";
 import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
@@ -141,5 +142,6 @@ export const storeOptions: StoreOptions<RootState> = {
     },
     actions: actions,
     mutations: mutations,
+    getters: getters,
     plugins: [persistState, resetState]
 };

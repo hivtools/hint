@@ -69,8 +69,9 @@
     import { mapGettersByNames, mapStateProps} from "../utils";
     import {Project} from "../types";
     import {ProjectsState} from "../store/projects/projects";
+    import {emptyState} from "../root"
 
-    declare const currentUser: string;
+    // declare const currentUser: string;
 
     interface ComputedState {
         activeStep: number,
@@ -83,7 +84,8 @@
         ready: boolean,
         complete: boolean,
         loadingFromFile: boolean
-        loading: boolean
+        loading: boolean,
+        currentUser: string
     }
 
     const namespace: string = 'stepper';
@@ -101,7 +103,7 @@
                 currentProject: state => state.currentProject,
                 projectLoading: state => state.loading
             }),
-            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
+            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete", "currentUser"]),
             loading: function () {
                 return this.loadingFromFile || !this.ready;
             }
@@ -125,8 +127,9 @@
             }
         },
         created() {
+            console.log('stepper currentUser', this.currentUser)
             //redirect to Projects if logged in with no currentProject
-            if ((currentUser != "guest") && (this.currentProject== null) && (!this.projectLoading)) {
+            if ((this.currentUser != "guest") && (this.currentProject== null) && (!this.projectLoading)) {
                 this.$router.push('/projects');
             }
         },
