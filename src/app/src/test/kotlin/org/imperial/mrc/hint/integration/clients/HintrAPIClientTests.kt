@@ -48,7 +48,7 @@ class HintrApiClientTests {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.submit(emptyMap(), ModelRunOptions(emptyMap(), emptyMap()))
         assertThat(result.statusCodeValue).isEqualTo(400)
-        JSONValidator().validateError(result.body!!, "VERSION_OUT_OF_DATE")
+        JSONValidator().validateError(result.body!!, "INVALID_INPUT")
     }
 
     @Test
