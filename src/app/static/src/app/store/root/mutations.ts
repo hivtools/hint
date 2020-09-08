@@ -15,8 +15,6 @@ import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
 import {router} from '../../router';
 
-declare const currentUser: string;
-
 export enum RootMutation {
     Reset = "Reset",
     ResetSelectedDataType = "ResetSelectedDataType",
@@ -70,7 +68,7 @@ export const mutations: MutationTree<RootState> = {
             load: initialLoadState(),
             errors: initialErrorsState(),
             projects: initialProjectsState(),
-            currentUser: currentUser
+            currentUser: state.currentUser
         };
         Object.assign(state, resetState);
 

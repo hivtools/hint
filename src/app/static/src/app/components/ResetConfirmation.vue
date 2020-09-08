@@ -39,20 +39,23 @@
 
 <script lang="ts">
     import Vue from "vue";
+    import {mapState} from "vuex";
     import Modal from "./Modal.vue";
     import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
     import {StepDescription} from "../store/stepper/stepper";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import {ProjectsState} from "../store/projects/projects";
     import {ErrorsState} from "../store/errors/errors";
+    // import {RootState} from "../root"
 
-    declare const currentUser: string;
+    // declare const currentUser: string;
 
     interface Computed {
         laterCompleteSteps: StepDescription[],
         guestUser: boolean,
         currentVersionId: string | null,
-        errorsCount: number
+        errorsCount: number,
+        // currentUser: string
     }
 
     interface Props {
@@ -78,11 +81,15 @@
                 return state.currentVersion && state.currentVersion.id;
             }),
             guestUser: function() {
-                return (currentUser === "guest");
+                console.log('reset confirmation current user', this.$store.state.currentUser, this.$store.getters.isGuest)
+                return (this.$store.getters.isGuest);
             },
             errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
                 return state.errors ? state.errors.length : 0;
             }),
+            // currentUser() {
+            //     return this.$store.state.currentUser
+            // }
         },
         methods: {
             handleConfirm: function() {

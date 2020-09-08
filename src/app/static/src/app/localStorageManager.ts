@@ -35,6 +35,8 @@ export class LocalStorageManager {
     };
 
     getState = (): Partial<RootState> | null => {
+        // console.log('storage manager currentUser', state.currentUser)
+        // console.log('storage manager ', this)
         if (currentUser != window.localStorage.getItem("user")) {
             localStorage.clear();
             localStorage.setItem("user", currentUser);
