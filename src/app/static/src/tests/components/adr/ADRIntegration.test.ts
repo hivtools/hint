@@ -36,8 +36,9 @@ describe("adr integration", () => {
     });
 
     it("does not render if not logged in", () => {
-        currentUser = "guest";
-        const rendered = shallowMount(ADRIntegration, {store: createStore()});
+        const store = createStore()
+        store.getters.isGuest = true
+        const rendered = shallowMount(ADRIntegration, {store});
         expect(rendered.findAll("div").length).toBe(0);
     });
 
@@ -47,8 +48,9 @@ describe("adr integration", () => {
     });
 
     it("does not fetch ADR key if not logged in", () => {
-        currentUser = "guest";
-        shallowMount(ADRIntegration, {store: createStore()});
+        const store = createStore()
+        store.getters.isGuest = true
+        shallowMount(ADRIntegration, {store});
         expect(fetchKeyStub.mock.calls.length).toBe(0);
     });
 
