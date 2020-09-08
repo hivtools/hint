@@ -40,8 +40,6 @@
     import {Project} from "../../types";
     import ProjectHistory from "./ProjectHistory.vue";
 
-    // declare const currentUser: string;
-
     const namespace = "projects";
 
     interface Data {

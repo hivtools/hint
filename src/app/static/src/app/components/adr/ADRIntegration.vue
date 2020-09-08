@@ -11,13 +11,10 @@
     import adrKey from "./ADRKey.vue";
     import SelectDataset from "./SelectDataset.vue";
 
-    // declare const currentUser: string;
-
     export default Vue.extend({
         components: {adrKey, SelectDataset},
         computed: {
             loggedIn(): boolean {
-                console.log('ADR integration current user', this.$store.state.currentUser, this.$store.getters.isGuest)
                 return !this.$store.getters.isGuest
             },
             key: mapStateProp<RootState, string | null>(null,

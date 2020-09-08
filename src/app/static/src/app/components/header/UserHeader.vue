@@ -46,7 +46,6 @@
     import {RootState} from "../../root";
     import {ProjectsMutations} from "../../store/projects/mutations";
     import {PayloadWithType} from "../../types";
-// import { mapGetters } from "vuex";
 
     interface Props {
         title: string,
@@ -78,8 +77,6 @@
                     return filename;
                 }),
             isGuest() {
-                console.log('userHeader isGuest', this.$store.getters.isGuest)
-                // return this.user == "guest"
                 return this.$store.getters.isGuest
             }
         },
