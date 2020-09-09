@@ -4,14 +4,16 @@ import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {emptyState} from "../../app/root";
-import {mockErrorsState, mockProjectsState} from "../mocks";
+import {emptyState, storeOptions, RootState} from "../../app/root";
+import {mockErrorsState, mockProjectsState, mockRootState} from "../mocks";
 import {mutations as versionsMutations} from "../../app/store/projects/mutations";
 import {mutations as errorMutations} from "../../app/store/errors/mutations";
+import { getters } from "../../app/store/root/getters";
 
-const createStore = (newVersion = jest.fn()) => {
+const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState> = {}) => {
     const store = new Vuex.Store({
-        state: emptyState(),
+        state: mockRootState(partialRootState),
+        getters: getters,
         modules: {
             stepper: {
                 namespaced: true,
@@ -45,13 +47,12 @@ declare let currentUser: string;
 describe("Reset confirmation modal", () => {
 
     it("renders as expected for guest user", () => {
-        currentUser = "guest";
         const rendered = mount(ResetConfirmation, {
             propsData: {
                 continueEditing: jest.fn(),
                 cancelEditing: jest.fn()
             },
-            store: createStore()
+            store: createStore(jest.fn(), {currentUser: 'guest'})
         });
 
         expect(rendered.find("h4").text()).toBe("Have you saved your work?");

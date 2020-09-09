@@ -2,12 +2,10 @@ import Vuex from "vuex";
 import {mount, Wrapper} from '@vue/test-utils';
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
-import {mockFile} from "../../mocks";
-import {emptyState} from "../../../app/root";
+import {mockFile, mockRootState} from "../../mocks";
+import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-
-declare let currentUser: string;
-currentUser = "guest";
+import { getters } from "../../../app/store/root/getters";
 
 describe("File upload component", () => {
 
@@ -16,9 +14,10 @@ describe("File upload component", () => {
         laterCompleteSteps: () => [{number: 4, textKey: "runModel"}]
     };
 
-    const createStore = () => {
+    const createStore = (partialRootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: mockRootState(partialRootState),
+            getters: getters,
             modules: {
                 stepper: {
                     namespaced: true,
@@ -36,9 +35,9 @@ describe("File upload component", () => {
         return store;
     };
 
-    const createSut = (props?: any) => {
+    const createSut = (props?: any, partialRootState: Partial<RootState> = {}) => {
         return mount(FileUpload, {
-            store: createStore(),
+            store: createStore(partialRootState),
             propsData: {
                 upload: jest.fn(),
                 name: "pjnz",
@@ -67,6 +66,8 @@ describe("File upload component", () => {
         const uploader = jest.fn();
         const wrapper = createSut({
             upload: uploader
+        }, {
+            currentUser: 'guest'
         });
 
         (wrapper.vm.$refs as any).pjnz = {
