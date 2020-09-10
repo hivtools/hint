@@ -21,15 +21,17 @@ const createFrenchStore = () => {
 
 describe("user header", () => {
 
-    // const store = (partialRootState: Partial<RootState> = {}) => { 
-    const store = new Vuex.Store({
-            state: emptyState(),
-            getters: getters
-        });
-    // }
-    registerTranslations(store);
+    const createStore = (partialRootState: Partial<RootState> = {}) => { 
+        const store = new Vuex.Store({
+                state: mockRootState(partialRootState),
+                getters: getters
+            });
+        registerTranslations(store);
+        return store
+    }
 
     const getWrapper = (user: string = "someone@email.com") => {
+        const store = createStore({currentUser: user})
         return shallowMount(UserHeader, {propsData: {user, title: "Naomi"}, store, stubs: ["router-link"]});
     };
 
@@ -47,31 +49,35 @@ describe("user header", () => {
         expect(loginInfo.text()).toBe("Logged in as someone@email.com");
     });
 
-    // it("contains login link if user is guest", () => {
-    //     const wrapper = getWrapper("guest");
-    //     const logoutLink = wrapper.findAll("a[href='/logout']");
-    //     const loginLink = wrapper.find("a[href='/login']");
-    //     expect(loginLink.text()).toBe("Log In");
-    //     expect(logoutLink.length).toBe(0);
-    // });
+    it("contains login link if user is guest", () => {
+        const wrapper = getWrapper("guest");
+        const logoutLink = wrapper.findAll("a[href='/logout']");
+        const loginLink = wrapper.find("a[href='/login']");
+        expect(loginLink.text()).toBe("Log In");
+        expect(logoutLink.length).toBe(0);
+    });
 
     it("renders file menu", () => {
+        const store = createStore()
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.findAll(FileMenu).length).toBe(1);
     });
 
     it("renders language menu", () => {
+        const store = createStore()
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.findAll(LanguageMenu).length).toBe(1);
     });
 
     it("contains bug report link", () => {
+        const store = createStore()
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         const bugLink = wrapper.find("a[href='https://forms.gle/QxCT1b4ScLqKPg6a7']");
         expect(bugLink.text()).toBe("Report a bug");
     });
 
     it("computes language", () => {
+        const store = createStore()
         const wrapper = shallowMount(UserHeader, {localVue, store, stubs: ["router-link"]});
         const vm = (wrapper as any).vm;
         expect(vm.helpFilename).toStrictEqual("Naomi-basic-instructions.pdf");
@@ -86,6 +92,7 @@ describe("user header", () => {
 
     it("contains help document links", () => {
         // Reset translations
+        const store = createStore()
         registerTranslations(store);
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Help");
@@ -102,12 +109,12 @@ describe("user header", () => {
 
         const link = wrapper.find("router-link-stub");
         expect(link.attributes("to")).toBe("/projects");
-        expect(link.text()).toBe("Projets");
+        expect(link.text()).toBe("Projects");
     });
 
-    // it("does not render Projects link if current user is guest", () => {
-    //     const wrapper = getWrapper("guest");
-    //     expect(wrapper.find("#projects-link").exists()).toBe(false);
-    // });
+    it("does not render Projects link if current user is guest", () => {
+        const wrapper = getWrapper("guest");
+        expect(wrapper.find("#projects-link").exists()).toBe(false);
+    });
 
 });
