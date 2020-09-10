@@ -82,7 +82,6 @@ describe("Model options component when edit confirmation is required", () => {
     });
 
     it("closes modal and commits UnValidate mutation if user confirms action", async () => {
-        const store2 = {...store}
         const rendered = mount(ModelOptions, {store});
         rendered.find(DynamicForm).trigger("mousedown");
         rendered.find(ResetConfirmation).find(".btn-white").trigger("click");

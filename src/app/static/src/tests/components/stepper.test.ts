@@ -45,8 +45,6 @@ import { getters as rootGetters } from "../../app/store/root/getters";
 
 const localVue = createLocalVue();
 
-declare var currentUser: string; // set in jest config, or on the index page when run for real
-
 describe("Stepper component", () => {
     const createSut = (baselineState?: Partial<BaselineState>,
                        surveyAndProgramState?: Partial<SurveyAndProgramState>,

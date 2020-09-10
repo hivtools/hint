@@ -91,8 +91,8 @@ describe("user header", () => {
     });
 
     it("contains help document links", () => {
-        // Reset translations
         const store = createStore()
+        // Reset translations
         registerTranslations(store);
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Help");

@@ -10,8 +10,6 @@ import ADRIntegration from "../../../app/components/adr/ADRIntegration.vue";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import {mutations, RootMutation} from "../../../app/store/root/mutations";
 
-declare let currentUser: string;
-
 describe("adr integration", () => {
 
     const fetchKeyStub = jest.fn();
@@ -31,7 +29,6 @@ describe("adr integration", () => {
     }
 
     beforeEach(() => {
-        currentUser = "some.user@example.com"
         jest.resetAllMocks();
     });
 
