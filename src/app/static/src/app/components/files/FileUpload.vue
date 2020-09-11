@@ -68,8 +68,6 @@
         },
         methods: {
             handleFileSelect() {
-                console.log('edits confirmation', this.editsRequireConfirmation)
-                console.log('input value', this.name)
                 if (this.editsRequireConfirmation) {
                     this.showUploadConfirmation = true;
                 } else {
