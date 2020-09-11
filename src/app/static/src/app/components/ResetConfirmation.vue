@@ -36,7 +36,6 @@
         </modal>
     </div>
 </template>
-// working here
 
 <script lang="ts">
     import Vue from "vue";

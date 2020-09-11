@@ -28,6 +28,7 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
     },
     laterCompleteSteps: (state: StepperState, getters: any) => {
         const activeStep = state.activeStep;
+        // console.log('stepper steps', state.steps.filter((s: StepDescription) => s.number > activeStep && getters.complete[s.number]))
         return state.steps.filter((s: StepDescription) => s.number > activeStep && getters.complete[s.number]);
     },
     editsRequireConfirmation: (state: StepperState, getters: any) => {

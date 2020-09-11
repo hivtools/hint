@@ -43,7 +43,7 @@
     interface Props {
         upload: (formData: FormData) => void,
         accept: string,
-        name: string
+        name: string,
         uploading: boolean
     }
 
@@ -68,6 +68,8 @@
         },
         methods: {
             handleFileSelect() {
+                console.log('edits confirmation', this.editsRequireConfirmation)
+                console.log('input value', this.name)
                 if (this.editsRequireConfirmation) {
                     this.showUploadConfirmation = true;
                 } else {
@@ -85,6 +87,8 @@
                 this.showUploadConfirmation = false;
             },
             cancelEdit() {
+                const fileInput = this.$refs[this.name] as HTMLInputElement;
+                fileInput.value = "";
                 this.showUploadConfirmation = false
             }
         }
