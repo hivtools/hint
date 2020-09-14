@@ -113,7 +113,42 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .then(() => {
                 dispatch("getProjects");
             });
-    }
+    },
+
+    async copyVersion(context, version) {
+        const {commit, dispatch, state} = context;
+
+        //Ensure we have saved the current version
+        if (state.currentVersion) {
+            immediateUploadVersionState(context);
+        }
+
+        commit({type: ProjectsMutations.SetLoading, payload: true});
+        await api<ProjectsMutations, ProjectsMutations>(context)
+            .ignoreSuccess()
+            .withError(ProjectsMutations.ProjectError)
+            .get<VersionDetails>(`project/${version.projectId}/version/${version.versionId}`)
+            .then((response: any) => {
+                if (state.error === null) {
+                    dispatch("load/loadFromVersion", response.data, {root: true})
+                }
+            });
+    },
+
+    // async createProject(context, name) {
+    //     const {commit, state} = context;
+
+    //     //Ensure we have saved the current version
+    //     if (state.currentVersion) {
+    //         immediateUploadVersionState(context);
+    //     }
+
+    //     commit({type: ProjectsMutations.SetLoading, payload: true});
+    //     await api<RootMutation, ProjectsMutations>(context)
+    //         .withSuccess(RootMutation.SetProject, true)
+    //         .withError(ProjectsMutations.ProjectError)
+    //         .postAndReturn<String>("/project/", qs.stringify({name}));
+    // },
 };
 
 async function immediateUploadVersionState(context: ActionContext<ProjectsState, RootState>) {

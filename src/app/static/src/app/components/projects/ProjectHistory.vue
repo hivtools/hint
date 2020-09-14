@@ -3,7 +3,7 @@
         <h5 v-translate="'projectHistory'"></h5>
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
-            <div class="col-md-3 header-cell" v-translate="'projectName'"></div>
+            <div class="col-md-2 header-cell" v-translate="'projectName'"></div>
             <div class="col-md-3 header-cell" v-translate="'lastUpdated'"></div>
         </div>
         <hr/>
@@ -15,7 +15,7 @@
                         <chevron-down-icon size="20" class="icon when-open"></chevron-down-icon>
                     </button>
                 </div>
-                <div class="col-md-3 project-cell">
+                <div class="col-md-2 project-cell">
                     {{p.name}}
                 </div>
                 <div class="col-md-3 project-cell">{{format(p.versions[0].updated)}}</div>
@@ -25,16 +25,22 @@
                 <div class="col-md-2 project-cell">
                     <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
                 </div>
+                <div class="col-md-2 project-cell">
+                    <a href="" >Copy to new project</a>
+                </div>
             </div>
             <b-collapse :id="`versions-${p.id}`">
                 <div v-for="v in p.versions" :id="`v-${v.id}`" class="row font-italic bg-light py-2">
-                    <div class="col-md-4 version-cell"></div>
+                    <div class="col-md-3 version-cell"></div>
                     <div class="col-md-3 version-cell">{{format(v.updated)}}</div>
                     <div class="col-md-2 version-cell">
                         <a @click="loadVersion($event, p.id, v.id)" href="" v-translate="'load'"></a>
                     </div>
                     <div class="col-md-2 version-cell">
                         <a @click="deleteVersion($event, p.id, v.id)" href="" v-translate="'delete'"></a>
+                    </div>
+                    <div class="col-md-2 version-cell">
+                        <a href="" >Copy to new project</a>
                     </div>
                 </div>
             </b-collapse>
