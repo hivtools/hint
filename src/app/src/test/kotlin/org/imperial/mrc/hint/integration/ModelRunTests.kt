@@ -49,12 +49,11 @@ class ModelRunTests : SecureIntegrationTests() {
 
     @Test
     fun `can cancel run model`() {
-        var modelRunId = "test"
 
         val entity = getModelRunEntity()
         val runResponseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
         val bodyJSON = ObjectMapper().readTree(runResponseEntity.body)
-        modelRunId = bodyJSON["data"]["id"].asText()
+        val modelRunId = bodyJSON["data"]["id"].asText()
 
 
         val responseEntity = testRestTemplate.postForEntity<String>("/model/cancel/$modelRunId")
