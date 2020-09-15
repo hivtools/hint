@@ -26,7 +26,7 @@
                     <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
                 </div>
                 <div class="col-md-2 project-cell">
-                    <a href="" >Copy to new project</a>
+                    <a @click="copyProject($event, p.id)" href="" v-translate="'copyToNewProject'"></a>
                 </div>
             </div>
             <b-collapse :id="`versions-${p.id}`">
@@ -40,7 +40,7 @@
                         <a @click="deleteVersion($event, p.id, v.id)" href="" v-translate="'delete'"></a>
                     </div>
                     <div class="col-md-2 version-cell">
-                        <a href="" >Copy to new project</a>
+                        <a @click="copyVersion($event, p.id, v.id)" href="" v-translate="'copyToNewProject'"></a>
                     </div>
                 </div>
             </b-collapse>
@@ -61,6 +61,30 @@
                 </button>
             </template>
         </modal>
+        <modal :open="projectToCopy || versionToCopy">
+            <h4 v-if="projectToCopy">Copying project to new project</h4>
+            <h4 v-if="versionToCopy">Copying project-version to new project</h4>
+            <h5>Please enter a name for the new project</h5>
+            <template v-slot:footer>
+                <div class="container">
+                    <div class="row">
+                        <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="copiedProjectName">
+                    </div>
+                    <div class="row">
+                        <button type="button"
+                            class="btn btn-white mt-2 mr-1 col align-self-start"
+                            v-translate="'createProject'">
+                        </button>
+                        <button type="button"
+                            class="btn btn-red mt-2 ml-1 col align-self-end"
+                            @click="cancelCopy"
+                            v-translate="'cancel'">
+                        </button>
+                    </div>
+                </div>
+                
+            </template>
+        </modal>
     </div>
 </template>
 
@@ -75,7 +99,10 @@
 
     interface Data {
         projectToDelete: number | null,
-        versionToDelete: VersionIds | null
+        versionToDelete: VersionIds | null,
+        copiedProjectName: string,
+        projectToCopy: number | null,
+        versionToCopy: VersionIds | null
     }
 
     interface Props {
@@ -88,6 +115,9 @@
         loadAction: (version: VersionIds) => void
         deleteProject: (event: Event, projectId: number) => void,
         deleteVersion: (event: Event, projectId: number, versionId: string) => void
+        copyProject: (event: Event, projectId: number) => void,
+        copyVersion: (event: Event, projectId: number, versionId: string) => void
+        cancelCopy: () => void
         cancelDelete: () => void
         confirmDelete: () => void,
         deleteProjectAction: (projectId: number) => void,
@@ -103,7 +133,10 @@
        data() {
            return {
                projectToDelete: null,
-               versionToDelete: null
+               versionToDelete: null,
+               copiedProjectName: '',
+               projectToCopy: null,
+               versionToCopy: null
            }
        },
        methods: {
@@ -121,6 +154,18 @@
            deleteVersion(event: Event, projectId: number, versionId: string) {
                event.preventDefault();
                this.versionToDelete = {projectId, versionId};
+           },
+           copyProject(event: Event, projectId: number) {
+               event.preventDefault();
+               this.projectToCopy = projectId;
+           },
+           copyVersion(event: Event, projectId: number, versionId: string) {
+               event.preventDefault();
+               this.versionToCopy = {projectId, versionId};
+           },
+           cancelCopy() {
+               this.versionToCopy = null;
+               this.projectToCopy = null;
            },
            cancelDelete() {
                this.versionToDelete = null;
