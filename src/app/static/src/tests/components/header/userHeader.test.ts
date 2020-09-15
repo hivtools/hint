@@ -13,7 +13,11 @@ const localVue = createLocalVue();
 
 const createFrenchStore = () => {
     const frStore = new Vuex.Store({
-        state: {language: Language.fr}
+        state: {
+            ...emptyState(),
+            language: Language.fr
+        },
+        getters: getters
     });
     registerTranslations(frStore);
     return frStore;
@@ -92,8 +96,6 @@ describe("user header", () => {
 
     it("contains help document links", () => {
         const store = createStore()
-        // Reset translations
-        registerTranslations(store);
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Help");
         expect(wrapper.find("a[href='https://mrc-ide.github.io/naomi-troubleshooting/index-en.html']").text()).toBe("Troubleshooting");

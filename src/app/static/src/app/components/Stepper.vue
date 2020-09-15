@@ -53,7 +53,7 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {mapActions} from "vuex";
+    import {mapActions, mapGetters} from "vuex";
     import AdrIntegration from "./adr/ADRIntegration.vue";
     import Step from "./Step.vue";
     import Baseline from "./baseline/Baseline.vue";
@@ -102,7 +102,8 @@
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
             loading: function () {
                 return this.loadingFromFile || !this.ready;
-            }
+            },
+            ...mapGetters(["isGuest"]),
         },
         methods: {
             ...mapActions(namespace, ["jump", "next"]),
@@ -124,7 +125,7 @@
         },
         created() {
             //redirect to Projects if logged in with no currentProject
-            if ((!this.$store.getters.isGuest) && (this.currentProject== null) && (!this.projectLoading)) {
+            if ((!this.isGuest) && (this.currentProject== null) && (!this.projectLoading)) {
                 this.$router.push('/projects');
             }
         },
