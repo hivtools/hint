@@ -9,20 +9,22 @@ import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import ADRIntegration from "../../../app/components/adr/ADRIntegration.vue";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import {mutations, RootMutation} from "../../../app/store/root/mutations";
+import { getters } from "../../../app/store/root/getters";
 
 describe("adr integration", () => {
 
     const fetchKeyStub = jest.fn();
     const getDataStub = jest.fn();
 
-    const createStore = (key: string = "", error: Error | null = null) => {
+    const createStore = (key: string = "", error: Error | null = null, partialRootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
-            state: mockRootState({adrKey: key, adrKeyError: error}),
+            state: mockRootState({...partialRootState, adrKey: key, adrKeyError: error}),
             actions: {
                 getADRDatasets: getDataStub,
                 fetchADRKey: fetchKeyStub
             } as Partial<RootActions> & ActionTree<RootState, RootState>,
-            mutations
+            mutations,
+            getters: getters
         });
         registerTranslations(store);
         return store;
@@ -33,8 +35,8 @@ describe("adr integration", () => {
     });
 
     it("does not render if not logged in", () => {
-        const store = createStore()
-        store.getters.isGuest = true
+        const store = createStore('', null, {currentUser: 'guest'})
+        // store.getters.isGuest = true
         const rendered = shallowMount(ADRIntegration, {store});
         expect(rendered.findAll("div").length).toBe(0);
     });
@@ -45,8 +47,8 @@ describe("adr integration", () => {
     });
 
     it("does not fetch ADR key if not logged in", () => {
-        const store = createStore()
-        store.getters.isGuest = true
+        const store = createStore('', null, {currentUser: 'guest'})
+        // store.getters.isGuest = true
         shallowMount(ADRIntegration, {store});
         expect(fetchKeyStub.mock.calls.length).toBe(0);
     });
