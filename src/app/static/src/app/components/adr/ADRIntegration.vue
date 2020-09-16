@@ -22,7 +22,6 @@
         key: string | null
     }
 
-
      export default Vue.extend<{}, Methods, Computed, {}>({
         components: {adrKey, SelectDataset},
         computed: {
