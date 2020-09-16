@@ -15,6 +15,7 @@ import {initialModelOutputState, modelOutput, ModelOutputState} from "./store/mo
 import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations, RootMutation} from "./store/root/mutations";
+import {getters} from "./store/root/getters";
 import {initialModelOptionsState, modelOptions, ModelOptionsState} from "./store/modelOptions/modelOptions";
 import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mutations";
 import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
@@ -50,6 +51,7 @@ export interface RootState extends TranslatableState {
     load: LoadState,
     errors: ErrorsState,
     projects: ProjectsState
+    currentUser: string
 }
 
 export interface ReadyState {
@@ -98,6 +100,8 @@ const resetState = (store: Store<RootState>) => {
     })
 };
 
+declare const currentUser: string;
+
 export const emptyState = (): RootState => {
     return {
         adrKey: null,
@@ -116,7 +120,8 @@ export const emptyState = (): RootState => {
         load: initialLoadState(),
         plottingSelections: initialPlottingSelectionsState(),
         errors: initialErrorsState(),
-        projects: initialProjectsState()
+        projects: initialProjectsState(),
+        currentUser: currentUser
     }
 };
 
@@ -137,5 +142,6 @@ export const storeOptions: StoreOptions<RootState> = {
     },
     actions: actions,
     mutations: mutations,
+    getters: getters,
     plugins: [persistState, resetState]
 };

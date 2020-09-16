@@ -21,9 +21,9 @@ export const mapStateProps = <S, K extends string>(namespace: string,
     return mapState<S>(namespace, map) as R
 };
 
-export const mapGetterByName = <T>(namespace: string, name: string): ComputedWithType<T> => {
-    return mapGetters(namespace, [name])[name]
-};
+export const mapGetterByName = <T>(namespace: string | null, name: string): ComputedWithType<T> => {
+    return (namespace && mapGetters(namespace, [name])[name]) || mapGetters([name])[name]
+}
 
 export const mapGettersByNames = <K extends string>(namespace: string, names: string[]) => {
     type R = { [key in K]: any }
