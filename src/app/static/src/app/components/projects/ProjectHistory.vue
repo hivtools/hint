@@ -62,9 +62,9 @@
             </template>
         </modal>
         <modal :open="projectToCopy || versionToCopy">
-            <h4 v-if="projectToCopy">Copying project to new project</h4>
-            <h4 v-if="versionToCopy">Copying project-version to new project</h4>
-            <h5>Please enter a name for the new project</h5>
+            <h4 v-if="projectToCopy" v-translate="'copyProjectHeader'"></h4>
+            <h4 v-if="versionToCopy" v-translate="'copyVersionHeader'"></h4>
+            <h5 v-translate="'enterProjectName'"></h5>
             <template v-slot:footer>
                 <div class="container">
                     <div class="row">
@@ -72,11 +72,11 @@
                     </div>
                     <div class="row">
                         <button type="button"
-                            class="btn btn-white mt-2 mr-1 col align-self-start"
+                            class="btn btn-white mt-2 mr-1 col"
                             v-translate="'createProject'">
                         </button>
                         <button type="button"
-                            class="btn btn-red mt-2 ml-1 col align-self-end"
+                            class="btn btn-red mt-2 ml-1 col"
                             @click="cancelCopy"
                             v-translate="'cancel'">
                         </button>

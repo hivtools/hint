@@ -51,6 +51,8 @@ describe("Project history component", () => {
         expect(v.at(3).find("a").attributes("href")).toBe("");
         expect(v.at(4).text()).toBe("Delete");
         expect(v.at(4).find("a").attributes("href")).toBe("");
+        expect(v.at(5).text()).toBe("Copy to a new project");
+        expect(v.at(5).find("a").attributes("href")).toBe("");
 
         const versions = wrapper.find(`#versions-${id}`);
         expect(versions.classes()).toContain("collapse");
@@ -66,6 +68,8 @@ describe("Project history component", () => {
         expect(loadLink.text()).toBe("Load");
         const deleteLink = cells.at(3).find("a");
         expect(deleteLink.text()).toBe("Delete");
+        const copyLink = cells.at(4).find("a");
+        expect(copyLink.text()).toBe("Copy to a new project");
     };
 
     it("renders as expected ", () => {
@@ -262,4 +266,46 @@ describe("Project history component", () => {
         expect(mockLoad.mock.calls.length).toBe(1);
         expect(mockLoad.mock.calls[0][1]).toStrictEqual({projectId: 1, versionId: "s11"});
     };
+
+    it("shows modal when copy project link is clicked and removes it when cancel is clicked", async () => {
+        const wrapper = getWrapper();
+        const copyLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("a");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(1);
+        expect(modal.classes()).toContain("show");
+        expect(modal.find(".modal-body").text()).toBe("Copying project to a new project  Please enter a name for the new project");
+        const input = modal.find("input")
+        expect(input.attributes("placeholder")).toBe("Project name")
+        const buttons = modal.find(".modal-footer").findAll("button");
+        expect(buttons.at(0).text()).toBe("Create project");
+        expect(buttons.at(1).text()).toBe("Cancel");
+
+        const cancelButton = buttons.at(1);
+        cancelButton.trigger("click");
+        await Vue.nextTick();
+        expect(modal.classes()).not.toContain("show");
+    });
+
+    it("shows modal when copy version link is clicked and removes it when cancel is clicked", async () => {
+        const wrapper = getWrapper();
+        const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("a");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(1);
+        expect(modal.classes()).toContain("show");
+        expect(modal.find(".modal-body").text()).toBe("Copying project-version to a new project Please enter a name for the new project");
+        const input = modal.find("input")
+        expect(input.attributes("placeholder")).toBe("Project name")
+        const buttons = modal.find(".modal-footer").findAll("button");
+        expect(buttons.at(0).text()).toBe("Create project");
+        expect(buttons.at(1).text()).toBe("Cancel");
+
+        const cancelButton = buttons.at(1);
+        cancelButton.trigger("click");
+        await Vue.nextTick();
+        expect(modal.classes()).not.toContain("show");
+    });
 });
