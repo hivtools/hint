@@ -159,7 +159,7 @@ const en: Translations = {
     continue: "continue",
     copyProjectHeader: "Copying project to a new project",
     copyToNewProject: "Copy to a new project",
-    copyVersionHeader: "Copying project-version to a new project",
+    copyVersionHeader: "Copying version to a new project",
     couldNotParse: "Could not parse API response. Please contact support.",
     country: "Country",
     createProject: "Create project",

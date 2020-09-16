@@ -296,7 +296,7 @@ describe("Project history component", () => {
 
         const modal = wrapper.findAll(".modal").at(1);
         expect(modal.classes()).toContain("show");
-        expect(modal.find(".modal-body").text()).toBe("Copying project-version to a new project Please enter a name for the new project");
+        expect(modal.find(".modal-body").text()).toBe("Copying version to a new project Please enter a name for the new project");
         const input = modal.find("input")
         expect(input.attributes("placeholder")).toBe("Project name")
         const buttons = modal.find(".modal-footer").findAll("button");
