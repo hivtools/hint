@@ -17,6 +17,7 @@ export interface ProjectsActions {
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
     deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
     deleteVersion: (store: ActionContext<ProjectsState, RootState>, versionIds: VersionIds) => void
+    copyVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds, name: string) => void,
 }
 
 export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
@@ -113,7 +114,39 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .then(() => {
                 dispatch("getProjects");
             });
-    }
+    },
+
+    // async copyVersion(context, name, versionId) {
+    //     const {commit, state} = context;
+
+    //     //Ensure we have saved the current version
+    //     if (state.currentVersion) {
+    //         immediateUploadVersionState(context);
+    //     }
+
+    //     commit({type: ProjectsMutations.SetLoading, payload: true});
+    //     await api<RootMutation, ProjectsMutations>(context)
+    //         .withSuccess(RootMutation.SetProject, true)
+    //         .withError(ProjectsMutations.ProjectError)
+    //         .postAndReturn<String>("/project/", qs.stringify({name}));
+    //         .then(() => {
+    //             .postAndReturn(`project/${name}/version/?parent=${versionId}`);
+    //         });
+            
+    // }
+
+
+    async copyVersion(context, version, name) {
+        const {state} = context;
+        await immediateUploadVersionState(context);
+
+        // const projectId = state.currentProject && state.currentProject.id;
+        // const versionId = state.currentVersion && state.currentVersion.id;
+        api<ProjectsMutations, ErrorsMutation>(context)
+            .withSuccess(ProjectsMutations.VersionCreated)
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
+            .postAndReturn(`project/${name}/version/?parent=${version.versionId}`)
+    },
 };
 
 async function immediateUploadVersionState(context: ActionContext<ProjectsState, RootState>) {

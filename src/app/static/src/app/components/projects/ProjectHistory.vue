@@ -68,11 +68,13 @@
             <template v-slot:footer>
                 <div class="container">
                     <div class="row">
-                        <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="copiedProjectName">
+                        <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
                     </div>
                     <div class="row">
                         <button type="button"
                             class="btn btn-red mt-2 mr-1 col"
+                            :disabled="disableCreate"
+                            @click="confirmCopy(newProjectName)"
                             v-translate="'createProject'">
                         </button>
                         <button type="button"
@@ -95,18 +97,29 @@
     import { VBToggle } from 'bootstrap-vue';
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
     import Modal from "../Modal.vue"
-    import {formatDateTime, mapActionByName} from "../../utils";
+    import {formatDateTime, mapActionByName, mapStateProps} from "../../utils";
+    import {ProjectsState} from "../../store/projects/projects";
 
     interface Data {
         projectToDelete: number | null,
         versionToDelete: VersionIds | null,
-        copiedProjectName: string,
+        // copiedProjectName: string,
         projectToCopy: number | null,
-        versionToCopy: VersionIds | null
+        versionToCopy: VersionIds | null,
+        newProjectName: string
     }
 
     interface Props {
         projects: Project[];
+    }
+
+    interface Computed {
+        currentProject: Project | null,
+        previousProjects: Project[],
+        error: Error,
+        hasError: boolean,
+        disableCreate: boolean,
+        loading: boolean
     }
 
     interface Methods {
@@ -120,8 +133,11 @@
         cancelCopy: () => void
         cancelDelete: () => void
         confirmDelete: () => void,
+        confirmCopy: (name: string) => void,
         deleteProjectAction: (projectId: number) => void,
         deleteVersionAction: (versionIds: VersionIds) => void
+        copyVersionAction: (versionIds: VersionIds) => void
+        createProject: (name: string) => void
     }
 
     export default Vue.extend<Data, Methods, {}, Props>({
@@ -134,11 +150,24 @@
            return {
                projectToDelete: null,
                versionToDelete: null,
-               copiedProjectName: '',
+            //    copiedProjectName: '',
                projectToCopy: null,
-               versionToCopy: null
+               versionToCopy: null,
+               newProjectName: ""
            }
        },
+        computed: {
+            ...mapStateProps<ProjectsState, keyof Computed>('projects', {
+                currentProject: state => state.currentProject,
+                previousProjects: state => state.previousProjects,
+                error: state => state.error,
+                hasError: state => !!state.error,
+                loading: state => state.loading
+            }),
+            disableCreate: function() {
+                return !this.newProjectName;
+            }
+        },
        methods: {
            format(date: string) {
                return formatDateTime(date);
@@ -166,6 +195,7 @@
            cancelCopy() {
                this.versionToCopy = null;
                this.projectToCopy = null;
+               this.newProjectName = "";
            },
            cancelDelete() {
                this.versionToDelete = null;
@@ -180,9 +210,18 @@
                     this.versionToDelete = null;
                 }
            },
+           confirmCopy(name) {
+                if (this.versionToCopy) {
+                    this.createProject(name)
+                    this.copyVersionAction(this.versionToCopy, name);
+                    this.versionToCopy = null;
+                }
+           },
            loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
            deleteProjectAction: mapActionByName<number>("projects", "deleteProject"),
-           deleteVersionAction: mapActionByName<VersionIds>("projects", "deleteVersion")
+           deleteVersionAction: mapActionByName<VersionIds>("projects", "deleteVersion"),
+           copyVersionAction: mapActionByName<VersionIds>("projects", "copyVersion"),
+           createProject: mapActionByName("projects", "createProject")
        },
        components: {
            BCollapse,
