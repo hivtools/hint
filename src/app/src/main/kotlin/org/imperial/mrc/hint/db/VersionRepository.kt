@@ -172,7 +172,6 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
 
     override fun copyVersion(parentVersionId: String, newVersionId: String, projectId: Int, userId: String)
     {
-        checkVersionExists(parentVersionId, projectId, userId)
 
         dsl.insertInto(PROJECT_VERSION)
                 .set(PROJECT_VERSION.ID, newVersionId)

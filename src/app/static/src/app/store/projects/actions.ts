@@ -9,6 +9,11 @@ import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
 import {Project, VersionDetails, VersionIds} from "../../types";
 
+export interface versionBundle {
+    version: VersionIds,
+    newProjectId: number
+}
+
 export interface ProjectsActions {
     createProject: (store: ActionContext<ProjectsState, RootState>, name: string) => void,
     getProjects: (store: ActionContext<ProjectsState, RootState>) => void
@@ -17,7 +22,7 @@ export interface ProjectsActions {
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
     deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
     deleteVersion: (store: ActionContext<ProjectsState, RootState>, versionIds: VersionIds) => void
-    copyVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds, name: string) => void,
+    copyVersion: (store: ActionContext<ProjectsState, RootState>, versionBundle: versionBundle) => void,
 }
 
 export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
@@ -34,6 +39,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .withSuccess(RootMutation.SetProject, true)
             .withError(ProjectsMutations.ProjectError)
             .postAndReturn<String>("/project/", qs.stringify({name}));
+            console.log('qs stringify name', qs.stringify({name}))
     },
 
     async getProjects(context) {
@@ -67,11 +73,12 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .withSuccess(ProjectsMutations.VersionCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`project/${projectId}/version/?parent=${versionId}`)
+            console.log(`project/${projectId}/version/?parent=${versionId}`)
     },
 
     async loadVersion(context, version) {
         const {commit, dispatch, state} = context;
-
+        console.log('version', version.versionId)
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<ProjectsMutations, ProjectsMutations>(context)
             .ignoreSuccess()
@@ -82,6 +89,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
                     dispatch("load/loadFromVersion", response.data, {root: true})
                 }
             });
+            
     },
 
     async deleteProject(context, projectId) {
@@ -136,7 +144,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     // }
 
 
-    async copyVersion(context, version, name) {
+    async copyVersion(context, versionBundle: versionBundle) {
         const {state} = context;
         await immediateUploadVersionState(context);
 
@@ -145,7 +153,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.VersionCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`project/${name}/version/?parent=${version.versionId}`)
+            .postAndReturn(`project/${versionBundle.newProjectId}/version/?parent=${versionBundle.version.versionId}`)
     },
 };
 

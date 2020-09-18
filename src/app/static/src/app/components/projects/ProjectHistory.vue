@@ -99,6 +99,9 @@
     import Modal from "../Modal.vue"
     import {formatDateTime, mapActionByName, mapStateProps} from "../../utils";
     import {ProjectsState} from "../../store/projects/projects";
+import { versionBundle } from "../../store/projects/actions";
+
+    const namespace = "projects";
 
     interface Data {
         projectToDelete: number | null,
@@ -136,11 +139,12 @@
         confirmCopy: (name: string) => void,
         deleteProjectAction: (projectId: number) => void,
         deleteVersionAction: (versionIds: VersionIds) => void
-        copyVersionAction: (versionIds: VersionIds) => void
-        createProject: (name: string) => void
+        copyVersionAction: (versionBundle: versionBundle) => void
+        createProject: (name: string) => void,
+        getProjects: () => void,
     }
 
-    export default Vue.extend<Data, Methods, {}, Props>({
+    export default Vue.extend<Data, Methods, Computed, Props>({
        props: {
             projects: {
                 type: Array
@@ -157,7 +161,7 @@
            }
        },
         computed: {
-            ...mapStateProps<ProjectsState, keyof Computed>('projects', {
+            ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
                 currentProject: state => state.currentProject,
                 previousProjects: state => state.previousProjects,
                 error: state => state.error,
@@ -210,18 +214,28 @@
                     this.versionToDelete = null;
                 }
            },
-           confirmCopy(name) {
+           async confirmCopy(name) {
+               
                 if (this.versionToCopy) {
-                    this.createProject(name)
-                    this.copyVersionAction(this.versionToCopy, name);
+                    await this.createProject(name)
+                    const versionBundle: versionBundle = {
+                        version: this.versionToCopy!,
+                        newProjectId: this.currentProject!.id
+                    }
+                    console.log('versionBundle', versionBundle)
+                    console.log('currentProject', this.currentProject)
+                    this.copyVersionAction(versionBundle);
                     this.versionToCopy = null;
+                    this.newProjectName = "";
+                    this.getProjects()
                 }
            },
-           loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
-           deleteProjectAction: mapActionByName<number>("projects", "deleteProject"),
-           deleteVersionAction: mapActionByName<VersionIds>("projects", "deleteVersion"),
-           copyVersionAction: mapActionByName<VersionIds>("projects", "copyVersion"),
-           createProject: mapActionByName("projects", "createProject")
+           loadAction: mapActionByName<VersionIds>(namespace, "loadVersion"),
+           deleteProjectAction: mapActionByName<number>(namespace, "deleteProject"),
+           deleteVersionAction: mapActionByName<VersionIds>(namespace, "deleteVersion"),
+           copyVersionAction: mapActionByName<versionBundle>(namespace, "copyVersion"),
+           createProject: mapActionByName(namespace, "createProject"),
+           getProjects: mapActionByName(namespace, "getProjects")
        },
        components: {
            BCollapse,
