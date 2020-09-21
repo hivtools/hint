@@ -17,7 +17,7 @@
                 </div>
                 <div class="col-md-3 project-cell d-flex justify-content-between">
                     {{p.name}}
-                    <a href="#">Edit name</a>
+                    <a @click="renameProject($event, p.id)" href="" v-translate="'renameProject'"></a>
                 </div>
                 <div class="col-md-3 project-cell">{{format(p.versions[0].updated)}}</div>
                 <div class="col-md-2 project-cell">
@@ -56,6 +56,27 @@
                 </button>
             </template>
         </modal>
+        <modal :open="projectToRename">
+            <h4 v-translate="'renameProjectHeader'"></h4>
+            <template v-slot:footer>
+                <div class="container">
+                    <div class="row">
+                        <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="renamedProjectName">
+                    </div>
+                    <div class="row">
+                        <button type="button"
+                            class="btn btn-white mt-2 mr-1 col"
+                            v-translate="'renameProject'">
+                        </button>
+                        <button type="button"
+                            class="btn btn-red mt-2 ml-1 col"
+                            @click="cancelRename"
+                            v-translate="'cancel'">
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </modal>
     </div>
 </template>
 
@@ -70,7 +91,9 @@
 
     interface Data {
         projectToDelete: number | null,
-        versionToDelete: VersionIds | null
+        versionToDelete: VersionIds | null,
+        renamedProjectName: string,
+        projectToRename: number | null
     }
 
     interface Props {
@@ -82,8 +105,10 @@
         loadVersion: (event: Event, projectId: number, versionId: string) => void,
         loadAction: (version: VersionIds) => void
         deleteProject: (event: Event, projectId: number) => void,
-        deleteVersion: (event: Event, projectId: number, versionId: string) => void
-        cancelDelete: () => void
+        deleteVersion: (event: Event, projectId: number, versionId: string) => void,
+        renameProject: (event: Event, projectId: number) => void,
+        cancelDelete: () => void,
+        cancelRename: () => void,
         confirmDelete: () => void,
         deleteProjectAction: (projectId: number) => void,
         deleteVersionAction: (versionIds: VersionIds) => void
@@ -98,7 +123,9 @@
        data() {
            return {
                projectToDelete: null,
-               versionToDelete: null
+               versionToDelete: null,
+               projectToRename: null,
+               renamedProjectName: ''
            }
        },
        methods: {
@@ -120,6 +147,13 @@
            cancelDelete() {
                this.versionToDelete = null;
                this.projectToDelete = null;
+           },
+           renameProject(event: Event, projectId: number) {
+               event.preventDefault();
+               this.projectToRename = projectId;
+           },
+           cancelRename() {
+               this.projectToRename = null;
            },
            confirmDelete() {
                 if (this.projectToDelete) {

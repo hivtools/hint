@@ -45,7 +45,9 @@ describe("Project history component", () => {
         expect(svg.at(0).classes()).toContain("feather-chevron-right");
         expect(svg.at(1).classes()).toContain("when-open");
         expect(svg.at(1).classes()).toContain("feather-chevron-down");
-        expect(v.at(1).text()).toBe(name);
+        expect(v.at(1).text()).toBe(`${name}
+                Rename project`);
+        expect(v.at(1).find("a").attributes("href")).toBe("");
         expect(v.at(2).text()).toBe(formatDateTime(updatedIsoDate));
         expect(v.at(3).text()).toBe("Load last updated");
         expect(v.at(3).find("a").attributes("href")).toBe("");
@@ -262,4 +264,25 @@ describe("Project history component", () => {
         expect(mockLoad.mock.calls.length).toBe(1);
         expect(mockLoad.mock.calls[0][1]).toStrictEqual({projectId: 1, versionId: "s11"});
     };
+
+    it("shows modal when rename project link is clicked and removes it when cancel is clicked", async () => {
+        const wrapper = getWrapper();
+        const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(1).find("a");
+        renameLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(1);
+        expect(modal.classes()).toContain("show");
+        expect(modal.find(".modal-body").text()).toBe("Please enter a new name for the project");
+        const input = modal.find("input")
+        expect(input.attributes("placeholder")).toBe("Project name")
+        const buttons = modal.find(".modal-footer").findAll("button");
+        expect(buttons.at(0).text()).toBe("Rename project");
+        expect(buttons.at(1).text()).toBe("Cancel");
+
+        const cancelButton = buttons.at(1);
+        cancelButton.trigger("click");
+        await Vue.nextTick();
+        expect(modal.classes()).not.toContain("show");
+    });
 });
