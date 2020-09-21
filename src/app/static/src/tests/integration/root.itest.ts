@@ -51,6 +51,6 @@ describe("Root actions", () => {
 
         expect(commit.mock.calls[0][0]["type"]).toBe(RootMutation.SetADRSchemas);
         const payload = commit.mock.calls[0][0]["payload"] as ADRSchemas;
-        expect(payload.baseUrl).toBe("https://adr.unaids.org/me/")
+        expect(payload.baseUrl).toBe("https://dev.adr.fjelltopp.org/")
     });
 });
