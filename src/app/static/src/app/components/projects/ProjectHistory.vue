@@ -45,12 +45,12 @@
             <h4 v-if="versionToDelete" v-translate="'deleteVersion'"></h4>
             <template v-slot:footer>
                 <button type="button"
-                        class="btn btn-white"
+                        class="btn btn-red"
                         @click="confirmDelete"
                         v-translate="'ok'">
                 </button>
                 <button type="button"
-                         class="btn btn-red"
+                         class="btn btn-white"
                         @click="cancelDelete"
                         v-translate="'cancel'">
                 </button>
@@ -65,11 +65,11 @@
                     </div>
                     <div class="row">
                         <button type="button"
-                            class="btn btn-white mt-2 mr-1 col"
+                            class="btn btn-red mt-2 mr-1 col"
                             v-translate="'renameProject'">
                         </button>
                         <button type="button"
-                            class="btn btn-red mt-2 ml-1 col"
+                            class="btn btn-white mt-2 ml-1 col"
                             @click="cancelRename"
                             v-translate="'cancel'">
                         </button>
