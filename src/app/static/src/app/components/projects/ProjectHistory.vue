@@ -15,8 +15,9 @@
                         <chevron-down-icon size="20" class="icon when-open"></chevron-down-icon>
                     </button>
                 </div>
-                <div class="col-md-3 project-cell">
+                <div class="col-md-3 project-cell d-flex justify-content-between">
                     {{p.name}}
+                    <a href="#">Edit name</a>
                 </div>
                 <div class="col-md-3 project-cell">{{format(p.versions[0].updated)}}</div>
                 <div class="col-md-2 project-cell">
