@@ -110,13 +110,13 @@ class ProjectRepositoryTests {
         val v2Id = insertProject("v2", userId)
         val anotherProject = insertProject("v2", anotherUserId) //should not be returned
 
-        insertVersion("v1s1", v1Id, ago_4h, ago_3h, false)
-        insertVersion("v1s2", v1Id, ago_2h, ago_2h, false)
+        insertVersion("v1s1", v1Id, ago_4h, ago_3h, false, 1)
+        insertVersion("v1s2", v1Id, ago_2h, ago_2h, false, 2)
 
-        insertVersion("deletedVersion", v2Id, ago_1h, now(), true) //should not be returned
-        insertVersion("v2s1", v2Id, ago_3h, ago_1h, false)
+        insertVersion("deletedVersion", v2Id, ago_1h, now(), true, 2) //should not be returned
+        insertVersion("v2s1", v2Id, ago_3h, ago_1h, false, 1)
 
-        insertVersion("anotherVersion", anotherProject, ago_1h, ago_1h, false)
+        insertVersion("anotherVersion", anotherProject, ago_1h, ago_1h, false, 3)
 
         val projects = sut.getProjects(userId)
         assertThat(projects.count()).isEqualTo(2)
@@ -128,6 +128,7 @@ class ProjectRepositoryTests {
         assertThat(p2.versions[0].id).isEqualTo("v2s1")
         assertThat(p2.versions[0].created).isEqualTo(format(ago_3h))
         assertThat(p2.versions[0].updated).isEqualTo(format(ago_1h))
+        assertThat(p2.versions[0].versionNumber).isEqualTo(1)
 
         val p1 = projects[1]
         assertThat(p1.id).isEqualTo(v1Id)
@@ -136,9 +137,11 @@ class ProjectRepositoryTests {
         assertThat(p1.versions[0].id).isEqualTo("v1s2")
         assertThat(p1.versions[0].created).isEqualTo(format(ago_2h))
         assertThat(p1.versions[0].updated).isEqualTo(format(ago_2h))
+        assertThat(p1.versions[0].versionNumber).isEqualTo(2)
         assertThat(p1.versions[1].id).isEqualTo("v1s1")
         assertThat(p1.versions[1].created).isEqualTo(format(ago_4h))
         assertThat(p1.versions[1].updated).isEqualTo(format(ago_3h))
+        assertThat(p1.versions[1].versionNumber).isEqualTo(1)
     }
 
     private fun setupUser(): String
@@ -163,15 +166,17 @@ class ProjectRepositoryTests {
         return saved[PROJECT.ID]
     }
 
-    private fun insertVersion(versionId: String, projectId: Int, created: Instant, updated: Instant, deleted: Boolean)
+    private fun insertVersion(versionId: String, projectId: Int, created: Instant, updated: Instant, deleted: Boolean,
+                              versionNumber: Int)
     {
         dsl.insertInto(PROJECT_VERSION,
                 PROJECT_VERSION.ID,
                 PROJECT_VERSION.PROJECT_ID,
                 PROJECT_VERSION.CREATED,
                 PROJECT_VERSION.UPDATED,
-                PROJECT_VERSION.DELETED)
-                .values(versionId, projectId, Timestamp.from(created), Timestamp.from(updated), deleted)
+                PROJECT_VERSION.DELETED,
+                PROJECT_VERSION.VERSION_NUMBER)
+                .values(versionId, projectId, Timestamp.from(created), Timestamp.from(updated), deleted, versionNumber)
                 .execute()
     }
 }
