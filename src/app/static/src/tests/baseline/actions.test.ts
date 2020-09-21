@@ -1,8 +1,12 @@
 import {
     mockAxios,
-    mockBaselineState, mockError,
+    mockBaselineState,
+    mockDataset,
+    mockDatasetResource,
+    mockError,
     mockFailure,
-    mockPopulationResponse, mockRootState,
+    mockPopulationResponse,
+    mockRootState,
     mockShapeResponse,
     mockSuccess,
     mockValidateBaselineResponse
@@ -10,10 +14,22 @@ import {
 import {actions} from "../../app/store/baseline/actions";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
+import {ADRSchemas} from "../../app/types";
 import Mock = jest.Mock;
 
 const FormData = require("form-data");
-const rootState = mockRootState();
+const adrSchemas: ADRSchemas = {
+    baseUrl: "adr.com",
+    pjnz: "pjnz",
+    population: "pop",
+    shape: "shape",
+    survey: "survey",
+    programme: "program",
+    anc: "anc"
+}
+const rootState = mockRootState({
+    adrSchemas
+});
 
 describe("Baseline actions", () => {
 
@@ -336,6 +352,87 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.deleteAll({commit, dispatch, rootState} as any);
         expect(mockAxios.history["delete"].length).toBe(3)
+    });
+
+    it("refreshes dataset metdata", async () => {
+
+        mockAxios.onGet("/adr/datasets/1234")
+            .reply(200, mockSuccess({
+                resources: [
+                    {url: "something.com", revision_id: "po1234", resource_type: "pop"},
+                    {url: "something.com", revision_id: "pj1234", resource_type: "pjnz"},
+                    {url: "something.com", revision_id: "sh1234", resource_type: "shape"},
+                    {url: "something.com", revision_id: "su1234", resource_type: "survey"},
+                    {url: "something.com", revision_id: "pr1234", resource_type: "program"},
+                    {url: "something.com", revision_id: "an1234", resource_type: "anc"},
+                    {url: "something.com", revision_id: "ra1234", resource_type: "random"},
+
+                ]
+            }))
+
+        const commit = jest.fn();
+        const state = mockBaselineState({
+            selectedDataset: mockDataset({id: "1234"})
+        });
+
+        await actions.refreshDatasetMetadata({commit, rootState, state} as any);
+
+        expect(commit.mock.calls[0][0]).toBe(BaselineMutation.UpdateDatasetResources);
+        expect(commit.mock.calls[0][1]).toEqual({
+            pjnz: mockDatasetResource({url: "something.com", revisionId: "pj1234"}),
+            shape: mockDatasetResource({url: "something.com", revisionId: "sh1234"}),
+            pop: mockDatasetResource({url: "something.com", revisionId: "po1234"}),
+            survey: mockDatasetResource({url: "something.com", revisionId: "su1234"}),
+            program: mockDatasetResource({url: "something.com", revisionId: "pr1234"}),
+            anc: mockDatasetResource({url: "something.com", revisionId: "an1234"})
+        });
+    });
+
+    it("refreshDatasetMetadata can handle missing resources", async () => {
+
+        mockAxios.onGet("/adr/datasets/1234")
+            .reply(200, mockSuccess({
+                resources: [
+                    {url: "something.com", revision_id: "ra1234", resource_type: "random"},
+
+                ]
+            }))
+
+        const commit = jest.fn();
+        const state = mockBaselineState({
+            selectedDataset: mockDataset({id: "1234"})
+        });
+
+        await actions.refreshDatasetMetadata({commit, rootState, state} as any);
+
+        expect(commit.mock.calls[0][0]).toBe(BaselineMutation.UpdateDatasetResources);
+        expect(commit.mock.calls[0][1]).toEqual({
+            pjnz: null,
+            shape: null,
+            pop: null,
+            survey: null,
+            program: null,
+            anc: null
+        });
+    });
+
+    it("refreshDatasetMetadata does nothing if no dataset", async () => {
+        const commit = jest.fn();
+        const state = mockBaselineState();
+        await actions.refreshDatasetMetadata({commit, rootState, state} as any);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("refreshDatasetMetadata does nothing if api call fails", async () => {
+        mockAxios.onGet("/adr/datasets/1234")
+            .reply(500);
+
+        const commit = jest.fn();
+        const state = mockBaselineState({
+            selectedDataset: mockDataset({id: "1234"})
+        });
+        await actions.refreshDatasetMetadata({commit, rootState, state} as any);
+        expect(commit.mock.calls.length).toBe(0);
     });
 
 });

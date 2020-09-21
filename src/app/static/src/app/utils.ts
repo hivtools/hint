@@ -1,6 +1,6 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
-import {Dict} from "./types";
+import {DatasetResource, Dict} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
 
@@ -21,9 +21,9 @@ export const mapStateProps = <S, K extends string>(namespace: string,
     return mapState<S>(namespace, map) as R
 };
 
-export const mapGetterByName = <T>(namespace: string, name: string): ComputedWithType<T> => {
-    return mapGetters(namespace, [name])[name]
-};
+export const mapGetterByName = <T>(namespace: string | null, name: string): ComputedWithType<T> => {
+    return (namespace && mapGetters(namespace, [name])[name]) || mapGetters([name])[name]
+}
 
 export const mapGettersByNames = <K extends string>(namespace: string, names: string[]) => {
     type R = { [key in K]: any }
@@ -161,3 +161,8 @@ export const rootOptionChildren = (filterOptions: FilterOption[]) => {
 export const formatDateTime = (isoUTCString: string) => {
     return moment.utc(isoUTCString).local().format('DD/MM/YYYY HH:mm:ss');
 };
+
+export const findResource = (datasetWithResources: any, resourceType: string): DatasetResource | null => {
+    const metadata = datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
+    return metadata ? {url: metadata.url, revisionId: metadata.revision_id, outOfDate: false} : null
+}

@@ -1,8 +1,8 @@
 <template>
     <div>
         <modal :open="open">
-            <h4 v-if="guestUser" v-translate="'haveYouSaved'"></h4>
-            <h4 v-if="!guestUser">Save version?</h4>
+            <h4 v-if="isGuest" v-translate="'haveYouSaved'"></h4>
+            <h4 v-if="!isGuest">Save version?</h4>
 
             <p v-translate="'discardWarning'"></p>
             <ul>
@@ -11,8 +11,8 @@
                 </li>
             </ul>
 
-            <p v-if="guestUser"  v-translate="'savePrompt'"></p>
-            <p v-if="!guestUser">
+            <p v-if="isGuest"  v-translate="'savePrompt'"></p>
+            <p v-if="!isGuest">
                 These steps will automatically be saved in a version. You will be able to reload this version from the Projects page.
             </p>
 
@@ -20,12 +20,12 @@
                 <button type="button"
                         class="btn btn-white"
                         @click="handleConfirm"
-                        v-translate="guestUser? 'discardSteps' : 'saveVersionConfirm'">
+                        v-translate="isGuest? 'discardSteps' : 'saveVersionConfirm'">
                 </button>
                 <button type="button"
                         class="btn btn-red"
                         @click="cancelEditing"
-                        v-translate="guestUser? 'cancelEdit': 'cancelEditLoggedIn'">
+                        v-translate="isGuest? 'cancelEdit': 'cancelEditLoggedIn'">
                 </button>
             </template>
 
@@ -39,6 +39,7 @@
 
 <script lang="ts">
     import Vue from "vue";
+    import { mapGetters } from 'vuex';
     import Modal from "./Modal.vue";
     import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
     import {StepDescription} from "../store/stepper/stepper";
@@ -46,11 +47,8 @@
     import {ProjectsState} from "../store/projects/projects";
     import {ErrorsState} from "../store/errors/errors";
 
-    declare const currentUser: string;
-
     interface Computed {
         laterCompleteSteps: StepDescription[],
-        guestUser: boolean,
         currentVersionId: string | null,
         errorsCount: number
     }
@@ -77,16 +75,14 @@
             currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
                 return state.currentVersion && state.currentVersion.id;
             }),
-            guestUser: function() {
-                return (currentUser === "guest");
-            },
+            ...mapGetters(["isGuest"]),
             errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
                 return state.errors ? state.errors.length : 0;
-            }),
+            })
         },
         methods: {
             handleConfirm: function() {
-                if (this.guestUser) {
+                if (this.isGuest) {
                     this.continueEditing();
                 } else {
                     this.waitingForVersion = true;

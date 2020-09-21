@@ -1,6 +1,6 @@
 import {BaselineMutation, mutations} from "../../app/store/baseline/mutations";
 import {
-    mockBaselineState, mockDataset, mockError,
+    mockBaselineState, mockDataset, mockDatasetResource, mockError,
     mockPJNZResponse,
     mockPopulationResponse,
     mockRootState,
@@ -202,4 +202,51 @@ describe("Baseline mutations", () => {
         expect(testState.selectedDataset).toEqual(fakeDataset);
     });
 
+    it("UpdateDatasetResources marks resource as out of date and updates metadata if previously null", () => {
+        const fakeResource = mockDatasetResource();
+        const fakeDataset = mockDataset();
+        const testState = mockBaselineState({selectedDataset: fakeDataset});
+        mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: fakeResource} as any);
+
+        expect(testState.selectedDataset!!.resources.pjnz).toEqual({...fakeResource, outOfDate: true});
+    });
+
+    it("UpdateDatasetResources marks resource as out of date and updates metadata if revision id changed", () => {
+        const oldResource = mockDatasetResource({revisionId: "1234"});
+        const newResouce = mockDatasetResource({revisionId: "5678"});
+        const fakeDataset = mockDataset();
+        fakeDataset.resources.pjnz = oldResource;
+        const testState = mockBaselineState({selectedDataset: fakeDataset});
+        mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: newResouce} as any);
+
+        expect(testState.selectedDataset!!.resources.pjnz).toEqual({...newResouce, outOfDate: true});
+    });
+
+    it("UpdateDatasetResources does nothing if new data is null", () => {
+        const fakeDataset = mockDataset();
+        const fakeResource = mockDatasetResource();
+        fakeDataset.resources.pjnz = fakeResource;
+        const testState = mockBaselineState({selectedDataset: fakeDataset});
+        mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: null} as any);
+
+        expect(testState.selectedDataset!!.resources.pjnz).toEqual(fakeResource);
+    });
+
+    it("UpdateDatasetResources does nothing if revision ids match", () => {
+        const oldResource = mockDatasetResource({revisionId: "1234", outOfDate: false});
+        const newResource = mockDatasetResource({revisionId: "1234"});
+        const fakeDataset = mockDataset();
+        fakeDataset.resources.pjnz = oldResource;
+        const testState = mockBaselineState({selectedDataset: fakeDataset});
+        mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: newResource} as any);
+
+        expect(testState.selectedDataset!!.resources.pjnz).toEqual(oldResource);
+    });
+
+    it("UpdateDatasetResources does nothing if selectedDataset is null", () => {
+        const testState = mockBaselineState();
+        mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: mockDatasetResource()} as any);
+
+        expect(testState.selectedDataset).toBe(null);
+    });
 });

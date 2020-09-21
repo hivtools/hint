@@ -8,7 +8,30 @@ describe("Baseline actions", () => {
 
     beforeAll(async () => {
         await login();
-        await rootActions.saveADRKey({commit: jest.fn(), rootState} as any, "123");
+        // this key is for a test user who has access to 1 fake dataset
+        const adrKey = "4c69b103-4532-4b30-8a37-27a15e56c0bb"
+        await rootActions.saveADRKey({commit: jest.fn(), rootState} as any, adrKey);
+    });
+
+    it("can get dataset", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const rootStateWithSchemas = {
+            ...rootState, adrSchemas: {
+                baseUrl: "adr.com",
+                pjnz: "pjnz",
+                population: "pop",
+                shape: "shape",
+                survey: "survey",
+                programme: "program",
+                anc: "anc"
+            }
+        }
+        await rootActions.getADRDatasets({commit, rootState} as any);
+        const datasetId = commit.mock.calls[0][0]["payload"][0].id;
+        const state = {selectedDataset: {id: datasetId}};
+        await actions.refreshDatasetMetadata({commit, state, dispatch, rootState: rootStateWithSchemas} as any);
+        expect(commit.mock.calls[1][0]).toBe(BaselineMutation.UpdateDatasetResources);
     });
 
     it("can import PJNZ file", async () => {
