@@ -48,6 +48,7 @@ class VersionRepositoryTests {
         val version = dsl.selectFrom(PROJECT_VERSION)
                 .fetchOne()
         assertThat(version[PROJECT_VERSION.ID]).isEqualTo(versionId)
+        assertThat(version[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
 
         val projectId: Int? = version[PROJECT_VERSION.PROJECT_ID]
         assertThat(projectId).isEqualTo(null)
@@ -65,6 +66,7 @@ class VersionRepositoryTests {
 
         assertThat(version[PROJECT_VERSION.ID]).isEqualTo(versionId)
         assertThat(version[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
+        assertThat(version[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
     }
 
     @Test
@@ -76,6 +78,7 @@ class VersionRepositoryTests {
                 .fetchOne()
 
         assertThat(version[PROJECT_VERSION.ID]).isEqualTo(versionId)
+        assertThat(version[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
     }
 
     @Test
@@ -155,13 +158,15 @@ class VersionRepositoryTests {
         val updated = LocalDateTime.parse(newVersion.updated, ISO_LOCAL_DATE_TIME)
         assertThat(updated).isBetween(now, soon)
 
-        val newVersionRecord = dsl.select(PROJECT_VERSION.STATE, PROJECT_VERSION.PROJECT_ID)
+        val newVersionRecord =
+                dsl.select(PROJECT_VERSION.STATE, PROJECT_VERSION.PROJECT_ID, PROJECT_VERSION.VERSION_NUMBER)
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq("newVersionId"))
                 .fetchOne()
 
         assertThat(newVersionRecord[PROJECT_VERSION.STATE]).isEqualTo("TEST STATE")
         assertThat(newVersionRecord[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
+        assertThat(newVersionRecord[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(2)
 
         val files = sut.getVersionFiles("newVersionId")
         assertThat(files.keys.count()).isEqualTo(2)
@@ -216,6 +221,8 @@ class VersionRepositoryTests {
 
         val updated = LocalDateTime.parse(version.updated, ISO_LOCAL_DATE_TIME)
         assertThat(updated).isBetween(now, soon)
+
+        assertThat(version.versionNumber).isEqualTo(1)
     }
 
     @Test
@@ -467,6 +474,21 @@ class VersionRepositoryTests {
         assertThatThrownBy{ sut.deleteVersion("nonexistentVersion", projectId, uid) }
                 .isInstanceOf(VersionException::class.java)
                 .hasMessageContaining("versionDoesNotExist")
+    }
+
+    @Test
+    fun `copy version after delete version assigns unused version number to new version`()
+    {
+        //deleted version still exists, with deleted flag set, its version number should not be reused
+        val uid = setupUser()
+        val projectId = setupProject(uid);
+        sut.saveVersion("version1", projectId);
+        sut.copyVersion("version1", "version2", projectId, uid)
+        sut.deleteVersion("version2", projectId, uid)
+
+        sut.copyVersion("version1", "version3", projectId, uid)
+        val version = sut.getVersion("version3")
+        assertThat(version.versionNumber).isEqualTo(3)
     }
 
     private fun assertVersionFileExists(hash: String) {

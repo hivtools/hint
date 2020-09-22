@@ -21,7 +21,11 @@ describe("Projects actions", () => {
 
     const rootState = mockRootState();
 
-    const mockProject: Project = {id: 1, name: "testProject", versions: [{id: "version-id", created: "", updated: ""}]};
+    const mockProject: Project = {
+        id: 1,
+        name: "testProject",
+        versions: [{id: "version-id", created: "", updated: "", versionNumber: 1}]
+    };
 
     it("createProject posts to new project endpoint and sets error on unsuccessful response", async (done) => {
         mockAxios.onPost(`/project/`)

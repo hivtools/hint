@@ -38,6 +38,7 @@ class ProjectTests : VersionFileTests() {
         val versions = data["versions"] as ArrayNode
         assertThat(versions.count()).isEqualTo(1)
         assertThat(versions[0]["id"].asText().count()).isGreaterThan(0)
+        assertThat(versions[0]["versionNumber"].asInt()).isEqualTo(1)
         LocalDateTime.parse(versions[0]["created"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         LocalDateTime.parse(versions[0]["updated"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     }
@@ -57,6 +58,7 @@ class ProjectTests : VersionFileTests() {
 
         val newVersionId = data["id"].asText()
         assertThat(newVersionId.count()).isGreaterThan(0)
+        assertThat(data["versionNumber"].asInt()).isEqualTo(2)
         LocalDateTime.parse(data["created"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         LocalDateTime.parse(data["updated"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
@@ -156,6 +158,7 @@ class ProjectTests : VersionFileTests() {
         assertThat(versions.count()).isEqualTo(1)
         val createVersions = createData["versions"] as ArrayNode
         assertThat(versions[0]["id"]).isEqualTo(createVersions[0]["id"])
+        assertThat(versions[0]["versionNumber"].asInt()).isEqualTo(1)
         assertThat(versions[0]["created"]).isEqualTo(createVersions[0]["created"])
         assertThat(versions[0]["updated"]).isEqualTo(createVersions[0]["updated"])
     }

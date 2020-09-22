@@ -4,6 +4,7 @@
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
             <div class="col-md-2 header-cell" v-translate="'projectName'"></div>
+            <div class="col-md-1 header-cell">Versions</div>
             <div class="col-md-3 header-cell" v-translate="'lastUpdated'"></div>
         </div>
         <hr/>
@@ -18,11 +19,12 @@
                 <div class="col-md-2 project-cell">
                     {{p.name}}
                 </div>
+                <div class="col-md-1 project-cell"><small class="text-muted">{{versionCountLabel(p)}}</small></div>
                 <div class="col-md-3 project-cell">{{format(p.versions[0].updated)}}</div>
                 <div class="col-md-2 project-cell">
                     <a @click="loadVersion($event, p.id, p.versions[0].id)" href="" v-translate="'loadLastUpdated'"></a>
                 </div>
-                <div class="col-md-2 project-cell">
+                <div class="col-md-1 project-cell">
                     <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
                 </div>
                 <div class="col-md-2 project-cell">
@@ -32,11 +34,12 @@
             <b-collapse :id="`versions-${p.id}`">
                 <div v-for="v in p.versions" :id="`v-${v.id}`" class="row font-italic bg-light py-2">
                     <div class="col-md-3 version-cell"></div>
+                    <div class="col-md-1 version-cell">{{`v${v.versionNumber}`}}</div>
                     <div class="col-md-3 version-cell">{{format(v.updated)}}</div>
                     <div class="col-md-2 version-cell">
                         <a @click="loadVersion($event, p.id, v.id)" href="" v-translate="'load'"></a>
                     </div>
-                    <div class="col-md-2 version-cell">
+                    <div class="col-md-1 version-cell">
                         <a @click="deleteVersion($event, p.id, v.id)" href="" v-translate="'delete'"></a>
                     </div>
                     <div class="col-md-2 version-cell">
@@ -112,7 +115,8 @@
     interface Methods {
         format: (date: string) => void,
         loadVersion: (event: Event, projectId: number, versionId: string) => void,
-        loadAction: (version: VersionIds) => void
+        loadAction: (version: VersionIds) => void,
+        versionCountLabel: (project: Project) => string
         deleteProject: (event: Event, projectId: number) => void,
         deleteVersion: (event: Event, projectId: number, versionId: string) => void
         copyProject: (event: Event, projectId: number) => void,
@@ -179,6 +183,9 @@
                     this.deleteVersionAction(this.versionToDelete);
                     this.versionToDelete = null;
                 }
+           },
+           versionCountLabel(project: Project) {
+               return project.versions.length == 1 ? "1 version" : `${project.versions.length} versions`
            },
            loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
            deleteProjectAction: mapActionByName<number>("projects", "deleteProject"),
