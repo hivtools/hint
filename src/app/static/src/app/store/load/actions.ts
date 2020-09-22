@@ -28,7 +28,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     },
 
     async setFiles(context, savedFileContents) {
-        const {commit, rootGetters, dispatch} = context;
+        const {commit, rootState, rootGetters, dispatch} = context;
         commit({type: "SettingFiles", payload: null});
 
         const objectContents = verifyCheckSum(savedFileContents);
@@ -45,10 +45,14 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const savedState = objectContents.state;
 
         if (!rootGetters.isGuest) {
+            //todo: get project name from user
+
             await(dispatch("projects/createProject", "LOADED_PROJECT", {root: true}));
+            savedState.projects.currentProject = rootState.projects.currentProject;
+            savedState.projects.currentVersion = rootState.projects.currentVersion;
         }
 
-        await getFilesAndLoad(context, files, savedState)
+        await getFilesAndLoad(context, files, savedState);
     },
 
     async loadFromVersion(context, versionDetails) {
@@ -82,7 +86,7 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, fil
         .withError("LoadFailed")
         .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
         .then(() => {
-            if (state.loadingState == LoadingState.UpdatingState) {
+            if (state.loadingState != LoadingState.LoadFailed) {
                 dispatch("updateStoreState", savedState);
             }
         });

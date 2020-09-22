@@ -45,6 +45,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
 
     async uploadVersionState(context) {
+        console.log("uploading version state");
         const {state, commit} = context;
         if (state.currentVersion) {
             if (!state.versionUploadPending) {
