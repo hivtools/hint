@@ -28,7 +28,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     },
 
     async setFiles(context, savedFileContents) {
-        const {commit} = context;
+        const {commit, rootGetters, dispatch} = context;
         commit({type: "SettingFiles", payload: null});
 
         const objectContents = verifyCheckSum(savedFileContents);
@@ -43,6 +43,10 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         const files = objectContents.files;
         const savedState = objectContents.state;
+
+        if (!rootGetters.isGuest) {
+            await(dispatch("projects/createProject", "LOADED_PROJECT", {root: true}));
+        }
 
         await getFilesAndLoad(context, files, savedState)
     },
