@@ -98,7 +98,7 @@
     import Modal from "../Modal.vue"
     import {formatDateTime, mapActionByName, mapStateProps} from "../../utils";
     import {ProjectsState} from "../../store/projects/projects";
-import { versionBundle } from "../../store/projects/actions";
+    import { versionBundle } from "../../store/projects/actions";
 
     const namespace = "projects";
 

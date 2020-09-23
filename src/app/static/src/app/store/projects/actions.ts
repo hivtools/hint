@@ -39,7 +39,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .withSuccess(RootMutation.SetProject, true)
             .withError(ProjectsMutations.ProjectError)
             .postAndReturn<String>("/project/", qs.stringify({name}));
-            console.log('qs stringify name', qs.stringify({name}))
     },
 
     async getProjects(context) {
@@ -73,12 +72,10 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .withSuccess(ProjectsMutations.VersionCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`project/${projectId}/version/?parent=${versionId}`)
-            console.log(`project/${projectId}/version/?parent=${versionId}`)
     },
 
     async loadVersion(context, version) {
         const {commit, dispatch, state} = context;
-        console.log('version', version.versionId)
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<ProjectsMutations, ProjectsMutations>(context)
             .ignoreSuccess()
@@ -89,7 +86,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
                     dispatch("load/loadFromVersion", response.data, {root: true})
                 }
             });
-            
     },
 
     async deleteProject(context, projectId) {
