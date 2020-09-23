@@ -288,7 +288,7 @@ const fr: Partial<Translations> = {
     continue: "poursuivre",
     copyLatestToNewProject: "Copier la dernière version dans un nouveau projet",
     copyToNewProject: "Copier dans un nouveau projet",
-    copyVersionHeader: "Copying project-version to a new project",
+    copyVersionHeader: "Copie de la version dans un nouveau projet",
     couldNotParse: "Impossible d'analyser la réponse de l'API. Veuillez contacter le support.",
     country: "Pays",
     createProject: "Créer un projet",

@@ -28,7 +28,7 @@
                     <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
                 </div>
                 <div class="col-md-2 project-cell">
-                    <a @click="copyVersion($event, p.id, p.versions[0].id)" href="" v-translate="'copyLatestToNewProject'"></a>
+                    <a @click="copyVersion($event, p.id, p.versions[0].id, p.versions[0].versionNumber)" href="" v-translate="'copyLatestToNewProject'"></a>
                 </div>
             </div>
             <b-collapse :id="`versions-${p.id}`">
@@ -43,7 +43,7 @@
                         <a @click="deleteVersion($event, p.id, v.id)" href="" v-translate="'delete'"></a>
                     </div>
                     <div class="col-md-2 version-cell">
-                        <a @click="copyVersion($event, p.id, v.id)" href="" v-translate="'copyToNewProject'"></a>
+                        <a @click="copyVersion($event, p.id, v.id, v.versionNumber)" href="" v-translate="'copyToNewProject'"></a>
                     </div>
                 </div>
             </b-collapse>
@@ -65,7 +65,7 @@
             </template>
         </modal>
         <modal :open="versionToCopy">
-            <h4 v-translate="'copyVersionHeader'"></h4>
+            <h4 >{{copyVersionHeader}}</h4>
             <h5 v-translate="'enterProjectName'"></h5>
             <template v-slot:footer>
                 <div class="container">
@@ -94,14 +94,17 @@
 
 <script lang="ts">
     import Vue from "vue";
+    import i18next from "i18next";
     import {VersionIds, Project} from "../../types";
     import {BCollapse} from "bootstrap-vue";
     import { VBToggle } from 'bootstrap-vue';
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
     import Modal from "../Modal.vue"
-    import {formatDateTime, mapActionByName, mapStateProps} from "../../utils";
+    import {formatDateTime, mapActionByName, mapStateProps, mapStateProp} from "../../utils";
     import {ProjectsState} from "../../store/projects/projects";
     import { versionBundle } from "../../store/projects/actions";
+    import {Language} from "../../store/translations/locales";
+    import {RootState} from "../../root";
 
     const namespace = "projects";
 
@@ -109,7 +112,8 @@
         projectToDelete: number | null,
         versionToDelete: VersionIds | null,
         versionToCopy: VersionIds | null,
-        newProjectName: string
+        newProjectName: string,
+        selectedVersionNumber: number
     }
 
     interface Props {
@@ -122,7 +126,9 @@
         error: Error,
         hasError: boolean,
         disableCreate: boolean,
-        loading: boolean
+        loading: boolean,
+        currentLanguage: Language,
+        copyVersionHeader: string
     }
 
     interface Methods {
@@ -132,7 +138,7 @@
         versionCountLabel: (project: Project) => string
         deleteProject: (event: Event, projectId: number) => void,
         deleteVersion: (event: Event, projectId: number, versionId: string) => void
-        copyVersion: (event: Event, projectId: number, versionId: string) => void
+        copyVersion: (event: Event, projectId: number, versionId: string, versionNumber: number) => void
         cancelCopy: () => void
         cancelDelete: () => void
         confirmDelete: () => void,
@@ -141,7 +147,7 @@
         deleteVersionAction: (versionIds: VersionIds) => void
         copyVersionAction: (versionBundle: versionBundle) => void
         createProject: (name: string) => void,
-        getProjects: () => void,
+        getProjects: () => void
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -155,7 +161,8 @@
                projectToDelete: null,
                versionToDelete: null,
                versionToCopy: null,
-               newProjectName: ""
+               newProjectName: "",
+               selectedVersionNumber: 0
            }
        },
         computed: {
@@ -168,7 +175,12 @@
             }),
             disableCreate: function() {
                 return !this.newProjectName;
-            }
+            },
+            copyVersionHeader: function() {
+                return i18next.t('copyVersionHeader', {lng: this.currentLanguage}).replace('version', `version v${this.selectedVersionNumber}`)
+            },
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language)
         },
        methods: {
            format(date: string) {
@@ -186,9 +198,10 @@
                event.preventDefault();
                this.versionToDelete = {projectId, versionId};
            },
-           copyVersion(event: Event, projectId: number, versionId: string) {
+           copyVersion(event: Event, projectId: number, versionId: string, versionNumber: number) {
                event.preventDefault();
                this.versionToCopy = {projectId, versionId};
+               this.selectedVersionNumber = versionNumber
            },
            cancelCopy() {
                this.versionToCopy = null;
