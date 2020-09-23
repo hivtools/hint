@@ -25,16 +25,17 @@
             </template>
         </modal>
         <modal :open="requestProjectName">
-            <h4 v-if="versionToCopy" v-translate="'copyVersionHeader'"></h4>
+            <h4 v-translate="'loadFileToProjectHeader'"></h4>
             <h5 v-translate="'enterProjectName'"></h5>
             <template v-slot:footer>
                 <div class="container">
                     <div class="row">
-                        <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="copiedProjectName">
+                        <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
                     </div>
                     <div class="row">
                         <button type="button"
                                 class="btn btn-red mt-2 mr-1 col"
+                                @click="loadToNewProject"
                                 v-translate="'createProject'">
                         </button>
                         <button type="button"
@@ -63,6 +64,7 @@
     import Modal from "../Modal.vue"
     import DropDown from "./DropDown.vue";
     import {mapGetterByName} from "../../utils";
+    import {loadPayload} from "../../store/load/actions";
 
     interface Data {
         requestProjectName: boolean,
@@ -73,7 +75,7 @@
     interface Methods {
         save: (e: Event) => void;
         load: () => void;
-        loadAction: (file: File) => void;
+        loadAction: (payload: loadPayload) => void;
         loadToNewProject: () => void,
         clearLoadError: () => void,
         cancelLoad: () => void
@@ -160,15 +162,16 @@
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];
                     if (this.isGuest) {
-                        this.loadAction(file);
+                        this.loadAction({file, projectName: null});
                     } else  {
                         this.fileToLoad = file;
-                        this.requestProjectName = false;
+                        this.requestProjectName = true;
                     }
                 }
             },
             loadToNewProject() {
-
+                //TODO: validation - no empty project name - disable button
+                this.loadAction({file: this.fileToLoad!, projectName: this.newProjectName});
             },
             cancelLoad() {
                 this.requestProjectName = false;

@@ -11,23 +11,35 @@ export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded"
 export type LoadErrorActionTypes = "LoadFailed"
 
 export interface LoadActions {
-    load: (store: ActionContext<LoadState, RootState>, file: File, projectName: string | null) => void
-    setFiles: (store: ActionContext<LoadState, RootState>, savedFileContents: string) => void
+    load: (store: ActionContext<LoadState, RootState>, payload: loadPayload) => void
+    setFiles: (store: ActionContext<LoadState, RootState>, payload: setFilesPayload) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
 }
 
+export interface loadPayload {
+    file: File,
+    projectName: string | null
+}
+
+export interface setFilesPayload {
+    savedFileContents: string,
+    projectName: string | null
+}
+
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
-    load({dispatch}, file, projectName) {
+    load({dispatch}, payload) {
+        const {file, projectName} = payload;
         const reader = new FileReader();
         reader.addEventListener('loadend', function() {
-            dispatch("setFiles", reader.result as string);
+            dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
         });
         reader.readAsText(file);
     },
 
-    async setFiles(context, savedFileContents) {
+    async setFiles(context, payload) {
+        const {savedFileContents, projectName} = payload;
         const {commit, rootState, rootGetters, dispatch} = context;
         commit({type: "SettingFiles", payload: null});
 
@@ -45,7 +57,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const savedState = objectContents.state;
 
         if (!rootGetters.isGuest) {
-            await(dispatch("projects/createProject", "LOADED_PROJECT", {root: true}));
+            await(dispatch("projects/createProject", projectName, {root: true}));
             savedState.projects.currentProject = rootState.projects.currentProject;
             savedState.projects.currentVersion = rootState.projects.currentVersion;
         }
