@@ -4,14 +4,16 @@ import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {emptyState} from "../../app/root";
-import {mockErrorsState, mockProjectsState} from "../mocks";
+import {emptyState, storeOptions, RootState} from "../../app/root";
+import {mockErrorsState, mockProjectsState, mockRootState} from "../mocks";
 import {mutations as versionsMutations} from "../../app/store/projects/mutations";
 import {mutations as errorMutations} from "../../app/store/errors/mutations";
+import { getters } from "../../app/store/root/getters";
 
-const createStore = (newVersion = jest.fn()) => {
+const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState> = {}) => {
     const store = new Vuex.Store({
-        state: emptyState(),
+        state: mockRootState(partialRootState),
+        getters: getters,
         modules: {
             stepper: {
                 namespaced: true,
@@ -40,18 +42,15 @@ const createStore = (newVersion = jest.fn()) => {
     return store;
 };
 
-declare let currentUser: string;
-
 describe("Reset confirmation modal", () => {
 
     it("renders as expected for guest user", () => {
-        currentUser = "guest";
         const rendered = mount(ResetConfirmation, {
             propsData: {
                 continueEditing: jest.fn(),
                 cancelEditing: jest.fn()
             },
-            store: createStore()
+            store: createStore(jest.fn(), {currentUser: 'guest'})
         });
 
         expect(rendered.find("h4").text()).toBe("Have you saved your work?");
@@ -69,7 +68,6 @@ describe("Reset confirmation modal", () => {
     });
 
     it("renders as expected for logged in user", () => {
-        currentUser = "test.user@example.com";
         const rendered = mount(ResetConfirmation, {
             propsData: {
                 continueEditing: jest.fn(),
@@ -94,7 +92,6 @@ describe("Reset confirmation modal", () => {
     });
 
     it("cancel edit button invokes cancelEditing", () => {
-        currentUser = "test.user@example.com";
         const mockCancelEdit = jest.fn();
         const rendered = mount(ResetConfirmation, {
             propsData: {
@@ -109,14 +106,13 @@ describe("Reset confirmation modal", () => {
     });
 
     it("continue button invokes continueEditing for guest user", () => {
-        currentUser = "guest";
         const mockContinueEdit = jest.fn();
         const rendered = mount(ResetConfirmation, {
             propsData: {
                 continueEditing: mockContinueEdit,
                 cancelEditing: jest.fn()
             },
-            store: createStore()
+            store: createStore(jest.fn(), {currentUser: 'guest'})
         });
 
         rendered.findAll("button").at(0).trigger("click");
@@ -124,7 +120,6 @@ describe("Reset confirmation modal", () => {
     });
 
     it("continue button sets waitingForVersion to true and invokes newVersion action for logged in user", () => {
-        currentUser = "test.user@example.com";
 
         const mockContinueEdit = jest.fn();
         const mockNewVersion = jest.fn();
@@ -133,7 +128,7 @@ describe("Reset confirmation modal", () => {
                 continueEditing: mockContinueEdit,
                 cancelEditing: jest.fn()
             },
-            store: createStore(mockNewVersion)
+            store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
         });
 
         expect((rendered.vm as any).waitingForVersion).toBe(false);
@@ -224,7 +219,6 @@ describe("Reset confirmation modal", () => {
     });
 
     it("renders spinner in place of buttons when waiting for version", () => {
-        currentUser = "test.user@example.com";
         const rendered = mount(ResetConfirmation, {
             data() {
                 return {

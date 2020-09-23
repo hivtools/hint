@@ -298,15 +298,94 @@ describe("Projects actions", () => {
         const dispatch = jest.fn();
         const state = {error: "test error"};
         mockAxios.onGet("project/1/version/testVersion")
-            .reply(2500, mockFailure("test error"));
+            .reply(500, mockFailure("test error"));
 
         actions.loadVersion({commit, dispatch, state, rootState} as any, {projectId: 1, versionId: "testVersion"});
         setTimeout(() => {
             expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
             const expectedError = {detail: "test error", error: "OTHER_ERROR"};
             expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.ProjectError, payload: expectedError});
-            expect(dispatch.mock.calls.length).toBe(0);
             done();
         });
+    });
+
+    it("deleteProject dispatches getProjects action", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = {};
+        mockAxios.onDelete("project/1")
+            .reply(200, mockSuccess("OK"));
+
+        actions.deleteProject({commit, dispatch, state, rootState} as any, 1);
+        setTimeout(() => {
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            expect(commit.mock.calls.length).toBe(0);
+            done();
+        });
+    });
+
+    it("deleteProject commits ProjectError on failure", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = {};
+        mockAxios.onDelete("project/1")
+            .reply(500, mockFailure("TEST ERROR"));
+        actions.deleteProject({commit, dispatch, state, rootState} as any, 1);
+        setTimeout(() => {
+            const expectedError = {detail: "TEST ERROR", error: "OTHER_ERROR"};
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ProjectError, payload: expectedError});
+            done();
+        });
+    });
+
+    it("deleteProject clears current version if it is being deleted", () => {
+        const commit = jest.fn();
+        const state = {currentVersion: {id: "testVersion"}, currentProject: {id: 1}};
+        const dispatch = jest.fn();
+
+        mockAxios.onDelete("project/1")
+            .reply(200, mockSuccess("OK"));
+        actions.deleteProject({commit, dispatch, state, rootState} as any, 1);
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
+    });
+
+    it("deleteVersion dispatches getProjects action", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = {};
+        mockAxios.onDelete("project/1/version/testVersion")
+            .reply(200, mockSuccess("OK"));
+
+        actions.deleteVersion({commit, dispatch, state, rootState} as any, {projectId: 1, versionId: "testVersion"});
+        setTimeout(() => {
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            expect(commit.mock.calls.length).toBe(0);
+            done();
+        });
+    });
+
+    it("deleteVersion commits ProjectError on failure", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = {};
+        mockAxios.onDelete("project/1/version/testVersion")
+            .reply(500, mockFailure("TEST ERROR"));
+        actions.deleteVersion({commit, dispatch, state, rootState} as any, {projectId: 1, versionId: "testVersion"});
+        setTimeout(() => {
+            const expectedError = {detail: "TEST ERROR", error: "OTHER_ERROR"};
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ProjectError, payload: expectedError});
+            done();
+        });
+    });
+
+    it("deleteVersion clears current version if it is being deleted", () => {
+        const commit = jest.fn();
+        const state = {currentVersion: {id: "testVersion"}, currentProject: {id: 1}};
+        const dispatch = jest.fn();
+
+        mockAxios.onDelete("project/1")
+            .reply(200, mockSuccess("OK"));
+        actions.deleteVersion({commit, dispatch, state, rootState} as any, {projectId: 1, versionId: "testVersion"});
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
     });
 });

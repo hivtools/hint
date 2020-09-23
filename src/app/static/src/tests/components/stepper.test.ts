@@ -40,10 +40,10 @@ import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {ProjectsState} from "../../app/store/projects/projects";
 import VersionStatus from "../../app/components/projects/VersionStatus.vue";
+import {emptyState, storeOptions, RootState} from "../../app/root";
+import { getters as rootGetters } from "../../app/store/root/getters";
 
 const localVue = createLocalVue();
-
-declare var currentUser: string; // set in jest config, or on the index page when run for real
 
 describe("Stepper component", () => {
     const createSut = (baselineState?: Partial<BaselineState>,
@@ -53,12 +53,14 @@ describe("Stepper component", () => {
                        stepperState?: Partial<StepperState>,
                        loadState?: Partial<LoadState>,
                        projectsState?: Partial<ProjectsState>,
-                       mockRouterPush = jest.fn()) => {
+                       mockRouterPush = jest.fn(),
+                       partialRootState: Partial<RootState> = {}) => {
 
         const store = new Vuex.Store({
             actions: rootActions,
             mutations: rootMutations,
-            state: mockRootState({adrSchemas: {baseUrl: "whatever"} as any}),
+            state: mockRootState({...partialRootState, adrSchemas: {baseUrl: "whatever"} as any}),
+            getters: rootGetters,
             modules: {
                 baseline: {
                     namespaced: true,
@@ -514,9 +516,8 @@ describe("Stepper component", () => {
     });
 
     it("does not push router to projects if guest user", () => {
-        currentUser = "guest";
         const mockRouterPush = jest.fn();
-        const wrapper = createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush);
+        const wrapper = createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush, {currentUser: 'guest'});
 
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });

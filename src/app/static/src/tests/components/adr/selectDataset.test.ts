@@ -101,7 +101,12 @@ describe("select dataset", () => {
 
     afterEach(() => {
         jest.resetAllMocks();
-    })
+    });
+
+    it("refreshes selected dataset metdata on mount", () => {
+        const rendered = shallowMount(SelectDataset, {store: getStore()});
+        expect((baselineActions.refreshDatasetMetadata as Mock).mock.calls.length).toBe(1);
+    });
 
     it("renders select dataset button when no dataset is selected", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});

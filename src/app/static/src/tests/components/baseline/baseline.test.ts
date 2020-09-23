@@ -20,6 +20,7 @@ describe("Baseline upload component", () => {
     const createSut = (baselineState?: Partial<BaselineState>, metadataState?: Partial<MetadataState>) => {
 
         actions = {
+            refreshDatasetMetadata: jest.fn(),
             importPJNZ: jest.fn(),
             importPopulation: jest.fn(),
             importShape: jest.fn(),

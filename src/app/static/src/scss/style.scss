@@ -28,6 +28,10 @@ a {
   }
 }
 
+.color-red {
+  color: $theme-red;
+}
+
 .btn-red {
   @include button-variant($theme-red, darken($theme-red, 10%))
 }

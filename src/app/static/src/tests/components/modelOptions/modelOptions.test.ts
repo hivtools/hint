@@ -3,7 +3,7 @@ import ModelOptions from "../../../app/components/modelOptions/ModelOptions.vue"
 import {DynamicForm} from "@reside-ic/vue-dynamic-form";
 import Vue from "vue";
 import Vuex, {ActionTree, MutationTree} from "vuex";
-import {mockModelOptionsState} from "../../mocks";
+import {mockModelOptionsState, mockRootState} from "../../mocks";
 import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
 import {DynamicControlSection} from "@reside-ic/vue-dynamic-form";
 import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";
@@ -12,9 +12,7 @@ import Tick from "../../../app/components/Tick.vue";
 import {ModelOptionsActions} from "../../../app/store/modelOptions/actions";
 import {RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-
-declare let currentUser: string;
-currentUser = "guest";
+import { getters } from "../../../app/store/root/getters";
 
 describe("Model options component", () => {
 
@@ -54,7 +52,9 @@ describe("Model options component", () => {
                 errors:  {
                     namespaced: true
                 }
-            }
+            },
+            getters: getters,
+            state: mockRootState({currentUser: 'guest'})
         });
         registerTranslations(store);
         return store;
