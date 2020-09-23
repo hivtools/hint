@@ -39,6 +39,7 @@
 <script lang="ts">
 
     import Vue from "vue";
+    import { mapGetters } from 'vuex';
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
@@ -54,8 +55,7 @@
 
     interface Computed {
         helpFilename: string,
-        troubleFilename: string,
-        isGuest: boolean
+        troubleFilename: string
     }
 
     export default Vue.extend<{}, {}, Computed, Props>({
@@ -76,9 +76,7 @@
                     }
                     return filename;
                 }),
-            isGuest() {
-                return this.user == "guest"
-            }
+            ...mapGetters(["isGuest"])
         },
         props: {
             title: String,

@@ -6,18 +6,28 @@
 </template>
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapStateProp} from "../../utils";
+    import {mapActionByName, mapStateProp, mapGetterByName} from "../../utils";
     import {RootState} from "../../root";
     import adrKey from "./ADRKey.vue";
     import SelectDataset from "./SelectDataset.vue";
 
-    declare const currentUser: string;
+    interface Methods {
+        getDatasets: () => void
+        fetchADRKey: () => void
+    }
 
-    export default Vue.extend({
+    interface Computed {
+        isGuest: boolean
+        loggedIn: boolean
+        key: string | null
+    }
+
+     export default Vue.extend<{}, Methods, Computed, {}>({
         components: {adrKey, SelectDataset},
         computed: {
+            isGuest: mapGetterByName(null, "isGuest"),
             loggedIn() {
-                return currentUser != "guest"
+                return !this.isGuest
             },
             key: mapStateProp<RootState, string | null>(null,
                 (state: RootState) => state.adrKey)

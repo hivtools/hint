@@ -34,7 +34,8 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
                         PROJECT.NAME,
                         PROJECT_VERSION.ID,
                         PROJECT_VERSION.CREATED,
-                        PROJECT_VERSION.UPDATED)
+                        PROJECT_VERSION.UPDATED,
+                        PROJECT_VERSION.VERSION_NUMBER)
                         .from(PROJECT)
                         .join(PROJECT_VERSION)
                         .on(PROJECT.ID.eq(PROJECT_VERSION.PROJECT_ID))
@@ -48,7 +49,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
                     Project(v.key, v.value[0][PROJECT.NAME],
                             v.value.map { s ->
                                 Version(s[PROJECT_VERSION.ID], s[PROJECT_VERSION.CREATED],
-                                        s[PROJECT_VERSION.UPDATED])
+                                        s[PROJECT_VERSION.UPDATED], s[PROJECT_VERSION.VERSION_NUMBER])
                             })
                 }
                 .sortedByDescending { it.versions[0].updated }

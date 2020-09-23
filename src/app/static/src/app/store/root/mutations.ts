@@ -67,7 +67,8 @@ export const mutations: MutationTree<RootState> = {
             stepper: state.stepper,
             load: initialLoadState(),
             errors: initialErrorsState(),
-            projects: initialProjectsState()
+            projects: initialProjectsState(),
+            currentUser: state.currentUser
         };
         Object.assign(state, resetState);
 

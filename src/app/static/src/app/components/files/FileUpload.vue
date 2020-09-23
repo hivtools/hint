@@ -43,7 +43,7 @@
     interface Props {
         upload: (formData: FormData) => void,
         accept: string,
-        name: string
+        name: string,
         uploading: boolean
     }
 
@@ -85,6 +85,8 @@
                 this.showUploadConfirmation = false;
             },
             cancelEdit() {
+                const fileInput = this.$refs[this.name] as HTMLInputElement;
+                fileInput.value = "";
                 this.showUploadConfirmation = false
             }
         }

@@ -66,7 +66,8 @@ export interface NumericRange {
 export interface Version {
     id: string,
     created: string,
-    updated: string
+    updated: string,
+    versionNumber: number
 }
 
 export interface Project {

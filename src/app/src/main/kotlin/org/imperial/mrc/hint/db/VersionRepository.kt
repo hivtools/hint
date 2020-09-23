@@ -43,9 +43,11 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
                 .firstOrNull()
 
         if (version == null) {
+            val versionNumber = getNextVersionNumber(projectId)
             dsl.insertInto(PROJECT_VERSION)
                     .set(PROJECT_VERSION.ID, versionId)
                     .set(PROJECT_VERSION.PROJECT_ID, projectId)
+                    .set(PROJECT_VERSION.VERSION_NUMBER, versionNumber)
                     .execute()
         }
     }
@@ -54,12 +56,14 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
     {
         val result =  dsl.select(PROJECT_VERSION.ID,
                 PROJECT_VERSION.CREATED,
-                PROJECT_VERSION.UPDATED)
+                PROJECT_VERSION.UPDATED,
+                PROJECT_VERSION.VERSION_NUMBER)
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(versionId))
                 .fetchOne()
 
-        return Version(result[PROJECT_VERSION.ID], result[PROJECT_VERSION.CREATED], result[PROJECT_VERSION.UPDATED])
+        return Version(result[PROJECT_VERSION.ID], result[PROJECT_VERSION.CREATED],
+                        result[PROJECT_VERSION.UPDATED], result[PROJECT_VERSION.VERSION_NUMBER])
     }
 
     override fun getVersionDetails(versionId: String, projectId: Int, userId: String): VersionDetails
@@ -172,10 +176,11 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
 
     override fun copyVersion(parentVersionId: String, newVersionId: String, projectId: Int, userId: String)
     {
-
+        val versionNumber = getNextVersionNumber(projectId)
         dsl.insertInto(PROJECT_VERSION)
                 .set(PROJECT_VERSION.ID, newVersionId)
                 .set(PROJECT_VERSION.PROJECT_ID, projectId)
+                .set(PROJECT_VERSION.VERSION_NUMBER, versionNumber)
                 .set(PROJECT_VERSION.STATE, dsl.select(PROJECT_VERSION.STATE)
                         .from(PROJECT_VERSION)
                         .where(PROJECT_VERSION.ID.eq(parentVersionId)))
@@ -212,6 +217,15 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
                 .where(VERSION_FILE.VERSION.eq(versionId))
                 .and(VERSION_FILE.TYPE.eq(type.toString()))
                 .fetchAny()
+    }
+
+    private fun getNextVersionNumber(projectId: Int?): Int
+    {
+        val max =  dsl.select(PROJECT_VERSION.VERSION_NUMBER.max())
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.PROJECT_ID.eq(projectId))
+                .fetchOne(PROJECT_VERSION.VERSION_NUMBER.max())
+        return (max ?: 0) + 1
     }
 
 }
