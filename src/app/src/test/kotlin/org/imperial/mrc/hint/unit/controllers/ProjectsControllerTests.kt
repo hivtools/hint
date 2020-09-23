@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.controllers.ProjectsController
 import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.models.Project
 import org.imperial.mrc.hint.models.Version
@@ -18,7 +19,6 @@ import org.imperial.mrc.hint.models.VersionDetails
 import org.imperial.mrc.hint.models.VersionFile
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
-import org.omg.CORBA.UserException
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 
