@@ -54,6 +54,8 @@ export const mutations: MutationTree<BaselineState> = {
             Object.keys(resources).map((k: string) => {
                 const key = k as keyof DatasetResourceSet;
                 if (!payload[key]) {
+                    // resource has been removed from the dataset
+                    resources[key] = null;
                     return;
                 }
                 if (!resources[key] || (resources[key]!!.revisionId != payload[key]!!.revisionId)) {

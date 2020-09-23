@@ -1,6 +1,9 @@
 import {BaselineMutation, mutations} from "../../app/store/baseline/mutations";
 import {
-    mockBaselineState, mockDataset, mockDatasetResource, mockError,
+    mockBaselineState,
+    mockDataset,
+    mockDatasetResource,
+    mockError,
     mockPJNZResponse,
     mockPopulationResponse,
     mockRootState,
@@ -222,14 +225,13 @@ describe("Baseline mutations", () => {
         expect(testState.selectedDataset!!.resources.pjnz).toEqual({...newResouce, outOfDate: true});
     });
 
-    it("UpdateDatasetResources does nothing if new data is null", () => {
+    it("UpdateDatasetResources sets resource to null if new data is null", () => {
         const fakeDataset = mockDataset();
-        const fakeResource = mockDatasetResource();
-        fakeDataset.resources.pjnz = fakeResource;
+        fakeDataset.resources.pjnz = mockDatasetResource();
         const testState = mockBaselineState({selectedDataset: fakeDataset});
         mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: null} as any);
 
-        expect(testState.selectedDataset!!.resources.pjnz).toEqual(fakeResource);
+        expect(testState.selectedDataset!!.resources.pjnz).toEqual(null);
     });
 
     it("UpdateDatasetResources does nothing if revision ids match", () => {

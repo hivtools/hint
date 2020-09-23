@@ -171,7 +171,7 @@ describe("select dataset", () => {
         expect((baselineActions.importShape as Mock).mock.calls[0][1]).toBe("shape.url");
     });
 
-    it("marks resources are updated after refreshing", async () => {
+    it("marks resources as updated after refreshing", async () => {
         const fakeDataset = mockDataset();
         fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"})
         const store = getStore({selectedDataset: fakeDataset});
