@@ -26,7 +26,7 @@
                     <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
                 </div>
                 <div class="col-md-2 project-cell">
-                    <a @click="copyProject($event, p.id)" href="" v-translate="'copyToNewProject'"></a>
+                    <a @click="copyVersion($event, p.id, p.versions[0].id)" href="" v-translate="'copyLatestToNewProject'"></a>
                 </div>
             </div>
             <b-collapse :id="`versions-${p.id}`">
@@ -61,9 +61,8 @@
                 </button>
             </template>
         </modal>
-        <modal :open="projectToCopy || versionToCopy">
-            <h4 v-if="projectToCopy" v-translate="'copyProjectHeader'"></h4>
-            <h4 v-if="versionToCopy" v-translate="'copyVersionHeader'"></h4>
+        <modal :open="versionToCopy">
+            <h4 v-translate="'copyVersionHeader'"></h4>
             <h5 v-translate="'enterProjectName'"></h5>
             <template v-slot:footer>
                 <div class="container">
@@ -106,8 +105,6 @@ import { versionBundle } from "../../store/projects/actions";
     interface Data {
         projectToDelete: number | null,
         versionToDelete: VersionIds | null,
-        // copiedProjectName: string,
-        projectToCopy: number | null,
         versionToCopy: VersionIds | null,
         newProjectName: string
     }
@@ -131,7 +128,6 @@ import { versionBundle } from "../../store/projects/actions";
         loadAction: (version: VersionIds) => void
         deleteProject: (event: Event, projectId: number) => void,
         deleteVersion: (event: Event, projectId: number, versionId: string) => void
-        copyProject: (event: Event, projectId: number) => void,
         copyVersion: (event: Event, projectId: number, versionId: string) => void
         cancelCopy: () => void
         cancelDelete: () => void
@@ -154,8 +150,6 @@ import { versionBundle } from "../../store/projects/actions";
            return {
                projectToDelete: null,
                versionToDelete: null,
-            //    copiedProjectName: '',
-               projectToCopy: null,
                versionToCopy: null,
                newProjectName: ""
            }
@@ -188,17 +182,12 @@ import { versionBundle } from "../../store/projects/actions";
                event.preventDefault();
                this.versionToDelete = {projectId, versionId};
            },
-           copyProject(event: Event, projectId: number) {
-               event.preventDefault();
-               this.projectToCopy = projectId;
-           },
            copyVersion(event: Event, projectId: number, versionId: string) {
                event.preventDefault();
                this.versionToCopy = {projectId, versionId};
            },
            cancelCopy() {
                this.versionToCopy = null;
-               this.projectToCopy = null;
                this.newProjectName = "";
            },
            cancelDelete() {
@@ -217,17 +206,13 @@ import { versionBundle } from "../../store/projects/actions";
            async confirmCopy(name) {
                
                 if (this.versionToCopy) {
-                    await this.createProject(name)
                     const versionBundle: versionBundle = {
                         version: this.versionToCopy!,
-                        newProjectId: this.currentProject!.id
+                        name: this.newProjectName
                     }
-                    console.log('versionBundle', versionBundle)
-                    console.log('currentProject', this.currentProject)
                     this.copyVersionAction(versionBundle);
                     this.versionToCopy = null;
                     this.newProjectName = "";
-                    this.getProjects()
                 }
            },
            loadAction: mapActionByName<VersionIds>(namespace, "loadVersion"),

@@ -11,7 +11,7 @@ import {Project, VersionDetails, VersionIds} from "../../types";
 
 export interface versionBundle {
     version: VersionIds,
-    newProjectId: number
+    name: string
 }
 
 export interface ProjectsActions {
@@ -124,36 +124,18 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             });
     },
 
-    // async copyVersion(context, name, versionId) {
-    //     const {commit, state} = context;
-
-    //     //Ensure we have saved the current version
-    //     if (state.currentVersion) {
-    //         immediateUploadVersionState(context);
-    //     }
-
-    //     commit({type: ProjectsMutations.SetLoading, payload: true});
-    //     await api<RootMutation, ProjectsMutations>(context)
-    //         .withSuccess(RootMutation.SetProject, true)
-    //         .withError(ProjectsMutations.ProjectError)
-    //         .postAndReturn<String>("/project/", qs.stringify({name}));
-    //         .then(() => {
-    //             .postAndReturn(`project/${name}/version/?parent=${versionId}`);
-    //         });
-            
-    // }
-
-
     async copyVersion(context, versionBundle: versionBundle) {
-        const {state} = context;
+        const {state, dispatch} = context;
         await immediateUploadVersionState(context);
-
-        // const projectId = state.currentProject && state.currentProject.id;
-        // const versionId = state.currentVersion && state.currentVersion.id;
+        const {projectId, versionId} = versionBundle.version
+        const name = versionBundle.name
         api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.VersionCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`project/${versionBundle.newProjectId}/version/?parent=${versionBundle.version.versionId}`)
+            .postAndReturn(`/project/${projectId}/version/${versionId}/promoteversion`, qs.stringify({name}))
+            .then(() => {
+                dispatch("getProjects");
+            });
     },
 };
 
