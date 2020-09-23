@@ -11,6 +11,7 @@
             </div>
             <div class="my-3 col-6 clearfix">
                 <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
+                <div class="invalid-feedback d-block" v-translate="'uniqueProjectName'" v-if="invalidName"></div>
                 <button type="button"
                         class="btn btn-red mt-2 float-right"
                         :disabled="disableCreate"
@@ -52,7 +53,8 @@
         error: Error,
         hasError: boolean,
         disableCreate: boolean,
-        loading: boolean
+        loading: boolean,
+        invalidName: boolean
     }
 
     interface Methods {
@@ -76,7 +78,10 @@
                 loading: state => state.loading
             }),
             disableCreate: function() {
-                return !this.newProjectName;
+                return !this.newProjectName || this.invalidName;
+            },
+            invalidName() {
+                return this.previousProjects.map(p => p.name).indexOf(this.newProjectName) > -1
             }
         },
         methods: {
