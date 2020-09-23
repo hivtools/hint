@@ -24,6 +24,29 @@
                 </button>
             </template>
         </modal>
+        <modal :open="requestProjectName">
+            <h4 v-if="versionToCopy" v-translate="'copyVersionHeader'"></h4>
+            <h5 v-translate="'enterProjectName'"></h5>
+            <template v-slot:footer>
+                <div class="container">
+                    <div class="row">
+                        <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="copiedProjectName">
+                    </div>
+                    <div class="row">
+                        <button type="button"
+                                class="btn btn-red mt-2 mr-1 col"
+                                v-translate="'createProject'">
+                        </button>
+                        <button type="button"
+                                class="btn btn-white mt-2 ml-1 col"
+                                @click="cancelLoad"
+                                v-translate="'cancel'">
+                        </button>
+                    </div>
+                </div>
+
+            </template>
+        </modal>
     </div>
 </template>
 <script lang="ts">
@@ -39,12 +62,21 @@
     import {ValidateInputResponse} from "../../generated";
     import Modal from "../Modal.vue"
     import DropDown from "./DropDown.vue";
+    import {mapGetterByName} from "../../utils";
+
+    interface Data {
+        requestProjectName: boolean,
+        newProjectName: string | null,
+        fileToLoad: File | null
+    }
 
     interface Methods {
         save: (e: Event) => void;
         load: () => void;
         loadAction: (file: File) => void;
-        clearLoadError: () => void
+        loadToNewProject: () => void,
+        clearLoadError: () => void,
+        cancelLoad: () => void
     }
 
     interface LoadComputed {
@@ -54,7 +86,8 @@
 
     interface Computed extends LoadComputed {
         baselineFiles: BaselineFiles
-        surveyAndProgramFiles: SurveyAndProgramFiles
+        surveyAndProgramFiles: SurveyAndProgramFiles,
+        isGuest: boolean
     }
 
     interface BaselineFiles {
@@ -73,13 +106,21 @@
         return file ? {hash: file.hash, filename: file.filename} : null
     };
 
-    export default Vue.extend<{}, Methods, Computed, "title">({
+    export default Vue.extend<Data, Methods, Computed, "title">({
         props: ["title"],
+        data(): Data {
+            return {
+                requestProjectName: false,
+                newProjectName: null,
+                fileToLoad: null
+            }
+        },
         computed: {
             ...mapStateProps<LoadState, keyof LoadComputed>("load", {
                 hasError: state => state.loadingState == LoadingState.LoadFailed,
                 loadError: state => state.loadError && state.loadError.detail
             }),
+            isGuest: mapGetterByName(null, "isGuest"),
             baselineFiles: mapStateProp<BaselineState, BaselineFiles>("baseline", state => {
                 return {
                     pjnz: localSessionFile(state.pjnz),
@@ -118,8 +159,19 @@
                 const input = this.$refs.loadFile as HTMLInputElement;
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];
-                    this.loadAction(file);
+                    if (this.isGuest) {
+                        this.loadAction(file);
+                    } else  {
+                        this.fileToLoad = file;
+                        this.requestProjectName = false;
+                    }
                 }
+            },
+            loadToNewProject() {
+
+            },
+            cancelLoad() {
+                this.requestProjectName = false;
             }
         },
         components: {
