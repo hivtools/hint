@@ -8,7 +8,7 @@ describe("Projects mutations", () => {
     const mockProject = {
         id: 1,
         name: "v1",
-        versions: [{id: "OLD VERSION", created: "old created time", updated: "old updated time"}]
+        versions: [{id: "OLD VERSION", created: "old created time", updated: "old updated time", versionNumber: 1}]
     };
 
     const consoleSpy = jest.fn();

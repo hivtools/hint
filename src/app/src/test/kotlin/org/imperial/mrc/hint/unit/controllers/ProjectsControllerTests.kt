@@ -30,7 +30,7 @@ class ProjectsControllerTests {
         on { userIsGuest() } doReturn false
     }
 
-    private val mockVersion = Version("testVersion", "createdTime", "updatedTime")
+    private val mockVersion = Version("testVersion", "createdTime", "updatedTime", 1)
 
     private val parser = ObjectMapper()
 
@@ -78,7 +78,7 @@ class ProjectsControllerTests {
     @Test
     fun `gets Projects`()
     {
-        val mockVersions = listOf(Version("testVersion", "createdTime", "updatedTime"))
+        val mockVersions = listOf(Version("testVersion", "createdTime", "updatedTime", 1))
         val mockProjects = listOf(Project(99, "testProject", mockVersions))
         val mockProjectRepo = mock<ProjectRepository>{
             on { getProjects("testUser") } doReturn mockProjects
