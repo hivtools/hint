@@ -16,7 +16,7 @@ class SessionControllerTests {
         val mockFileManager = mock<FileManager>()
 
         val sut = SessionController(mockFileManager)
-        val files = mapOf("pjnz" to VersionFile("hash1", "file1"))
+        val files = mapOf("pjnz" to VersionFile("hash1", "file1", false))
         val result = sut.postFiles(files)
 
         verify(mockFileManager).setAllFiles(files)

@@ -86,9 +86,9 @@ class BaselineControllerTests : HintrControllerTests() {
 
     @Test
     fun `validates combined files`() {
-        val mockPjnz = VersionFileWithPath("pjnzPath", "pjnzHash", "pjnzFile")
-        val mockShape = VersionFileWithPath("shapePath", "shapeHash", "shapeFile")
-        val mockPop = VersionFileWithPath("popPath", "pjnzHash", "popFile")
+        val mockPjnz = VersionFileWithPath("pjnzPath", "pjnzHash", "pjnzFile", false)
+        val mockShape = VersionFileWithPath("shapePath", "shapeHash", "shapeFile", false)
+        val mockPop = VersionFileWithPath("popPath", "pjnzHash", "popFile", false)
 
         val mockFileManager = mock<FileManager> {
             on { getFile(FileType.PJNZ) } doReturn mockPjnz
