@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.AssertionsForClassTypes
 import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
@@ -53,6 +54,17 @@ class ProjectRepositoryTests {
 
         assertThat(project[PROJECT.USER_ID]).isEqualTo(uid)
         assertThat(project[PROJECT.NAME]).isEqualTo("testProjectRepo")
+    }
+
+    @Test
+    fun `project name must be unique`()
+    {
+        val uid = setupUser()
+
+        sut.saveNewProject(uid, "testProjectRepo")
+
+        assertThatThrownBy { sut.saveNewProject(uid, "testProjectRepo") }
+                .isInstanceOf(ProjectException::class.java)
     }
 
     @Test

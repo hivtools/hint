@@ -66,6 +66,14 @@ describe("Projects component", () => {
         const wrapper = createSut();
         wrapper.find("input").setValue("newProject");
         expect(wrapper.find("button").attributes("disabled")).toBeUndefined();
+        expect(wrapper.findAll(".invalid-feedback").length).toBe(0);
+    });
+
+    it("shows invalid feedback if name is non unique", () => {
+        const wrapper = createSut({previousProjects: [{name: "p1", id: 123, versions: []}]});
+        wrapper.find("input").setValue("p1");
+        expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
+        expect(wrapper.findAll(".invalid-feedback").length).toBe(1);
     });
 
     it("displays error if any", () => {

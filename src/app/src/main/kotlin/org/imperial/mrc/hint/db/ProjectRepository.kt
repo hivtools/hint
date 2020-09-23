@@ -6,6 +6,8 @@ import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
 import org.imperial.mrc.hint.exceptions.ProjectException
 import org.imperial.mrc.hint.models.Version
 import org.imperial.mrc.hint.models.Project
+import org.jooq.Record
+import org.jooq.Record1
 import org.springframework.stereotype.Component
 
 interface ProjectRepository
@@ -17,8 +19,12 @@ interface ProjectRepository
 
 @Component
 class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
+
     override fun saveNewProject(userId: String, projectName: String): Int
     {
+        if (getProject(projectName, userId) != null) {
+            throw ProjectException("projectNameAlreadyExists")
+        }
         val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME)
                 .values(userId, projectName)
                 .returning(PROJECT.ID)
@@ -71,5 +77,13 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
                 .where(PROJECT.ID.eq(projectId))
                 .and(PROJECT.USER_ID.eq(userId))
                 .fetchAny() ?: throw ProjectException("projectDoesNotExist")
+    }
+
+    private fun getProject(projectName: String, userId: String): Record? {
+        return dsl.select(PROJECT.ID)
+                .from(PROJECT)
+                .where(PROJECT.NAME.eq(projectName))
+                .and(PROJECT.USER_ID.eq(userId))
+                .fetchAny()
     }
 }
