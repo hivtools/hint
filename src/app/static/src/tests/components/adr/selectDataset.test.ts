@@ -151,7 +151,7 @@ describe("select dataset", () => {
         expect(mockTooltipDirective.mock.calls[0][0].innerHTML)
             .toContain("<circle cx=\"12\" cy=\"12\" r=\"10\"></circle>"); // tooltip should be on the icon
         expect(mockTooltipDirective.mock.calls[0][1].value)
-            .toBe("This dataset has been updated in the ADR. Use the refresh button to import the latest files.");
+            .toBe("The following files have been updated in the ADR: PJNZ. Use the refresh button to import the latest files.");
     });
 
     it("refreshes out of date baseline files", async () => {

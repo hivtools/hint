@@ -91,6 +91,15 @@
         newDatasetId: string | null
     }
 
+    const names: { [k in keyof DatasetResourceSet]: string } = {
+        pjnz: "PJNZ",
+        pop: "Population",
+        shape: "Shape file",
+        survey: "Household Survey",
+        program: "ART",
+        anc: "ANC"
+    }
+
     export default Vue.extend<Data, Methods, Computed, {}>({
         data() {
             return {
@@ -159,10 +168,12 @@
                 return outOfDateResources
             },
             outOfDateMessage() {
+                const updatedNames = Object.keys(this.outOfDateResources)
+                    .map(r => names[r as keyof DatasetResourceSet]).join(", ")
                 if (Object.keys(this.outOfDateResources).length == 0) {
                     return ""
                 }
-                return "This dataset has been updated in the ADR. Use the refresh button to import the latest files."
+                return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`
             }
         },
         methods: {
