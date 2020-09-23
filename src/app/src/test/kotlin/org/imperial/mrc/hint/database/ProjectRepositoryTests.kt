@@ -5,9 +5,11 @@ import org.assertj.core.api.AssertionsForClassTypes
 import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.db.tables.Project.PROJECT
+import org.imperial.mrc.hint.db.tables.ProjectVersion
 import org.imperial.mrc.hint.db.tables.ProjectVersion.PROJECT_VERSION
 import org.imperial.mrc.hint.exceptions.ProjectException
 import org.imperial.mrc.hint.logic.UserLogic
+import org.imperial.mrc.hint.models.Version
 import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,6 +41,22 @@ class ProjectRepositoryTests {
     private lateinit var dsl: DSLContext
 
     private val testEmail = "test@test.com"
+
+    @Test
+    fun `can get project`() {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        versionRepo.saveVersion("v1", projectId)
+        val project = sut.getProject(projectId)
+        assertThat(project.name).isEqualTo("testProjectRepo")
+        assertThat(project.id).isEqualTo(projectId)
+        assertThat(project.versions.count()).isEqualTo(1)
+        assertThat(project.versions[0].versionNumber).isEqualTo(1)
+        assertThat(project.versions[0].id).isEqualTo("v1")
+        assertThat(project.versions[0].created).isNotNull()
+        assertThat(project.versions[0].updated).isNotNull()
+    }
 
     @Test
     fun `can save new project`()
@@ -144,10 +162,10 @@ class ProjectRepositoryTests {
         assertThat(p1.versions[1].versionNumber).isEqualTo(1)
     }
 
-    private fun setupUser(): String
+    private fun setupUser(email: String = testEmail): String
     {
-        userRepo.addUser(testEmail, "pw")
-       return userRepo.getUser(testEmail)!!.id
+        userRepo.addUser(email, "pw")
+       return userRepo.getUser(email)!!.id
     }
 
     private fun format(time: Instant): String
