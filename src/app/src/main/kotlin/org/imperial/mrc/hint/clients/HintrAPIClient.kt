@@ -9,7 +9,7 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.asResponseEntity
 import org.imperial.mrc.hint.getStreamingResponseEntity
 import org.imperial.mrc.hint.models.ModelRunOptions
-import org.imperial.mrc.hint.models.SnapshotFileWithPath
+import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
@@ -17,16 +17,16 @@ import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
 interface HintrAPIClient {
-    fun validateBaselineIndividual(file: SnapshotFileWithPath, type: FileType): ResponseEntity<String>
-    fun validateBaselineCombined(files: Map<String, SnapshotFileWithPath?>): ResponseEntity<String>
-    fun validateSurveyAndProgramme(file: SnapshotFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
-    fun submit(data: Map<String, SnapshotFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
+    fun validateBaselineIndividual(file: VersionFileWithPath, type: FileType): ResponseEntity<String>
+    fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
+    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
+    fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
     fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
-    fun getModelRunOptions(files: Map<String, SnapshotFileWithPath>): ResponseEntity<String>
+    fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
 }
 
@@ -47,7 +47,7 @@ class HintrFuelAPIClient(
         return mapOf("Accept-Language" to getAcceptLanguage())
     }
 
-    override fun validateBaselineIndividual(file: SnapshotFileWithPath,
+    override fun validateBaselineIndividual(file: VersionFileWithPath,
                                             type: FileType): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
@@ -57,7 +57,7 @@ class HintrFuelAPIClient(
         return postJson("validate/baseline-individual", json)
     }
 
-    override fun validateSurveyAndProgramme(file: SnapshotFileWithPath,
+    override fun validateSurveyAndProgramme(file: VersionFileWithPath,
                                             shapePath: String,
                                             type: FileType): ResponseEntity<String> {
 
@@ -69,7 +69,7 @@ class HintrFuelAPIClient(
         return postJson("validate/survey-and-programme", json)
     }
 
-    override fun submit(data: Map<String, SnapshotFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String> {
+    override fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("options" to modelRunOptions.options,
@@ -91,12 +91,12 @@ class HintrFuelAPIClient(
         return get("meta/plotting/${iso3}")
     }
 
-    override fun getModelRunOptions(files: Map<String, SnapshotFileWithPath>): ResponseEntity<String> {
+    override fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String> {
         val json = objectMapper.writeValueAsString(files)
         return postJson("model/options", json)
     }
 
-    override fun validateBaselineCombined(files: Map<String, SnapshotFileWithPath?>): ResponseEntity<String> {
+    override fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String> {
         val json = objectMapper.writeValueAsString(
                 files.mapValues { it.value?.path }
         )

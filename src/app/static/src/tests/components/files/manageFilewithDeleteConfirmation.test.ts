@@ -3,9 +3,10 @@ import {mount, Slots, Wrapper} from '@vue/test-utils';
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
 import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
-import {mockFile} from "../../mocks";
-import {emptyState} from "../../../app/root";
+import {mockFile, mockRootState} from "../../mocks";
+import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import { getters } from "../../../app/store/root/getters";
 
 declare let currentUser: string;
 currentUser = "guest";
@@ -17,15 +18,16 @@ describe("File upload component", () => {
         laterCompleteSteps: () => [{number: 4, textKey: "runModel"}]
     };
 
-    const createStore = () => {
+    const createStore = (partialRootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: mockRootState(partialRootState),
+            getters: getters,
             modules: {
                 stepper: {
                     namespaced: true,
                     getters: mockGetters
                 },
-                versions: {
+                projects: {
                     namespaced: true
                 },
                 errors: {
@@ -37,9 +39,9 @@ describe("File upload component", () => {
         return store;
     };
 
-    const createSut = (props?: any, slots?: Slots) => {
+    const createSut = (props?: any, slots?: Slots, partialRootState: Partial<RootState> = {}) => {
         return mount(ManageFile, {
-            store: createStore(),
+            store: createStore(partialRootState),
             propsData: {
                 error: null,
                 label: "PJNZ",
@@ -77,6 +79,8 @@ describe("File upload component", () => {
         const wrapper = createSut({
             existingFileName: "test.pjnz",
             deleteFile: removeHandler
+        }, {
+            currentUser: 'guest'
         });
         const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");

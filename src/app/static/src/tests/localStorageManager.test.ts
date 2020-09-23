@@ -1,5 +1,5 @@
 import {
-    mockBaselineState,
+    mockBaselineState, mockDataset,
     mockError,
     mockMetadataState,
     mockModelOptionsState,
@@ -8,7 +8,7 @@ import {
     mockPlottingSelections,
     mockStepperState,
     mockSurveyAndProgramState,
-    mockVersionsState
+    mockProjectsState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -29,7 +29,7 @@ describe("LocalStorageManager", () => {
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey}),
-            versions: mockVersionsState()
+            projects: mockProjectsState()
         } as RootState;
 
         const result = serialiseState(mockRoot);
@@ -42,19 +42,15 @@ describe("LocalStorageManager", () => {
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: DataType.Survey},
-            versions: mockVersionsState()
+            projects: mockProjectsState()
         });
     });
 
     it("serialiseState saves selectedDataset from baseline", async () => {
+        const dataset = mockDataset();
         const mockRoot = {
             baseline: mockBaselineState({
-                selectedDataset: {
-                    id: "123",
-                    revision_id: "456",
-                    title: "Some data",
-                    url: "www.some.url"
-                }
+                selectedDataset: dataset
             }),
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
@@ -63,18 +59,13 @@ describe("LocalStorageManager", () => {
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: mockSurveyAndProgramState(),
-            versions: mockVersionsState()
+            projects: mockProjectsState()
         } as RootState;
 
         const result = serialiseState(mockRoot);
         expect(result).toStrictEqual({
             baseline: {
-                selectedDataset: {
-                    id: "123",
-                    revision_id: "456",
-                    title: "Some data",
-                    url: "www.some.url"
-                }
+                selectedDataset: dataset
             },
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
@@ -83,7 +74,7 @@ describe("LocalStorageManager", () => {
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: null},
-            versions: mockVersionsState()
+            projects: mockProjectsState()
         });
     });
 

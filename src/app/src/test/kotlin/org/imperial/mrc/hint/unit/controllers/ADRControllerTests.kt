@@ -14,7 +14,7 @@ import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.controllers.HintrController
-import org.imperial.mrc.hint.db.SnapshotRepository
+import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
@@ -179,6 +179,31 @@ class ADRControllerTests : HintrControllerTests() {
     }
 
     @Test
+    fun `gets dataset by id`() {
+        val expectedUrl = "package_show?id=1234"
+        val mockClient = mock<ADRClient> {
+            on { get(expectedUrl) } doReturn ResponseEntity
+                    .ok()
+                    .body("whatever")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.getDataset("1234")
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
     fun `returns map of names to adr file schemas`() {
         val sut = ADRController(
                 mock(),
@@ -205,7 +230,7 @@ class ADRControllerTests : HintrControllerTests() {
     override fun getSut(mockFileManager: FileManager,
                         mockAPIClient: HintrAPIClient,
                         mockSession: Session,
-                        mockSnapshotRepository: SnapshotRepository): HintrController {
+                        mockVersionRepository: VersionRepository): HintrController {
         return ADRController(mockEncryption,
                 mockUserRepo,
                 mock(),
@@ -214,7 +239,7 @@ class ADRControllerTests : HintrControllerTests() {
                 mockFileManager,
                 mockAPIClient,
                 mockSession,
-                mockSnapshotRepository)
+                mockVersionRepository)
     }
 
     @Test

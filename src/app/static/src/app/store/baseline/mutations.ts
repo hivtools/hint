@@ -1,14 +1,14 @@
 import {MutationTree} from 'vuex';
 import {BaselineState} from "./baseline";
 import {
+    Error,
     NestedFilterOption,
     PjnzResponse,
     PopulationResponse,
     ShapeResponse,
-    ValidateBaselineResponse,
-    Error
+    ValidateBaselineResponse
 } from "../../generated";
-import {Dataset, PayloadWithType} from "../../types";
+import {Dataset, DatasetResourceSet, PayloadWithType} from "../../types";
 import {flattenOptions} from "../../utils";
 import {ReadyState} from "../../root";
 
@@ -23,7 +23,8 @@ export enum BaselineMutation {
     Validating = "Validating",
     Validated = "Validated",
     BaselineError = "Error",
-    SetDataset = "SetDataset"
+    SetDataset = "SetDataset",
+    UpdateDatasetResources = "UpdateDatasetResources"
 }
 
 export const BaselineUpdates = [
@@ -33,6 +34,24 @@ export const BaselineUpdates = [
 ];
 
 export const mutations: MutationTree<BaselineState> = {
+
+    [BaselineMutation.UpdateDatasetResources](state: BaselineState, payload: DatasetResourceSet) {
+        if (state.selectedDataset) {
+            const resources = state.selectedDataset.resources;
+            Object.keys(resources).map((k: string) => {
+                const key = k as keyof DatasetResourceSet;
+                if (!payload[key]) {
+                    return;
+                }
+                if (!resources[key] || (resources[key]!!.revisionId != payload[key]!!.revisionId)) {
+                    // previous data was null OR has a different revision id
+                    // so update metadata and mark as out of date
+                    resources[key] = payload[key];
+                    resources[key]!!.outOfDate = true;
+                }
+            })
+        }
+    },
 
     [BaselineMutation.SetDataset](state: BaselineState, payload: Dataset) {
         state.selectedDataset = payload;

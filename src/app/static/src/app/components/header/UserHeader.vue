@@ -5,7 +5,7 @@
                 <div class="navbar-header">
                     {{title}}
                 </div>
-                <router-link v-if="!isGuest" to="/versions" class="ml-2 pr-2 border-right" v-translate="'versions'"
+                <router-link id="projects-link" v-if="!isGuest" to="/projects" class="ml-2 pr-2 border-right" v-translate="'projects'"
                              style="flex:none"></router-link>
                 <file-menu :title="title"></file-menu>
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-light">
@@ -39,12 +39,13 @@
 <script lang="ts">
 
     import Vue from "vue";
+    import { mapGetters } from 'vuex';
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
     import {mapMutationByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
-    import {VersionsMutations} from "../../store/versions/mutations";
+    import {ProjectsMutations} from "../../store/projects/mutations";
     import {PayloadWithType} from "../../types";
 
     interface Props {
@@ -54,8 +55,7 @@
 
     interface Computed {
         helpFilename: string,
-        troubleFilename: string,
-        isGuest: boolean
+        troubleFilename: string
     }
 
     export default Vue.extend<{}, {}, Computed, Props>({
@@ -76,9 +76,7 @@
                     }
                     return filename;
                 }),
-            isGuest() {
-                return this.user == "guest"
-            }
+            ...mapGetters(["isGuest"])
         },
         props: {
             title: String,

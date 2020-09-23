@@ -1,7 +1,7 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
 import {Error} from "./generated";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
-import {versions, VersionsState, initialVersionsState} from "./store/versions/versions";
+import {projects, initialProjectsState, ProjectsState} from "./store/projects/projects";
 import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
 import {
     initialSurveyAndProgramState,
@@ -15,6 +15,7 @@ import {initialModelOutputState, modelOutput, ModelOutputState} from "./store/mo
 import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations, RootMutation} from "./store/root/mutations";
+import {getters} from "./store/root/getters";
 import {initialModelOptionsState, modelOptions, ModelOptionsState} from "./store/modelOptions/modelOptions";
 import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mutations";
 import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
@@ -49,7 +50,8 @@ export interface RootState extends TranslatableState {
     stepper: StepperState,
     load: LoadState,
     errors: ErrorsState,
-    versions: VersionsState
+    projects: ProjectsState
+    currentUser: string
 }
 
 export interface ReadyState {
@@ -63,8 +65,8 @@ const persistState = (store: Store<RootState>) => {
 
         const {dispatch} = store;
         const type = stripNamespace(mutation.type);
-        if (type[0] !== "versions" && type[0] !== "errors") {
-            dispatch("versions/uploadSnapshotState", {root: true});
+        if (type[0] !== "projects" && type[0] !== "errors") {
+            dispatch("projects/uploadVersionState", {root: true});
         }
     })
 };
@@ -98,6 +100,8 @@ const resetState = (store: Store<RootState>) => {
     })
 };
 
+declare const currentUser: string;
+
 export const emptyState = (): RootState => {
     return {
         adrKey: null,
@@ -116,7 +120,8 @@ export const emptyState = (): RootState => {
         load: initialLoadState(),
         plottingSelections: initialPlottingSelectionsState(),
         errors: initialErrorsState(),
-        versions: initialVersionsState()
+        projects: initialProjectsState(),
+        currentUser: currentUser
     }
 };
 
@@ -133,9 +138,10 @@ export const storeOptions: StoreOptions<RootState> = {
         stepper,
         load,
         errors,
-        versions
+        projects
     },
     actions: actions,
     mutations: mutations,
+    getters: getters,
     plugins: [persistState, resetState]
 };

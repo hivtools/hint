@@ -7,11 +7,10 @@ import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.controllers.HintrController
-import org.imperial.mrc.hint.db.SnapshotRepository
-import org.imperial.mrc.hint.models.SnapshotFileWithPath
+import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
-import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.mock.web.MockMultipartFile
@@ -38,19 +37,19 @@ abstract class HintrControllerTests {
                 saveFile(argWhere<MultipartFile> {
                     it.originalFilename == "some-file-name.csv"
                 }, eq(type))
-            } doReturn SnapshotFileWithPath("test-path", "hash", "some-file-name.csv")
+            } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv")
 
             on {
                 saveFile(any<String>(), eq(type))
-            } doReturn SnapshotFileWithPath("test-path", "hash", "some-file-name.csv")
+            } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv")
 
             on {
                 getFile(FileType.Shape)
-            } doReturn SnapshotFileWithPath("shape-path", "hash", "shape-file-name.csv")
+            } doReturn VersionFileWithPath("shape-path", "hash", "shape-file-name.csv")
 
             on {
                 getFile(type)
-            } doReturn SnapshotFileWithPath("test-path", "hash", "some-file-name.csv")
+            } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv")
         }
     }
 
@@ -63,7 +62,7 @@ abstract class HintrControllerTests {
     }
 
     abstract fun getSut(mockFileManager: FileManager, mockAPIClient: HintrAPIClient,
-                        mockSession: Session, mockSnapshotRepository: SnapshotRepository): HintrController
+                        mockSession: Session, mockVersionRepository: VersionRepository): HintrController
 
     protected fun assertSavesAndValidates(fileType: FileType,
                                           uploadAction: (sut: HintrController) -> ResponseEntity<String>) {
@@ -79,9 +78,9 @@ abstract class HintrControllerTests {
         when (fileType) {
             FileType.PJNZ, FileType.Population, FileType.Shape -> verify(mockApiClient)
                     .validateBaselineIndividual(
-                            SnapshotFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
+                            VersionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
             else -> verify(mockApiClient)
-                    .validateSurveyAndProgramme(SnapshotFileWithPath("test-path", "hash", "some-file-name.csv"), "shape-path", fileType)
+                    .validateSurveyAndProgramme(VersionFileWithPath("test-path", "hash", "some-file-name.csv"), "shape-path", fileType)
         }
     }
 
@@ -99,9 +98,9 @@ abstract class HintrControllerTests {
         when (fileType) {
             FileType.PJNZ, FileType.Population, FileType.Shape -> verify(mockApiClient)
                     .validateBaselineIndividual(
-                            SnapshotFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
+                            VersionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
             else -> verify(mockApiClient)
-                    .validateSurveyAndProgramme(SnapshotFileWithPath("test-path", "hash", "some-file-name.csv"), "shape-path", fileType)
+                    .validateSurveyAndProgramme(VersionFileWithPath("test-path", "hash", "some-file-name.csv"), "shape-path", fileType)
         }
     }
 
@@ -117,7 +116,7 @@ abstract class HintrControllerTests {
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
         verify(mockApiClient)
-                .validateBaselineIndividual(SnapshotFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
+                .validateBaselineIndividual(VersionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
 
         // should return a null result when null is returned from the file manager
         sut = getSut(mock(), mockApiClient, mock(), mock())
@@ -132,12 +131,12 @@ abstract class HintrControllerTests {
     protected fun assertDeletes(fileType: FileType,
                                 getAction: (sut: HintrController) -> ResponseEntity<String>) {
         val mockSession = mock<Session> {
-            on { getSnapshotId() } doReturn "sid"
+            on { getVersionId() } doReturn "sid"
         }
-        val mockSessionRepository = mock<SnapshotRepository>()
+        val mockSessionRepository = mock<VersionRepository>()
         val sut = getSut(mock(), mock(), mockSession, mockSessionRepository)
         val result = getAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-        verify(mockSessionRepository).removeSnapshotFile(sessionId, fileType)
+        verify(mockSessionRepository).removeVersionFile(sessionId, fileType)
     }
 }

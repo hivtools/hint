@@ -40,7 +40,7 @@ class Pac4jConfig {
 class Session(private val webContext: WebContext, private val pac4jConfig: Config) {
 
     companion object {
-        private const val SNAPSHOT_ID = "snapshot_id"
+        private const val VERSION_ID = "version_id"
     }
 
      fun getUserProfile(): CommonProfile {
@@ -55,19 +55,19 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
         return getUserProfile().id == GUEST_USER
     }
 
-    fun getSnapshotId() :String {
+    fun getVersionId() :String {
         //Generate a new id if none exists
-        return ( pac4jConfig.sessionStore.get(webContext, SNAPSHOT_ID) ?: generateNewSnapshotId() ) as String
+        return ( pac4jConfig.sessionStore.get(webContext, VERSION_ID) ?: generateNewVersionId() ) as String
     }
 
-    fun setSnapshotId(value: String) {
-        pac4jConfig.sessionStore.set(webContext, SNAPSHOT_ID, value)
+    fun setVersionId(value: String) {
+        pac4jConfig.sessionStore.set(webContext, VERSION_ID, value)
     }
 
-    fun generateNewSnapshotId(): String {
-        val newSnapshotId = UUID.randomUUID().toString()
-        setSnapshotId(newSnapshotId)
-        return newSnapshotId
+    fun generateNewVersionId(): String {
+        val newVersionId = UUID.randomUUID().toString()
+        setVersionId(newVersionId)
+        return newVersionId
     }
 }
 

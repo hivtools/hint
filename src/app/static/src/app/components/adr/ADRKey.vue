@@ -1,55 +1,63 @@
 <template>
-        <div class="row mb-2">
-            <div class="col-8">
-                <div class="d-flex">
-                    <label for="key"
-                           class="font-weight-bold align-self-stretch"
-                           v-translate="'adrKey'">
-                    </label>
-                    <div class="align-self-stretch pl-2">
-                        <div v-if="!editing">
-                            <span class="pr-2">{{keyText}}</span>
-                            <a href="#" v-if="!key"
-                               @click="edit"
-                               v-translate="'add'"></a>
-                            <a href="#" v-if="key"
+    <div class="row mb-2">
+        <div class="col-8">
+            <div class="d-flex">
+                <label for="key"
+                       class="font-weight-bold align-self-stretch"
+                       v-translate="'adrKey'">
+                </label>
+                <div class="align-self-stretch pl-2">
+                    <div v-if="!editing">
+                        <span class="pr-2">{{ keyText }}</span>
+                        <span v-if="!key">
+                           <a href="#"
+                              @click="edit"
+                              v-translate="'add'"></a>
+                              <span>/</span>
+                            <a :href="adrUrl"
+                               target="_blank"
+                               v-translate="'getAccessKey'"
+                               v-tooltip="tooltipContent"></a>
+                        </span>
+                        <span v-if="key">
+                            <a href="#"
                                @click="edit"
                                v-translate="'edit'"> </a>
-                            <span v-if="key">/</span>
+                            <span>/</span>
                             <a href="#"
-                               v-if="key"
                                @click="remove"
                                v-translate="'remove'"></a>
-                        </div>
-                        <div class="input-group"
-                             style="margin-top: -8px; min-width: 390px"
-                             v-if="editing">
-                            <input id="key"
-                                   ref="keyInput"
-                                   class="form-control"
-                                   v-model="editableKey"
-                                   type="text"
-                                   placeholder="Enter key"/>
-                            <div class="input-group-append">
-                                <button class="btn btn-red"
-                                        type="button"
-                                        v-translate="'save'"
-                                        :disabled="!editableKey"
-                                        @click="save">
-                                </button>
-                            </div>
-                        </div>
+                         </span>
                     </div>
-                    <div class="align-self-stretch pl-2">
-                        <a href="#"
-                           v-if="editing"
-                           @click="cancel"
-                           v-translate="'cancel'"></a>
+                    <div class="input-group"
+                         style="margin-top: -8px; min-width: 390px"
+                         v-if="editing">
+                        <input id="key"
+                               ref="keyInput"
+                               class="form-control"
+                               v-model="editableKey"
+                               type="text"
+                               v-translate:placeholder="'enterKey'"/>
+                        <div class="input-group-append">
+                            <button class="btn btn-red"
+                                    type="button"
+                                    v-translate="'save'"
+                                    :disabled="!editableKey"
+                                    @click="save">
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <error-alert v-if="error" :error="error"></error-alert>
+                <div class="align-self-stretch pl-2">
+                    <a href="#"
+                       v-if="editing"
+                       @click="cancel"
+                       v-translate.lowercase="'cancel'"></a>
+                </div>
             </div>
+            <error-alert v-if="error" :error="error"></error-alert>
         </div>
+    </div>
 </template>
 <script lang="ts">
     import Vue from "vue";
@@ -59,6 +67,7 @@
     import {Language} from "../../store/translations/locales";
     import i18next from "i18next";
     import ErrorAlert from "../ErrorAlert.vue";
+    import {VTooltip} from 'v-tooltip'
 
     interface Data {
         editableKey: string | null
@@ -76,9 +85,11 @@
 
     interface Computed {
         key: string | null
+        adrUrl: string
         currentLanguage: Language
         keyText: string
         error: Error | null
+        tooltipContent: string
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -91,6 +102,8 @@
         computed: {
             key: mapStateProp<RootState, string | null>(null,
                 (state: RootState) => state.adrKey),
+            adrUrl: mapStateProp<RootState, string>(null,
+                (state: RootState) => state.adrSchemas!!.baseUrl),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
             error: mapStateProp<RootState, Error | null>(null,
@@ -105,8 +118,11 @@
                     }
                     return str;
                 } else {
-                    return i18next.t("noneProvided", this.currentLanguage)
+                    return i18next.t("noneProvided", {lng: this.currentLanguage})
                 }
+            },
+            tooltipContent() {
+                return i18next.t("adrTooltip", {lng: this.currentLanguage})
             }
         },
         methods: {
@@ -133,7 +149,8 @@
                 this.editing = false;
             }
         },
-        components: {ErrorAlert}
+        components: {ErrorAlert},
+        directives: {"tooltip": VTooltip}
     });
 
 </script>

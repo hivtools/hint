@@ -2,12 +2,72 @@ import {actions} from "../../app/store/baseline/actions";
 import {login, rootState} from "./integrationTest";
 import {getFormData} from "./helpers";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
+import {actions as rootActions} from "../../app/store/root/actions";
 
 describe("Baseline actions", () => {
 
     beforeAll(async () => {
         await login();
+        // this key is for a test user who has access to 1 fake dataset
+        const adrKey = "4c69b103-4532-4b30-8a37-27a15e56c0bb"
+        await rootActions.saveADRKey({commit: jest.fn(), rootState} as any, adrKey);
     });
+
+    it("can get dataset", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const rootStateWithSchemas = {
+            ...rootState, adrSchemas: {
+                baseUrl: "adr.com",
+                pjnz: "pjnz",
+                population: "pop",
+                shape: "shape",
+                survey: "survey",
+                programme: "program",
+                anc: "anc"
+            }
+        }
+        await rootActions.getADRDatasets({commit, rootState} as any);
+        const datasetId = commit.mock.calls[0][0]["payload"][0].id;
+        const state = {selectedDataset: {id: datasetId}};
+        await actions.refreshDatasetMetadata({commit, state, dispatch, rootState: rootStateWithSchemas} as any);
+        expect(commit.mock.calls[1][0]).toBe(BaselineMutation.UpdateDatasetResources);
+    });
+
+    it("can import PJNZ file", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = {country: "Malawi"} as any;
+        await actions.importPJNZ({commit, state, dispatch, rootState} as any,
+            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/Botswana2018.PJNZ");
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
+            .toBe("Botswana2018.PJNZ");
+    }, 10000);
+
+    it("can import shape file", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.importShape({commit, dispatch, rootState} as any,
+            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/malawi.geojson");
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
+            .toBe("malawi.geojson");
+
+    }, 10000);
+
+    it("can import population file", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.importPopulation({commit, dispatch, rootState} as any,
+            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/population.csv");
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
+        expect(commit.mock.calls[1][0]["payload"]["filename"])
+            .toBe("population.csv");
+    }, 7000);
 
     it("can upload PJNZ file", async () => {
         const commit = jest.fn();
@@ -20,7 +80,6 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("Botswana2018.PJNZ");
-
     });
 
     it("can get baseline data", async () => {

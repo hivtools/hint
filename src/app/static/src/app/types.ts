@@ -63,23 +63,48 @@ export interface NumericRange {
     max: number
 }
 
-export interface Snapshot {
+export interface Version {
     id: string,
     created: string,
     updated: string
 }
 
-export interface Version {
+export interface Project {
     id: number,
     name: string,
-    snapshots: Snapshot[]
+    versions: Version[]
+}
+
+export interface VersionDetails {
+    files: any,
+    state: string
+}
+
+export interface VersionIds {
+    projectId: number,
+    versionId: string
+}
+
+export interface DatasetResource {
+    revisionId: string
+    url: string
+    outOfDate: boolean
+}
+
+export interface DatasetResourceSet {
+    pjnz: DatasetResource | null,
+    pop: DatasetResource | null,
+    program: DatasetResource | null,
+    anc: DatasetResource | null,
+    shape: DatasetResource | null,
+    survey: DatasetResource | null
 }
 
 export interface Dataset {
     id: string
     title: string
-    revision_id: string,
-    url: string
+    url: string,
+    resources:  DatasetResourceSet
 }
 
 export interface ADRSchemas {

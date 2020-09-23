@@ -2,11 +2,19 @@
     <div class="d-flex">
         <div v-if="selectedDataset" style="margin-top:8px">
             <span class="font-weight-bold">Selected dataset:</span>
-            <a :href="selectedDataset.url" target="_blank">{{selectedDataset.title}}</a>
+            <a :href="selectedDataset.url" target="_blank">{{ selectedDataset.title }}</a>
+            <span class="color-red">
+                <info-icon size="20"
+                           v-if="outOfDateMessage"
+                           v-tooltip="outOfDateMessage"
+                           style="vertical-align: text-bottom;"></info-icon>
+            </span>
         </div>
-        <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{selectText}}</button>
+        <button v-if="outOfDateMessage" class="btn btn-white ml-2" @click="refresh">Refresh</button>
+        <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{ selectText }}</button>
         <modal id="dataset" :open="open">
-            <h4>Browse ADR</h4>
+            <h4 v-if="!loading">Browse ADR</h4>
+            <p v-if="loading">Importing files - this may take several minutes. Please do not close your browser.</p>
             <div v-if="!loading">
                 <tree-select :multiple="false"
                              :searchable="true"
@@ -21,17 +29,15 @@
             <div class="text-center" v-if="loading">
                 <loading-spinner size="sm"></loading-spinner>
             </div>
-            <template v-slot:footer>
+            <template v-slot:footer v-if="!loading">
                 <button type="button"
                         class="btn btn-white"
-                        @click="importDataset"
-                        :disabled="loading">
+                        @click="importDataset">
                     Import
                 </button>
                 <button type="button"
                         class="btn btn-white"
-                        @click="toggleModal"
-                        :disabled="loading">
+                        @click="toggleModal">
                     Cancel
                 </button>
             </template>
@@ -41,18 +47,29 @@
 <script lang="ts">
     import Vue from "vue"
     import TreeSelect from '@riophae/vue-treeselect'
-    import {mapMutationByName, mapStateProp} from "../../utils";
+    import {mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
     import {BaselineMutation} from "../../store/baseline/mutations";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {ADRSchemas, Dataset} from "../../types";
+    import {ADRSchemas, Dataset, DatasetResource, DatasetResourceSet} from "../../types";
+    import {InfoIcon} from "vue-feather-icons";
+    import {VTooltip} from "v-tooltip";
 
     interface Methods {
         setDataset: (dataset: Dataset) => void
         importDataset: () => void
         toggleModal: () => void
+        importPJNZ: (url: string) => Promise<void>
+        importShape: (url: string) => Promise<void>
+        importPopulation: (url: string) => Promise<void>
+        importSurvey: (url: string) => Promise<void>
+        importProgram: (url: string) => Promise<void>
+        importANC: (url: string) => Promise<void>
+        findResource: (datasetWithResources: any, resourceType: string) => DatasetResource | null
+        refresh: () => void
+        refreshDatasetMetadata: () => void
     }
 
     interface Computed {
@@ -61,7 +78,10 @@
         datasetOptions: any[]
         selectedDataset: Dataset | null
         newDataset: Dataset
-        selectText: string
+        selectText: string,
+        outOfDateMessage: string,
+        outOfDateResources: { [k in keyof DatasetResourceSet]?: true }
+        hasShapeFile: boolean
     }
 
     interface Data {
@@ -78,8 +98,11 @@
                 newDatasetId: null
             }
         },
-        components: {Modal, TreeSelect, LoadingSpinner},
+        components: {Modal, TreeSelect, LoadingSpinner, InfoIcon},
+        directives: {"tooltip": VTooltip},
         computed: {
+            hasShapeFile: mapStateProp<BaselineState, boolean>("baseline",
+                (state: BaselineState) => !!state.shape),
             schemas: mapStateProp<RootState, ADRSchemas>(null,
                 (state: RootState) => state.adrSchemas!!),
             selectedDataset: mapStateProp<BaselineState, Dataset | null>("baseline",
@@ -98,39 +121,97 @@
                 }))
             },
             newDataset() {
-                const fullMetaData = this.datasets.find(d => d.id = this.newDatasetId)
+                const fullMetaData = this.datasets.find(d => d.id = this.newDatasetId);
                 return fullMetaData && {
                     id: fullMetaData.id,
                     title: fullMetaData.title,
-                    revision_id: fullMetaData.revision_id,
-                    url: `${this.schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`
+                    url: `${this.schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`,
+                    resources: {
+                        pjnz: this.findResource(fullMetaData, this.schemas.pjnz),
+                        shape: this.findResource(fullMetaData, this.schemas.shape),
+                        pop: this.findResource(fullMetaData, this.schemas.population),
+                        survey: this.findResource(fullMetaData, this.schemas.survey),
+                        program: this.findResource(fullMetaData, this.schemas.programme),
+                        anc: this.findResource(fullMetaData, this.schemas.anc)
+                    }
                 }
             },
             selectText() {
-                if (this.selectedDataset){
+                if (this.selectedDataset) {
                     return "Edit"
-                }
-                else {
+                } else {
                     return "Select ADR dataset"
                 }
+            },
+            outOfDateResources() {
+                if (!this.selectedDataset) {
+                    return {};
+                }
+                const resources = this.selectedDataset.resources;
+                const outOfDateResources: { [k in keyof DatasetResourceSet]?: true } = {};
+                Object.keys(resources).map((k) => {
+                    const key = k as keyof DatasetResourceSet;
+                    if (resources[key] && resources[key]!!.outOfDate) {
+                        outOfDateResources[key] = true;
+                    }
+                });
+                return outOfDateResources
+            },
+            outOfDateMessage() {
+                if (Object.keys(this.outOfDateResources).length == 0) {
+                    return ""
+                }
+                return "This dataset has been updated in the ADR. Use the refresh button to import the latest files."
             }
         },
         methods: {
             setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
-            importDataset() {
+            refreshDatasetMetadata: mapActionByName("baseline", "refreshDatasetMetadata"),
+            importPJNZ: mapActionByName("baseline", "importPJNZ"),
+            importShape: mapActionByName("baseline", "importShape"),
+            importPopulation: mapActionByName("baseline", "importPopulation"),
+            importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
+            importProgram: mapActionByName("surveyAndProgram", "importProgram"),
+            importANC: mapActionByName("surveyAndProgram", "importANC"),
+            findResource(datasetWithResources: any, resourceType: string) {
+                const metadata = datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
+                return metadata ? {url: metadata.url, revisionId: metadata.revision_id, outOfDate: false} : null
+            },
+            async importDataset() {
                 this.loading = true;
                 this.setDataset(this.newDataset);
-                // TODO import each file
-                // TODO await all
+
+                const {pjnz, pop, shape, survey, program, anc} = this.newDataset.resources
+
+                await Promise.all([
+                    pjnz && this.importPJNZ(pjnz.url),
+                    pop && this.importPopulation(pop.url),
+                    shape && this.importShape(shape.url)]);
+
+                (shape || this.hasShapeFile) && await Promise.all([
+                    survey && this.importSurvey(survey.url),
+                    program && this.importProgram(program.url),
+                    anc && this.importANC(anc.url)
+                ]);
+
+                this.loading = false;
+                this.open = false;
+            },
+            async refresh() {
+                this.loading = true;
+                this.open = true;
                 setTimeout(() => {
-                    // mock importing of files with a timeout
+                    // TODO actually refresh files
                     this.loading = false;
                     this.open = false;
-                }, 200)
+                }, 200);
             },
             toggleModal() {
                 this.open = !this.open;
             }
+        },
+        mounted() {
+            this.refreshDatasetMetadata();
         }
     })
 </script>

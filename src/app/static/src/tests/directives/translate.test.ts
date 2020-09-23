@@ -17,6 +17,10 @@ describe("translate directive", () => {
         template: '<input v-translate:value="\'validate\'" />'
     };
 
+    const TranslateLowercaseAttributeTest = {
+        template: '<input v-translate:value.lowercase="\'validate\'" />'
+    };
+
     const TranslateInnerTextTestStatic = {
         template: '<h4 v-translate="\'validate\'"></h4>'
     };
@@ -46,6 +50,12 @@ describe("translate directive", () => {
         const store = createStore();
         const rendered = shallowMount(TranslateAttributeTest, {store});
         expect((rendered.find("input").element as HTMLInputElement).value).toBe("Validate");
+    });
+
+    it("makes translated text lowercase if modifier specified", () => {
+        const store = createStore();
+        const rendered = shallowMount(TranslateLowercaseAttributeTest, {store});
+        expect((rendered.find("input").element as HTMLInputElement).value).toBe("validate");
     });
 
     it("translates the attribute when the store language changes", () => {

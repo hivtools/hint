@@ -9,7 +9,7 @@ import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpMethod
 
-class DiseaseTests : SnapshotFileTests() {
+class DiseaseTests : VersionFileTests() {
 
     @BeforeEach
     fun setup() {
