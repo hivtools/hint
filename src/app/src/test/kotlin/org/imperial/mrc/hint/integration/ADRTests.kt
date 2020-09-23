@@ -126,17 +126,17 @@ class ADRTests : SecureIntegrationTests() {
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
-    @ParameterizedTest
-    @Ignore
-    @EnumSource(IsAuthorized::class)
-    fun `can save survey from ADR`(isAuthorized: IsAuthorized) {
-        importShapeFile(isAuthorized)
-
-        val survey = extractUrl(isAuthorized, "inputs-unaids-survey")
-        val result = testRestTemplate.postForEntity<String>("/adr/survey",
-                getPostEntityWithUrl(survey))
-        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
-    }
+//    @ParameterizedTest
+//    @Ignore
+//    @EnumSource(IsAuthorized::class)
+//    fun `can save survey from ADR`(isAuthorized: IsAuthorized) {
+//        importShapeFile(isAuthorized)
+//
+//        val survey = extractUrl(isAuthorized, "inputs-unaids-survey")
+//        val result = testRestTemplate.postForEntity<String>("/adr/survey",
+//                getPostEntityWithUrl(survey))
+//        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
+//    }
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
