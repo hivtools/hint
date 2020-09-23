@@ -7,7 +7,6 @@ import org.imperial.mrc.hint.exceptions.ProjectException
 import org.imperial.mrc.hint.models.Version
 import org.imperial.mrc.hint.models.Project
 import org.jooq.Record
-import org.jooq.Record1
 import org.springframework.stereotype.Component
 
 interface ProjectRepository
