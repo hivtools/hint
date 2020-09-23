@@ -11,7 +11,7 @@ export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded"
 export type LoadErrorActionTypes = "LoadFailed"
 
 export interface LoadActions {
-    load: (store: ActionContext<LoadState, RootState>, file: File) => void
+    load: (store: ActionContext<LoadState, RootState>, file: File, projectName: string | null) => void
     setFiles: (store: ActionContext<LoadState, RootState>, savedFileContents: string) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
@@ -19,7 +19,7 @@ export interface LoadActions {
 }
 
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
-    load({dispatch}, file) {
+    load({dispatch}, file, projectName) {
         const reader = new FileReader();
         reader.addEventListener('loadend', function() {
             dispatch("setFiles", reader.result as string);
@@ -45,8 +45,6 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const savedState = objectContents.state;
 
         if (!rootGetters.isGuest) {
-            //todo: get project name from user
-
             await(dispatch("projects/createProject", "LOADED_PROJECT", {root: true}));
             savedState.projects.currentProject = rootState.projects.currentProject;
             savedState.projects.currentVersion = rootState.projects.currentVersion;
