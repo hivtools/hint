@@ -52,7 +52,7 @@ describe("Project history component", () => {
         expect(v.at(4).text()).toBe("Load last updated");
         expect(v.at(4).find("a").attributes("href")).toBe("");
         expect(v.at(5).text()).toBe("Delete");
-        expect(v.at(6).text()).toBe("Copy to a new project");
+        expect(v.at(6).text()).toBe("Copy last updated to a new project");
         expect(v.at(6).find("a").attributes("href")).toBe("");
 
         const versions = wrapper.find(`#versions-${id}`);
@@ -278,7 +278,7 @@ describe("Project history component", () => {
 
         const modal = wrapper.findAll(".modal").at(1);
         expect(modal.classes()).toContain("show");
-        expect(modal.find(".modal-body").text()).toBe("Copying project to a new project  Please enter a name for the new project");
+        expect(modal.find(".modal-body").text()).toBe("Copying version v1 to a new project Please enter a name for the new project");
         const input = modal.find("input")
         expect(input.attributes("placeholder")).toBe("Project name")
         const buttons = modal.find(".modal-footer").findAll("button");
@@ -299,7 +299,7 @@ describe("Project history component", () => {
 
         const modal = wrapper.findAll(".modal").at(1);
         expect(modal.classes()).toContain("show");
-        expect(modal.find(".modal-body").text()).toBe("Copying version to a new project Please enter a name for the new project");
+        expect(modal.find(".modal-body").text()).toBe("Copying version v1 to a new project Please enter a name for the new project");
         const input = modal.find("input")
         expect(input.attributes("placeholder")).toBe("Project name")
         const buttons = modal.find(".modal-footer").findAll("button");
