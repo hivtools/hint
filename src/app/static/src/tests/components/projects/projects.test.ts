@@ -51,7 +51,6 @@ describe("Projects component", () => {
         expect(wrapper.find("input").attributes()["placeholder"]).toBe("Project name");
         expect(wrapper.find("button").text()).toBe("Create project");
         expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
-        expect(wrapper.find(ProjectHistory).props("projects")).toBe(previousProjects);
         expect(wrapper.find(ErrorAlert).exists()).toBe(false);
     });
 
