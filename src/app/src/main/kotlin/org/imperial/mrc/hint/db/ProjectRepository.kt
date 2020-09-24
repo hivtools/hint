@@ -30,7 +30,12 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
                 .from(PROJECT)
                 .join(PROJECT_VERSION)
                 .on(PROJECT.ID.eq(PROJECT_VERSION.PROJECT_ID))
-                .where(PROJECT.ID.eq(projectId)).fetch() ?: throw ProjectException("projectDoesNotExist")
+                .where(PROJECT.ID.eq(projectId)).fetch()
+
+        if (!projectRecord.any()) {
+            throw ProjectException("projectDoesNotExist")
+        }
+
         return mapProject(projectRecord)
     }
 
