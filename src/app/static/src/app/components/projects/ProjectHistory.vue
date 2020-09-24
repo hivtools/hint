@@ -125,7 +125,7 @@
 
     import ProjectsMixin from "./ProjectsMixin";
 
-    export default ProjectsMixin.extend<Data, Methods, {}, Props>({
+    export default ProjectsMixin.extend<Data, Methods, {}, {}>({
        data() {
            return {
                projectToDelete: null,
