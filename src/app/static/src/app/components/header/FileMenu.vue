@@ -30,13 +30,16 @@
             <template v-slot:footer>
                 <div class="container">
                     <div class="row">
-                        <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
+                        <input type="text" class="form-control"
+                               v-translate:placeholder="'projectName'"
+                               v-model="newProjectName">
                     </div>
                     <div class="row">
                         <button type="button"
                                 class="btn btn-red mt-2 mr-1 col"
                                 @click="loadToNewProject"
-                                v-translate="'createProject'">
+                                v-translate="'createProject'"
+                                :disabled="!newProjectName">
                         </button>
                         <button type="button"
                                 class="btn btn-white mt-2 ml-1 col"
@@ -170,7 +173,6 @@
                 }
             },
             loadToNewProject() {
-                //TODO: validation - no empty project name - disable button
                 this.loadAction({file: this.fileToLoad!, projectName: this.newProjectName});
             },
             cancelLoad() {
