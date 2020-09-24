@@ -8,6 +8,7 @@ import {actions as baselineActions} from "../../app/store/baseline/actions";
 import {ShapeResponse} from "../../app/generated";
 import Vuex from "vuex";
 import {emptyState} from "../../app/root";
+import {localStorageManager} from "../../app/localStorageManager";
 
 const fs = require("fs");
 const FormData = require("form-data");
@@ -46,7 +47,8 @@ describe("load actions", () => {
         const fakeState = JSON.stringify({
             files: {"shape": shape},
             state: {
-                projects: {}
+                projects: {},
+                baseline: "TEST BASELINE"
             }
         });
         const fakeFileContents = addCheckSum(fakeState);
@@ -68,15 +70,24 @@ describe("load actions", () => {
             }
         });
 
+        const mockSaveToLocalStorage = jest.fn();
+        localStorageManager.savePartialState = mockSaveToLocalStorage;
+
         await actions.setFiles({commit, dispatch: store.dispatch, state: {}, rootState: store.state, rootGetters} as any,
             {savedFileContents: fakeFileContents, projectName: "new project"});
 
         //we expect the non-mocked dispatch to have created a project, and to have invoked the local store manager to
-        //have saved state to the mocked local storage with the new project's details
-
+        //save state
         expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
         expect(commit.mock.calls[1][0].type).toBe("UpdatingState");
         expect(commit.mock.calls[1][0].payload).toStrictEqual({shape: {hash: shape.hash, filename: shape.filename}});
+        const savedProjectState = mockSaveToLocalStorage.mock.calls[0][0].projects;
+        expect(savedProjectState.currentProject.id).toBeGreaterThan(0);
+        expect(savedProjectState.currentProject.name).toBe("new project");
+        expect(savedProjectState.currentProject.versions.length).toBe(1);
+        expect(savedProjectState.currentVersion.id).toBeTruthy();
+        expect(savedProjectState.currentVersion.versionNumber).toBe(1);
+        expect(mockSaveToLocalStorage.mock.calls[0][0].baseline).toBe("TEST BASELINE");
     });
 
 });
