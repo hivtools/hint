@@ -102,7 +102,7 @@ describe("Load actions", () => {
           }
         };
         const rootGetters = {isGuest: false};
-        const fileContents = addCheckSum('{"files": "TEST FILES", "state": {"projects": {}}}');
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"projects": {}}}));
 
         await actions.setFiles({commit, state, dispatch, rootState: testRootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: "new project"}
