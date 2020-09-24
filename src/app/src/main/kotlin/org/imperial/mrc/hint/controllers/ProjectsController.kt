@@ -37,7 +37,7 @@ class ProjectsController(private val session: Session,
                            @PathVariable("email") email: String): ResponseEntity<String> {
 
         val userId = userLogic.getUser(email)?.id ?: throw UserException("userDoesNotExist")
-        val currentProject = projectRepository.getProject(parentProjectId)
+        val currentProject = projectRepository.getProject(parentProjectId, userId())
         val newProjectId = projectRepository.saveNewProject(userId, currentProject.name)
         currentProject.versions.forEach {
             versionRepository.cloneVersion(it.id, session.generateNewVersionId(), newProjectId)
