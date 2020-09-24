@@ -166,6 +166,32 @@ class ProjectsControllerTests {
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
+    // @Test
+    // fun `promotes version to project`()
+    // {
+    //     val mockVersionRepo = mock<VersionRepository> {
+    //         on { getVersion("testVersion") } doReturn mockVersion
+    //     }
+
+    //     val mockProjectRepo = mock<ProjectRepository> {
+    //         on { saveNewProject("testUser", "testProject") } doReturn 99
+    //     }
+
+    //     val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo)
+
+    //     val result = sut.newProject("testProject")
+
+    //     verify(mockVersionRepo).saveVersion("testVersion", 99)
+
+    //     val resultJson = parser.readTree(result.body)["data"]
+
+    //     assertThat(resultJson["id"].asInt()).isEqualTo(99)
+    //     assertThat(resultJson["name"].asText()).isEqualTo("testProject")
+    //     val versions = resultJson["versions"] as ArrayNode
+    //     assertThat(versions.count()).isEqualTo(1)
+    //     assertExpectedVersion(versions[0])
+    // }
+
     private fun assertExpectedVersion(node: JsonNode)
     {
         assertThat(node["id"].asText()).isEqualTo("testVersion")

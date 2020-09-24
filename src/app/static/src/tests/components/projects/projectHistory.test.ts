@@ -270,7 +270,7 @@ describe("Project history component", () => {
         expect(mockLoad.mock.calls[0][1]).toStrictEqual({projectId: 1, versionId: "s11"});
     };
 
-    it("shows modal when copy project link is clicked and removes it when cancel is clicked", async () => {
+    it("shows modal when copy last updated version link is clicked and removes it when cancel is clicked", async () => {
         const wrapper = getWrapper();
         const copyLink = wrapper.find("#p-1").findAll(".project-cell").at(6).find("a");
         copyLink.trigger("click");
@@ -310,5 +310,71 @@ describe("Project history component", () => {
         cancelButton.trigger("click");
         await Vue.nextTick();
         expect(modal.classes()).not.toContain("show");
+    });
+
+    it("invokes copyVersion action when confirm copy", async () => {
+        const mockCopyVersion = jest.fn();
+        const mockStore = new Vuex.Store({
+            state: emptyState(),
+            modules: {
+                projects: {
+                    namespaced: true,
+                    actions: {
+                        copyVersion: mockCopyVersion
+                    }
+                }
+            }
+        });
+        const wrapper = getWrapper(testPropsData, mockStore);
+        const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(1);
+        const input = modal.find("input");
+        const copyBtn = modal.find(".modal-footer").findAll("button").at(0);
+        input.setValue("newProject");
+        expect(copyBtn.attributes("disabled")).toBe(undefined);
+        copyBtn.trigger("click");
+
+        await Vue.nextTick();
+
+        expect(mockCopyVersion.mock.calls.length).toBe(1);
+        expect(mockCopyVersion.mock.calls[0][1]).toStrictEqual(
+        {"name": "newProject",
+           "version": {
+              "projectId": 1,
+              "versionId": "s11",
+           }});
+    });
+
+    it("cannot invoke copyVersion action when when input value is empty", async () => {
+        const mockCopyVersion = jest.fn();
+        const mockStore = new Vuex.Store({
+            state: emptyState(),
+            modules: {
+                projects: {
+                    namespaced: true,
+                    actions: {
+                        copyVersion: mockCopyVersion
+                    }
+                }
+            }
+        });
+        const wrapper = getWrapper(testPropsData, mockStore);
+        const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(1);
+        const input = modal.find("input");
+        const copyBtn = modal.find(".modal-footer").findAll("button").at(0);
+        input.setValue("");
+        expect(copyBtn.attributes("disabled")).toBe("disabled");
+        copyBtn.trigger("click");
+
+        await Vue.nextTick();
+
+        expect(mockCopyVersion.mock.calls.length).toBe(0);
     });
 });

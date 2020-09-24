@@ -121,12 +121,12 @@
     }
 
     interface Computed {
-        currentProject: Project | null,
-        previousProjects: Project[],
-        error: Error,
-        hasError: boolean,
+        // currentProject: Project | null,
+        // previousProjects: Project[],
+        // error: Error,
+        // hasError: boolean,
         disableCreate: boolean,
-        loading: boolean,
+        // loading: boolean,
         currentLanguage: Language,
         copyVersionHeader: string
     }
@@ -166,13 +166,13 @@
            }
        },
         computed: {
-            ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
-                currentProject: state => state.currentProject,
-                previousProjects: state => state.previousProjects,
-                error: state => state.error,
-                hasError: state => !!state.error,
-                loading: state => state.loading
-            }),
+            // ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
+            //     currentProject: state => state.currentProject,
+            //     previousProjects: state => state.previousProjects,
+            //     error: state => state.error,
+            //     hasError: state => !!state.error,
+            //     loading: state => state.loading
+            // }),
             disableCreate: function() {
                 return !this.newProjectName;
             },
