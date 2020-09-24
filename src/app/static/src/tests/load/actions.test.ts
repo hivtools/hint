@@ -60,7 +60,7 @@ describe("Load actions", () => {
             expect(mockAxios.history.post[0].url).toBe("/session/files/");
             expect(mockAxios.history.post[0].data).toBe("files");
 
-            expect(dispatch.mock.calls[0][0]).toBe("updateStoreState");
+            expect(dispatch.mock.calls[0][0]).toBe("load/updateStoreState");
             expect(dispatch.mock.calls[0][1]).toStrictEqual({});
             done();
         });
@@ -84,7 +84,7 @@ describe("Load actions", () => {
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "UpdatingState", payload: {}});
 
         //should also hand on to updateState action
-        expect(dispatch.mock.calls[0][0]).toEqual("updateStoreState");
+        expect(dispatch.mock.calls[0][0]).toEqual("load/updateStoreState");
         expect(dispatch.mock.calls[0][1]).toStrictEqual("TEST STATE");
     });
 
@@ -116,7 +116,7 @@ describe("Load actions", () => {
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "UpdatingState", payload: {}});
 
         //should also hand on to updateState action, with updated project state
-        expect(dispatch.mock.calls[1][0]).toEqual("updateStoreState");
+        expect(dispatch.mock.calls[1][0]).toEqual("load/updateStoreState");
         expect(dispatch.mock.calls[1][1]).toStrictEqual(
             {projects: {currentProject: "TEST PROJECT", currentVersion: "TEST VERSION"}
             });
