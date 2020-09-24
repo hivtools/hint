@@ -395,31 +395,33 @@ describe("Projects actions", () => {
 
     it("copyVersion creates new project containing replicated version", async (done) => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const state = mockProjectsState({
             currentProject: mockProject,
             currentVersion: mockProject.versions[0]
         });
 
-        const stateUrl = "/project/1/version/version-id/promoteversion";
+        const stateUrl = "/project/1/version/testVersion/promoteversion";
         mockAxios.onPost(stateUrl, "newProject")
             .reply(200, mockSuccess("OK"));
 
         const versionBundle = {
-            version: {projectId: state.currentProject.id, versionId: state.currentVersion.id},
+            version: {projectId: 1, versionId: "testVersion"},
             name: "newProject"
         }
         // const commit = jest.fn();
         // const state = mockProjectsState();
 
-        actions.copyVersion({commit, state, rootState} as any, versionBundle);
+        actions.copyVersion({commit, state, rootState, dispatch} as any, versionBundle);
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
+            // expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
 
             const posted = mockAxios.history.post[0].data;
-            expect(posted).toEqual("name=newProject");
-            expect(commit.mock.calls[1][0]).toStrictEqual({type: RootMutation.SetProject, payload: "TestProject"});
-            expect(commit.mock.calls[1][1]).toStrictEqual({root: true});
+            expect(posted).toEqual("newProject");
+            // expect(mockAxios.history.post[0].respons)
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.VersionCreated});
+            // expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
             done();
         });
 
