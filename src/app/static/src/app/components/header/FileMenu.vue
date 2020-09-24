@@ -24,24 +24,26 @@
                 </button>
             </template>
         </modal>
-        <modal :open="requestProjectName">
+        <modal id="load-project-name" :open="requestProjectName">
             <h4 v-translate="'loadFileToProjectHeader'"></h4>
             <h5 v-translate="'enterProjectName'"></h5>
             <template v-slot:footer>
                 <div class="container">
                     <div class="row">
-                        <input type="text" class="form-control"
+                        <input id="project-name-input" type="text" class="form-control"
                                v-translate:placeholder="'projectName'"
                                v-model="newProjectName">
                     </div>
                     <div class="row">
-                        <button type="button"
+                        <button id="confirm-load-project"
+                                type="button"
                                 class="btn btn-red mt-2 mr-1 col"
                                 @click="loadToNewProject"
                                 v-translate="'createProject'"
                                 :disabled="!newProjectName">
                         </button>
-                        <button type="button"
+                        <button id="cancel-load-project"
+                                type="button"
                                 class="btn btn-white mt-2 ml-1 col"
                                 @click="cancelLoad"
                                 v-translate="'cancel'">
@@ -173,6 +175,7 @@
                 }
             },
             loadToNewProject() {
+                this.requestProjectName = false;
                 this.loadAction({file: this.fileToLoad!, projectName: this.newProjectName});
             },
             cancelLoad() {
