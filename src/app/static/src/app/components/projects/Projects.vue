@@ -13,7 +13,7 @@
                 <input type="text" class="form-control"
                        v-translate:placeholder="'projectName'"
                        v-model="newProjectName">
-                <div class="invalid-feedback d-block"
+                <div class="invalid-feedback d-inline"
                      v-translate="'uniqueProjectName'"
                      v-if="invalidName"></div>
                 <button type="button"
