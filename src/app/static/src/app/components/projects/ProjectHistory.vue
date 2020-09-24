@@ -21,8 +21,8 @@
                 </div>
                 <div class="col-md-1 project-cell"><small class="text-muted">{{ versionCountLabel(p) }}</small></div>
                 <div class="col-md-3 project-cell">{{ format(p.versions[0].updated) }}</div>
-                <div class="col-md-2 project-cell">
-                    <a @click="loadVersion($event, p.id, p.versions[0].id)" href="" v-translate="'loadLastUpdated'"></a>
+                <div class="col-md-1 project-cell">
+                    <a @click="loadVersion($event, p.id, p.versions[0].id)" href="" v-translate="'load'"></a>
                 </div>
                 <div class="col-md-1 project-cell">
                     <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
@@ -30,7 +30,7 @@
                 <div class="col-md-2 project-cell">
                     <a @click="copyProject($event, p.id)" href="" v-translate="'copyToNewProject'"></a>
                 </div>
-                <div class="col-md-2 project-cell">
+                <div class="col-md-1 project-cell">
                     <share-project :project="p"></share-project>
                 </div>
             </div>
@@ -39,7 +39,7 @@
                     <div class="col-md-3 version-cell"></div>
                     <div class="col-md-1 version-cell">{{ `v${v.versionNumber}` }}</div>
                     <div class="col-md-3 version-cell">{{ format(v.updated) }}</div>
-                    <div class="col-md-2 version-cell">
+                    <div class="col-md-1 version-cell">
                         <a @click="loadVersion($event, p.id, v.id)" href="" v-translate="'load'"></a>
                     </div>
                     <div class="col-md-1 version-cell">
@@ -102,6 +102,7 @@
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
     import Modal from "../Modal.vue"
     import {formatDateTime, mapActionByName} from "../../utils";
+    import ShareProject from "./ShareProject.vue";
 
     interface Data {
         projectToDelete: number | null,
@@ -189,13 +190,6 @@
             },
             versionCountLabel(project: Project) {
                 return project.versions.length == 1 ? "1 version" : `${project.versions.length} versions`
-            },
-            shareProject() {
-                // TODO trigger action to clone project
-                this.projectToShare = null
-            },
-            cancelShareProject() {
-                this.projectToShare = null
             },
             loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
             deleteProjectAction: mapActionByName<number>("projects", "deleteProject"),

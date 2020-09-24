@@ -1,16 +1,21 @@
 <template>
     <div>
-        <a @click="shareProject" href="" v-translate="'shareProject'"></a>
+        <a @click="shareProject" href=""
+           v-translate="'share'"></a>
         <modal :open="open">
             <h4 v-translate="'shareProject'"></h4>
-            <p>This will create a copy of {{ project.name }} for the given users.
-                Please enter the email address or addresses you would like to share this project with.
-                These email addresses must be already registered with Naomi.
-                If sharing with multiple users, separate email addresses with commas:</p>
-            <div class="help-text">E.g. someone@gmail.com, another@hotmail.com</div>
-            <input class="form-control" v-model="emailsToShareWith"/>
-            <div class="invalid-feedback d-block" v-if="invalidEmail">
-                Please enter valid, comma separated email addresses
+            <div v-if="!loading">
+                <div v-html="instructions"></div>
+                <div class="help-text text-muted small">E.g. someone@gmail.com, another@hotmail.com</div>
+                <input class="form-control"
+                       :class="{'is-invalid': showValidationFeedback}"
+                       v-model="emailsToShareWith"/>
+                <div class="invalid-feedback"
+                     v-translate="'emailMultiValidation'">
+                </div>
+            </div>
+            <div class="text-center" v-if="loading">
+                <loading-spinner size="sm"></loading-spinner>
             </div>
             <template v-slot:footer>
                 <button type="button"
@@ -32,21 +37,34 @@
     import {Project} from "../../types";
     import Vue from "vue";
     import Modal from "../Modal.vue";
+    import LoadingSpinner from "../LoadingSpinner.vue";
+    import {mapStatePropByName, validateEmail} from "../../utils";
+    import i18next from "i18next";
+    import {Language} from "../../store/translations/locales";
 
     interface Data {
         emailsToShareWith: string
         open: boolean
+        loading: boolean,
+        showValidationFeedback: boolean
     }
 
     interface Props {
-        project: Project;
+        project: Project
     }
 
     interface Computed {
-        invalidEmail: boolean;
+        currentLanguage: Language,
+        invalidEmail: boolean
+        instructions: string
     }
 
-    const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
+    interface Methods {
+        shareProject: (e: Event) => void
+        confirmShareProject: () => void
+        cancelShareProject: () => void
+    }
+
     export default Vue.extend<Data, Methods, Computed, Props>({
         props: {
             project: {
@@ -56,7 +74,9 @@
         data() {
             return {
                 emailsToShareWith: "",
-                open: false
+                open: false,
+                loading: false,
+                showValidationFeedback: false
             }
         },
         methods: {
@@ -65,20 +85,37 @@
                 this.open = true;
             },
             confirmShareProject() {
-                // TODO trigger action to clone project
-                this.open = false;
+                if (this.invalidEmail) {
+                    this.showValidationFeedback = true;
+                } else {
+                    this.showValidationFeedback = false;
+                    this.loading = true;
+                    const emails = this.emailsToShareWith.replace(/\s*/g, "").split(",")
+                    setTimeout(() => {
+                        // TODO trigger action to clone project
+                        this.loading = false;
+                        this.open = false;
+                    }, 200);
+                }
             },
             cancelShareProject() {
+                this.showValidationFeedback = false;
+                this.emailsToShareWith = "";
                 this.open = false;
             }
         },
         computed: {
+            currentLanguage: mapStatePropByName<Language>(null, "language"),
             invalidEmail() {
-                return !this.emailsToShareWith || !emailRegex.test(this.emailsToShareWith)
+                return !this.emailsToShareWith || !validateEmail(this.emailsToShareWith)
+            },
+            instructions() {
+                return i18next.t('shareProjectInstructions', {project: this.project.name, lng: this.currentLanguage});
             }
         },
         components: {
-            Modal
+            Modal,
+            LoadingSpinner
         }
     });
 

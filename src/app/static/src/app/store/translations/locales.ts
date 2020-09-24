@@ -45,6 +45,7 @@ export interface Translations {
     edit: string,
     email: string,
     emailValidation: string,
+    emailMultiValidation: string,
     enterKey: string,
     enterPassword: string,
     enterProjectName: string,
@@ -116,6 +117,9 @@ export interface Translations {
     sessionExpired: string,
     sex: string,
     shape: string,
+    share: string,
+    shareProject: string,
+    shareProjectInstructions: string,
     sizeIndicator: string,
     static: string,
     survey: string,
@@ -180,6 +184,7 @@ const en: Translations = {
     edit: "edit",
     email: "Email address",
     emailValidation: "Please enter a valid email address.",
+    emailMultiValidation: "Please enter valid, comma separated email addresses",
     entireDataset: "Entire dataset",
     enterKey: "Enter key",
     enterPassword: "Enter a new password",
@@ -252,6 +257,16 @@ const en: Translations = {
     sessionExpired: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing.",
     sex: "Sex",
     shape: "Shape file",
+    share: "Share",
+    shareProject: "Share project",
+    shareProjectInstructions: "<p>" +
+        "This will create a copy of {{ project }} for the given users." +
+        "</p>" +
+        "<p>" +
+        "Please enter the email address or comma separated list of email addresses you would like to share" +
+        "this project with." +
+        "These email addresses must be already registered with Naomi." +
+        "</p>",
     sizeIndicator: "Size Indicator",
     static: "Static",
     survey: "Household Survey",
