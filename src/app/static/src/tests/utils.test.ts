@@ -1,4 +1,12 @@
-import {addCheckSum, freezer, verifyCheckSum, flattenOptions, flattenToIdSet, formatDateTime} from "../app/utils";
+import {
+    addCheckSum,
+    freezer,
+    verifyCheckSum,
+    flattenOptions,
+    flattenToIdSet,
+    formatDateTime,
+    versionLabel
+} from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 import {rootOptionChildren} from "../app/utils";
 
@@ -138,6 +146,11 @@ describe("utils", () => {
         const result = formatDateTime(isoUTCString);
 
         expect(result).toStrictEqual(expected);
+    });
+
+    it("can get version label", () => {
+        const version = {id: "testVersionId", versionNumber: 9, created: "24/09/20", updated: "24/09/20"};
+        expect(versionLabel(version)).toBe("v9");
     });
 
 });

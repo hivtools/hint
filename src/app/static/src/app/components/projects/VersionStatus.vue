@@ -3,7 +3,7 @@
         <span class="float-right">
             <span v-translate="'project'"></span>: {{projectName}} {{versionLabel}}
         </span><br/>
-        <span class="float-right">
+        <span v-if="time" class="float-right">
             <span v-translate="'lastSaved'"></span> {{formattedTime}}
             <check-icon size="14" class="mb-1"></check-icon>
         </span>
