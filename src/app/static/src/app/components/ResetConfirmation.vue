@@ -7,7 +7,7 @@
             <p v-translate="'discardWarning'"></p>
             <ul>
                 <li v-for="step in laterCompleteSteps">
-                    <span v-translate="step"></span> {{step.number}}: <span v-translate="step.textKey"></span>
+                    <span v-translate="'step'"></span> {{step.number}}: <span v-translate="step.textKey"></span>
                 </li>
             </ul>
 
