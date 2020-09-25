@@ -128,7 +128,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.VersionCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`/project/${projectId}/version/${versionId}/promoteversion`, qs.stringify({name}))
+            .postAndReturn(`/project/${projectId}/version/${versionId}/promote`, qs.stringify({name}))
             .then(() => {
                 dispatch("getProjects");
             });

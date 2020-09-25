@@ -401,7 +401,7 @@ describe("Projects actions", () => {
             currentVersion: mockProject.versions[0]
         });
 
-        const stateUrl = "/project/1/version/testVersion/promoteversion";
+        const stateUrl = "/project/1/version/testVersion/promote";
         mockAxios.onPost(stateUrl, "newProject")
             .reply(200, mockSuccess("OK"));
 

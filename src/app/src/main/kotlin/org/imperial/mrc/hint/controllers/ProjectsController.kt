@@ -51,7 +51,7 @@ class ProjectsController(private val session: Session,
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @PostMapping("/project/{projectId}/version/{versionId}/promoteversion")
+    @PostMapping("/project/{projectId}/version/{versionId}/promote")
     @ResponseBody
     fun promoteVersion(
         @PathVariable("projectId") projectId: Int,
