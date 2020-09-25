@@ -96,4 +96,3 @@ class ProjectsController(private val session: Session,
         return session.getUserProfile().id
     }
 }
-//build check
