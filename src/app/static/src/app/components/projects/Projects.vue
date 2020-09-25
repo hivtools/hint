@@ -32,13 +32,14 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp, mapStateProps} from "../../utils";
     import {ProjectsState} from "../../store/projects/projects";
     import {Error} from "../../generated";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {Project} from "../../types";
     import ProjectHistory from "./ProjectHistory.vue";
+    import {router} from "../../router";
 
     const namespace = "projects";
 
@@ -51,6 +52,7 @@
         previousProjects: Project[],
         error: Error,
         hasError: boolean,
+        isGuest: boolean,
         disableCreate: boolean,
         loading: boolean
     }
@@ -75,6 +77,7 @@
                 hasError: state => !!state.error,
                 loading: state => state.loading
             }),
+            isGuest: mapGetterByName(null, "isGuest"),
             disableCreate: function() {
                 return !this.newProjectName;
             }
@@ -86,6 +89,11 @@
             },
             createProject: mapActionByName(namespace, "createProject"),
             getProjects: mapActionByName(namespace, "getProjects")
+        },
+        beforeMount() {
+          if (this.isGuest) {
+              router.push("/");
+          }
         },
         mounted() {
             this.getProjects();
