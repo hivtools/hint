@@ -39,7 +39,6 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {Project} from "../../types";
     import ProjectHistory from "./ProjectHistory.vue";
-    import {router} from "../../router";
 
     const namespace = "projects";
 
@@ -92,7 +91,7 @@
         },
         beforeMount() {
           if (this.isGuest) {
-              router.push("/");
+              this.$router.push("/");
           }
         },
         mounted() {

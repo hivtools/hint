@@ -1,5 +1,6 @@
 import {ProjectsState} from "../../../app/store/projects/projects";
 import Vuex from "vuex";
+import Vue from "vue";
 import {mockProjectsState} from "../../mocks";
 import {shallowMount} from "@vue/test-utils";
 import Projects from "../../../app/components/projects/Projects.vue";
@@ -8,7 +9,6 @@ import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
-import {router} from "../../../app/router";
 
 describe("Projects component", () => {
 
@@ -91,7 +91,7 @@ describe("Projects component", () => {
 
     it("clicking back to current project link invokes router", () =>{
         const mockRouterPush = jest.fn();
-        const wrapper = createSut({currentProject}, jest.fn(), mockRouterPush, true);
+        const wrapper = createSut({currentProject}, jest.fn(), mockRouterPush);
 
         wrapper.find("#projects-header a").trigger("click");
 
@@ -105,9 +105,10 @@ describe("Projects component", () => {
         expect(wrapper.find("#projects-content").exists()).toBe(false);
     });
 
-    it("pushes home route on mount if user is guest", () => {
+    it("pushes home route on mount if user is guest", async () => {
         const mockRouterPush = jest.fn();
         const wrapper = createSut({}, jest.fn(), mockRouterPush, true);
+        await Vue.nextTick();
 
         expect(mockRouterPush.mock.calls.length).toBe(1);
         expect(mockRouterPush.mock.calls[0][0]).toStrictEqual( "/");
