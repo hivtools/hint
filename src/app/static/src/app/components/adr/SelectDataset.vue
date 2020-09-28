@@ -70,6 +70,7 @@
         findResource: (datasetWithResources: any, resourceType: string) => DatasetResource | null
         refresh: () => void
         refreshDatasetMetadata: () => void
+        markResourcesUpdated: () => void
     }
 
     interface Computed {
@@ -88,6 +89,15 @@
         open: boolean
         loading: boolean
         newDatasetId: string | null
+    }
+
+    const names: { [k in keyof DatasetResourceSet]: string } = {
+        pjnz: "PJNZ",
+        pop: "Population",
+        shape: "Shape file",
+        survey: "Household Survey",
+        program: "ART",
+        anc: "ANC"
     }
 
     export default Vue.extend<Data, Methods, Computed, {}>({
@@ -158,15 +168,18 @@
                 return outOfDateResources
             },
             outOfDateMessage() {
+                const updatedNames = Object.keys(this.outOfDateResources)
+                    .map(r => names[r as keyof DatasetResourceSet]).join(", ")
                 if (Object.keys(this.outOfDateResources).length == 0) {
                     return ""
                 }
-                return "This dataset has been updated in the ADR. Use the refresh button to import the latest files."
+                return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`
             }
         },
         methods: {
             setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
             refreshDatasetMetadata: mapActionByName("baseline", "refreshDatasetMetadata"),
+            markResourcesUpdated: mapMutationByName("baseline", BaselineMutation.MarkDatasetResourcesUpdated),
             importPJNZ: mapActionByName("baseline", "importPJNZ"),
             importShape: mapActionByName("baseline", "importShape"),
             importPopulation: mapActionByName("baseline", "importPopulation"),
@@ -200,11 +213,29 @@
             async refresh() {
                 this.loading = true;
                 this.open = true;
-                setTimeout(() => {
-                    // TODO actually refresh files
-                    this.loading = false;
-                    this.open = false;
-                }, 200);
+                const {pjnz, pop, shape, survey, program, anc} = this.selectedDataset!!.resources;
+                await Promise.all([
+                    this.outOfDateResources["pjnz"] && pjnz && this.importPJNZ(pjnz.url),
+                    this.outOfDateResources["pop"] && pop && this.importPopulation(pop.url),
+                    this.outOfDateResources["shape"] && shape && this.importShape(shape.url)]);
+
+                const baselineUpdated =
+                    this.outOfDateResources["pjnz"] ||
+                    this.outOfDateResources["pop"] ||
+                    this.outOfDateResources["shape"];
+
+                // if baseline files are updated, we have to re-import all survey & program files,
+                // regardless of whether they have changed, since updating the baseline files will
+                // have wiped these
+                (shape || this.hasShapeFile) && await Promise.all([
+                    (baselineUpdated || this.outOfDateResources["survey"]) && survey && this.importSurvey(survey.url),
+                    (baselineUpdated || this.outOfDateResources["program"]) && program && this.importProgram(program.url),
+                    (baselineUpdated || this.outOfDateResources["anc"]) && anc && this.importANC(anc.url)
+                ]);
+
+                this.markResourcesUpdated();
+                this.loading = false;
+                this.open = false;
             },
             toggleModal() {
                 this.open = !this.open;

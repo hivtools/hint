@@ -1,6 +1,9 @@
 import {BaselineMutation, mutations} from "../../app/store/baseline/mutations";
 import {
-    mockBaselineState, mockDataset, mockDatasetResource, mockError,
+    mockBaselineState,
+    mockDataset,
+    mockDatasetResource,
+    mockError,
     mockPJNZResponse,
     mockPopulationResponse,
     mockRootState,
@@ -222,14 +225,13 @@ describe("Baseline mutations", () => {
         expect(testState.selectedDataset!!.resources.pjnz).toEqual({...newResouce, outOfDate: true});
     });
 
-    it("UpdateDatasetResources does nothing if new data is null", () => {
+    it("UpdateDatasetResources sets resource to null if new data is null", () => {
         const fakeDataset = mockDataset();
-        const fakeResource = mockDatasetResource();
-        fakeDataset.resources.pjnz = fakeResource;
+        fakeDataset.resources.pjnz = mockDatasetResource();
         const testState = mockBaselineState({selectedDataset: fakeDataset});
         mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: null} as any);
 
-        expect(testState.selectedDataset!!.resources.pjnz).toEqual(fakeResource);
+        expect(testState.selectedDataset!!.resources.pjnz).toEqual(null);
     });
 
     it("UpdateDatasetResources does nothing if revision ids match", () => {
@@ -249,4 +251,38 @@ describe("Baseline mutations", () => {
 
         expect(testState.selectedDataset).toBe(null);
     });
+
+    it("MarkDatasetResourcesUpdated marks all resources as not out of date", () => {
+        const fakeDataset = mockDataset();
+        fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true});
+        fakeDataset.resources.pop = mockDatasetResource({outOfDate: true});
+        fakeDataset.resources.shape = mockDatasetResource({outOfDate: true});
+        fakeDataset.resources.survey = mockDatasetResource({outOfDate: true});
+        fakeDataset.resources.program = mockDatasetResource({outOfDate: true});
+        fakeDataset.resources.anc = mockDatasetResource({outOfDate: true});
+
+        const testState = mockBaselineState({selectedDataset: fakeDataset});
+        mutations[BaselineMutation.MarkDatasetResourcesUpdated](testState);
+
+        const resources = testState.selectedDataset!!.resources;
+        expect(resources.pjnz!!.outOfDate).toBe(false);
+        expect(resources.pop!!.outOfDate).toBe(false);
+        expect(resources.shape!!.outOfDate).toBe(false);
+        expect(resources.survey!!.outOfDate).toBe(false);
+        expect(resources.program!!.outOfDate).toBe(false);
+        expect(resources.anc!!.outOfDate).toBe(false);
+    });
+
+    it("MarkDatasetResourcesUpdated does nothing if selectedDataset is null", () => {
+        const testState = mockBaselineState();
+        mutations[BaselineMutation.MarkDatasetResourcesUpdated](testState);
+        expect(testState.selectedDataset).toBe(null);
+    });
+
+    it("MarkDatasetResourcesUpdated can handle null resources", () => {
+        const testState = mockBaselineState({selectedDataset: mockDataset()});
+        mutations[BaselineMutation.MarkDatasetResourcesUpdated](testState);
+        expect(testState.selectedDataset).toEqual(mockDataset());
+    });
+
 });
