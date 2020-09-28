@@ -24,6 +24,6 @@ class TranslationTests : SecureIntegrationTests() {
         assertError(responseEntity,
                 HttpStatus.BAD_REQUEST,
                 "INVALID_FILE",
-                "Le fichier doit être de type PJNZ, zip, mais il est du type geojson,geojson,geojson.")
+                "Le fichier doit être de type PJNZ, zip, mais il est du type geojson.")
     }
 }
