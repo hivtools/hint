@@ -3,7 +3,8 @@
         <h5 v-translate="'projectHistory'"></h5>
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
-            <div class="col-md-3 header-cell" v-translate="'projectName'"></div>
+            <div class="col-md-2 header-cell" v-translate="'projectName'"></div>
+            <div class="col-md-1 header-cell">Versions</div>
             <div class="col-md-3 header-cell" v-translate="'lastUpdated'"></div>
         </div>
         <hr/>
@@ -15,26 +16,34 @@
                         <chevron-down-icon size="20" class="icon when-open"></chevron-down-icon>
                     </button>
                 </div>
-                <div class="col-md-3 project-cell">
+                <div class="col-md-2 project-cell">
                     {{p.name}}
                 </div>
+                <div class="col-md-1 project-cell"><small class="text-muted">{{versionCountLabel(p)}}</small></div>
                 <div class="col-md-3 project-cell">{{format(p.versions[0].updated)}}</div>
                 <div class="col-md-2 project-cell">
                     <a @click="loadVersion($event, p.id, p.versions[0].id)" href="" v-translate="'loadLastUpdated'"></a>
                 </div>
-                <div class="col-md-2 project-cell">
+                <div class="col-md-1 project-cell">
                     <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
+                </div>
+                <div class="col-md-2 project-cell">
+                    <a @click="copyProject($event, p.id)" href="" v-translate="'copyToNewProject'"></a>
                 </div>
             </div>
             <b-collapse :id="`versions-${p.id}`">
                 <div v-for="v in p.versions" :id="`v-${v.id}`" class="row font-italic bg-light py-2">
-                    <div class="col-md-4 version-cell"></div>
+                    <div class="col-md-3 version-cell"></div>
+                    <div class="col-md-1 version-cell">{{versionLabel(v)}}</div>
                     <div class="col-md-3 version-cell">{{format(v.updated)}}</div>
                     <div class="col-md-2 version-cell">
                         <a @click="loadVersion($event, p.id, v.id)" href="" v-translate="'load'"></a>
                     </div>
-                    <div class="col-md-2 version-cell">
+                    <div class="col-md-1 version-cell">
                         <a @click="deleteVersion($event, p.id, v.id)" href="" v-translate="'delete'"></a>
+                    </div>
+                    <div class="col-md-2 version-cell">
+                        <a @click="copyVersion($event, p.id, v.id)" href="" v-translate="'copyToNewProject'"></a>
                     </div>
                 </div>
             </b-collapse>
@@ -44,60 +53,87 @@
             <h4 v-if="versionToDelete" v-translate="'deleteVersion'"></h4>
             <template v-slot:footer>
                 <button type="button"
-                        class="btn btn-white"
+                        class="btn btn-red"
                         @click="confirmDelete"
                         v-translate="'ok'">
                 </button>
                 <button type="button"
-                         class="btn btn-red"
+                         class="btn btn-white"
                         @click="cancelDelete"
                         v-translate="'cancel'">
                 </button>
+            </template>
+        </modal>
+        <modal :open="projectToCopy || versionToCopy">
+            <h4 v-if="projectToCopy" v-translate="'copyProjectHeader'"></h4>
+            <h4 v-if="versionToCopy" v-translate="'copyVersionHeader'"></h4>
+            <h5 v-translate="'enterProjectName'"></h5>
+            <template v-slot:footer>
+                <div class="container">
+                    <div class="row">
+                        <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="copiedProjectName">
+                    </div>
+                    <div class="row">
+                        <button type="button"
+                            class="btn btn-red mt-2 mr-1 col"
+                            v-translate="'createProject'">
+                        </button>
+                        <button type="button"
+                            class="btn btn-white mt-2 ml-1 col"
+                            @click="cancelCopy"
+                            v-translate="'cancel'">
+                        </button>
+                    </div>
+                </div>
+                
             </template>
         </modal>
     </div>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {VersionIds, Project} from "../../types";
+    import {VersionIds, Project, Version} from "../../types";
     import {BCollapse} from "bootstrap-vue";
     import { VBToggle } from 'bootstrap-vue';
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
     import Modal from "../Modal.vue"
-    import {formatDateTime, mapActionByName} from "../../utils";
+    import {formatDateTime, mapActionByName, versionLabel} from "../../utils";
 
     interface Data {
         projectToDelete: number | null,
-        versionToDelete: VersionIds | null
-    }
-
-    interface Props {
-        projects: Project[];
+        versionToDelete: VersionIds | null,
+        copiedProjectName: string,
+        projectToCopy: number | null,
+        versionToCopy: VersionIds | null
     }
 
     interface Methods {
         format: (date: string) => void,
         loadVersion: (event: Event, projectId: number, versionId: string) => void,
-        loadAction: (version: VersionIds) => void
+        loadAction: (version: VersionIds) => void,
+        versionCountLabel: (project: Project) => string
         deleteProject: (event: Event, projectId: number) => void,
         deleteVersion: (event: Event, projectId: number, versionId: string) => void
+        copyProject: (event: Event, projectId: number) => void,
+        copyVersion: (event: Event, projectId: number, versionId: string) => void
+        cancelCopy: () => void
         cancelDelete: () => void
         confirmDelete: () => void,
         deleteProjectAction: (projectId: number) => void,
         deleteVersionAction: (versionIds: VersionIds) => void
+        versionLabel: (version: Version) => string
     }
 
-    export default Vue.extend<Data, Methods, {}, Props>({
-       props: {
-            projects: {
-                type: Array
-            }
-       },
+    import ProjectsMixin from "./ProjectsMixin";
+
+    export default ProjectsMixin.extend<Data, Methods, {}, {}>({
        data() {
            return {
                projectToDelete: null,
-               versionToDelete: null
+               versionToDelete: null,
+               copiedProjectName: '',
+               projectToCopy: null,
+               versionToCopy: null
            }
        },
        methods: {
@@ -116,6 +152,18 @@
                event.preventDefault();
                this.versionToDelete = {projectId, versionId};
            },
+           copyProject(event: Event, projectId: number) {
+               event.preventDefault();
+               this.projectToCopy = projectId;
+           },
+           copyVersion(event: Event, projectId: number, versionId: string) {
+               event.preventDefault();
+               this.versionToCopy = {projectId, versionId};
+           },
+           cancelCopy() {
+               this.versionToCopy = null;
+               this.projectToCopy = null;
+           },
            cancelDelete() {
                this.versionToDelete = null;
                this.projectToDelete = null;
@@ -128,6 +176,12 @@
                     this.deleteVersionAction(this.versionToDelete);
                     this.versionToDelete = null;
                 }
+           },
+           versionCountLabel(project: Project) {
+               return project.versions.length == 1 ? "1 version" : `${project.versions.length} versions`
+           },
+           versionLabel(version: Version) {
+               return versionLabel(version)
            },
            loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
            deleteProjectAction: mapActionByName<number>("projects", "deleteProject"),

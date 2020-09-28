@@ -3,12 +3,16 @@ package org.imperial.mrc.hint.integration
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import com.fasterxml.jackson.databind.node.ObjectNode
+import org.imperial.mrc.hint.db.Tables.*
+import org.imperial.mrc.hint.logic.UserLogic
+import org.imperial.mrc.hint.security.HintDbProfileService
+import org.pac4j.sql.profile.DbProfile
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
@@ -17,13 +21,13 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class ProjectTests : VersionFileTests() {
+
     @BeforeEach
     fun setup() {
         authorize()
         testRestTemplate.getForEntity<String>("/")
     }
 
-    private val projectName = "testProjectEndpoint"
     private val testState = "{\"state\": \"test\"}"
 
     @Test
@@ -38,6 +42,7 @@ class ProjectTests : VersionFileTests() {
         val versions = data["versions"] as ArrayNode
         assertThat(versions.count()).isEqualTo(1)
         assertThat(versions[0]["id"].asText().count()).isGreaterThan(0)
+        assertThat(versions[0]["versionNumber"].asInt()).isEqualTo(1)
         LocalDateTime.parse(versions[0]["created"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         LocalDateTime.parse(versions[0]["updated"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     }
@@ -57,6 +62,7 @@ class ProjectTests : VersionFileTests() {
 
         val newVersionId = data["id"].asText()
         assertThat(newVersionId.count()).isGreaterThan(0)
+        assertThat(data["versionNumber"].asInt()).isEqualTo(2)
         LocalDateTime.parse(data["created"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         LocalDateTime.parse(data["updated"].asText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
@@ -156,6 +162,7 @@ class ProjectTests : VersionFileTests() {
         assertThat(versions.count()).isEqualTo(1)
         val createVersions = createData["versions"] as ArrayNode
         assertThat(versions[0]["id"]).isEqualTo(createVersions[0]["id"])
+        assertThat(versions[0]["versionNumber"].asInt()).isEqualTo(1)
         assertThat(versions[0]["created"]).isEqualTo(createVersions[0]["created"])
         assertThat(versions[0]["updated"]).isEqualTo(createVersions[0]["updated"])
     }
@@ -303,6 +310,41 @@ class ProjectTests : VersionFileTests() {
         assertThat(msg).isEqualTo("La version n'existe pas.")
     }
 
+    @Test
+    fun `can clone project`()
+    {
+        val createResult = createProject()
+        val createProjectData = getResponseData(createResult)
+        val projectId = createProjectData["id"].asInt()
+        val versions = createProjectData["versions"] as ArrayNode
+        val versionId = versions[0]["id"].asText()
+        getUpdateVersionStateResult(projectId, versionId, testState)
+
+        val email = "user@email.com"
+        userRepo.addUser(email, "password")
+
+        testRestTemplate.postForEntity<String>("/user/$email/project/", getCloneProjectEntity(projectId))
+
+        val newProject = dsl.selectFrom(PROJECT)
+                .where(PROJECT.USER_ID.eq("user@email.com"))
+                .fetchAny()
+
+        val newVersions = dsl.selectFrom(PROJECT_VERSION)
+                .where(PROJECT_VERSION.PROJECT_ID.eq(newProject[PROJECT.ID]))
+                .fetch()
+
+        val oldVersions = dsl.selectFrom(PROJECT_VERSION)
+                .where(PROJECT_VERSION.PROJECT_ID.eq(projectId))
+                .fetch()
+
+        assertThat(newVersions.count()).isEqualTo(1)
+        assertThat(newVersions[0].state).isEqualTo(oldVersions[0].state)
+        assertThat(newVersions[0].versionNumber).isEqualTo(oldVersions[0].versionNumber)
+        assertThat(newVersions[0].created).isEqualTo(oldVersions[0].created)
+        assertThat(newVersions[0].updated).isEqualTo(oldVersions[0].updated)
+        assertThat(newVersions[0].deleted).isEqualTo(oldVersions[0].deleted)
+    }
+
     private fun createProject(): ResponseEntity<String>
     {
         val map = LinkedMultiValueMap<String, String>()
@@ -311,6 +353,15 @@ class ProjectTests : VersionFileTests() {
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         val httpEntity =  HttpEntity(map, headers)
         return testRestTemplate.postForEntity<String>("/project/", httpEntity)
+    }
+
+    private fun getCloneProjectEntity(projectId: Int): HttpEntity<Any>
+    {
+        val map = LinkedMultiValueMap<String, Int>()
+        map.add("parentProjectId", projectId)
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        return HttpEntity(map, headers)
     }
 
     private fun getUpdateVersionStateResult(projectId: Int, versionId: String, state: String,
