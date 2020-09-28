@@ -96,9 +96,9 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {Project, VersionIds} from "../../types";
-    import {BCollapse, VBToggle} from "bootstrap-vue";
+    import {VersionIds, Project} from "../../types";
+    import {BCollapse} from "bootstrap-vue";
+    import { VBToggle } from 'bootstrap-vue';
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
     import Modal from "../Modal.vue"
     import {formatDateTime, mapActionByName} from "../../utils";
@@ -110,10 +110,6 @@
         copiedProjectName: string,
         projectToCopy: number | null,
         versionToCopy: VersionIds | null
-    }
-
-    interface Props {
-        projects: Project[];
     }
 
     interface Methods {
@@ -132,54 +128,51 @@
         deleteVersionAction: (versionIds: VersionIds) => void
     }
 
-    export default Vue.extend<Data, Methods, {}, Props>({
-        props: {
-            projects: {
-                type: Array
-            }
-        },
-        data() {
-            return {
-                projectToDelete: null,
-                versionToDelete: null,
-                copiedProjectName: '',
-                projectToCopy: null,
-                versionToCopy: null
-            }
-        },
-        methods: {
-            format(date: string) {
-                return formatDateTime(date);
-            },
-            loadVersion(event: Event, projectId: number, versionId: string) {
-                event.preventDefault();
-                this.loadAction({projectId, versionId});
-            },
-            deleteProject(event: Event, projectId: number) {
-                event.preventDefault();
-                this.projectToDelete = projectId;
-            },
-            deleteVersion(event: Event, projectId: number, versionId: string) {
-                event.preventDefault();
-                this.versionToDelete = {projectId, versionId};
-            },
-            copyProject(event: Event, projectId: number) {
-                event.preventDefault();
-                this.projectToCopy = projectId;
-            },
-            copyVersion(event: Event, projectId: number, versionId: string) {
-                event.preventDefault();
-                this.versionToCopy = {projectId, versionId};
-            },
-            cancelCopy() {
-                this.versionToCopy = null;
-                this.projectToCopy = null;
-            },
-            cancelDelete() {
-                this.versionToDelete = null;
-                this.projectToDelete = null;
-            },
-            confirmDelete() {
+    import ProjectsMixin from "./ProjectsMixin";
+
+    export default ProjectsMixin.extend<Data, Methods, {}, {}>({
+       data() {
+           return {
+               projectToDelete: null,
+               versionToDelete: null,
+               copiedProjectName: '',
+               projectToCopy: null,
+               versionToCopy: null
+           }
+       },
+       methods: {
+           format(date: string) {
+               return formatDateTime(date);
+           },
+           loadVersion(event: Event, projectId: number, versionId: string) {
+               event.preventDefault();
+               this.loadAction({projectId, versionId});
+           },
+           deleteProject(event: Event, projectId: number) {
+               event.preventDefault();
+               this.projectToDelete = projectId;
+           },
+           deleteVersion(event: Event, projectId: number, versionId: string) {
+               event.preventDefault();
+               this.versionToDelete = {projectId, versionId};
+           },
+           copyProject(event: Event, projectId: number) {
+               event.preventDefault();
+               this.projectToCopy = projectId;
+           },
+           copyVersion(event: Event, projectId: number, versionId: string) {
+               event.preventDefault();
+               this.versionToCopy = {projectId, versionId};
+           },
+           cancelCopy() {
+               this.versionToCopy = null;
+               this.projectToCopy = null;
+           },
+           cancelDelete() {
+               this.versionToDelete = null;
+               this.projectToDelete = null;
+           },
+           confirmDelete() {
                 if (this.projectToDelete) {
                     this.deleteProjectAction(this.projectToDelete);
                     this.projectToDelete = null;

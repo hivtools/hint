@@ -13,13 +13,13 @@ interface ProjectRepository {
     fun saveNewProject(userId: String, projectName: String): Int
     fun getProjects(userId: String): List<Project>
     fun deleteProject(projectId: Int, userId: String)
-    fun getProject(projectId: Int): Project
+    fun getProject(projectId: Int, userId: String): Project
 }
 
 @Component
 class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
 
-    override fun getProject(projectId: Int): Project {
+    override fun getProject(projectId: Int, userId: String): Project {
         val projectRecord = dsl.select(
                 PROJECT.ID,
                 PROJECT.NAME,
@@ -30,7 +30,14 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
                 .from(PROJECT)
                 .join(PROJECT_VERSION)
                 .on(PROJECT.ID.eq(PROJECT_VERSION.PROJECT_ID))
-                .where(PROJECT.ID.eq(projectId)).fetch() ?: throw ProjectException("projectDoesNotExist")
+                .where(PROJECT.ID.eq(projectId)
+                        .and(PROJECT.USER_ID.eq(userId))
+                ).fetch()
+
+        if (!projectRecord.any()) {
+            throw ProjectException("projectDoesNotExist")
+        }
+
         return mapProject(projectRecord)
     }
 
