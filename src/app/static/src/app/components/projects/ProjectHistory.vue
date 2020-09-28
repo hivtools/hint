@@ -92,7 +92,6 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import {VersionIds, Project, Version} from "../../types";
     import {BCollapse} from "bootstrap-vue";
     import { VBToggle } from 'bootstrap-vue';
@@ -106,10 +105,6 @@
         copiedProjectName: string,
         projectToCopy: number | null,
         versionToCopy: VersionIds | null
-    }
-
-    interface Props {
-        projects: Project[];
     }
 
     interface Methods {
@@ -129,12 +124,9 @@
         versionLabel: (version: Version) => string
     }
 
-    export default Vue.extend<Data, Methods, {}, Props>({
-       props: {
-            projects: {
-                type: Array
-            }
-       },
+    import ProjectsMixin from "./ProjectsMixin";
+
+    export default ProjectsMixin.extend<Data, Methods, {}, {}>({
        data() {
            return {
                projectToDelete: null,

@@ -10,7 +10,12 @@
                 </span>
             </div>
             <div class="my-3 col-6 clearfix">
-                <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
+                <input type="text" class="form-control"
+                       v-translate:placeholder="'projectName'"
+                       v-model="newProjectName">
+                <div class="invalid-feedback d-inline"
+                     v-translate="'uniqueProjectName'"
+                     v-if="invalidName"></div>
                 <button type="button"
                         class="btn btn-red mt-2 float-right"
                         :disabled="disableCreate"
@@ -19,7 +24,7 @@
                 </button>
             </div>
             <div class="my-3 col-12">
-                <project-history :projects="previousProjects"></project-history>
+                <project-history></project-history>
             </div>
             <error-alert v-if="hasError" :error="error"></error-alert>
         </div>
@@ -31,8 +36,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {mapActionByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStateProps} from "../../utils";
     import {ProjectsState} from "../../store/projects/projects";
     import {Error} from "../../generated";
     import ErrorAlert from "../ErrorAlert.vue";
@@ -48,9 +52,9 @@
 
     interface Computed {
         currentProject: Project | null,
-        previousProjects: Project[],
         error: Error,
         hasError: boolean,
+        isGuest: boolean,
         disableCreate: boolean,
         loading: boolean
     }
@@ -61,22 +65,19 @@
         handleCurrentProjectClick: (e: Event) => void
     }
 
-    export default Vue.extend<Data, Methods, Computed, {}>({
-        data: function(){
-            return {
-                newProjectName: ""
-            }
-        },
+    import ProjectsMixin from "./ProjectsMixin";
+
+    export default ProjectsMixin.extend<Data, Methods, Computed, {}>({
         computed: {
             ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
                 currentProject: state => state.currentProject,
-                previousProjects: state => state.previousProjects,
                 error: state => state.error,
                 hasError: state => !!state.error,
                 loading: state => state.loading
             }),
+            isGuest: mapGetterByName(null, "isGuest"),
             disableCreate: function() {
-                return !this.newProjectName;
+                return !this.newProjectName || this.invalidName;
             }
         },
         methods: {
@@ -86,6 +87,11 @@
             },
             createProject: mapActionByName(namespace, "createProject"),
             getProjects: mapActionByName(namespace, "getProjects")
+        },
+        beforeMount() {
+          if (this.isGuest) {
+              this.$router.push("/");
+          }
         },
         mounted() {
             this.getProjects();
