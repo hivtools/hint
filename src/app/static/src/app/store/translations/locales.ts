@@ -327,7 +327,7 @@ const fr: Partial<Translations> = {
     filters: "Filtres",
     fitModel: "Ajuster le modèle",
     fitToCurrentDataset: "Ajuster aux données actuelles",
-    fittingComplete: "Ajustement du modèle terminée",
+    fittingComplete: "Ajustement du modèle terminé",
     forgottenPassword: "Vous avez oublié votre mot de passe ?",
     forgottenPasswordHelp: "Si vous avez oublié votre mot de passe, entrez votre adresse e-mail pour demander un lien qui vous permettra de créer un nouveau mot de passe.",
     haveYouSaved: "Avez-vous sauvegardé votre travail ?",
