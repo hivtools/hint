@@ -73,7 +73,9 @@ describe("load actions", () => {
         const mockSaveToLocalStorage = jest.fn();
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
-        await actions.setFiles({commit, dispatch: store.dispatch, state: {}, rootState: store.state, rootGetters} as any,
+        const dispatch = ((store as any)._modulesNamespaceMap["load/"] as any).context.dispatch;
+
+        await actions.setFiles({commit, dispatch, state: {}, rootState: store.state, rootGetters} as any,
             {savedFileContents: fakeFileContents, projectName: "new project"});
 
         //we expect the non-mocked dispatch to have created a project, and to have invoked the local store manager to
