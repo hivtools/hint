@@ -19,7 +19,7 @@ abstract class CleanDatabaseTests
     protected lateinit var dsl: DSLContext
 
     @Autowired
-    private lateinit var userRepo: DbProfileServiceUserLogic
+    protected lateinit var userRepo: DbProfileServiceUserLogic
 
     @AfterEach
     fun tearDown() {
