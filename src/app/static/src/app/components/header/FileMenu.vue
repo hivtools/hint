@@ -27,30 +27,22 @@
         <modal id="load-project-name" :open="requestProjectName">
             <h4 v-translate="'loadFileToProjectHeader'"></h4>
             <h5 v-translate="'enterProjectName'"></h5>
+            <input id="project-name-input" type="text" class="form-control"
+                   v-translate:placeholder="'projectName'" v-model="newProjectName">
             <template v-slot:footer>
-                <div class="container">
-                    <div class="row">
-                        <input id="project-name-input" type="text" class="form-control"
-                               v-translate:placeholder="'projectName'"
-                               v-model="newProjectName">
-                    </div>
-                    <div class="row">
-                        <button id="confirm-load-project"
-                                type="button"
-                                class="btn btn-red mt-2 mr-1 col"
-                                @click="loadToNewProject"
-                                v-translate="'createProject'"
-                                :disabled="!newProjectName">
-                        </button>
-                        <button id="cancel-load-project"
-                                type="button"
-                                class="btn btn-white mt-2 ml-1 col"
-                                @click="cancelLoad"
-                                v-translate="'cancel'">
-                        </button>
-                    </div>
-                </div>
-
+                <button id="confirm-load-project"
+                        type="button"
+                        class="btn btn-red"
+                        @click="loadToNewProject"
+                        v-translate="'createProject'"
+                        :disabled="!newProjectName">
+                </button>
+                <button id="cancel-load-project"
+                        type="button"
+                        class="btn btn-white"
+                        @click="cancelLoad"
+                        v-translate="'cancel'">
+                </button>
             </template>
         </modal>
     </div>
