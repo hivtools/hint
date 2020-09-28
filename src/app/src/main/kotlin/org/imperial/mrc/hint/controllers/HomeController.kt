@@ -14,7 +14,7 @@ class HomeController(
         private val session: Session,
         private val appProperties: AppProperties) {
 
-    @GetMapping("/")
+    @GetMapping(value = ["/", "/projects"])
     fun index(model: Model): String {
         val userProfile = session.getUserProfile()
         versionRepository.saveVersion(session.getVersionId(), null)
