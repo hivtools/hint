@@ -36,7 +36,7 @@
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
         </div>
         <div v-if="!loading" class="content">
-            <version-status class="float-right"></version-status>
+            <version-status></version-status>
             <div class="pt-4">
                 <adr-integration v-if="isActive(1)"></adr-integration>
                 <baseline v-if="isActive(1)"></baseline>
