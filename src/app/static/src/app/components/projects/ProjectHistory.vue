@@ -34,7 +34,7 @@
             <b-collapse :id="`versions-${p.id}`">
                 <div v-for="v in p.versions" :id="`v-${v.id}`" class="row font-italic bg-light py-2">
                     <div class="col-md-3 version-cell"></div>
-                    <div class="col-md-1 version-cell">{{`v${v.versionNumber}`}}</div>
+                    <div class="col-md-1 version-cell">{{versionLabel(v)}}</div>
                     <div class="col-md-3 version-cell">{{format(v.updated)}}</div>
                     <div class="col-md-2 version-cell">
                         <a @click="loadVersion($event, p.id, v.id)" href="" v-translate="'load'"></a>
@@ -92,12 +92,12 @@
 </template>
 
 <script lang="ts">
-    import {VersionIds, Project} from "../../types";
+    import {VersionIds, Project, Version} from "../../types";
     import {BCollapse} from "bootstrap-vue";
     import { VBToggle } from 'bootstrap-vue';
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
     import Modal from "../Modal.vue"
-    import {formatDateTime, mapActionByName} from "../../utils";
+    import {formatDateTime, mapActionByName, versionLabel} from "../../utils";
 
     interface Data {
         projectToDelete: number | null,
@@ -121,6 +121,7 @@
         confirmDelete: () => void,
         deleteProjectAction: (projectId: number) => void,
         deleteVersionAction: (versionIds: VersionIds) => void
+        versionLabel: (version: Version) => string
     }
 
     import ProjectsMixin from "./ProjectsMixin";
@@ -178,6 +179,9 @@
            },
            versionCountLabel(project: Project) {
                return project.versions.length == 1 ? "1 version" : `${project.versions.length} versions`
+           },
+           versionLabel(version: Version) {
+               return versionLabel(version)
            },
            loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
            deleteProjectAction: mapActionByName<number>("projects", "deleteProject"),
