@@ -12,7 +12,7 @@ import {emptyState} from "../../../app/root";
 
 describe("Projects component", () => {
 
-   const createSut = (state: Partial<ProjectsState> = {},
+    const createSut = (state: Partial<ProjectsState> = {},
                        mockCreateProject = jest.fn(),
                        mockRouterPush = jest.fn(),
                        isGuest = false) => {
@@ -56,7 +56,6 @@ describe("Projects component", () => {
         expect(wrapper.find("input").attributes()["placeholder"]).toBe("Project name");
         expect(wrapper.find("button").text()).toBe("Create project");
         expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
-        expect(wrapper.find(ProjectHistory).props("projects")).toBe(previousProjects);
         expect(wrapper.find(ErrorAlert).exists()).toBe(false);
     });
 
@@ -71,6 +70,14 @@ describe("Projects component", () => {
         const wrapper = createSut();
         wrapper.find("input").setValue("newProject");
         expect(wrapper.find("button").attributes("disabled")).toBeUndefined();
+        expect(wrapper.findAll(".invalid-feedback").length).toBe(0);
+    });
+
+    it("shows invalid feedback if name is non unique", () => {
+        const wrapper = createSut({previousProjects: [{name: "p1", id: 123, versions: []}]});
+        wrapper.find("input").setValue("p1");
+        expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
+        expect(wrapper.findAll(".invalid-feedback").length).toBe(1);
     });
 
     it("displays error if any", () => {
