@@ -43,8 +43,9 @@
                 <survey-and-program v-if="isActive(2)"></survey-and-program>
                 <model-options v-if="isActive(3)"></model-options>
                 <model-run v-if="isActive(4)"></model-run>
-                <model-output v-if="isActive(5)"></model-output>
-                <download-results v-if="isActive(6)"></download-results>
+                <div v-if="isActive(5)">Calibrate model</div>
+                <model-output v-if="isActive(6)"></model-output>
+                <download-results v-if="isActive(7)"></download-results>
             </div>
         </div>
     </div>
