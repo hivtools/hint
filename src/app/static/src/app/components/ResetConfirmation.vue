@@ -2,19 +2,17 @@
     <div>
         <modal :open="open">
             <h4 v-if="isGuest" v-translate="'haveYouSaved'"></h4>
-            <h4 v-if="!isGuest">Save version?</h4>
+            <h4 v-if="!isGuest" v-translate="'saveVersion'"></h4>
 
             <p v-translate="'discardWarning'"></p>
             <ul>
                 <li v-for="step in laterCompleteSteps">
-                    Step {{step.number}}: <span v-translate="step.textKey"></span>
+                    <span v-translate="'step'"></span> {{step.number}}: <span v-translate="step.textKey"></span>
                 </li>
             </ul>
 
             <p v-if="isGuest"  v-translate="'savePrompt'"></p>
-            <p v-if="!isGuest">
-                These steps will automatically be saved in a version. You will be able to reload this version from the Projects page.
-            </p>
+            <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
 
             <template v-if="!waitingForVersion" v-slot:footer>
                 <button type="button"

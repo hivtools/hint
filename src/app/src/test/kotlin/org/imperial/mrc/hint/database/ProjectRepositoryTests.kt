@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.AssertionsForClassTypes
 import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
@@ -41,8 +42,43 @@ class ProjectRepositoryTests {
     private val testEmail = "test@test.com"
 
     @Test
-    fun `can save new project`()
-    {
+    fun `can get project`() {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        versionRepo.saveVersion("v1", projectId)
+        val project = sut.getProject(projectId, uid)
+        assertThat(project.name).isEqualTo("testProjectRepo")
+        assertThat(project.id).isEqualTo(projectId)
+        assertThat(project.versions.count()).isEqualTo(1)
+        assertThat(project.versions[0].versionNumber).isEqualTo(1)
+        assertThat(project.versions[0].id).isEqualTo("v1")
+        assertThat(project.versions[0].created).isNotNull()
+        assertThat(project.versions[0].updated).isNotNull()
+    }
+
+    @Test
+    fun `getProject throws project exception if project id does not exist`() {
+
+        assertThatThrownBy {
+            sut.getProject(1234, "uid")
+        }.isInstanceOf(ProjectException::class.java)
+                .hasMessageContaining("projectDoesNotExist")
+    }
+
+    @Test
+    fun `getProject throws project exception if project id does not belong to user`() {
+
+        val uid = setupUser()
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        assertThatThrownBy {
+            sut.getProject(projectId, "testProjectRepo")
+        }.isInstanceOf(ProjectException::class.java)
+                .hasMessageContaining("projectDoesNotExist")
+    }
+
+    @Test
+    fun `can save new project`() {
         val uid = setupUser()
 
         val projectId = sut.saveNewProject(uid, "testProjectRepo")
@@ -56,8 +92,7 @@ class ProjectRepositoryTests {
     }
 
     @Test
-    fun `delete project throws error if project does not exist`()
-    {
+    fun `delete project throws error if project does not exist`() {
         val uid = setupUser()
         AssertionsForClassTypes.assertThatThrownBy { sut.deleteProject(9999, uid) }
                 .isInstanceOf(ProjectException::class.java)
@@ -65,13 +100,12 @@ class ProjectRepositoryTests {
     }
 
     @Test
-    fun `can delete project`()
-    {
+    fun `can delete project`() {
         val uid = setupUser()
 
         val projectId = sut.saveNewProject(uid, "testProjectRepo")
         val versionId1 = "testVersion"
-        val versionId2= "testVersion2"
+        val versionId2 = "testVersion2"
         versionRepo.saveVersion(versionId1, projectId)
         versionRepo.saveVersion(versionId2, projectId)
 
@@ -93,8 +127,7 @@ class ProjectRepositoryTests {
     }
 
     @Test
-    fun `can get projects for user`()
-    {
+    fun `can get projects for user`() {
         val userId = setupUser()
 
         userRepo.addUser("another.user@example.com", "pw")
@@ -144,20 +177,17 @@ class ProjectRepositoryTests {
         assertThat(p1.versions[1].versionNumber).isEqualTo(1)
     }
 
-    private fun setupUser(): String
-    {
-        userRepo.addUser(testEmail, "pw")
-       return userRepo.getUser(testEmail)!!.id
+    private fun setupUser(email: String = testEmail): String {
+        userRepo.addUser(email, "pw")
+        return userRepo.getUser(email)!!.id
     }
 
-    private fun format(time: Instant): String
-    {
+    private fun format(time: Instant): String {
         val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
         return formatter.format(LocalDateTime.ofInstant(time, ZoneId.systemDefault()))
     }
 
-    private fun insertProject(name: String, userId: String): Int
-    {
+    private fun insertProject(name: String, userId: String): Int {
         val saved = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME)
                 .values(userId, name)
                 .returning(PROJECT.ID)
@@ -167,8 +197,7 @@ class ProjectRepositoryTests {
     }
 
     private fun insertVersion(versionId: String, projectId: Int, created: Instant, updated: Instant, deleted: Boolean,
-                              versionNumber: Int)
-    {
+                              versionNumber: Int) {
         dsl.insertInto(PROJECT_VERSION,
                 PROJECT_VERSION.ID,
                 PROJECT_VERSION.PROJECT_ID,

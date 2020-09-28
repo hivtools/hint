@@ -19,11 +19,20 @@ class HintApplicationTests : SecureIntegrationTests() {
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `unauthorized users can access index as guest`(isAuthorized: IsAuthorized) {
+    fun `all users can access index`(isAuthorized: IsAuthorized) {
+        testAllUserAccess("/", isAuthorized)
+    }
 
-        val rootEntity = testRestTemplate.getForEntity<String>("/")
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `all users can access projects`(isAuthorized: IsAuthorized) {
+        testAllUserAccess("/projects", isAuthorized)
+    }
+
+    private fun testAllUserAccess(url: String, isAuthorized: IsAuthorized) {
+        val rootEntity = testRestTemplate.getForEntity<String>(url)
         assertThat(rootEntity.statusCode).isEqualTo(HttpStatus.OK)
-        if (isAuthorized == IsAuthorized.TRUE) {
+        if (isAuthorized == SecureIntegrationTests.IsAuthorized.TRUE) {
             assertThat(rootEntity.body!!).doesNotContain("<title>Login</title>")
             assertThat(rootEntity.body!!).contains("var currentUser = \"test.user@example.com\"")
         } else {
