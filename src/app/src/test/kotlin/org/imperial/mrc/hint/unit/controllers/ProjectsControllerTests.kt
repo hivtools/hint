@@ -145,7 +145,7 @@ class ProjectsControllerTests {
     fun `can clone project to user`() {
         val mockVersionRepo = mock<VersionRepository>()
         val mockProjectRepo = mock<ProjectRepository> {
-            on { getProject(1, "testuser") } doReturn Project(1, "p1", listOf(Version("v1", "createdTime", "updatedTime", 1),
+            on { getProject(1, "testUser") } doReturn Project(1, "p1", listOf(Version("v1", "createdTime", "updatedTime", 1),
                     Version("v2", "createdTime", "updatedTime", 1)))
             on { saveNewProject("uid", "p1") } doReturn 2
         }
