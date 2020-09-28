@@ -131,7 +131,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
     }
 
     override fun getVersionFiles(versionId: String): Map<String, VersionFile> {
-        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME,VERSION_FILE.TYPE)
+        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME,VERSION_FILE.TYPE, VERSION_FILE.FROM_ADR)
                 .from(VERSION_FILE)
                 .where(VERSION_FILE.VERSION.eq(versionId))
                 .associate { it[VERSION_FILE.TYPE] to
@@ -154,6 +154,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
                                 .set(VERSION_FILE.TYPE, fileType)
                                 .set(VERSION_FILE.VERSION, versionId)
                                 .set(VERSION_FILE.FILENAME, versionFile.filename)
+                                .set(VERSION_FILE.FROM_ADR, versionFile.fromADR)
                                 .execute()
                     }
                 }
@@ -211,7 +212,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
     }
 
     private fun getVersionFileRecord(versionId: String, type: FileType): Record? {
-        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME)
+        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME, VERSION_FILE.FROM_ADR)
                 .from(VERSION_FILE)
                 .where(VERSION_FILE.VERSION.eq(versionId))
                 .and(VERSION_FILE.TYPE.eq(type.toString()))

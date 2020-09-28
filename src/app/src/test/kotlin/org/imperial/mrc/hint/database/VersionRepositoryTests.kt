@@ -320,11 +320,11 @@ class VersionRepositoryTests {
         val result = sut.getVersionFiles(versionId)
         assertThat(result["survey"]!!.filename).isEqualTo("original.csv")
         assertThat(result["survey"]!!.hash).isEqualTo("surveyhash")
-        assertThat(result["survey"]!!.fromADR).isEqualTo(false)
+        assertThat(result["survey"]!!.fromADR).isEqualTo(true)
 
         assertThat(result["pjnz"]!!.filename).isEqualTo("original.pjnz")
         assertThat(result["pjnz"]!!.hash).isEqualTo("pjnzhash")
-        assertThat(result["pjnz"]!!.fromADR).isEqualTo(true)
+        assertThat(result["pjnz"]!!.fromADR).isEqualTo(false)
     }
 
     @Test
