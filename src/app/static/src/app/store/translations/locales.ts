@@ -270,7 +270,7 @@ const en: Translations = {
         "</p>" +
         "<p>" +
         "Please enter the email address or comma separated list of email addresses you would like to share" +
-        "this project with." +
+        "this project with. " +
         "These email addresses must be already registered with Naomi." +
         "</p>",
     sizeIndicator: "Size Indicator",
@@ -330,6 +330,7 @@ const fr: Partial<Translations> = {
     downloadResults: "Télécharger les résultats",
     downloadSummary: "Télécharger les résultats grossiers du groupe d'âge",
     email: "Adresse e-mail",
+    emailMultiValidation: "Veuillez entrer une adresse e-mail valide.",
     emailValidation: "Veuillez entrer une adresse e-mail valide.",
     enterProjectName: "Please enter a name for the new project",
     entireDataset: "Toutes les données",
@@ -400,6 +401,15 @@ const fr: Partial<Translations> = {
     sessionExpired: "Votre session a expiré. Veuillez rafraîchir la page et vous reconnecter. Vous pouvez sauvegarder votre travail avant de rafraîchir la page.",
     sex: "Sexe",
     shape: "Fichier de formes",
+    shareProject: "Partagez projet",
+    shareProjectInstructions: "<p>" +
+        "Cela créera une copie de {{ project }} pour les utilisateurs désignés." +
+        "</p>" +
+        "<p>" +
+        "Veuillez entrer une adresse e-mail ou une liste d'adresses séparées par des virgules " +
+        "avec lesquelles vous souhaitez partager ce projet. Ces addresses e-mails doivent être " +
+        "déjà enregistrées dans Naomi." +
+        "</p>",
     static: "Statique",
     step: "Étape",
     survey: "Enquête de ménage",

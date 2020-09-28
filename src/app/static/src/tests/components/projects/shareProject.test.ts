@@ -5,6 +5,7 @@ import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
+import {expectTranslated} from "../../testHelpers";
 
 describe("ShareProject", () => {
 
@@ -83,6 +84,76 @@ describe("ShareProject", () => {
             expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
             done();
         }, 200)
+    });
+
+    it("translates header", () => {
+        const store = createStore();
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: store
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        expectTranslated(wrapper.find(Modal).find("h4"), "Share project", "Partagez projet", store);
+    });
+
+    it("translates instructions", () => {
+        const store = createStore();
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: store
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const expectedEnglish  = "This will create a copy of p1 for the given users." +
+        "Please enter the email address or comma separated list of email addresses you would like to share" +
+        "this project with. These email addresses must be already registered with Naomi."
+
+        const expectedFrench = "Cela créera une copie de p1 pour les utilisateurs désignés." +
+            "Veuillez entrer une adresse e-mail ou une liste d'adresses séparées par des virgules " +
+            "avec lesquelles vous souhaitez partager ce projet. Ces addresses e-mails doivent être déjà enregistrées dans Naomi."
+
+        expectTranslated(wrapper.find(Modal).find("#instructions"), expectedEnglish, expectedFrench, store);
+    });
+
+    it("translates validation feedback", () => {
+        const store = createStore();
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: store
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const expectedEnglish  = "Please enter valid, comma separated email addresses";
+        const expectedFrench = "Veuillez entrer une adresse e-mail valide."
+
+        expectTranslated(wrapper.find(Modal).find(".invalid-feedback"), expectedEnglish, expectedFrench, store);
+    });
+
+    it("translates button text", () => {
+        const store = createStore();
+        const wrapper = mount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: store
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const buttons = wrapper.find(Modal).findAll("button");
+
+        expectTranslated(buttons.at(0), "OK", "OK", store);
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
     });
 
 });

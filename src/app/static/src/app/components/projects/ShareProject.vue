@@ -5,7 +5,7 @@
         <modal :open="open">
             <h4 v-translate="'shareProject'"></h4>
             <div v-if="!loading">
-                <div v-html="instructions"></div>
+                <div v-html="instructions" id="instructions"></div>
                 <div class="help-text text-muted small">E.g. someone@gmail.com, another@hotmail.com</div>
                 <input class="form-control"
                        :class="{'is-invalid': showValidationFeedback}"
