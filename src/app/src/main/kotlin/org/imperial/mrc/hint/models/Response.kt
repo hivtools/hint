@@ -13,7 +13,7 @@ data class SuccessResponse(val data: Any?) {
 fun SuccessResponse.toJsonString() = ObjectMapper().writeValueAsString(this)
 fun SuccessResponse.asResponseEntity() = ResponseEntity
         .ok()
-        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(this.toJsonString())
 
 val EmptySuccessResponse = SuccessResponse(true)
