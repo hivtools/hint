@@ -15,7 +15,7 @@ class HintrApiClientTests {
     @Test
     fun `can validate baseline individual`() {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val file = VersionFileWithPath("fakepath", "hash", "filename")
+        val file = VersionFileWithPath("fakepath", "hash", "filename", false)
         val result = sut.validateBaselineIndividual(file, FileType.PJNZ)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")
@@ -25,9 +25,9 @@ class HintrApiClientTests {
     fun `can validate baseline combined`() {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.validateBaselineCombined( mapOf(
-                "pjnz" to VersionFileWithPath("fakePjnz", "pjnzHash", "pjnzFile"),
-                "shape" to VersionFileWithPath("fakeShape", "shapeHash", "shapeFile"),
-                "population" to VersionFileWithPath("fakePop", "popHash", "popFile")
+                "pjnz" to VersionFileWithPath("fakePjnz", "pjnzHash", "pjnzFile", false),
+                "shape" to VersionFileWithPath("fakeShape", "shapeHash", "shapeFile", false),
+                "population" to VersionFileWithPath("fakePop", "popHash", "popFile", false)
             )
         )
         assertThat(result.statusCodeValue).isEqualTo(400)
@@ -37,7 +37,7 @@ class HintrApiClientTests {
     @Test
     fun `can validate survey and programme`() {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val file = VersionFileWithPath("fakepath", "hash", "filename")
+        val file = VersionFileWithPath("fakepath", "hash", "filename", false)
         val result = sut.validateSurveyAndProgramme(file, "fakepath", FileType.ANC)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")

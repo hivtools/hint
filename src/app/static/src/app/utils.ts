@@ -165,6 +165,12 @@ export const formatDateTime = (isoUTCString: string) => {
 export const findResource = (datasetWithResources: any, resourceType: string): DatasetResource | null => {
     const metadata = datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
     return metadata ? {url: metadata.url, revisionId: metadata.revision_id, outOfDate: false} : null
-};
+}
+
+const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
+
+export const validateEmail = (test: string): boolean => {
+    return emailRegex.test(test.replace(/\s*/g,""))
+}
 
 export const versionLabel = (version: Version) => `v${version.versionNumber}`;
