@@ -14,6 +14,7 @@ import {ADRSchemas, PayloadWithType, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
 import {router} from '../../router';
+import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -48,7 +49,7 @@ export const mutations: MutationTree<RootState> = {
 
         const maxValidStep = action.payload;
 
-        //We treat the final group of steps 4-6 together - all rely on modelRun and its result. If we're calling Reset
+        //We treat the final group of steps 5-7 together - all rely on modelCalibrate and its result. If we're calling Reset
         //at all we assume that these steps will be invalidated but earlier steps may be retainable
         const resetState: RootState = {
             adrDatasets: state.adrDatasets,
@@ -61,8 +62,9 @@ export const mutations: MutationTree<RootState> = {
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
             surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramState() : state.surveyAndProgram,
             modelOptions: maxValidStep < 3 ? initialModelOptionsState() : state.modelOptions,
+            modelRun: maxValidStep < 4 ? initialModelRunState() : state.modelRun,
+            modelCalibrate: initialModelCalibrateState(),
             modelOutput: initialModelOutputState(),
-            modelRun: initialModelRunState(),
             plottingSelections: initialPlottingSelectionsState(),
             stepper: state.stepper,
             load: initialLoadState(),

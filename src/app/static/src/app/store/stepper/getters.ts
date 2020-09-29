@@ -23,7 +23,7 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
             3: rootGetters['modelOptions/complete'],
             4: rootGetters['modelRun/complete'],
             5: rootGetters['modelCalibrate/complete'],
-            6: rootGetters['modelRun/complete'],
+            6: rootGetters['modelCalibrate/complete'],
             7: false
         }
     },

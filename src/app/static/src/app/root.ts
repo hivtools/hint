@@ -29,6 +29,7 @@ import {
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 import {Language} from "./store/translations/locales";
 import {ADRSchemas} from "./types";
+import {modelCalibrate, initialModelCalibrateState, ModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 
 export interface TranslatableState {
     language: Language
@@ -45,6 +46,7 @@ export interface RootState extends TranslatableState {
     surveyAndProgram: SurveyAndProgramState,
     modelOptions: ModelOptionsState
     modelRun: ModelRunState,
+    modelCalibrate: ModelCalibrateState,
     modelOutput: ModelOutputState,
     plottingSelections: PlottingSelectionsState,
     stepper: StepperState,
@@ -113,6 +115,7 @@ export const emptyState = (): RootState => {
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
         surveyAndProgram: initialSurveyAndProgramState(),
+        modelCalibrate: initialModelCalibrateState(),
         modelOptions: initialModelOptionsState(),
         modelOutput: initialModelOutputState(),
         modelRun: initialModelRunState(),
@@ -131,6 +134,7 @@ export const storeOptions: StoreOptions<RootState> = {
         baseline,
         metadata,
         surveyAndProgram,
+        modelCalibrate,
         modelOptions,
         modelRun,
         modelOutput,
