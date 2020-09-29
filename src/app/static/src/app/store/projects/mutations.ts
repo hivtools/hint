@@ -10,10 +10,21 @@ export enum ProjectsMutations {
     ProjectError = "ProjectError",
     VersionCreated = "VersionCreated",
     VersionUploadSuccess = "VersionUploadSuccess",
-    ClearCurrentVersion = "ClearCurrentVersion"
+    ClearCurrentVersion = "ClearCurrentVersion",
+    CloneProjectError = "CloneProjectError",
+    CloningProject = "CloningProject"
 }
 
 export const mutations: MutationTree<ProjectsState> = {
+
+    [ProjectsMutations.CloneProjectError](state: ProjectsState, action: PayloadWithType<Error>) {
+        state.cloneProjectError = action.payload
+    },
+
+    [ProjectsMutations.CloningProject](state: ProjectsState, action: PayloadWithType<boolean>) {
+        state.cloningProject = action.payload
+    },
+
     [ProjectsMutations.SetLoading](state: ProjectsState, action: PayloadWithType<boolean>) {
         state.error = null;
         state.loading = action.payload;

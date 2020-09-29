@@ -12,6 +12,8 @@ export interface ProjectsState {
     previousProjects: Project[],
     loading: boolean,
     error: Error | null,
+    cloneProjectError: Error | null,
+    cloningProject: boolean,
     versionUploadPending: boolean,
     versionTime: Date | null
 }
@@ -23,6 +25,8 @@ export const initialProjectsState = (): ProjectsState => {
         previousProjects: [],
         loading: false,
         error: null,
+        cloneProjectError: null,
+        cloningProject: false,
         versionUploadPending: false,
         versionTime: null
     }
