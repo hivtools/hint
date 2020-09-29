@@ -31,7 +31,13 @@ describe("load actions", () => {
 
         expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
         expect(commit.mock.calls[1][0].type).toBe("UpdatingState");
-        expect(commit.mock.calls[1][0].payload).toStrictEqual({shape: {hash: shape.hash, filename: shape.filename}});
+        expect(commit.mock.calls[1][0].payload).toEqual({
+            shape: {
+                hash: shape.hash,
+                filename: shape.filename,
+                fromADR: false
+            }
+        });
     });
 
 });
