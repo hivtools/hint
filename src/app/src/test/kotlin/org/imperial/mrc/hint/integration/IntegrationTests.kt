@@ -67,16 +67,14 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
 
         when (isAuthorized) {
             IsAuthorized.TRUE -> {
-                Assertions.assertThat(responseEntity.headers.contentType!!.toString())
-                        .isEqualTo("application/json")
-
                 if (responseEntity.statusCode != HttpStatus.OK) {
                     Assertions.fail<String>("Expected OK response but got error: ${responseEntity.body}")
                 }
                 if (schemaName != null) {
                     JSONValidator().validateSuccess(responseEntity.body!!, schemaName)
                 }
-
+                Assertions.assertThat(responseEntity.headers.contentType!!.toString())
+                        .isEqualTo("application/json;charset=UTF-8")
             }
             IsAuthorized.FALSE -> {
                 assertUnauthorized(responseEntity)
