@@ -125,8 +125,9 @@ class ProjectsControllerTests {
     }
 
     @Test
-    fun `can get version details`() {
-        val mockDetails = VersionDetails("TEST STATE", mapOf("pjnz" to VersionFile("hash1", "filename1")))
+    fun `can get version details`()
+    {
+        val mockDetails = VersionDetails("TEST STATE", mapOf("pjnz" to VersionFile("hash1", "filename1", false)))
         val mockRepo = mock<VersionRepository> {
             on { getVersionDetails("testVersion", 99, "testUser") } doReturn mockDetails
         };
@@ -139,6 +140,7 @@ class ProjectsControllerTests {
         val filesJson = resultJson["files"]
         assertThat(filesJson["pjnz"]["hash"].asText()).isEqualTo("hash1")
         assertThat(filesJson["pjnz"]["filename"].asText()).isEqualTo("filename1")
+        assertThat(filesJson["pjnz"]["fromADR"].asBoolean()).isEqualTo(false)
 
         verify(mockSession).setVersionId("testVersion")
     }

@@ -10,16 +10,23 @@ import org.imperial.mrc.hint.helpers.getTestEntity
 import org.imperial.mrc.hint.models.ModelRunOptions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.*
+import javax.annotation.PostConstruct
 
 abstract class SecureIntegrationTests : CleanDatabaseTests() {
 
-    @Autowired
-    lateinit var testRestTemplate: TestRestTemplate
+    protected lateinit var testRestTemplate: TestRestTemplate
+
+    @PostConstruct
+    fun getTemplate() {
+        val builder = restTemplateBuilder
+                .rootUri("http://localhost:" + env.getProperty("local.server.port"))
+
+        this.testRestTemplate = TestRestTemplate(builder)
+    }
 
     @BeforeEach
     fun beforeEach(info: TestInfo) {

@@ -37,19 +37,19 @@ abstract class HintrControllerTests {
                 saveFile(argWhere<MultipartFile> {
                     it.originalFilename == "some-file-name.csv"
                 }, eq(type))
-            } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv")
+            } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv", false)
 
             on {
                 saveFile(any<String>(), eq(type))
-            } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv")
+            } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv", false)
 
             on {
                 getFile(FileType.Shape)
-            } doReturn VersionFileWithPath("shape-path", "hash", "shape-file-name.csv")
+            } doReturn VersionFileWithPath("shape-path", "hash", "shape-file-name.csv", false)
 
             on {
                 getFile(type)
-            } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv")
+            } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv", false)
         }
     }
 
@@ -78,9 +78,10 @@ abstract class HintrControllerTests {
         when (fileType) {
             FileType.PJNZ, FileType.Population, FileType.Shape -> verify(mockApiClient)
                     .validateBaselineIndividual(
-                            VersionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
+                            VersionFileWithPath("test-path", "hash", "some-file-name.csv", false), fileType)
             else -> verify(mockApiClient)
-                    .validateSurveyAndProgramme(VersionFileWithPath("test-path", "hash", "some-file-name.csv"), "shape-path", fileType)
+                    .validateSurveyAndProgramme(VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
+                            "shape-path", fileType)
         }
     }
 
@@ -98,9 +99,10 @@ abstract class HintrControllerTests {
         when (fileType) {
             FileType.PJNZ, FileType.Population, FileType.Shape -> verify(mockApiClient)
                     .validateBaselineIndividual(
-                            VersionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
+                            VersionFileWithPath("test-path", "hash", "some-file-name.csv", false), fileType)
             else -> verify(mockApiClient)
-                    .validateSurveyAndProgramme(VersionFileWithPath("test-path", "hash", "some-file-name.csv"), "shape-path", fileType)
+                    .validateSurveyAndProgramme(VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
+                            "shape-path", fileType)
         }
     }
 
@@ -116,7 +118,8 @@ abstract class HintrControllerTests {
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
         verify(mockApiClient)
-                .validateBaselineIndividual(VersionFileWithPath("test-path", "hash", "some-file-name.csv"), fileType)
+                .validateBaselineIndividual(VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
+                        fileType)
 
         // should return a null result when null is returned from the file manager
         sut = getSut(mock(), mockApiClient, mock(), mock())
