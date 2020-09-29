@@ -6,7 +6,9 @@
             <h4 v-translate="'shareProject'"></h4>
             <div v-if="!loading">
                 <div v-html="instructions" id="instructions"></div>
-                <div class="help-text text-muted small">E.g. someone@gmail.com, another@hotmail.com</div>
+                <div class="help-text text-muted small">
+                    <span v-translate="'forExample'"></span> john.doe@gmail.com, dr.smith@hotmail.com
+                </div>
                 <input class="form-control"
                        :class="{'is-invalid': showValidationFeedback}"
                        v-model="emailsToShareWith"/>

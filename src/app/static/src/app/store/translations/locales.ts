@@ -56,6 +56,7 @@ export interface Translations {
     filteredDataset: string,
     filters: string,
     fitToCurrentDataset: string,
+    forExample: string,
     forgottenPassword: string,
     forgottenPasswordHelp: string,
     getAccessKey: string,
@@ -199,6 +200,7 @@ const en: Translations = {
     filteredDataset: "Filtered dataset",
     filters: "Filters",
     fitToCurrentDataset: "Fit to current dataset",
+    forExample: "e.g.",
     forgottenPassword: "Forgotten your password?",
     forgottenPasswordHelp: "If you've forgotten your password, enter your email address to request a link which you can use to create a new password.",
     getAccessKey: "get access key from ADR",
@@ -269,7 +271,7 @@ const en: Translations = {
         "This will create a copy of {{ project }} for the given users." +
         "</p>" +
         "<p>" +
-        "Please enter the email address or comma separated list of email addresses you would like to share" +
+        "Please enter the email address or comma separated list of email addresses you would like to share " +
         "this project with. " +
         "These email addresses must be already registered with Naomi." +
         "</p>",
@@ -340,6 +342,7 @@ const fr: Partial<Translations> = {
     filteredDataset: "Données filtrées",
     filters: "Filtres",
     fitToCurrentDataset: "Ajuster aux données actuelles",
+    forExample: "par ex.",
     forgottenPassword: "Vous avez oublié votre mot de passe ?",
     forgottenPasswordHelp: "Si vous avez oublié votre mot de passe, entrez votre adresse e-mail pour demander un lien qui vous permettra de créer un nouveau mot de passe.",
     haveYouSaved: "Avez-vous sauvegardé votre travail ?",

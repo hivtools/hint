@@ -112,7 +112,7 @@ describe("ShareProject", () => {
         const link = wrapper.find("a");
         link.trigger("click");
         const expectedEnglish  = "This will create a copy of p1 for the given users." +
-        "Please enter the email address or comma separated list of email addresses you would like to share" +
+        "Please enter the email address or comma separated list of email addresses you would like to share " +
         "this project with. These email addresses must be already registered with Naomi."
 
         const expectedFrench = "Cela créera une copie de p1 pour les utilisateurs désignés." +
@@ -154,6 +154,23 @@ describe("ShareProject", () => {
 
         expectTranslated(buttons.at(0), "OK", "OK", store);
         expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
+    });
+
+    it("translates help text", () => {
+        const store = createStore();
+        const wrapper = mount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: store
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const helpText = wrapper.find(Modal).find(".help-text");
+
+        expectTranslated(helpText, "e.g. john.doe@gmail.com, dr.smith@hotmail.com",
+            "par ex. john.doe@gmail.com, dr.smith@hotmail.com", store);
     });
 
 });

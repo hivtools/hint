@@ -17,9 +17,26 @@ export interface ProjectsActions {
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
     deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
     deleteVersion: (store: ActionContext<ProjectsState, RootState>, versionIds: VersionIds) => void
+    shareProject: (store: ActionContext<ProjectsState, RootState>, payload: ShareProjectPayload) => void
+}
+
+interface ShareProjectPayload {
+    emails: string[],
+    projectId: number
 }
 
 export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
+
+    async shareProject(context, payload) {
+        const {commit, state} = context;
+
+        await api<RootMutation, ProjectsMutations>(context)
+            .withSuccess(RootMutation.SetProject, true)
+            .withError(ProjectsMutations.ProjectError)
+            .postAndReturn<String>("/project/", qs.stringify({name}));
+    },
+
+
     async createProject(context, name) {
         const {commit, state} = context;
 
