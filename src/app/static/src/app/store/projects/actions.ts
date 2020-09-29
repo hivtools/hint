@@ -17,9 +17,17 @@ export interface ProjectsActions {
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
     deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
     deleteVersion: (store: ActionContext<ProjectsState, RootState>, versionIds: VersionIds) => void
+    userExists: (store: ActionContext<ProjectsState, RootState>, email: string) => void
 }
 
 export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
+
+    async userExists(context, email) {
+        return await api<RootMutation, ProjectsMutations>(context)
+            .ignoreSuccess()
+            .ignoreErrors()
+            .get<String>(`/user/${email}`);
+    },
 
     async createProject(context, name) {
         const {commit, state} = context;

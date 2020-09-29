@@ -6,15 +6,14 @@
             <h4 v-translate="'shareProject'"></h4>
             <div v-if="!loading">
                 <div v-html="instructions" id="instructions"></div>
-                <div class="help-text text-muted small">
-                    <span v-translate="'forExample'"></span> john.doe@gmail.com, dr.smith@hotmail.com
-                </div>
-                <input class="form-control"
-                       :class="{'is-invalid': showValidationFeedback}"
-                       v-model="emailsToShareWith"/>
-                <div class="invalid-feedback"
-                     v-translate="'emailMultiValidation'">
-                </div>
+                <input v-for="email in emailsToShareWith"
+                       class="form-control"
+                       :class="{
+                        'is-invalid': email.valid === false,
+                        'is-valid': email.valid === true
+                        }"
+                       @blur="() => addEmail(email)"
+                       v-model="email.value"/>
             </div>
             <div class="text-center" v-if="loading">
                 <loading-spinner size="sm"></loading-spinner>
@@ -40,15 +39,19 @@
     import Vue from "vue";
     import Modal from "../Modal.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import {mapStatePropByName, validateEmail} from "../../utils";
+    import {mapStatePropByName} from "../../utils";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
 
+    interface EmailToShareWith {
+        value: string
+        valid: boolean | null
+    }
+
     interface Data {
-        emailsToShareWith: string
+        emailsToShareWith: EmailToShareWith[]
         open: boolean
-        loading: boolean,
-        showValidationFeedback: boolean
+        loading: boolean
     }
 
     interface Props {
@@ -57,11 +60,11 @@
 
     interface Computed {
         currentLanguage: Language,
-        invalidEmail: boolean
         instructions: string
     }
 
     interface Methods {
+        addEmail: (email: EmailToShareWith) => void
         shareProject: (e: Event) => void
         confirmShareProject: () => void
         cancelShareProject: () => void
@@ -75,42 +78,32 @@
         },
         data() {
             return {
-                emailsToShareWith: "",
+                emailsToShareWith: [{value: "", valid: null}],
                 open: false,
-                loading: false,
-                showValidationFeedback: false
+                loading: false
             }
         },
         methods: {
+            addEmail(e: EmailToShareWith) {
+                this.emailsToShareWith.push({
+                    value: "",
+                    valid: null
+                });
+                // TODO also validate email
+            },
             shareProject(e: Event) {
                 e.preventDefault();
                 this.open = true;
             },
             confirmShareProject() {
-                if (this.invalidEmail) {
-                    this.showValidationFeedback = true;
-                } else {
-                    this.showValidationFeedback = false;
-                    this.loading = true;
-                    const emails = this.emailsToShareWith.replace(/\s*/g, "").split(",")
-                    setTimeout(() => {
-                        // TODO trigger action to clone project
-                        this.loading = false;
-                        this.open = false;
-                    }, 200);
-                }
+
             },
             cancelShareProject() {
-                this.showValidationFeedback = false;
-                this.emailsToShareWith = "";
                 this.open = false;
             }
         },
         computed: {
             currentLanguage: mapStatePropByName<Language>(null, "language"),
-            invalidEmail() {
-                return !this.emailsToShareWith || !validateEmail(this.emailsToShareWith)
-            },
             instructions() {
                 return i18next.t('shareProjectInstructions', {project: this.project.name, lng: this.currentLanguage});
             }
