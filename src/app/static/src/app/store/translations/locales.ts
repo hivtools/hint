@@ -45,6 +45,7 @@ export interface Translations {
     edit: string,
     email: string,
     emailValidation: string,
+    emailMultiValidation: string,
     enterKey: string,
     enterPassword: string,
     enterProjectName: string,
@@ -57,6 +58,7 @@ export interface Translations {
     fitModel: string,
     fittingComplete: string,
     fitToCurrentDataset: string,
+    forExample: string,
     forgottenPassword: string,
     forgottenPasswordHelp: string,
     getAccessKey: string,
@@ -120,6 +122,9 @@ export interface Translations {
     sessionExpired: string,
     sex: string,
     shape: string,
+    share: string,
+    shareProject: string,
+    shareProjectInstructions: string,
     sizeIndicator: string,
     static: string,
     step: string,
@@ -186,6 +191,7 @@ const en: Translations = {
     edit: "edit",
     email: "Email address",
     emailValidation: "Please enter a valid email address.",
+    emailMultiValidation: "Please enter valid, comma separated email addresses",
     entireDataset: "Entire dataset",
     enterKey: "Enter key",
     enterPassword: "Enter a new password",
@@ -198,6 +204,7 @@ const en: Translations = {
     fitModel: "Fit model",
     fittingComplete: "Model fitting complete",
     fitToCurrentDataset: "Fit to current dataset",
+    forExample: "e.g.",
     forgottenPassword: "Forgotten your password?",
     forgottenPasswordHelp: "If you've forgotten your password, enter your email address to request a link which you can use to create a new password.",
     getAccessKey: "get access key from ADR",
@@ -262,6 +269,16 @@ const en: Translations = {
     sessionExpired: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing.",
     sex: "Sex",
     shape: "Shape file",
+    share: "Share",
+    shareProject: "Share project",
+    shareProjectInstructions: "<p>" +
+        "This will create a copy of {{ project }} for the given users." +
+        "</p>" +
+        "<p>" +
+        "Please enter the email address or comma separated list of email addresses you would like to share " +
+        "this project with. " +
+        "These email addresses must be already registered with Naomi." +
+        "</p>",
     sizeIndicator: "Size Indicator",
     static: "Static",
     step: "Step",
@@ -319,6 +336,7 @@ const fr: Partial<Translations> = {
     downloadResults: "Télécharger les résultats",
     downloadSummary: "Télécharger les résultats grossiers du groupe d'âge",
     email: "Adresse e-mail",
+    emailMultiValidation: "Veuillez entrer une adresse e-mail valide.",
     emailValidation: "Veuillez entrer une adresse e-mail valide.",
     enterProjectName: "Please enter a name for the new project",
     entireDataset: "Toutes les données",
@@ -329,6 +347,7 @@ const fr: Partial<Translations> = {
     filters: "Filtres",
     fitModel: "Ajuster le modèle",
     fitToCurrentDataset: "Ajuster aux données actuelles",
+    forExample: "par ex.",
     fittingComplete: "Ajustement du modèle terminé",
     forgottenPassword: "Vous avez oublié votre mot de passe ?",
     forgottenPasswordHelp: "Si vous avez oublié votre mot de passe, entrez votre adresse e-mail pour demander un lien qui vous permettra de créer un nouveau mot de passe.",
@@ -391,6 +410,15 @@ const fr: Partial<Translations> = {
     sessionExpired: "Votre session a expiré. Veuillez rafraîchir la page et vous reconnecter. Vous pouvez sauvegarder votre travail avant de rafraîchir la page.",
     sex: "Sexe",
     shape: "Fichier de formes",
+    shareProject: "Partagez projet",
+    shareProjectInstructions: "<p>" +
+        "Cela créera une copie de {{ project }} pour les utilisateurs désignés." +
+        "</p>" +
+        "<p>" +
+        "Veuillez entrer une adresse e-mail ou une liste d'adresses séparées par des virgules " +
+        "avec lesquelles vous souhaitez partager ce projet. Ces addresses e-mails doivent être " +
+        "déjà enregistrées dans Naomi." +
+        "</p>",
     static: "Statique",
     step: "Étape",
     survey: "Enquête de ménage",
