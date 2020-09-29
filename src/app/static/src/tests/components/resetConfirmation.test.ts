@@ -20,7 +20,7 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
                 getters: {
                     laterCompleteSteps: () => [{number: 2, textKey: "uploadSurvey"},
                         {number: 3, textKey: "modelOptions"},
-                        {number: 4, textKey: "runModel"}]
+                        {number: 4, textKey: "fitModel"}]
                 }
             },
             errors: {
@@ -242,7 +242,7 @@ describe("Reset confirmation modal", () => {
         expect(steps.length).toBe(3);
         expect(steps.at(0).text()).toBe("Step 2: Upload survey and programme data");
         expect(steps.at(1).text()).toBe("Step 3: Model options");
-        expect(steps.at(2).text()).toBe("Step 4: Run model");
+        expect(steps.at(2).text()).toBe("Step 4: Fit model");
     };
 
 });
