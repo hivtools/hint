@@ -5,10 +5,10 @@ import {
     flattenOptions,
     flattenToIdSet,
     formatDateTime,
-    versionLabel
+    validateEmail,
+    versionLabel, rootOptionChildren
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
-import {rootOptionChildren} from "../app/utils";
 
 describe("utils", () => {
 
@@ -146,6 +146,32 @@ describe("utils", () => {
         const result = formatDateTime(isoUTCString);
 
         expect(result).toStrictEqual(expected);
+    });
+
+    it("single email addresses are valid", () => {
+        let test = "email@gmail.com"
+        expect(validateEmail(test)).toBe(true);
+
+        test = "email.lastname@imperial.ac.uk"
+        expect(validateEmail(test)).toBe(true);
+
+        test = "email_12346@gmail.com"
+        expect(validateEmail(test)).toBe(true);
+    });
+
+    it("bad email addresses are invalid", () => {
+        const test = "emailgmail.com"
+        expect(validateEmail(test)).toBe(false);
+    });
+
+    it("comma separated email addresses are valid", () => {
+        const test = "email@gmail.com , another@imperial.org,   someone.1234@hotmaol.com,someone@hotmail.com"
+        expect(validateEmail(test)).toBe(true);
+    });
+
+    it("space separated email addresses are invalid", () => {
+        const test = "email@gmail.com , another@imperial.org someone.1234@hotmaol.com,someone@hotmail.com"
+        expect(validateEmail(test)).toBe(false);
     });
 
     it("can get version label", () => {

@@ -9,7 +9,7 @@
         </div>
         <hr/>
         <div v-for="p in projects">
-            <div :id="`p-${p.id}`"  class="row py-2">
+            <div :id="`p-${p.id}`" class="row py-2">
                 <div class="col-md-1 project-cell">
                     <button v-b-toggle="`versions-${p.id}`" class="btn btn-xs bg-transparent shadow-none py-0">
                         <chevron-right-icon size="20" class="icon when-closed"></chevron-right-icon>
@@ -17,12 +17,12 @@
                     </button>
                 </div>
                 <div class="col-md-2 project-cell">
-                    {{p.name}}
+                    {{ p.name }}
                 </div>
-                <div class="col-md-1 project-cell"><small class="text-muted">{{versionCountLabel(p)}}</small></div>
-                <div class="col-md-3 project-cell">{{format(p.versions[0].updated)}}</div>
-                <div class="col-md-2 project-cell">
-                    <a @click="loadVersion($event, p.id, p.versions[0].id)" href="" v-translate="'loadLastUpdated'"></a>
+                <div class="col-md-1 project-cell"><small class="text-muted">{{ versionCountLabel(p) }}</small></div>
+                <div class="col-md-3 project-cell">{{ format(p.versions[0].updated) }}</div>
+                <div class="col-md-1 project-cell">
+                    <a @click="loadVersion($event, p.id, p.versions[0].id)" href="" v-translate="'load'"></a>
                 </div>
                 <div class="col-md-1 project-cell">
                     <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
@@ -30,13 +30,16 @@
                 <div class="col-md-2 project-cell">
                     <a @click="copyProject($event, p.id)" href="" v-translate="'copyToNewProject'"></a>
                 </div>
+                <div class="col-md-1 project-cell">
+                    <share-project :project="p"></share-project>
+                </div>
             </div>
             <b-collapse :id="`versions-${p.id}`">
                 <div v-for="v in p.versions" :id="`v-${v.id}`" class="row font-italic bg-light py-2">
                     <div class="col-md-3 version-cell"></div>
                     <div class="col-md-1 version-cell">{{versionLabel(v)}}</div>
                     <div class="col-md-3 version-cell">{{format(v.updated)}}</div>
-                    <div class="col-md-2 version-cell">
+                    <div class="col-md-1 version-cell">
                         <a @click="loadVersion($event, p.id, v.id)" href="" v-translate="'load'"></a>
                     </div>
                     <div class="col-md-1 version-cell">
@@ -58,7 +61,7 @@
                         v-translate="'ok'">
                 </button>
                 <button type="button"
-                         class="btn btn-white"
+                        class="btn btn-white"
                         @click="cancelDelete"
                         v-translate="'cancel'">
                 </button>
@@ -71,21 +74,22 @@
             <template v-slot:footer>
                 <div class="container">
                     <div class="row">
-                        <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="copiedProjectName">
+                        <input type="text" class="form-control" v-translate:placeholder="'projectName'"
+                               v-model="copiedProjectName">
                     </div>
                     <div class="row">
                         <button type="button"
-                            class="btn btn-red mt-2 mr-1 col"
-                            v-translate="'createProject'">
+                                class="btn btn-red mt-2 mr-1 col"
+                                v-translate="'createProject'">
                         </button>
                         <button type="button"
-                            class="btn btn-white mt-2 ml-1 col"
-                            @click="cancelCopy"
-                            v-translate="'cancel'">
+                                class="btn btn-white mt-2 ml-1 col"
+                                @click="cancelCopy"
+                                v-translate="'cancel'">
                         </button>
                     </div>
                 </div>
-                
+
             </template>
         </modal>
     </div>
@@ -98,6 +102,7 @@
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
     import Modal from "../Modal.vue"
     import {formatDateTime, mapActionByName, versionLabel} from "../../utils";
+    import ShareProject from "./ShareProject.vue";
 
     interface Data {
         projectToDelete: number | null,
@@ -191,7 +196,8 @@
            BCollapse,
            ChevronDownIcon,
            ChevronRightIcon,
-           Modal
+           Modal,
+           ShareProject
        },
        directives: {
            'b-toggle': VBToggle

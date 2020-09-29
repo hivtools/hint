@@ -56,7 +56,7 @@ describe("Project history component", () => {
         ]
 
     const getWrapper = (projects = testProjects) => {
-        return mount(ProjectHistory, {store: createStore(projects)});
+        return mount(ProjectHistory, {store: createStore(projects), stubs: ["share-project"]});
     };
 
     const testRendersProject = (wrapper: Wrapper<any>, id: number, name: string, updatedIsoDate: string,
@@ -72,7 +72,7 @@ describe("Project history component", () => {
         expect(v.at(1).text()).toBe(name);
         expect(v.at(2).text()).toBe(versionsCount === 1 ? "1 version" : `${versionsCount} versions`);
         expect(v.at(3).text()).toBe(formatDateTime(updatedIsoDate));
-        expect(v.at(4).text()).toBe("Load last updated");
+        expect(v.at(4).text()).toBe("Load");
         expect(v.at(4).find("a").attributes("href")).toBe("");
         expect(v.at(5).text()).toBe("Delete");
         expect(v.at(6).text()).toBe("Copy to a new project");
