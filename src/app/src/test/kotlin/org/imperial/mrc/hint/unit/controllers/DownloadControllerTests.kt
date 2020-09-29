@@ -26,7 +26,7 @@ class DownloadControllerTests {
     fun `downloads summary data`() {
         val mockResponse = mock<ResponseEntity<StreamingResponseBody>>()
         val mockAPIClient = mock<HintrAPIClient>{
-            on {downloadSummary("id1")} doReturn mockResponse
+            on {downloadCoarseOutput("id1")} doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)

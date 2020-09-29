@@ -14,9 +14,9 @@ class DownloadController(val apiClient: HintrAPIClient){
         return apiClient.downloadSpectrum(id)
     }
 
-    @GetMapping("/summary/{id}")
+    @GetMapping("/coarse-output/{id}")
     @ResponseBody
     fun getSummary(@PathVariable("id")id: String): ResponseEntity<StreamingResponseBody> {
-        return apiClient.downloadSummary(id)
+        return apiClient.downloadCoarseOutput(id)
     }
 }
