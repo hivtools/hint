@@ -1,5 +1,6 @@
 import {ProjectsState} from "../../../app/store/projects/projects";
 import Vuex from "vuex";
+import Vue from "vue";
 import {mockProjectsState} from "../../mocks";
 import {shallowMount} from "@vue/test-utils";
 import Projects from "../../../app/components/projects/Projects.vue";
@@ -13,10 +14,14 @@ describe("Projects component", () => {
 
     const createSut = (state: Partial<ProjectsState> = {},
                        mockCreateProject = jest.fn(),
-                       mockRouterPush = jest.fn()) => {
+                       mockRouterPush = jest.fn(),
+                       isGuest = false) => {
 
         const store =  new Vuex.Store({
             state: emptyState(),
+            getters: {
+                isGuest: () => isGuest
+            },
             modules: {
                 projects: {
                     namespaced: true,
@@ -105,5 +110,14 @@ describe("Projects component", () => {
         const wrapper = createSut({loading: true});
         expect(wrapper.find(LoadingSpinner).exists()).toBe(true);
         expect(wrapper.find("#projects-content").exists()).toBe(false);
+    });
+
+    it("pushes home route on mount if user is guest", async () => {
+        const mockRouterPush = jest.fn();
+        const wrapper = createSut({}, jest.fn(), mockRouterPush, true);
+        await Vue.nextTick();
+
+        expect(mockRouterPush.mock.calls.length).toBe(1);
+        expect(mockRouterPush.mock.calls[0][0]).toStrictEqual( "/");
     });
 });

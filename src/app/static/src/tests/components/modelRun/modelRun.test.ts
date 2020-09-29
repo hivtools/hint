@@ -71,7 +71,7 @@ describe("Model run component", () => {
         const store = createStore();
         const wrapper = shallowMount(ModelRun, {store, localVue});
         const button = wrapper.find("button");
-        expect(button.text()).toBe("Run model");
+        expect(button.text()).toBe("Fit model");
         button.trigger("click");
 
         setTimeout(() => {
@@ -161,7 +161,7 @@ describe("Model run component", () => {
 
         const wrapper = mount(ModelRun, {store, localVue});
         expect(wrapper.find(Modal).props().open).toBe(true);
-        expect(wrapper.find(Modal).find("h4").text()).toBe("Initialising model run");
+        expect(wrapper.find(Modal).find("h4").text()).toBe("Initialising model fitting");
         expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.find(Modal).findAll(ProgressBar).length).toBe(0);
     });
@@ -246,7 +246,7 @@ describe("Model run component", () => {
             status: {id: "1234", success: true, done: true} as ModelStatusResponse
         });
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.find("#model-run-complete").text()).toBe("Model run complete");
+        expect(wrapper.find("#model-run-complete").text()).toBe("Model fitting complete");
         expect(wrapper.findAll(Tick).length).toBe(1);
     });
 
@@ -285,7 +285,7 @@ describe("Model run component", () => {
         expect(errorAlerts.length).toBe(0);
     });
 
-    it("cancel run button invokes action to cancel model run", (done) => {
+    it("cancel fitting button invokes action to cancel model fitting", (done) => {
 
         const store = createStore({
             status: mockModelStatusResponse({id: "123", done: false}),

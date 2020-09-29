@@ -1,6 +1,6 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
-import {DatasetResource, Dict} from "./types";
+import {DatasetResource, Dict, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
 
@@ -172,3 +172,5 @@ const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\
 export const validateEmail = (test: string): boolean => {
     return emailRegex.test(test.replace(/\s*/g,""))
 }
+
+export const versionLabel = (version: Version) => `v${version.versionNumber}`;
