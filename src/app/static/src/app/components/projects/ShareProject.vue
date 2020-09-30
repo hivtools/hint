@@ -57,7 +57,6 @@
     import {mapActionByName, mapStatePropByName} from "../../utils";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
-    import ErrorAlert from "../ErrorAlert.vue";
 
     interface EmailToShareWith {
         value: string
@@ -66,8 +65,8 @@
 
     interface Data {
         emailsToShareWith: EmailToShareWith[]
-        open: boolean,
-        loading: boolean,
+        open: boolean
+        loading: boolean
         showValidationMessage: boolean
     }
 
@@ -161,8 +160,7 @@
         },
         components: {
             Modal,
-            LoadingSpinner,
-            ErrorAlert
+            LoadingSpinner
         }
     });
 

@@ -11,10 +11,10 @@ describe("Projects actions", () => {
     });
 
     it("can check user exists", async () => {
-        let result = await actions.createProject({rootState} as any, "test.user@example.com");
+        let result = await actions.userExists({rootState} as any, "test.user@example.com");
         expect(result).toBe(true);
 
-        result = await actions.createProject({rootState} as any, "bad.user@example.com");
+        result = await actions.userExists({rootState} as any, "bad.user@example.com");
         expect(result).toBe(false);
     });
 
