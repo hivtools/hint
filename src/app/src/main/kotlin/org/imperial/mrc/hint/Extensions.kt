@@ -22,7 +22,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 fun httpStatusFromCode(code: Int): HttpStatus {
-    val status = HttpStatus.valueOf(code)
+    val status = HttpStatus.resolve(code) ?: return HttpStatus.INTERNAL_SERVER_ERROR
     return if (status <= HttpStatus.NOT_FOUND) {
         status
     } else {
