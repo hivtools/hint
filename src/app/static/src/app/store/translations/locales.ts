@@ -46,6 +46,7 @@ export interface Translations {
     email: string,
     emailValidation: string,
     emailMultiValidation: string,
+    emailNotRegistered: string,
     enterKey: string,
     enterPassword: string,
     enterProjectName: string,
@@ -191,7 +192,8 @@ const en: Translations = {
     edit: "edit",
     email: "Email address",
     emailValidation: "Please enter a valid email address.",
-    emailMultiValidation: "Please enter valid, comma separated email addresses",
+    emailMultiValidation: "Please correct or remove invalid email addresses",
+    emailNotRegistered: "This email address is not registered with Naomi",
     entireDataset: "Entire dataset",
     enterKey: "Enter key",
     enterPassword: "Enter a new password",
@@ -275,7 +277,7 @@ const en: Translations = {
         "This will create a copy of {{ project }} for the given users." +
         "</p>" +
         "<p>" +
-        "Please enter the email address or comma separated list of email addresses you would like to share " +
+        "Please enter the email addresses you would like to share " +
         "this project with. " +
         "These email addresses must be already registered with Naomi." +
         "</p>",
@@ -336,7 +338,8 @@ const fr: Partial<Translations> = {
     downloadResults: "Télécharger les résultats",
     downloadSummary: "Télécharger les résultats grossiers du groupe d'âge",
     email: "Adresse e-mail",
-    emailMultiValidation: "Veuillez entrer une adresse e-mail valide.",
+    emailMultiValidation: "Veuillez entrer les adresses e-mails valide",
+    emailNotRegistered: "Cette adresse e-mail n'est pas enregistrée dans Naomi",
     emailValidation: "Veuillez entrer une adresse e-mail valide.",
     enterProjectName: "Please enter a name for the new project",
     entireDataset: "Toutes les données",
@@ -415,8 +418,8 @@ const fr: Partial<Translations> = {
         "Cela créera une copie de {{ project }} pour les utilisateurs désignés." +
         "</p>" +
         "<p>" +
-        "Veuillez entrer une adresse e-mail ou une liste d'adresses séparées par des virgules " +
-        "avec lesquelles vous souhaitez partager ce projet. Ces addresses e-mails doivent être " +
+        "Veuillez entrer les adresses e-mails " +
+        "avec lesquelles vous souhaitez partager ce projet. Ces adresses e-mails doivent être " +
         "déjà enregistrées dans Naomi." +
         "</p>",
     static: "Statique",

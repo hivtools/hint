@@ -1,3 +1,4 @@
+import Vue from "vue"
 import {mount, shallowMount} from "@vue/test-utils";
 import ShareProject from "../../../app/components/projects/ShareProject.vue";
 import Modal from "../../../app/components/Modal.vue";
@@ -9,9 +10,17 @@ import {expectTranslated} from "../../testHelpers";
 
 describe("ShareProject", () => {
 
-    const createStore = () => {
+    const createStore = (userExists = jest.fn()) => {
         const store = new Vuex.Store({
-            state: emptyState()
+            state: emptyState(),
+            modules: {
+                projects: {
+                    namespaced: true,
+                    actions: {
+                        userExists: userExists
+                    }
+                }
+            }
         });
         registerTranslations(store);
         return store;
@@ -47,44 +56,66 @@ describe("ShareProject", () => {
         expect(wrapper.find(Modal).props("open")).toBe(false);
     });
 
-    it("if emails are invalid, validation feedback is shown and no action taken", () => {
+    it("if email is invalid, validation feedback is shown and button disabled", async () => {
         const wrapper = mount(ShareProject, {
             propsData: {
                 project: {id: 1, name: "p1"}
             },
-            store: createStore()
+            store: createStore(jest.fn().mockResolvedValue(false)),
         });
 
         const link = wrapper.find("a");
         link.trigger("click");
-        wrapper.find(Modal).find("input").setValue("bademail");
-        wrapper.find(Modal).findAll("button").at(0).trigger("click");
-        expect(wrapper.find(Modal).props("open")).toBe(true);
-        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
+        const input = wrapper.find(Modal).find("input");
+        input.setValue("bademail");
+        input.trigger("blur");
+        await Vue.nextTick();
         expect(wrapper.find(Modal).find("input").classes()).toContain("is-invalid");
+        expect(wrapper.find(Modal).find(".text-danger").classes()).not.toContain("d-none");
+        expect(wrapper.find(Modal).find("button").attributes("disabled")).toBe("disabled");
     });
 
-    it("if emails are valid, project is shared", (done) => {
+    it("if email is valid, validation feedback is not shown and button enabled", async () => {
         const wrapper = mount(ShareProject, {
             propsData: {
                 project: {id: 1, name: "p1"}
             },
-            store: createStore()
+            store: createStore(jest.fn().mockResolvedValue(true)),
         });
 
         const link = wrapper.find("a");
         link.trigger("click");
-        wrapper.find(Modal).find("input").setValue("goodemail@gmail.com");
-        wrapper.find(Modal).findAll("button").at(0).trigger("click");
-        expect(wrapper.find(Modal).props("open")).toBe(true);
-        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
-
-        setTimeout(() => {
-            expect(wrapper.find(Modal).props("open")).toBe(false);
-            expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
-            done();
-        }, 200)
+        const input = wrapper.find(Modal).find("input");
+        input.setValue("goodemail");
+        input.trigger("blur");
+        await Vue.nextTick();
+        expect(wrapper.find(Modal).find("input").classes()).not.toContain("is-invalid");
+        expect(wrapper.find(Modal).find(".text-danger").classes()).toContain("d-none");
+        expect(wrapper.find(Modal).find("button").attributes("disabled")).toBeUndefined();
     });
+
+
+    // it("if emails are valid, project is shared", (done) => {
+    //     const wrapper = mount(ShareProject, {
+    //         propsData: {
+    //             project: {id: 1, name: "p1"}
+    //         },
+    //         store: createStore()
+    //     });
+    //
+    //     const link = wrapper.find("a");
+    //     link.trigger("click");
+    //     wrapper.find(Modal).find("input").setValue("goodemail@gmail.com");
+    //     wrapper.find(Modal).findAll("button").at(0).trigger("click");
+    //     expect(wrapper.find(Modal).props("open")).toBe(true);
+    //     expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
+    //
+    //     setTimeout(() => {
+    //         expect(wrapper.find(Modal).props("open")).toBe(false);
+    //         expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
+    //         done();
+    //     }, 200)
+    // });
 
     it("translates header", () => {
         const store = createStore();
@@ -112,19 +143,19 @@ describe("ShareProject", () => {
         const link = wrapper.find("a");
         link.trigger("click");
         const expectedEnglish  = "This will create a copy of p1 for the given users." +
-        "Please enter the email address or comma separated list of email addresses you would like to share " +
+        "Please enter the email addresses you would like to share " +
         "this project with. These email addresses must be already registered with Naomi."
 
         const expectedFrench = "Cela créera une copie de p1 pour les utilisateurs désignés." +
-            "Veuillez entrer une adresse e-mail ou une liste d'adresses séparées par des virgules " +
-            "avec lesquelles vous souhaitez partager ce projet. Ces addresses e-mails doivent être déjà enregistrées dans Naomi."
+            "Veuillez entrer les adresses e-mails " +
+            "avec lesquelles vous souhaitez partager ce projet. Ces adresses e-mails doivent être déjà enregistrées dans Naomi."
 
         expectTranslated(wrapper.find(Modal).find("#instructions"), expectedEnglish, expectedFrench, store);
     });
 
     it("translates validation feedback", () => {
-        const store = createStore();
-        const wrapper = shallowMount(ShareProject, {
+        const store =  createStore();
+        const wrapper = mount(ShareProject, {
             propsData: {
                 project: {id: 1, name: "p1"}
             },
@@ -133,10 +164,10 @@ describe("ShareProject", () => {
 
         const link = wrapper.find("a");
         link.trigger("click");
-        const expectedEnglish  = "Please enter valid, comma separated email addresses";
-        const expectedFrench = "Veuillez entrer une adresse e-mail valide."
+        const expectedEnglish  = "This email address is not registered with Naomi";
+        const expectedFrench = "Cette adresse e-mail n'est pas enregistrée dans Naomi"
 
-        expectTranslated(wrapper.find(Modal).find(".invalid-feedback"), expectedEnglish, expectedFrench, store);
+        expectTranslated(wrapper.find(Modal).find(".text-danger"), expectedEnglish, expectedFrench, store);
     });
 
     it("translates button text", () => {
@@ -169,8 +200,8 @@ describe("ShareProject", () => {
         link.trigger("click");
         const helpText = wrapper.find(Modal).find(".help-text");
 
-        expectTranslated(helpText, "e.g. john.doe@gmail.com, dr.smith@hotmail.com",
-            "par ex. john.doe@gmail.com, dr.smith@hotmail.com", store);
+        expectTranslated(helpText, "Please correct or remove invalid email addresses",
+            "Veuillez entrer les adresses e-mails valide", store);
     });
 
 });
