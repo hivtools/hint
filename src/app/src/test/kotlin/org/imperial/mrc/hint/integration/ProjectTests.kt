@@ -1,19 +1,16 @@
 package org.imperial.mrc.hint.integration
 
-import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.db.Tables.PROJECT
+import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
-import com.fasterxml.jackson.databind.node.ObjectNode
-import org.imperial.mrc.hint.db.Tables.*
-import org.imperial.mrc.hint.logic.UserLogic
-import org.imperial.mrc.hint.security.HintDbProfileService
-import org.pac4j.sql.profile.DbProfile
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.web.client.exchange
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
 import java.time.LocalDateTime
@@ -31,8 +28,7 @@ class ProjectTests : VersionFileTests() {
     private val testState = "{\"state\": \"test\"}"
 
     @Test
-    fun `can create new project`()
-    {
+    fun `can create new project`() {
         val result = createProject()
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         val data = getResponseData(result)
@@ -48,8 +44,7 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can create new version from parent`()
-    {
+    fun `can create new version from parent`() {
         val createResult = createProject()
         val createProjectData = getResponseData(createResult)
         val projectId = createProjectData["id"].asInt()
@@ -78,8 +73,7 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can return expected English error when copy nonexistent version`()
-    {
+    fun `can return expected English error when copy nonexistent version`() {
         val result = getNewVersionResult(1, "nonExistent")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
 
@@ -89,9 +83,8 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can return expected French error when copy nonexistent version`()
-    {
-        val result = getNewVersionResult(1, "nonExistent","fr")
+    fun `can return expected French error when copy nonexistent version`() {
+        val result = getNewVersionResult(1, "nonExistent", "fr")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
 
         val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
@@ -100,8 +93,7 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can update version state`()
-    {
+    fun `can update version state`() {
         val createResult = createProject()
         val data = getResponseData(createResult)
         val projectId = data["id"].asInt()
@@ -123,8 +115,7 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can return expected English error when update nonexistent version state`()
-    {
+    fun `can return expected English error when update nonexistent version state`() {
         val result = getUpdateVersionStateResult(1, "nonExistent", "testState")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
 
@@ -134,8 +125,7 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can return expected French error when update nonexistent version state`()
-    {
+    fun `can return expected French error when update nonexistent version state`() {
         val result = getUpdateVersionStateResult(1, "nonExistent", "testState",
                 "fr")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
@@ -146,8 +136,7 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can get projects`()
-    {
+    fun `can get projects`() {
         val createResult = createProject()
 
         val result = testRestTemplate.getForEntity<String>("/projects/")
@@ -168,8 +157,7 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can get version details`()
-    {
+    fun `can get version details`() {
         val createResult = createProject()
         val createProjectData = getResponseData(createResult)
         val projectId = createProjectData["id"].asInt()
@@ -189,8 +177,7 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can return expected English error when get nonexistent version details`()
-    {
+    fun `can return expected English error when get nonexistent version details`() {
         val result = testRestTemplate.getForEntity<String>("/project/99/version/noversion")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
 
@@ -200,10 +187,9 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can return expected French error when get nonexistent version details`()
-    {
+    fun `can return expected French error when get nonexistent version details`() {
         val headers = getStandardHeaders("fr")
-        val httpEntity =  HttpEntity<String>(headers)
+        val httpEntity = HttpEntity<String>(headers)
 
         val result = testRestTemplate.exchange<String>("/project/99/version/noversion", HttpMethod.GET, httpEntity)
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
@@ -214,8 +200,7 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can delete project`()
-    {
+    fun `can delete project`() {
         val createResult = createProject()
         val createProjectData = getResponseData(createResult)
         val projectId = createProjectData["id"].asInt()
@@ -233,10 +218,9 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can return expected English error when delete nonexistent project`()
-    {
+    fun `can return expected English error when delete nonexistent project`() {
         val headers = getStandardHeaders("en")
-        val httpEntity =  HttpEntity<String>(headers)
+        val httpEntity = HttpEntity<String>(headers)
 
         val result = testRestTemplate.exchange<String>("/project/99/", HttpMethod.DELETE, httpEntity)
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
@@ -247,10 +231,9 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can return expected French error when delete nonexistent project`()
-    {
+    fun `can return expected French error when delete nonexistent project`() {
         val headers = getStandardHeaders("fr")
-        val httpEntity =  HttpEntity<String>(headers)
+        val httpEntity = HttpEntity<String>(headers)
 
         val result = testRestTemplate.exchange<String>("/project/99", HttpMethod.DELETE, httpEntity)
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
@@ -261,8 +244,7 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can delete version`()
-    {
+    fun `can delete version`() {
         val createResult = createProject()
         val createProjectData = getResponseData(createResult)
         val projectId = createProjectData["id"].asInt()
@@ -283,10 +265,9 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can return expected English error when delete nonexistent version`()
-    {
+    fun `can return expected English error when delete nonexistent version`() {
         val headers = getStandardHeaders("en")
-        val httpEntity =  HttpEntity<String>(headers)
+        val httpEntity = HttpEntity<String>(headers)
 
         val result = testRestTemplate.exchange<String>("/project/99/version/nonexistent", HttpMethod.DELETE, httpEntity)
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
@@ -297,10 +278,9 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can return expected French error when delete nonexistent version`()
-    {
+    fun `can return expected French error when delete nonexistent version`() {
         val headers = getStandardHeaders("fr")
-        val httpEntity =  HttpEntity<String>(headers)
+        val httpEntity = HttpEntity<String>(headers)
 
         val result = testRestTemplate.exchange<String>("/project/99/version/nonexistent", HttpMethod.DELETE, httpEntity)
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
@@ -311,8 +291,7 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
-    fun `can clone project`()
-    {
+    fun `can clone project`() {
         val createResult = createProject()
         val createProjectData = getResponseData(createResult)
         val projectId = createProjectData["id"].asInt()
@@ -321,73 +300,78 @@ class ProjectTests : VersionFileTests() {
         getUpdateVersionStateResult(projectId, versionId, testState)
 
         val email = "user@email.com"
+        val email2 = "another.user@email.com"
         userRepo.addUser(email, "password")
+        userRepo.addUser(email2, "password")
 
-        testRestTemplate.postForEntity<String>("/user/$email/project/", getCloneProjectEntity(projectId))
+        testRestTemplate.postForEntity<String>("/project/$projectId/clone/",
+                getCloneProjectEntity(listOf(email, email2)))
 
-        val newProject = dsl.selectFrom(PROJECT)
-                .where(PROJECT.USER_ID.eq("user@email.com"))
-                .fetchAny()
-
-        val newVersions = dsl.selectFrom(PROJECT_VERSION)
-                .where(PROJECT_VERSION.PROJECT_ID.eq(newProject[PROJECT.ID]))
+        val newProjects = dsl.selectFrom(PROJECT)
+                .where(PROJECT.USER_ID.eq(email))
+                .or(PROJECT.USER_ID.eq(email2))
                 .fetch()
+                .map {
+                    it[PROJECT.ID]
+                }
+
+        assertThat(newProjects.count()).isEqualTo(2)
 
         val oldVersions = dsl.selectFrom(PROJECT_VERSION)
                 .where(PROJECT_VERSION.PROJECT_ID.eq(projectId))
                 .fetch()
 
-        assertThat(newVersions.count()).isEqualTo(1)
-        assertThat(newVersions[0].state).isEqualTo(oldVersions[0].state)
-        assertThat(newVersions[0].versionNumber).isEqualTo(oldVersions[0].versionNumber)
-        assertThat(newVersions[0].created).isEqualTo(oldVersions[0].created)
-        assertThat(newVersions[0].updated).isEqualTo(oldVersions[0].updated)
-        assertThat(newVersions[0].deleted).isEqualTo(oldVersions[0].deleted)
+        newProjects.forEach {
+            val newVersions = dsl.selectFrom(PROJECT_VERSION)
+                    .where(PROJECT_VERSION.PROJECT_ID.eq(it))
+                    .fetch()
+
+            assertThat(newVersions.count()).isEqualTo(1)
+            assertThat(newVersions[0].state).isEqualTo(oldVersions[0].state)
+            assertThat(newVersions[0].versionNumber).isEqualTo(oldVersions[0].versionNumber)
+            assertThat(newVersions[0].created).isEqualTo(oldVersions[0].created)
+            assertThat(newVersions[0].updated).isEqualTo(oldVersions[0].updated)
+            assertThat(newVersions[0].deleted).isEqualTo(oldVersions[0].deleted)
+        }
     }
 
-    private fun createProject(): ResponseEntity<String>
-    {
+    private fun createProject(): ResponseEntity<String> {
         val map = LinkedMultiValueMap<String, String>()
         map.add("name", "testProject")
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-        val httpEntity =  HttpEntity(map, headers)
+        val httpEntity = HttpEntity(map, headers)
         return testRestTemplate.postForEntity<String>("/project/", httpEntity)
     }
 
-    private fun getCloneProjectEntity(projectId: Int): HttpEntity<Any>
-    {
-        val map = LinkedMultiValueMap<String, Int>()
-        map.add("parentProjectId", projectId)
+    private fun getCloneProjectEntity(emails: List<String>): HttpEntity<Any> {
+        val map = LinkedMultiValueMap<String, String>()
+        map.add("emails", emails.joinToString(","))
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         return HttpEntity(map, headers)
     }
 
     private fun getUpdateVersionStateResult(projectId: Int, versionId: String, state: String,
-                                             language: String? = null): ResponseEntity<String>
-    {
+                                            language: String? = null): ResponseEntity<String> {
         val headers = getStandardHeaders(language)
 
-        val httpEntity =  HttpEntity(state, headers)
+        val httpEntity = HttpEntity(state, headers)
         val url = "/project/$projectId/version/$versionId/state/"
         return testRestTemplate.postForEntity<String>(url, httpEntity)
     }
 
-    private fun getNewVersionResult(projectId: Int, versionId: String, language: String? = null): ResponseEntity<String>
-    {
+    private fun getNewVersionResult(projectId: Int, versionId: String, language: String? = null): ResponseEntity<String> {
         val headers = getStandardHeaders(language)
         val httpEntity = HttpEntity(null, headers)
         val url = "/project/$projectId/version/?parent=$versionId"
         return testRestTemplate.postForEntity<String>(url, httpEntity)
     }
 
-    private fun getStandardHeaders(language: String?): HttpHeaders
-    {
+    private fun getStandardHeaders(language: String?): HttpHeaders {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
-        if (language != null)
-        {
+        if (language != null) {
             headers.acceptLanguage = mutableListOf(Locale.LanguageRange(language))
         }
 

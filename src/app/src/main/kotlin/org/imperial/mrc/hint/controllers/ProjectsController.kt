@@ -31,16 +31,18 @@ class ProjectsController(private val session: Session,
         return SuccessResponse(project).asResponseEntity()
     }
 
-    @PostMapping("/user/{email}/project/")
+    @PostMapping("/project/{projectId}/clone")
     @ResponseBody
-    fun cloneProjectToUser(@RequestParam("parentProjectId") parentProjectId: Int,
-                           @PathVariable("email") email: String): ResponseEntity<String> {
+    fun cloneProjectToUser(@PathVariable("projectId") projectId: Int,
+                           @RequestParam("emails") emails: List<String>): ResponseEntity<String> {
 
-        val userId = userLogic.getUser(email)?.id ?: throw UserException("userDoesNotExist")
-        val currentProject = projectRepository.getProject(parentProjectId, userId())
-        val newProjectId = projectRepository.saveNewProject(userId, currentProject.name)
-        currentProject.versions.forEach {
-            versionRepository.cloneVersion(it.id, session.generateNewVersionId(), newProjectId)
+        val userIds = emails.map { userLogic.getUser(it)?.id ?: throw UserException("userDoesNotExist") }
+        val currentProject = projectRepository.getProject(projectId, userId())
+        userIds.forEach {
+            val newProjectId = projectRepository.saveNewProject(it, currentProject.name)
+            currentProject.versions.forEach {
+                versionRepository.cloneVersion(it.id, session.generateNewVersionId(), newProjectId)
+            }
         }
         return SuccessResponse(null).asResponseEntity()
     }
