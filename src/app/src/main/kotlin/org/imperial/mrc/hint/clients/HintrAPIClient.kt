@@ -25,7 +25,7 @@ interface HintrAPIClient {
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
-    fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
+    fun downloadCoarseOutput(id: String): ResponseEntity<StreamingResponseBody>
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
 }
@@ -117,8 +117,8 @@ class HintrFuelAPIClient(
                 .getStreamingResponseEntity(::head)
     }
 
-    override fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody> {
-        return "$baseUrl/download/summary/${id}"
+    override fun downloadCoarseOutput(id: String): ResponseEntity<StreamingResponseBody> {
+        return "$baseUrl/download/coarse-output/${id}"
                 .httpDownload()
                 .getStreamingResponseEntity(::head)
     }

@@ -23,14 +23,14 @@ class DownloadControllerTests {
     }
 
     @Test
-    fun `downloads summary data`() {
+    fun `downloads coarse output data`() {
         val mockResponse = mock<ResponseEntity<StreamingResponseBody>>()
         val mockAPIClient = mock<HintrAPIClient>{
-            on {downloadSummary("id1")} doReturn mockResponse
+            on {downloadCoarseOutput("id1")} doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
-        val result = sut.getSummary("id1")
+        val result = sut.getCoarseOutput("id1")
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 }
