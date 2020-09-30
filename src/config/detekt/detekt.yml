@@ -1,6 +1,9 @@
 build:
   maxIssues: 10
 
+comments:
+   active: false
+
 complexity:
   TooManyFunctions:
     active: true
@@ -20,8 +23,6 @@ formatting:
     active: true
     indentSize: 4
     continuationIndentSize: 4
-  NoBlankLineBeforeRbrace:
-    active: false
 
 style:
   MandatoryBracesIfStatements:
@@ -30,4 +31,3 @@ style:
     active: true
   WildcardImport:
     active: false
-
