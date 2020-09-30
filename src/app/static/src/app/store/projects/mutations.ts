@@ -19,6 +19,7 @@ export const mutations: MutationTree<ProjectsState> = {
 
     [ProjectsMutations.CloneProjectError](state: ProjectsState, action: PayloadWithType<Error>) {
         state.cloneProjectError = action.payload
+        state.cloningProject = false;
     },
 
     [ProjectsMutations.CloningProject](state: ProjectsState, action: PayloadWithType<boolean>) {

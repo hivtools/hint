@@ -12,10 +12,7 @@
                             @keyup.enter="$event.target.blur()"
                             @keyup.delete="removeEmail(email, index)"
                             class="form-control"
-                            :class="{
-                                        'is-invalid': email.valid === false,
-                                        'is-valid': email.valid === true
-                                    }"
+                            :class="{'is-invalid': email.valid === false}"
                             @blur="() => addEmail(email, index)"
                             v-model="email.value"/>
                     </div>
@@ -30,13 +27,14 @@
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <template v-slot:footer>
-                <div class="text-muted help-text" v-show="disabled">
+                <div class="text-muted help-text" v-show="showValidationMessage">
                     Please correct or remove invalid email addresses
                 </div>
+                <error-alert v-if="cloneProjectError" :error="cloneProjectError"></error-alert>
                 <button type="button"
                         class="btn btn-red"
                         @click="confirmShareProject"
-                        :disabled="disabled || cloningProject"
+                        :disabled="invalidEmails || cloningProject"
                         v-translate="'ok'">
                 </button>
                 <button type="button"
@@ -59,6 +57,7 @@
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
     import {CloneProjectPayload} from "../../store/projects/actions";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     interface EmailToShareWith {
         value: string
@@ -67,7 +66,8 @@
 
     interface Data {
         emailsToShareWith: EmailToShareWith[]
-        open: boolean
+        open: boolean,
+        showValidationMessage: boolean
     }
 
     interface Props {
@@ -77,7 +77,7 @@
     interface Computed {
         currentLanguage: Language,
         instructions: string
-        disabled: boolean,
+        invalidEmails: boolean,
         cloneProjectError: Error | null
         cloningProject: boolean
     }
@@ -101,7 +101,8 @@
         data() {
             return {
                 emailsToShareWith: [{value: "", valid: null}],
-                open: false
+                open: false,
+                showValidationMessage: false
             }
         },
         methods: {
@@ -120,17 +121,20 @@
                     this.userExists(e.value)
                         .then((result: boolean) => {
                             this.emailsToShareWith[index].valid = result
+                            this.showValidationMessage = this.invalidEmails
                         })
                 } else {
                     e.valid = null
+                    this.showValidationMessage = this.invalidEmails
                 }
             },
             removeEmail(email: EmailToShareWith, index: number) {
-                // if email has been deleted and this is not the last input box
+                // if email has been deleted and this is not the last input
                 // remove from UI
                 if (!email.value && index < this.emailsToShareWith.length - 1) {
                     this.emailsToShareWith.splice(index, 1)
                 }
+                this.showValidationMessage = this.invalidEmails
             },
             shareProject(e: Event) {
                 e.preventDefault();
@@ -155,24 +159,21 @@
             instructions() {
                 return i18next.t('shareProjectInstructions', {project: this.project.name, lng: this.currentLanguage});
             },
-            disabled() {
+            invalidEmails() {
                 return this.emailsToShareWith.filter(e => e.value && !e.valid).length > 0
             }
         },
         components: {
             Modal,
-            LoadingSpinner
+            LoadingSpinner,
+            ErrorAlert
         },
         watch: {
             cloningProject(newVal: boolean) {
-                if (!newVal) {
+                if (!newVal && !this.cloneProjectError) {
                     this.open = false;
                 }
-                console.log(newVal)
             }
-        },
-        mounted() {
-            console.log(this.cloningProject)
         }
     });
 
