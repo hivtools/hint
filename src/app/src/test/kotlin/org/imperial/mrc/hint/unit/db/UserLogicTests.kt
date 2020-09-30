@@ -2,13 +2,12 @@ package org.imperial.mrc.hint.unit.db
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.db.UserRepository
-import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.helpers.TranslationAssert
+import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.pac4j.core.profile.CommonProfile
@@ -16,18 +15,21 @@ import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
 import java.util.*
 
-class UserLogicTests {
+class UserLogicTests
+{
 
-    companion object {
+    companion object
+    {
         const val TEST_EMAIL = "test@test.com"
     }
 
     private val mockUserRepo = mock<UserRepository> {
-        on { getAllUserNames()} doReturn listOf(TEST_EMAIL)
+        on { getAllUserNames() } doReturn listOf(TEST_EMAIL)
     }
 
     @Test
-    fun `add user calls create on profile service`() {
+    fun `add user calls create on profile service`()
+    {
 
         val mockProfileService = mock<DbProfileService>()
         val sut = DbProfileServiceUserLogic(mockUserRepo, mockProfileService, mock())
@@ -42,7 +44,8 @@ class UserLogicTests {
 
 
     @Test
-    fun `adding user without password creates random pw and sends account creation email`() {
+    fun `adding user without password creates random pw and sends account creation email`()
+    {
         val mockEmailManager = mock<EmailManager>()
         val mockProfileService = mock<DbProfileService>()
         val sut = DbProfileServiceUserLogic(mockUserRepo, mockProfileService, mockEmailManager)
@@ -59,7 +62,8 @@ class UserLogicTests {
     }
 
     @Test
-    fun `adding user with password does not send email`() {
+    fun `adding user with password does not send email`()
+    {
         val mockEmailManager = mock<EmailManager>()
         val sut = DbProfileServiceUserLogic(mockUserRepo, mock(), mockEmailManager)
 
@@ -68,7 +72,8 @@ class UserLogicTests {
     }
 
     @Test
-    fun `add user throws exception if finds existing user with email`() {
+    fun `add user throws exception if finds existing user with email`()
+    {
 
         val mockProfileService = mock<DbProfileService> {
             on { findById(TEST_EMAIL) } doReturn mock<DbProfile>()
@@ -82,7 +87,8 @@ class UserLogicTests {
     }
 
     @Test
-    fun `remove user calls removeById on profile service`() {
+    fun `remove user calls removeById on profile service`()
+    {
 
         val mockProfileService = mock<DbProfileService> {
             on { findById(TEST_EMAIL) } doReturn DbProfile().apply { id = TEST_EMAIL }
@@ -95,7 +101,8 @@ class UserLogicTests {
     }
 
     @Test
-    fun `remove user throws exception if does not find existing user`() {
+    fun `remove user throws exception if does not find existing user`()
+    {
 
         val mockProfileService = mock<DbProfileService>()
 
@@ -107,7 +114,8 @@ class UserLogicTests {
     }
 
     @Test
-    fun `getUser calls findById on profile service`() {
+    fun `getUser calls findById on profile service`()
+    {
         val mockProfile = mock<DbProfile>()
         val mockProfileService = mock<DbProfileService> {
             on { findById(TEST_EMAIL) } doReturn mockProfile
@@ -119,7 +127,8 @@ class UserLogicTests {
     }
 
     @Test
-    fun `updateUserPassword updates profile`() {
+    fun `updateUserPassword updates profile`()
+    {
         val mockCommonProfile = mock<CommonProfile> {
             on { id } doReturn TEST_EMAIL
         }

@@ -8,7 +8,8 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
 
-object KeyHelper {
+object KeyHelper
+{
 
     private const val KEY_PATH = "/etc/hint/token_key"
     private const val KEY_SIZE = 1024
@@ -17,25 +18,31 @@ object KeyHelper {
     private val logger: Logger = LoggerFactory.getLogger(KeyHelper::class.java)
 
     val keyPair by lazy {
-        if (File(KEY_PATH, "private_key.der").exists()) {
+        if (File(KEY_PATH, "private_key.der").exists())
+        {
             loadKeyPair()
-        } else {
+        }
+        else
+        {
             generateKeyPair()
         }
     }
 
-    fun loadKeyPair(): KeyPair {
+    fun loadKeyPair(): KeyPair
+    {
         logger.info("Loading token signing keypair from $KEY_PATH")
         return KeyPair(loadPublicKey(), loadPrivateKey())
     }
 
-    private fun loadPublicKey(): PublicKey {
+    private fun loadPublicKey(): PublicKey
+    {
         val keyBytes = File(KEY_PATH, "public_key.der").readBytes()
         val spec = X509EncodedKeySpec(keyBytes)
         return keyFactory.generatePublic(spec)
     }
 
-    private fun loadPrivateKey(): PrivateKey {
+    private fun loadPrivateKey(): PrivateKey
+    {
         val file = File(KEY_PATH, "private_key.der")
         val keyBytes = file.readBytes()
         val spec = PKCS8EncodedKeySpec(keyBytes)
@@ -43,7 +50,8 @@ object KeyHelper {
     }
 
     // inject file manager wrapper to make unit testing possible
-    fun generateKeyPair(fileManager: FileManager = KeyFileManager()): KeyPair {
+    fun generateKeyPair(fileManager: FileManager = KeyFileManager()): KeyPair
+    {
         logger.info("Unable to find a token keypair at $KEY_PATH. Generating a new")
         logger.info("RSA keypair for token signing. If other applications need to")
         logger.info("verify tokens they should use the following public key:")
@@ -54,7 +62,8 @@ object KeyHelper {
         val publicKey = Base64.getEncoder().encode(keypair.public.encoded)
         logger.info("Public key for token verification: " + publicKey)
 
-        if (fileManager.exists(KEY_PATH)) {
+        if (fileManager.exists(KEY_PATH))
+        {
             fileManager.writeToFile(File(KEY_PATH, "private_key.der"), keypair.private.encoded)
             fileManager.writeToFile(File(KEY_PATH, "public_key.der"), keypair.public.encoded)
         }
@@ -62,19 +71,23 @@ object KeyHelper {
     }
 }
 
-class KeyFileManager: FileManager {
+class KeyFileManager : FileManager
+{
 
-    override fun exists(path: String): Boolean {
+    override fun exists(path: String): Boolean
+    {
         return File(path).exists()
     }
 
-    override fun writeToFile(file: File, bytes: ByteArray) {
+    override fun writeToFile(file: File, bytes: ByteArray)
+    {
         file.createNewFile()
         file.writeBytes(bytes)
     }
 }
 
-interface FileManager {
+interface FileManager
+{
     fun exists(path: String): Boolean
     fun writeToFile(file: File, bytes: ByteArray)
 }

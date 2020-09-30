@@ -4,7 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.junit.jupiter.api.Test
 
-class PasswordEmailTemplateTests {
+class PasswordEmailTemplateTests
+{
     private val values = mapOf("appTitle" to "testApp",
             "appUrl" to "http://testAppUrl",
             "token" to "testToken",
@@ -16,13 +17,15 @@ class PasswordEmailTemplateTests {
     private val passwordResetEmailData = passwordResetEmail.emailData(values)
 
     @Test
-    fun `account creation has correct subject`() {
+    fun `account creation has correct subject`()
+    {
         assertThat(accountCreationEmail.subject).isEqualTo("Account creation for {{appTitle}}")
         assertThat(accountCreationEmailData.subject).isEqualTo("Account creation for testApp")
     }
 
     @Test
-    fun `account creation has correct text`() {
+    fun `account creation has correct text`()
+    {
 
         assertThat(accountCreationEmail.textTemplate).isEqualTo("account-creation.txt")
         assertThat(accountCreationEmailData.text).isEqualTo("""Hello,
@@ -41,7 +44,8 @@ Have a great day!""")
     }
 
     @Test
-    fun `account creation has correct html`() {
+    fun `account creation has correct html`()
+    {
         assertThat(accountCreationEmail.htmlTemplate).isEqualTo("account-creation.html")
         assertThat(accountCreationEmailData.html).isEqualTo("""<html>
 <head>
@@ -70,13 +74,15 @@ Have a great day!""")
     }
 
     @Test
-    fun `password reset has correct subject`() {
+    fun `password reset has correct subject`()
+    {
         assertThat(passwordResetEmail.subject).isEqualTo("Password change for {{appTitle}}")
         assertThat(passwordResetEmailData.subject).isEqualTo("Password change for testApp")
     }
 
     @Test
-    fun `password reset has correct text`() {
+    fun `password reset has correct text`()
+    {
         assertThat(passwordResetEmail.textTemplate).isEqualTo("password-reset.txt")
         assertThat(passwordResetEmailData.text).isEqualTo("""Hello,
 
@@ -95,7 +101,8 @@ Have a great day!""")
     }
 
     @Test
-    fun `password reset has correct html`() {
+    fun `password reset has correct html`()
+    {
         assertThat(passwordResetEmail.htmlTemplate).isEqualTo("password-reset.html")
         assertThat(passwordResetEmailData.html).isEqualTo("""<html>
 <head>

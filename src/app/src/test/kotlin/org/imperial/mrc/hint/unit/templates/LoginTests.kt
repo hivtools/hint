@@ -1,19 +1,16 @@
 package org.imperial.mrc.hint.unit.templates
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.ui.ConcurrentModel
-import org.assertj.core.api.Assertions.assertThat
 
-class LoginTests
-{
-    companion object
-    {
+class LoginTests {
+    companion object {
         val template = FreemarkerTemplateLoader("login.ftl")
     }
 
     @Test
-    fun `renders login form correctly with error`()
-    {
+    fun `renders login form correctly with error`() {
         val model = ConcurrentModel()
         model["username"] = "test user"
         model["error"] = "test error"
@@ -42,8 +39,7 @@ class LoginTests
     }
 
     @Test
-    fun `renders login form correctly without error`()
-    {
+    fun `renders login form correctly without error`() {
         val model = ConcurrentModel()
         model["username"] = ""
         model["error"] = ""
@@ -61,8 +57,7 @@ class LoginTests
     }
 
     @Test
-    fun `renders partner logos without error`()
-    {
+    fun `renders partner logos without error`() {
         val model = ConcurrentModel()
         model["username"] = ""
         model["error"] = ""

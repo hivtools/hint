@@ -9,7 +9,8 @@ import org.jooq.DSLContext
 import org.jooq.Record
 import org.springframework.stereotype.Component
 
-interface ProjectRepository {
+interface ProjectRepository
+{
     fun saveNewProject(userId: String, projectName: String): Int
     fun getProjects(userId: String): List<Project>
     fun deleteProject(projectId: Int, userId: String)
@@ -17,9 +18,11 @@ interface ProjectRepository {
 }
 
 @Component
-class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
+class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
+{
 
-    override fun getProject(projectId: Int, userId: String): Project {
+    override fun getProject(projectId: Int, userId: String): Project
+    {
         val projectRecord = dsl.select(
                 PROJECT.ID,
                 PROJECT.NAME,
@@ -34,14 +37,16 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
                         .and(PROJECT.USER_ID.eq(userId))
                 ).fetch()
 
-        if (!projectRecord.any()) {
+        if (!projectRecord.any())
+        {
             throw ProjectException("projectDoesNotExist")
         }
 
         return mapProject(projectRecord)
     }
 
-    override fun saveNewProject(userId: String, projectName: String): Int {
+    override fun saveNewProject(userId: String, projectName: String): Int
+    {
         val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME)
                 .values(userId, projectName)
                 .returning(PROJECT.ID)
@@ -50,7 +55,8 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
         return result[PROJECT.ID]
     }
 
-    override fun getProjects(userId: String): List<Project> {
+    override fun getProjects(userId: String): List<Project>
+    {
         val result =
                 dsl.select(
                         PROJECT.ID,
@@ -73,7 +79,8 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
                 .sortedByDescending { it.versions[0].updated }
     }
 
-    override fun deleteProject(projectId: Int, userId: String) {
+    override fun deleteProject(projectId: Int, userId: String)
+    {
         checkProjectExists(projectId, userId)
         dsl.update(PROJECT_VERSION)
                 .set(PROJECT_VERSION.DELETED, true)
@@ -81,7 +88,8 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
                 .execute()
     }
 
-    private fun checkProjectExists(projectId: Int, userId: String) {
+    private fun checkProjectExists(projectId: Int, userId: String)
+    {
         dsl.select(PROJECT.ID)
                 .from(PROJECT)
                 .where(PROJECT.ID.eq(projectId))
@@ -89,11 +97,13 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository {
                 .fetchAny() ?: throw ProjectException("projectDoesNotExist")
     }
 
-    private fun mapProject(versions: List<Record>): Project {
+    private fun mapProject(versions: List<Record>): Project
+    {
         return Project(versions[0][PROJECT.ID], versions[0][PROJECT.NAME], mapVersion(versions))
     }
 
-    private fun mapVersion(records: List<Record>): List<Version> {
+    private fun mapVersion(records: List<Record>): List<Version>
+    {
         return records.map { v ->
             Version(v[PROJECT_VERSION.ID], v[PROJECT_VERSION.CREATED],
                     v[PROJECT_VERSION.UPDATED], v[PROJECT_VERSION.VERSION_NUMBER])

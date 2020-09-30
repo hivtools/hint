@@ -14,8 +14,8 @@ import java.io.File
 import java.io.StringWriter
 import java.io.Writer
 import java.net.URL
-import javax.xml.transform.Source
 import java.util.*
+import javax.xml.transform.Source
 
 class FreemarkerTemplateLoader(val templateName: String, val templatePath: String = "static/templates")
 {
@@ -38,7 +38,7 @@ class FreemarkerTemplateLoader(val templateName: String, val templatePath: Strin
     private var template: Template? = null
 
 
-    private fun getTemplate() : Template
+    private fun getTemplate(): Template
     {
         return template ?: loadTemplate()
     }

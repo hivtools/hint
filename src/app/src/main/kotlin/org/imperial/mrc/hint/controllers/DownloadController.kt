@@ -7,16 +7,19 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 @RestController
 @RequestMapping("/download")
-class DownloadController(val apiClient: HintrAPIClient){
+class DownloadController(val apiClient: HintrAPIClient)
+{
     @GetMapping("/spectrum/{id}")
     @ResponseBody
-    fun getSpectrum(@PathVariable("id")id: String): ResponseEntity<StreamingResponseBody> {
+    fun getSpectrum(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
+    {
         return apiClient.downloadSpectrum(id)
     }
 
     @GetMapping("/coarse-output/{id}")
     @ResponseBody
-    fun getCoarseOutput(@PathVariable("id")id: String): ResponseEntity<StreamingResponseBody> {
+    fun getCoarseOutput(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
+    {
         return apiClient.downloadCoarseOutput(id)
     }
 }

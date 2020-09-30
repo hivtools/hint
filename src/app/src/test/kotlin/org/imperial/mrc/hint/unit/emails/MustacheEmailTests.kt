@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test
 class MustacheEmailTests
 {
 
-    class TestMustacheEmailTemplate: MustacheEmailTemplate() {
+    class TestMustacheEmailTemplate : MustacheEmailTemplate()
+    {
         override val subject = "Welcome to {{app}}"
+
         //These files are in the resources for the test module
         override val textTemplate = "mustache-email-test.txt"
         override val htmlTemplate = "mustache-email-test.html"
