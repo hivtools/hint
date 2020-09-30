@@ -10,7 +10,7 @@
                       @submit="calibrate"
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
-        <div v-if="complete" class="mt-3">
+        <div v-if="complete" id="calibrateion-complete" class="mt-3">
             <h4 class="d-inline" id="calibrate-complete" v-translate="'calibrationComplete'"></h4>
             <tick color="#e31837" width="20px"></tick>
         </div>
