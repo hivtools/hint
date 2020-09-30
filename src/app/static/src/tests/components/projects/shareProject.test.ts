@@ -190,28 +190,31 @@ describe("ShareProject", () => {
         expect(wrapper.find(Modal).findAll("input").length).toBe(2);
     });
 
-    it("if email is deleted , input is removed from list", async () => {
-        const wrapper = shallowMount(ShareProject, {
-            propsData: {
-                project: {id: 1, name: "p1"}
-            },
-            store: createStore(),
+    it("if email is deleted , input is removed from list and validation message refreshed",
+        async () => {
+            const wrapper = mount(ShareProject, {
+                propsData: {
+                    project: {id: 1, name: "p1"}
+                },
+                store: createStore(jest.fn().mockResolvedValue(false)),
+            });
+
+            const link = wrapper.find("a");
+            link.trigger("click");
+            const inputs = wrapper.find(Modal).findAll("input");
+            expect(inputs.length).toBe(1);
+            inputs.at(0).setValue("testing");
+            inputs.at(0).trigger("blur");
+            await Vue.nextTick();
+            expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+            expect(wrapper.find(Modal).find(".help-text").isVisible()).toBe(true);
+
+            inputs.at(0).setValue("");
+            inputs.at(0).trigger("keyup.delete");
+            await Vue.nextTick();
+            expect(wrapper.find(Modal).findAll("input").length).toBe(1);
+            expect(wrapper.find(Modal).find(".help-text").isVisible()).toBe(false);
         });
-
-        const link = wrapper.find("a");
-        link.trigger("click");
-        const inputs = wrapper.find(Modal).findAll("input");
-        expect(inputs.length).toBe(1);
-        inputs.at(0).setValue("testing");
-        inputs.at(0).trigger("blur");
-        await Vue.nextTick();
-        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
-
-        inputs.at(0).setValue("");
-        inputs.at(0).trigger("keyup.delete");
-        await Vue.nextTick();
-        expect(wrapper.find(Modal).findAll("input").length).toBe(1);
-    });
 
     it("if email characters are deleted nothing happens", async () => {
         const wrapper = shallowMount(ShareProject, {
@@ -317,9 +320,9 @@ describe("ShareProject", () => {
 
         const link = wrapper.find("a");
         link.trigger("click");
-        const expectedEnglish  = "This will create a copy of p1 for the given users." +
-        "Please enter the email addresses you would like to share " +
-        "this project with. These email addresses must be already registered with Naomi."
+        const expectedEnglish = "This will create a copy of p1 for the given users." +
+            "Please enter the email addresses you would like to share " +
+            "this project with. These email addresses must be already registered with Naomi."
 
         const expectedFrench = "Cela créera une copie de p1 pour les utilisateurs désignés." +
             "Veuillez entrer les adresses e-mails " +
@@ -329,7 +332,7 @@ describe("ShareProject", () => {
     });
 
     it("translates validation feedback", () => {
-        const store =  createStore();
+        const store = createStore();
         const wrapper = mount(ShareProject, {
             propsData: {
                 project: {id: 1, name: "p1"}
@@ -339,7 +342,7 @@ describe("ShareProject", () => {
 
         const link = wrapper.find("a");
         link.trigger("click");
-        const expectedEnglish  = "This email address is not registered with Naomi";
+        const expectedEnglish = "This email address is not registered with Naomi";
         const expectedFrench = "Cette adresse e-mail n'est pas enregistrée dans Naomi"
 
         expectTranslated(wrapper.find(Modal).find(".text-danger"), expectedEnglish, expectedFrench, store);
