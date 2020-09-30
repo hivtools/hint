@@ -20,7 +20,7 @@ interface VersionRepository {
     // returns true if a new hash is saved, false if it already exists
     fun saveNewHash(hash: String): Boolean
 
-    fun saveVersionFile(versionId: String, type: FileType, hash: String, fileName: String)
+    fun saveVersionFile(versionId: String, type: FileType, hash: String, fileName: String, fromADR: Boolean)
     fun removeVersionFile(versionId: String, type: FileType)
     fun getVersionFile(versionId: String, type: FileType): VersionFile?
     fun getHashesForVersion(versionId: String): Map<String, String>
@@ -93,7 +93,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
         }
     }
 
-    override fun saveVersionFile(versionId: String, type: FileType, hash: String, fileName: String) {
+    override fun saveVersionFile(versionId: String, type: FileType, hash: String, fileName: String, fromADR: Boolean) {
 
         if (getVersionFileRecord(versionId, type) == null) {
             dsl.insertInto(VERSION_FILE)
@@ -101,11 +101,13 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
                     .set(VERSION_FILE.TYPE, type.toString())
                     .set(VERSION_FILE.VERSION, versionId)
                     .set(VERSION_FILE.FILENAME, fileName)
+                    .set(VERSION_FILE.FROM_ADR, fromADR)
                     .execute()
         } else {
             dsl.update(VERSION_FILE)
                     .set(VERSION_FILE.HASH, hash)
                     .set(VERSION_FILE.FILENAME, fileName)
+                    .set(VERSION_FILE.FROM_ADR, fromADR)
                     .where(VERSION_FILE.VERSION.eq(versionId))
                     .and(VERSION_FILE.TYPE.eq(type.toString()))
                     .execute()
@@ -132,10 +134,11 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
     }
 
     override fun getVersionFiles(versionId: String): Map<String, VersionFile> {
-        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME, VERSION_FILE.TYPE)
+        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME,VERSION_FILE.TYPE, VERSION_FILE.FROM_ADR)
                 .from(VERSION_FILE)
                 .where(VERSION_FILE.VERSION.eq(versionId))
-                .associate { it[VERSION_FILE.TYPE] to VersionFile(it[VERSION_FILE.HASH], it[VERSION_FILE.FILENAME]) }
+                .associate { it[VERSION_FILE.TYPE] to
+                        VersionFile(it[VERSION_FILE.HASH], it[VERSION_FILE.FILENAME], it[VERSION_FILE.FROM_ADR]) }
     }
 
     override fun setFilesForVersion(versionId: String, files: Map<String, VersionFile?>) {
@@ -154,6 +157,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
                                 .set(VERSION_FILE.TYPE, fileType)
                                 .set(VERSION_FILE.VERSION, versionId)
                                 .set(VERSION_FILE.FILENAME, versionFile.filename)
+                                .set(VERSION_FILE.FROM_ADR, versionFile.fromADR)
                                 .execute()
                     }
                 }
@@ -231,7 +235,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository {
     }
 
     private fun getVersionFileRecord(versionId: String, type: FileType): Record? {
-        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME)
+        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME, VERSION_FILE.FROM_ADR)
                 .from(VERSION_FILE)
                 .where(VERSION_FILE.VERSION.eq(versionId))
                 .and(VERSION_FILE.TYPE.eq(type.toString()))

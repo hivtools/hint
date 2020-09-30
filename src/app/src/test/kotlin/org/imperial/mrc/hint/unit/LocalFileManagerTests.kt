@@ -32,7 +32,7 @@ class LocalFileManagerTests {
     }
 
     private val allFilesMap = FileType.values().associate {
-        it.toString() to VersionFile("${it}hash", "${it}filename")
+        it.toString() to VersionFile("${it}hash", "${it}filename", false)
     }
 
     @AfterEach
@@ -57,6 +57,7 @@ class LocalFileManagerTests {
         assertThat(file.path).isEqualTo("tmp/C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
         assertThat(file.filename).isEqualTo("some-file-name.pjnz")
         assertThat(file.hash).isEqualTo("C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
+        assertThat(file.fromADR).isEqualTo(false)
     }
 
     @Test
@@ -75,6 +76,7 @@ class LocalFileManagerTests {
         assertThat(file.path).isEqualTo("tmp/C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
         assertThat(file.filename).isEqualTo("some-file-name.pjnz")
         assertThat(file.hash).isEqualTo("C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
+        assertThat(file.fromADR).isEqualTo(false)
     }
 
     @Test
@@ -97,6 +99,7 @@ class LocalFileManagerTests {
         assertThat(file.path).isEqualTo("tmp/9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.filename).isEqualTo("name.csv")
         assertThat(file.hash).isEqualTo("9473FDD0D880A43C21B7778D34872157.csv")
+        assertThat(file.fromADR).isEqualTo(true)
     }
 
     @Test
@@ -117,6 +120,7 @@ class LocalFileManagerTests {
         assertThat(file.path).isEqualTo("tmp/9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.filename).isEqualTo("name.csv")
         assertThat(file.hash).isEqualTo("9473FDD0D880A43C21B7778D34872157.csv")
+        assertThat(file.fromADR).isEqualTo(true)
     }
 
     @Test
@@ -124,7 +128,7 @@ class LocalFileManagerTests {
 
         val mockStateRepository = mock<VersionRepository> {
             on { saveNewHash(any()) } doReturn true
-            on { getVersionFile(any(), any()) } doReturn VersionFile("test", "filename")
+            on { getVersionFile(any(), any()) } doReturn VersionFile("test", "filename", false)
         }
 
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock())
@@ -196,7 +200,7 @@ class LocalFileManagerTests {
         val stateRepo = mock<VersionRepository>()
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
-        val files = mapOf("pjnz" to VersionFile("hash1", "file1"))
+        val files = mapOf("pjnz" to VersionFile("hash1", "file1", false))
         sut.setAllFiles(files)
 
         verify(stateRepo).setFilesForVersion("fake-id", files)
