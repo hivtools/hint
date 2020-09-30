@@ -407,6 +407,7 @@ const fr: Partial<Translations> = {
     saveVersion: "Sauvegarder la version?",
     saveVersionConfirm: "Sauvegarder la version et continuer à modifier",
     select: "Sélectionner...",
+    selectNewFile: "Sélectionner un nouveau fichier",
     sessionExpired: "Votre session a expiré. Veuillez rafraîchir la page et vous reconnecter. Vous pouvez sauvegarder votre travail avant de rafraîchir la page.",
     sex: "Sexe",
     shape: "Fichier de formes",
