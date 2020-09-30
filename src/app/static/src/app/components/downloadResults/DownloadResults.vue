@@ -6,7 +6,7 @@
                <span v-translate="'export'"></span> <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
            </a>
            <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
-           <a class="btn btn-red btn-lg my-3" :href=summaryUrl>
+           <a class="btn btn-red btn-lg my-3" :href=coarseOutputUrl>
                <span v-translate="'download'"></span>  <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
            </a>
        </div>

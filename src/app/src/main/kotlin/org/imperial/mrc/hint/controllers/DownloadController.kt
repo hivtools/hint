@@ -16,7 +16,7 @@ class DownloadController(val apiClient: HintrAPIClient){
 
     @GetMapping("/coarse-output/{id}")
     @ResponseBody
-    fun getSummary(@PathVariable("id")id: String): ResponseEntity<StreamingResponseBody> {
+    fun getCoarseOutput(@PathVariable("id")id: String): ResponseEntity<StreamingResponseBody> {
         return apiClient.downloadCoarseOutput(id)
     }
 }
