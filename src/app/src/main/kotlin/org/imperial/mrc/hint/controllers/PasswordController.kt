@@ -25,6 +25,10 @@ class PasswordController(private val appProperties: AppProperties,
                          private val oneTimeTokenManager: OneTimeTokenManager,
                          private val emailManager: EmailManager) {
 
+    companion object {
+        private const val MIN_PASSWORD_LENGTH = 6
+    }
+
     @GetMapping("/forgot-password")
     fun forgotPassword(model: Model): String {
         model["title"] = appProperties.applicationTitle
@@ -56,7 +60,7 @@ class PasswordController(private val appProperties: AppProperties,
     fun postResetPassword(@RequestParam("token") token: String,
                           @RequestParam("password")
                           password: String): String {
-        if (password.length < 6) {
+        if (password.length < MIN_PASSWORD_LENGTH) {
             throw HintException("invalidPasswordLength", HttpStatus.BAD_REQUEST)
         }
 

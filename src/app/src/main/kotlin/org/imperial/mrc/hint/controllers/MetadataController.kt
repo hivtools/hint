@@ -11,6 +11,6 @@ class MetadataController(val apiClient: HintrAPIClient) {
     @GetMapping("/plotting/{iso3}")
     @ResponseBody
     fun plotting(@PathVariable("iso3") iso3: String): ResponseEntity<String> {
-        return apiClient.getPlottingMetadata(iso3);
+        return apiClient.getPlottingMetadata(iso3)
     }
 }

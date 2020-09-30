@@ -24,6 +24,10 @@ class OneTimeTokenManager(
     private val issuer = appProperties.tokenIssuer
     private val random = SecureRandom()
 
+    companion object {
+        private const val NONCE_LENGTH = 32
+    }
+
     fun generateOnetimeSetPasswordToken(username: String): String
     {
         val token= generator.generate(mapOf(
@@ -50,7 +54,7 @@ class OneTimeTokenManager(
 
     private fun getNonce(): String
     {
-        val bytes = ByteArray(32)
+        val bytes = ByteArray(NONCE_LENGTH)
         random.nextBytes(bytes)
         return Base64.getEncoder().encodeToString(bytes)
     }

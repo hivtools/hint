@@ -8,6 +8,10 @@ import org.springframework.http.ResponseEntity
 
 abstract class FuelClient(protected val baseUrl: String) {
 
+    companion object {
+        private const val TIMEOUT = 60000
+    }
+
     abstract fun standardHeaders(): Map<String, Any>
 
     fun get(url: String): ResponseEntity<String> {
@@ -31,7 +35,7 @@ abstract class FuelClient(protected val baseUrl: String) {
     }
 
     protected fun Request.addTimeouts(): Request {
-        return this.timeout(60000)
-                .timeoutRead(60000)
+        return this.timeout(TIMEOUT)
+                .timeoutRead(TIMEOUT)
     }
 }

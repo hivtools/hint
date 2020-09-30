@@ -35,6 +35,7 @@ matrix:
       - sudo /etc/init.d/postgresql stop
       - ./scripts/run-dependencies.sh
       script:
+      - ./src/gradlew -p src app::detektMain
       - ./src/gradlew -p src app::test
       - ./src/gradlew -p src userCLI::test
       - ./src/gradlew -p src app::jacocoTestReport

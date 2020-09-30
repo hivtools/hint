@@ -19,7 +19,9 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 interface HintrAPIClient {
     fun validateBaselineIndividual(file: VersionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
-    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
+    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType)
+            : ResponseEntity<String>
+
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
@@ -69,7 +71,8 @@ class HintrFuelAPIClient(
         return postJson("validate/survey-and-programme", json)
     }
 
-    override fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String> {
+    override fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions)
+            : ResponseEntity<String> {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("options" to modelRunOptions.options,

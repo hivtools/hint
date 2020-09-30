@@ -1,0 +1,33 @@
+build:
+  maxIssues: 10
+
+complexity:
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 20
+    thresholdInClasses: 20
+    thresholdInInterfaces: 20
+    thresholdInObjects: 20
+    thresholdInEnums: 20
+    ignoreDeprecated: true
+    ignorePrivate: true
+    ignoreOverridden: false
+
+formatting:
+  NoWildcardImports:
+    active: false
+  Indentation:
+    active: true
+    indentSize: 4
+    continuationIndentSize: 4
+  NoBlankLineBeforeRbrace:
+    active: false
+
+style:
+  MandatoryBracesIfStatements:
+    active: true
+  MandatoryBracesLoops:
+    active: true
+  WildcardImport:
+    active: false
+
