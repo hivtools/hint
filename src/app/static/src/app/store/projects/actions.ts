@@ -21,7 +21,7 @@ export interface ProjectsActions {
     cloneProject: (store: ActionContext<ProjectsState, RootState>, payload: CloneProjectPayload) => void
 }
 
-interface CloneProjectPayload {
+export interface CloneProjectPayload {
     projectId: number
     emails: string[]
 }
