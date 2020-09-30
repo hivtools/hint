@@ -70,9 +70,11 @@ describe("ShareProject", () => {
         input.setValue("bademail");
         input.trigger("blur");
         await Vue.nextTick();
-        expect(wrapper.find(Modal).find("input").classes()).toContain("is-invalid");
-        expect(wrapper.find(Modal).find(".text-danger").classes()).not.toContain("d-none");
-        expect(wrapper.find(Modal).find("button").attributes("disabled")).toBe("disabled");
+        const modal = wrapper.find(Modal);
+        expect(modal.find("input").classes()).toContain("is-invalid");
+        expect(modal.find(".text-danger").classes()).not.toContain("d-none");
+        expect(modal.find("button").attributes("disabled")).toBe("disabled");
+        expect(modal.find(".help-text").isVisible()).toBe(true);
     });
 
     it("if email is valid, validation feedback is not shown and button enabled", async () => {
@@ -89,33 +91,206 @@ describe("ShareProject", () => {
         input.setValue("goodemail");
         input.trigger("blur");
         await Vue.nextTick();
-        expect(wrapper.find(Modal).find("input").classes()).not.toContain("is-invalid");
-        expect(wrapper.find(Modal).find(".text-danger").classes()).toContain("d-none");
-        expect(wrapper.find(Modal).find("button").attributes("disabled")).toBeUndefined();
+        const modal = wrapper.find(Modal);
+        expect(modal.find("input").classes()).not.toContain("is-invalid");
+        expect(modal.find(".text-danger").classes()).toContain("d-none");
+        expect(modal.find("button").attributes("disabled")).toBeUndefined();
+        expect(modal.find(".help-text").isVisible()).toBe(false);
     });
 
+    it("user validation fires on blur if value is provided", async () => {
+        const userExists = jest.fn();
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(userExists),
+        });
 
-    // it("if emails are valid, project is shared", (done) => {
-    //     const wrapper = mount(ShareProject, {
-    //         propsData: {
-    //             project: {id: 1, name: "p1"}
-    //         },
-    //         store: createStore()
-    //     });
-    //
-    //     const link = wrapper.find("a");
-    //     link.trigger("click");
-    //     wrapper.find(Modal).find("input").setValue("goodemail@gmail.com");
-    //     wrapper.find(Modal).findAll("button").at(0).trigger("click");
-    //     expect(wrapper.find(Modal).props("open")).toBe(true);
-    //     expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
-    //
-    //     setTimeout(() => {
-    //         expect(wrapper.find(Modal).props("open")).toBe(false);
-    //         expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
-    //         done();
-    //     }, 200)
-    // });
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const input = wrapper.find(Modal).find("input");
+        input.setValue("testingblurevent");
+        input.trigger("blur");
+        await Vue.nextTick();
+        expect(userExists.mock.calls.length).toBe(1);
+    });
+
+    it("user validation does not fire on blur if no value is provided", async () => {
+        const userExists = jest.fn();
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(userExists),
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const input = wrapper.find(Modal).find("input");
+        input.trigger("blur");
+        await Vue.nextTick();
+        expect(userExists.mock.calls.length).toBe(0);
+    });
+
+    it("if blur fires on last input and value is provided, a new input is added", async () => {
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(),
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const inputs = wrapper.find(Modal).findAll("input");
+        expect(inputs.length).toBe(1);
+        inputs.at(0).setValue("testing");
+        inputs.at(0).trigger("blur");
+        await Vue.nextTick();
+        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+    });
+
+    it("if blur fires on last input but no value is provided, no new input is added", async () => {
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(),
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const inputs = wrapper.find(Modal).findAll("input");
+        expect(inputs.length).toBe(1);
+        inputs.at(0).trigger("blur");
+        await Vue.nextTick();
+        expect(wrapper.find(Modal).findAll("input").length).toBe(1);
+    });
+
+    it("if blur fires on non-last input, no new input is added", async () => {
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(),
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const inputs = wrapper.find(Modal).findAll("input");
+        expect(inputs.length).toBe(1);
+        inputs.at(0).setValue("testing");
+        inputs.at(0).trigger("blur");
+        await Vue.nextTick();
+        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+
+        inputs.at(0).setValue("newvalue");
+        inputs.at(0).trigger("blur");
+        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+    });
+
+    it("if email is deleted , input is removed from list", async () => {
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(),
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const inputs = wrapper.find(Modal).findAll("input");
+        expect(inputs.length).toBe(1);
+        inputs.at(0).setValue("testing");
+        inputs.at(0).trigger("blur");
+        await Vue.nextTick();
+        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+
+        inputs.at(0).setValue("");
+        inputs.at(0).trigger("keyup.delete");
+        await Vue.nextTick();
+        expect(wrapper.find(Modal).findAll("input").length).toBe(1);
+    });
+
+    it("if email characters are deleted nothing happens", async () => {
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(),
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const inputs = wrapper.find(Modal).findAll("input");
+        expect(inputs.length).toBe(1);
+        inputs.at(0).setValue("testing");
+        inputs.at(0).trigger("blur");
+        await Vue.nextTick();
+        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+
+        inputs.at(0).setValue("testin");
+        inputs.at(0).trigger("keyup.delete");
+        await Vue.nextTick();
+        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+    });
+
+    it("if last email in list is deleted, empty input remains visible", async () => {
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(),
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        let inputs = wrapper.find(Modal).findAll("input");
+        expect(inputs.length).toBe(1);
+        inputs.at(0).setValue("testing");
+        inputs.at(0).trigger("blur");
+        await Vue.nextTick();
+        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+
+        inputs = wrapper.find(Modal).findAll("input");
+        inputs.at(1).setValue("somevalue");
+        inputs.at(1).trigger("blur");
+        await Vue.nextTick();
+
+        inputs.at(1).setValue("");
+        inputs.at(1).trigger("keyup.delete");
+        await Vue.nextTick();
+
+        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+    });
+
+    it("can share project", async (done) => {
+        const wrapper = mount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(jest.fn().mockResolvedValue(true)),
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        const input = wrapper.find(Modal).find("input");
+        input.setValue("testing");
+        input.trigger("blur");
+
+        await Vue.nextTick();
+
+        wrapper.find(Modal).find("button").trigger("click");
+        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
+
+        setTimeout(() => {
+            expect(wrapper.find(Modal).props("open")).toBe(false);
+            expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
+            done();
+        }, 200);
+
+    });
 
     it("translates header", () => {
         const store = createStore();
