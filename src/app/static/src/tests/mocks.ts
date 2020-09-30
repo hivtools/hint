@@ -35,6 +35,7 @@ import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
 import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
 import {Dataset, DatasetResource} from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
+import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -70,6 +71,13 @@ export const mockModelRunState = (props?: Partial<ModelRunState>) => {
 export const mockModelOptionsState = (props?: Partial<ModelOptionsState>): ModelOptionsState => {
     return {
         ...initialModelOptionsState(),
+        ...props
+    }
+};
+
+export const mockModelCalibrateState = (props?: Partial<ModelCalibrateState>): ModelCalibrateState => {
+    return {
+        ...initialModelCalibrateState(),
         ...props
     }
 };

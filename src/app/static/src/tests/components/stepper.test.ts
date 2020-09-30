@@ -13,7 +13,7 @@ import {
     mockShapeResponse, mockStepperState,
     mockSurveyAndProgramState,
     mockValidateBaselineResponse,
-    mockProjectsState
+    mockProjectsState, mockModelCalibrateState
 
 } from "../mocks";
 import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
@@ -42,6 +42,8 @@ import {ProjectsState} from "../../app/store/projects/projects";
 import VersionStatus from "../../app/components/projects/VersionStatus.vue";
 import {emptyState, storeOptions, RootState} from "../../app/root";
 import { getters as rootGetters } from "../../app/store/root/getters";
+import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
+import {modelCalibrateGetters} from "../../app/store/modelCalibrate/modelCalibrate";
 
 const localVue = createLocalVue();
 
@@ -84,6 +86,11 @@ describe("Stepper component", () => {
                     namespaced: true,
                     state: mockModelOptionsState(),
                     getters: modelOptionsGetters
+                },
+                modelCalibrate: {
+                    namespaced: true,
+                    state: mockModelCalibrateState(),
+                    getters: modelCalibrateGetters,
                 },
                 stepper: {
                     namespaced: true,
@@ -166,7 +173,7 @@ describe("Stepper component", () => {
         const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
         const steps = wrapper.findAll(Step);
 
-        expect(wrapper.findAll(Step).length).toBe(6);
+        expect(wrapper.findAll(Step).length).toBe(7);
         expect(steps.at(0).props().textKey).toBe("uploadBaseline");
         expect(steps.at(0).props().active).toBe(true);
         expect(steps.at(0).props().number).toBe(1);
@@ -191,24 +198,30 @@ describe("Stepper component", () => {
         expect(steps.at(3).props().complete).toBe(false);
         expect(steps.at(3).props().enabled).toBe(false);
 
-        expect(steps.at(4).props().textKey).toBe("reviewOutput");
+        expect(steps.at(4).props().textKey).toBe("calibrateModel");
         expect(steps.at(4).props().active).toBe(false);
         expect(steps.at(4).props().number).toBe(5);
         expect(steps.at(4).props().complete).toBe(false);
         expect(steps.at(4).props().enabled).toBe(false);
 
-        expect(steps.at(5).props().textKey).toBe("downloadResults");
+        expect(steps.at(5).props().textKey).toBe("reviewOutput");
         expect(steps.at(5).props().active).toBe(false);
         expect(steps.at(5).props().number).toBe(6);
         expect(steps.at(5).props().complete).toBe(false);
         expect(steps.at(5).props().enabled).toBe(false);
+
+        expect(steps.at(6).props().textKey).toBe("downloadResults");
+        expect(steps.at(6).props().active).toBe(false);
+        expect(steps.at(6).props().number).toBe(7);
+        expect(steps.at(6).props().complete).toBe(false);
+        expect(steps.at(6).props().enabled).toBe(false);
     });
 
     it("renders step connectors", () => {
         const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
         const connectors = wrapper.findAll(".step-connector");
 
-        expect(connectors.length).toBe(5);
+        expect(connectors.length).toBe(6);
         // all should not be enabled at first
         expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(0);
     });
@@ -566,6 +579,14 @@ describe("Stepper component", () => {
     it("does not show ADR integration on step 6", () => {
         const wrapper = getStepperOnStep(6);
         expect(wrapper.findAll(ADRIntegration).length).toBe(0);
+    });
+
+    it("renders model calibrate component on step 5", () => {
+        let wrapper = getStepperOnStep(5);
+        expect(wrapper.findAll(ModelCalibrate).length).toBe(1);
+
+        wrapper = getStepperOnStep(1);
+        expect(wrapper.findAll(ModelCalibrate).length).toBe(0);
     });
 
     const getStepperOnStep = (step: number) => {

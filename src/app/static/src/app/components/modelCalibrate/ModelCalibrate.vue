@@ -33,6 +33,7 @@
     import {StepDescription} from "../../store/stepper/stepper";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
+    import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
 
     interface Methods {
         fetchOptions: () => void
@@ -75,7 +76,7 @@
             },
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
-            ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
+            ...mapStateProps<ModelCalibrateState, keyof Computed>(namespace, {
                 loading: s => s.fetching
             }),
             complete: mapGetterByName(namespace, "complete"),
