@@ -53,16 +53,21 @@ describe("user header", () => {
     });
 
     it("contains login info if current user is not guest", () => {
-        const wrapper = getWrapper();
+        const currentUser = "someone@email.com";
+        const store = createStore({currentUser});
+        const wrapper = getWrapper(currentUser, store);
         const loginInfo = wrapper.find("span");
-        expect(loginInfo.text()).toBe("Logged in as someone@email.com");
+        expectTranslated(loginInfo,"Logged in as someone@email.com",
+            "Connecté en tant que someone@email.com", store);
     });
 
     it("contains login link if user is guest", () => {
-        const wrapper = getWrapper("guest");
+        const currentUser = "guest";
+        const store = createStore({currentUser});
+        const wrapper = getWrapper(currentUser, store);
         const logoutLink = wrapper.findAll("a[href='/logout']");
         const loginLink = wrapper.find("a[href='/login']");
-        expect(loginLink.text()).toBe("Log In");
+        expectTranslated(loginLink, "Log In", "Ouvrir une session", store);
         expect(logoutLink.length).toBe(0);
     });
 
@@ -82,7 +87,7 @@ describe("user header", () => {
         const store = createStore()
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         const bugLink = wrapper.find("a[href='https://forms.gle/QxCT1b4ScLqKPg6a7']");
-        expect(bugLink.text()).toBe("Report a bug");
+        expectTranslated(bugLink, "Report a bug", "Signaler un bogue", store);
     });
 
     it("computes language", () => {
@@ -100,7 +105,7 @@ describe("user header", () => {
     });
 
     it("contains help document links", () => {
-        const store = createStore()
+        const store = createStore();
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Help");
         expect(wrapper.find("a[href='https://mrc-ide.github.io/naomi-troubleshooting/index-en.html']").text()).toBe("Troubleshooting");
@@ -112,11 +117,12 @@ describe("user header", () => {
     });
 
     it("renders Projects link as expected if user is not guest", () => {
-        const wrapper = getWrapper();
+        const store = createStore();
+        const wrapper = getWrapper("someone@email.com", store);
 
         const link = wrapper.find("router-link-stub");
         expect(link.attributes("to")).toBe("/projects");
-        expect(link.text()).toBe("Projects");
+        expectTranslated(link, "Projects", "Projets", store);
     });
 
     it("does not render Projects link if current user is guest", () => {
