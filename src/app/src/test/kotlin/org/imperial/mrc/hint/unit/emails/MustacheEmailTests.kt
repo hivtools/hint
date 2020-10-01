@@ -37,7 +37,7 @@ class MustacheEmailTests
         val result = sut.html
         assertThat(result).isEqualTo("""<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 </head>
 <body>
 This is a test text email with testValue1 and testValue2

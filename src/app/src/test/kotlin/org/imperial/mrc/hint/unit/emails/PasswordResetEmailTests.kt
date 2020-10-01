@@ -49,7 +49,7 @@ Have a great day!""")
         assertThat(accountCreationEmail.htmlTemplate).isEqualTo("account-creation.html")
         assertThat(accountCreationEmailData.html).isEqualTo("""<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 </head>
 <body>
 <p>Hello,</p>
@@ -106,7 +106,7 @@ Have a great day!""")
         assertThat(passwordResetEmail.htmlTemplate).isEqualTo("password-reset.html")
         assertThat(passwordResetEmailData.html).isEqualTo("""<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 </head>
 <body>
 <p>Hello,</p>
