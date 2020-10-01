@@ -123,7 +123,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
     async copyVersion(context, versionBundle: versionBundle) {
         const {state, dispatch} = context;
-        // await immediateUploadVersionState(context);
         const {projectId, versionId} = versionBundle.version
         const name = versionBundle.name
         api<ProjectsMutations, ErrorsMutation>(context)

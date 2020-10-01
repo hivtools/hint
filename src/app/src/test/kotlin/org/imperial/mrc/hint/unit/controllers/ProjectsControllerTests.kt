@@ -197,8 +197,6 @@ class ProjectsControllerTests {
         val mockRepo = mock<VersionRepository>()
         val sut = ProjectsController(mockSession, mockRepo, mock(), mock())
         val result = sut.promoteVersion(1, "testVersion", "newProject")
-
-        // verify(mockRepo).promoteVersion("testVersion", 1, "testUser")
         
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }

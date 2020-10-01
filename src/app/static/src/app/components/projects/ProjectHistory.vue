@@ -70,8 +70,6 @@
         <modal :open="versionToCopy">
             <h4 >{{copyVersionHeader}}</h4>
             <h5 v-translate="'enterProjectName'"></h5>
-            <!-- <input type="text" class="form-control" v-translate:placeholder="'projectName'"
-                   v-model="copiedProjectName"> -->
             <template v-slot:footer>
                 <div class="container">
                     <div class="row">
@@ -91,16 +89,6 @@
                         </button>
                     </div>
                 </div>
-                
-                <!-- <button type="button"
-                        class="btn btn-red"
-                        v-translate="'createProject'">
-                </button>
-                <button type="button"
-                        class="btn btn-white"
-                        @click="cancelCopy"
-                        v-translate="'cancel'">
-                </button> -->
             </template>
         </modal>
     </div>
@@ -138,12 +126,7 @@
     }
 
     interface Computed {
-        // currentProject: Project | null,
-        // previousProjects: Project[],
-        // error: Error,
-        // hasError: boolean,
         disableCreate: boolean,
-        // loading: boolean,
         currentLanguage: Language,
         copyVersionHeader: string
     }
@@ -154,8 +137,7 @@
         loadAction: (version: VersionIds) => void,
         versionCountLabel: (project: Project) => string
         deleteProject: (event: Event, projectId: number) => void,
-        deleteVersion: (event: Event, projectId: number, versionId: string) => void
-        // copyProject: (event: Event, projectId: number) => void,
+        deleteVersion: (event: Event, projectId: number, versionId: string) => void,
         copyVersion: (event: Event, projectId: number, versionId: string, versionNumber: number) => void
         cancelCopy: () => void
         cancelDelete: () => void
@@ -163,7 +145,6 @@
         confirmCopy: (name: string) => void,
         deleteProjectAction: (projectId: number) => void,
         deleteVersionAction: (versionIds: VersionIds) => void
-        /////
         copyVersionAction: (versionBundle: versionBundle) => void
         createProject: (name: string) => void,
         getProjects: () => void
@@ -183,18 +164,10 @@
                versionToCopy: null,
                newProjectName: "",
                selectedVersionNumber: 0,
-            //    copiedProjectName: '',
                projectToCopy: null
            }
        },
         computed: {
-            // ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
-            //     currentProject: state => state.currentProject,
-            //     previousProjects: state => state.previousProjects,
-            //     error: state => state.error,
-            //     hasError: state => !!state.error,
-            //     loading: state => state.loading
-            // }),
             disableCreate: function() {
                 return !this.newProjectName;
             },
@@ -225,10 +198,6 @@
                this.versionToCopy = {projectId, versionId};
                this.selectedVersionNumber = versionNumber
            },
-        //    copyProject(event: Event, projectId: number) {
-        //         event.preventDefault();
-        //         this.projectToCopy = projectId;
-        //     },
            cancelCopy() {
                this.versionToCopy = null;
                this.projectToCopy = null;
@@ -238,61 +207,14 @@
                this.versionToDelete = null;
                this.projectToDelete = null;
            },
-        //    confirmDelete() {
-///////
-
-    // export default ProjectsMixin.extend<Data, Methods, {}, {}>({
-    //     data() {
-    //         return {
-    //             projectToDelete: null,
-    //             versionToDelete: null,
-    //             copiedProjectName: '',
-    //             projectToCopy: null,
-    //             versionToCopy: null
-    //         }
-    //     },
-        // methods: {
-        //     format(date: string) {
-        //         return formatDateTime(date);
-        //     },
-            // loadVersion(event: Event, projectId: number, versionId: string) {
-            //     event.preventDefault();
-            //     this.loadAction({projectId, versionId});
-            // },
-            // deleteProject(event: Event, projectId: number) {
-            //     event.preventDefault();
-            //     this.projectToDelete = projectId;
-            // },
-            // deleteVersion(event: Event, projectId: number, versionId: string) {
-            //     event.preventDefault();
-            //     this.versionToDelete = {projectId, versionId};
-            // },
-            // copyProject(event: Event, projectId: number) {
-            //     event.preventDefault();
-            //     this.projectToCopy = projectId;
-            // },
-            // copyVersion(event: Event, projectId: number, versionId: string) {
-            //     event.preventDefault();
-            //     this.versionToCopy = {projectId, versionId};
-            // },
-            // cancelCopy() {
-            //     this.versionToCopy = null;
-            //     this.projectToCopy = null;
-            // },
-            // cancelDelete() {
-            //     this.versionToDelete = null;
-            //     this.projectToDelete = null;
-            // },
-            confirmDelete() {
-               //////// 
-                if (this.projectToDelete) {
-                    this.deleteProjectAction(this.projectToDelete);
-                    this.projectToDelete = null;
-                } else if (this.versionToDelete) {
-                    this.deleteVersionAction(this.versionToDelete);
-                    this.versionToDelete = null;
-                }
-                //////-
+           confirmDelete() {
+               if (this.projectToDelete) {
+                   this.deleteProjectAction(this.projectToDelete);
+                   this.projectToDelete = null;
+               } else if (this.versionToDelete) {
+                   this.deleteVersionAction(this.versionToDelete);
+                   this.versionToDelete = null;
+               }
            },
            async confirmCopy(name) {
                
@@ -329,29 +251,6 @@
        directives: {
            'b-toggle': VBToggle
        }
-            //////-
-            // },
-            // versionCountLabel(project: Project) {
-            //     return project.versions.length == 1 ? "1 version" : `${project.versions.length} versions`
-            // },
-            // versionLabel(version: Version) {
-            //     return versionLabel(version)
-            // },
-            // loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
-            // deleteProjectAction: mapActionByName<number>("projects", "deleteProject"),
-            // deleteVersionAction: mapActionByName<VersionIds>("projects", "deleteVersion")
-        // },
-        // components: {
-        //     BCollapse,
-        //     ChevronDownIcon,
-        //     ChevronRightIcon,
-        //     Modal,
-        //     ShareProject
-        // },
-        // directives: {
-        //     'b-toggle': VBToggle
-        // }
-    /////-
     });
 </script>
 
