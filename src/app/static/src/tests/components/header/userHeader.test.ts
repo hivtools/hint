@@ -1,4 +1,4 @@
-import Vuex from "vuex";
+import Vuex, {Store} from "vuex";
 import {createLocalVue, RouterLinkStub, shallowMount} from "@vue/test-utils";
 import UserHeader from "../../../app/components/header/UserHeader.vue";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
@@ -8,6 +8,7 @@ import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import { getters } from "../../../app/store/root/getters";
 import {mockRootState} from "../../mocks";
+import {expectTranslated} from "../../testHelpers";
 
 const localVue = createLocalVue();
 
@@ -34,16 +35,20 @@ describe("user header", () => {
         return store
     }
 
-    const getWrapper = (user: string = "someone@email.com") => {
-        const store = createStore({currentUser: user})
-        return shallowMount(UserHeader, {propsData: {user, title: "Naomi"}, store, stubs: ["router-link"]});
+    const getWrapper = (user: string = "someone@email.com", store?: Store<RootState>) => {
+        return shallowMount(UserHeader, {
+            propsData: {user, title: "Naomi"},
+            store: store || createStore({currentUser: user}),
+            stubs: ["router-link"]});
     };
 
     it("contains logout link if current user is not guest", () => {
-        const wrapper = getWrapper();
+        const currentUser = "someone@email.com";
+        const store = createStore({currentUser});
+        const wrapper = getWrapper(currentUser, store);
         const logoutLink = wrapper.find("a[href='/logout']");
         const loginLink = wrapper.findAll("a[href='/login']");
-        expect(logoutLink.text()).toBe("Logout");
+        expectTranslated(logoutLink, "Logout", "Fermer une session", store);
         expect(loginLink.length).toBe(0);
     });
 
