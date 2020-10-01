@@ -28,7 +28,7 @@
                     <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
                 </div>
                 <div class="col-md-2 project-cell">
-                    <a @click="copyVersion($event, p.id, p.versions[0].id, p.versions[0].versionNumber)" href="" v-translate="'copyLatestToNewProject'"></a>
+                    <a @click="promoteVersion($event, p.id, p.versions[0].id, p.versions[0].versionNumber)" href="" v-translate="'copyLatestToNewProject'"></a>
                 </div>
                 <div class="col-md-1 project-cell">
                     <share-project :project="p"></share-project>
@@ -46,7 +46,7 @@
                         <a @click="deleteVersion($event, p.id, v.id)" href="" v-translate="'delete'"></a>
                     </div>
                     <div class="col-md-2 version-cell">
-                        <a @click="copyVersion($event, p.id, v.id, v.versionNumber)" href="" v-translate="'copyToNewProject'"></a>
+                        <a @click="promoteVersion($event, p.id, v.id, v.versionNumber)" href="" v-translate="'copyToNewProject'"></a>
                     </div>
                 </div>
             </b-collapse>
@@ -68,7 +68,7 @@
             </template>
         </modal>
         <modal :open="versionToCopy">
-            <h4 >{{copyVersionHeader}}</h4>
+            <div v-html="promoteVersionHeader" id="promoteVersionHeader"></div>
             <h5 v-translate="'enterProjectName'"></h5>
             <template v-slot:footer>
                 <div class="container">
@@ -104,7 +104,7 @@
     import Modal from "../Modal.vue"
     import {formatDateTime, mapActionByName, mapStateProps, mapStateProp, versionLabel} from "../../utils";
     import {ProjectsState} from "../../store/projects/projects";
-    import { versionBundle } from "../../store/projects/actions";
+    import { versionPayload } from "../../store/projects/actions";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
@@ -118,17 +118,13 @@
         projectToCopy: number | null,
         versionToCopy: VersionIds | null,
         newProjectName: string,
-        selectedVersionNumber: number,
+        selectedVersionNumber: string,
     }
-
-    // interface Props {
-    //     projects: Project[];
-    // }
 
     interface Computed {
         disableCreate: boolean,
         currentLanguage: Language,
-        copyVersionHeader: string
+        promoteVersionHeader: string
     }
 
     interface Methods {
@@ -138,32 +134,27 @@
         versionCountLabel: (project: Project) => string
         deleteProject: (event: Event, projectId: number) => void,
         deleteVersion: (event: Event, projectId: number, versionId: string) => void,
-        copyVersion: (event: Event, projectId: number, versionId: string, versionNumber: number) => void
+        promoteVersion: (event: Event, projectId: number, versionId: string, versionNumber: number) => void
         cancelCopy: () => void
         cancelDelete: () => void
         confirmDelete: () => void,
         confirmCopy: (name: string) => void,
         deleteProjectAction: (projectId: number) => void,
         deleteVersionAction: (versionIds: VersionIds) => void
-        copyVersionAction: (versionBundle: versionBundle) => void
+        promoteVersionAction: (versionPayload: versionPayload) => void
         createProject: (name: string) => void,
         getProjects: () => void
         versionLabel: (version: Version) => string
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, {}>({
-    //    props: {
-    //         projects: {
-    //             type: Array
-    //         }
-    //    },
        data() {
            return {
                projectToDelete: null,
                versionToDelete: null,
                versionToCopy: null,
                newProjectName: "",
-               selectedVersionNumber: 0,
+               selectedVersionNumber: "",
                projectToCopy: null
            }
        },
@@ -171,8 +162,8 @@
             disableCreate: function() {
                 return !this.newProjectName;
             },
-            copyVersionHeader: function() {
-                return i18next.t('copyVersionHeader', {lng: this.currentLanguage}).replace('version', `version v${this.selectedVersionNumber}`)
+            promoteVersionHeader: function() {
+                return i18next.t('promoteVersionHeader', {version: this.selectedVersionNumber, lng: this.currentLanguage});
             },
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language)
@@ -193,10 +184,10 @@
                event.preventDefault();
                this.versionToDelete = {projectId, versionId};
            },
-           copyVersion(event: Event, projectId: number, versionId: string, versionNumber: number) {
+           promoteVersion(event: Event, projectId: number, versionId: string, versionNumber: number) {
                event.preventDefault();
                this.versionToCopy = {projectId, versionId};
-               this.selectedVersionNumber = versionNumber
+               this.selectedVersionNumber = `v${versionNumber}`
            },
            cancelCopy() {
                this.versionToCopy = null;
@@ -219,16 +210,16 @@
            async confirmCopy(name) {
                
                 if (this.versionToCopy) {
-                    const versionBundle: versionBundle = {
+                    const versionPayload: versionPayload = {
                         version: this.versionToCopy!,
                         name: this.newProjectName
                     }
-                    this.copyVersionAction(versionBundle);
+                    this.promoteVersionAction(versionPayload);
                     this.versionToCopy = null;
                     this.newProjectName = "";
                 }
            },
-           copyVersionAction: mapActionByName<versionBundle>(namespace, "copyVersion"),
+           promoteVersionAction: mapActionByName<versionPayload>(namespace, "promoteVersion"),
            createProject: mapActionByName(namespace, "createProject"),
            getProjects: mapActionByName(namespace, "getProjects"),
            versionCountLabel(project: Project) {

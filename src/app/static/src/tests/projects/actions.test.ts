@@ -417,7 +417,7 @@ describe("Projects actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
     });
 
-    it("copyVersion creates new project containing replicated version", async (done) => {
+    it("promoteVersion creates new project containing replicated version", async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockProjectsState({
@@ -429,11 +429,11 @@ describe("Projects actions", () => {
         mockAxios.onPost(stateUrl, "newProject")
             .reply(200, mockSuccess("OK"));
 
-        const versionBundle = {
+        const versionPayload = {
             version: {projectId: 1, versionId: "testVersion"},
             name: "newProject"
         }
-        actions.copyVersion({commit, state, rootState, dispatch} as any, versionBundle);
+        actions.promoteVersion({commit, state, rootState, dispatch} as any, versionPayload);
 
         setTimeout(() => {
 

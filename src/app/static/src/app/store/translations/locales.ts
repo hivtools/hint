@@ -24,7 +24,6 @@ export interface Translations {
     continue: string,
     copyLatestToNewProject: string,
     copyToNewProject: string,
-    copyVersionHeader: string,
     couldNotParse: string,
     country: string,
     createProject: string,
@@ -106,6 +105,7 @@ export interface Translations {
     projects: string,
     projectsHeaderCreate: string,
     projectsHeaderReturn: string,
+    promoteVersionHeader: string,
     remove: string,
     reportBug: string,
     requestReset: string,
@@ -171,7 +171,6 @@ const en: Translations = {
     continue: "continue",
     copyLatestToNewProject: "Copy last updated to a new project",
     copyToNewProject: "Copy to a new project",
-    copyVersionHeader: "Copying version to a new project",
     couldNotParse: "Could not parse API response. Please contact support.",
     country: "Country",
     createProject: "Create project",
@@ -253,6 +252,9 @@ const en: Translations = {
     projects: "Projects",
     projectsHeaderCreate: "Create a new project",
     projectsHeaderReturn: "return to current project",
+    promoteVersionHeader: "<h4>" +
+        "Copying version {{ version }} to a new project" +
+        "</h4>",
     remove: "remove",
     reportBug: "Report a bug",
     requestReset: "Request password reset email",
@@ -320,7 +322,6 @@ const fr: Partial<Translations> = {
     continue: "poursuivre",
     copyLatestToNewProject: "Copier la dernière mise à jour dans un nouveau projet",
     copyToNewProject: "Copier dans un nouveau projet",
-    copyVersionHeader: "Copie de la version dans un nouveau projet",
     couldNotParse: "Impossible d'analyser la réponse de l'API. Veuillez contacter le support.",
     country: "Pays",
     createProject: "Créer un projet",
@@ -397,6 +398,9 @@ const fr: Partial<Translations> = {
     projectName: "Nom du projet",
     project: "Projet",
     projects: "Projets",
+    promoteVersionHeader: "<h4>" +
+        "Copie de la version {{ version }} dans un nouveau projet" +
+        "</h4>",
     remove: "supprimer",
     reportBug: "Signaler un bogue",
     requestReset: "Demande de réinitialisation du mot de passe par e-mail",

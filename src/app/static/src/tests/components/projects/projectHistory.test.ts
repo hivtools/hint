@@ -22,7 +22,7 @@ describe("Project history component", () => {
     const mockDeleteProject = jest.fn();
     const mockDeleteVersion = jest.fn();
     const mockLoad = jest.fn();
-    const mockCopyVersion = jest.fn();
+    const mockPromoteVersion = jest.fn();
 
     const testStore = new Vuex.Store({
         state: emptyState()
@@ -39,7 +39,7 @@ describe("Project history component", () => {
                         deleteVersion: mockDeleteVersion,
                         deleteProject: mockDeleteProject,
                         loadVersion: mockLoad,
-                        copyVersion: mockCopyVersion
+                        promoteVersion: mockPromoteVersion
                     }
                 }
             }
@@ -297,7 +297,7 @@ describe("Project history component", () => {
         expect(modal.classes()).not.toContain("show");
     });
 
-    it("invokes copyVersion action when confirm copy", async () => {
+    it("invokes promoteVersion action when confirm copy", async () => {
         const wrapper = getWrapper(testProjects);
         const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
         copyLink.trigger("click");
@@ -312,8 +312,8 @@ describe("Project history component", () => {
 
         await Vue.nextTick();
 
-        expect(mockCopyVersion.mock.calls.length).toBe(1);
-        expect(mockCopyVersion.mock.calls[0][1]).toStrictEqual(
+        expect(mockPromoteVersion.mock.calls.length).toBe(1);
+        expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
         {"name": "newProject",
            "version": {
               "projectId": 1,
@@ -321,7 +321,7 @@ describe("Project history component", () => {
            }});
     });
 
-    it("cannot invoke copyVersion action when when input value is empty", async () => {
+    it("cannot invoke promoteVersion action when when input value is empty", async () => {
         const wrapper = getWrapper(testProjects);
         const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
         copyLink.trigger("click");
@@ -336,6 +336,6 @@ describe("Project history component", () => {
 
         await Vue.nextTick();
 
-        expect(mockCopyVersion.mock.calls.length).toBe(0);
+        expect(mockPromoteVersion.mock.calls.length).toBe(0);
     });
 });

@@ -9,7 +9,7 @@ import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
 import {Project, VersionDetails, VersionIds} from "../../types";
 
-export interface versionBundle {
+export interface versionPayload {
     version: VersionIds,
     name: string
 }
@@ -22,7 +22,7 @@ export interface ProjectsActions {
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
     deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
     deleteVersion: (store: ActionContext<ProjectsState, RootState>, versionIds: VersionIds) => void
-    copyVersion: (store: ActionContext<ProjectsState, RootState>, versionBundle: versionBundle) => void,
+    promoteVersion: (store: ActionContext<ProjectsState, RootState>, versionPayload: versionPayload) => void,
     userExists: (store: ActionContext<ProjectsState, RootState>, email: string) => Promise<boolean>
 }
 
@@ -138,10 +138,10 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             });
     },
 
-    async copyVersion(context, versionBundle: versionBundle) {
+    async promoteVersion(context, versionPayload: versionPayload) {
         const {state, dispatch} = context;
-        const {projectId, versionId} = versionBundle.version
-        const name = versionBundle.name
+        const {projectId, versionId} = versionPayload.version
+        const name = versionPayload.name
         api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.VersionCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
