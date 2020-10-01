@@ -27,7 +27,7 @@ Ensure dependencies are running and then execute tests on the command line or th
 1. `./scripts/run-development-dependencies.sh`
 1. `./src/gradlew -p src app::test`
 
-To run a specific test alone, add `--test` + the file path to the command. For example, the command for running ProjectsControllerTests.kt would be: `./src/gradlew -p src app::test --tests org.imperial.mrc.hint.unit.controllers.ProjectsControllerTests`
+To run a specific test alone, add `--test` + the [fully qualified class name](https://docs.gradle.org/current/userguide/java_testing.html#full_qualified_name_pattern) to the command. For example, the command for running ProjectsControllerTests.kt would be: `./src/gradlew -p src app::test --tests org.imperial.mrc.hint.unit.controllers.ProjectsControllerTests`
 
 ### Database Interface
 
