@@ -74,7 +74,7 @@ export const mutations: MutationTree<RootState> = {
         };
         Object.assign(state, resetState);
 
-        const maxAccessibleStep = maxValidStep < 4 ? Math.max(maxValidStep, 1) : 4;
+        const maxAccessibleStep = maxValidStep < 5 ? Math.max(maxValidStep, 1) : 5;
         if (state.stepper.activeStep > maxAccessibleStep) {
             state.stepper.activeStep = maxAccessibleStep;
         }
