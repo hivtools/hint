@@ -10,6 +10,14 @@ describe("Projects actions", () => {
         await login();
     });
 
+    it("can check user exists", async () => {
+        let result = await actions.userExists({rootState} as any, "test.user@example.com");
+        expect(result).toBe(true);
+
+        result = await actions.userExists({rootState} as any, "bad.user@example.com");
+        expect(result).toBe(false);
+    });
+
     it("can create project", async () => {
         const commit = jest.fn();
         await actions.createProject({commit, rootState, state:initialProjectsState()} as any, "v1");
