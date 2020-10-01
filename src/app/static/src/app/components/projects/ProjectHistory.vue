@@ -121,9 +121,9 @@
         selectedVersionNumber: number,
     }
 
-    interface Props {
-        projects: Project[];
-    }
+    // interface Props {
+    //     projects: Project[];
+    // }
 
     interface Computed {
         disableCreate: boolean,
@@ -151,12 +151,12 @@
         versionLabel: (version: Version) => string
     }
 
-    export default ProjectsMixin.extend<Data, Methods, Computed, Props>({
-       props: {
-            projects: {
-                type: Array
-            }
-       },
+    export default ProjectsMixin.extend<Data, Methods, Computed, {}>({
+    //    props: {
+    //         projects: {
+    //             type: Array
+    //         }
+    //    },
        data() {
            return {
                projectToDelete: null,
@@ -237,9 +237,9 @@
            versionLabel(version: Version) {
                 return versionLabel(version)
             },
-           loadAction: mapActionByName<VersionIds>("projects", "loadVersion"),
-           deleteProjectAction: mapActionByName<number>("projects", "deleteProject"),
-           deleteVersionAction: mapActionByName<VersionIds>("projects", "deleteVersion")
+           loadAction: mapActionByName<VersionIds>(namespace, "loadVersion"),
+           deleteProjectAction: mapActionByName<number>(namespace, "deleteProject"),
+           deleteVersionAction: mapActionByName<VersionIds>(namespace, "deleteVersion")
        },
        components: {
            BCollapse,

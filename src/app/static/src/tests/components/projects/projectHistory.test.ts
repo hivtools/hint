@@ -22,6 +22,11 @@ describe("Project history component", () => {
     const mockDeleteProject = jest.fn();
     const mockDeleteVersion = jest.fn();
     const mockLoad = jest.fn();
+    const mockCopyVersion = jest.fn();
+
+    const testStore = new Vuex.Store({
+        state: emptyState()
+    });
 
     function createStore(projects: Project[] = testProjects) {
         const store = new Vuex.Store({
@@ -33,7 +38,8 @@ describe("Project history component", () => {
                     actions: {
                         deleteVersion: mockDeleteVersion,
                         deleteProject: mockDeleteProject,
-                        loadVersion: mockLoad
+                        loadVersion: mockLoad,
+                        copyVersion: mockCopyVersion
                     }
                 }
             }
@@ -292,19 +298,7 @@ describe("Project history component", () => {
     });
 
     it("invokes copyVersion action when confirm copy", async () => {
-        const mockCopyVersion = jest.fn();
-        const mockStore = new Vuex.Store({
-            state: emptyState(),
-            modules: {
-                projects: {
-                    namespaced: true,
-                    actions: {
-                        copyVersion: mockCopyVersion
-                    }
-                }
-            }
-        });
-        const wrapper = getWrapper(testPropsData, mockStore);
+        const wrapper = getWrapper(testProjects);
         const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
         copyLink.trigger("click");
         await Vue.nextTick();
@@ -328,19 +322,7 @@ describe("Project history component", () => {
     });
 
     it("cannot invoke copyVersion action when when input value is empty", async () => {
-        const mockCopyVersion = jest.fn();
-        const mockStore = new Vuex.Store({
-            state: emptyState(),
-            modules: {
-                projects: {
-                    namespaced: true,
-                    actions: {
-                        copyVersion: mockCopyVersion
-                    }
-                }
-            }
-        });
-        const wrapper = getWrapper(testPropsData, mockStore);
+        const wrapper = getWrapper(testProjects);
         const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
         copyLink.trigger("click");
         await Vue.nextTick();
