@@ -30,6 +30,6 @@ describe("Download Results component", () => {
 
         expect(links.length).toBe(2);
         expect(links.at(0).attributes().href).toEqual("/download/spectrum/testId");
-        expect(links.at(1).attributes().href).toEqual("/download/summary/testId");
+        expect(links.at(1).attributes().href).toEqual("/download/coarse-output/testId");
     });
 });

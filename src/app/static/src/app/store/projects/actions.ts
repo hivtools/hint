@@ -23,9 +23,26 @@ export interface ProjectsActions {
     deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
     deleteVersion: (store: ActionContext<ProjectsState, RootState>, versionIds: VersionIds) => void
     copyVersion: (store: ActionContext<ProjectsState, RootState>, versionBundle: versionBundle) => void,
+    userExists: (store: ActionContext<ProjectsState, RootState>, email: string) => Promise<boolean>
 }
 
 export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
+
+    // unlike most actions, rather than committing a mutation this returns a boolean
+    // value which can be used directly by the caller
+    async userExists(context, email) {
+        const result = await api(context)
+            .ignoreSuccess()
+            .ignoreErrors()
+            .get<boolean>(`/user/${email}/exists`);
+
+        if (result) {
+            return result.data
+        } else {
+            // an error occurred, probably because the email address wasn't in a valid format
+            return false
+        }
+    },
 
     async createProject(context, name) {
         const {commit, state} = context;

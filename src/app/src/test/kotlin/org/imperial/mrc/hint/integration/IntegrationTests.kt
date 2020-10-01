@@ -75,7 +75,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
         when (isAuthorized) {
             IsAuthorized.TRUE -> {
                 Assertions.assertThat(responseEntity.headers.contentType!!.toString())
-                        .isEqualTo("application/json")
+                        .contains("application/json")
 
                 if (responseEntity.statusCode != HttpStatus.OK) {
                     Assertions.fail<String>("Expected OK response but got error: ${responseEntity.body}")

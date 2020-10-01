@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.unit.controllers
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -19,6 +20,7 @@ import org.imperial.mrc.hint.models.VersionDetails
 import org.imperial.mrc.hint.models.VersionFile
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
+import org.mockito.internal.verification.Times
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 
@@ -149,26 +151,37 @@ class ProjectsControllerTests {
         val mockProjectRepo = mock<ProjectRepository> {
             on { getProject(1, "testUser") } doReturn Project(1, "p1", listOf(Version("v1", "createdTime", "updatedTime", 1),
                     Version("v2", "createdTime", "updatedTime", 1)))
-            on { saveNewProject("uid", "p1") } doReturn 2
+            on { saveNewProject("uid1", "p1") } doReturn 2
+            on { saveNewProject("uid2", "p1") } doReturn 3
         }
         val mockLogic = mock<UserLogic> {
-            on { getUser("new.user@email.com") } doReturn CommonProfile().apply { id = "uid" }
+            on { getUser("new.user@email.com") } doReturn CommonProfile().apply { id = "uid1" }
+            on { getUser("a.user@email.com") } doReturn CommonProfile().apply { id = "uid2" }
         }
         val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mockLogic)
-        sut.cloneProjectToUser(1, "new.user@email.com")
+        sut.cloneProjectToUser(1, listOf("new.user@email.com", "a.user@email.com"))
+
         verify(mockVersionRepo).cloneVersion("v1", "testVersion", 2)
         verify(mockVersionRepo).cloneVersion("v2", "testVersion", 2)
+
+        verify(mockVersionRepo).cloneVersion("v1", "testVersion", 3)
+        verify(mockVersionRepo).cloneVersion("v2", "testVersion", 3)
     }
 
     @Test
-    fun `clone project to user throws if user does not exist`() {
+    fun `clone project to user throws if any user does not exist`() {
         val mockLogic = mock<UserLogic> {
+            on { getUser("a.user@email.com") } doReturn CommonProfile().apply { id = "1" }
             on { getUser("new.user@email.com") } doReturn null as CommonProfile?
         }
-        val sut = ProjectsController(mockSession, mock(), mock(), mockLogic)
-        assertThatThrownBy {  sut.cloneProjectToUser(1, "new.user@email.com") }
+        val mockRepo = mock<ProjectRepository>()
+        val sut = ProjectsController(mockSession, mock(), mockRepo, mockLogic)
+        val userList = listOf("a.user@email.com", "new.user@email.com")
+        assertThatThrownBy { sut.cloneProjectToUser(1, userList) }
                 .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("userDoesNotExist")
+        verify(mockRepo, Times(0)).saveNewProject(any(), any())
+
     }
 
     @Test
