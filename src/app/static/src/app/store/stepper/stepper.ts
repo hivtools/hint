@@ -34,7 +34,7 @@ export const initialStepperState = (): StepperState => {
             },
             {
                 number: 4,
-                textKey: "runModel"
+                textKey: "fitModel"
             },
             {
                 number: 5,

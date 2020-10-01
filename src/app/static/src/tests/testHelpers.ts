@@ -1,6 +1,10 @@
 import {mockAxios, mockBaselineState, mockError, mockFailure, mockRootState} from "./mocks";
-import {ActionContext, MutationTree} from "vuex";
+import {ActionContext, MutationTree, Store} from "vuex";
 import {PayloadWithType} from "../app/types";
+import {Wrapper} from "@vue/test-utils";
+import {RootState} from "../app/root";
+import {Language} from "../app/store/translations/locales";
+import registerTranslations from "../app/store/translations/registerTranslations";
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
     expect(Object.isFrozen(args["payload"])).toBe(true);
@@ -50,4 +54,16 @@ export function expectAllMutationsDefined(mutationDefinitions: any, mutationTree
     if (missing.length > 0) {
         throw Error(`The following mutations were declared but not defined: ${missing.join(",")}`)
     }
+}
+
+export function expectTranslated(element: Wrapper<any>,
+                                 englishText: string,
+                                 frenchText: string,
+                                 store: Store<RootState>){
+    store.state.language = Language.en;
+    registerTranslations(store);
+    expect(element.text()).toBe(englishText);
+    store.state.language = Language.fr;
+    registerTranslations(store);
+    expect(element.text()).toBe(frenchText);
 }

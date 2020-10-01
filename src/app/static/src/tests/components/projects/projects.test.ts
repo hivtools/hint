@@ -1,5 +1,6 @@
 import {ProjectsState} from "../../../app/store/projects/projects";
 import Vuex from "vuex";
+import Vue from "vue";
 import {mockProjectsState} from "../../mocks";
 import {shallowMount} from "@vue/test-utils";
 import Projects from "../../../app/components/projects/Projects.vue";
@@ -11,12 +12,16 @@ import {emptyState} from "../../../app/root";
 
 describe("Projects component", () => {
 
-   const createSut = (state: Partial<ProjectsState> = {},
+    const createSut = (state: Partial<ProjectsState> = {},
                        mockCreateProject = jest.fn(),
-                       mockRouterPush = jest.fn()) => {
+                       mockRouterPush = jest.fn(),
+                       isGuest = false) => {
 
         const store =  new Vuex.Store({
             state: emptyState(),
+            getters: {
+                isGuest: () => isGuest
+            },
             modules: {
                 projects: {
                     namespaced: true,
@@ -51,7 +56,6 @@ describe("Projects component", () => {
         expect(wrapper.find("input").attributes()["placeholder"]).toBe("Project name");
         expect(wrapper.find("button").text()).toBe("Create project");
         expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
-        expect(wrapper.find(ProjectHistory).props("projects")).toBe(previousProjects);
         expect(wrapper.find(ErrorAlert).exists()).toBe(false);
     });
 
@@ -66,6 +70,14 @@ describe("Projects component", () => {
         const wrapper = createSut();
         wrapper.find("input").setValue("newProject");
         expect(wrapper.find("button").attributes("disabled")).toBeUndefined();
+        expect(wrapper.findAll(".invalid-feedback").length).toBe(0);
+    });
+
+    it("shows invalid feedback if name is non unique", () => {
+        const wrapper = createSut({previousProjects: [{name: "p1", id: 123, versions: []}]});
+        wrapper.find("input").setValue("p1");
+        expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
+        expect(wrapper.findAll(".invalid-feedback").length).toBe(1);
     });
 
     it("displays error if any", () => {
@@ -98,5 +110,14 @@ describe("Projects component", () => {
         const wrapper = createSut({loading: true});
         expect(wrapper.find(LoadingSpinner).exists()).toBe(true);
         expect(wrapper.find("#projects-content").exists()).toBe(false);
+    });
+
+    it("pushes home route on mount if user is guest", async () => {
+        const mockRouterPush = jest.fn();
+        const wrapper = createSut({}, jest.fn(), mockRouterPush, true);
+        await Vue.nextTick();
+
+        expect(mockRouterPush.mock.calls.length).toBe(1);
+        expect(mockRouterPush.mock.calls[0][0]).toStrictEqual( "/");
     });
 });

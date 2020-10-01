@@ -3,9 +3,9 @@
         <button class="btn btn-red btn-lg"
                 v-on:click="run"
                 :disabled="running"
-                v-translate="'runModel'">
+                v-translate="'fitModel'">
         </button>
-        <h4 v-if="complete" class="mt-3" id="model-run-complete" v-translate="'runComplete'">
+        <h4 v-if="complete" class="mt-3" id="model-run-complete" v-translate="'fittingComplete'">
             <tick color="#e31837" width="20px"></tick>
         </h4>
         <modal :open="running">
@@ -13,12 +13,12 @@
                           :key="phase.name"
                           :phase="phase"></progress-bar>
             <div class="text-center" v-if="phases.length == 0">
-                <h4 v-translate="'initialisingRun'"></h4>
+                <h4 v-translate="'initialisingFit'"></h4>
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <div>
                 <button class="btn btn-red float-right" id="cancel-model-run"
-                        v-on:click="cancelRun" v-translate="'cancelRun'">
+                        v-on:click="cancelRun" v-translate="'cancelFitting'">
                 </button>
             </div>
         </modal>

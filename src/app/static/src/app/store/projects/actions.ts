@@ -26,6 +26,7 @@ export interface ProjectsActions {
 }
 
 export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
+
     async createProject(context, name) {
         const {commit, state} = context;
 
