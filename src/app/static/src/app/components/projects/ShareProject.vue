@@ -4,17 +4,17 @@
            v-translate="'share'"></a>
         <modal :open="open">
             <h4 v-translate="'shareProject'"></h4>
-            <div v-if="!loading">
+            <div v-if="!cloningProject">
                 <div v-html="instructions" id="instructions"></div>
                 <div class="row mb-2" v-for="(email, index) in emailsToShareWith">
                     <div class="col">
                         <input autocomplete="no"
-                            @keyup.enter="$event.target.blur()"
-                            @keyup.delete="removeEmail(email, index)"
-                            class="form-control"
-                            :class="{'is-invalid': email.valid === false}"
-                            @blur="() => addEmail(email, index)"
-                            v-model="email.value"/>
+                               @keyup.enter="$event.target.blur()"
+                               @keyup.delete="removeEmail(email, index)"
+                               class="form-control"
+                               :class="{'is-invalid': email.valid === false}"
+                               @blur="() => addEmail(email, index)"
+                               v-model="email.value"/>
                     </div>
                     <div class="col">
                         <div class="small text-danger"
@@ -24,7 +24,7 @@
                     </div>
                 </div>
             </div>
-            <div class="text-center" v-if="loading">
+            <div class="text-center" v-if="cloningProject">
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <template v-slot:footer>
@@ -32,16 +32,17 @@
                      v-show="showValidationMessage"
                      v-translate="'emailMultiValidation'">
                 </div>
+                <error-alert v-if="cloneProjectError" :error="cloneProjectError"></error-alert>
                 <button type="button"
                         class="btn btn-red"
                         @click="confirmShareProject"
-                        :disabled="invalidEmails || loading"
+                        :disabled="invalidEmails || cloningProject"
                         v-translate="'ok'">
                 </button>
                 <button type="button"
                         class="btn btn-white"
                         @click="cancelShareProject"
-                        :disabled="loading"
+                        :disabled="cloningProject"
                         v-translate="'cancel'">
                 </button>
             </template>
@@ -57,6 +58,8 @@
     import {mapActionByName, mapStatePropByName} from "../../utils";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
+    import ErrorAlert from "../ErrorAlert.vue";
+    import {CloneProjectPayload} from "../../store/projects/actions";
 
     interface EmailToShareWith {
         value: string
@@ -66,7 +69,6 @@
     interface Data {
         emailsToShareWith: EmailToShareWith[]
         open: boolean
-        loading: boolean
         showValidationMessage: boolean
     }
 
@@ -78,6 +80,8 @@
         currentLanguage: Language,
         instructions: string
         invalidEmails: boolean
+        cloneProjectError: Error | null
+        cloningProject: boolean
     }
 
     interface Methods {
@@ -87,6 +91,7 @@
         confirmShareProject: () => void
         cancelShareProject: () => void
         userExists: (email: string) => Promise<boolean>
+        cloneProject: (payload: CloneProjectPayload) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -99,11 +104,11 @@
             return {
                 emailsToShareWith: [{value: "", valid: null}],
                 open: false,
-                loading: false,
                 showValidationMessage: false
             }
         },
         methods: {
+            cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
             addEmail(e: EmailToShareWith, index: number) {
                 if (e.value) {
@@ -138,18 +143,21 @@
                 this.open = true;
             },
             confirmShareProject() {
-                this.loading = true;
-                setTimeout(() => {
-                    // TODO trigger action to clone project
-                    this.loading = false;
-                    this.open = false;
-                }, 200);
+                const emails = this.emailsToShareWith
+                    .filter(e => e.value)
+                    .map(e => e.value);
+                if (emails.length > 0) {
+                    this.cloneProject({emails, projectId: this.project.id})
+                }
             },
             cancelShareProject() {
+                this.emailsToShareWith = [];
                 this.open = false;
             }
         },
         computed: {
+            cloningProject: mapStatePropByName<boolean>("projects", "cloningProject"),
+            cloneProjectError: mapStatePropByName<Error | null>("projects", "cloneProjectError"),
             currentLanguage: mapStatePropByName<Language>(null, "language"),
             instructions() {
                 return i18next.t('shareProjectInstructions', {project: this.project.name, lng: this.currentLanguage});
@@ -160,7 +168,16 @@
         },
         components: {
             Modal,
-            LoadingSpinner
+            LoadingSpinner,
+            ErrorAlert
+        },
+        watch: {
+            cloningProject(newVal: boolean) {
+                if (!newVal && !this.cloneProjectError) {
+                    this.emailsToShareWith = [];
+                    this.open = false;
+                }
+            }
         }
     });
 

@@ -7,18 +7,27 @@ import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {expectTranslated} from "../../testHelpers";
+import {ProjectsState} from "../../../app/store/projects/projects";
+import {mockProjectsState} from "../../mocks";
+import {mutations, ProjectsMutations} from "../../../app/store/projects/mutations";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 describe("ShareProject", () => {
 
-    const createStore = (userExists = jest.fn()) => {
+    const createStore = (userExists = jest.fn(),
+                         cloneProject = jest.fn(),
+                         state: ProjectsState = mockProjectsState()) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
                 projects: {
+                    state: state,
                     namespaced: true,
                     actions: {
-                        userExists: userExists
-                    }
+                        userExists: userExists,
+                        cloneProject: cloneProject
+                    },
+                    mutations
                 }
             }
         });
@@ -52,6 +61,7 @@ describe("ShareProject", () => {
         const link = wrapper.find("a");
         link.trigger("click");
         expect(wrapper.find(Modal).props("open")).toBe(true);
+        const input = wrapper.find(Modal).find("input");
         wrapper.find(Modal).findAll("button").at(1).trigger("click");
         expect(wrapper.find(Modal).props("open")).toBe(false);
     });
@@ -268,12 +278,13 @@ describe("ShareProject", () => {
         expect(wrapper.find(Modal).findAll("input").length).toBe(2);
     });
 
-    it("can share project", async (done) => {
+    it("can share project", async () => {
+        const cloneProject = jest.fn();
         const wrapper = mount(ShareProject, {
             propsData: {
                 project: {id: 1, name: "p1"}
             },
-            store: createStore(jest.fn().mockResolvedValue(true)),
+            store: createStore(jest.fn().mockResolvedValue(true), cloneProject),
         });
 
         const link = wrapper.find("a");
@@ -285,15 +296,73 @@ describe("ShareProject", () => {
         await Vue.nextTick();
 
         wrapper.find(Modal).find("button").trigger("click");
-        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
-
-        setTimeout(() => {
-            expect(wrapper.find(Modal).props("open")).toBe(false);
-            expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
-            done();
-        }, 200);
-
+        expect(cloneProject.mock.calls[0][1]).toEqual({projectId: 1, emails: ["testing"]});
     });
+
+    it("shows loading spinner when cloningProject is true", () => {
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(jest.fn(), jest.fn(), mockProjectsState({cloningProject: true})),
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
+    });
+
+    it("does not show loading spinner when cloningProject is false", () => {
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(jest.fn(), jest.fn()),
+        });
+
+        const link = wrapper.find("a");
+        link.trigger("click");
+        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
+    });
+
+    it("closes modal when cloningProject changes from true to false, if there is not an error",
+         () => {
+            const store = createStore(jest.fn(), jest.fn(), mockProjectsState({cloningProject: true}));
+            const wrapper = shallowMount(ShareProject, {
+                propsData: {
+                    project: {id: 1, name: "p1"}
+                },
+                store
+            });
+
+            const link = wrapper.find("a");
+            link.trigger("click");
+            expect(wrapper.find(Modal).props("open")).toBe(true);
+            store.commit("projects/" + ProjectsMutations.CloningProject, {payload: false});
+            expect(wrapper.find(Modal).props("open")).toBe(false);
+        });
+
+    it("does not close modal when cloningProject changes from true to false if there is an error",
+         () => {
+            const store = createStore(jest.fn(),
+                jest.fn(),
+                mockProjectsState({cloningProject: true}));
+
+            const wrapper = mount(ShareProject, {
+                propsData: {
+                    project: {id: 1, name: "p1"}
+                },
+                store
+            });
+
+            const link = wrapper.find("a");
+            link.trigger("click");
+            expect(wrapper.find(Modal).props("open")).toBe(true);
+            store.commit("projects/" + ProjectsMutations.CloneProjectError, {payload: {error: "E"}});
+            expect(wrapper.find(Modal).props("open")).toBe(true);
+            expect(wrapper.find(Modal).findAll(ErrorAlert).length).toBe(1);
+            expect(wrapper.find(Modal).find(ErrorAlert).props("error")).toEqual({error: "E"});
+        });
 
     it("translates header", () => {
         const store = createStore();
