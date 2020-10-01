@@ -12,7 +12,7 @@ import Tick from "../../../app/components/Tick.vue";
 import {ModelCalibrateMutation} from "../../../app/store/modelCalibrate/mutations";
 
 describe("Model calibrate component", () => {
-    const getStore = (state: Partial<ModelCalibrateState> = {}, fetchAction = jest.fn(),
+    const getStore = (state: Partial<ModelCalibrateState> = {}, fetchAction = jest.fn(), calibrateAction = jest.fn(),
                       updateMutation = jest.fn()) => {
         const store = new Vuex.Store({
             state: mockRootState(),
@@ -22,7 +22,8 @@ describe("Model calibrate component", () => {
                     state: mockModelCalibrateState(state),
                     getters: modelCalibrateGetters,
                     actions: {
-                        fetchModelCalibrateOptions: fetchAction
+                        fetchModelCalibrateOptions: fetchAction,
+                        calibrate: calibrateAction
                     },
                     mutations: {
                         [ModelCalibrateMutation.Update]: updateMutation
@@ -65,6 +66,13 @@ describe("Model calibrate component", () => {
         expect(wrapper.find("#calibration-complete").exists()).toBe(false);
     });
 
+    it("invokes fetch options action on mount", () => {
+        const mockFetch = jest.fn();
+        const store = getStore({}, mockFetch);
+        const wrapper = getWrapper(store);
+        expect(mockFetch.mock.calls.length).toBe(1);
+    });
+
     it("renders options as expected", () => {
         const store = getStore({optionsFormMeta: mockOptionsFormMeta});
         const wrapper = mount(ModelCalibrate, {store});
@@ -91,7 +99,7 @@ describe("Model calibrate component", () => {
 
     it("setting options value commits update mutation", () => {
         const mockUpdate = jest.fn();
-        const store = getStore({optionsFormMeta: mockOptionsFormMeta}, jest.fn(), mockUpdate);
+        const store = getStore({optionsFormMeta: mockOptionsFormMeta}, jest.fn(), jest.fn(), mockUpdate);
         const wrapper = mount(ModelCalibrate, {store});
 
         wrapper.find(DynamicForm).find("input").setValue("6");
@@ -101,6 +109,11 @@ describe("Model calibrate component", () => {
     });
 
     it("clicking Calibrate button invokes calibrate action", () => {
+        const mockCalibrate = jest.fn();
+        const store = getStore({optionsFormMeta: mockOptionsFormMeta}, jest.fn(), mockCalibrate);
+        const wrapper = mount(ModelCalibrate, {store});
+        wrapper.find(DynamicForm).find("button").trigger("click");
+        expect(mockCalibrate.mock.calls.length).toBe(1);
 
     });
 });
