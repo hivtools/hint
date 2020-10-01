@@ -322,11 +322,11 @@ describe("ShareProject", () => {
         link.trigger("click");
         const expectedEnglish = "This will create a copy of p1 for the given users." +
             "Please enter the email addresses you would like to share " +
-            "this project with. These email addresses must be already registered with Naomi."
+            "this project with. Press Enter to add a new address. These email addresses must be already registered with Naomi."
 
         const expectedFrench = "Cela créera une copie de p1 pour les utilisateurs désignés." +
             "Veuillez entrer les adresses e-mails " +
-            "avec lesquelles vous souhaitez partager ce projet. Ces adresses e-mails doivent être déjà enregistrées dans Naomi."
+            "avec lesquelles vous souhaitez partager ce projet. Appuyez sur Enter pour ajouter une autre adresse. Ces adresses e-mails doivent être déjà enregistrées dans Naomi."
 
         expectTranslated(wrapper.find(Modal).find("#instructions"), expectedEnglish, expectedFrench, store);
     });

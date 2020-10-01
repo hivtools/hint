@@ -278,7 +278,7 @@ const en: Translations = {
         "</p>" +
         "<p>" +
         "Please enter the email addresses you would like to share " +
-        "this project with. " +
+        "this project with. Press Enter to add a new address. " +
         "These email addresses must be already registered with Naomi." +
         "</p>",
     sizeIndicator: "Size Indicator",
@@ -419,7 +419,7 @@ const fr: Partial<Translations> = {
         "</p>" +
         "<p>" +
         "Veuillez entrer les adresses e-mails " +
-        "avec lesquelles vous souhaitez partager ce projet. Ces adresses e-mails doivent être " +
+        "avec lesquelles vous souhaitez partager ce projet. Appuyez sur Enter pour ajouter une autre adresse. Ces adresses e-mails doivent être " +
         "déjà enregistrées dans Naomi." +
         "</p>",
     static: "Statique",
