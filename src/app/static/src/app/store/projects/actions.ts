@@ -18,6 +18,12 @@ export interface ProjectsActions {
     deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
     deleteVersion: (store: ActionContext<ProjectsState, RootState>, versionIds: VersionIds) => void
     userExists: (store: ActionContext<ProjectsState, RootState>, email: string) => Promise<boolean>
+    cloneProject: (store: ActionContext<ProjectsState, RootState>, payload: CloneProjectPayload) => void
+}
+
+export interface CloneProjectPayload {
+    projectId: number
+    emails: string[]
 }
 
 export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
@@ -36,6 +42,18 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             // an error occurred, probably because the email address wasn't in a valid format
             return false
         }
+    },
+
+    async cloneProject(context, payload) {
+        const {commit} = context;
+        commit({type: ProjectsMutations.CloningProject, payload: true});
+
+        const emails = "emails=" + payload.emails.join(",");
+
+        await api<ProjectsMutations, ProjectsMutations>(context)
+            .withSuccess(ProjectsMutations.CloningProject)
+            .withError(ProjectsMutations.CloneProjectError)
+            .postAndReturn(`/project/${payload.projectId}/clone`, emails);
     },
 
     async createProject(context, name) {
