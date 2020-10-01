@@ -82,7 +82,7 @@ describe("Model calibrate component", () => {
         const form = wrapper.find(DynamicForm);
         expect(form.attributes("required-text")).toBe("required");
         expect(form.attributes("select-text")).toBe("Select...");
-        expect(form.props("submitText")).toBe("Calibrate");
+        expectTranslated(form.find("button"), "Calibrate", "Calibrer", store);
         expect(form.find("h3").text()).toBe("Test Section");
         expect(form.find(".text-muted").text()).toBe("Just a test section");
         expect((form.find("input").element as HTMLInputElement).value).toBe("5");

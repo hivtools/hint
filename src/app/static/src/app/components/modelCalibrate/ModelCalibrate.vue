@@ -6,7 +6,7 @@
         </div>
         <dynamic-form v-if="!loading"
                       v-model="calibrateOptions"
-                      submit-text="Calibrate"
+                      :submit-text="submitText"
                       @submit="calibrate"
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
@@ -49,7 +49,8 @@
         laterCompleteSteps: StepDescription[]
         currentLanguage: Language
         selectText: string
-        requiredText: string
+        requiredText: string,
+        submitText: string
     }
 
     interface Data {
@@ -73,6 +74,9 @@
             },
             requiredText() {
                 return i18next.t("required", this.currentLanguage)
+            },
+            submitText() {
+                return i18next.t("calibrate", {lng: this.currentLanguage})
             },
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
