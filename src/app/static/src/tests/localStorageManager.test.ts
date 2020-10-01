@@ -8,7 +8,7 @@ import {
     mockPlottingSelections,
     mockStepperState,
     mockSurveyAndProgramState,
-    mockProjectsState
+    mockProjectsState, mockModelCalibrateState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -25,6 +25,7 @@ describe("LocalStorageManager", () => {
             }),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
+            modelCalibrate: mockModelCalibrateState(),
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
@@ -38,6 +39,7 @@ describe("LocalStorageManager", () => {
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
+            modelCalibrate: mockModelCalibrateState(),
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
@@ -55,6 +57,7 @@ describe("LocalStorageManager", () => {
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
+            modelCalibrate: mockModelCalibrateState(),
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
@@ -70,6 +73,7 @@ describe("LocalStorageManager", () => {
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
+            modelCalibrate: mockModelCalibrateState(),
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
