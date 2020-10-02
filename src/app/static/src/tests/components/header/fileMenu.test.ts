@@ -232,7 +232,7 @@ describe("File menu", () => {
 
         const modal = wrapper.find(Modal);
         modal.find(".btn").trigger("click");
-        expectTranslated(modal.find(".btn", "OK", "OK", store as any);
+        expectTranslated(modal.find(".btn"), "OK", "OK", store as any);
         expect(clearErrorMock.mock.calls.length).toBe(1);
     });
 

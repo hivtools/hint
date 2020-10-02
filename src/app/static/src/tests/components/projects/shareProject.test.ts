@@ -24,10 +24,11 @@ describe("ShareProject", () => {
             },
             store: createStore()
         });
+        const store = wrapper.vm.$store;
 
         expect(wrapper.find(Modal).props("open")).toBe(false);
         const link = wrapper.find("a");
-        expect(link.text()).toBe("Share");
+        expectTranslated(link, "Share" ,"Partager", store);
         link.trigger("click");
         expect(wrapper.find(Modal).props("open")).toBe(true);
     });

@@ -316,9 +316,9 @@ const fr: Partial<Translations> = {
     clearText: "Supprimer",
     clickHere: "Cliquer ici",
     continue: "poursuivre",
-    copyProjectHeader: "Copying project to a new project",
+    copyProjectHeader: "Copier le projet dans un nouveau projet",
     copyToNewProject: "Copier dans un nouveau projet",
-    copyVersionHeader: "Copying project-version to a new project",
+    copyVersionHeader: "Copier la version dans un nouveau projet",
     couldNotParse: "Impossible d'analyser la réponse de l'API. Veuillez contacter le support.",
     country: "Pays",
     createProject: "Créer un projet",
@@ -339,7 +339,7 @@ const fr: Partial<Translations> = {
     emailMultiValidation: "Veuillez entrer une adresse e-mail valide.",
     emailValidation: "Veuillez entrer une adresse e-mail valide.",
     enterPassword: "Veuillez entrer un nouveau mot de passe",
-    enterProjectName: "Please enter a name for the new project",
+    enterProjectName: "Veuillez entrer un nom pour le nouveau projet",
     entireDataset: "Toutes les données",
     export: "Exporter",
     exportOutputs: "Exporter des sorties de modèles pour Spectrum",
@@ -412,6 +412,7 @@ const fr: Partial<Translations> = {
     sessionExpired: "Votre session a expiré. Veuillez rafraîchir la page et vous reconnecter. Vous pouvez sauvegarder votre travail avant de rafraîchir la page.",
     sex: "Sexe",
     shape: "Fichier de formes",
+    share: "Partager",
     shareProject: "Partagez projet",
     shareProjectInstructions: "<p>" +
         "Cela créera une copie de {{ project }} pour les utilisateurs désignés." +
