@@ -32,6 +32,7 @@ class MvcConfig(val config: Config) : WebMvcConfigurer {
         //Ajax endpoints only available to logged in users
         registry.addInterceptor(SecurityInterceptor(config, ""))
                 .addPathPatterns("/adr/**")
+                .addPathPatterns("/user/**")
                 .excludePathPatterns("/adr/schemas", "/adr/schemas/")
     }
 

@@ -1,4 +1,4 @@
-import {mockAxios, mockFailure, mockRootState, mockSuccess, mockProjectsState} from "../mocks";
+import {mockAxios, mockFailure, mockRootState, mockSuccess, mockProjectsState, mockError} from "../mocks";
 import {actions} from "../../app/store/projects/actions";
 import {ProjectsMutations} from "../../app/store/projects/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
@@ -26,6 +26,30 @@ describe("Projects actions", () => {
         name: "testProject",
         versions: [{id: "version-id", created: "", updated: "", versionNumber: 1}]
     };
+
+    it("userExists returns true if user exists", async () => {
+        mockAxios.onGet(`/user/test.user@example.com/exists`)
+            .reply(200, mockSuccess(true));
+
+        const result = await actions.userExists({rootState} as any, "test.user@example.com");
+        expect(result).toBe(true);
+    });
+
+    it("userExists returns false if user does not exist", async () => {
+        mockAxios.onGet(`/user/test.user@example.com/exists`)
+            .reply(200, mockSuccess(false));
+
+        const result = await actions.userExists({rootState} as any, "test.user@example.com");
+        expect(result).toBe(false);
+    });
+
+    it("userExists returns false if call fails", async () => {
+        mockAxios.onGet(`/user/test.user@example.com/exists`)
+            .reply(400, mockError("whatever"));
+
+        const result = await actions.userExists({rootState} as any, "test.user@example.com");
+        expect(result).toBe(false);
+    });
 
     it("createProject posts to new project endpoint and sets error on unsuccessful response", async (done) => {
         mockAxios.onPost(`/project/`)

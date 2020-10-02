@@ -47,16 +47,20 @@ class LocalFileManager(
     private val uploadPath = appProperties.uploadDirectory
 
     override fun saveFile(file: MultipartFile, type: FileType): VersionFileWithPath {
-        return saveFile(file.inputStream, file.originalFilename!!, type)
+        return saveFile(file.inputStream, file.originalFilename!!, type, false)
     }
 
     override fun saveFile(url: String, type: FileType): VersionFileWithPath {
         val originalFilename = url.split("/").last()
         val adr = adrClientBuilder.build()
-        return saveFile(adr.getInputStream(url), originalFilename, type)
+        return saveFile(adr.getInputStream(url), originalFilename, type, true)
     }
 
-    private fun saveFile(inputStream: InputStream, originalFilename: String, type: FileType): VersionFileWithPath {
+    private fun saveFile(inputStream: InputStream,
+                         originalFilename: String,
+                         type: FileType,
+                         fromADR: Boolean): VersionFileWithPath {
+
         val md = MessageDigest.getInstance("MD5")
         val bytes = inputStream.use {
             DigestInputStream(it, md).readBytes()
@@ -69,8 +73,10 @@ class LocalFileManager(
             FileUtils.forceMkdirParent(localFile)
             localFile.writeBytes(bytes)
         }
-        versionRepository.saveVersionFile(session.getVersionId(), type, hash, originalFilename)
-        return VersionFileWithPath(path, hash, originalFilename)
+
+        versionRepository.saveVersionFile(session.getVersionId(), type, hash, originalFilename, fromADR)
+        return VersionFileWithPath(path, hash, originalFilename, fromADR)
+
     }
 
     override fun getFile(type: FileType): VersionFileWithPath? {

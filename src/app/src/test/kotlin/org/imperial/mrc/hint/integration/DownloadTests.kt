@@ -43,9 +43,9 @@ class DownloadTests : SecureIntegrationTests() {
 
 
     @Test
-    fun `can download summary results`() {
+    fun `can download coarse output results`() {
         val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/summary/$id")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/coarse-output/$id")
         assertSuccess(responseEntity)
         assertResponseHasExpectedDownloadHeaders(responseEntity)
 

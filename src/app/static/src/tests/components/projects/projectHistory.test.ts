@@ -5,21 +5,45 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import Vuex from "vuex";
 import Vue from "vue";
 import {emptyState} from "../../../app/root";
+import {Project} from "../../../app/types";
+import {mockProjectsState} from "../../mocks";
 
 describe("Project history component", () => {
+
+    afterEach(() => {
+        jest.resetAllMocks();
+    });
 
     const isoDates = ["2020-07-30T15:00:00.000000",
         "2020-07-31T09:00:00.000000",
         "2020-07-31T10:00:00.000000",
         "2020-08-01T11:00:00.000000"];
 
-    const testStore = new Vuex.Store({
-        state: emptyState()
-    });
-    registerTranslations(testStore);
+    const mockDeleteProject = jest.fn();
+    const mockDeleteVersion = jest.fn();
+    const mockLoad = jest.fn();
 
-    const testPropsData = {
-        projects: [
+    function createStore(projects: Project[] = testProjects) {
+        const store = new Vuex.Store({
+            state: emptyState(),
+            modules: {
+                projects: {
+                    namespaced: true,
+                    state: mockProjectsState({previousProjects: projects}),
+                    actions: {
+                        deleteVersion: mockDeleteVersion,
+                        deleteProject: mockDeleteProject,
+                        loadVersion: mockLoad
+                    }
+                }
+            }
+        });
+
+        registerTranslations(store);
+        return store;
+    }
+
+    const testProjects = [
             {
                 id: 1, name: "proj1", versions: [
                     {id: "s11", created: isoDates[0], updated: isoDates[1], versionNumber: 1},
@@ -30,10 +54,9 @@ describe("Project history component", () => {
                     {id: "s21", created: isoDates[2], updated: isoDates[3], versionNumber: 1}]
             }
         ]
-    };
 
-    const getWrapper = (propsData = testPropsData, store = testStore) => {
-        return mount(ProjectHistory, {store, propsData});
+    const getWrapper = (projects = testProjects) => {
+        return mount(ProjectHistory, {store: createStore(projects), stubs: ["share-project"]});
     };
 
     const testRendersProject = (wrapper: Wrapper<any>, id: number, name: string, updatedIsoDate: string,
@@ -49,7 +72,7 @@ describe("Project history component", () => {
         expect(v.at(1).text()).toBe(name);
         expect(v.at(2).text()).toBe(versionsCount === 1 ? "1 version" : `${versionsCount} versions`);
         expect(v.at(3).text()).toBe(formatDateTime(updatedIsoDate));
-        expect(v.at(4).text()).toBe("Load last updated");
+        expect(v.at(4).text()).toBe("Load");
         expect(v.at(4).find("a").attributes("href")).toBe("");
         expect(v.at(5).text()).toBe("Delete");
         expect(v.at(6).text()).toBe("Copy to a new project");
@@ -130,7 +153,7 @@ describe("Project history component", () => {
     });
 
     it("does not render if no previous projects", () => {
-        const wrapper = getWrapper({projects: []});
+        const wrapper = getWrapper([]);
         expect(wrapper.findAll("div").length).toBe(0);
     });
 
@@ -171,19 +194,8 @@ describe("Project history component", () => {
     });
 
     it("invokes deleteProject action when confirm delete", async () => {
-        const mockDeleteProject = jest.fn();
-        const mockStore = new Vuex.Store({
-            state: emptyState(),
-            modules: {
-                projects: {
-                    namespaced: true,
-                    actions: {
-                        deleteProject: mockDeleteProject
-                    }
-                }
-            }
-        });
-        const wrapper = getWrapper(testPropsData, mockStore);
+
+        const wrapper = getWrapper(testProjects);
         const deleteLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("a");
         deleteLink.trigger("click");
         await Vue.nextTick();
@@ -197,19 +209,8 @@ describe("Project history component", () => {
     });
 
     it("invokes deleteVersion action when confirm delete", async () => {
-        const mockDeleteVersion = jest.fn();
-        const mockStore = new Vuex.Store({
-            state: emptyState(),
-            modules: {
-                projects: {
-                    namespaced: true,
-                    actions: {
-                        deleteVersion: mockDeleteVersion
-                    }
-                }
-            }
-        });
-        const wrapper = getWrapper(testPropsData, mockStore);
+
+        const wrapper = getWrapper(testProjects);
         const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("a");
         deleteLink.trigger("click");
         await Vue.nextTick();
@@ -223,19 +224,8 @@ describe("Project history component", () => {
     });
 
     it("hides modal and does not invoke action when click cancel", async () => {
-        const mockDeleteVersion = jest.fn();
-        const mockStore = new Vuex.Store({
-            state: emptyState(),
-            modules: {
-                projects: {
-                    namespaced: true,
-                    actions: {
-                        deleteVersion: mockDeleteVersion
-                    }
-                }
-            }
-        });
-        const wrapper = getWrapper(testPropsData, mockStore);
+
+        const wrapper = getWrapper(testProjects);
         const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("a");
         deleteLink.trigger("click");
         await Vue.nextTick();
@@ -250,19 +240,8 @@ describe("Project history component", () => {
     });
 
     const testLoadVersionLink = async function(elementId: string, projectId: number, versionId: string) {
-        const mockLoad = jest.fn();
-        const mockStore = new Vuex.Store({
-            state: emptyState(),
-            modules: {
-                projects: {
-                    namespaced: true,
-                    actions: {
-                        loadVersion: mockLoad
-                    }
-                }
-            }
-        });
-        const wrapper = getWrapper(testPropsData, mockStore);
+
+        const wrapper = getWrapper(testProjects);
         const versionLink = wrapper.find("#versions-1").find("a");
         versionLink.trigger("click");
         await Vue.nextTick();

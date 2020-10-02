@@ -47,7 +47,7 @@ class SessionTests : SecureIntegrationTests() {
     }
 
     private fun getJsonEntity(hash: String): HttpEntity<String> {
-        val files = mapOf("pjnz" to VersionFile(hash, "file1"))
+        val files = mapOf("pjnz" to VersionFile(hash, "file1", false))
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val jsonString = ObjectMapper().writeValueAsString(files)

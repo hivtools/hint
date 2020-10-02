@@ -185,7 +185,7 @@ describe("Stepper component", () => {
         expect(steps.at(2).props().complete).toBe(false);
         expect(steps.at(2).props().enabled).toBe(false);
 
-        expect(steps.at(3).props().textKey).toBe("runModel");
+        expect(steps.at(3).props().textKey).toBe("fitModel");
         expect(steps.at(3).props().active).toBe(false);
         expect(steps.at(3).props().number).toBe(4);
         expect(steps.at(3).props().complete).toBe(false);
