@@ -45,7 +45,7 @@
 <script lang="ts">
     import Vue from "vue";
     import i18next from "i18next";
-    import {findPath, iterateDataValues} from "../utils";
+    import {findPath, iterateDataValues, formatOutput} from "../utils";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {Dict, Filter} from "../../../types";
     import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
@@ -199,7 +199,7 @@
                             ...filterLabels,
                         }
                     }
-                    displayRows[key][current.indicatorMeta.indicator] = current.value;
+                    displayRows[key][current.indicatorMeta.indicator] = formatOutput(current.value, 'percentages');
                     current.lower ? displayRows[key][`${current.indicatorMeta.indicator}_lower`] = current.lower : '';
                     current.upper ? displayRows[key][`${current.indicatorMeta.indicator}_upper`] = current.upper : '';
                 });

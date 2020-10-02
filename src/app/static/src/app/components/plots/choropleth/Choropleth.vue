@@ -45,7 +45,7 @@
         ColourScaleSettings,
         ColourScaleType
     } from "../../../store/plottingSelections/plottingSelections";
-    import {getIndicatorRange, toIndicatorNameLookup} from "../utils";
+    import {getIndicatorRange, toIndicatorNameLookup, formatOutput} from "../utils";
     import {getFeatureIndicator, initialiseColourScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
@@ -290,7 +290,7 @@
                         const stringVal = (value || value === 0) ? value.toString() : "";
                         layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
-                                <br/>${stringVal}
+                                <br/>${formatOutput(stringVal, 'percentages')}
                             </div>`);
                     }
                 }

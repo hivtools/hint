@@ -1,6 +1,7 @@
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
+// import Numeral from numeral
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
                          colourRange: NumericRange) => {
@@ -173,4 +174,17 @@ export const findPath = function (id: string, obj: any): any {
           }
       }
   }
-}
+};
+
+export const formatOutput = function (value: number | string, form: string) {
+    var numeral = require('numeral')
+    // this assumes we have to transform whatever comes from hintr to suit numeraljs
+    // if not, can be simplified to return numeral(value).format(form)
+    const format: Dict<string | number> = {
+        commas: numeral(value).format('0,0'), // adds commas for 1000s
+        percentages: numeral(value).format('0%') // makes percentage
+    }
+    if (format[form]){
+        return format[form]
+    } else return numeral(value)
+};
