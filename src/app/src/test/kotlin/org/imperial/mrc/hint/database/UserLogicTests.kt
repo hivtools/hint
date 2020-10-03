@@ -17,16 +17,19 @@ import org.springframework.transaction.annotation.Transactional
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @Transactional
-class UserLogicTests {
+class UserLogicTests
+{
     @Autowired
     private lateinit var sut: UserLogic
 
-    companion object {
+    companion object
+    {
         const val TEST_EMAIL = "test@test.com"
     }
 
     @Test
-    fun `can add user`() {
+    fun `can add user`()
+    {
         sut.addUser(TEST_EMAIL, "testpassword")
 
         assertThat(sut.getUser(TEST_EMAIL)).isNotNull
@@ -34,21 +37,24 @@ class UserLogicTests {
 
 
     @Test
-    fun `can add guest user`() {
+    fun `can add guest user`()
+    {
         sut.addUser("guest", "guest")
 
         assertThat(sut.getUser("guest")).isNotNull
     }
 
     @Test
-    fun `can add user without password`() {
+    fun `can add user without password`()
+    {
         sut.addUser(TEST_EMAIL, null)
 
         assertThat(sut.getUser(TEST_EMAIL)).isNotNull
     }
 
     @Test
-    fun `emails without @ signs are invalid`() {
+    fun `emails without @ signs are invalid`()
+    {
 
         TranslationAssert.assertThatThrownBy { sut.addUser("email", "testpassword") }
                 .isInstanceOf(UserException::class.java)
@@ -56,7 +62,8 @@ class UserLogicTests {
     }
 
     @Test
-    fun `can remove user`() {
+    fun `can remove user`()
+    {
         sut.addUser(TEST_EMAIL, "testpassword")
 
         sut.removeUser(TEST_EMAIL)
@@ -64,7 +71,8 @@ class UserLogicTests {
     }
 
     @Test
-    fun `can remove user with differently cased domain`() {
+    fun `can remove user with differently cased domain`()
+    {
         sut.addUser("test@test.com", "testpassword")
 
         sut.removeUser("test@TEST.com")
@@ -72,7 +80,8 @@ class UserLogicTests {
     }
 
     @Test
-    fun `cannot add same user twice`() {
+    fun `cannot add same user twice`()
+    {
         sut.addUser(TEST_EMAIL, "testpassword")
 
         TranslationAssert.assertThatThrownBy { sut.addUser(TEST_EMAIL, "testpassword") }
@@ -82,7 +91,8 @@ class UserLogicTests {
     }
 
     @Test
-    fun `cannot add same user twice with differently cased domain`() {
+    fun `cannot add same user twice with differently cased domain`()
+    {
         sut.addUser("test@test.com", "testpassword")
 
         TranslationAssert.assertThatThrownBy { sut.addUser("test@TEST.com", "testpassword") }
@@ -92,26 +102,30 @@ class UserLogicTests {
     }
 
     @Test
-    fun `cannot remove nonexistent user`() {
+    fun `cannot remove nonexistent user`()
+    {
         TranslationAssert.assertThatThrownBy { sut.removeUser("notaperson@email.com") }
                 .isInstanceOf(UserException::class.java)
                 .hasTranslatedMessage("User does not exist.")
     }
 
     @Test
-    fun `can get user`() {
+    fun `can get user`()
+    {
         sut.addUser(TEST_EMAIL, "testpassword")
         assertThat(sut.getUser(TEST_EMAIL)!!.username).isEqualTo(TEST_EMAIL)
     }
 
     @Test
-    fun `can get user with differently cased domain`() {
+    fun `can get user with differently cased domain`()
+    {
         sut.addUser("test@test.com", "testpassword")
         assertThat(sut.getUser("test@TEST.com")!!.username).isEqualTo(TEST_EMAIL)
     }
 
     @Test
-    fun `throws error if trying to get user with invalid email`() {
+    fun `throws error if trying to get user with invalid email`()
+    {
         TranslationAssert.assertThatThrownBy { sut.getUser("email") }
                 .isInstanceOf(UserException::class.java)
                 .hasTranslatedMessage("Please provide a valid email address.")

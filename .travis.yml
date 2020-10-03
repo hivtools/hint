@@ -34,6 +34,7 @@ matrix:
       before_script:
       - sudo /etc/init.d/postgresql stop
       - ./scripts/run-dependencies.sh
+      - ./src/gradlew -p src app::detektMain
       script:
       - ./src/gradlew -p src app::test
       - ./src/gradlew -p src userCLI::test

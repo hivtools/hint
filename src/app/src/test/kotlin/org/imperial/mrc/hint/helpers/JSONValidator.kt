@@ -18,7 +18,8 @@ import java.net.URL
 import javax.json.stream.JsonParsingException
 
 
-class JSONValidator {
+class JSONValidator
+{
 
     private val service = JsonValidationService.newInstance()
     private val objectMapper = ObjectMapper()
@@ -33,21 +34,24 @@ class JSONValidator {
     fun validateError(response: String,
                       expectedErrorCode: String,
                       expectedErrorMessage: String? = null,
-                      errorTrace: String? = null) {
+                      errorTrace: String? = null)
+    {
         assertValidates(response, responseSchema, "Response")
         val error = objectMapper.readValue<JsonNode>(response)["errors"].first()
         val status = objectMapper.readValue<JsonNode>(response)["status"].textValue()
 
         assertThat(status).isEqualTo("failure")
         assertThat(error["error"].asText()).isEqualTo(expectedErrorCode)
-        if (expectedErrorMessage != null) {
+        if (expectedErrorMessage != null)
+        {
             val actualErrorDetail = error["detail"].asText()
             val regex = Regex(expectedErrorMessage)
             assertThat(regex.matchEntire(actualErrorDetail))
                     .withFailMessage("Expected $actualErrorDetail to match $expectedErrorMessage")
                     .isNotNull()
         }
-        if (errorTrace != null) {
+        if (errorTrace != null)
+        {
             val actualErrorTrace = error["trace"].first().asText()
             val regex = Regex(errorTrace)
             assertThat(regex.matchEntire(actualErrorTrace))
@@ -56,7 +60,8 @@ class JSONValidator {
         }
     }
 
-    fun validateSuccess(response: String, schemaName: String) {
+    fun validateSuccess(response: String, schemaName: String)
+    {
         assertValidates(response, responseSchema, "Response")
         val data = objectMapper.readValue<JsonNode>(response)["data"]
         val status = objectMapper.readValue<JsonNode>(response)["status"].textValue()
@@ -66,14 +71,17 @@ class JSONValidator {
         assertValidates(objectMapper.writeValueAsString(data), dataSchema, schemaName)
     }
 
-    private fun assertValidates(jsonString: String, schema: JsonSchema, schemaName: String) {
+    private fun assertValidates(jsonString: String, schema: JsonSchema, schemaName: String)
+    {
         val problems = mutableListOf<Problem>()
         val handler = ProblemHandler.collectingTo(problems)
         val parser = service.createParser(jsonString.byteInputStream(), schema, handler)
-        while (parser.hasNext()) {
+        while (parser.hasNext())
+        {
             parser.next()
         }
-        if (problems.any()) {
+        if (problems.any())
+        {
             Assertions.fail<Any>(
                     "JSON failed schema validation. Attempted to validate: $jsonString against $schemaName. " +
                             "Problems were ${problems.joinToString(",")}"
@@ -81,10 +89,14 @@ class JSONValidator {
         }
     }
 
-    private fun getSchema(name: String): JsonSchema {
-        val path = if (name.endsWith(".schema.json")) {
+    private fun getSchema(name: String): JsonSchema
+    {
+        val path = if (name.endsWith(".schema.json"))
+        {
             name
-        } else {
+        }
+        else
+        {
             "$name.schema.json"
         }
         val url = URL("https://raw.githubusercontent.com/mrc-ide/hintr/$hintrVersion/inst/schema/$path")
@@ -92,15 +104,19 @@ class JSONValidator {
         val conn = url.openConnection() as HttpURLConnection
         return BufferedReader(InputStreamReader(conn.getInputStream())).use {
             val reader = readerFactory.createSchemaReader(it)
-            try {
+            try
+            {
                 reader.read()
-            } catch (e: JsonParsingException) {
+            }
+            catch (e: JsonParsingException)
+            {
                 Assertions.fail<JsonSchema>("Could not parse schema $name")
             }
         }
     }
 
-    private fun resolveSchema(id: URI): JsonSchema {
+    private fun resolveSchema(id: URI): JsonSchema
+    {
         return getSchema(id.path)
     }
 }

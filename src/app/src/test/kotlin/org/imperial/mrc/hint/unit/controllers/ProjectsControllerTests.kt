@@ -24,7 +24,8 @@ import org.mockito.internal.verification.Times
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 
-class ProjectsControllerTests {
+class ProjectsControllerTests
+{
     private val mockProfile = mock<CommonProfile> {
         on { id } doReturn "testUser"
     }
@@ -40,7 +41,8 @@ class ProjectsControllerTests {
     private val parser = ObjectMapper()
 
     @Test
-    fun `creates new project`() {
+    fun `creates new project`()
+    {
         val mockVersionRepo = mock<VersionRepository> {
             on { getVersion("testVersion") } doReturn mockVersion
         }
@@ -65,7 +67,8 @@ class ProjectsControllerTests {
     }
 
     @Test
-    fun `copies version`() {
+    fun `copies version`()
+    {
         val mockVersionRepo = mock<VersionRepository> {
             on { getVersion("testVersion") } doReturn mockVersion
         }
@@ -79,7 +82,8 @@ class ProjectsControllerTests {
     }
 
     @Test
-    fun `gets Projects`() {
+    fun `gets Projects`()
+    {
         val mockVersions = listOf(Version("testVersion", "createdTime", "updatedTime", 1))
         val mockProjects = listOf(Project(99, "testProject", mockVersions))
         val mockProjectRepo = mock<ProjectRepository> {
@@ -100,7 +104,8 @@ class ProjectsControllerTests {
     }
 
     @Test
-    fun `gets empty projects list if user is guest`() {
+    fun `gets empty projects list if user is guest`()
+    {
         val guestSession = mock<Session> {
             on { userIsGuest() } doReturn true
         }
@@ -113,7 +118,8 @@ class ProjectsControllerTests {
     }
 
     @Test
-    fun `can upload state`() {
+    fun `can upload state`()
+    {
         val mockRepo = mock<VersionRepository>();
         val sut = ProjectsController(mockSession, mockRepo, mock(), mock())
 
@@ -146,7 +152,8 @@ class ProjectsControllerTests {
     }
 
     @Test
-    fun `can clone project to user`() {
+    fun `can clone project to user`()
+    {
         val mockVersionRepo = mock<VersionRepository>()
         val mockProjectRepo = mock<ProjectRepository> {
             on { getProject(1, "testUser") } doReturn Project(1, "p1", listOf(Version("v1", "createdTime", "updatedTime", 1),
@@ -169,7 +176,8 @@ class ProjectsControllerTests {
     }
 
     @Test
-    fun `clone project to user throws if any user does not exist`() {
+    fun `clone project to user throws if any user does not exist`()
+    {
         val mockLogic = mock<UserLogic> {
             on { getUser("a.user@email.com") } doReturn CommonProfile().apply { id = "1" }
             on { getUser("new.user@email.com") } doReturn null as CommonProfile?
@@ -185,7 +193,8 @@ class ProjectsControllerTests {
     }
 
     @Test
-    fun `can delete version`() {
+    fun `can delete version`()
+    {
         val mockRepo = mock<VersionRepository>()
         val sut = ProjectsController(mockSession, mockRepo, mock(), mock())
         val result = sut.deleteVersion(1, "testVersion")
@@ -195,7 +204,8 @@ class ProjectsControllerTests {
     }
 
     @Test
-    fun `can delete project`() {
+    fun `can delete project`()
+    {
         val mockRepo = mock<ProjectRepository>()
         val sut = ProjectsController(mockSession, mock(), mockRepo, mock())
         val result = sut.deleteProject(1)
@@ -204,7 +214,8 @@ class ProjectsControllerTests {
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
-    private fun assertExpectedVersion(node: JsonNode) {
+    private fun assertExpectedVersion(node: JsonNode)
+    {
         assertThat(node["id"].asText()).isEqualTo("testVersion")
         assertThat(node["created"].asText()).isEqualTo("createdTime")
         assertThat(node["updated"].asText()).isEqualTo("updatedTime")

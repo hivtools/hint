@@ -11,16 +11,19 @@ import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
-class BaselineTests : VersionFileTests() {
+class BaselineTests : VersionFileTests()
+{
 
     @BeforeEach
-    fun setup() {
+    fun setup()
+    {
         authorize()
         testRestTemplate.getForEntity<String>("/")
     }
 
     @Test
-    fun `can get pjnz data`() {
+    fun `can get pjnz data`()
+    {
         val postEntity = getTestEntity("Botswana2018.PJNZ")
         testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/pjnz/")
@@ -29,7 +32,8 @@ class BaselineTests : VersionFileTests() {
 
 
     @Test
-    fun `can get shape data`() {
+    fun `can get shape data`()
+    {
         val postEntity = getTestEntity("malawi.geojson")
         testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/shape/")
@@ -38,7 +42,8 @@ class BaselineTests : VersionFileTests() {
 
 
     @Test
-    fun `can get population data`() {
+    fun `can get population data`()
+    {
         val postEntity = getTestEntity("population.csv")
         testRestTemplate.postForEntity<String>("/baseline/population/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/population/")
@@ -47,7 +52,8 @@ class BaselineTests : VersionFileTests() {
 
 
     @Test
-    fun `can upload pjnz file`() {
+    fun `can upload pjnz file`()
+    {
         val postEntity = getTestEntity("Botswana2018.PJNZ")
         val responseEntity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
         assertSuccess(responseEntity, "ValidateInputResponse")
@@ -58,7 +64,8 @@ class BaselineTests : VersionFileTests() {
 
 
     @Test
-    fun `can upload zip file as pjnz`() {
+    fun `can upload zip file as pjnz`()
+    {
         val postEntity = getTestEntity("Botswana2018.zip")
         val responseEntity = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
         assertSuccess(responseEntity, "ValidateInputResponse")
@@ -70,7 +77,8 @@ class BaselineTests : VersionFileTests() {
 
 
     @Test
-    fun `can upload shape file`() {
+    fun `can upload shape file`()
+    {
         val postEntity = getTestEntity("malawi.geojson")
         val entity = testRestTemplate.postForEntity<String>("/baseline/shape/", postEntity)
         assertSuccess(entity, "ValidateInputResponse")
@@ -81,7 +89,8 @@ class BaselineTests : VersionFileTests() {
 
 
     @Test
-    fun `can upload population file`() {
+    fun `can upload population file`()
+    {
         val postEntity = getTestEntity("population.csv")
         val entity = testRestTemplate.postForEntity<String>("/baseline/population/", postEntity)
         assertSuccess(entity, "ValidateInputResponse")
@@ -92,7 +101,8 @@ class BaselineTests : VersionFileTests() {
 
 
     @Test
-    fun `can delete pjnz data`() {
+    fun `can delete pjnz data`()
+    {
         setUpVersionFileAndGetHash("Botswana2018.PJNZ", "/baseline/pjnz/")
         assertVersionFileExists(FileType.PJNZ)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/pjnz/", HttpMethod.DELETE)
@@ -102,7 +112,8 @@ class BaselineTests : VersionFileTests() {
 
 
     @Test
-    fun `can delete shape data`() {
+    fun `can delete shape data`()
+    {
         setUpVersionFileAndGetHash("malawi.geojson", "/baseline/shape/")
         assertVersionFileExists(FileType.Shape)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/shape/", HttpMethod.DELETE)
@@ -112,7 +123,8 @@ class BaselineTests : VersionFileTests() {
 
 
     @Test
-    fun `can delete population data`() {
+    fun `can delete population data`()
+    {
         setUpVersionFileAndGetHash("population.csv", "/baseline/population/")
         assertVersionFileExists(FileType.Population)
         val responseEntity = testRestTemplate.exchange<String>("/baseline/population/", HttpMethod.DELETE)
@@ -122,7 +134,8 @@ class BaselineTests : VersionFileTests() {
 
 
     @Test
-    fun `can get consistent validate result when no files are uploaded`() {
+    fun `can get consistent validate result when no files are uploaded`()
+    {
         val responseEntity = testRestTemplate.getForEntity<String>("/baseline/validate/")
         assertSuccess(responseEntity, "ValidateBaselineResponse")
         val data = getResponseData(responseEntity)
@@ -130,7 +143,8 @@ class BaselineTests : VersionFileTests() {
     }
 
     @Test
-    fun `can get consistent validate result when all files are uploaded`() {
+    fun `can get consistent validate result when all files are uploaded`()
+    {
         authorize()
         testRestTemplate.getForEntity<String>("/")
 
@@ -151,7 +165,8 @@ class BaselineTests : VersionFileTests() {
     }
 
     @Test
-    fun `can get 400 result when inconsistent files are uploaded`() {
+    fun `can get 400 result when inconsistent files are uploaded`()
+    {
         authorize()
         testRestTemplate.getForEntity<String>("/")
 
