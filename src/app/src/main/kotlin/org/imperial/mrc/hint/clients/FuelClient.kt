@@ -38,6 +38,16 @@ abstract class FuelClient(protected val baseUrl: String)
                 .asResponseEntity()
     }
 
+    protected fun postEmpty(url: String): ResponseEntity<String>
+    {
+        return "$baseUrl/$url".httpPost()
+                .addTimeouts()
+                .header(standardHeaders())
+                .response()
+                .second
+                .asResponseEntity()
+    }
+
     protected fun Request.addTimeouts(): Request
     {
         return this.timeout(TIMEOUT)
