@@ -4,12 +4,14 @@ import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
 import {actions} from "./actions";
+import {VersionInfo} from "../../generated";
 
 export interface ModelCalibrateState {
     optionsFormMeta: DynamicFormMeta
     options: DynamicFormData
     fetching: boolean
     complete: boolean
+    version: VersionInfo
 }
 
 export const initialModelCalibrateState = (): ModelCalibrateState => {
@@ -17,7 +19,8 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         optionsFormMeta: {controlSections: []},
         options: {},
         fetching: false,
-        complete: false
+        complete: false,
+        version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"}
     }
 };
 

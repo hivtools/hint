@@ -15,24 +15,14 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     async fetchModelCalibrateOptions(context) {
         const {commit} = context;
         commit(ModelCalibrateMutation.FetchingModelCalibrateOptions);
-        //TODO: fetch from backend
-        const placeholderFormMeta = {
-           controlSections: [{
-               label: "Test Section",
-               description: "Just a test section",
-               controlGroups: [{
-                   controls: [{
-                       name: "TestValue",
-                       type: "number",
-                       required: false,
-                       min: 0,
-                       max: 10,
-                       value: 5
-                   }]
-               }]
-           }]
-       };
-       commit(ModelCalibrateMutation.ModelCalibrateOptionsFetched, {payload: placeholderFormMeta});
+        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+            .withSuccess(ModelCalibrateMutation.ModelCalibrateOptionsFetched)
+            .ignoreErrors()
+            .get<DynamicFormMeta>("/model/calibrate-options/");
+
+        if (response) {
+            commit({type: ModelCalibrateMutation.SetModelCalibrateOptionsVersion, payload: response.version});
+        }
     },
 
     async calibrate(context) {
