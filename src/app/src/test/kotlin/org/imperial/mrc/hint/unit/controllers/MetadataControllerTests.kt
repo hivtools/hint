@@ -8,10 +8,12 @@ import org.imperial.mrc.hint.controllers.MetadataController
 import org.junit.jupiter.api.Test
 import org.springframework.http.ResponseEntity
 
-class MetadataControllerTests {
+class MetadataControllerTests
+{
 
     @Test
-    fun `gets plotting metadata`() {
+    fun `gets plotting metadata`()
+    {
         val mockResponse = mock<ResponseEntity<String>>()
 
         val mockAPIClient = mock<HintrAPIClient> {

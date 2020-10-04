@@ -5,10 +5,12 @@ import org.imperial.mrc.hint.exceptions.RandomErrorCodeGenerator
 import org.imperial.mrc.hint.helpers.errorCodeRegex
 import org.junit.jupiter.api.Test
 
-class ErrorCodeGeneratorTests {
+class ErrorCodeGeneratorTests
+{
 
     @Test
-    fun `generates a new error code`() {
+    fun `generates a new error code`()
+    {
         val sut = RandomErrorCodeGenerator()
         val result = sut.newCode()
 

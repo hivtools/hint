@@ -12,7 +12,8 @@ export enum ModelCalibrateMutation {
     ModelCalibrateOptionsFetched = "ModelCalibrateOptionsFetched",
     SetModelCalibrateOptionsVersion = "SetModelCalibrateOptionsVersion",
     Update = "Update",
-    Calibrated = "Calibrated"
+    Calibrated = "Calibrated",
+    SetOptionsData = "SetOptionsData"
 }
 
 export const mutations: MutationTree<ModelCalibrateState> = {
@@ -36,6 +37,10 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.SetModelCalibrateOptionsVersion](state: ModelCalibrateState, action: PayloadWithType<VersionInfo>) {
-        state.version = action.payload
+        state.version = action.payload;
+    },
+
+    [ModelCalibrateMutation.SetOptionsData](state: ModelCalibrateState, action: PayloadWithType<DynamicFormData>) {
+        state.options = action.payload;
     }
 };

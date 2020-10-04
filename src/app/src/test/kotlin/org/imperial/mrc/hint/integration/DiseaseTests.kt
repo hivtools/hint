@@ -9,10 +9,12 @@ import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpMethod
 
-class DiseaseTests : VersionFileTests() {
+class DiseaseTests : VersionFileTests()
+{
 
     @BeforeEach
-    fun setup() {
+    fun setup()
+    {
         authorize()
         testRestTemplate.getForEntity<String>("/")
         testRestTemplate.postForEntity<String>("/baseline/shape/",
@@ -20,7 +22,8 @@ class DiseaseTests : VersionFileTests() {
     }
 
     @Test
-    fun `can upload survey file`() {
+    fun `can upload survey file`()
+    {
         val postEntity = getTestEntity("survey.csv")
         val entity = testRestTemplate.postForEntity<String>("/disease/survey/", postEntity)
         assertSuccess(entity, "ValidateInputResponse")
@@ -30,7 +33,8 @@ class DiseaseTests : VersionFileTests() {
     }
 
     @Test
-    fun `can upload program file`() {
+    fun `can upload program file`()
+    {
         val postEntity = getTestEntity("programme.csv")
         val entity = testRestTemplate.postForEntity<String>("/disease/programme/", postEntity)
         assertSuccess(entity, "ValidateInputResponse")
@@ -40,7 +44,8 @@ class DiseaseTests : VersionFileTests() {
     }
 
     @Test
-    fun `can upload ANC file`() {
+    fun `can upload ANC file`()
+    {
         val postEntity = getTestEntity("anc.csv")
         val entity = testRestTemplate.postForEntity<String>("/disease/anc/", postEntity)
         assertSuccess(entity, "ValidateInputResponse")
@@ -50,7 +55,8 @@ class DiseaseTests : VersionFileTests() {
     }
 
     @Test
-    fun `can get survey data`() {
+    fun `can get survey data`()
+    {
         val postEntity = getTestEntity("survey.csv")
         testRestTemplate.postForEntity<String>("/disease/survey/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/disease/survey/")
@@ -58,7 +64,8 @@ class DiseaseTests : VersionFileTests() {
     }
 
     @Test
-    fun `can get programme data`() {
+    fun `can get programme data`()
+    {
         val postEntity = getTestEntity("programme.csv")
         testRestTemplate.postForEntity<String>("/disease/programme/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/disease/programme/")
@@ -66,7 +73,8 @@ class DiseaseTests : VersionFileTests() {
     }
 
     @Test
-    fun `can get ANC data`() {
+    fun `can get ANC data`()
+    {
         val postEntity = getTestEntity("anc.csv")
         testRestTemplate.postForEntity<String>("/disease/anc/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/disease/anc/")
@@ -74,19 +82,22 @@ class DiseaseTests : VersionFileTests() {
     }
 
     @Test
-    fun `can delete survey data`() {
+    fun `can delete survey data`()
+    {
         val responseEntity = testRestTemplate.exchange<String>("/disease/survey/", HttpMethod.DELETE)
         assertSuccess(responseEntity, null)
     }
 
     @Test
-    fun `can delete programme data`() {
+    fun `can delete programme data`()
+    {
         val responseEntity = testRestTemplate.exchange<String>("/disease/programme/", HttpMethod.DELETE)
         assertSuccess(responseEntity, null)
     }
 
     @Test
-    fun `can delete ANC data`() {
+    fun `can delete ANC data`()
+    {
         val responseEntity = testRestTemplate.exchange<String>("/disease/anc/", HttpMethod.DELETE)
         assertSuccess(responseEntity, null)
     }

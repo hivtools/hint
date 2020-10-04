@@ -8,7 +8,8 @@ import org.pac4j.core.util.CommonHelper
 import org.pac4j.sql.profile.service.DbProfileService
 import javax.sql.DataSource
 
-class HintDbProfileService(dataSource: DataSource, passwordEncoder: PasswordEncoder): DbProfileService(dataSource, passwordEncoder)
+class HintDbProfileService(dataSource: DataSource, passwordEncoder: PasswordEncoder)
+    : DbProfileService(dataSource, passwordEncoder)
 {
     override fun validate(credentials: UsernamePasswordCredentials, context: WebContext)
     {

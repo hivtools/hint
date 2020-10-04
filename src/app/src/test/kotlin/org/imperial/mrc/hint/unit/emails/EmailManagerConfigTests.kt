@@ -17,7 +17,7 @@ class EmailManagerConfigTests
     @Test
     fun `returns WriteToDisk manager when email mode is disk`()
     {
-        val mockAppProperties = mock<AppProperties>{
+        val mockAppProperties = mock<AppProperties> {
             on { emailMode } doReturn "disk"
         }
 
@@ -28,7 +28,7 @@ class EmailManagerConfigTests
     @Test
     fun `returns RealEmailManager when email mode is real`()
     {
-        val mockAppProperties = mock<AppProperties>{
+        val mockAppProperties = mock<AppProperties> {
             on { emailMode } doReturn "real"
             on { emailUsername } doReturn "testUsername"
             on { emailServer } doReturn "testServer"
@@ -42,7 +42,8 @@ class EmailManagerConfigTests
     }
 
     @Test
-    fun `throws exception when email mode is unknown`() {
+    fun `throws exception when email mode is unknown`()
+    {
         val mockAppProperties = mock<AppProperties> {
             on { emailMode } doReturn "unsupported"
         }

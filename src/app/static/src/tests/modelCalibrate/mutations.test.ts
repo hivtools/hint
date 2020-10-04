@@ -1,6 +1,7 @@
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelCalibrateMutation, mutations} from "../../app/store/modelCalibrate/mutations";
-import {mockModelCalibrateState} from "../mocks";
+import {mockModelCalibrateState, mockModelOptionsState} from "../mocks";
+import {VersionInfo} from "../../app/generated";
 
 describe("ModelCalibrate mutations", () => {
 
@@ -34,5 +35,16 @@ describe("ModelCalibrate mutations", () => {
         const state = mockModelCalibrateState();
         mutations[ModelCalibrateMutation.Calibrated](state);
         expect(state.complete).toBe(true);
+    });
+
+    it("sets version", () => {
+        const state = mockModelCalibrateState();
+        const mockVersion: VersionInfo = {
+            hintr: "1",
+            naomi: "2",
+            rrq: "3"
+        };
+        mutations[ModelCalibrateMutation.SetModelCalibrateOptionsVersion](state, {payload: mockVersion});
+        expect(state.version).toStrictEqual(mockVersion);
     });
 });
