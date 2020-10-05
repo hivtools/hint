@@ -27,10 +27,10 @@
                 <div class="col-md-1 project-cell">
                     <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
                 </div>
-                <div class="col-md-2 project-cell">
+                <div class="col-md-2 project-cell" v-if="copyProjectIsEnabled">
                     <a @click="copyProject($event, p.id)" href="" v-translate="'copyToNewProject'"></a>
                 </div>
-                <div class="col-md-1 project-cell">
+                <div class="col-md-1 project-cell" v-if="shareProjectIsEnabled">
                     <share-project :project="p"></share-project>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                     <div class="col-md-1 version-cell">
                         <a @click="deleteVersion($event, p.id, v.id)" href="" v-translate="'delete'"></a>
                     </div>
-                    <div class="col-md-2 version-cell">
+                    <div class="col-md-2 version-cell" v-if="copyProjectIsEnabled">
                         <a @click="copyVersion($event, p.id, v.id)" href="" v-translate="'copyToNewProject'"></a>
                     </div>
                 </div>
@@ -96,6 +96,7 @@
     import {formatDateTime, mapActionByName, versionLabel} from "../../utils";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
+    import {switches} from "../../featuresSwitches";
 
     interface Data {
         projectToDelete: number | null,
@@ -103,6 +104,8 @@
         copiedProjectName: string,
         projectToCopy: number | null,
         versionToCopy: VersionIds | null
+        shareProjectIsEnabled: boolean
+        copyProjectIsEnabled: boolean
     }
 
     interface Methods {
@@ -129,7 +132,9 @@
                 versionToDelete: null,
                 copiedProjectName: '',
                 projectToCopy: null,
-                versionToCopy: null
+                versionToCopy: null,
+                shareProjectIsEnabled: switches.shareProject,
+                copyProjectIsEnabled: switches.copyProject
             }
         },
         methods: {

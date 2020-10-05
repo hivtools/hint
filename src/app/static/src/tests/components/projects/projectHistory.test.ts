@@ -8,6 +8,7 @@ import {emptyState, RootState} from "../../../app/root";
 import {Project} from "../../../app/types";
 import {mockProjectsState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
+import {switches} from "../../../app/featuresSwitches";
 
 describe("Project history component", () => {
 
@@ -77,9 +78,13 @@ describe("Project history component", () => {
         expectTranslated(v.at(4),"Load", "Charger", store);
         expect(v.at(4).find("a").attributes("href")).toBe("");
         expectTranslated(v.at(5), "Delete", "Supprimer", store);
-        expectTranslated(v.at(6),"Copy to a new project", "Copier dans un nouveau projet", store);
-        expect(v.at(6).find("a").attributes("href")).toBe("");
-
+        if (switches.copyProject) {
+            expectTranslated(v.at(6), "Copy to a new project", "Copier dans un nouveau projet", store);
+            expect(v.at(6).find("a").attributes("href")).toBe("");
+        }
+        else {
+            expect(v.length).toBe(6);
+        }
         const versions = wrapper.find(`#versions-${id}`);
         expect(versions.classes()).toContain("collapse");
         expect(versions.attributes("style")).toBe("display: none;");
@@ -96,8 +101,13 @@ describe("Project history component", () => {
         expectTranslated(loadLink,"Load", "Charger", store);
         const deleteLink = cells.at(4).find("a");
         expectTranslated(deleteLink, "Delete", "Supprimer", store);
-        const copyLink = cells.at(5).find("a");
-        expectTranslated(copyLink,"Copy to a new project", "Copier dans un nouveau projet", store);
+        if (switches.copyProject) {
+            const copyLink = cells.at(5).find("a");
+            expectTranslated(copyLink, "Copy to a new project", "Copier dans un nouveau projet", store);
+        }
+        else {
+            expect(cells.length).toBe(5);
+        }
     };
 
     it("renders as expected ", () => {
@@ -256,53 +266,57 @@ describe("Project history component", () => {
     };
 
     it("shows modal when copy project link is clicked and removes it when cancel is clicked", async () => {
-        const wrapper = getWrapper();
-        const store = wrapper.vm.$store;
-        const copyLink = wrapper.find("#p-1").findAll(".project-cell").at(6).find("a");
-        copyLink.trigger("click");
-        await Vue.nextTick();
+        if (switches.copyProject) {
+            const wrapper = getWrapper();
+            const store = wrapper.vm.$store;
+            const copyLink = wrapper.find("#p-1").findAll(".project-cell").at(6).find("a");
+            copyLink.trigger("click");
+            await Vue.nextTick();
 
-        const modal = wrapper.findAll(".modal").at(1);
-        expect(modal.classes()).toContain("show");
-        expectTranslated(modal.find(".modal-body h4"), "Copying project to a new project",
-            "Copier le projet dans un nouveau projet", store);
-        expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
-            "Veuillez entrer un nom pour le nouveau projet", store);
+            const modal = wrapper.findAll(".modal").at(1);
+            expect(modal.classes()).toContain("show");
+            expectTranslated(modal.find(".modal-body h4"), "Copying project to a new project",
+                "Copier le projet dans un nouveau projet", store);
+            expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
+                "Veuillez entrer un nom pour le nouveau projet", store);
 
-        const input = modal.find("input")
-        expectTranslated(input, "Project name", "Nom du projet", store, "placeholder");
-        const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "Create project", "Créer un projet", store);
-        expectTranslated(buttons.at(1),"Cancel", "Annuler", store);
+            const input = modal.find("input")
+            expectTranslated(input, "Project name", "Nom du projet", store, "placeholder");
+            const buttons = modal.find(".modal-footer").findAll("button");
+            expectTranslated(buttons.at(0), "Create project", "Créer un projet", store);
+            expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
 
-        const cancelButton = buttons.at(1);
-        cancelButton.trigger("click");
-        await Vue.nextTick();
-        expect(modal.classes()).not.toContain("show");
+            const cancelButton = buttons.at(1);
+            cancelButton.trigger("click");
+            await Vue.nextTick();
+            expect(modal.classes()).not.toContain("show");
+        }
     });
 
     it("shows modal when copy version link is clicked and removes it when cancel is clicked", async () => {
-        const wrapper = getWrapper();
-        const store = wrapper.vm.$store;
-        const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
-        copyLink.trigger("click");
-        await Vue.nextTick();
+        if (switches.copyProject) {
+            const wrapper = getWrapper();
+            const store = wrapper.vm.$store;
+            const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
+            copyLink.trigger("click");
+            await Vue.nextTick();
 
-        const modal = wrapper.findAll(".modal").at(1);
-        expect(modal.classes()).toContain("show");
-        expectTranslated(modal.find(".modal-body h4"), "Copying version to a new project",
-            "Copier la version dans un nouveau projet", store);
-        expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
-            "Veuillez entrer un nom pour le nouveau projet", store);
-        const input = modal.find("input");
-        expectTranslated(input, "Project name", "Nom du projet", store,"placeholder");
-        const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "Create project", "Créer un projet", store);
-        expectTranslated(buttons.at(1),"Cancel", "Annuler", store);
+            const modal = wrapper.findAll(".modal").at(1);
+            expect(modal.classes()).toContain("show");
+            expectTranslated(modal.find(".modal-body h4"), "Copying version to a new project",
+                "Copier la version dans un nouveau projet", store);
+            expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
+                "Veuillez entrer un nom pour le nouveau projet", store);
+            const input = modal.find("input");
+            expectTranslated(input, "Project name", "Nom du projet", store, "placeholder");
+            const buttons = modal.find(".modal-footer").findAll("button");
+            expectTranslated(buttons.at(0), "Create project", "Créer un projet", store);
+            expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
 
-        const cancelButton = buttons.at(1);
-        cancelButton.trigger("click");
-        await Vue.nextTick();
-        expect(modal.classes()).not.toContain("show");
+            const cancelButton = buttons.at(1);
+            cancelButton.trigger("click");
+            await Vue.nextTick();
+            expect(modal.classes()).not.toContain("show");
+        }
     });
 });
