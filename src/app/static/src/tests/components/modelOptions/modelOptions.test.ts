@@ -13,6 +13,7 @@ import {ModelOptionsActions} from "../../../app/store/modelOptions/actions";
 import {RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import { getters } from "../../../app/store/root/getters";
+import {expectTranslated} from "../../testHelpers";
 
 describe("Model options component", () => {
 
@@ -72,13 +73,15 @@ describe("Model options component", () => {
         const rendered = shallowMount(ModelOptions, {store});
         expect(rendered.findAll(DynamicForm).length).toBe(0);
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
-        expect(rendered.find("#loading-message").text()).toBe("Loading options");
+        expectTranslated(rendered.find("#loading-message"),"Loading options",
+            "Chargement de vos options.", store);
     });
 
     it("displays tick and message if valid is true", () => {
         const store = createStore({valid: true});
         const rendered = shallowMount(ModelOptions, {store});
-        expect(rendered.find("h4").text()).toBe("Options are valid");
+        expectTranslated(rendered.find("h4"), "Options are valid",
+            "Les options sont valides", store);
         expect(rendered.findAll(Tick).length).toBe(1);
     });
 
