@@ -3,17 +3,17 @@ import {ModelCalibrateState} from "./modelCalibrate";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {PayloadWithType} from "../../types";
 import {updateForm} from "../../utils";
-import {ModelOptionsState} from "../modelOptions/modelOptions";
-import {VersionInfo} from "../../generated";
-import {ModelOptionsMutation} from "../modelOptions/mutations";
+import {Error, VersionInfo} from "../../generated";
 
 export enum ModelCalibrateMutation {
     FetchingModelCalibrateOptions = "FetchingModelCalibrateOptions",
     ModelCalibrateOptionsFetched = "ModelCalibrateOptionsFetched",
     SetModelCalibrateOptionsVersion = "SetModelCalibrateOptionsVersion",
     Update = "Update",
+    Calibrating = "Calibrating",
     Calibrated = "Calibrated",
-    SetOptionsData = "SetOptionsData"
+    SetOptionsData = "SetOptionsData",
+    SetError = "SetError"
 }
 
 export const mutations: MutationTree<ModelCalibrateState> = {
@@ -32,8 +32,14 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.optionsFormMeta = payload;
     },
 
+    [ModelCalibrateMutation.Calibrating](state: ModelCalibrateState) {
+        state.calibrating = true;
+        state.error = null;
+    },
+
     [ModelCalibrateMutation.Calibrated](state: ModelCalibrateState) {
         state.complete = true;
+        state.calibrating = false
     },
 
     [ModelCalibrateMutation.SetModelCalibrateOptionsVersion](state: ModelCalibrateState, action: PayloadWithType<VersionInfo>) {
@@ -42,5 +48,10 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 
     [ModelCalibrateMutation.SetOptionsData](state: ModelCalibrateState, action: PayloadWithType<DynamicFormData>) {
         state.options = action.payload;
+    },
+
+    [ModelCalibrateMutation.SetError](state: ModelCalibrateState, action: PayloadWithType<Error>) {
+        state.error = action.payload;
+        state.calibrating = false;
     }
 };

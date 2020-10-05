@@ -29,13 +29,13 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
 
     async calibrate(context, options) {
         const {commit, state, rootState} = context;
-
         const modelRunId = rootState.modelRun.modelRunId;
         const version = state.version;
         commit(ModelCalibrateMutation.SetOptionsData, options);
+        commit(ModelCalibrateMutation.Calibrating);
         const response = await api<ModelRunMutation, ModelCalibrateMutation>(context)
             .withSuccess(ModelRunMutation.RunResultFetched)
-            .ignoreErrors()
+            .withError(ModelCalibrateMutation.SetError)
             .freezeResponse()
             .postAndReturn<ModelResultResponse>(`/model/calibrate/${modelRunId}`, {options, version});
 

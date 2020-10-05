@@ -1,6 +1,6 @@
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelCalibrateMutation, mutations} from "../../app/store/modelCalibrate/mutations";
-import {mockModelCalibrateState, mockModelOptionsState} from "../mocks";
+import {mockError, mockModelCalibrateState, mockModelOptionsState} from "../mocks";
 import {VersionInfo} from "../../app/generated";
 
 describe("ModelCalibrate mutations", () => {
@@ -31,10 +31,18 @@ describe("ModelCalibrate mutations", () => {
         expect(state.optionsFormMeta).toBe(payload);
     });
 
+    it("Calibrating sets calibrating to true, error to null", () => {
+        const state = mockModelCalibrateState({error: mockError("TEST ERROR")});
+        mutations[ModelCalibrateMutation.Calibrating](state);
+        expect(state.calibrating).toBe(true);
+        expect(state.error).toBeNull();
+    });
+
     it("Calibrated sets complete to true", () => {
-        const state = mockModelCalibrateState();
+        const state = mockModelCalibrateState({calibrating: true});
         mutations[ModelCalibrateMutation.Calibrated](state);
         expect(state.complete).toBe(true);
+        expect(state.calibrating).toBe(false);
     });
 
     it("sets version", () => {
@@ -46,5 +54,13 @@ describe("ModelCalibrate mutations", () => {
         };
         mutations[ModelCalibrateMutation.SetModelCalibrateOptionsVersion](state, {payload: mockVersion});
         expect(state.version).toStrictEqual(mockVersion);
+    });
+
+    it("sets error", () => {
+        const state = mockModelCalibrateState();
+        const error = mockError("TEST ERROR");
+        mutations[ModelCalibrateMutation.SetError](state, {payload: error});
+        expect(state.error).toBe(error);
+        expect(state.calibrating).toBe(false);
     });
 });
