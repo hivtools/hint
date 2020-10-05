@@ -8,7 +8,7 @@ import {emptyState, RootState} from "../../../app/root";
 import {Project} from "../../../app/types";
 import {mockProjectsState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
-import {switches} from "../../../app/featuresSwitches";
+import {switches} from "../../../app/featureSwitches";
 
 describe("Project history component", () => {
 

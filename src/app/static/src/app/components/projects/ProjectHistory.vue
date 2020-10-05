@@ -96,7 +96,7 @@
     import {formatDateTime, mapActionByName, versionLabel} from "../../utils";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
-    import {switches} from "../../featuresSwitches";
+    import {switches} from "../../featureSwitches";
 
     interface Data {
         projectToDelete: number | null,
