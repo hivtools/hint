@@ -10,6 +10,11 @@
                       @submit="calibrate"
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
+        <div v-if="calibrating" id="calibrating" class="mt-3">
+            <loading-spinner size="xs"></loading-spinner>
+            <span v-translate="'calibrating'"></span>
+        </div>
+        <error-alert v-if="hasError" :error="error"></error-alert>
         <div v-if="complete" id="calibration-complete" class="mt-3">
             <h4 class="d-inline" id="calibrate-complete" v-translate="'calibrationComplete'"></h4>
             <tick color="#e31837" width="20px"></tick>
@@ -18,7 +23,6 @@
 
 </template>
 <script lang="ts">
-    //TODO: translation for Calibrate button? Same for Validation model options
     import Vue from "vue";
     import i18next from "i18next";
     import {DynamicFormData, DynamicFormMeta, DynamicForm} from "@reside-ic/vue-dynamic-form";
@@ -28,12 +32,12 @@
 
     import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
     import {ModelCalibrateMutation} from "../../store/modelCalibrate/mutations";
-    import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
     import ResetConfirmation from "../ResetConfirmation.vue";
     import {StepDescription} from "../../store/stepper/stepper";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     interface Methods {
         fetchOptions: () => void
@@ -44,13 +48,16 @@
     interface Computed {
         calibrateOptions: DynamicFormMeta
         loading: boolean
-        complete:boolean
+        calibrating: boolean
+        complete: boolean
         editsRequireConfirmation: boolean
         laterCompleteSteps: StepDescription[]
         currentLanguage: Language
         selectText: string
         requiredText: string,
-        submitText: string
+        submitText: string,
+        hasError: boolean,
+        error: Error
     }
 
     interface Data {
@@ -81,7 +88,9 @@
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             ...mapStateProps<ModelCalibrateState, keyof Computed>(namespace, {
-                loading: s => s.fetching
+                loading: s => s.fetching,
+                calibrating: s => s.calibrating,
+                error: s => s.error
             }),
             complete: mapGetterByName(namespace, "complete"),
             calibrateOptions: {
@@ -91,6 +100,9 @@
                 set(value: DynamicFormMeta) {
                     this.update(value);
                 }
+            },
+            hasError() {
+                return !!this.error;
             }
         },
         methods: {
@@ -102,7 +114,8 @@
             DynamicForm,
             LoadingSpinner,
             Tick,
-            ResetConfirmation
+            ResetConfirmation,
+            ErrorAlert
         },
         mounted() {
             this.fetchOptions();

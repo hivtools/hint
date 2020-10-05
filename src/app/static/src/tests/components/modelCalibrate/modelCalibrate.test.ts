@@ -1,5 +1,5 @@
 import Vuex, {ActionTree, MutationTree, Store} from "vuex";
-import {mockModelCalibrateState, mockRootState} from "../../mocks";
+import {mockError, mockModelCalibrateState, mockRootState} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {RootState} from "../../../app/root";
 import {ModelCalibrateState, modelCalibrateGetters} from "../../../app/store/modelCalibrate/modelCalibrate";;
@@ -9,6 +9,7 @@ import {DynamicControlType, DynamicForm} from "@reside-ic/vue-dynamic-form";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {expectTranslated} from "../../testHelpers";
 import Tick from "../../../app/components/Tick.vue";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {ModelCalibrateMutation} from "../../../app/store/modelCalibrate/mutations";
 
 describe("Model calibrate component", () => {
@@ -64,6 +65,8 @@ describe("Model calibrate component", () => {
             "Chargement de vos options.", store);
         expect(wrapper.find(DynamicForm).exists()).toBe(false);
         expect(wrapper.find("#calibration-complete").exists()).toBe(false);
+        expect(wrapper.find(ErrorAlert).exists()).toBe(false);
+        expect(wrapper.find("#calibrating").exists()).toBe(false);
     });
 
     it("invokes fetch options action on mount", () => {
@@ -95,6 +98,21 @@ describe("Model calibrate component", () => {
         expect(wrapper.find("#calibration-complete").find(Tick).exists()).toBe(true);
         expectTranslated(wrapper.find("#calibration-complete h4"), "Calibration complete",
             "Calibrage du modèle terminé", store);
+    });
+
+    it("renders error", () => {
+        const error = mockError("TEST ERROR");
+        const store = getStore({error});
+        const wrapper = getWrapper(store);
+        expect(wrapper.find(ErrorAlert).props("error")).toBe(error);
+    });
+
+    it("renders calibrating message", () => {
+        const store = getStore({calibrating: true});
+        const wrapper = getWrapper(store);
+        expect(wrapper.find("#calibrating").find(LoadingSpinner).exists()).toBe(true);
+        expectTranslated(wrapper.find("#calibrating"), "Calibrating...",
+            "Calibrage en cours...", store);
     });
 
     it("setting options value commits update mutation", () => {
