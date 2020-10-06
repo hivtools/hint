@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-sm-6 col-md-8">
                 <form>
-                    <manage-file label="PJNZ"
+                    <manage-file label="Spectrum file"
                                      :valid="pjnz.valid"
                                      :error="pjnz.error || plottingMetadataError"
                                      :upload="uploadPJNZ"
@@ -13,7 +13,7 @@
                                      name="pjnz">
                         <label class="mb-0" v-if="country"><strong v-translate="'country'"></strong>: {{country}}</label>
                     </manage-file>
-                    <manage-file label="shape"
+                    <manage-file label="Area boundary file"
                                  :valid="shape.valid"
                                  :error="shape.error"
                                  :upload="uploadShape"
