@@ -9,6 +9,7 @@ import {Project} from "../../../app/types";
 import {mockProjectsState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
 import {switches} from "../../../app/featureSwitches";
+import ShareProject from "../../../app/components/projects/ShareProject.vue";
 
 describe("Project history component", () => {
 
@@ -83,7 +84,18 @@ describe("Project history component", () => {
             expect(v.at(6).find("a").attributes("href")).toBe("");
         }
         else {
-            expect(v.length).toBe(6);
+            if (switches.shareProject) {
+                expect(v.at(6).findAll(ShareProject).length).toBe(1);
+            }
+            else {
+                expect(v.length).toBe(6);
+            }
+        }
+        if (switches.shareProject) {
+            expect(wrapper.findAll(ShareProject).length).toBeGreaterThan(0);
+        }
+        else {
+            expect(wrapper.findAll(ShareProject).length).toBe(0);
         }
         const versions = wrapper.find(`#versions-${id}`);
         expect(versions.classes()).toContain("collapse");
