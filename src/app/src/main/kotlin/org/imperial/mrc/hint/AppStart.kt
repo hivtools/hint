@@ -37,6 +37,7 @@ class MvcConfig(val config: Config) : WebMvcConfigurer
         registry.addInterceptor(SecurityInterceptor(config, ""))
                 .addPathPatterns("/adr/**")
                 .addPathPatterns("/user/**")
+                .addPathPatterns("/project/**")
                 .excludePathPatterns("/adr/schemas", "/adr/schemas/")
     }
 
