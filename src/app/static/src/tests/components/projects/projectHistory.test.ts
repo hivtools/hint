@@ -24,10 +24,6 @@ describe("Project history component", () => {
     const mockLoad = jest.fn();
     const mockPromoteVersion = jest.fn();
 
-    const testStore = new Vuex.Store({
-        state: emptyState()
-    });
-
     function createStore(projects: Project[] = testProjects) {
         const store = new Vuex.Store({
             state: emptyState(),
@@ -321,7 +317,7 @@ describe("Project history component", () => {
            }});
     });
 
-    it("cannot invoke promoteVersion action when when input value is empty", async () => {
+    it("cannot invoke promoteVersion action when input value is empty", async () => {
         const wrapper = getWrapper(testProjects);
         const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
         copyLink.trigger("click");

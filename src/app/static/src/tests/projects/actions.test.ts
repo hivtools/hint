@@ -436,9 +436,30 @@ describe("Projects actions", () => {
         actions.promoteVersion({commit, state, rootState, dispatch} as any, versionPayload);
 
         setTimeout(() => {
-
             const posted = mockAxios.history.post[0].data;
             expect(posted).toEqual("name=newProject");
+
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            expect(commit.mock.calls.length).toBe(1);
+            done();
+        });
+    });
+
+    it("promoteVersion commits ErrorAdded on failure", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = {};
+        mockAxios.onPost("project/1/version/testVersion/promote")
+            .reply(500, mockFailure("TEST ERROR"));
+
+        const versionPayload = {
+            version: {projectId: 1, versionId: "testVersion"},
+            name: "newProject"
+        }
+        actions.promoteVersion({commit, dispatch, state, rootState} as any, versionPayload);
+        setTimeout(() => {
+            const expectedError = {detail: "TEST ERROR", error: "OTHER_ERROR"};
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: `errors/${ErrorsMutation.ErrorAdded}`, payload: expectedError});
             done();
         });
     });

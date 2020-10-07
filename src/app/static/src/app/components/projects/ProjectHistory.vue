@@ -67,28 +67,29 @@
                 </button>
             </template>
         </modal>
-        <modal :open="versionToCopy">
+        <modal :open="versionToPromote">
             <div v-html="promoteVersionHeader" id="promoteVersionHeader"></div>
             <h5 v-translate="'enterProjectName'"></h5>
+            <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
             <template v-slot:footer>
-                <div class="container">
-                    <div class="row">
+                <!-- <div class="container"> -->
+                    <!-- <div class="row">
                         <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
-                    </div>
-                    <div class="row">
+                    </div> -->
+                    <!-- <div class="row"> -->
                         <button type="button"
-                            class="btn btn-red mt-2 mr-1 col"
+                            class="btn btn-red"
                             :disabled="disableCreate"
-                            @click="confirmCopy(newProjectName)"
+                            @click="confirmPromotion(newProjectName)"
                             v-translate="'createProject'">
                         </button>
                         <button type="button"
-                            class="btn btn-white mt-2 ml-1 col"
-                            @click="cancelCopy"
+                            class="btn btn-white"
+                            @click="cancelPromotion"
                             v-translate="'cancel'">
                         </button>
-                    </div>
-                </div>
+                    <!-- </div>
+                </div> -->
             </template>
         </modal>
     </div>
@@ -115,8 +116,8 @@
     interface Data {
         projectToDelete: number | null,
         versionToDelete: VersionIds | null,
-        projectToCopy: number | null,
-        versionToCopy: VersionIds | null,
+        // projectToPromote: number | null,
+        versionToPromote: VersionIds | null,
         newProjectName: string,
         selectedVersionNumber: string,
     }
@@ -135,10 +136,10 @@
         deleteProject: (event: Event, projectId: number) => void,
         deleteVersion: (event: Event, projectId: number, versionId: string) => void,
         promoteVersion: (event: Event, projectId: number, versionId: string, versionNumber: number) => void
-        cancelCopy: () => void
+        cancelPromotion: () => void
         cancelDelete: () => void
         confirmDelete: () => void,
-        confirmCopy: (name: string) => void,
+        confirmPromotion: (name: string) => void,
         deleteProjectAction: (projectId: number) => void,
         deleteVersionAction: (versionIds: VersionIds) => void
         promoteVersionAction: (versionPayload: versionPayload) => void
@@ -152,10 +153,9 @@
            return {
                projectToDelete: null,
                versionToDelete: null,
-               versionToCopy: null,
+               versionToPromote: null,
                newProjectName: "",
-               selectedVersionNumber: "",
-               projectToCopy: null
+               selectedVersionNumber: ""
            }
        },
         computed: {
@@ -186,12 +186,11 @@
            },
            promoteVersion(event: Event, projectId: number, versionId: string, versionNumber: number) {
                event.preventDefault();
-               this.versionToCopy = {projectId, versionId};
+               this.versionToPromote = {projectId, versionId};
                this.selectedVersionNumber = `v${versionNumber}`
            },
-           cancelCopy() {
-               this.versionToCopy = null;
-               this.projectToCopy = null;
+           cancelPromotion() {
+               this.versionToPromote = null;
                this.newProjectName = "";
            },
            cancelDelete() {
@@ -207,15 +206,15 @@
                    this.versionToDelete = null;
                }
            },
-           async confirmCopy(name) {
+           async confirmPromotion(name) {
                
-                if (this.versionToCopy) {
+                if (this.versionToPromote) {
                     const versionPayload: versionPayload = {
-                        version: this.versionToCopy!,
+                        version: this.versionToPromote!,
                         name: this.newProjectName
                     }
                     this.promoteVersionAction(versionPayload);
-                    this.versionToCopy = null;
+                    this.versionToPromote = null;
                     this.newProjectName = "";
                 }
            },

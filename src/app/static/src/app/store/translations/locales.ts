@@ -342,7 +342,7 @@ const fr: Partial<Translations> = {
     emailMultiValidation: "Veuillez entrer les adresses e-mails valide",
     emailNotRegistered: "Cette adresse e-mail n'est pas enregistrée dans Naomi",
     emailValidation: "Veuillez entrer une adresse e-mail valide.",
-    enterProjectName: "Veuillez saisir un nom pour le nouveau projet",
+    enterProjectName: "Veuillez entrer un nom pour le nouveau projet",
     entireDataset: "Toutes les données",
     export: "Exporter",
     exportOutputs: "Exporter des sorties de modèles pour Spectrum",

@@ -140,13 +140,23 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
     async promoteVersion(context, versionPayload: versionPayload) {
         const {state, dispatch} = context;
+        console.log('this is the promote version action state', state)
         const {projectId, versionId} = versionPayload.version
         const name = versionPayload.name
+        // const projectId = state.currentProject && state.currentProject.id;
+        // const versionId = state.currentVersion && state.currentVersion.id;
+
+        // await api<RootMutation, ProjectsMutations>(context)
+        //     .withSuccess(RootMutation.SetProject, true)
+        //     .withError(ProjectsMutations.ProjectError)
+
         api<ProjectsMutations, ErrorsMutation>(context)
-            .withSuccess(ProjectsMutations.VersionCreated)
+            // .withSuccess(ProjectsMutations.VersionCreated)
+            .ignoreSuccess()
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`/project/${projectId}/version/${versionId}/promote`, qs.stringify({name}))
             .then(() => {
+                // immediateUploadVersionState(context)
                 dispatch("getProjects");
             });
     },
@@ -157,6 +167,7 @@ async function immediateUploadVersionState(context: ActionContext<ProjectsState,
     commit({type: ProjectsMutations.SetVersionUploadPending, payload: false});
     const projectId = state.currentProject && state.currentProject.id;
     const versionId = state.currentVersion && state.currentVersion.id;
+    console.log('this is the immediateuploadversionstate', state)
     if (projectId && versionId) {
         await api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.VersionUploadSuccess)
