@@ -64,7 +64,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     },
 
     async loadFromVersion(context, versionDetails) {
-        const {commit, rootState} = context;
+        const {commit} = context;
         commit({type: "SettingFiles", payload: null});
 
        router.push("/", () => {
