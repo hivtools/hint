@@ -65,7 +65,7 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
     fun getVersionId(): String
     {
         //Generate a new id if none exists
-        return (pac4jConfig.sessionStore.get(webContext, VERSION_ID) ?: generateNewVersionId()) as String
+        return (pac4jConfig.sessionStore.get(webContext, VERSION_ID) ?: setNewVersionId()) as String
     }
 
     fun setVersionId(value: String)
@@ -73,9 +73,14 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
         pac4jConfig.sessionStore.set(webContext, VERSION_ID, value)
     }
 
-    fun generateNewVersionId(): String
+    fun generateVersionId(): String
     {
-        val newVersionId = UUID.randomUUID().toString()
+        return UUID.randomUUID().toString()
+    }
+
+    private fun setNewVersionId(): String
+    {
+        val newVersionId = generateVersionId()
         setVersionId(newVersionId)
         return newVersionId
     }
