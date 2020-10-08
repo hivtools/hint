@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint
 
+import org.imperial.mrc.hint.utils.SecurePaths
 import org.pac4j.core.config.Config
 import org.pac4j.springframework.web.SecurityInterceptor
 import org.springframework.boot.SpringApplication
@@ -33,12 +34,11 @@ class MvcConfig(val config: Config) : WebMvcConfigurer
 
     override fun addInterceptors(registry: InterceptorRegistry)
     {
+        var pathUrls = listOf<String>("/adr/**","/user/**","/project/**")
         //Ajax endpoints only available to logged in users
         registry.addInterceptor(SecurityInterceptor(config, ""))
-                .addPathPatterns("/adr/**")
-                .addPathPatterns("/user/**")
-                .addPathPatterns("/project/**")
-                .excludePathPatterns("/adr/schemas", "/adr/schemas/")
+                .addPathPatterns(SecurePaths.ADD.pathList())
+                .excludePathPatterns(SecurePaths.EXCLUDE.pathList())
     }
 
     override fun configureAsyncSupport(configurer: AsyncSupportConfigurer)
