@@ -34,7 +34,6 @@ class MvcConfig(val config: Config) : WebMvcConfigurer
 
     override fun addInterceptors(registry: InterceptorRegistry)
     {
-        var pathUrls = listOf<String>("/adr/**","/user/**","/project/**")
         //Ajax endpoints only available to logged in users
         registry.addInterceptor(SecurityInterceptor(config, ""))
                 .addPathPatterns(SecurePaths.ADD.pathList())
