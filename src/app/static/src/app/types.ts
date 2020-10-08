@@ -76,6 +76,11 @@ export interface Project {
     versions: Version[]
 }
 
+export interface CurrentProject {
+    project: Project,
+    version: Version
+}
+
 export interface VersionDetails {
     files: any,
     state: string

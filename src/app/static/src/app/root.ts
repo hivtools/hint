@@ -145,3 +145,4 @@ export const storeOptions: StoreOptions<RootState> = {
     getters: getters,
     plugins: [persistState, resetState]
 };
+

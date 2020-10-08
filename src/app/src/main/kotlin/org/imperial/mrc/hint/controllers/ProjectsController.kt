@@ -4,10 +4,7 @@ import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.logic.UserLogic
-import org.imperial.mrc.hint.models.EmptySuccessResponse
-import org.imperial.mrc.hint.models.Project
-import org.imperial.mrc.hint.models.SuccessResponse
-import org.imperial.mrc.hint.models.asResponseEntity
+import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -111,6 +108,17 @@ class ProjectsController(private val session: Session,
     {
         projectRepository.deleteProject(projectId, userId())
         return EmptySuccessResponse.asResponseEntity()
+    }
+
+    @GetMapping("/project/current")
+    @ResponseBody
+    fun getCurrentProject(): ResponseEntity<String>
+    {
+        val versionId = session.getVersionId()
+        val version = versionRepository.getVersion(versionId)
+        val project = projectRepository.getProjectFromVersionId(versionId, userId())
+        val currentProject = CurrentProject(project, version)
+        return SuccessResponse(currentProject).asResponseEntity()
     }
 
     private fun userId(): String

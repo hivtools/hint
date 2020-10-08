@@ -1,6 +1,6 @@
 import {MutationTree} from "vuex";
 import {ProjectsState} from "./projects";
-import {PayloadWithType, Version, Project, VersionIds} from "../../types";
+import {PayloadWithType, Version, Project, VersionIds, CurrentProject} from "../../types";
 import {Error} from "../../generated";
 
 export enum ProjectsMutations {
@@ -10,7 +10,8 @@ export enum ProjectsMutations {
     ProjectError = "ProjectError",
     VersionCreated = "VersionCreated",
     VersionUploadSuccess = "VersionUploadSuccess",
-    ClearCurrentVersion = "ClearCurrentVersion"
+    ClearCurrentVersion = "ClearCurrentVersion",
+    SetCurrentProject = "SetCurrentProject"
 }
 
 export const mutations: MutationTree<ProjectsState> = {
@@ -40,5 +41,9 @@ export const mutations: MutationTree<ProjectsState> = {
     [ProjectsMutations.ClearCurrentVersion](state: ProjectsState) {
         state.currentProject = null;
         state.currentVersion = null;
+    },
+    [ProjectsMutations.ClearCurrentVersion](state: ProjectsState, action: PayloadWithType<CurrentProject>) {
+        state.currentProject = action.payload.project;
+        state.currentVersion = action.payload.version;
     }
 };
