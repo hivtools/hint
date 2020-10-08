@@ -140,7 +140,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
     async promoteVersion(context, versionPayload: versionPayload) {
         const {state, dispatch} = context;
-        console.log('this is the promote version action state', state)
+        // console.log('this is the promote version action state', state)
         const {projectId, versionId} = versionPayload.version
         const name = versionPayload.name
         // const projectId = state.currentProject && state.currentProject.id;
@@ -150,12 +150,13 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         //     .withSuccess(RootMutation.SetProject, true)
         //     .withError(ProjectsMutations.ProjectError)
 
-        api<ProjectsMutations, ErrorsMutation>(context)
+        await api<ProjectsMutations, ErrorsMutation>(context)
             // .withSuccess(ProjectsMutations.VersionCreated)
             .ignoreSuccess()
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`/project/${projectId}/version/${versionId}/promote`, qs.stringify({name}))
             .then(() => {
+                // console.log('check here')
                 // immediateUploadVersionState(context)
                 dispatch("getProjects");
             });

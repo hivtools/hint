@@ -265,6 +265,47 @@ class ProjectTests : VersionFileTests() {
     }
 
     @Test
+    fun `can promote version`() {
+        val createResult = createProject()
+        val createProjectData = getResponseData(createResult)
+        val projectId = createProjectData["id"].asInt()
+        val versions = createProjectData["versions"] as ArrayNode
+        val versionId = versions[0]["id"].asText()
+        getUpdateVersionStateResult(projectId, versionId, testState)
+
+
+        val map = LinkedMultiValueMap<String, String>()
+        map.add("name", "newProject")
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        val httpEntity = HttpEntity(map, headers)
+
+        testRestTemplate.postForEntity<String>("/project/$projectId/version/$versionId/promote", httpEntity)
+
+        val result = testRestTemplate.getForEntity<String>("/projects/")
+        val data = getResponseData(result) as ArrayNode
+        assertThat(data.count()).isEqualTo(2)
+        val versionsData = data[0]["versions"] as ArrayNode
+        val versionsData2 = data[1]["versions"] as ArrayNode
+        assertThat(versionsData.count()).isEqualTo(1)
+        assertThat(versionsData2.count()).isEqualTo(1)
+
+
+        val newVersionId = versionsData[0]["id"].asText()
+        assertThat(newVersionId.count()).isGreaterThan(0)
+
+        val newProject = dsl.select(PROJECT_VERSION.STATE,
+                PROJECT_VERSION.CREATED,
+                PROJECT_VERSION.UPDATED)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(newVersionId))
+                .fetchOne()
+
+        assertThat(newProject[PROJECT_VERSION.STATE]).isEqualTo(testState)
+        assertThat(newProject[PROJECT_VERSION.UPDATED]).isEqualTo(newProject[PROJECT_VERSION.CREATED])
+    }
+
+    @Test
     fun `can return expected English error when delete nonexistent version`() {
         val headers = getStandardHeaders("en")
         val httpEntity = HttpEntity<String>(headers)
