@@ -116,7 +116,6 @@
     interface Data {
         projectToDelete: number | null,
         versionToDelete: VersionIds | null,
-        // projectToPromote: number | null,
         versionToPromote: VersionIds | null,
         newProjectName: string,
         selectedVersionNumber: string,
