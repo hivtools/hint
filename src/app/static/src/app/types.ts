@@ -77,8 +77,8 @@ export interface Project {
 }
 
 export interface CurrentProject {
-    project: Project,
-    version: Version
+    project: Project | null,
+    version: Version | null
 }
 
 export interface VersionDetails {

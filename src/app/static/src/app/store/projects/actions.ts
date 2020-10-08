@@ -7,7 +7,7 @@ import {api} from "../../apiService";
 import {ProjectsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
-import {Project, VersionDetails, VersionIds} from "../../types";
+import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
 
 export interface ProjectsActions {
     createProject: (store: ActionContext<ProjectsState, RootState>, name: string) => void,
@@ -69,7 +69,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             await api<ProjectsMutations, ProjectsMutations>(context)
                 .withSuccess(ProjectsMutations.SetCurrentProject)
                 .withError(ProjectsMutations.ProjectError)
-                .get<Project[]>("/project/current");
+                .get<CurrentProject>("/project/current");
         }
     },
 

@@ -115,9 +115,17 @@ class ProjectsController(private val session: Session,
     fun getCurrentProject(): ResponseEntity<String>
     {
         val versionId = session.getVersionId()
-        val version = versionRepository.getVersion(versionId)
-        val project = projectRepository.getProjectFromVersionId(versionId, userId())
-        val currentProject = CurrentProject(project, version)
+        val currentProject = if (versionRepository.versionExists(versionId, userId()))
+        {
+            val version = versionRepository.getVersion(versionId)
+            val project = projectRepository.getProjectFromVersionId(versionId, userId())
+            CurrentProject(project, version)
+        }
+        else
+        {
+            CurrentProject(null, null)
+        }
+
         return SuccessResponse(currentProject).asResponseEntity()
     }
 
