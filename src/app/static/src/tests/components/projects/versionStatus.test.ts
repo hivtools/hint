@@ -6,6 +6,7 @@ import {mockProjectsState} from "../../mocks";
 import {CheckIcon} from "vue-feather-icons";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
+import {expectTranslated} from "../../testHelpers";
 
 describe("Version status component", () => {
     const getWrapper = (projectsState: Partial<ProjectsState> = {}) => {
@@ -34,13 +35,14 @@ describe("Version status component", () => {
             currentVersion: {versionNumber: 2} as any,
             versionTime: date
         });
+        const store = wrapper.vm.$store;
 
         const spans = wrapper.findAll(".float-right");
         const projectLabel = spans.at(0);
-        expect(projectLabel.text()).toBe("Project: Test Project v2");
+        expectTranslated(projectLabel, "Project: Test Project v2", "Projet: Test Project v2", store);
 
         const savedLabel = spans.at(1);
-        expect(savedLabel.text()).toBe("Last saved 12:45");
+        expectTranslated(savedLabel, "Last saved 12:45", "Dernier enregistré 12:45", store);
         expect(savedLabel.find(CheckIcon).exists()).toBe(true);
     });
 
@@ -50,10 +52,11 @@ describe("Version status component", () => {
             currentVersion: {versionNumber: 2} as any,
             versionTime: null
         });
+        const store = wrapper.vm.$store;
 
         const spans = wrapper.findAll(".float-right");
         expect(spans.length).toBe(1);
         const projectLabel = spans.at(0);
-        expect(projectLabel.text()).toBe("Project: Test Project v2");
+        expectTranslated(projectLabel, "Project: Test Project v2", "Projet: Test Project v2", store);
     });
 });

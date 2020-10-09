@@ -24,7 +24,8 @@ import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 @ActiveProfiles(profiles = ["test"])
 @SpringBootTest
 @Transactional
-class VersionRepositoryTests {
+class VersionRepositoryTests
+{
 
     @Autowired
     private lateinit var sut: VersionRepository
@@ -42,7 +43,8 @@ class VersionRepositoryTests {
     private val testEmail = "test.user@test.com"
 
     @Test
-    fun `can save version without project id`() {
+    fun `can save version without project id`()
+    {
         sut.saveVersion(versionId, null)
 
         val version = dsl.selectFrom(PROJECT_VERSION)
@@ -55,7 +57,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `can save version with project id`() {
+    fun `can save version with project id`()
+    {
         val uid = setupUser()
         val projectId = setupProject(uid)
         sut.saveVersion(versionId, projectId)
@@ -69,7 +72,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `saveVersion is idempotent`() {
+    fun `saveVersion is idempotent`()
+    {
 
         sut.saveVersion(versionId, null)
         sut.saveVersion(versionId, null)
@@ -81,7 +85,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `can save version state`() {
+    fun `can save version state`()
+    {
         val uid = setupUser()
         val projectId = setupProject(uid)
         sut.saveVersion(versionId, projectId)
@@ -106,7 +111,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `save version state throws error if version does not exist`() {
+    fun `save version state throws error if version does not exist`()
+    {
         val uid = setupUser()
         val projectId = setupProject(uid)
         assertThatThrownBy { sut.saveVersionState("nonexistentVersion", projectId, uid, "testState") }
@@ -115,7 +121,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `save version state throws error if version belongs to another project`() {
+    fun `save version state throws error if version belongs to another project`()
+    {
         val uid = setupUser()
         val projectId = setupProject(uid)
         assertThatThrownBy { sut.saveVersionState(versionId, projectId + 1, uid, "testState") }
@@ -124,7 +131,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `save version state throws error if version belongs to another user`() {
+    fun `save version state throws error if version belongs to another user`()
+    {
         val uid = setupUser()
         val projectId = setupProject(uid)
         assertThatThrownBy { sut.saveVersionState(versionId, projectId, "not$uid", "testState") }
@@ -133,7 +141,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `can copy version`() {
+    fun `can copy version`()
+    {
         val now = LocalDateTime.now(ZoneOffset.UTC)
         val soon = now.plusSeconds(5)
 
@@ -223,7 +232,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `copy version throws error if version belongs to another project`() {
+    fun `copy version throws error if version belongs to another project`()
+    {
         val uid = setupUser()
         val projectId = setupProject(uid)
         assertThatThrownBy { sut.copyVersion(versionId, "newVersion", projectId + 1, uid) }
@@ -232,7 +242,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `copy version throws error if version belongs to another user`() {
+    fun `copy version throws error if version belongs to another user`()
+    {
         val uid = setupUser()
         val projectId = setupProject(uid)
         assertThatThrownBy { sut.copyVersion(versionId, "newVersion", projectId, "not$uid") }
@@ -241,7 +252,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `can clone version to new project`() {
+    fun `can clone version to new project`()
+    {
         val uid = setupUser()
         val uid2 = setupUser("another.user@email.com")
 
@@ -261,7 +273,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `can get version`() {
+    fun `can get version`()
+    {
         val now = LocalDateTime.now(ZoneOffset.UTC)
         val soon = now.plusSeconds(5)
         setUpVersion()
@@ -279,20 +292,23 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `saveNewHash returns true if a new hash is saved`() {
+    fun `saveNewHash returns true if a new hash is saved`()
+    {
         val result = sut.saveNewHash("newhash")
         assertThat(result).isTrue()
     }
 
     @Test
-    fun `saveNewHash returns false if the hash already exists`() {
+    fun `saveNewHash returns false if the hash already exists`()
+    {
         sut.saveNewHash("newhash")
         val result = sut.saveNewHash("newhash")
         assertThat(result).isFalse()
     }
 
     @Test
-    fun `saves new version file`() {
+    fun `saves new version file`()
+    {
         setUpVersionAndHash()
         sut.saveVersionFile(versionId, FileType.PJNZ, "newhash", "original.pjnz", true)
 
@@ -307,7 +323,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `correct version file is removed`() {
+    fun `correct version file is removed`()
+    {
         setUpVersionAndHash()
         val hash = "newhash"
         sut.saveVersionFile(versionId, FileType.PJNZ, hash, "original.pjnz", false)
@@ -330,7 +347,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `updates version file if an entry for the given type already exists`() {
+    fun `updates version file if an entry for the given type already exists`()
+    {
         setUpVersionAndHash()
         sut.saveVersionFile(versionId, FileType.PJNZ, "newhash", "original.pjnz", false)
 
@@ -349,7 +367,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `can get version file`() {
+    fun `can get version file`()
+    {
         setUpVersionAndHash()
         sut.saveVersionFile(versionId, FileType.PJNZ, "newhash", "original.pjnz", true)
         val result = sut.getVersionFile(versionId, FileType.PJNZ)!!
@@ -359,7 +378,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `can get all version file hashes`() {
+    fun `can get all version file hashes`()
+    {
         setUpVersionAndHash()
         sut.saveNewHash("pjnzhash")
         sut.saveNewHash("surveyhash")
@@ -371,7 +391,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `can get all version files`() {
+    fun `can get all version files`()
+    {
         setUpVersionAndHash()
         sut.saveNewHash("pjnzhash")
         sut.saveNewHash("surveyhash")
@@ -388,7 +409,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `can set files for version`() {
+    fun `can set files for version`()
+    {
         setUpVersion()
         sut.saveNewHash("pjnz_hash")
         sut.saveNewHash("shape_hash")
@@ -419,7 +441,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `setFilesForVersion deletes existing files for this version only`() {
+    fun `setFilesForVersion deletes existing files for this version only`()
+    {
         sut.saveVersion("sid2", null);
 
         sut.saveNewHash("shape_hash")
@@ -447,7 +470,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `setFilesForSession rolls back transaction on error, leaving existing session files unchanged`() {
+    fun `setFilesForSession rolls back transaction on error, leaving existing session files unchanged`()
+    {
         setUpVersion()
         setUpHashAndVersionFile("pjnz_hash", "pjnz_file", versionId, "pjnz")
 
@@ -472,7 +496,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `can get version details`() {
+    fun `can get version details`()
+    {
         val now = LocalDateTime.now(ZoneOffset.UTC)
         val soon = now.plusSeconds(5)
 
@@ -495,7 +520,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `get version details throws error if version does not exist`() {
+    fun `get version details throws error if version does not exist`()
+    {
         val uid = setupUser()
         val projectId = setupProject(uid)
         assertThatThrownBy { sut.getVersionDetails("nonexistentVersion", projectId, uid) }
@@ -504,7 +530,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `can delete version`() {
+    fun `can delete version`()
+    {
         val uid = setupUser()
         val projectId = setupProject(uid)
         sut.saveVersion(versionId, projectId)
@@ -526,7 +553,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `delete version throws error if version does not exist`() {
+    fun `delete version throws error if version does not exist`()
+    {
         val uid = setupUser()
         val projectId = setupProject(uid)
         assertThatThrownBy { sut.deleteVersion("nonexistentVersion", projectId, uid) }
@@ -535,7 +563,8 @@ class VersionRepositoryTests {
     }
 
     @Test
-    fun `copy version after delete version assigns unused version number to new version`() {
+    fun `copy version after delete version assigns unused version number to new version`()
+    {
         //deleted version still exists, with deleted flag set, its version number should not be reused
         val uid = setupUser()
         val projectId = setupProject(uid);
@@ -548,34 +577,41 @@ class VersionRepositoryTests {
         assertThat(version.versionNumber).isEqualTo(3)
     }
 
-    private fun assertVersionFileExists(hash: String) {
+    private fun assertVersionFileExists(hash: String)
+    {
         val records = dsl.selectFrom(VERSION_FILE)
                 .where(VERSION_FILE.HASH.eq(hash))
 
         assertThat(records.count()).isEqualTo(1)
     }
 
-    private fun setupUser(email: String = testEmail): String {
+    private fun setupUser(email: String = testEmail): String
+    {
         userRepo.addUser(email, "pw")
         return userRepo.getUser(email)!!.id
     }
 
-    private fun setupProject(userId: String): Int {
+    private fun setupProject(userId: String): Int
+    {
         return projectRepo.saveNewProject(userId, "testProject")
     }
 
-    private fun setUpVersionAndHash() {
+    private fun setUpVersionAndHash()
+    {
         sut.saveNewHash("newhash")
         setUpVersion()
     }
 
-    private fun setUpVersion() {
+    private fun setUpVersion()
+    {
         sut.saveVersion(versionId, null)
     }
 
-    private fun setUpHashAndVersionFile(hash: String, filename: String, versionId: String, type: String, setUpVersion: Boolean = true) {
+    private fun setUpHashAndVersionFile(hash: String, filename: String, versionId: String, type: String, setUpVersion: Boolean = true)
+    {
         sut.saveNewHash(hash)
-        if (setUpVersion) {
+        if (setUpVersion)
+        {
             setUpVersion()
         }
         dsl.insertInto(VERSION_FILE)

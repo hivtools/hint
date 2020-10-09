@@ -17,7 +17,7 @@ class RealEmailManager(appProperties: AppProperties,
                                        appProperties.emailPort,
                                        appProperties.emailUsername,
                                        appProperties.emailPassword),
-                               TransportStrategy.SMTP_TLS)): BaseEmailManager(appProperties, oneTimeTokenManager)
+                               TransportStrategy.SMTP_TLS)) : BaseEmailManager(appProperties, oneTimeTokenManager)
 {
     val sender = appProperties.emailSender
     val appTitle = appProperties.applicationTitle

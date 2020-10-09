@@ -6,7 +6,8 @@ import java.io.FileNotFoundException
 import java.net.URL
 import java.util.*
 
-interface AppProperties {
+interface AppProperties
+{
     val adrANCSchema: String
     val adrARTSchema: String
     val adrPJNZSchema: String
@@ -36,10 +37,11 @@ interface AppProperties {
 class HintProperties : Properties()
 
 @Component
-class ConfiguredAppProperties(private val props: HintProperties = properties) : AppProperties {
+class ConfiguredAppProperties(private val props: HintProperties = properties) : AppProperties
+{
     override val adrANCSchema = propString("adr_anc_schema")
     override val adrARTSchema = propString("adr_art_schema")
-    override val adrPJNZSchema= propString("adr_pjnz_schema")
+    override val adrPJNZSchema = propString("adr_pjnz_schema")
     override val adrPopSchema = propString("adr_pop_schema")
     override val adrShapeSchema = propString("adr_shape_schema")
     override val adrSurveySchema = propString("adr_survey_schema")
@@ -61,13 +63,16 @@ class ConfiguredAppProperties(private val props: HintProperties = properties) : 
     override val dbUrl: String = propString("db_url")
     override val supportEmail: String = propString("support_email")
 
-    companion object {
+    companion object
+    {
 
-        fun readProperties(configPath: String): HintProperties {
+        fun readProperties(configPath: String): HintProperties
+        {
             return HintProperties().apply {
                 load(getResource("config.properties").openStream())
                 val global = File(configPath)
-                if (global.exists()) {
+                if (global.exists())
+                {
                     global.inputStream().use { load(it) }
                 }
             }
@@ -77,16 +82,21 @@ class ConfiguredAppProperties(private val props: HintProperties = properties) : 
         val properties = readProperties(configPath)
     }
 
-    private fun propString(propName: String): String {
+    private fun propString(propName: String): String
+    {
         return props[propName].toString()
     }
 }
 
-fun getResource(path: String): URL {
+fun getResource(path: String): URL
+{
     val url: URL? = AppProperties::class.java.classLoader.getResource(path)
-    if (url != null) {
+    if (url != null)
+    {
         return url
-    } else {
+    }
+    else
+    {
         throw FileNotFoundException("Unable to load '$path' as a resource steam")
     }
 }

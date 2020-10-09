@@ -17,7 +17,8 @@ import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import java.time.Instant
 import java.util.*
 
-class OneTimeTokenManagerTests {
+class OneTimeTokenManagerTests
+{
 
     private val mockAppProperties = mock<AppProperties>() {
         on { tokenIssuer } doReturn "test issuer"
@@ -34,7 +35,8 @@ class OneTimeTokenManagerTests {
     private val signatureConfig = RSASignatureConfiguration(KeyHelper.keyPair)
 
     @Test
-    fun `can generate onetime set password token`() {
+    fun `can generate onetime set password token`()
+    {
         val authenticator = OneTimeTokenAuthenticator(signatureConfig, mockTokenChecker, mockAppProperties)
 
         val sut = OneTimeTokenManager(mockAppProperties, mockTokenRepository, signatureConfig, authenticator)
@@ -51,7 +53,8 @@ class OneTimeTokenManagerTests {
     }
 
     @Test
-    fun `validateToken calls authenticator`() {
+    fun `validateToken calls authenticator`()
+    {
         val mockProfile = mock<CommonProfile>()
         val authenticator = mock<OneTimeTokenAuthenticator> {
             on { validateToken("testToken") } doReturn (mockProfile)

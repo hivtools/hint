@@ -17,7 +17,8 @@ import java.time.Duration
 import java.time.Instant
 import java.util.*
 
-class OnetimeTokenAuthenticatorTests{
+class OnetimeTokenAuthenticatorTests
+{
 
     private val keyPair: KeyPair = KeyHelper.keyPair
     private val signatureConfiguration = RSASignatureConfiguration(keyPair)
@@ -27,13 +28,14 @@ class OnetimeTokenAuthenticatorTests{
         on { checkToken(any()) } doReturn true
     }
 
-    private val mockAppProperties = mock<AppProperties>{
+    private val mockAppProperties = mock<AppProperties> {
         on { tokenIssuer } doReturn "right issuer"
     }
 
     @Test
-    fun `can get claims when token is valid`() {
-        val token= tokenGenerator.generate(mapOf(
+    fun `can get claims when token is valid`()
+    {
+        val token = tokenGenerator.generate(mapOf(
                 "iss" to "right issuer",
                 "sub" to "test user",
                 "exp" to Date.from(Instant.now().plus(Duration.ofDays(1)))
@@ -49,8 +51,9 @@ class OnetimeTokenAuthenticatorTests{
     }
 
     @Test
-    fun `validateToken returns null when issuer is incorrect`() {
-        val token= tokenGenerator.generate(mapOf(
+    fun `validateToken returns null when issuer is incorrect`()
+    {
+        val token = tokenGenerator.generate(mapOf(
                 "iss" to "wrong issuer",
                 "sub" to "test user",
                 "exp" to Date.from(Instant.now().plus(Duration.ofDays(1)))
@@ -63,14 +66,15 @@ class OnetimeTokenAuthenticatorTests{
     }
 
     @Test
-    fun `validateToken returns null when token check fails`() {
-        val token= tokenGenerator.generate(mapOf(
+    fun `validateToken returns null when token check fails`()
+    {
+        val token = tokenGenerator.generate(mapOf(
                 "iss" to "right issuer",
                 "sub" to "test user",
                 "exp" to Date.from(Instant.now().plus(Duration.ofDays(1)))
         ))
 
-        val mockTokenChecker =  mock<OneTimeTokenChecker> {
+        val mockTokenChecker = mock<OneTimeTokenChecker> {
             on { checkToken(any()) } doReturn false
         }
 
@@ -83,7 +87,7 @@ class OnetimeTokenAuthenticatorTests{
     @Test
     fun `validateToken fails when token has expired`()
     {
-        val token= tokenGenerator.generate(mapOf(
+        val token = tokenGenerator.generate(mapOf(
                 "iss" to "right issuer",
                 "sub" to "test user",
                 "exp" to Date.from(Instant.now().minus(Duration.ofDays(1)))

@@ -4,10 +4,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.security.SecurePasswordEncoder
 import org.junit.jupiter.api.Test
 
-class SecurePasswordEncoderTests {
+class SecurePasswordEncoderTests
+{
 
     @Test
-    fun `can match encoded password`() {
+    fun `can match encoded password`()
+    {
         val sut = SecurePasswordEncoder()
         val plainTextPassword = "myplaintestpw"
         val encoded = sut.encode(plainTextPassword)

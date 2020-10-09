@@ -27,10 +27,10 @@
                 <div class="col-md-1 project-cell">
                     <a @click="deleteProject($event, p.id)" href="" v-translate="'delete'"></a>
                 </div>
-                <div class="col-md-2 project-cell">
+                <div class="col-md-2 project-cell" v-if="promoteProjectIsEnabled">
                     <a @click="promoteVersion($event, p.id, p.versions[0].id, p.versions[0].versionNumber)" href="" v-translate="'copyLatestToNewProject'"></a>
                 </div>
-                <div class="col-md-1 project-cell">
+                <div class="col-md-1 project-cell" v-if="shareProjectIsEnabled">
                     <share-project :project="p"></share-project>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                     <div class="col-md-1 version-cell">
                         <a @click="deleteVersion($event, p.id, v.id)" href="" v-translate="'delete'"></a>
                     </div>
-                    <div class="col-md-2 version-cell">
+                    <div class="col-md-2 version-cell" v-if="promoteProjectIsEnabled">
                         <a @click="promoteVersion($event, p.id, v.id, v.versionNumber)" href="" v-translate="'copyToNewProject'"></a>
                     </div>
                 </div>
@@ -72,11 +72,6 @@
             <h5 v-translate="'enterProjectName'"></h5>
             <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
             <template v-slot:footer>
-                <!-- <div class="container"> -->
-                    <!-- <div class="row">
-                        <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
-                    </div> -->
-                    <!-- <div class="row"> -->
                         <button type="button"
                             class="btn btn-red"
                             :disabled="disableCreate"
@@ -88,8 +83,6 @@
                             @click="cancelPromotion"
                             v-translate="'cancel'">
                         </button>
-                    <!-- </div>
-                </div> -->
             </template>
         </modal>
     </div>
@@ -110,6 +103,7 @@
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
+    import {switches} from "../../featureSwitches";
 
     const namespace = "projects";
 
@@ -119,6 +113,8 @@
         versionToPromote: VersionIds | null,
         newProjectName: string,
         selectedVersionNumber: string,
+        shareProjectIsEnabled: boolean,
+        promoteProjectIsEnabled: boolean
     }
 
     interface Computed {
@@ -154,7 +150,9 @@
                versionToDelete: null,
                versionToPromote: null,
                newProjectName: "",
-               selectedVersionNumber: ""
+               selectedVersionNumber: "",
+               shareProjectIsEnabled: switches.shareProject,
+               promoteProjectIsEnabled: switches.promoteProject
            }
        },
         computed: {

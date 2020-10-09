@@ -6,11 +6,14 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class EmailConfig {
+class EmailConfig
+{
     @Bean
-    fun getEmailManager(appProperties: AppProperties, oneTimeTokenManager: OneTimeTokenManager): EmailManager {
+    fun getEmailManager(appProperties: AppProperties, oneTimeTokenManager: OneTimeTokenManager): EmailManager
+    {
         val mode = appProperties.emailMode
-        return when (mode) {
+        return when (mode)
+        {
             "real" -> RealEmailManager(appProperties, oneTimeTokenManager)
             "disk" -> WriteToDiskEmailManager(appProperties, oneTimeTokenManager)
             else -> throw Exception("Unknown email mode '$mode'")

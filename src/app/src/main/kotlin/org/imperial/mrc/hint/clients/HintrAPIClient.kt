@@ -16,10 +16,13 @@ import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
-interface HintrAPIClient {
+interface HintrAPIClient
+{
     fun validateBaselineIndividual(file: VersionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
-    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType): ResponseEntity<String>
+    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType)
+            : ResponseEntity<String>
+
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
@@ -33,22 +36,27 @@ interface HintrAPIClient {
 @Component
 class HintrFuelAPIClient(
         appProperties: AppProperties,
-        private val objectMapper: ObjectMapper) : HintrAPIClient, FuelClient(appProperties.apiUrl) {
+        private val objectMapper: ObjectMapper) : HintrAPIClient, FuelClient(appProperties.apiUrl)
+{
 
-    private fun getAcceptLanguage(): String {
+    private fun getAcceptLanguage(): String
+    {
         val requestAttributes = RequestContextHolder.getRequestAttributes()
-        if (requestAttributes is ServletRequestAttributes) {
+        if (requestAttributes is ServletRequestAttributes)
+        {
             return requestAttributes.request.getHeader("Accept-Language") ?: "en"
         }
         return "en"
     }
 
-    override fun standardHeaders(): Map<String, Any> {
+    override fun standardHeaders(): Map<String, Any>
+    {
         return mapOf("Accept-Language" to getAcceptLanguage())
     }
 
     override fun validateBaselineIndividual(file: VersionFileWithPath,
-                                            type: FileType): ResponseEntity<String> {
+                                            type: FileType): ResponseEntity<String>
+    {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().toLowerCase(),
@@ -59,7 +67,8 @@ class HintrFuelAPIClient(
 
     override fun validateSurveyAndProgramme(file: VersionFileWithPath,
                                             shapePath: String,
-                                            type: FileType): ResponseEntity<String> {
+                                            type: FileType): ResponseEntity<String>
+    {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().toLowerCase(),
@@ -69,7 +78,9 @@ class HintrFuelAPIClient(
         return postJson("validate/survey-and-programme", json)
     }
 
-    override fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String> {
+    override fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions)
+            : ResponseEntity<String>
+    {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("options" to modelRunOptions.options,
@@ -79,31 +90,37 @@ class HintrFuelAPIClient(
         return postJson("model/submit", json)
     }
 
-    override fun getStatus(id: String): ResponseEntity<String> {
+    override fun getStatus(id: String): ResponseEntity<String>
+    {
         return get("model/status/${id}")
     }
 
-    override fun getResult(id: String): ResponseEntity<String> {
+    override fun getResult(id: String): ResponseEntity<String>
+    {
         return get("model/result/${id}")
     }
 
-    override fun getPlottingMetadata(iso3: String): ResponseEntity<String> {
+    override fun getPlottingMetadata(iso3: String): ResponseEntity<String>
+    {
         return get("meta/plotting/${iso3}")
     }
 
-    override fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String> {
+    override fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
+    {
         val json = objectMapper.writeValueAsString(files)
         return postJson("model/options", json)
     }
 
-    override fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String> {
+    override fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
+    {
         val json = objectMapper.writeValueAsString(
                 files.mapValues { it.value?.path }
         )
         return postJson("validate/baseline-combined", json)
     }
 
-    override fun cancelModelRun(id: String): ResponseEntity<String> {
+    override fun cancelModelRun(id: String): ResponseEntity<String>
+    {
         return "$baseUrl/model/cancel/${id}".httpPost()
                 .addTimeouts()
                 .response()
@@ -111,13 +128,15 @@ class HintrFuelAPIClient(
                 .asResponseEntity()
     }
 
-    override fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody> {
+    override fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
+    {
         return "$baseUrl/download/spectrum/${id}"
                 .httpDownload()
                 .getStreamingResponseEntity(::head)
     }
 
-    override fun downloadCoarseOutput(id: String): ResponseEntity<StreamingResponseBody> {
+    override fun downloadCoarseOutput(id: String): ResponseEntity<StreamingResponseBody>
+    {
         return "$baseUrl/download/coarse-output/${id}"
                 .httpDownload()
                 .getStreamingResponseEntity(::head)

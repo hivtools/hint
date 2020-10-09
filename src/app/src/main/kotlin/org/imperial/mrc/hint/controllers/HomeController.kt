@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping
 class HomeController(
         private val versionRepository: VersionRepository,
         private val session: Session,
-        private val appProperties: AppProperties) {
+        private val appProperties: AppProperties)
+{
 
     @GetMapping(value = ["/", "/projects"])
-    fun index(model: Model): String {
+    fun index(model: Model): String
+    {
         val userProfile = session.getUserProfile()
         versionRepository.saveVersion(session.getVersionId(), null)
         model["title"] = appProperties.applicationTitle
