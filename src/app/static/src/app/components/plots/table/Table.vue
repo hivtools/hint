@@ -199,7 +199,7 @@
                             ...filterLabels,
                         }
                     }
-                    displayRows[key][current.indicatorMeta.indicator] = formatOutput(current.value, 'percentages');
+                    displayRows[key][current.indicatorMeta.indicator] = formatOutput(current.value, '0,0', 0.01);
                     current.lower ? displayRows[key][`${current.indicatorMeta.indicator}_lower`] = current.lower : '';
                     current.upper ? displayRows[key][`${current.indicatorMeta.indicator}_upper`] = current.upper : '';
                 });
