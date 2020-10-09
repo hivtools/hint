@@ -68,7 +68,7 @@
             </template>
         </modal>
         <modal :open="versionToPromote">
-            <div v-html="promoteVersionHeader" id="promoteVersionHeader"></div>
+            <h4 v-html="promoteVersionHeader" id="promoteVersionHeader"></h4>
             <h5 v-translate="'enterProjectName'"></h5>
             <input type="text" class="form-control" v-translate:placeholder="'projectName'" v-model="newProjectName">
             <template v-slot:footer>

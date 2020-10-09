@@ -289,8 +289,8 @@ describe("Project history component", () => {
 
             const modal = wrapper.findAll(".modal").at(1);
             expect(modal.classes()).toContain("show");
-            // expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
-            //     "Copie de la version v1 dans un nouveau projet", store);
+            expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
+                "Copie de la version v1 dans un nouveau projet", store);
             expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
                 "Veuillez entrer un nom pour le nouveau projet", store);
 
@@ -317,8 +317,8 @@ describe("Project history component", () => {
 
             const modal = wrapper.findAll(".modal").at(1);
             expect(modal.classes()).toContain("show");
-            // expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
-            //     "Copie de la version v1 dans un nouveau projet", store);
+            expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
+                "Copie de la version v1 dans un nouveau projet", store);
             expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
                 "Veuillez entrer un nom pour le nouveau projet", store);
             const input = modal.find("input");

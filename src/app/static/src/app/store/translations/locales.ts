@@ -254,9 +254,7 @@ const en: Translations = {
     projects: "Projects",
     projectsHeaderCreate: "Create a new project",
     projectsHeaderReturn: "return to current project",
-    promoteVersionHeader: "<h4>" +
-        "Copying version {{ version }} to a new project" +
-        "</h4>",
+    promoteVersionHeader: "Copying version {{ version }} to a new project",
     remove: "remove",
     reportBug: "Report a bug",
     requestReset: "Request password reset email",
@@ -402,9 +400,7 @@ const fr: Partial<Translations> = {
     projectName: "Nom du projet",
     project: "Projet",
     projects: "Projets",
-    promoteVersionHeader: "<h4>" +
-        "Copie de la version {{ version }} dans un nouveau projet" +
-        "</h4>",
+    promoteVersionHeader: "Copie de la version {{ version }} dans un nouveau projet",
     remove: "supprimer",
     reportBug: "Signaler un bogue",
     requestReset: "Demande de réinitialisation du mot de passe par e-mail",
