@@ -2,6 +2,7 @@
     <div>
         <div v-if="!loading" id="projects-content" class="row">
             <div id="projects-header" class="lead col-12">
+                <p class="text-muted" v-translate="'projectDescription'"></p>
                 <span v-translate="'projectsHeaderCreate'"></span>
                 <span v-if="currentProject">
                     <span v-translate="'or'"></span>

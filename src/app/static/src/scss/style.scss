@@ -10,6 +10,7 @@
 @import "partials/tooltips";
 @import "partials/progress";
 @import "partials/files";
+@import "partials/dismissibleAlerts.scss";
 
 a {
   color: $theme-red;
@@ -125,4 +126,5 @@ a.down::after {
 .form-control.is-invalid {
   background-image: none;
 }
+
 
