@@ -75,8 +75,6 @@ class ADRTests : SecureIntegrationTests()
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
         val result = testRestTemplate.getForEntity<String>("/adr/datasets")
 
-        assertSecureWithSuccess(isAuthorized, result, null)
-
         if (isAuthorized == IsAuthorized.TRUE)
         {
             val data = ObjectMapper().readTree(result.body!!)["data"]
@@ -92,6 +90,8 @@ class ADRTests : SecureIntegrationTests()
     {
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
         val datasets = testRestTemplate.getForEntity<String>("/adr/datasets")
+
+        assertSecureWithSuccess(isAuthorized, datasets, null)
 
         val id = if (isAuthorized == IsAuthorized.TRUE)
         {
