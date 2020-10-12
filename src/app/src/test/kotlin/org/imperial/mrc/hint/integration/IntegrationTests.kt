@@ -76,7 +76,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
                 getTestEntity("survey.csv"))
     }
 
-    fun assertSecureWithSuccess(isAuthorized: IsAuthorized,
+    fun assertSecureWithHttpStatus(isAuthorized: IsAuthorized,
                                 responseEntity: ResponseEntity<String>,
                                 schemaName: String?, httpStatus: HttpStatus)
     {
@@ -90,7 +90,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
 
                 if (responseEntity.statusCode != httpStatus)
                 {
-                    Assertions.fail<String>("Expected BAD_REQUEST response but got error: ${responseEntity.body}")
+                    Assertions.fail<String>("Expected $httpStatus but got error: ${responseEntity.body}")
                 }
                 if (schemaName != null)
                 {

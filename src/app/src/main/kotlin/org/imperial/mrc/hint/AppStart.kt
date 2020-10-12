@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint
 
-import org.imperial.mrc.hint.utils.SecurePaths
+import org.imperial.mrc.hint.security.SecurePaths
 import org.pac4j.core.config.Config
 import org.pac4j.springframework.web.SecurityInterceptor
 import org.springframework.boot.SpringApplication

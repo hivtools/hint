@@ -2,7 +2,7 @@ package org.imperial.mrc.hint.unit.security
 
 import com.nhaarman.mockito_kotlin.*
 import org.imperial.mrc.hint.MvcConfig
-import org.imperial.mrc.hint.utils.SecurePaths
+import org.imperial.mrc.hint.security.SecurePaths
 import org.junit.jupiter.api.Test
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry

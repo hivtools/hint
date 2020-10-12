@@ -1,4 +1,4 @@
-package org.imperial.mrc.hint.utils
+package org.imperial.mrc.hint.security
 
 enum class SecurePaths{
 

@@ -85,7 +85,7 @@ class ProjectTests : VersionFileTests()
     fun `can return expected English error when copy nonexistent version`(isAuthorized: IsAuthorized)
     {
         val result = getNewVersionResult(1, "nonExistent")
-        assertSecureWithSuccess(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
+        assertSecureWithHttpStatus(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
 
         if(isAuthorized == IsAuthorized.TRUE)
         {
@@ -100,7 +100,7 @@ class ProjectTests : VersionFileTests()
     fun `can return expected French error when copy nonexistent version`(isAuthorized: IsAuthorized)
     {
         val result = getNewVersionResult(1, "nonExistent", "fr")
-        assertSecureWithSuccess(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
+        assertSecureWithHttpStatus(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
         if(isAuthorized == IsAuthorized.TRUE)
         {
             val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
@@ -140,7 +140,7 @@ class ProjectTests : VersionFileTests()
     fun `can return expected English error when update nonexistent version state`(isAuthorized: IsAuthorized)
     {
         val result = getUpdateVersionStateResult(1, "nonExistent", "testState")
-        assertSecureWithSuccess(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
+        assertSecureWithHttpStatus(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
         if(isAuthorized == IsAuthorized.TRUE)
         {
             val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
@@ -155,7 +155,7 @@ class ProjectTests : VersionFileTests()
     {
         val result = getUpdateVersionStateResult(1, "nonExistent", "testState",
                 "fr")
-        assertSecureWithSuccess(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
+        assertSecureWithHttpStatus(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
         if (isAuthorized == IsAuthorized.TRUE)
         {
             val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
@@ -226,7 +226,7 @@ class ProjectTests : VersionFileTests()
     fun `can return expected English error when get nonexistent version details`(isAuthorized: IsAuthorized)
     {
         val result = testRestTemplate.getForEntity<String>("/project/99/version/noversion")
-        assertSecureWithSuccess(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
+        assertSecureWithHttpStatus(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
         if (isAuthorized == IsAuthorized.TRUE)
         {
             val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
@@ -244,7 +244,7 @@ class ProjectTests : VersionFileTests()
         val httpEntity = HttpEntity<String>(headers)
 
         val result = testRestTemplate.exchange<String>("/project/99/version/noversion", HttpMethod.GET, httpEntity)
-        assertSecureWithSuccess(isAuthorized, result, null,HttpStatus.BAD_REQUEST)
+        assertSecureWithHttpStatus(isAuthorized, result, null,HttpStatus.BAD_REQUEST)
         if(isAuthorized == IsAuthorized.TRUE)
         {
             val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
@@ -286,7 +286,7 @@ class ProjectTests : VersionFileTests()
         val httpEntity = HttpEntity<String>(headers)
 
         val result = testRestTemplate.exchange<String>("/project/99/", HttpMethod.DELETE, httpEntity)
-        assertSecureWithSuccess(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
+        assertSecureWithHttpStatus(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
 
         if(isAuthorized == IsAuthorized.TRUE)
         {
@@ -304,7 +304,7 @@ class ProjectTests : VersionFileTests()
         val httpEntity = HttpEntity<String>(headers)
 
         val result = testRestTemplate.exchange<String>("/project/99", HttpMethod.DELETE, httpEntity)
-        assertSecureWithSuccess(isAuthorized,result,null, HttpStatus.BAD_REQUEST)
+        assertSecureWithHttpStatus(isAuthorized,result,null, HttpStatus.BAD_REQUEST)
 
         if(isAuthorized == IsAuthorized.TRUE)
         {
@@ -351,7 +351,7 @@ class ProjectTests : VersionFileTests()
         val httpEntity = HttpEntity<String>(headers)
 
         val result = testRestTemplate.exchange<String>("/project/99/version/nonexistent", HttpMethod.DELETE, httpEntity)
-        assertSecureWithSuccess(isAuthorized,result,null, HttpStatus.BAD_REQUEST)
+        assertSecureWithHttpStatus(isAuthorized,result,null, HttpStatus.BAD_REQUEST)
         if(isAuthorized == IsAuthorized.TRUE)
         {
             val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
@@ -368,7 +368,7 @@ class ProjectTests : VersionFileTests()
         val httpEntity = HttpEntity<String>(headers)
 
         val result = testRestTemplate.exchange<String>("/project/99/version/nonexistent", HttpMethod.DELETE, httpEntity)
-        assertSecureWithSuccess(isAuthorized,result,null, HttpStatus.BAD_REQUEST)
+        assertSecureWithHttpStatus(isAuthorized,result,null, HttpStatus.BAD_REQUEST)
         if(isAuthorized == IsAuthorized.TRUE)
         {
             val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
