@@ -426,7 +426,7 @@ describe("Projects actions", () => {
         });
 
         const stateUrl = "/project/1/version/testVersion/promote";
-        mockAxios.onPost(stateUrl, "newProject")
+        mockAxios.onPost(stateUrl, "name=newProject")
             .reply(200, mockSuccess("OK"));
 
         const versionPayload = {
@@ -440,7 +440,7 @@ describe("Projects actions", () => {
             expect(posted).toEqual("name=newProject");
 
             expect(dispatch.mock.calls[0][0]).toBe("getProjects");
-            expect(commit.mock.calls.length).toBe(1);
+            expect(commit.mock.calls.length).toBe(0);
             done();
         });
     });

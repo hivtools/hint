@@ -302,13 +302,13 @@ class ProjectTests : VersionFileTests()
         val result = testRestTemplate.getForEntity<String>("/projects/")
         val data = getResponseData(result) as ArrayNode
         assertThat(data.count()).isEqualTo(2)
-        val versionsData = data[0]["versions"] as ArrayNode
-        val versionsData2 = data[1]["versions"] as ArrayNode
-        assertThat(versionsData.count()).isEqualTo(1)
-        assertThat(versionsData2.count()).isEqualTo(1)
+        assertThat(data[0]["name"].asText()).isEqualTo("newProject")
+        val newVersionsData = data[0]["versions"] as ArrayNode
+        val oldVersionsData = data[1]["versions"] as ArrayNode
+        assertThat(newVersionsData.count()).isEqualTo(1)
+        assertThat(oldVersionsData.count()).isEqualTo(1)
 
-
-        val newVersionId = versionsData[0]["id"].asText()
+        val newVersionId = newVersionsData[0]["id"].asText()
         assertThat(newVersionId.count()).isGreaterThan(0)
 
         val newProject = dsl.select(PROJECT_VERSION.STATE,

@@ -160,9 +160,10 @@ describe("Projects actions", () => {
         state.currentVersion = createdProject.versions[0];
         const versionPayload = {version: {projectId: state.currentProject!.id, versionId: state.currentVersion!.id}, name: 'newProject'};
         
-        await actions.promoteVersion({commit, dispatch, state, rootState} as any, versionPayload);
+        const newCommit = jest.fn();
+        await actions.promoteVersion({newCommit, dispatch, state, rootState} as any, versionPayload);
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
+            expect(newCommit.mock.calls.length).toBe(0);
             expect(dispatch.mock.calls[0][0]).toBe("getProjects");
             done();
         });
