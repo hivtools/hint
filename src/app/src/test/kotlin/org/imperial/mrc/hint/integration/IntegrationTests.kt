@@ -76,6 +76,35 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
                 getTestEntity("survey.csv"))
     }
 
+    fun assertSecureWithHttpStatus(isAuthorized: IsAuthorized,
+                                responseEntity: ResponseEntity<String>,
+                                schemaName: String?, httpStatus: HttpStatus)
+    {
+
+        when (isAuthorized)
+        {
+            IsAuthorized.TRUE ->
+            {
+                Assertions.assertThat(responseEntity.headers.contentType!!.toString())
+                        .contains("application/json")
+
+                if (responseEntity.statusCode != httpStatus)
+                {
+                    Assertions.fail<String>("Expected $httpStatus but got error: ${responseEntity.body}")
+                }
+                if (schemaName != null)
+                {
+                    JSONValidator().validateSuccess(responseEntity.body!!, schemaName)
+                }
+
+            }
+            IsAuthorized.FALSE ->
+            {
+                assertUnauthorized(responseEntity)
+            }
+        }
+    }
+
     fun assertSecureWithSuccess(isAuthorized: IsAuthorized,
                                 responseEntity: ResponseEntity<String>,
                                 schemaName: String?)

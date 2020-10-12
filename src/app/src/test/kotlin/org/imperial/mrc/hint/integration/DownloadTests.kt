@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.integration
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.aspectj.lang.annotation.Before
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,6 +20,7 @@ class DownloadTests : SecureIntegrationTests()
         authorize()
         testRestTemplate.getForEntity<String>("/")
     }
+
 
     private fun waitForModelRunResult(): String
     {

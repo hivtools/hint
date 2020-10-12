@@ -70,7 +70,7 @@ class ProjectsController(private val session: Session,
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @GetMapping("project/{projectId}/version/{versionId}")
+    @GetMapping("/project/{projectId}/version/{versionId}")
     @ResponseBody
     fun loadVersionDetails(@PathVariable("projectId") projectId: Int,
                            @PathVariable("versionId") versionId: String): ResponseEntity<String>
@@ -93,6 +93,7 @@ class ProjectsController(private val session: Session,
                 {
                     projectRepository.getProjects(userId())
                 }
+
         return SuccessResponse(projects).asResponseEntity()
     }
 
