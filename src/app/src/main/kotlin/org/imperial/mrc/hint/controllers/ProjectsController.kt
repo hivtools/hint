@@ -109,6 +109,7 @@ class ProjectsController(private val session: Session,
                 {
                     projectRepository.getProjects(userId())
                 }
+
         return SuccessResponse(projects).asResponseEntity()
     }
 
