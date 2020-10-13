@@ -55,6 +55,8 @@ describe("Projects component", () => {
 
         expectTranslated(wrapper.find("#projects-header"), "Create a new project",
             "Créer un nouveau projet", store);
+        expectTranslated(wrapper.find("p"), "Your work is organised into projects. Each project contains its own data and settings.",
+            "Votre travail est organisé en projets. Chaque projet contient ses propres données et paramètres.", store);
         expectTranslated(wrapper.find("input"), "Project name",
             "Nom du projet", store, "placeholder");
         expectTranslated(wrapper.find("button"),"Create project",
@@ -67,6 +69,8 @@ describe("Projects component", () => {
         const wrapper = createSut({currentProject});
         const store = wrapper.vm.$store;
 
+        expectTranslated(wrapper.find("p"), "Your work is organised into projects. Each project contains its own data and settings.",
+            "Votre travail est organisé en projets. Chaque projet contient ses propres données et paramètres.", store);
         expectTranslated(wrapper.find("#projects-header"),
             "Create a new project or return to current project (existingProject)",
             "Créer un nouveau projet ou retour au projet actuel (existingProject)", store);

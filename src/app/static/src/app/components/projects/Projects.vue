@@ -1,8 +1,8 @@
 <template>
     <div>
         <div v-if="!loading" id="projects-content" class="row">
+            <p class="text-muted" v-translate="'projectDescription'"></p>
             <div id="projects-header" class="lead col-12">
-                <p class="text-muted" ><span v-translate="'projectDescription'"></span></p>
                 <span v-translate="'projectsHeaderCreate'"></span>
                 <span v-if="currentProject">
                     <span v-translate="'or'"></span>
