@@ -88,7 +88,7 @@ class HintrApiClientTests
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val metadataVersion = sut.getVersion()
 
-        JSONValidator().validateSuccess(metadataVersion.body!!,"VersionInfo")
+        JSONValidator().validateSuccess(metadataVersion.body!!, "VersionInfo")
     }
 
     @Test

@@ -25,6 +25,6 @@ class MetadataTests : SecureIntegrationTests()
     fun `can get version`()
     {
         val responseEntity = testRestTemplate.getForEntity<String>("/meta/hintr/version/")
-        assertSuccess(responseEntity,"VersionInfo")
+        assertSuccess(responseEntity, "VersionInfo")
     }
 }
