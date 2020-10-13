@@ -1,7 +1,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 const shareProject = !!urlParams.get('shareProject');
-const copyProject = !!urlParams.get('copyProject');
+const promoteProject = !!urlParams.get('promoteProject');
 export const switches = {
     shareProject: shareProject,
-    copyProject: copyProject
+    promoteProject: promoteProject
 }

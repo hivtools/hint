@@ -345,6 +345,52 @@ class ProjectTests : VersionFileTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can promote version`(isAuthorized: IsAuthorized)
+    {
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val createResult = createProject()
+            val createProjectData = getResponseData(createResult)
+            val projectId = createProjectData["id"].asInt()
+            val versions = createProjectData["versions"] as ArrayNode
+            val versionId = versions[0]["id"].asText()
+            getUpdateVersionStateResult(projectId, versionId, testState)
+
+
+            val map = LinkedMultiValueMap<String, String>()
+            map.add("name", "newProject")
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+            val httpEntity = HttpEntity(map, headers)
+
+            testRestTemplate.postForEntity<String>("/project/$projectId/version/$versionId/promote", httpEntity)
+
+            val result = testRestTemplate.getForEntity<String>("/projects/")
+            val data = getResponseData(result) as ArrayNode
+            assertThat(data.count()).isEqualTo(2)
+            assertThat(data[0]["name"].asText()).isEqualTo("newProject")
+            val newVersionsData = data[0]["versions"] as ArrayNode
+            val oldVersionsData = data[1]["versions"] as ArrayNode
+            assertThat(newVersionsData.count()).isEqualTo(1)
+            assertThat(oldVersionsData.count()).isEqualTo(1)
+
+            val newVersionId = newVersionsData[0]["id"].asText()
+            assertThat(newVersionId.count()).isGreaterThan(0)
+
+            val newProject = dsl.select(PROJECT_VERSION.STATE,
+                    PROJECT_VERSION.CREATED,
+                    PROJECT_VERSION.UPDATED)
+                    .from(PROJECT_VERSION)
+                    .where(PROJECT_VERSION.ID.eq(newVersionId))
+                    .fetchOne()
+
+            assertThat(newProject[PROJECT_VERSION.STATE]).isEqualTo(testState)
+            assertThat(newProject[PROJECT_VERSION.UPDATED]).isEqualTo(newProject[PROJECT_VERSION.CREATED])
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can return expected English error when delete nonexistent version`(isAuthorized: IsAuthorized)
     {
         val headers = getStandardHeaders("en")

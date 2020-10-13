@@ -70,7 +70,23 @@ class ProjectsController(private val session: Session,
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @GetMapping("/project/{projectId}/version/{versionId}")
+    @PostMapping("/project/{projectId}/version/{versionId}/promote")
+    @ResponseBody
+    fun promoteVersion(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("versionId") versionId: String,
+        @RequestParam("name") name: String): ResponseEntity<String>
+    {
+        val newProjectId = projectRepository.saveNewProject(userId(), name)
+        val newVersionId = session.generateNewVersionId()
+        versionRepository.promoteVersion(versionId, newVersionId, newProjectId, userId())
+
+        val version = versionRepository.getVersion(newVersionId)
+        val project = Project(newProjectId, name, listOf(version))
+        return SuccessResponse(project).asResponseEntity()
+    }
+
+    @GetMapping("project/{projectId}/version/{versionId}")
     @ResponseBody
     fun loadVersionDetails(@PathVariable("projectId") projectId: Int,
                            @PathVariable("versionId") versionId: String): ResponseEntity<String>
