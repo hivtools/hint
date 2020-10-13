@@ -25,6 +25,7 @@ describe("Project history component", () => {
     const mockDeleteProject = jest.fn();
     const mockDeleteVersion = jest.fn();
     const mockLoad = jest.fn();
+    const mockPromoteVersion = jest.fn();
 
     function createStore(projects: Project[] = testProjects) {
         const store = new Vuex.Store({
@@ -36,7 +37,8 @@ describe("Project history component", () => {
                     actions: {
                         deleteVersion: mockDeleteVersion,
                         deleteProject: mockDeleteProject,
-                        loadVersion: mockLoad
+                        loadVersion: mockLoad,
+                        promoteVersion: mockPromoteVersion
                     }
                 }
             }
@@ -79,8 +81,8 @@ describe("Project history component", () => {
         expectTranslated(v.at(4),"Load", "Charger", store);
         expect(v.at(4).find("a").attributes("href")).toBe("");
         expectTranslated(v.at(5), "Delete", "Supprimer", store);
-        if (switches.copyProject) {
-            expectTranslated(v.at(6), "Copy to a new project", "Copier dans un nouveau projet", store);
+        if (switches.promoteProject) {
+            expectTranslated(v.at(6), "Copy last updated to a new project", "Copier la dernière mise à jour dans un nouveau projet", store);
             expect(v.at(6).find("a").attributes("href")).toBe("");
         }
         else {
@@ -113,7 +115,7 @@ describe("Project history component", () => {
         expectTranslated(loadLink,"Load", "Charger", store);
         const deleteLink = cells.at(4).find("a");
         expectTranslated(deleteLink, "Delete", "Supprimer", store);
-        if (switches.copyProject) {
+        if (switches.promoteProject) {
             const copyLink = cells.at(5).find("a");
             expectTranslated(copyLink, "Copy to a new project", "Copier dans un nouveau projet", store);
         }
@@ -278,7 +280,7 @@ describe("Project history component", () => {
     };
 
     it("shows modal when copy project link is clicked and removes it when cancel is clicked", async () => {
-        if (switches.copyProject) {
+        if (switches.promoteProject) {
             const wrapper = getWrapper();
             const store = wrapper.vm.$store;
             const copyLink = wrapper.find("#p-1").findAll(".project-cell").at(6).find("a");
@@ -287,8 +289,8 @@ describe("Project history component", () => {
 
             const modal = wrapper.findAll(".modal").at(1);
             expect(modal.classes()).toContain("show");
-            expectTranslated(modal.find(".modal-body h4"), "Copying project to a new project",
-                "Copier le projet dans un nouveau projet", store);
+            expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
+                "Copie de la version v1 dans un nouveau projet", store);
             expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
                 "Veuillez entrer un nom pour le nouveau projet", store);
 
@@ -306,7 +308,7 @@ describe("Project history component", () => {
     });
 
     it("shows modal when copy version link is clicked and removes it when cancel is clicked", async () => {
-        if (switches.copyProject) {
+        if (switches.promoteProject) {
             const wrapper = getWrapper();
             const store = wrapper.vm.$store;
             const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
@@ -315,8 +317,8 @@ describe("Project history component", () => {
 
             const modal = wrapper.findAll(".modal").at(1);
             expect(modal.classes()).toContain("show");
-            expectTranslated(modal.find(".modal-body h4"), "Copying version to a new project",
-                "Copier la version dans un nouveau projet", store);
+            expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
+                "Copie de la version v1 dans un nouveau projet", store);
             expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
                 "Veuillez entrer un nom pour le nouveau projet", store);
             const input = modal.find("input");
@@ -329,6 +331,52 @@ describe("Project history component", () => {
             cancelButton.trigger("click");
             await Vue.nextTick();
             expect(modal.classes()).not.toContain("show");
+        }
+    });
+
+    it("invokes promoteVersion action when confirm copy", async () => {
+        if (switches.promoteProject) {
+            const wrapper = getWrapper(testProjects);
+            const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
+            copyLink.trigger("click");
+            await Vue.nextTick();
+
+            const modal = wrapper.findAll(".modal").at(1);
+            const input = modal.find("input");
+            const copyBtn = modal.find(".modal-footer").findAll("button").at(0);
+            input.setValue("newProject");
+            expect(copyBtn.attributes("disabled")).toBe(undefined);
+            copyBtn.trigger("click");
+
+            await Vue.nextTick();
+
+            expect(mockPromoteVersion.mock.calls.length).toBe(1);
+            expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
+            {"name": "newProject",
+            "version": {
+                "projectId": 1,
+                "versionId": "s11",
+            }});
+        }
+    });
+
+    it("cannot invoke promoteVersion action when input value is empty", async () => {
+        if (switches.promoteProject) {
+            const wrapper = getWrapper(testProjects);
+            const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
+            copyLink.trigger("click");
+            await Vue.nextTick();
+
+            const modal = wrapper.findAll(".modal").at(1);
+            const input = modal.find("input");
+            const copyBtn = modal.find(".modal-footer").findAll("button").at(0);
+            input.setValue("");
+            expect(copyBtn.attributes("disabled")).toBe("disabled");
+            copyBtn.trigger("click");
+
+            await Vue.nextTick();
+
+            expect(mockPromoteVersion.mock.calls.length).toBe(0);
         }
     });
 });
