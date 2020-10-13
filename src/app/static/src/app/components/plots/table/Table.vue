@@ -165,6 +165,7 @@
                 return this.nonAreaFilters.filter(f => f.options.length > 0)
             },
             filteredData() {
+                console.log('table data', this.tabledata)
                 const filteredValues: any[] = [];
                 iterateDataValues(this.tabledata,
                     this.indicators,
@@ -182,6 +183,7 @@
                         const lower = row.lower
                         filteredValues.push({areaId, filterValues, indicatorMeta, value, upper, lower});
                     });
+                console.log('filteredValues', filteredValues)
                 const displayRows: Dict<any> = {};
                 filteredValues.forEach(current => {
                     const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");

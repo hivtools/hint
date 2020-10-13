@@ -180,11 +180,21 @@ var numeral = require('numeral')
 
 export const formatOutput = function (value: number | string, form: string, scale: number) {
     let ans: number
+    const format = {
+        prevalence: {
+            form: '0%',
+            scale: 0
+        },
+        current_art: {
+            form: '0,0',
+            scale: 1000
+        }
+    }
     if (typeof(value) === 'string'){
         ans = parseFloat(value)
     } else ans = value
     if (form !== '0%'){
-        ans = Math.round(ans / scale) * scale
+        ans = Math.round(ans / format[form].scale) * format[form].scale
     }
     return numeral(ans).format(form)
 };
