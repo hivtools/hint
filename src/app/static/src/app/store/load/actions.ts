@@ -58,8 +58,6 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         if (!rootGetters.isGuest) {
             await(dispatch("projects/createProject", projectName, {root: true}));
-            savedState.projects.currentProject = rootState.projects.currentProject;
-            savedState.projects.currentVersion = rootState.projects.currentVersion;
         }
 
         await getFilesAndLoad(context, files, savedState);
@@ -69,7 +67,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const {commit} = context;
         commit({type: "SettingFiles", payload: null});
 
-        router.push("/", () => {
+       router.push("/", () => {
             getFilesAndLoad(context, versionDetails.files, JSON.parse(versionDetails.state));
         });
 

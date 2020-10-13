@@ -35,6 +35,7 @@ interface VersionRepository
     fun getVersionDetails(versionId: String, projectId: Int, userId: String): VersionDetails
 
     fun deleteVersion(versionId: String, projectId: Int, userId: String)
+    fun versionExists(versionId: String, userId: String): Boolean
 }
 
 @Component
@@ -266,6 +267,17 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                 .set(PROJECT_VERSION.DELETED, true)
                 .where(PROJECT_VERSION.ID.eq(versionId))
                 .execute()
+    }
+
+    override fun versionExists(versionId: String, userId: String): Boolean
+    {
+        return dsl.select(PROJECT_VERSION.ID)
+                .from(PROJECT_VERSION)
+                .join(PROJECT)
+                .on(PROJECT_VERSION.PROJECT_ID.eq(PROJECT.ID))
+                .where(PROJECT_VERSION.ID.eq(versionId))
+                .and(PROJECT.USER_ID.eq(userId))
+                .fetchAny() != null
     }
 
     private fun checkVersionExists(versionId: String, projectId: Int, userId: String)

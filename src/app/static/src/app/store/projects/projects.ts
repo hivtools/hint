@@ -30,11 +30,9 @@ export const initialProjectsState = (): ProjectsState => {
 
 const namespaced: boolean = true;
 
-const existingState = localStorageManager.getState();
-
 export const projects: Module<ProjectsState, RootState> = {
     namespaced,
-    state: {...initialProjectsState(), ...existingState && existingState.projects},
+    state: initialProjectsState(),
     mutations,
     actions
 };

@@ -123,12 +123,6 @@
                 return !this.loading && this.complete[num];
             }
         },
-        created() {
-            //redirect to Projects if logged in with no currentProject
-            if ((!this.isGuest) && (this.currentProject== null) && (!this.projectLoading)) {
-                this.$router.push('/projects');
-            }
-        },
         components: {
             AdrIntegration,
             Step,
