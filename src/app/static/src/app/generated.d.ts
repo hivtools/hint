@@ -47,16 +47,8 @@ export interface BarchartDefaults {
   x_axis_id: string;
   disaggregate_by_id: string;
   selected_filter_options: {
-    /**
-     * This interface was referenced by `undefined`'s JSON-Schema definition
-     * via the `patternProperty` "^.*$".
-     */
-    [k: string]: {
-      label: string;
-      id: string;
-    }[];
+    [k: string]: any;
   };
-  [k: string]: any;
 }
 export interface BarchartIndicator {
   indicator: string;
@@ -66,7 +58,9 @@ export interface BarchartIndicator {
   name: string;
   error_low_column: string;
   error_high_column: string;
-  [k: string]: any;
+  scale: number;
+  accuracy: number | null;
+  format: string;
 }
 export interface BarchartMetadata {
   indicators: {
@@ -77,7 +71,9 @@ export interface BarchartMetadata {
     name: string;
     error_low_column: string;
     error_high_column: string;
-    [k: string]: any;
+    scale: number;
+    accuracy: number | null;
+    format: string;
   }[];
   filters: {
     id: string;
@@ -88,29 +84,21 @@ export interface BarchartMetadata {
       id: string;
     }[];
     use_shape_regions?: boolean | null;
-    [k: string]: any;
   }[];
   defaults?: {
     indicator_id: string;
     x_axis_id: string;
     disaggregate_by_id: string;
     selected_filter_options: {
-      /**
-       * This interface was referenced by `undefined`'s JSON-Schema definition
-       * via the `patternProperty` "^.*$".
-       */
-      [k: string]: {
-        label: string;
-        id: string;
-      }[];
+      [k: string]: any;
     };
-    [k: string]: any;
   };
-  [k: string]: any;
 }
 export interface ChoroplethIndicatorMetadata {
   indicator: string;
   value_column: string;
+  error_low_column?: string;
+  error_high_column?: string;
   indicator_column?: string;
   indicator_value?: string;
   name: string;
@@ -118,11 +106,16 @@ export interface ChoroplethIndicatorMetadata {
   max: number;
   colour: string;
   invert_scale: boolean;
+  scale: number;
+  accuracy: number | null;
+  format: string;
 }
 export interface ChoroplethMetadata {
   indicators: {
     indicator: string;
     value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
     indicator_column?: string;
     indicator_value?: string;
     name: string;
@@ -130,6 +123,9 @@ export interface ChoroplethMetadata {
     max: number;
     colour: string;
     invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
   }[];
   filters: {
     id: string;
@@ -140,13 +136,9 @@ export interface ChoroplethMetadata {
       id: string;
     }[];
     use_shape_regions?: boolean | null;
-    [k: string]: any;
   }[];
-  [k: string]: any;
 }
-export interface Data {
-  placeholder?: boolean;
-}
+export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -154,7 +146,6 @@ export interface Error {
   trace?: string[];
   [k: string]: any;
 }
-export type ErrorCode = string;
 export type FileName = string;
 export type FilePath = string | null;
 export interface Filter {
@@ -166,7 +157,6 @@ export interface Filter {
     id: string;
   }[];
   use_shape_regions?: boolean | null;
-  [k: string]: any;
 }
 export interface FilterOption {
   label: string;
@@ -184,11 +174,60 @@ export interface LevelLabels {
   area_level_label: string;
   display: boolean;
 }
+export interface ModelCalibrateRequest {
+  options: {
+    [k: string]: any;
+  };
+  version: {
+    hintr: string;
+    naomi: string;
+    rrq: string;
+    [k: string]: any;
+  };
+}
 export type ModelCancelResponse = null;
 export interface ModelOptionsValidate {
   valid: true;
 }
 export interface ModelOptionsValidateRequest {
+  data: {
+    pjnz: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
+    shape: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
+    population: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
+    survey: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
+    programme?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
+    anc?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
+  };
   options: {
     [k: string]: any;
   };
@@ -205,20 +244,6 @@ export type ModelResultData = {
   upper: number | null;
   [k: string]: any;
 }[];
-export interface ModelResultFilters {
-  age: {
-    label: string;
-    id: string;
-  }[];
-  quarter: {
-    label: string;
-    id: string;
-  }[];
-  indicators: {
-    label: string;
-    id: string;
-  }[];
-}
 export interface ModelResultResponse {
   data: {
     area_id: string;
@@ -242,7 +267,9 @@ export interface ModelResultResponse {
         name: string;
         error_low_column: string;
         error_high_column: string;
-        [k: string]: any;
+        scale: number;
+        accuracy: number | null;
+        format: string;
       }[];
       filters: {
         id: string;
@@ -253,30 +280,22 @@ export interface ModelResultResponse {
           id: string;
         }[];
         use_shape_regions?: boolean | null;
-        [k: string]: any;
       }[];
       defaults?: {
         indicator_id: string;
         x_axis_id: string;
         disaggregate_by_id: string;
         selected_filter_options: {
-          /**
-           * This interface was referenced by `undefined`'s JSON-Schema definition
-           * via the `patternProperty` "^.*$".
-           */
-          [k: string]: {
-            label: string;
-            id: string;
-          }[];
+          [k: string]: any;
         };
-        [k: string]: any;
       };
-      [k: string]: any;
     };
     choropleth: {
       indicators: {
         indicator: string;
         value_column: string;
+        error_low_column?: string;
+        error_high_column?: string;
         indicator_column?: string;
         indicator_value?: string;
         name: string;
@@ -284,6 +303,9 @@ export interface ModelResultResponse {
         max: number;
         colour: string;
         invert_scale: boolean;
+        scale: number;
+        accuracy: number | null;
+        format: string;
       }[];
       filters: {
         id: string;
@@ -294,9 +316,7 @@ export interface ModelResultResponse {
           id: string;
         }[];
         use_shape_regions?: boolean | null;
-        [k: string]: any;
       }[];
-      [k: string]: any;
     };
   };
   [k: string]: any;
@@ -355,21 +375,25 @@ export interface ModelRunOptionsRequest {
     path: string | null;
     hash: string;
     filename: string;
+    fromADR: boolean;
   };
   survey: {
     path: string | null;
     hash: string;
     filename: string;
+    fromADR: boolean;
   };
   programme?: {
     path: string | null;
     hash: string;
     filename: string;
+    fromADR: boolean;
   };
   anc?: {
     path: string | null;
     hash: string;
     filename: string;
+    fromADR: boolean;
   };
 }
 export interface ModelStatusResponse {
@@ -387,25 +411,81 @@ export interface ModelStatusResponse {
   }[];
 }
 export interface ModelSubmitData {
-  pjnz: string | null;
-  shape: string | null;
-  population: string | null;
-  survey: string | null;
-  programme: string | null;
-  anc: string | null;
-}
-export interface ModelSubmitInputOptions {
-  programme: boolean;
-  anc: boolean;
+  pjnz: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR: boolean;
+  };
+  shape: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR: boolean;
+  };
+  population: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR: boolean;
+  };
+  survey: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR: boolean;
+  };
+  programme?: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR: boolean;
+  };
+  anc?: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR: boolean;
+  };
 }
 export interface ModelSubmitRequest {
   data: {
-    pjnz: string | null;
-    shape: string | null;
-    population: string | null;
-    survey: string | null;
-    programme: string | null;
-    anc: string | null;
+    pjnz: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
+    shape: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
+    population: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
+    survey: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
+    programme?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
+    anc?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR: boolean;
+    };
   };
   options: {
     [k: string]: any;
@@ -434,6 +514,8 @@ export interface PjnzResponseData {
 export type ChoroplethMetadata = {
   indicator: string;
   value_column: string;
+  error_low_column?: string;
+  error_high_column?: string;
   indicator_column?: string;
   indicator_value?: string;
   name: string;
@@ -441,6 +523,9 @@ export type ChoroplethMetadata = {
   max: number;
   colour: string;
   invert_scale: boolean;
+  scale: number;
+  accuracy: number | null;
+  format: string;
 }[];
 
 export interface PlottingMetadataResponse {
@@ -517,6 +602,7 @@ export interface SessionFile {
   path: string | null;
   hash: string;
   filename: string;
+  fromADR: boolean;
 }
 /**
  * TODO: Validate against a URL e.g. https://geojson.org/schema/FeatureCollection.json
@@ -591,6 +677,7 @@ export interface ValidateInputRequest {
     path: string | null;
     hash: string;
     filename: string;
+    fromADR: boolean;
   };
 }
 export type ValidateInputResponse =
@@ -604,6 +691,7 @@ export type ValidateInputResponse =
 export interface PjnzResponse {
   hash: string;
   filename: string;
+  fromADR?: boolean;
   type: "pjnz";
   data: {
     country: string;
@@ -614,6 +702,7 @@ export interface PjnzResponse {
 export interface ShapeResponse {
   hash: string;
   filename: string;
+  fromADR?: boolean;
   type: "shape";
   data: GeoJSONObject;
   filters: {
@@ -649,6 +738,7 @@ export interface GeoJSONObject {
 export interface PopulationResponse {
   hash: string;
   filename: string;
+  fromADR?: boolean;
   type: "population";
   data: null;
   filters?: null;
@@ -656,6 +746,7 @@ export interface PopulationResponse {
 export interface ProgrammeResponse {
   hash: string;
   filename: string;
+  fromADR?: boolean;
   type: "programme";
   data: {
     area_id: string;
@@ -683,6 +774,7 @@ export interface ProgrammeResponse {
 export interface AncResponse {
   hash: string;
   filename: string;
+  fromADR?: boolean;
   type: "anc";
   data: {
     area_id: string;
@@ -712,6 +804,7 @@ export interface AncResponse {
 export interface SurveyResponse {
   hash: string;
   filename: string;
+  fromADR?: boolean;
   type: "survey";
   data: {
     indicator: string;
@@ -749,6 +842,7 @@ export interface ValidateSurveyAndProgrammeRequest {
     path: string | null;
     hash: string;
     filename: string;
+    fromADR: boolean;
   };
   shape: string | null;
 }

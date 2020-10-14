@@ -179,11 +179,9 @@
                                 filterValues[f.id] = row[f.column_id]
                             }
                         });
-                        const upper = row.upper
-                        const lower = row.lower
+                        const {upper, lower} = row
                         filteredValues.push({areaId, filterValues, indicatorMeta, value, upper, lower});
                     });
-                console.log('filteredValues', filteredValues)
                 const displayRows: Dict<any> = {};
                 filteredValues.forEach(current => {
                     const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
@@ -201,9 +199,11 @@
                             ...filterLabels,
                         }
                     }
-                    displayRows[key][current.indicatorMeta.indicator] = formatOutput(current.value, '0,0', 0.01);
-                    current.lower ? displayRows[key][`${current.indicatorMeta.indicator}_lower`] = current.lower : '';
-                    current.upper ? displayRows[key][`${current.indicatorMeta.indicator}_upper`] = current.upper : '';
+                    const {value, upper, lower} = current
+                    const { indicator, format, scale } = current.indicatorMeta
+                    displayRows[key][indicator] = formatOutput(value, format, scale);
+                    lower ? displayRows[key][`${indicator}_lower`] = formatOutput(lower, format, scale): '';
+                    upper ? displayRows[key][`${indicator}_upper`] = formatOutput(upper, format, scale): '';
                 });
                 return Object.values(displayRows);
             },
