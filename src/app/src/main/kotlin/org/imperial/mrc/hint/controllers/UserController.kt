@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class UserController(private val userLogic: UserLogic) {
+class UserController(private val userLogic: UserLogic)
+{
 
     @GetMapping("/user/{email}/exists")
     @ResponseBody
-    fun userExists(@PathVariable("email") email: String): SuccessResponse {
+    fun userExists(@PathVariable("email") email: String): SuccessResponse
+    {
 
         val user = userLogic.getUser(email)
         return SuccessResponse(user != null)

@@ -21,25 +21,21 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
-
 fun httpStatusFromCode(code: Int): HttpStatus {
-    return when (code) {
-        200 -> HttpStatus.OK
-        201 -> HttpStatus.CREATED
-        400 -> HttpStatus.BAD_REQUEST
-        401 -> HttpStatus.UNAUTHORIZED
-        403 -> HttpStatus.FORBIDDEN
-        404 -> HttpStatus.NOT_FOUND
-        else -> HttpStatus.INTERNAL_SERVER_ERROR
+    val status = HttpStatus.resolve(code) ?: return HttpStatus.INTERNAL_SERVER_ERROR
+    return if (status <= HttpStatus.NOT_FOUND) {
+        status
+    } else {
+        HttpStatus.INTERNAL_SERVER_ERROR
     }
 }
 
 fun headersToMultiMap(headers: Headers): MultiValueMap<String, String> {
     val result = LinkedMultiValueMap<String, String>()
     headers.entries.forEach {
-        result.addAll(it.key, it.value.toList());
+        result.addAll(it.key, it.value.toList())
     }
-    return result;
+    return result
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -68,14 +64,14 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
         }
 
     } catch (e: IOException) {
-        ErrorDetail(httpStatusFromCode(500), "Could not parse response.")
+        ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Could not parse response.")
                 .toResponseEntity() as ResponseEntity<String>
     }
 }
 
 @Suppress("UNCHECKED_CAST")
 fun formatADRResponse(json: JsonNode): ResponseEntity<String> {
-    
+
     return if (json["success"].asBoolean()) {
         SuccessResponse(json["result"])
                 .asResponseEntity()
@@ -90,7 +86,8 @@ fun formatADRResponse(json: JsonNode): ResponseEntity<String> {
 
 }
 
-fun Request.getStreamingResponseEntity(headRequest: (url: String, parameters: Parameters?) -> Request): ResponseEntity<StreamingResponseBody> {
+fun Request.getStreamingResponseEntity(headRequest: (url: String, parameters: Parameters?) -> Request)
+        : ResponseEntity<StreamingResponseBody> {
 
     val responseBody = StreamingResponseBody { outputStream: OutputStream ->
         //return an empty input stream to the body - don't need to re-use it

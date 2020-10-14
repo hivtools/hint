@@ -14,7 +14,8 @@ import java.security.DigestInputStream
 import java.security.MessageDigest
 import javax.xml.bind.DatatypeConverter
 
-enum class FileType {
+enum class FileType
+{
 
     ANC,
     PJNZ,
@@ -23,12 +24,14 @@ enum class FileType {
     Shape,
     Survey;
 
-    override fun toString(): String {
+    override fun toString(): String
+    {
         return this.name.toLowerCase()
     }
 }
 
-interface FileManager {
+interface FileManager
+{
     fun saveFile(file: MultipartFile, type: FileType): VersionFileWithPath
     fun saveFile(url: String, type: FileType): VersionFileWithPath
     fun getFile(type: FileType): VersionFileWithPath?
@@ -42,15 +45,18 @@ class LocalFileManager(
         private val session: Session,
         private val versionRepository: VersionRepository,
         private val appProperties: AppProperties,
-        private val adrClientBuilder: ADRClientBuilder) : FileManager {
+        private val adrClientBuilder: ADRClientBuilder) : FileManager
+{
 
     private val uploadPath = appProperties.uploadDirectory
 
-    override fun saveFile(file: MultipartFile, type: FileType): VersionFileWithPath {
+    override fun saveFile(file: MultipartFile, type: FileType): VersionFileWithPath
+    {
         return saveFile(file.inputStream, file.originalFilename!!, type, false)
     }
 
-    override fun saveFile(url: String, type: FileType): VersionFileWithPath {
+    override fun saveFile(url: String, type: FileType): VersionFileWithPath
+    {
         val originalFilename = url.split("/").last()
         val adr = adrClientBuilder.build()
         return saveFile(adr.getInputStream(url), originalFilename, type, true)
@@ -59,7 +65,8 @@ class LocalFileManager(
     private fun saveFile(inputStream: InputStream,
                          originalFilename: String,
                          type: FileType,
-                         fromADR: Boolean): VersionFileWithPath {
+                         fromADR: Boolean): VersionFileWithPath
+    {
 
         val md = MessageDigest.getInstance("MD5")
         val bytes = inputStream.use {
@@ -68,7 +75,8 @@ class LocalFileManager(
         val extension = originalFilename.split(".").last()
         val hash = "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
         val path = "${appProperties.uploadDirectory}/$hash"
-        if (versionRepository.saveNewHash(hash)) {
+        if (versionRepository.saveNewHash(hash))
+        {
             val localFile = File(path)
             FileUtils.forceMkdirParent(localFile)
             localFile.writeBytes(bytes)
@@ -79,24 +87,28 @@ class LocalFileManager(
 
     }
 
-    override fun getFile(type: FileType): VersionFileWithPath? {
+    override fun getFile(type: FileType): VersionFileWithPath?
+    {
         return versionRepository.getVersionFile(session.getVersionId(), type)
                 ?.toVersionFileWithPath(uploadPath)
     }
 
-    override fun getAllHashes(): Map<String, String> {
+    override fun getAllHashes(): Map<String, String>
+    {
         val hashes = versionRepository.getHashesForVersion(session.getVersionId())
         return hashes.mapValues { "$uploadPath/${it.value}" }
     }
 
-    override fun getFiles(vararg include: FileType): Map<String, VersionFileWithPath> {
+    override fun getFiles(vararg include: FileType): Map<String, VersionFileWithPath>
+    {
         val files = versionRepository.getVersionFiles(session.getVersionId())
         val includeKeys = include.map { it.toString() }
         return files.filterKeys { includeKeys.count() == 0 || includeKeys.contains(it) }
                 .mapValues { it.value.toVersionFileWithPath(uploadPath) }
     }
 
-    override fun setAllFiles(files: Map<String, VersionFile?>) {
+    override fun setAllFiles(files: Map<String, VersionFile?>)
+    {
         versionRepository.setFilesForVersion(session.getVersionId(), files);
     }
 }

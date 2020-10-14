@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint
 
+import org.imperial.mrc.hint.security.SecurePaths
 import org.pac4j.core.config.Config
 import org.pac4j.springframework.web.SecurityInterceptor
 import org.springframework.boot.SpringApplication
@@ -13,14 +14,17 @@ import org.springframework.web.servlet.resource.PathResourceResolver
 @SpringBootApplication
 class HintApplication
 
-fun main(args: Array<String>) {
-    SpringApplication.run(HintApplication::class.java, *args)
+fun main(args: Array<String>)
+{
+    SpringApplication.run(HintApplication::class.java)
 }
 
 @Configuration
 @EnableWebMvc
-class MvcConfig(val config: Config) : WebMvcConfigurer {
-    override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
+class MvcConfig(val config: Config) : WebMvcConfigurer
+{
+    override fun addResourceHandlers(registry: ResourceHandlerRegistry)
+    {
         registry.addResourceHandler("/public/**")
                 .addResourceLocations("file:/static/public/", "file:static/public/")
                 .resourceChain(true)
@@ -28,15 +32,16 @@ class MvcConfig(val config: Config) : WebMvcConfigurer {
                 .addResolver(PathResourceResolver())
     }
 
-    override fun addInterceptors(registry: InterceptorRegistry) {
+    override fun addInterceptors(registry: InterceptorRegistry)
+    {
         //Ajax endpoints only available to logged in users
         registry.addInterceptor(SecurityInterceptor(config, ""))
-                .addPathPatterns("/adr/**")
-                .addPathPatterns("/user/**")
-                .excludePathPatterns("/adr/schemas", "/adr/schemas/")
+                .addPathPatterns(SecurePaths.ADD.pathList())
+                .excludePathPatterns(SecurePaths.EXCLUDE.pathList())
     }
 
-    override fun configureAsyncSupport(configurer: AsyncSupportConfigurer) {
+    override fun configureAsyncSupport(configurer: AsyncSupportConfigurer)
+    {
         val t = ThreadPoolTaskExecutor()
         t.corePoolSize = 10
         t.maxPoolSize = 100

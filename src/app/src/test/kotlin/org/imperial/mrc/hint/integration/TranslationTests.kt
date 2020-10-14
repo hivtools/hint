@@ -9,10 +9,12 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
-class TranslationTests : SecureIntegrationTests() {
+class TranslationTests : SecureIntegrationTests()
+{
 
     @Test
-    fun `returns translated error message when accept language is fr`() {
+    fun `returns translated error message when accept language is fr`()
+    {
         authorize()
         testRestTemplate.getForEntity<String>("/")
         val headers = HttpHeaders()

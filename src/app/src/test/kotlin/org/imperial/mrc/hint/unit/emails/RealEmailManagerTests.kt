@@ -6,14 +6,17 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
-import org.imperial.mrc.hint.emails.*
+import org.imperial.mrc.hint.emails.EmailData
+import org.imperial.mrc.hint.emails.PasswordEmailTemplate
+import org.imperial.mrc.hint.emails.RealEmailManager
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
 import org.simplejavamail.email.Email
 import org.simplejavamail.mailer.Mailer
 import org.slf4j.Logger
 
-class RealEmailManagerTests {
+class RealEmailManagerTests
+{
     private val mockAppProps = mock<AppProperties> {
         on { applicationTitle } doReturn "testApp"
         on { applicationUrl } doReturn "http://testurl.com"
@@ -28,7 +31,8 @@ class RealEmailManagerTests {
     val mockMailer = mock<Mailer>()
 
     @Test
-    fun `initialises correctly`() {
+    fun `initialises correctly`()
+    {
         val sut = RealEmailManager(mockAppProps, mock())
 
         assertThat(sut.sender).isEqualTo("test@sender.com")
@@ -44,7 +48,8 @@ class RealEmailManagerTests {
 
 
     @Test
-    fun `sends email`() {
+    fun `sends email`()
+    {
         val mockEmailData = EmailData("testSubject", "testText", "testHtml")
         val sut = RealEmailManager(mockAppProps, mock(), mockLogger, mockMailer)
         sut.sendEmail(mockEmailData, "test@email.com")
@@ -66,7 +71,8 @@ class RealEmailManagerTests {
     }
 
     @Test
-    fun `send password reset email`() {
+    fun `send password reset email`()
+    {
 
         val mockTokenManager = mock<OneTimeTokenManager> {
             on { generateOnetimeSetPasswordToken("test.user") } doReturn "TOKEN"
@@ -96,7 +102,8 @@ Have a great day!""")
     }
 
     @Test
-    fun `send account creation email`() {
+    fun `send account creation email`()
+    {
 
         val mockTokenManager = mock<OneTimeTokenManager> {
             on { generateOnetimeSetPasswordToken("test.user") } doReturn "TOKEN"

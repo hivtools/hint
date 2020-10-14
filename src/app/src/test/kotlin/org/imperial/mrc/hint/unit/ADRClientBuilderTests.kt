@@ -3,8 +3,8 @@ package org.imperial.mrc.hint.unit
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
-import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.ADRFuelClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
@@ -13,7 +13,8 @@ import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 
-class ADRClientBuilderTests {
+class ADRClientBuilderTests
+{
 
     private val encryption = Encryption()
     private val mockSession = mock<Session> {
@@ -23,13 +24,15 @@ class ADRClientBuilderTests {
         on { getADRKey(TEST_EMAIL) } doReturn encryption.encrypt(TEST_KEY)
     }
 
-    companion object {
+    companion object
+    {
         const val TEST_EMAIL = "test@test.com"
         const val TEST_KEY = "123"
     }
 
     @Test
-    fun `throws error if user does not have a key`() {
+    fun `throws error if user does not have a key`()
+    {
         Assertions.assertThatThrownBy {
             ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mock())
                     .build()
@@ -37,7 +40,8 @@ class ADRClientBuilderTests {
     }
 
     @Test
-    fun `creates client with correct auth header`() {
+    fun `creates client with correct auth header`()
+    {
         val sut = ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mockRepo)
         val result = sut.build() as ADRFuelClient
         val headers = result.standardHeaders()

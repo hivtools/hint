@@ -14,8 +14,8 @@ import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.controllers.HintrController
-import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
@@ -23,7 +23,8 @@ import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
-class ADRControllerTests : HintrControllerTests() {
+class ADRControllerTests : HintrControllerTests()
+{
 
     private val mockEncryption = mock<Encryption> {
         on { encrypt(any()) } doReturn "encrypted".toByteArray()
@@ -54,7 +55,8 @@ class ADRControllerTests : HintrControllerTests() {
     }
 
     @Test
-    fun `encrypts key before saving it`() {
+    fun `encrypts key before saving it`()
+    {
         val mockRepo = mock<UserRepository>()
         val sut = ADRController(mockEncryption, mockRepo, mock(), mock(), mock(), mock(), mock(), mockSession, mock())
         sut.saveAPIKey("plainText")
@@ -62,7 +64,8 @@ class ADRControllerTests : HintrControllerTests() {
     }
 
     @Test
-    fun `decrypts key before returning it`() {
+    fun `decrypts key before returning it`()
+    {
 
         val sut = ADRController(mockEncryption, mockUserRepo, mock(), mock(), mock(), mock(), mock(), mockSession, mock())
         val result = sut.getAPIKey()
@@ -71,7 +74,8 @@ class ADRControllerTests : HintrControllerTests() {
     }
 
     @Test
-    fun `returns null if key does not exist`() {
+    fun `returns null if key does not exist`()
+    {
         val sut = ADRController(mock(), mock(), mock(), mock(), mock(), mock(), mock(), mockSession, mock())
         val result = sut.getAPIKey()
         val data = objectMapper.readTree(result.body!!)["data"]
@@ -79,7 +83,8 @@ class ADRControllerTests : HintrControllerTests() {
     }
 
     @Test
-    fun `gets datasets without inaccessible resources by default`() {
+    fun `gets datasets without inaccessible resources by default`()
+    {
         val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
@@ -104,7 +109,8 @@ class ADRControllerTests : HintrControllerTests() {
     }
 
     @Test
-    fun `gets datasets including inaccessible resources if flag is passed`() {
+    fun `gets datasets including inaccessible resources if flag is passed`()
+    {
         val expectedUrl = "package_search?q=type:adr-schema"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
@@ -129,7 +135,8 @@ class ADRControllerTests : HintrControllerTests() {
     }
 
     @Test
-    fun `filters datasets to only those with resources`() {
+    fun `filters datasets to only those with resources`()
+    {
         val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
@@ -155,7 +162,8 @@ class ADRControllerTests : HintrControllerTests() {
     }
 
     @Test
-    fun `passes error responses along`() {
+    fun `passes error responses along`()
+    {
         val badResponse = ResponseEntity<String>(HttpStatus.BAD_REQUEST)
         val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
         val mockClient = mock<ADRClient> {
@@ -179,7 +187,8 @@ class ADRControllerTests : HintrControllerTests() {
     }
 
     @Test
-    fun `gets dataset by id`() {
+    fun `gets dataset by id`()
+    {
         val expectedUrl = "package_show?id=1234"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn ResponseEntity
@@ -204,7 +213,8 @@ class ADRControllerTests : HintrControllerTests() {
     }
 
     @Test
-    fun `returns map of names to adr file schemas`() {
+    fun `returns map of names to adr file schemas`()
+    {
         val sut = ADRController(
                 mock(),
                 mock(),
@@ -230,7 +240,8 @@ class ADRControllerTests : HintrControllerTests() {
     override fun getSut(mockFileManager: FileManager,
                         mockAPIClient: HintrAPIClient,
                         mockSession: Session,
-                        mockVersionRepository: VersionRepository): HintrController {
+                        mockVersionRepository: VersionRepository): HintrController
+    {
         return ADRController(mockEncryption,
                 mockUserRepo,
                 mock(),
@@ -243,48 +254,55 @@ class ADRControllerTests : HintrControllerTests() {
     }
 
     @Test
-    fun `imports anc`() {
+    fun `imports anc`()
+    {
         assertSavesAndValidatesUrl(FileType.ANC) { sut ->
             (sut as ADRController).importANC(fakeUrl)
         }
     }
 
     @Test
-    fun `imports pjnz`() {
+    fun `imports pjnz`()
+    {
         assertSavesAndValidatesUrl(FileType.PJNZ) { sut ->
             (sut as ADRController).importPJNZ(fakeUrl)
         }
     }
 
     @Test
-    fun `imports programme`() {
+    fun `imports programme`()
+    {
         assertSavesAndValidatesUrl(FileType.Programme) { sut ->
             (sut as ADRController).importProgramme(fakeUrl)
         }
     }
 
     @Test
-    fun `imports population`() {
+    fun `imports population`()
+    {
         assertSavesAndValidatesUrl(FileType.Population) { sut ->
             (sut as ADRController).importPopulation(fakeUrl)
         }
     }
 
     @Test
-    fun `imports shape file`() {
+    fun `imports shape file`()
+    {
         assertSavesAndValidatesUrl(FileType.Shape) { sut ->
             (sut as ADRController).importShape(fakeUrl)
         }
     }
 
     @Test
-    fun `imports survey`() {
+    fun `imports survey`()
+    {
         assertSavesAndValidatesUrl(FileType.Survey) { sut ->
             (sut as ADRController).importSurvey(fakeUrl)
         }
     }
 
-    private fun makeFakeSuccessResponse(): ResponseEntity<String> {
+    private fun makeFakeSuccessResponse(): ResponseEntity<String>
+    {
         val resultWithResources = mapOf("resources" to listOf(1, 2))
         val resultWithoutResources = mapOf("resources" to listOf<Any>())
         val data = mapOf("results" to listOf(resultWithResources, resultWithoutResources))

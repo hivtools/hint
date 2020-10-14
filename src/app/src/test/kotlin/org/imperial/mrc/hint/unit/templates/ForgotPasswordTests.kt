@@ -4,14 +4,17 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.ui.ConcurrentModel
 
-class ForgotPasswordTests {
-    companion object {
+class ForgotPasswordTests
+{
+    companion object
+    {
         val template = FreemarkerTemplateLoader("forgot-password.ftl")
 
     }
 
     @Test
-    fun `renders as expected`() {
+    fun `renders as expected`()
+    {
         val model = ConcurrentModel()
         model["title"] = "AppTitle"
         val doc = template.jsoupDocFor(model)

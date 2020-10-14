@@ -13,13 +13,15 @@ val unexpectedErrorRegex = "An unexpected error occurred. If you see this messag
         " workshop technical support and show them this code: (u[a-z]{2}-[a-z]{3}-[a-z]{3})." +
         " Otherwise please contact support at (.*) and quote this code: (u[a-z]{2}-[a-z]{3}-[a-z]{3})"
 
-fun getTestEntity(fileName: String, acceptGzip: Boolean = false): HttpEntity<LinkedMultiValueMap<String, Any>> {
+fun getTestEntity(fileName: String, acceptGzip: Boolean = false): HttpEntity<LinkedMultiValueMap<String, Any>>
+{
     val testFile = File("testdata/$fileName")
     val body = LinkedMultiValueMap<String, Any>()
     body.add("file", FileSystemResource(testFile))
     val headers = HttpHeaders()
     headers.contentType = MediaType.MULTIPART_FORM_DATA
-    if (acceptGzip) {
+    if (acceptGzip)
+    {
         headers.set("Accept-Encoding", "gzip")
     }
     return HttpEntity(body, headers)
