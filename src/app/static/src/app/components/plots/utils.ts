@@ -1,7 +1,6 @@
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
-// import Numeral from numeral
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
                          colourRange: NumericRange) => {
@@ -178,15 +177,15 @@ export const findPath = function (id: string, obj: any): any {
 
 var numeral = require('numeral')
 
-export const formatOutput = function (value: number | string, form: string, scale: number) {
+export const formatOutput = function (value: number | string, format: string, scale: number) {
     let ans: number
     if (typeof(value) === 'string'){
         ans = parseFloat(value)
     } else ans = value
-    if (!form.includes('%')){
+    if (!format.includes('%')){
         ans = Math.round(ans / scale) * scale
     }
-    return numeral(ans).format(form)
+    return numeral(ans).format(format)
 };
 
 interface Indicator {
