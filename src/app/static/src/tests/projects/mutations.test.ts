@@ -1,5 +1,6 @@
 import {mockProjectsState} from "../mocks";
 import {mutations, ProjectsMutations} from "../../app/store/projects/mutations";
+import {router} from '../../app/router';
 
 describe("Projects mutations", () => {
     const testNow = Date.now();
@@ -82,13 +83,39 @@ describe("Projects mutations", () => {
         expect(state.currentVersion).toBeNull();
     });
 
-    // it("pushes router to projects if logged in user and currentProject not set", () => {
-    //     const state = mockProjectsState({currentProject: null, currentVersion: null});
-    //     mutations[ProjectsMutations.SetCurrentProject](state, {payload: true})
-    //     console.log('this is the state', state)
-    //     const mockRouterPush = jest.fn();
+    it("pushes router to projects if logged in user and currentProject not set", () => {
+        const state = mockProjectsState({currentProject: null, currentVersion: null});
+        const mockRouterPush = jest.fn();
+        router.push = mockRouterPush;
+        mutations[ProjectsMutations.SetCurrentProject](state, {payload: false})
 
-    //     expect(mockRouterPush.mock.calls.length).toBe(1);
-    //     expect(mockRouterPush.mock.calls[0][0]).toBe("/projects");
+        expect(mockRouterPush.mock.calls.length).toBe(1);
+        expect(mockRouterPush.mock.calls[0][0]).toBe("/projects");
+    });
+
+    // it("does not push router to projects if guest user", () => {
+    //     const state = mockProjectsState({currentProject: null, currentVersion: null});
+    //     const mockRouterPush = jest.fn();
+    //     router.push = mockRouterPush;
+    //     mutations[ProjectsMutations.SetCurrentProject](state, {payload: false})
+    //     // const wrapper = createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush, {currentUser: 'guest'});
+
+    //     expect(mockRouterPush.mock.calls.length).toBe(0);
+    // });
+
+    // it("does not push router to projects if logged in user and currentProject set", () => {
+    //     const mockRouterPush = jest.fn();
+    //     const projectsState = {currentProject: {id: 1, name: "testProject", versions: []}};
+    //     const wrapper =  createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
+
+    //     expect(mockRouterPush.mock.calls.length).toBe(0);
+    // });
+
+    // it("does not push router to projects if project is loading", () => {
+    //     const mockRouterPush = jest.fn();
+    //     const projectsState = {loading: true};
+    //     const wrapper =  createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
+
+    //     expect(mockRouterPush.mock.calls.length).toBe(0);
     // });
 });
