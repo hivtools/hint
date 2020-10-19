@@ -3,10 +3,11 @@ import {shallowMount, Slots} from '@vue/test-utils';
 
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import {mockFile} from "../../mocks";
-import Vuex from "vuex";
-import {emptyState} from "../../../app/root";
+import Vuex, {Store} from "vuex";
+import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {BDropdown} from "bootstrap-vue";
+import {expectTranslated} from "../../testHelpers";
 
 describe("File upload component", () => {
 
@@ -32,9 +33,9 @@ describe("File upload component", () => {
     const mockHideDropDown = jest.fn();
     const dropdownWithMockedHideMethod = Vue.extend({mixins: [BDropdown], methods: {hide: mockHideDropDown}});
 
-    const createSut = (props?: any, slots?: Slots) => {
+    const createSut = (props?: any, slots?: Slots, store?: Store<RootState>) => {
         return shallowMount(FileUpload, {
-            store: createStore(),
+            store: store || createStore(),
             propsData: {
                 uploading: false,
                 upload: jest.fn(),
@@ -66,10 +67,12 @@ describe("File upload component", () => {
     });
 
     it("renders label", () => {
+        const store = createStore();
         const wrapper = createSut({
             name: "test-name"
-        });
-        expect(wrapper.find(".custom-file-label").text()).toBe("Select new file");
+        }, undefined, store);
+        expectTranslated(wrapper.find(".custom-file-label"), "Select new file",
+            "Sélectionner un nouveau fichier", store);
     });
 
     it("calls upload when file is selected", async () => {

@@ -2,7 +2,7 @@ import {mockAxios, mockBaselineState, mockError, mockFailure, mockRootState} fro
 import {ActionContext, MutationTree, Store} from "vuex";
 import {PayloadWithType} from "../app/types";
 import {Wrapper} from "@vue/test-utils";
-import {RootState} from "../app/root";
+import {RootState, TranslatableState} from "../app/root";
 import {Language} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
 
@@ -56,14 +56,23 @@ export function expectAllMutationsDefined(mutationDefinitions: any, mutationTree
     }
 }
 
-export function expectTranslated(element: Wrapper<any>,
+export function expectTranslatedWithStoreType<T extends TranslatableState>(element: Wrapper<any>,
                                  englishText: string,
                                  frenchText: string,
-                                 store: Store<RootState>){
+                                 store: Store<T>,
+                                 attribute?: string){
     store.state.language = Language.en;
     registerTranslations(store);
-    expect(element.text()).toBe(englishText);
+    const value = () => attribute ? element.attributes(attribute) : element.text();
+    expect(value()).toBe(englishText);
     store.state.language = Language.fr;
     registerTranslations(store);
-    expect(element.text()).toBe(frenchText);
+    expect(value()).toBe(frenchText);
 }
+
+export const expectTranslated = (element: Wrapper<any>,
+                                 englishText: string,
+                                 frenchText: string,
+                                 store: Store<RootState>,
+                                 attribute?: string) =>
+    expectTranslatedWithStoreType<RootState>(element, englishText, frenchText, store, attribute);
