@@ -25,7 +25,8 @@ class ProjectsController(private val session: Session,
         val projectId = projectRepository.saveNewProject(userId(), name)
 
         //Generate new version id and set it as the session variable, and save new version to db
-        val newVersionId = session.generateNewVersionId()
+        val newVersionId = session.generateVersionId()
+        session.setVersionId(newVersionId)
         versionRepository.saveVersion(newVersionId, projectId)
 
         val version = versionRepository.getVersion(newVersionId)
@@ -44,7 +45,7 @@ class ProjectsController(private val session: Session,
         userIds.forEach {
             val newProjectId = projectRepository.saveNewProject(it, currentProject.name)
             currentProject.versions.forEach {
-                versionRepository.cloneVersion(it.id, session.generateNewVersionId(), newProjectId)
+                versionRepository.cloneVersion(it.id, session.generateVersionId(), newProjectId)
             }
         }
         return SuccessResponse(null).asResponseEntity()
@@ -54,7 +55,8 @@ class ProjectsController(private val session: Session,
     fun newVersion(@PathVariable("projectId") projectId: Int,
                    @RequestParam("parent") parentVersionId: String): ResponseEntity<String>
     {
-        val newVersionId = session.generateNewVersionId()
+        val newVersionId = session.generateVersionId()
+        session.setVersionId(newVersionId)
         versionRepository.copyVersion(parentVersionId, newVersionId, projectId, userId())
         val newVersion = versionRepository.getVersion(newVersionId)
         return SuccessResponse(newVersion).asResponseEntity();
@@ -78,7 +80,7 @@ class ProjectsController(private val session: Session,
         @RequestParam("name") name: String): ResponseEntity<String>
     {
         val newProjectId = projectRepository.saveNewProject(userId(), name)
-        val newVersionId = session.generateNewVersionId()
+        val newVersionId = session.generateVersionId()
         versionRepository.promoteVersion(versionId, newVersionId, newProjectId, userId())
 
         val version = versionRepository.getVersion(newVersionId)
