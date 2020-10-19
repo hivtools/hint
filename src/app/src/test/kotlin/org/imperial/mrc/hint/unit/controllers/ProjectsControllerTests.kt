@@ -214,8 +214,24 @@ class ProjectsControllerTests
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
-    private fun assertExpectedVersion(node: JsonNode)
+    @Test
+    fun `promotes version to project`()
     {
+        val mockVersionRepo = mock<VersionRepository>()
+        val mockProjectRepo = mock<ProjectRepository> {
+            on { getProject(1, "testUser") } doReturn Project(1, "p1", listOf(Version("v1", "createdTime", "updatedTime", 1),
+                    Version("v2", "createdTime", "updatedTime", 1)))
+        }
+        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock())
+        val result = sut.promoteVersion(1, "testVersion", "newProjectName")
+        
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        verify(mockProjectRepo).saveNewProject("testUser", "newProjectName")
+        verify(mockVersionRepo).promoteVersion("testVersion", "testVersion", 0, "testUser")
+        verify(mockVersionRepo).getVersion("testVersion")
+    }
+
+    private fun assertExpectedVersion(node: JsonNode) {
         assertThat(node["id"].asText()).isEqualTo("testVersion")
         assertThat(node["created"].asText()).isEqualTo("createdTime")
         assertThat(node["updated"].asText()).isEqualTo("updatedTime")
