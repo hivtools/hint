@@ -11,7 +11,7 @@ export interface HintrVersionState {
 
 export const initialHintrVersionState = (): HintrVersionState => {
     return {
-        hintrVersion: { hintr: "hintr", naomi: "naomi", rrq: "rrq", traduire: "traduire" }
+        hintrVersion: { hintr: "unknown", naomi: "unknown", rrq: "unknown", traduire: "unknown" }
     }
 };
 
