@@ -41,7 +41,7 @@ describe("LocalStorageManager", () => {
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
             stepper: mockStepperState(),
-            metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
+            metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: DataType.Survey},
             projects: mockProjectsState(),

@@ -14,7 +14,7 @@ export const serialiseState = (rootState: RootState): Partial<RootState> => {
         modelOptions: rootState.modelOptions,
         modelOutput: rootState.modelOutput,
         stepper: rootState.stepper,
-        metadata: {...rootState.metadata},
+        metadata: {...rootState.metadata, plottingMetadataError:null},
         plottingSelections: rootState.plottingSelections,
         surveyAndProgram: {selectedDataType: rootState.surveyAndProgram.selectedDataType} as any,
         projects: rootState.projects,

@@ -30,7 +30,7 @@ describe("Hintr Menu Version", () => {
             store
         });
 
-        expect(wrapper.findAll("a").length).toBe(4);
+        expect(wrapper.findAll("span").length).toBe(4);
     });
 
     it("hintr version menu gets initial version placeholder before getter ", async() => {

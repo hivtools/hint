@@ -1,11 +1,9 @@
 <template>
   <drop-down :text="`v${hintrVersions.naomi}`" :right="true" style="flex: none">
-    <a class="dropdown-item" href="#"> naomi: v{{ hintrVersions.naomi }} </a>
-    <a class="dropdown-item" href="#"> hintr : v{{ hintrVersions.hintr }} </a>
-    <a class="dropdown-item" href="#"> rrq : v{{ hintrVersions.rrq }} </a>
-    <a class="dropdown-item" href="#"
-      >traduire : v{{ hintrVersions.traduire }}</a
-    >
+    <span class="dropdown-item"> naomi    : v{{ hintrVersions.naomi }} </span>
+    <span class="dropdown-item"> hintr    : v{{ hintrVersions.hintr }} </span>
+    <span class="dropdown-item"> rrq      : v{{ hintrVersions.rrq }} </span>
+    <span class="dropdown-item"> traduire : v{{ hintrVersions.traduire }}</span>
   </drop-down>
 </template>
 

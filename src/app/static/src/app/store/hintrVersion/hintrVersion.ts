@@ -15,11 +15,6 @@ export const initialHintrVersionState = (): HintrVersionState => {
     }
 };
 
-export const hintrGetters = {
-    complete: (state: HintrVersionState) => {
-        return state.hintrVersion
-    }
-}
 const namespaced: boolean = true;
 const existingState = localStorageManager.getState();
 
@@ -27,6 +22,5 @@ export const hintrVersion: Module<HintrVersionState, RootState> = {
     namespaced,
     state: { ...initialHintrVersionState(), ...existingState && existingState.hintrVersion },
     actions,
-    mutations,
-    getters: hintrGetters
+    mutations
 };
