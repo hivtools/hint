@@ -10,8 +10,7 @@ import { hintrGetters, hintrVersion, initialHintrVersionState } from "../../../a
 
 describe("Hintr Version", () => {
 
-    const mockMethodHintrVersion = jest.fn();
-    const mockActionHintrVersion = jest.fn();
+    const mockGetHinrVersion = jest.fn();
 
     const createStore = () => {
         const store = new Vuex.Store({
@@ -21,7 +20,7 @@ describe("Hintr Version", () => {
                     namespaced: true,
                     state: mockHintrVersionState(),
                     actions: {
-                        getHintrVersion: mockActionHintrVersion
+                        getHintrVersion: mockGetHinrVersion
                     }
                 }
             }
@@ -46,11 +45,11 @@ describe("Hintr Version", () => {
         const wrapper = shallowMount(HintrVersionMenu, {
             store: store,
             methods: {
-                getHintrVersion: mockMethodHintrVersion
+                getHintrVersion: mockGetHinrVersion
             }
         });
 
-        expect(mockMethodHintrVersion).toHaveBeenCalled()
+        expect(mockGetHinrVersion).toHaveBeenCalled()
 
     });
 

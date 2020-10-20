@@ -6,7 +6,6 @@ import { HintrVersionState } from "./hintrVersion";
 import { HintrVersionMutation } from "./mutations";
 
 export type HintrVersionActionTypes = "HintrVersionFetched"
-export type HintrVersionErrorActionTypes = "HintrVersionError"
 
 export interface HintrVersionActions {
     getHintrVersion: (store: ActionContext<HintrVersionState, RootState>) => void
