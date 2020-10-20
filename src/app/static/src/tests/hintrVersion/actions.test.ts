@@ -4,7 +4,7 @@ import { HintrVersionMutation } from "../../app/store/hintrVersion/mutations";
 
 const rootState = mockRootState();
 
-describe("hintrVersion Action ", ()=> {
+describe("hintrVersion Actions ", ()=> {
 
     beforeEach(() => {
         // stop apiService logging to console
