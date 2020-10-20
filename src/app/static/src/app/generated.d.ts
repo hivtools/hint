@@ -173,7 +173,11 @@ export interface FilterOption {
   id: string;
 }
 export interface HintrVersionResponse {
-  [k: string]: string;
+  hintr: string;
+  naomi: string;
+  rrq: string;
+  traduire: string;
+  [k: string]: any;
 }
 export interface HintrWorkerStatus {
   [k: string]: "BUSY" | "IDLE" | "PAUSED" | "EXITED" | "LOST";

@@ -31,12 +31,13 @@ export const app = new Vue({
         ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
         ...mapActions({loadSurveyAndProgram: 'surveyAndProgram/getSurveyAndProgramData'}),
         ...mapActions({loadModelRun: 'modelRun/getResult'}),
-        ...mapActions({getADRSchemas: 'getADRSchemas'})
+        ...mapActions({getADRSchemas: 'getADRSchemas'}),
     },
     beforeMount: function () {
         this.loadBaseline();
         this.loadSurveyAndProgram();
         this.loadModelRun();
         this.getADRSchemas();
+        
     }
 });
