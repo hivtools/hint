@@ -104,6 +104,40 @@ class ProjectsControllerTests
     }
 
     @Test
+    fun `gets current Project`()
+    {
+        val mockVersions = listOf(Version("testVersion", "createdTime", "updatedTime", 1))
+        val mockProjects = listOf(Project(99, "testProject", mockVersions))
+        val mockProjectRepo = mock<ProjectRepository> {
+            on { getProjects("testUser") } doReturn mockProjects
+        }
+
+        val sut = ProjectsController(mockSession, mock(), mockProjectRepo, mock())
+        val result = sut.getCurrentProject()
+
+        // val resultJson = parser.readTree(result.body)["data"]
+        // val projects = resultJson as ArrayNode
+        // assertThat(projects.count()).isEqualTo(1)
+        // assertThat(projects[0]["id"].asInt()).isEqualTo(99)
+        // assertThat(projects[0]["name"].asText()).isEqualTo("testProject")
+        // val versions = projects[0]["versions"] as ArrayNode
+        // assertThat(versions.count()).isEqualTo(1)
+        // assertExpectedVersion(versions[0])
+
+
+        // assertThat(resultJson["id"].asInt()).isEqualTo(99)
+        // assertThat(resultJson["name"].asText()).isEqualTo("testProject")
+        // val versions = resultJson["versions"] as ArrayNode
+        // assertThat(versions.count()).isEqualTo(1)
+        // assertExpectedVersion(versions[0])
+
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        val resultJson = parser.readTree(result.body)["data"]
+        assertThat(resultJson["name"].asText()).isEqualTo("testProject")
+    }
+
+    @Test
     fun `gets empty projects list if user is guest`()
     {
         val guestSession = mock<Session> {

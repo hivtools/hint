@@ -82,6 +82,44 @@ class ProjectRepositoryTests
     }
 
     @Test
+    fun `can get project from version id`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        versionRepo.saveVersion("v1", projectId)
+        val project = sut.getProjectFromVersionId("v1", uid)
+        assertThat(project.name).isEqualTo("testProjectRepo")
+        assertThat(project.id).isEqualTo(projectId)
+        assertThat(project.versions.count()).isEqualTo(1)
+        assertThat(project.versions[0].versionNumber).isEqualTo(1)
+        assertThat(project.versions[0].id).isEqualTo("v1")
+        assertThat(project.versions[0].created).isNotNull()
+        assertThat(project.versions[0].updated).isNotNull()
+    }
+
+    @Test
+    fun `getProjectFromVersionId throws project exception if version id does not exist`()
+    {
+
+        assertThatThrownBy {
+            sut.getProjectFromVersionId("v1", "uid")
+        }.isInstanceOf(ProjectException::class.java)
+                .hasMessageContaining("projectDoesNotExist")
+    }
+
+    @Test
+    fun `getProjectFromVersionId throws project exception if version id does not belong to user`()
+    {
+        val uid = setupUser()
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        assertThatThrownBy {
+            sut.getProjectFromVersionId("v1", "testProjectRepo")
+        }.isInstanceOf(ProjectException::class.java)
+                .hasMessageContaining("projectDoesNotExist")
+    }
+
+    @Test
     fun `can save new project`()
     {
         val uid = setupUser()
