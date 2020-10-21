@@ -507,6 +507,17 @@ class VersionRepositoryTests
     }
 
     @Test
+    fun `returns false if version does not exist`()
+    {
+        val uid = setupUser()
+        val projectId = setupProject(uid)
+        sut.saveVersion("wrong version Id", projectId)
+
+        val result = sut.versionExists(versionId, uid)
+        assertThat(result).isEqualTo(false)
+    }
+
+    @Test
     fun `can get version details`()
     {
 
