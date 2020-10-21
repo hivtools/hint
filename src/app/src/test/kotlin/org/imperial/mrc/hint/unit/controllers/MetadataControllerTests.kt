@@ -26,13 +26,13 @@ class MetadataControllerTests
     }
 
     @Test
-    fun `get hintr version`()
+    fun `getting hintr version`()
     {
         val mockResponse = mock<ResponseEntity<String>>()
 
         val mockAPIClient = mock<HintrAPIClient>
         {
-            on {getVersion()} doReturn mockResponse
+            on { getVersion() } doReturn mockResponse
         }
 
         val sut = MetadataController(mockAPIClient)

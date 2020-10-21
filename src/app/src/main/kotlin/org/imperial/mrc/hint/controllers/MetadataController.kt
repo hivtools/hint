@@ -9,7 +9,6 @@ import javax.xml.ws.Response
 @RequestMapping("/meta")
 class MetadataController(val apiClient: HintrAPIClient)
 {
-
     @GetMapping("/plotting/{iso3}")
     @ResponseBody
     fun plotting(@PathVariable("iso3") iso3: String): ResponseEntity<String>
@@ -19,8 +18,8 @@ class MetadataController(val apiClient: HintrAPIClient)
 
     @GetMapping("/hintr/version")
     @ResponseBody
-    fun version():ResponseEntity<String>
+    fun version(): ResponseEntity<String>
     {
-        return apiClient.getVersion();
+        return apiClient.getVersion()
     }
 }
