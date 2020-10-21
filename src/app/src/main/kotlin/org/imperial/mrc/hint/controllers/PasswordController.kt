@@ -23,20 +23,29 @@ class TokenException(key: String) : HintException(key, HttpStatus.BAD_REQUEST)
 class PasswordController(private val appProperties: AppProperties,
                          private val userLogic: UserLogic,
                          private val oneTimeTokenManager: OneTimeTokenManager,
-                         private val emailManager: EmailManager) {
+                         private val emailManager: EmailManager)
+{
+
+    companion object
+    {
+        private const val MIN_PASSWORD_LENGTH = 6
+    }
 
     @GetMapping("/forgot-password")
-    fun forgotPassword(model: Model): String {
+    fun forgotPassword(model: Model): String
+    {
         model["title"] = appProperties.applicationTitle
         return "forgot-password"
     }
 
     @PostMapping("/request-reset-link")
     @ResponseBody
-    fun requestResetLink(@RequestParam("email") email: String): String {
+    fun requestResetLink(@RequestParam("email") email: String): String
+    {
         val user = userLogic.getUser(email)
 
-        if (user != null) {
+        if (user != null)
+        {
             emailManager.sendPasswordEmail(email, user.username, PasswordEmailTemplate.ResetPassword())
         }
 
@@ -44,7 +53,8 @@ class PasswordController(private val appProperties: AppProperties,
     }
 
     @GetMapping("/reset-password")
-    fun getResetPassword(@RequestParam("token") token: String, model: Model): String {
+    fun getResetPassword(@RequestParam("token") token: String, model: Model): String
+    {
         model["title"] = appProperties.applicationTitle
         model["token"] = token
         return "reset-password"
@@ -55,8 +65,10 @@ class PasswordController(private val appProperties: AppProperties,
     @Throws(TokenException::class)
     fun postResetPassword(@RequestParam("token") token: String,
                           @RequestParam("password")
-                          password: String): String {
-        if (password.length < 6) {
+                          password: String): String
+    {
+        if (password.length < MIN_PASSWORD_LENGTH)
+        {
             throw HintException("invalidPasswordLength", HttpStatus.BAD_REQUEST)
         }
 

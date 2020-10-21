@@ -5,8 +5,8 @@
            <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>
                <span v-translate="'export'"></span> <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
            </a>
-           <h4 class="mt-4" v-translate="'downloadSummary'"></h4>
-           <a class="btn btn-red btn-lg my-3" :href=summaryUrl>
+           <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
+           <a class="btn btn-red btn-lg my-3" :href=coarseOutputUrl>
                <span v-translate="'download'"></span>  <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
            </a>
        </div>
@@ -22,7 +22,7 @@
     interface Computed {
         modelRunId: string,
         spectrumUrl: string,
-        summaryUrl: string
+        coarseOutputUrl: string
     }
 
     export default Vue.extend<{}, {}, Computed>({
@@ -34,8 +34,8 @@
             spectrumUrl: function() {
                     return `/download/spectrum/${this.modelRunId}`
             },
-            summaryUrl: function() {
-                return `/download/summary/${this.modelRunId}`
+            coarseOutputUrl: function() {
+                return `/download/coarse-output/${this.modelRunId}`
             }
         },
         components: {

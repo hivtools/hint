@@ -10,6 +10,14 @@ describe("Projects actions", () => {
         await login();
     });
 
+    it("can check user exists", async () => {
+        let result = await actions.userExists({rootState} as any, "test.user@example.com");
+        expect(result).toBe(true);
+
+        result = await actions.userExists({rootState} as any, "bad.user@example.com");
+        expect(result).toBe(false);
+    });
+
     it("can create project", async () => {
         const commit = jest.fn();
         await actions.createProject({commit, rootState, state:initialProjectsState()} as any, "v1");
@@ -134,6 +142,28 @@ describe("Projects actions", () => {
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(3);
             expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            done();
+        });
+    });
+
+    it("can promote version", async(done) => {
+        const state = initialProjectsState();
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        
+        await actions.createProject({commit, rootState, state} as any, "v1");
+        expect(commit.mock.calls.length).toBe(2);
+
+        const createdProject = commit.mock.calls[1][0]["payload"];
+        state.currentProject = createdProject;
+        state.currentVersion = createdProject.versions[0];
+        const versionPayload = {version: {projectId: state.currentProject!.id, versionId: state.currentVersion!.id}, name: 'newProject'};
+        
+        const newCommit = jest.fn();
+        await actions.promoteVersion({newCommit, dispatch, state, rootState} as any, versionPayload);
+        setTimeout(() => {
+            expect(newCommit.mock.calls.length).toBe(0);
             expect(dispatch.mock.calls[0][0]).toBe("getProjects");
             done();
         });

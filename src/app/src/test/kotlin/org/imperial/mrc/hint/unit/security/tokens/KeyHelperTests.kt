@@ -1,9 +1,7 @@
 package org.imperial.mrc.hint.unit.security.tokens
 
 import com.nhaarman.mockito_kotlin.*
-import org.aspectj.lang.annotation.After
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.helpers.tmpUploadDirectory
 import org.imperial.mrc.hint.security.tokens.FileManager
 import org.imperial.mrc.hint.security.tokens.KeyFileManager
 import org.imperial.mrc.hint.security.tokens.KeyHelper
@@ -17,16 +15,19 @@ import java.security.interfaces.RSAPublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 
-class KeyHelperTests {
+class KeyHelperTests
+{
 
     private val keyFactory = KeyFactory.getInstance("RSA")
 
-    private fun keyIsEqual(bytes: ByteArray, key: RSAPublicKey): Boolean {
+    private fun keyIsEqual(bytes: ByteArray, key: RSAPublicKey): Boolean
+    {
         val spec = X509EncodedKeySpec(bytes)
         return keyFactory.generatePublic(spec) == key
     }
 
-    private fun keyIsEqual(bytes: ByteArray, key: RSAPrivateKey): Boolean {
+    private fun keyIsEqual(bytes: ByteArray, key: RSAPrivateKey): Boolean
+    {
         val spec = PKCS8EncodedKeySpec(bytes)
         return keyFactory.generatePrivate(spec) == key
     }
@@ -34,19 +35,22 @@ class KeyHelperTests {
     private val tmpDir = "tmp"
 
     @AfterEach
-    fun cleanUp() {
+    fun cleanUp()
+    {
         File(tmpDir).deleteRecursively()
     }
 
     @Test
-    fun `can get KeyPair`() {
+    fun `can get KeyPair`()
+    {
         val result = KeyHelper.keyPair
         assertThat(result.private).isInstanceOf(RSAPrivateKey::class.java)
         assertThat(result.public).isInstanceOf(RSAPublicKey::class.java)
     }
 
     @Test
-    fun `saves KeyPair to disk if directory exists`() {
+    fun `saves KeyPair to disk if directory exists`()
+    {
         val mockFileManager = mock<FileManager> {
             on { exists(any()) } doReturn true
         }
@@ -63,7 +67,8 @@ class KeyHelperTests {
     }
 
     @Test
-    fun `does not try to save KeyPair to disk if directory does not exists`() {
+    fun `does not try to save KeyPair to disk if directory does not exists`()
+    {
         val mockFileManager = mock<FileManager> {
             on { exists(any()) } doReturn false
         }
@@ -77,14 +82,16 @@ class KeyHelperTests {
     }
 
     @Test
-    fun `can tell if directory exists`() {
+    fun `can tell if directory exists`()
+    {
         val sut = KeyFileManager()
         assertThat(sut.exists("nonsense")).isFalse()
         assertThat(sut.exists(".")).isTrue()
     }
 
     @Test
-    fun `can write to file`() {
+    fun `can write to file`()
+    {
         File(tmpDir).mkdir()
         val testFile = File("$tmpDir/test")
         val sut = KeyFileManager()

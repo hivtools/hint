@@ -11,13 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.transaction.annotation.Transactional
-import javax.sql.DataSource
 
-@ActiveProfiles(profiles=["test"])
+@ActiveProfiles(profiles = ["test"])
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @Transactional
-class TokenRepositoryTests {
+class TokenRepositoryTests
+{
 
     @Autowired
     private lateinit var sut: TokenRepository
@@ -56,9 +56,9 @@ class TokenRepositoryTests {
     private fun checkIfTokenExists(): Boolean
     {
         val result = dsl.select()
-                    .from(ONETIME_TOKEN)
-                    .where(ONETIME_TOKEN.TOKEN.eq(TOKEN))
-                    .fetch()
+                .from(ONETIME_TOKEN)
+                .where(ONETIME_TOKEN.TOKEN.eq(TOKEN))
+                .fetch()
 
         return result.count() == 1
 

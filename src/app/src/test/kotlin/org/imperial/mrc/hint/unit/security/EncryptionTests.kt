@@ -1,12 +1,15 @@
 package org.imperial.mrc.hint.unit.security
-import org.junit.jupiter.api.Test
+
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.security.Encryption
+import org.junit.jupiter.api.Test
 
-class EncryptionTests {
+class EncryptionTests
+{
 
     @Test
-    fun `can encrypt and decrypt`() {
+    fun `can encrypt and decrypt`()
+    {
         val plainText = "sometestkey123"
         val sut = Encryption()
         val encrypted = sut.encrypt(plainText)

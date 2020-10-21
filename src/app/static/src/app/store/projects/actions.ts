@@ -9,6 +9,11 @@ import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
 import {Project, VersionDetails, VersionIds} from "../../types";
 
+export interface versionPayload {
+    version: VersionIds,
+    name: string
+}
+
 export interface ProjectsActions {
     createProject: (store: ActionContext<ProjectsState, RootState>, name: string) => void,
     getProjects: (store: ActionContext<ProjectsState, RootState>) => void
@@ -17,9 +22,27 @@ export interface ProjectsActions {
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
     deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
     deleteVersion: (store: ActionContext<ProjectsState, RootState>, versionIds: VersionIds) => void
+    promoteVersion: (store: ActionContext<ProjectsState, RootState>, versionPayload: versionPayload) => void,
+    userExists: (store: ActionContext<ProjectsState, RootState>, email: string) => Promise<boolean>
 }
 
 export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
+
+    // unlike most actions, rather than committing a mutation this returns a boolean
+    // value which can be used directly by the caller
+    async userExists(context, email) {
+        const result = await api(context)
+            .ignoreSuccess()
+            .ignoreErrors()
+            .get<boolean>(`/user/${email}/exists`);
+
+        if (result) {
+            return result.data
+        } else {
+            // an error occurred, probably because the email address wasn't in a valid format
+            return false
+        }
+    },
 
     async createProject(context, name) {
         const {commit, state} = context;
@@ -71,7 +94,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
     async loadVersion(context, version) {
         const {commit, dispatch, state} = context;
-
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<ProjectsMutations, ProjectsMutations>(context)
             .ignoreSuccess()
@@ -114,7 +136,21 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .then(() => {
                 dispatch("getProjects");
             });
-    }
+    },
+
+    async promoteVersion(context, versionPayload: versionPayload) {
+        const {state, dispatch} = context;
+        const {projectId, versionId} = versionPayload.version
+        const name = versionPayload.name
+
+        await api<ProjectsMutations, ErrorsMutation>(context)
+            .ignoreSuccess()
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
+            .postAndReturn(`/project/${projectId}/version/${versionId}/promote`, qs.stringify({name}))
+            .then(() => {
+                dispatch("getProjects");
+            });
+    },
 };
 
 async function immediateUploadVersionState(context: ActionContext<ProjectsState, RootState>) {

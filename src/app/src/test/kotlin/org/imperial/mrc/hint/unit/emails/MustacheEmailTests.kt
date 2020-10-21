@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test
 class MustacheEmailTests
 {
 
-    class TestMustacheEmailTemplate: MustacheEmailTemplate() {
+    class TestMustacheEmailTemplate : MustacheEmailTemplate()
+    {
         override val subject = "Welcome to {{app}}"
+
         //These files are in the resources for the test module
         override val textTemplate = "mustache-email-test.txt"
         override val htmlTemplate = "mustache-email-test.html"
@@ -35,7 +37,7 @@ class MustacheEmailTests
         val result = sut.html
         assertThat(result).isEqualTo("""<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 </head>
 <body>
 This is a test text email with testValue1 and testValue2

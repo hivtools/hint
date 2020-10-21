@@ -4,11 +4,11 @@ import Vue from "vue";
 import {mockProjectsState} from "../../mocks";
 import {shallowMount} from "@vue/test-utils";
 import Projects from "../../../app/components/projects/Projects.vue";
-import ProjectHistory from "../../../app/components/projects/ProjectHistory.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
+import {expectTranslated} from "../../testHelpers";
 
 describe("Projects component", () => {
 
@@ -49,20 +49,31 @@ describe("Projects component", () => {
 
     it("renders as expected with no current project", () => {
         const wrapper = createSut({previousProjects});
+        const store = wrapper.vm.$store;
         expect(wrapper.find(LoadingSpinner).exists()).toBe(false);
         expect(wrapper.find("#projects-content").exists()).toBe(true);
 
-        expect(wrapper.find("#projects-header").text()).toBe("Create a new project");
-        expect(wrapper.find("input").attributes()["placeholder"]).toBe("Project name");
-        expect(wrapper.find("button").text()).toBe("Create project");
+        expectTranslated(wrapper.find("#projects-header"), "Create a new project",
+            "Créer un nouveau projet", store);
+        expectTranslated(wrapper.find("p"), "Your work is organised into projects. Each project contains its own data and settings.",
+            "Votre travail est organisé en projets. Chaque projet contient ses propres données et paramètres.", store);
+        expectTranslated(wrapper.find("input"), "Project name",
+            "Nom du projet", store, "placeholder");
+        expectTranslated(wrapper.find("button"),"Create project",
+            "Créer un projet", store);
         expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
         expect(wrapper.find(ErrorAlert).exists()).toBe(false);
     });
 
     it("renders as expected with current project", () => {
         const wrapper = createSut({currentProject});
+        const store = wrapper.vm.$store;
 
-        expect(wrapper.find("#projects-header").text()).toBe("Create a new project or return to current project (existingProject)");
+        expectTranslated(wrapper.find("p"), "Your work is organised into projects. Each project contains its own data and settings.",
+            "Votre travail est organisé en projets. Chaque projet contient ses propres données et paramètres.", store);
+        expectTranslated(wrapper.find("#projects-header"),
+            "Create a new project or return to current project (existingProject)",
+            "Créer un nouveau projet ou retour au projet actuel (existingProject)", store);
         expect(wrapper.find("#projects-header a").exists()).toBe(true);
     });
 

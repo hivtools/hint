@@ -44,6 +44,7 @@ import {emptyState, storeOptions, RootState} from "../../app/root";
 import { getters as rootGetters } from "../../app/store/root/getters";
 import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {modelCalibrateGetters} from "../../app/store/modelCalibrate/modelCalibrate";
+import {expectTranslated} from "../testHelpers";
 
 const localVue = createLocalVue();
 
@@ -140,11 +141,12 @@ describe("Stepper component", () => {
     });
 
     it("renders loading spinner while states are not ready", () => {
-
         const wrapper = createSut();
+        const store = wrapper.vm.$store;
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
-        expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
+        expectTranslated(wrapper.find("#loading-message"), "Loading your data",
+            "Chargement de vos données", store);
     });
 
     it("renders loading spinner while ready but loadingFromFile", () => {
@@ -156,10 +158,12 @@ describe("Stepper component", () => {
             {ready: true},
             {},
             {loadingState: LoadingState.SettingFiles});
+        const store = wrapper.vm.$store;
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
-        expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
+        expectTranslated(wrapper.find("#loading-message"), "Loading your data",
+            "Chargement de vos données", store);
     });
 
     it("does not render loading spinner once states are ready", () => {
