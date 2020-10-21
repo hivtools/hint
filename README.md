@@ -10,6 +10,8 @@ Requirements:
 * npm
 * openjdk 8
 * coreutils (Mac users only)
+* realpath
+
 
 1. Clone this repo
 1. Run `npm install` from `src/app/static`
