@@ -1,3 +1,4 @@
+dist: bionic
 matrix:
   include:
     - language: java
@@ -8,10 +9,10 @@ matrix:
       - npm install codecov -g
       - npm install --prefix=src/app/static
       - npm run build --prefix=src/app/static
+      - npm run lint --prefix=src/app/static -- --quiet
       before_script:
       - ./src/app/static/scripts/run-dependencies-for-integration-tests.sh
       script:
-      - npm run lint
       - npm test --prefix=src/app/static
       - npm run integration-test --prefix=src/app/static
       after_success:

@@ -11,8 +11,8 @@
                                  :existingFileName="pjnz.existingFileName"
                                  accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
                                  name="pjnz">
-                        <label class="mb-0" v-if="country"><strong v-translate="'country'"></strong>:
-                            {{ country }}</label>
+                        <label class="mb-0" v-if="country">
+                            <strong v-translate="'country'"></strong>: {{ country }}</label>
                     </manage-file>
                     <manage-file label="shape"
                                  :valid="shape.valid"
