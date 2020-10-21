@@ -28,7 +28,7 @@
         formattedTime: string
     }
 
-    export default Vue.extend<{}, {}, Computed, {}>({
+    export default Vue.extend<unknown, unknown, Computed, unknown>({
         computed: {
             display: function() {
                 return !!this.projectName;

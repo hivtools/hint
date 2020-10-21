@@ -27,7 +27,6 @@
 </template>
 <script lang="ts">
     import Vue from "vue";
-    import {BDropdown} from "bootstrap-vue";
     import FileUpload from "./FileUpload.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
@@ -89,7 +88,6 @@
             }
         },
         components: {
-            BDropdown,
             FileUpload,
             LoadingSpinner,
             Tick,

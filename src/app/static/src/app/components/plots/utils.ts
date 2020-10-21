@@ -10,7 +10,7 @@ export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
 
     const colorFunction = colorFunctionFromName(metadata.colour);
 
-    let rangeNum = ((max !== null) && (max != min)) ? //Avoid dividing by zero if only one value...
+    const rangeNum = ((max !== null) && (max != min)) ? //Avoid dividing by zero if only one value...
         max - (min || 0) :
         1;
 
@@ -84,15 +84,15 @@ export const iterateDataValues = function (
     filters: Filter[] | null,
     selectedFilterValues: Dict<FilterOption[]> | null,
     func: (areaId: string,
-           indicatorMeta: ChoroplethIndicatorMetadata, value: number, row: object) => void) {
+           indicatorMeta: ChoroplethIndicatorMetadata, value: number, row: any) => void) {
 
     const selectedFilterValueIds: Dict<string[]> = {};
     const validFilters = filters && selectedFilterValues
-        && filters.filter(f => f.options && f.options.length > 0 && selectedFilterValues!!.hasOwnProperty(f.id));
+        && filters.filter(f => f.options && f.options.length > 0 && selectedFilterValues!.hasOwnProperty(f.id));
 
     if (validFilters) {
         for (const f of validFilters) {
-            selectedFilterValueIds[f.id] = selectedFilterValues!![f.id].map(n => n.id)
+            selectedFilterValueIds[f.id] = selectedFilterValues![f.id].map(n => n.id)
         }
     }
     for (const row of data) {
@@ -162,11 +162,11 @@ const roundToPlaces = function (value: number, decPl: number) {
 // Iteratively passes through the layers of a FilterOption object to find the regional hierarchy above the supplied id
 // Takes param any for obj and returns any because it will iterate through both objects (the NestedFilterOption) and arrays (the array of child options), treating array indices as keys
 export const findPath = function (id: string, obj: any): any {
-  for(var key in obj) {                                         
-      if(obj.hasOwnProperty(key)) {                         
+  for(const key in obj) {
+      if(obj.hasOwnProperty(key)) {
           if(id === obj[key]) return "";                      
           else if(obj[key] && typeof obj[key] === "object") {   
-              var path = findPath(id, obj[key]);               
+              const path = findPath(id, obj[key]);
               if (path != undefined) {
                 return ((obj.label ? obj.label + "/": "") + path).replace(/\/$/, '');   
               }              

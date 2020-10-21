@@ -25,7 +25,7 @@
         coarseOutputUrl: string
     }
 
-    export default Vue.extend<{}, {}, Computed>({
+    export default Vue.extend<unknown, unknown, Computed>({
         name: "downloadResults",
         computed: {
             ...mapStateProps<ModelRunState, keyof Computed>("modelRun", {

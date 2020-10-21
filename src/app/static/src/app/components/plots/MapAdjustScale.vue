@@ -70,14 +70,14 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     import i18next from "i18next";
 
     interface Props {
-        show: Boolean,
+        show: boolean,
         colourScale: ColourScaleSettings,
         step: number
     }
 
     interface Computed {
-        disableCustom: Boolean,
-        invalidMsg: String | null
+        disableCustom: boolean,
+        invalidMsg: string | null
     }
 
     interface Data {

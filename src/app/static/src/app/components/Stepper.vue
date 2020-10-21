@@ -11,6 +11,7 @@
                       @jump="jump">
                 </step>
                 <div class="col step-connector" v-if="step.number < steps.length"
+                     :key="step.number + 'conn'"
                      :class="[{'enabled': isEnabled(step.number + 1)}]">
                     <hr/>
                 </div>
@@ -84,9 +85,9 @@
         loading: boolean
     }
 
-    const namespace: string = 'stepper';
+    const namespace = 'stepper';
 
-    export default Vue.extend<{}, any, ComputedState & ComputedGetters, {}>({
+    export default Vue.extend<unknown, any, ComputedState & ComputedGetters, unknown>({
         computed: {
             ...mapStateProps<StepperState, keyof ComputedState>(namespace, {
                 activeStep: state => state.activeStep,

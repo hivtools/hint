@@ -81,8 +81,8 @@ export const freezer = {
             return Object.freeze(data.map(d => freezer.deepFreeze(d)))
         }
         if (data != null && typeof data === "object") {
-            for (let prop in data) {
-                if (data.hasOwnProperty(prop)) {
+            for (const prop in data) {
+                if (Object.prototype.hasOwnProperty.call(data, prop)) {
                     data[prop] = freezer.deepFreeze(data[prop])
                 }
             }

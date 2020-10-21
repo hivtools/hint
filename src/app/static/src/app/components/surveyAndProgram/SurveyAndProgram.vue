@@ -58,7 +58,7 @@
                                 :area-filter-id="areaFilterId"
                                 :colour-scales="selectedSAPColourScales"
                                 @update="updateChoroplethSelections({payload: $event})"
-                                @updateColourScales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
+                                @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
                     <div>
                         <table-view :tabledata="data"
                                     :area-filter-id="areaFilterId"
@@ -66,7 +66,6 @@
                                     :countryAreaFilterOption="countryAreaFilterOption"
                                     :indicators="filterTableIndicators"
                                     :selections="plottingSelections"
-
                                     :selectedFilterOptions="plottingSelections.selectedFilterOptions"
                         ></table-view>
                     </div>
@@ -90,7 +89,7 @@
     import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
     import ManageFile from "../files/ManageFile.vue";
 
-    const namespace: string = 'surveyAndProgram';
+    const namespace = 'surveyAndProgram';
     interface Data {
         areaFilterId: string
     }
@@ -107,10 +106,9 @@
         features: Feature[],
         featureLevels: LevelLabel[],
         plottingSelections: ChoroplethSelections,
-        selectedIndicator: any[],
-        filterTableIndicators: any[]
+        filterTableIndicators: ChoroplethIndicatorMetadata[]
     }
-    export default Vue.extend<Data, {}, Computed, {}>({
+    export default Vue.extend<Data, unknown, Computed, unknown>({
         name: "SurveyAndProgram",
         data: () => {
             return {
@@ -118,9 +116,6 @@
             };
         },
         computed: {
-            filterTableIndicators(){
-                return this.sapIndicatorsMetadata.filter((val: any):any => val.indicator === this.plottingSelections.indicatorId)
-            },
             ...mapState<RootState>({
                 selectedDataType: ({surveyAndProgram}) => {
                     return surveyAndProgram.selectedDataType;
@@ -158,7 +153,10 @@
             }),
             ...mapGettersByNames(namespace, ["data", "filters", "countryAreaFilterOption"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
-            ...mapGetters("plottingSelections", ["selectedSAPColourScales"])
+            ...mapGetters("plottingSelections", ["selectedSAPColourScales"]),
+            filterTableIndicators(){
+                return this.sapIndicatorsMetadata.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.plottingSelections.indicatorId)
+            }
         },
         methods: {
             ...mapActions({
@@ -174,8 +172,6 @@
                 updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections",
                 updateSAPColourScales: "plottingSelections/updateSAPColourScales",
             }),
-        },
-        created() {
         },
         components: {
             Choropleth,

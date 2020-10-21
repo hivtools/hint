@@ -258,7 +258,7 @@ describe("ModelOutput component", () => {
 
         const choro = wrapper.find(Choropleth);
         const newColourScales = {test: "NEW COLOUR SCALES"};
-        choro.vm.$emit("updateColourScales", newColourScales);
+        choro.vm.$emit("update-colour-scales", newColourScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(newColourScales);
     });
 
@@ -268,7 +268,7 @@ describe("ModelOutput component", () => {
 
         const bubble = wrapper.find(BubblePlot);
         const bubbleColourScales = {test: "NEW BUBBLE COLOUR SCALES"};
-        bubble.vm.$emit("updateColourScales", bubbleColourScales);
+        bubble.vm.$emit("update-colour-scales", bubbleColourScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(bubbleColourScales);
     });
 

@@ -39,7 +39,7 @@
 
     }
 
-    export default Vue.extend<{}, Methods, Computed, Props>({
+    export default Vue.extend<unknown, Methods, Computed, Props>({
         name: "Errors",
         props: {
             title: String

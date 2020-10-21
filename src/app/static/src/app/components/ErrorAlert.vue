@@ -17,7 +17,7 @@
     import {Error} from "../generated";
 
     interface Data {
-        showTrace: Boolean
+        showTrace: boolean
     }
 
     interface Props {
@@ -25,9 +25,9 @@
     }
 
     interface Computed {
-        message: String,
-        hasTrace: Boolean,
-        cssClass: String
+        message: string,
+        hasTrace: boolean,
+        cssClass: string
     }
 
     interface Methods {

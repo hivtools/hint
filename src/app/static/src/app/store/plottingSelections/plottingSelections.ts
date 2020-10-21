@@ -105,7 +105,7 @@ export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
     }
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 const existingState = localStorageManager.getState();
 
 export const plottingSelections: Module<PlottingSelectionsState, RootState> = {

@@ -17,7 +17,7 @@
     interface Props {
         title: string
     }
-    export default Vue.extend<{}, {}, {}, Props>({
+    export default Vue.extend<unknown, unknown, unknown, Props>({
         props: {
             title: String
         },

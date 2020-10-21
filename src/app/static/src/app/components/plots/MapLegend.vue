@@ -1,4 +1,3 @@
-import {ColourScaleType} from "../../store/colourScales/colourScales";
 <template>
     <l-control position="bottomright">
         <div class="legend-container">
@@ -31,11 +30,11 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         roundToContext
     } from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
-    import {ColourScaleSettings, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
+    import {ColourScaleSettings} from "../../store/plottingSelections/plottingSelections";
     import MapAdjustScale from "./MapAdjustScale.vue";
     import {NumericRange} from "../../types";
+    import numeral from 'numeral';
 
-    var numeral = require('numeral');
     interface Props {
         metadata: ChoroplethIndicatorMetadata,
         colourScale: ColourScaleSettings,
@@ -44,17 +43,17 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
 
     interface Level {
         val: number,
-        style: Object
+        style: any
     }
 
     interface Data {
-        showAdjust: Boolean
+        showAdjust: boolean
     }
 
     interface Computed {
         levels: Level[],
         colourScaleStep: number,
-        adjustable: Boolean
+        adjustable: boolean
     }
 
     interface Methods {
@@ -96,7 +95,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                     const indexes = max == min ? [0] : [5, 4, 3, 2, 1, 0];
 
                     return indexes.map((i) => {
-                        let val = min + (i * step);
+                        let val: any = min + (i * step);
                         val = roundToContext(val, [min, max]);
 
                         let valAsProportion =  (max != min) ? (val - min) / (max - min) : 0;

@@ -22,7 +22,6 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {BDropdown} from "bootstrap-vue";
     import {mapGetterByName} from "../../utils";
     import ResetConfirmation from "../ResetConfirmation.vue";
 
@@ -60,7 +59,6 @@
             }
         },
         components: {
-            BDropdown,
             ResetConfirmation
         },
         computed: {
@@ -76,7 +74,7 @@
             },
             uploadSelectedFile() {
                 const fileInput = this.$refs[this.name] as HTMLInputElement;
-                const selectedFile = fileInput.files!![0]!!;
+                const selectedFile = fileInput.files![0]!;
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 this.$emit("uploading");

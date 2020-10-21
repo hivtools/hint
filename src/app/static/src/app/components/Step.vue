@@ -11,11 +11,9 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import Tick from "./Tick.vue";
 
     export default Vue.extend({
-        props: ["active", "number", "textKey", "enabled", "complete"],
-        components: {Tick}
+        props: ["active", "number", "textKey", "enabled", "complete"]
     })
 
 </script>

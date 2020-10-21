@@ -68,7 +68,7 @@
 
     import ProjectsMixin from "./ProjectsMixin";
 
-    export default ProjectsMixin.extend<Data, Methods, Computed, {}>({
+    export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
         computed: {
             ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
                 currentProject: state => state.currentProject,

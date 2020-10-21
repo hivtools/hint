@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col">
                 <ul class="nav nav-tabs col-md-12">
-                    <li v-for="tab in tabs" class="nav-item">
+                    <li v-for="tab in tabs" class="nav-item" :key="tab">
                         <a class="nav-link"
                            :class="selectedTab === tab ? 'active' :  ''"
                            v-on:click="tabSelected(tab)" v-translate="tab">
@@ -25,7 +25,7 @@
                             area-filter-id="area"
                             :colour-scales="colourScales"
                             @update="updateOutputChoroplethSelections({payload: $event})"
-                            @updateColourScales="updateOutputColourScales({payload: $event})"></choropleth>
+                            @update-colour-scales="updateOutputColourScales({payload: $event})"></choropleth>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <table-view class="col-md-9"
@@ -70,7 +70,7 @@
                              area-filter-id="area"
                              :colour-scales="colourScales"
                              @update="updateBubblePlotSelections({payload: $event})"
-                             @updateColourScales="updateOutputColourScales({payload: $event})"></bubble-plot>
+                             @update-colour-scales="updateOutputColourScales({payload: $event})"></bubble-plot>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <table-view class="col-md-9"
@@ -117,7 +117,7 @@
     import {mapState} from "vuex";
     import {ChoroplethIndicatorMetadata} from "../../generated";
 
-    const namespace: string = 'filteredData';
+    const namespace = 'filteredData';
 
     interface Data {
         tabs: string[]
@@ -153,7 +153,7 @@
         filteredBubblePlotIndicators: ChoroplethIndicatorMetadata[],
     }
 
-    export default Vue.extend<Data, Methods, Computed, {}>({
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "ModelOutput",
         created() {
             if (!this.selectedTab) {
@@ -173,6 +173,21 @@
             }
         },
         computed: {
+            ...mapGettersByNames("modelOutput", [
+                "barchartFilters", "barchartIndicators",
+                "bubblePlotFilters", "bubblePlotIndicators",
+                "choroplethFilters", "choroplethIndicators", "countryAreaFilterOption"]),
+            ...mapStateProps<PlottingSelectionsState, keyof Computed>("plottingSelections", {
+                barchartSelections: state => state.barchart,
+                bubblePlotSelections: state => state.bubble,
+                choroplethSelections: state => state.outputChoropleth,
+                colourScales: state => state.colourScales.output
+            }),
+            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
+                    features: state => state.shape!.data.features as Feature[],
+                    featureLevels: state => state.shape!.filters.level_labels || []
+                }
+            ),
             filteredChoroplethIndicators(){
                 return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
             },
@@ -185,10 +200,6 @@
                     ...this.bubblePlotIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.bubblePlotSelections.sizeIndicatorId)
                     ]
             },
-            ...mapGettersByNames("modelOutput", [
-                "barchartFilters", "barchartIndicators",
-                "bubblePlotFilters", "bubblePlotIndicators",
-                "choroplethFilters", "choroplethIndicators", "countryAreaFilterOption"]),
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
             chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
                 return state.result ? state.result.data : [];
@@ -196,17 +207,6 @@
             barchartSelections() {
                 return this.$store.state.plottingSelections.barchart
             },
-            ...mapStateProps<PlottingSelectionsState, keyof Computed>("plottingSelections", {
-                barchartSelections: state => state.barchart,
-                bubblePlotSelections: state => state.bubble,
-                choroplethSelections: state => state.outputChoropleth,
-                colourScales: state => state.colourScales.output
-            }),
-            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
-                    features: state => state.shape!!.data.features as Feature[],
-                    featureLevels: state => state.shape!!.filters.level_labels || []
-                }
-            ),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
             filterConfig() {

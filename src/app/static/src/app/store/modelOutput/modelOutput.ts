@@ -6,7 +6,7 @@ import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
 import {rootOptionChildren} from "../../utils";
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export interface ModelOutputState {
     selectedTab: string
@@ -14,7 +14,7 @@ export interface ModelOutputState {
 
 export const modelOutputGetters = {
     barchartIndicators: (state: ModelOutputState, getters: any, rootState: RootState): BarchartIndicator[] => {
-        return rootState.modelRun.result!!.plottingMetadata.barchart.indicators;
+        return rootState.modelRun.result!.plottingMetadata.barchart.indicators;
     },
     barchartFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
         return outputPlotFilters(rootState);
@@ -46,11 +46,11 @@ export const modelOutputGetters = {
 };
 
 const outputPlotFilters = (rootState: RootState) => {
-    let filters =  [...rootState.modelRun.result!!.plottingMetadata.barchart.filters];
+    let filters =  [...rootState.modelRun.result!.plottingMetadata.barchart.filters];
     const area = filters.find((f: any) => f.id == "area");
     if (area && area.use_shape_regions) {
-        const regions: FilterOption[] = rootState.baseline.shape!!.filters!!.regions ?
-            [rootState.baseline.shape!!.filters!!.regions] : [];
+        const regions: FilterOption[] = rootState.baseline.shape!.filters!.regions ?
+            [rootState.baseline.shape!.filters!.regions] : [];
 
         //remove old, frozen area filter, add new one with regions from shape
         filters = [

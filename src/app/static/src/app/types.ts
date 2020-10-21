@@ -5,7 +5,7 @@ export interface PayloadWithType<T> extends Payload {
     payload: T
 }
 export interface PartialFileUploadProps {
-    valid: Boolean,
+    valid: boolean,
     error: Error | null,
     existingFileName: string
 }

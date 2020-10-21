@@ -54,7 +54,7 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ManageFile from "../files/ManageFile.vue";
 
-    const namespace: string = 'baseline';
+    const namespace = 'baseline';
 
     export default Vue.extend({
         name: "Baseline",

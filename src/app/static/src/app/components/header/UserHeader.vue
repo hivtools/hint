@@ -58,7 +58,7 @@
         troubleFilename: string
     }
 
-    export default Vue.extend<{}, {}, Computed, Props>({
+    export default Vue.extend<unknown, unknown, Computed, Props>({
         computed: {
             helpFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {

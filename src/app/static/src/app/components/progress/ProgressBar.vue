@@ -22,7 +22,7 @@
         cssClass: string
     }
 
-    export default Vue.extend<{}, {}, Computed, { phase: ProgressPhase}>({
+    export default Vue.extend<unknown, unknown, Computed, { phase: ProgressPhase}>({
         props: {
             phase: Object
         },
@@ -32,7 +32,7 @@
             },
             value: function () {
                 if (this.isDeterminate) {
-                    return this.phase.value!!;
+                    return this.phase.value!;
                 }
                 return 1;
             },

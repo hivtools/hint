@@ -48,7 +48,7 @@ export const initialStepperState = (): StepperState => {
 };
 
 
-const namespaced: boolean = true;
+const namespaced = true;
 const existingState = localStorageManager.getState();
 
 export const stepper: Module<StepperState, RootState> = {

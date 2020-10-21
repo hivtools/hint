@@ -6,7 +6,7 @@ import {Error, Response} from "./generated";
 import {TranslatableState} from "./root";
 import i18next from "i18next";
 
-declare var appUrl: string;
+declare let appUrl: string;
 
 export interface ResponseWithType<T> extends Response {
     data: T
@@ -43,9 +43,9 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this._baseUrl + url
     };
 
-    private _ignoreErrors: Boolean = false;
-    private _ignoreSuccess: Boolean = false;
-    private _freezeResponse: Boolean = false;
+    private _ignoreErrors = false;
+    private _ignoreSuccess = false;
+    private _freezeResponse = false;
 
     static getFirstErrorFromFailure = (failure: Response) => {
         if (failure.errors.length == 0) {
@@ -70,7 +70,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this;
     };
 
-    withError = (type: E, root: boolean = false) => {
+    withError = (type: E, root = false) => {
         this._onError = (failure: Response) => {
             this._commit({type: type, payload: APIService.getFirstErrorFromFailure(failure)}, {root});
         };
@@ -87,7 +87,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this;
     };
 
-    withSuccess = (type: S, root: boolean = false) => {
+    withSuccess = (type: S, root = false) => {
         this._onSuccess = (data: any) => {
             const finalData = this._freezeResponse ? freezer.deepFreeze(data) : data;
             const toCommit = {type: type, payload: finalData};

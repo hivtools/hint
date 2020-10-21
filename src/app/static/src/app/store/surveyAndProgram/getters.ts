@@ -34,7 +34,7 @@ export const getters = {
     },
 
     countryAreaFilterOption: (state: SurveyAndProgramState, getters: any, rootState: RootState): FilterOption => {
-    return rootState.baseline.shape!!.filters!!.regions as FilterOption;
+    return rootState.baseline.shape!.filters!.regions as FilterOption;
     },
 
     filters: (state: SurveyAndProgramState, getters: any, rootState: RootState): DisplayFilter[] => {
@@ -51,7 +51,7 @@ export const getters = {
                 id: "area",
                 column_id: "area_id",
                 label: "area",
-                options: rootOptionChildren([rootState.baseline.shape!!.filters!!.regions as FilterOption]),
+                options: rootOptionChildren([rootState.baseline.shape!.filters!.regions as FilterOption]),
                 allowMultiple: true
             });
         }

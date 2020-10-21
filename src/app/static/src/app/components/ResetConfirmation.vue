@@ -6,7 +6,7 @@
 
             <p v-translate="'discardWarning'"></p>
             <ul>
-                <li v-for="step in laterCompleteSteps">
+                <li v-for="step in laterCompleteSteps" :key="step.number">
                     <span v-translate="'step'"></span> {{step.number}}: <span v-translate="step.textKey"></span>
                 </li>
             </ul>
@@ -61,7 +61,7 @@
         waitingForVersion:  boolean
     }
 
-    export default Vue.extend<Data, {}, Computed, any>({
+    export default Vue.extend<Data, unknown, Computed, any>({
         props: ["open", "continueEditing", "cancelEditing"],
         data: function() {
             return {

@@ -16,6 +16,7 @@
     import {LControl} from "vue2-leaflet";
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
+    import numeral from "numeral";
 
     interface Circle {
         y: number,
@@ -46,8 +47,6 @@
         valueScalePointFromRadius: (r: number) => number
         valueFromValueScalePoint: (valueScalePoint: number) => number
     }
-
-    const numeral = require('numeral');
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "SizeLegend",
@@ -92,7 +91,7 @@
             }
         },
         methods: {
-            circleFromRadius: function(r: number, value: number, under: boolean = false){
+            circleFromRadius: function(r: number, value: number, under = false){
                 const y = this.height - r;
 
                 let text = value > 1000 ? numeral(value).format("0.0a") : (+value.toFixed(3)).toString();
