@@ -92,30 +92,4 @@ describe("Projects mutations", () => {
         expect(mockRouterPush.mock.calls.length).toBe(1);
         expect(mockRouterPush.mock.calls[0][0]).toBe("/projects");
     });
-
-    // it("does not push router to projects if guest user", () => {
-    //     const state = mockProjectsState({currentProject: null, currentVersion: null});
-    //     const mockRouterPush = jest.fn();
-    //     router.push = mockRouterPush;
-    //     mutations[ProjectsMutations.SetCurrentProject](state, {payload: false})
-    //     // const wrapper = createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush, {currentUser: 'guest'});
-
-    //     expect(mockRouterPush.mock.calls.length).toBe(0);
-    // });
-
-    // it("does not push router to projects if logged in user and currentProject set", () => {
-    //     const mockRouterPush = jest.fn();
-    //     const projectsState = {currentProject: {id: 1, name: "testProject", versions: []}};
-    //     const wrapper =  createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
-
-    //     expect(mockRouterPush.mock.calls.length).toBe(0);
-    // });
-
-    // it("does not push router to projects if project is loading", () => {
-    //     const mockRouterPush = jest.fn();
-    //     const projectsState = {loading: true};
-    //     const wrapper =  createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
-
-    //     expect(mockRouterPush.mock.calls.length).toBe(0);
-    // });
 });

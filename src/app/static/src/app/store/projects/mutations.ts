@@ -46,7 +46,6 @@ export const mutations: MutationTree<ProjectsState> = {
     [ProjectsMutations.SetCurrentProject](state: ProjectsState, action: PayloadWithType<CurrentProject>) {
         state.currentProject = action.payload.project;
         state.currentVersion = action.payload.version;
-        // console.log('current version and state', state.currentProject, state.currentVersion)
         // The action which invokes this mutation, fetching current project, is only invoked for logged in users
         // so it is safe to redirect to /projects here if no current project
         if ((state.currentProject == null) && (router.currentRoute.path == "/"))
