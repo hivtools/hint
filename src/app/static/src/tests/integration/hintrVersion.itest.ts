@@ -14,7 +14,8 @@ describe("HintrVersion actions", () => {
 
         await actions.getHintrVersion({commit, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe("HintrVersionFetched");
-       
+        expect(commit.mock.calls[0][0]["type"]).not.toBe("PlottingMetadataError");
+        
         const payload = commit.mock.calls[0][0]["payload"] as HintrVersionResponse;
         expect(payload.hintr).toBeDefined();
         expect(payload.naomi).toBeDefined();
