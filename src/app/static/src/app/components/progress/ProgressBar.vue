@@ -1,6 +1,6 @@
 <template>
     <div class="my-2" :class="cssClass">
-        <span class="title">{{title}}</span>
+        <span class="title">{{ title }}</span>
         <tick color="#e31837" v-if="phase.complete" width="20px"></tick>
         <b-progress :max="1" v-if="!phase.complete" :animated="!isDeterminate">
             <b-progress-bar :value="value"></b-progress-bar>
@@ -22,7 +22,7 @@
         cssClass: string
     }
 
-    export default Vue.extend<unknown, unknown, Computed, { phase: ProgressPhase}>({
+    export default Vue.extend<unknown, unknown, Computed, { phase: ProgressPhase }>({
         props: {
             phase: Object
         },

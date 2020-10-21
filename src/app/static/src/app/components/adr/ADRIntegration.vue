@@ -22,7 +22,7 @@
         key: string | null
     }
 
-     export default Vue.extend<unknown, Methods, Computed, unknown>({
+    export default Vue.extend<unknown, Methods, Computed, unknown>({
         components: {adrKey, SelectDataset},
         computed: {
             isGuest: mapGetterByName(null, "isGuest"),

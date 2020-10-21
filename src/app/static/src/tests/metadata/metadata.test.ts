@@ -9,7 +9,7 @@ import {
 
 const testIndicators = [
     {indicator: "art_coverage", name: "ART Coverage"},
-    {indicator:"prevalence", name: "Prevalence"}
+    {indicator: "prevalence", name: "Prevalence"}
 ];
 
 const testChoroMetadata = {
@@ -20,7 +20,7 @@ const testChoroMetadata = {
 
 function testGetsSAPIndicatorsMetadataForDataType(dataType: DataType) {
     let metadataProps = null as any;
-    switch(dataType) {
+    switch (dataType) {
         case(DataType.ANC):
             metadataProps = {anc: testChoroMetadata};
             break;
@@ -32,7 +32,7 @@ function testGetsSAPIndicatorsMetadataForDataType(dataType: DataType) {
             break;
     }
 
-    const metadataState =  mockMetadataState(
+    const metadataState = mockMetadataState(
         {plottingMetadata: mockPlottingMetadataResponse(metadataProps)});
 
     const rootState = mockRootState({surveyAndProgram: mockSurveyAndProgramState({selectedDataType: dataType})});
@@ -56,8 +56,8 @@ describe("Metadata ", () => {
         testGetsSAPIndicatorsMetadataForDataType(DataType.Survey);
     });
 
-    it ("gets empty SAP indicators when there is no metadata", () => {
-        const metadataState =  mockMetadataState(
+    it("gets empty SAP indicators when there is no metadata", () => {
+        const metadataState = mockMetadataState(
             {plottingMetadata: null});
 
         const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, mockRootState(), null);
@@ -84,14 +84,16 @@ describe("Metadata ", () => {
     });
 
     it("gets outputIndicators", () => {
-        const metadataState =  mockMetadataState(
-            {plottingMetadata: mockPlottingMetadataResponse({
+        const metadataState = mockMetadataState(
+            {
+                plottingMetadata: mockPlottingMetadataResponse({
                     output: {
                         choropleth: {
                             indicators: ["TEST OUTPUT INDICATOR"] as any
                         }
                     }
-                })});
+                })
+            });
 
         const result = metadataGetters.outputIndicatorsMetadata(metadataState, null, {} as any, null);
         expect(result).toStrictEqual(["TEST OUTPUT INDICATOR"]);

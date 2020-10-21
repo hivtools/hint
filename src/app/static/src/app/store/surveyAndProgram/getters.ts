@@ -4,7 +4,7 @@ import {DisplayFilter} from "../../types";
 import {FilterOption} from "../../generated";
 import {rootOptionChildren} from "../../utils";
 
-function response(state: SurveyAndProgramState){
+function response(state: SurveyAndProgramState) {
     switch (state.selectedDataType) {
         case (DataType.ANC):
             return state.anc;
@@ -34,7 +34,7 @@ export const getters = {
     },
 
     countryAreaFilterOption: (state: SurveyAndProgramState, getters: any, rootState: RootState): FilterOption => {
-    return rootState.baseline.shape!.filters!.regions as FilterOption;
+        return rootState.baseline.shape!.filters!.regions as FilterOption;
     },
 
     filters: (state: SurveyAndProgramState, getters: any, rootState: RootState): DisplayFilter[] => {
@@ -57,7 +57,7 @@ export const getters = {
         }
 
         const res = response(state);
-        const filters = res ?  res.filters : {} as any;
+        const filters = res ? res.filters : {} as any;
 
         result.push({
             id: "year",

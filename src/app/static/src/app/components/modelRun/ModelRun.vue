@@ -1,4 +1,4 @@
- <template>
+<template>
     <div>
         <button class="btn btn-red btn-lg"
                 v-on:click="run"

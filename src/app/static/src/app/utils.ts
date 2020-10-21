@@ -170,7 +170,7 @@ export const findResource = (datasetWithResources: any, resourceType: string): D
 const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
 
 export const validateEmail = (test: string): boolean => {
-    return emailRegex.test(test.replace(/\s*/g,""))
+    return emailRegex.test(test.replace(/\s*/g, ""))
 }
 
 export const versionLabel = (version: Version) => `v${version.versionNumber}`;

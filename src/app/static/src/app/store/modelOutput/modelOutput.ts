@@ -1,6 +1,6 @@
 import {Module} from "vuex";
 import {RootState} from "../../root";
-import {BarchartIndicator, Filter, DisplayFilter} from "../../types";
+import {BarchartIndicator, DisplayFilter, Filter} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
@@ -23,15 +23,15 @@ export const modelOutputGetters = {
         return rootGetters['metadata/outputIndicatorsMetadata'];
     },
     bubblePlotFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): Filter[] => {
-        return  outputPlotFilters(rootState);
+        return outputPlotFilters(rootState);
     },
     choroplethIndicators: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): ChoroplethIndicatorMetadata[] => {
         return rootGetters['metadata/outputIndicatorsMetadata'];
     },
     choroplethFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): DisplayFilter[] => {
-        const outputFilters =  outputPlotFilters(rootState) as Filter[];
+        const outputFilters = outputPlotFilters(rootState) as Filter[];
         const areaId = "area";
-        return  outputFilters.map(f => {
+        return outputFilters.map(f => {
             return {
                 ...f,
                 allowMultiple: f.id == areaId,
@@ -40,13 +40,13 @@ export const modelOutputGetters = {
         });
     },
     countryAreaFilterOption: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): FilterOption => {
-      const outputFilters =  outputPlotFilters(rootState) as Filter[];
-      return  outputFilters[0].options[0]
+        const outputFilters = outputPlotFilters(rootState) as Filter[];
+        return outputFilters[0].options[0]
     }
 };
 
 const outputPlotFilters = (rootState: RootState) => {
-    let filters =  [...rootState.modelRun.result!.plottingMetadata.barchart.filters];
+    let filters = [...rootState.modelRun.result!.plottingMetadata.barchart.filters];
     const area = filters.find((f: any) => f.id == "area");
     if (area && area.use_shape_regions) {
         const regions: FilterOption[] = rootState.baseline.shape!.filters!.regions ?

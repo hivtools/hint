@@ -4,6 +4,7 @@ import {FilterOption, Error} from "./generated";
 export interface PayloadWithType<T> extends Payload {
     payload: T
 }
+
 export interface PartialFileUploadProps {
     valid: boolean,
     error: Error | null,
@@ -28,7 +29,7 @@ export interface LevelLabel {
 
 export type Dict<V> = { [k: string]: V }
 
-export type IndicatorValuesDict= Dict<IndicatorValues>;
+export type IndicatorValuesDict = Dict<IndicatorValues>;
 
 export type BubbleIndicatorValuesDict = Dict<BubbleIndicatorValues>;
 
@@ -105,7 +106,7 @@ export interface Dataset {
     id: string
     title: string
     url: string,
-    resources:  DatasetResourceSet
+    resources: DatasetResourceSet
 }
 
 export interface ADRSchemas {

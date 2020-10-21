@@ -14,52 +14,52 @@
         </div>
         <div class="row mt-2">
             <div v-if="selectedTab==='map'" id="choropleth-container" class="col-md-12">
-                <choropleth 
-                            :chartdata="chartdata"
-                            :filters="choroplethFilters"
-                            :features="features"
-                            :feature-levels="featureLevels"
-                            :indicators="choroplethIndicators"
-                            :selections="choroplethSelections"
-                            :include-filters="true"
-                            area-filter-id="area"
-                            :colour-scales="colourScales"
-                            @update="updateOutputChoroplethSelections({payload: $event})"
-                            @update-colour-scales="updateOutputColourScales({payload: $event})"></choropleth>
+                <choropleth
+                    :chartdata="chartdata"
+                    :filters="choroplethFilters"
+                    :features="features"
+                    :feature-levels="featureLevels"
+                    :indicators="choroplethIndicators"
+                    :selections="choroplethSelections"
+                    :include-filters="true"
+                    area-filter-id="area"
+                    :colour-scales="colourScales"
+                    @update="updateOutputChoroplethSelections({payload: $event})"
+                    @update-colour-scales="updateOutputColourScales({payload: $event})"></choropleth>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <table-view class="col-md-9"
-                           :tabledata="chartdata"
-                           :area-filter-id="areaFilterId"
-                           :filters="choroplethFilters"
-                           :countryAreaFilterOption="countryAreaFilterOption"
-                           :indicators="filteredChoroplethIndicators"
-                           :selections="choroplethSelections"
-                        
-                           :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
-                        ></table-view>
+                                :tabledata="chartdata"
+                                :area-filter-id="areaFilterId"
+                                :filters="choroplethFilters"
+                                :countryAreaFilterOption="countryAreaFilterOption"
+                                :indicators="filteredChoroplethIndicators"
+                                :selections="choroplethSelections"
+
+                                :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
+                    ></table-view>
                 </div>
             </div>
 
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
                 <bar-chart-with-filters
-                        :chart-data="chartdata"
-                        :filter-config="filterConfig"
-                        :indicators="barchartIndicators"
-                        :selections="barchartSelections"
-                        @update="updateBarchartSelections({payload: $event})" ></bar-chart-with-filters>
+                    :chart-data="chartdata"
+                    :filter-config="filterConfig"
+                    :indicators="barchartIndicators"
+                    :selections="barchartSelections"
+                    @update="updateBarchartSelections({payload: $event})"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <table-view class="col-md-9"
-                            :tabledata="chartdata"
-                            :area-filter-id="areaFilterId"
-                            :filters="barchartFilters"
-                            :countryAreaFilterOption="countryAreaFilterOption"
-                            :indicators="filteredBarchartIndicators"
-                            :selections="barchartSelections"
-                            
-                            :selectedFilterOptions="barchartSelections.selectedFilterOptions"
-                            ></table-view>
+                                :tabledata="chartdata"
+                                :area-filter-id="areaFilterId"
+                                :filters="barchartFilters"
+                                :countryAreaFilterOption="countryAreaFilterOption"
+                                :indicators="filteredBarchartIndicators"
+                                :selections="barchartSelections"
+
+                                :selectedFilterOptions="barchartSelections.selectedFilterOptions"
+                    ></table-view>
                 </div>
             </div>
 
@@ -80,10 +80,10 @@
                                 :countryAreaFilterOption="countryAreaFilterOption"
                                 :indicators="filteredBubblePlotIndicators"
                                 :selections="bubblePlotSelections"
-                                
+
                                 :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
-                                ></table-view>
-                    </div>
+                    ></table-view>
+                </div>
             </div>
         </div>
     </div>
@@ -188,17 +188,17 @@
                     featureLevels: state => state.shape!.filters.level_labels || []
                 }
             ),
-            filteredChoroplethIndicators(){
+            filteredChoroplethIndicators() {
                 return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
             },
-            filteredBarchartIndicators(){
+            filteredBarchartIndicators() {
                 return this.barchartIndicators.filter((val: BarchartIndicator) => val.indicator === this.barchartSelections.indicatorId)
             },
-            filteredBubblePlotIndicators(){
+            filteredBubblePlotIndicators() {
                 return [
                     ...this.bubblePlotIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.bubblePlotSelections.colorIndicatorId),
                     ...this.bubblePlotIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.bubblePlotSelections.sizeIndicatorId)
-                    ]
+                ]
             },
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
             chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {

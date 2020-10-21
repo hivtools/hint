@@ -1,10 +1,10 @@
 <template>
     <div v-if="display" class="text-muted small pl-1">
         <span class="float-right">
-            <span v-translate="'project'"></span>: {{projectName}} {{versionLabel}}
+            <span v-translate="'project'"></span>: {{ projectName }} {{ versionLabel }}
         </span><br/>
         <span v-if="time" class="float-right">
-            <span v-translate="'lastSaved'"></span> {{formattedTime}}
+            <span v-translate="'lastSaved'"></span> {{ formattedTime }}
             <check-icon size="14" class="mb-1"></check-icon>
         </span>
     </div>
@@ -30,16 +30,16 @@
 
     export default Vue.extend<unknown, unknown, Computed, unknown>({
         computed: {
-            display: function() {
+            display: function () {
                 return !!this.projectName;
             },
-            formattedTime: function() {
+            formattedTime: function () {
                 return this.time ? moment(this.time).format('HH:mm') : '';
             },
             time: mapStateProp<ProjectsState, Date | null>(namespace, state => state.versionTime),
             projectName: mapStateProp<ProjectsState, string | null>(namespace, state =>
                 state.currentProject ? state.currentProject.name : null),
-            versionLabel:  mapStateProp<ProjectsState, string | null>(namespace, state =>
+            versionLabel: mapStateProp<ProjectsState, string | null>(namespace, state =>
                 state.currentVersion ? versionLabel(state.currentVersion) : null)
         },
         components: {

@@ -18,7 +18,7 @@ export interface BarchartSelections {
     indicatorId: string,
     xAxisId: string,
     disaggregateById: string,
-    selectedFilterOptions:  Dict<FilterOption[]>
+    selectedFilterOptions: Dict<FilterOption[]>
 
 }
 

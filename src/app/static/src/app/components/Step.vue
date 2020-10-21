@@ -2,7 +2,7 @@
     <div class="col step" :class="[{'active': active, 'complete': complete, 'enabled': enabled}]">
         <button class="btn" :class="[{'btn-red': complete, 'btn-white': enabled && !complete}]"
                 :disabled="!enabled"
-                v-on:click="$emit('jump', number)">{{number}}
+                v-on:click="$emit('jump', number)">{{ number }}
         </button>
         <div class="text-center mt-3" v-translate="textKey"></div>
     </div>

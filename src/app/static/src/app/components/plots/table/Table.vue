@@ -147,7 +147,8 @@
                 return this.areaFilter ? flattenOptions(this.areaFilter.options) : {};
             },
             selectedAreaIds() {
-                const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+                const selectedAreaIdSet =
+                    flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
                 const areaArray = Array.from(selectedAreaIdSet);
                 if (this.selections.detail === 0) {
                     return [areaArray[0]]

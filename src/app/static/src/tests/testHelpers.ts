@@ -57,10 +57,10 @@ export function expectAllMutationsDefined(mutationDefinitions: any, mutationTree
 }
 
 export function expectTranslatedWithStoreType<T extends TranslatableState>(element: Wrapper<any>,
-                                 englishText: string,
-                                 frenchText: string,
-                                 store: Store<T>,
-                                 attribute?: string){
+                                                                           englishText: string,
+                                                                           frenchText: string,
+                                                                           store: Store<T>,
+                                                                           attribute?: string) {
     store.state.language = Language.en;
     registerTranslations(store);
     const value = () => attribute ? element.attributes(attribute) : element.text();

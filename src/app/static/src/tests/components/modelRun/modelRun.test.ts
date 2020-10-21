@@ -162,7 +162,7 @@ describe("Model run component", () => {
 
         const wrapper = mount(ModelRun, {store, localVue});
         expect(wrapper.find(Modal).props().open).toBe(true);
-        expectTranslated(wrapper.find(Modal).find("h4"),"Initialising model fitting",
+        expectTranslated(wrapper.find(Modal).find("h4"), "Initialising model fitting",
             "Initialisation de l'ajustement du modèle", store);
         expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.find(Modal).findAll(ProgressBar).length).toBe(0);

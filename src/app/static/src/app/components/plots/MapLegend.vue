@@ -7,8 +7,8 @@
             <div class="legend-element map-control p-3">
                 <div class="legend" v-for="(level, index) in levels" v-bind:key="index">
                     <i v-bind:style="level.style"></i>
-                    <span class="level">{{level.val}}</span>
-                    <span class="hidden" style="display: none">{{level.style}}</span>
+                    <span class="level">{{ level.val }}</span>
+                    <span class="hidden" style="display: none">{{ level.style }}</span>
                     <br/>
                 </div>
                 <div v-if="adjustable" id="adjust-scale" class="mt-1">
@@ -78,16 +78,16 @@
             }
         },
         computed: {
-            adjustable: function() {
+            adjustable: function () {
                 return !!this.colourScale;
             },
-            colourScaleStep: function() {
-                return this.metadata ? colourScaleStepFromMetadata(this.metadata) :1;
+            colourScaleStep: function () {
+                return this.metadata ? colourScaleStepFromMetadata(this.metadata) : 1;
             },
             levels: function () {
                 if (this.metadata) {
                     const max = this.colourRange.max;
-                    const min =  this.colourRange.min;
+                    const min = this.colourRange.min;
 
                     const colorFunction = colorFunctionFromName(this.metadata.colour);
                     const step = (max - min) / 5;
@@ -98,7 +98,7 @@
                         let val: any = min + (i * step);
                         val = roundToContext(val, [min, max]);
 
-                        let valAsProportion =  (max != min) ? (val - min) / (max - min) : 0;
+                        let valAsProportion = (max != min) ? (val - min) / (max - min) : 0;
                         if (this.metadata.invert_scale) {
                             valAsProportion = 1 - valAsProportion;
                         }
@@ -116,11 +116,11 @@
             }
         },
         methods: {
-            toggleAdjust: function(e: Event) {
+            toggleAdjust: function (e: Event) {
                 e.preventDefault();
                 this.showAdjust = !this.showAdjust;
             },
-            update: function(colourScale: ColourScaleSettings) {
+            update: function (colourScale: ColourScaleSettings) {
                 this.$emit("update", colourScale);
             }
         }

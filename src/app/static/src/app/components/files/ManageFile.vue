@@ -7,7 +7,7 @@
         <slot></slot>
         <label v-if="existingFileName" class="file-name">
             <span>
-                <strong v-translate="'file'"></strong>: {{existingFileName}}
+                <strong v-translate="'file'"></strong>: {{ existingFileName }}
             </span>
             <a class="small float-right"
                href="#"

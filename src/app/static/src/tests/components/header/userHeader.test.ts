@@ -6,7 +6,7 @@ import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import {Language} from "../../../app/store/translations/locales";
 import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import { getters } from "../../../app/store/root/getters";
+import {getters} from "../../../app/store/root/getters";
 import {mockRootState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
 
@@ -26,11 +26,11 @@ const createFrenchStore = () => {
 
 describe("user header", () => {
 
-    const createStore = (partialRootState: Partial<RootState> = {}) => { 
+    const createStore = (partialRootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
-                state: mockRootState(partialRootState),
-                getters: getters
-            });
+            state: mockRootState(partialRootState),
+            getters: getters
+        });
         registerTranslations(store);
         return store
     }
@@ -39,7 +39,8 @@ describe("user header", () => {
         return shallowMount(UserHeader, {
             propsData: {user, title: "Naomi"},
             store: store || createStore({currentUser: user}),
-            stubs: ["router-link"]});
+            stubs: ["router-link"]
+        });
     };
 
     it("contains logout link if current user is not guest", () => {
@@ -57,7 +58,7 @@ describe("user header", () => {
         const store = createStore({currentUser});
         const wrapper = getWrapper(currentUser, store);
         const loginInfo = wrapper.find("span");
-        expectTranslated(loginInfo,"Logged in as someone@email.com",
+        expectTranslated(loginInfo, "Logged in as someone@email.com",
             "Connecté en tant que someone@email.com", store);
     });
 

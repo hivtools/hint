@@ -263,7 +263,7 @@ describe("ModelOutput component", () => {
     });
 
     it("commits updated colour scale from bubble plot", () => {
-        const store = getStore( {selectedTab: "bubble"});
+        const store = getStore({selectedTab: "bubble"});
         const wrapper = shallowMount(ModelOutput, {store, localVue});
 
         const bubble = wrapper.find(BubblePlot);
@@ -337,7 +337,10 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
         const table = wrapper.findAll("table-view-stub").at(1);
-        expect(table.props().selections).toStrictEqual({colorIndicatorId: "art_coverage", sizeIndicatorId: "current_art"});
+        expect(table.props().selections).toStrictEqual({
+            colorIndicatorId: "art_coverage",
+            sizeIndicatorId: "current_art"
+        });
         expect(table.props().indicators).toStrictEqual(
             [
                 {
@@ -366,7 +369,8 @@ describe("ModelOutput component", () => {
             selectedFilterOptions: {
                 region: {id: "r1", label: "region 1"},
                 age: {id: "a1", label: "0-4"}
-            }});
+            }
+        });
         expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
     });

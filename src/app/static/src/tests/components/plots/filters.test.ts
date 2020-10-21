@@ -13,38 +13,56 @@ registerTranslations(store);
 
 const propsData = {
     filters: [
-        { id: "area", label: "Area", column_id: "area_id", allowMultiple: true,
-            options: [{id: "MWI", label: "Malawi", children: [
+        {
+            id: "area", label: "Area", column_id: "area_id", allowMultiple: true,
+            options: [{
+                id: "MWI", label: "Malawi", children: [
                     {id: "MWI_3_1", label: "3.1"},
                     {id: "MWI_4_1", label: "4.1"},
                     {id: "MWI_4_2", label: "4.2"},
                     {id: "MWI_4_3", label: "4.3"}
-                ]}
-            ]},
-        { id: "age", label: "Age", column_id: "age", allowMultiple: false, options: [{id: "0:15", label:"0-15"}, {id: "15:30", label: "15-30"}]},
-        { id: "sex", label: "Sex", column_id: "sex", allowMultiple: false, options: [{id: "female", label:"Female"}, {id: "male", label: "Male"}]}
+                ]
+            }
+            ]
+        },
+        {
+            id: "age",
+            label: "Age",
+            column_id: "age",
+            allowMultiple: false,
+            options: [{id: "0:15", label: "0-15"}, {id: "15:30", label: "15-30"}]
+        },
+        {
+            id: "sex",
+            label: "Sex",
+            column_id: "sex",
+            allowMultiple: false,
+            options: [{id: "female", label: "Female"}, {id: "male", label: "Male"}]
+        }
     ],
     selectedFilterOptions: {
-            age: [{id: "0:15", label:"0-15"}],
-            sex: [{id: "female", label:"Female"}],
-            area: []
-        },
+        age: [{id: "0:15", label: "0-15"}],
+        sex: [{id: "female", label: "Female"}],
+        area: []
+    },
     selectMultipleFilterIds: ["area"]
 };
 
-const getWrapper  = (customPropsData: any = {}) => {
+const getWrapper = (customPropsData: any = {}) => {
     return shallowMount(Filters, {propsData: {...propsData, ...customPropsData}, localVue});
 };
 
 describe("Filters component", () => {
     it("renders multiple values filter", () => {
         const wrapper = getWrapper();
-        expectFilter(wrapper, "filter-area", [], "Area", true,[{id: "MWI", label: "Malawi", children: [
+        expectFilter(wrapper, "filter-area", [], "Area", true, [{
+            id: "MWI", label: "Malawi", children: [
                 {id: "MWI_3_1", label: "3.1"},
                 {id: "MWI_4_1", label: "4.1"},
                 {id: "MWI_4_2", label: "4.2"},
                 {id: "MWI_4_3", label: "4.3"}
-            ] } as any
+            ]
+        } as any
         ]);
     });
 
@@ -52,9 +70,9 @@ describe("Filters component", () => {
         const wrapper = getWrapper();
 
         expectFilter(wrapper, "filter-age", ["0:15"], "Age", false,
-            [{id: "0:15", label:"0-15"}, {id: "15:30", label: "15-30"}]);
+            [{id: "0:15", label: "0-15"}, {id: "15:30", label: "15-30"}]);
         expectFilter(wrapper, "filter-sex", ["female"], "Sex", false,
-            [{id: "female", label:"Female"}, {id: "male", label: "Male"}]);
+            [{id: "female", label: "Female"}, {id: "male", label: "Male"}]);
     });
 
     it("can getSelectedFilterValues", () => {
@@ -68,8 +86,8 @@ describe("Filters component", () => {
         vm.onFilterSelect(propsData.filters[1], [{id: "15:30", label: "15-30"}]);
         const updates = wrapper.emitted("update");
         expect(updates[updates.length - 1][0]).toStrictEqual({
-                ...propsData.selectedFilterOptions,
-                age: [{id: "15:30", label:"15-30"}],
-            });
+            ...propsData.selectedFilterOptions,
+            age: [{id: "15:30", label: "15-30"}],
+        });
     });
 });

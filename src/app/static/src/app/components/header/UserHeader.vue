@@ -3,13 +3,14 @@
         <nav class="navbar navbar-dark bg-secondary">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    {{title}}
+                    {{ title }}
                 </div>
-                <router-link id="projects-link" v-if="!isGuest" to="/projects" class="ml-2 pr-2 border-right" v-translate="'projects'"
+                <router-link id="projects-link" v-if="!isGuest" to="/projects" class="ml-2 pr-2 border-right"
+                             v-translate="'projects'"
                              style="flex:none"></router-link>
                 <file-menu :title="title"></file-menu>
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-light">
-                    <span v-translate="'loggedInAs'"></span> {{user}}
+                    <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <a href="https://forms.gle/QxCT1b4ScLqKPg6a7"
                    target="_blank"
@@ -39,7 +40,7 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import { mapGetters } from 'vuex';
+    import {mapGetters} from 'vuex';
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
