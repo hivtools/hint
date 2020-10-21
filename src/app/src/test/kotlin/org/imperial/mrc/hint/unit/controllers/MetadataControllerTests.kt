@@ -24,4 +24,19 @@ class MetadataControllerTests
         val result = sut.plotting("MWI")
         assertThat(result).isSameAs(mockResponse)
     }
+
+    @Test
+    fun `getting hintr version`()
+    {
+        val mockResponse = mock<ResponseEntity<String>>()
+
+        val mockAPIClient = mock<HintrAPIClient>
+        {
+            on { getVersion() } doReturn mockResponse
+        }
+
+        val sut = MetadataController(mockAPIClient)
+        val result = sut.version()
+        assertThat(result).isSameAs(mockResponse)
+    }
 }
