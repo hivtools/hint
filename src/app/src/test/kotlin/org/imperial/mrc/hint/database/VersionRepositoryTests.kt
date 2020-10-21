@@ -496,10 +496,19 @@ class VersionRepositoryTests
     }
 
     @Test
+    fun `can check version exists`()
+    {
+        val uid = setupUser()
+        val projectId = setupProject(uid)
+        sut.saveVersion(versionId, projectId)
+
+        val result = sut.versionExists(versionId, uid)
+        assertThat(result).isEqualTo(true)
+    }
+
+    @Test
     fun `can get version details`()
     {
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        val soon = now.plusSeconds(5)
 
         val uid = setupUser()
         val projectId = setupProject(uid)
