@@ -10,7 +10,7 @@ Requirements:
 * npm
 * openjdk 8
 * coreutils (Mac users only)
-* realpath
+* realpath (Mac Users only)
 
 
 1. Clone this repo
