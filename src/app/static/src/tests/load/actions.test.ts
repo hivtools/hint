@@ -88,6 +88,33 @@ describe("Load actions", () => {
         expect(dispatch.mock.calls[0][1]).toStrictEqual("TEST STATE");
     });
 
+    it("if not guest, creates project and updates saved State before setting files", async () => {
+        mockAxios.onPost(`/session/files/`)
+            .reply(200, mockSuccess({}));
+
+        const commit = jest.fn();
+        const state = mockLoadState({loadingState: LoadingState.UpdatingState});
+        const dispatch = jest.fn();
+        const testRootState = jest.fn();
+        const rootGetters = {isGuest: false};
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"projects": {}}}));
+
+        await actions.setFiles({commit, state, dispatch, rootState: testRootState, rootGetters} as any,
+            {savedFileContents: fileContents, projectName: "new project"}
+        );
+
+        expect(dispatch.mock.calls[0][0]).toEqual("projects/createProject");
+        expect(dispatch.mock.calls[0][1]).toEqual("new project");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
+        expect(commit.mock.calls[1][0]).toStrictEqual({type: "UpdatingState", payload: {}});
+
+        //should also hand on to updateState action, with updated project state
+        expect(dispatch.mock.calls[1][0]).toEqual("updateStoreState");
+        expect(dispatch.mock.calls[1][1]).toStrictEqual({projects: {}});
+    });
+
     it("calls loadFailed mutation with invalid checksum", async () => {
 
         mockAxios.onPost(`/session/files/`)

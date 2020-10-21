@@ -7,8 +7,7 @@ import {
     mockModelRunState,
     mockPlottingSelections,
     mockStepperState,
-    mockSurveyAndProgramState,
-    mockProjectsState
+    mockSurveyAndProgramState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -17,6 +16,63 @@ import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 
 describe("LocalStorageManager", () => {
+    it("serialiseState removes errors, saves selected data type", async () => {
+        const mockRoot = {
+            baseline: mockBaselineState(),
+            modelRun: mockModelRunState({
+                errors: [mockError("modelRunError1"), mockError("modelRunError2")]
+            }),
+            modelOptions: mockModelOptionsState(),
+            modelOutput: mockModelOutputState(),
+            stepper: mockStepperState(),
+            metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
+            plottingSelections: mockPlottingSelections(),
+            surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey})
+        } as RootState;
+
+        const result = serialiseState(mockRoot);
+        expect(result).toStrictEqual({
+            baseline: {selectedDataset: null},
+            modelRun: mockModelRunState(),
+            modelOptions: mockModelOptionsState(),
+            modelOutput: mockModelOutputState(),
+            stepper: mockStepperState(),
+            metadata: mockMetadataState(),
+            plottingSelections: mockPlottingSelections(),
+            surveyAndProgram: {selectedDataType: DataType.Survey}
+        });
+    });
+
+    it("serialiseState saves selectedDataset from baseline", async () => {
+        const dataset = mockDataset();
+        const mockRoot = {
+            baseline: mockBaselineState({
+                selectedDataset: dataset
+            }),
+            modelRun: mockModelRunState(),
+            modelOptions: mockModelOptionsState(),
+            modelOutput: mockModelOutputState(),
+            stepper: mockStepperState(),
+            metadata: mockMetadataState(),
+            plottingSelections: mockPlottingSelections(),
+            surveyAndProgram: mockSurveyAndProgramState()
+        } as RootState;
+
+        const result = serialiseState(mockRoot);
+        expect(result).toStrictEqual({
+            baseline: {
+                selectedDataset: dataset
+            },
+            modelRun: mockModelRunState(),
+            modelOptions: mockModelOptionsState(),
+            modelOutput: mockModelOutputState(),
+            stepper: mockStepperState(),
+            metadata: mockMetadataState(),
+            plottingSelections: mockPlottingSelections(),
+            surveyAndProgram: {selectedDataType: null}
+        });
+    });
+
     it("returns nothing and saves current user if local storage does not match current user", () => {
         localStorage.setItem("user", currentUser);
         localStorageManager.savePartialState({errors: {errors: [{error: "test", detail: "test"}]}});
