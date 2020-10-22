@@ -15,7 +15,7 @@ export const initialHintrVersionState = (): HintrVersionState => {
     }
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 const existingState = localStorageManager.getState();
 
 export const hintrVersion: Module<HintrVersionState, RootState> = {
