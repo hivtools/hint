@@ -82,7 +82,7 @@ const resetState = (store: Store<RootState>) => {
 
             const type = stripNamespace(mutation.type);
 
-            if (type[0] =="baseline" && BaselineUpdates.includes(type[1] as BaselineMutation)) {
+            if (type[0] == "baseline" && BaselineUpdates.includes(type[1] as BaselineMutation)) {
                 store.commit(RootMutation.ResetSelectedDataType);
                 store.commit(RootMutation.ResetOptions);
                 store.commit(RootMutation.ResetOutputs);

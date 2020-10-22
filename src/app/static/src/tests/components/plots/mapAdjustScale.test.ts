@@ -13,7 +13,8 @@ describe("MapAdjustScale component", () => {
     registerTranslations(store);
 
     it("does not render if show is false", () => {
-        const wrapper = shallowMount(MapAdjustScale, {store, propsData: {
+        const wrapper = shallowMount(MapAdjustScale, {
+            store, propsData: {
                 show: false,
                 colourScale: {}
             }
@@ -22,8 +23,9 @@ describe("MapAdjustScale component", () => {
         expect(wrapper.findAll("div").length).toBe(0);
     });
 
-    it("renders as expected with default scale",  () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {
+    it("renders as expected with default scale", () => {
+        const wrapper = mount(MapAdjustScale, {
+            store, propsData: {
                 show: true,
                 step: 0.1,
                 colourScale: {
@@ -44,7 +46,8 @@ describe("MapAdjustScale component", () => {
     });
 
     it("renders as expected with custom scale", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {
+        const wrapper = mount(MapAdjustScale, {
+            store, propsData: {
                 show: true,
                 step: 0.1,
                 colourScale: {
@@ -71,8 +74,9 @@ describe("MapAdjustScale component", () => {
         expect(wrapper.find("#custom-max-input").attributes("step")).toBe("0.1");
     });
 
-    it("renders as expected with full dynamic scale",  () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {
+    it("renders as expected with full dynamic scale", () => {
+        const wrapper = mount(MapAdjustScale, {
+            store, propsData: {
                 show: true,
                 step: 0.1,
                 colourScale: {
@@ -92,8 +96,9 @@ describe("MapAdjustScale component", () => {
         expect((wrapper.find("#custom-max-input").element as HTMLInputElement).disabled).toBe(true);
     });
 
-    it("renders as expected with filtered dynamic scale",  () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {
+    it("renders as expected with filtered dynamic scale", () => {
+        const wrapper = mount(MapAdjustScale, {
+            store, propsData: {
                 show: true,
                 step: 0.1,
                 colourScale: {
@@ -114,7 +119,8 @@ describe("MapAdjustScale component", () => {
     });
 
     it("emits update event when type changes", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {
+        const wrapper = mount(MapAdjustScale, {
+            store, propsData: {
                 show: true,
                 step: 0.1,
                 colourScale: {
@@ -163,7 +169,8 @@ describe("MapAdjustScale component", () => {
     });
 
     it("emits update event when custom min or max changes", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {
+        const wrapper = mount(MapAdjustScale, {
+            store, propsData: {
                 show: true,
                 step: 0.1,
                 colourScale: {
@@ -194,7 +201,8 @@ describe("MapAdjustScale component", () => {
     });
 
     it("does not emit update event when type is Custom and custom max is not greater than custom min", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {
+        const wrapper = mount(MapAdjustScale, {
+            store, propsData: {
                 show: true,
                 step: 0.1,
                 colourScale: {
@@ -215,7 +223,8 @@ describe("MapAdjustScale component", () => {
     });
 
     it("updates colourScaleToAdjust when colourScale property changes", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {
+        const wrapper = mount(MapAdjustScale, {
+            store, propsData: {
                 show: true,
                 step: 0.1,
                 colourScale: {

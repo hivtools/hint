@@ -4,13 +4,13 @@ import {mockAncResponse, mockError, mockProgramResponse, mockSurveyAndProgramSta
 
 describe("survey and program getters", () => {
 
-    const getTestState = function(values: Partial<SurveyAndProgramState> = {}) {
+    const getTestState = function (values: Partial<SurveyAndProgramState> = {}) {
         return mockSurveyAndProgramState(
             {
                 survey: mockSurveyResponse({
-                        data: "SURVEY" as any,
-                        filters: {year: ["Survey year"], age: ["Survey age"], surveys: ["Survey survey"]} as any
-                    }),
+                    data: "SURVEY" as any,
+                    filters: {year: ["Survey year"], age: ["Survey age"], surveys: ["Survey survey"]} as any
+                }),
                 program: mockProgramResponse({
                     data: "PROGRAM" as any,
                     filters: {year: ["Program year"], age: ["Program age"]} as any
@@ -19,7 +19,8 @@ describe("survey and program getters", () => {
                     data: "ANC" as any,
                     filters: {year: ["ANC year"], age: ["ANC age"]} as any
                 }),
-               ...values});
+                ...values
+            });
     };
 
     const testRootState = {
@@ -32,25 +33,55 @@ describe("survey and program getters", () => {
         }
     };
 
-    const testExpectedFilters = function(dataType: DataType, shouldIncludeSexOptions: boolean) {
+    const testExpectedFilters = function (dataType: DataType, shouldIncludeSexOptions: boolean) {
         const testState = getTestState({selectedDataType: dataType});
 
         const filters = getters.filters(testState, null, testRootState as any);
         expect(filters.length).toBe(5);
-        expect(filters[0]).toStrictEqual({id: "area", column_id: "area_id", label: "area", allowMultiple: true, options: ["REGION OPTIONS"]});
-        expect(filters[1]).toStrictEqual({id: "year", column_id: "year", label: "year", allowMultiple: false, options: [`${DataType[dataType]} year`]});
+        expect(filters[0]).toStrictEqual({
+            id: "area",
+            column_id: "area_id",
+            label: "area",
+            allowMultiple: true,
+            options: ["REGION OPTIONS"]
+        });
+        expect(filters[1]).toStrictEqual({
+            id: "year",
+            column_id: "year",
+            label: "year",
+            allowMultiple: false,
+            options: [`${DataType[dataType]} year`]
+        });
 
         const countryAreaFilterOption = getters.countryAreaFilterOption(testState, null, testRootState as any);
-        expect(countryAreaFilterOption).toStrictEqual({ children: ["REGION OPTIONS"] });
+        expect(countryAreaFilterOption).toStrictEqual({children: ["REGION OPTIONS"]});
 
         const sexFilterOptions = shouldIncludeSexOptions ?
-             [{id: "both", label: "both"},{id: "female", label: "female"},{id: "male", label: "male"}] : [];
-        expect(filters[2]).toStrictEqual({id: "sex", column_id: "sex", label: "sex", allowMultiple: false, options: sexFilterOptions});
+            [{id: "both", label: "both"}, {id: "female", label: "female"}, {id: "male", label: "male"}] : [];
+        expect(filters[2]).toStrictEqual({
+            id: "sex",
+            column_id: "sex",
+            label: "sex",
+            allowMultiple: false,
+            options: sexFilterOptions
+        });
 
-        expect(filters[3]).toStrictEqual({id: "age", column_id: "age_group", label: "age", allowMultiple: false, options: [`${DataType[dataType]} age`]});
+        expect(filters[3]).toStrictEqual({
+            id: "age",
+            column_id: "age_group",
+            label: "age",
+            allowMultiple: false,
+            options: [`${DataType[dataType]} age`]
+        });
 
         const surveyOptions = dataType == DataType.Survey ? [`Survey survey`] : [];
-        expect(filters[4]).toStrictEqual({id: "survey", column_id: "survey_id", label: "survey", allowMultiple: false, options: surveyOptions});
+        expect(filters[4]).toStrictEqual({
+            id: "survey",
+            column_id: "survey_id",
+            label: "survey",
+            allowMultiple: false,
+            options: surveyOptions
+        });
     };
 
     it("gets data when selectedDataType is Survey", () => {

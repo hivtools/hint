@@ -100,7 +100,7 @@
         anc: "ANC"
     }
 
-    export default Vue.extend<Data, Methods, Computed, {}>({
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
                 open: false,
@@ -114,7 +114,7 @@
             hasShapeFile: mapStateProp<BaselineState, boolean>("baseline",
                 (state: BaselineState) => !!state.shape),
             schemas: mapStateProp<RootState, ADRSchemas>(null,
-                (state: RootState) => state.adrSchemas!!),
+                (state: RootState) => state.adrSchemas!),
             selectedDataset: mapStateProp<BaselineState, Dataset | null>("baseline",
                 (state: BaselineState) => state.selectedDataset),
             datasets: mapStateProp<RootState, any[]>(null,
@@ -161,7 +161,7 @@
                 const outOfDateResources: { [k in keyof DatasetResourceSet]?: true } = {};
                 Object.keys(resources).map((k) => {
                     const key = k as keyof DatasetResourceSet;
-                    if (resources[key] && resources[key]!!.outOfDate) {
+                    if (resources[key] && resources[key]!.outOfDate) {
                         outOfDateResources[key] = true;
                     }
                 });
@@ -213,7 +213,7 @@
             async refresh() {
                 this.loading = true;
                 this.open = true;
-                const {pjnz, pop, shape, survey, program, anc} = this.selectedDataset!!.resources;
+                const {pjnz, pop, shape, survey, program, anc} = this.selectedDataset!.resources;
                 await Promise.all([
                     this.outOfDateResources["pjnz"] && pjnz && this.importPJNZ(pjnz.url),
                     this.outOfDateResources["pop"] && pop && this.importPopulation(pop.url),

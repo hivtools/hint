@@ -11,7 +11,7 @@ interface Computed {
     invalidName: boolean
 }
 
-export default Vue.extend<Data, {}, Computed, {}>({
+export default Vue.extend<Data, unknown, Computed, unknown>({
     data() {
         return {
             newProjectName: ""

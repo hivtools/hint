@@ -103,7 +103,7 @@ describe("File menu", () => {
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         let link = wrapper.findAll(".dropdown-item").at(0);
         link.trigger("mousedown");
-        expectTranslated(link,"Save", "Sauvegarder", store as any);
+        expectTranslated(link, "Save", "Sauvegarder", store as any);
 
         const hiddenLink = wrapper.find({ref: "save"});
         expect(hiddenLink.attributes("href")).toBe("http://localhost#1234");
@@ -143,12 +143,12 @@ describe("File menu", () => {
 
     it("opens file dialog on click load", (done) => {
         const store = createStore();
-        const wrapper = mount(FileMenu,{store});
+        const wrapper = mount(FileMenu, {store});
 
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         const link = wrapper.findAll(".dropdown-item").at(1);
-        expectTranslated(link,"Load", "Charger", store as any);
+        expectTranslated(link, "Load", "Charger", store as any);
 
         const input = wrapper.find("input").element as HTMLInputElement;
         input.addEventListener("click", function () {

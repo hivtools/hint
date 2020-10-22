@@ -2,10 +2,12 @@
     <l-control position="bottomleft">
         <div class="map-control p-1">
             <svg :width="width" :height="height">
-                <circle v-for="(circle, index) in circles" :key="'circle-' + index" stroke="#aaa" stroke-width="1" fill-opacity="0"
+                <circle v-for="(circle, index) in circles" :key="'circle-' + index" stroke="#aaa" stroke-width="1"
+                        fill-opacity="0"
                         :r="circle.radius" :cx="midX" :cy="circle.y"></circle>
                 <text v-for="(circle, index) in circles" :key="'text-' + index" text-anchor="middle"
-                      :x="midX" :y="circle.textY">{{circle.text}}</text>
+                      :x="midX" :y="circle.textY">{{ circle.text }}
+                </text>
             </svg>
         </div>
     </l-control>
@@ -16,6 +18,7 @@
     import {LControl} from "vue2-leaflet";
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
+    import numeral from "numeral";
 
     interface Circle {
         y: number,
@@ -47,8 +50,6 @@
         valueFromValueScalePoint: (valueScalePoint: number) => number
     }
 
-    const numeral = require('numeral');
-
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "SizeLegend",
         props: {
@@ -59,22 +60,22 @@
         components: {
             LControl
         },
-        data: function() {
+        data: function () {
             return {
-                steps: [0.1,  0.25, 0.5, 1]
+                steps: [0.1, 0.25, 0.5, 1]
             }
         },
         computed: {
-            width: function() {
+            width: function () {
                 return (this.maxRadius * 2) + 2; //leave room for stroke width
             },
-            height: function() {
+            height: function () {
                 return (this.maxRadius * 2) + 10; //leave room for the top text
             },
-            midX: function() {
+            midX: function () {
                 return this.width / 2;
             },
-            circles: function() {
+            circles: function () {
                 //We treat the minimum circle differently, since the smallest radius is actually likely to cover quite
                 //a wide range of low outliers, so we show the value for the next pixel up and prefix with '<'
                 const nextMinRadius = this.minRadius + 1;
@@ -82,7 +83,7 @@
                 const nextValue = this.valueFromValueScalePoint(valueScalePoint);
                 const minCircle = this.circleFromRadius(this.minRadius, nextValue, true);
 
-                const nonMinCircles =  this.steps.map((s: number) => {
+                const nonMinCircles = this.steps.map((s: number) => {
                     const value = this.indicatorRange.min + (s * (this.indicatorRange.max - this.indicatorRange.min));
                     const r = getRadius(value, this.indicatorRange.min, this.indicatorRange.max, this.minRadius, this.maxRadius);
                     return this.circleFromRadius(r, value, false)
@@ -92,24 +93,24 @@
             }
         },
         methods: {
-            circleFromRadius: function(r: number, value: number, under: boolean = false){
+            circleFromRadius: function (r: number, value: number, under = false) {
                 const y = this.height - r;
 
                 let text = value > 1000 ? numeral(value).format("0.0a") : (+value.toFixed(3)).toString();
-                if (under && text != "0"){
-                    text  = "<" + text;
+                if (under && text != "0") {
+                    text = "<" + text;
                 }
 
-                return {y: y, radius: r, text: text, textY: y-r}
+                return {y: y, radius: r, text: text, textY: y - r}
             },
-            valueScalePointFromRadius: function(r: number) {
-                return (Math.pow(r, 2) - Math.pow(this.minRadius, 2))/
-                            (Math.pow(this.maxRadius, 2) - Math.pow(this.minRadius, 2));
+            valueScalePointFromRadius: function (r: number) {
+                return (Math.pow(r, 2) - Math.pow(this.minRadius, 2)) /
+                    (Math.pow(this.maxRadius, 2) - Math.pow(this.minRadius, 2));
             },
-            valueFromValueScalePoint: function(valueScalePoint: number) {
+            valueFromValueScalePoint: function (valueScalePoint: number) {
                 return (valueScalePoint * (this.indicatorRange.max - this.indicatorRange.min))
-                            + this.indicatorRange.min;
+                    + this.indicatorRange.min;
             }
         }
     });
-</script >
+</script>

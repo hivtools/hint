@@ -22,7 +22,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         const {state, getters, commit, dispatch} = store;
         const completeSteps = state.stepper.steps.map((s: StepDescription) => s.number)
             .filter((i: number) => getters["stepper/complete"][i]);
-        const maxCompleteOrActive = Math.max(...completeSteps, state.stepper!!.activeStep);
+        const maxCompleteOrActive = Math.max(...completeSteps, state.stepper.activeStep);
 
         const invalidSteps = state.stepper.steps.map((s: StepDescription) => s.number)
             .filter((i: number) => i < maxCompleteOrActive && !completeSteps.includes(i));

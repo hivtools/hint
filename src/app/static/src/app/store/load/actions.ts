@@ -32,7 +32,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     load({dispatch}, payload) {
         const {file, projectName} = payload;
         const reader = new FileReader();
-        reader.addEventListener('loadend', function() {
+        reader.addEventListener('loadend', function () {
             dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
         });
         reader.readAsText(file);
@@ -57,7 +57,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const savedState = objectContents.state;
 
         if (!rootGetters.isGuest) {
-            await(dispatch("projects/createProject", projectName, {root: true}));
+            await (dispatch("projects/createProject", projectName, {root: true}));
             savedState.projects.currentProject = rootState.projects.currentProject;
             savedState.projects.currentVersion = rootState.projects.currentVersion;
         }

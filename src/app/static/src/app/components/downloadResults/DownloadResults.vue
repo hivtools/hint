@@ -1,16 +1,18 @@
 <template>
-   <div class="row">
-       <div class="col-sm-12">
-           <h4 v-translate="'exportOutputs'"></h4>
-           <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>
-               <span v-translate="'export'"></span> <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-           </a>
-           <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
-           <a class="btn btn-red btn-lg my-3" :href=coarseOutputUrl>
-               <span v-translate="'download'"></span>  <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-           </a>
-       </div>
-   </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h4 v-translate="'exportOutputs'"></h4>
+            <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>
+                <span v-translate="'export'"></span>
+                <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+            </a>
+            <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
+            <a class="btn btn-red btn-lg my-3" :href=coarseOutputUrl>
+                <span v-translate="'download'"></span>
+                <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+            </a>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -25,16 +27,16 @@
         coarseOutputUrl: string
     }
 
-    export default Vue.extend<{}, {}, Computed>({
+    export default Vue.extend<unknown, unknown, Computed>({
         name: "downloadResults",
         computed: {
             ...mapStateProps<ModelRunState, keyof Computed>("modelRun", {
                 modelRunId: state => state.modelRunId
             }),
-            spectrumUrl: function() {
-                    return `/download/spectrum/${this.modelRunId}`
+            spectrumUrl: function () {
+                return `/download/spectrum/${this.modelRunId}`
             },
-            coarseOutputUrl: function() {
+            coarseOutputUrl: function () {
                 return `/download/coarse-output/${this.modelRunId}`
             }
         },

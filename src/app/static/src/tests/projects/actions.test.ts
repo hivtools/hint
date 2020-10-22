@@ -8,7 +8,7 @@ import {serialiseState} from "../../app/localStorageManager";
 
 describe("Projects actions", () => {
     beforeEach(() => {
-        mockAxios.reset();  
+        mockAxios.reset();
         // stop apiService logging to console
         console.log = jest.fn();
         console.info = jest.fn();
@@ -92,7 +92,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("gets projects and commits mutation on successful response", async(done) => {
+    it("gets projects and commits mutation on successful response", async (done) => {
         const testProjects = [{id: 1, name: "v1", versions: []}];
         mockAxios.onGet("/projects/")
             .reply(200, mockSuccess(testProjects));
@@ -115,7 +115,7 @@ describe("Projects actions", () => {
     it("if current version, createProject uploads current version before post to new project endpoint", async (done) => {
         mockAxios.onPost(`/project/`)
             .reply(200, mockSuccess("TestProject"));
-        mockAxios.onPost( "/project/1/version/version-id/state/")
+        mockAxios.onPost("/project/1/version/version-id/state/")
             .reply(200, mockSuccess("ok"));
 
         const commit = jest.fn();
@@ -135,7 +135,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("gets projects and sets error on unsuccessful response", async(done) => {
+    it("gets projects and sets error on unsuccessful response", async (done) => {
         mockAxios.onGet("/projects/")
             .reply(500, mockFailure("TestError"));
 
@@ -332,7 +332,10 @@ describe("Projects actions", () => {
         setTimeout(() => {
             expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
             const expectedError = {detail: "test error", error: "OTHER_ERROR"};
-            expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.ProjectError, payload: expectedError});
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: ProjectsMutations.ProjectError,
+                payload: expectedError
+            });
             done();
         });
     });
@@ -361,7 +364,10 @@ describe("Projects actions", () => {
         actions.deleteProject({commit, dispatch, state, rootState} as any, 1);
         setTimeout(() => {
             const expectedError = {detail: "TEST ERROR", error: "OTHER_ERROR"};
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ProjectError, payload: expectedError});
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: ProjectsMutations.ProjectError,
+                payload: expectedError
+            });
             done();
         });
     });
@@ -401,7 +407,10 @@ describe("Projects actions", () => {
         actions.deleteVersion({commit, dispatch, state, rootState} as any, {projectId: 1, versionId: "testVersion"});
         setTimeout(() => {
             const expectedError = {detail: "TEST ERROR", error: "OTHER_ERROR"};
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ProjectError, payload: expectedError});
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: ProjectsMutations.ProjectError,
+                payload: expectedError
+            });
             done();
         });
     });
@@ -459,7 +468,10 @@ describe("Projects actions", () => {
         actions.promoteVersion({commit, dispatch, state, rootState} as any, versionPayload);
         setTimeout(() => {
             const expectedError = {detail: "TEST ERROR", error: "OTHER_ERROR"};
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: `errors/${ErrorsMutation.ErrorAdded}`, payload: expectedError});
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: `errors/${ErrorsMutation.ErrorAdded}`,
+                payload: expectedError
+            });
             done();
         });
     });

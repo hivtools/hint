@@ -34,7 +34,7 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
     },
     updateSAPColourScales(state: PlottingSelectionsState, action: PayloadWithType<[DataType, ColourScaleSelections]>) {
         const value = action.payload[1];
-        switch(action.payload[0]) {
+        switch (action.payload[0]) {
             case DataType.Survey:
                 state.colourScales.survey = value;
                 break;

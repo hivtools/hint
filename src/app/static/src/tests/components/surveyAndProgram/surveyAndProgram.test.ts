@@ -67,11 +67,13 @@ describe("Survey and programme component", () => {
                     }),
                     getters: {
                         selectedSAPColourScales: () => {
-                            return {prevalence: {
+                            return {
+                                prevalence: {
                                     type: ColourScaleType.Custom,
                                     customMin: 1,
                                     customMax: 2
-                                }} as ColourScaleSelections
+                                }
+                            } as ColourScaleSelections
                         }
                     },
                     mutations: selectionsMutations
@@ -139,11 +141,13 @@ describe("Survey and programme component", () => {
         expect(choro.props().featureLevels).toBe("TEST LEVEL LABELS");
         expect(choro.props().indicators).toStrictEqual(["TEST INDICATORS"]);
         expect(choro.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
-        expect(choro.props().colourScales).toEqual({prevalence: {
-            type: ColourScaleType.Custom,
+        expect(choro.props().colourScales).toEqual({
+            prevalence: {
+                type: ColourScaleType.Custom,
                 customMin: 1,
                 customMax: 2
-        }});
+            }
+        });
 
     });
 
@@ -197,7 +201,7 @@ describe("Survey and programme component", () => {
 
     it("programme (ART) tab is enabled when programme data is present", () => {
         expectTabEnabled({program: mockProgramResponse(), selectedDataType: DataType.Survey},
-            "ART", "ART",1);
+            "ART", "ART", 1);
     });
 
     it("ANC tab is enabled when ANC data is present", () => {
@@ -282,17 +286,17 @@ describe("Survey and programme component", () => {
         expect(table.props().indicators).toStrictEqual(["TEST INDICATORS"]);
         expect(table.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
         expect(table.props().countryAreaFilterOption).toStrictEqual(
-                {
-                  "children":[
+            {
+                "children": [
                     {
-                      "id": "region 1",
+                        "id": "region 1",
                     },
                     {
-                      "id": "region 2",
+                        "id": "region 2",
                     },
-                  ],
-                  "id": "country",
-                }
+                ],
+                "id": "country",
+            }
         );
     });
 
