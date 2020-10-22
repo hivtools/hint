@@ -32,7 +32,7 @@ class ProjectsControllerTests
 
     private val mockSession = mock<Session> {
         on { getUserProfile() } doReturn mockProfile
-        on { generateNewVersionId() } doReturn "testVersion"
+        on { generateVersionId() } doReturn "testVersion"
         on { userIsGuest() } doReturn false
     }
 

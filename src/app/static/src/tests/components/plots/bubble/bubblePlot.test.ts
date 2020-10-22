@@ -77,7 +77,7 @@ describe("BubblePlot component", () => {
         expect(circles.at(0).props().radius).toEqual(getRadius(10, 1, 20, 10, 70));
         expect(circles.at(0).find(LTooltip).props().content).toEqual(`<div>
                             <strong>North West</strong>
-                            <br/>Prevalence: 0.1
+                            <br/>Prevalence: 10.00%
                             <br/>PLHIV: 10
                         </div>`);
         const meta = propsData.indicators[1];
@@ -90,7 +90,7 @@ describe("BubblePlot component", () => {
         expect(circles.at(1).props().radius).toEqual(getRadius(20, 1, 20, 10, 70));
         expect(circles.at(1).find(LTooltip).props().content).toEqual(`<div>
                             <strong>North East</strong>
-                            <br/>Prevalence: 0.2
+                            <br/>Prevalence: 20.00%
                             <br/>PLHIV: 20
                         </div>`);
         color = getColor(0.2, meta, colourRange);

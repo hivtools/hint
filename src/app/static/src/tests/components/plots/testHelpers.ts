@@ -10,7 +10,10 @@ export const plhiv = {
     min: 1,
     max: 100,
     colour: "interpolateGreys",
-    invert_scale: false
+    invert_scale: false,
+    format: "0,0",
+    scale: 10,
+    accuracy: null
 };
 export const prev = {
     indicator: "prevalence",
@@ -19,7 +22,10 @@ export const prev = {
     min: 0,
     max: 0.8,
     colour: "interpolateGreys",
-    invert_scale: false
+    invert_scale: false,
+    format: "0.00%",
+    scale: 1,
+    accuracy: null
 }
 export const testData = {
     features: [

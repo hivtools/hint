@@ -484,7 +484,7 @@ describe("Choropleth component", () => {
         onEachFeatureFunction(mockFeature, mockLayer);
         expect(mockLayer.bindTooltip.mock.calls[0][0]).toEqual(`<div>
                             <strong>Area 1</strong>
-                            <br/>0.01
+                            <br/>1.00%
                         </div>`);
 
         const mockZeroValueFeature = {
@@ -497,7 +497,7 @@ describe("Choropleth component", () => {
         onEachFeatureFunction(mockZeroValueFeature, mockLayer);
         expect(mockLayer.bindTooltip.mock.calls[1][0]).toEqual(`<div>
                             <strong>Area 2</strong>
-                            <br/>0
+                            <br/>0.00%
                         </div>`);
 
     });
