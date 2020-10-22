@@ -165,8 +165,6 @@
                 return this.nonAreaFilters.filter(f => f.options.length > 0)
             },
             filteredData() {
-                // console.log('table data', this.tabledata)
-                // console.log('indicators', this.indicators)
                 const filteredValues: any[] = [];
                 iterateDataValues(this.tabledata,
                     this.indicators,
@@ -202,7 +200,6 @@
                     }
                     const {value, upper, lower} = current
                     const { indicator, format, scale } = current.indicatorMeta
-                    // console.log(formatOutput(value, format, scale), value, format, scale)
                     displayRows[key][indicator] = formatOutput(value, format, scale);
                     lower ? displayRows[key][`${indicator}_lower`] = formatOutput(lower, format, scale): '';
                     upper ? displayRows[key][`${indicator}_upper`] = formatOutput(upper, format, scale): '';
