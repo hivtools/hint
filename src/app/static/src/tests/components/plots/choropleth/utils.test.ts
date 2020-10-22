@@ -9,7 +9,10 @@ describe("Choropleth utils", () => {
             min: 1.5,
             max: 2.5,
             colour: "interpolateGreys",
-            invert_scale: false
+            invert_scale: false,
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         };
 
         const result = initialiseColourScaleFromMetadata(meta);
