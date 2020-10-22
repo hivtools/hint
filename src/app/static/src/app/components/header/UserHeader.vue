@@ -11,6 +11,7 @@
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-light">
                     <span v-translate="'loggedInAs'"></span> {{user}}
                 </span>
+                <hintr-version-menu class="pr-2 mr-2 border-right"/>
                 <a href="https://forms.gle/QxCT1b4ScLqKPg6a7"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
@@ -47,6 +48,7 @@
     import {RootState} from "../../root";
     import {ProjectsMutations} from "../../store/projects/mutations";
     import {PayloadWithType} from "../../types";
+    import HintrVersionMenu from "./HintrVersionMenu.vue";
 
     interface Props {
         title: string,
@@ -84,7 +86,8 @@
         },
         components: {
             FileMenu,
-            LanguageMenu
+            LanguageMenu,
+            HintrVersionMenu
         }
     })
 </script>
