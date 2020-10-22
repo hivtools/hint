@@ -38,5 +38,6 @@ export const app = new Vue({
         this.loadSurveyAndProgram();
         this.loadModelRun();
         this.getADRSchemas();
+        
     }
 });

@@ -193,7 +193,11 @@ export interface FilterOption {
 }
 
 export interface HintrVersionResponse {
-    [k: string]: string;
+  hintr: string;
+  naomi: string;
+  rrq: string;
+  traduire: string;
+  [k: string]: any;
 }
 
 export interface HintrWorkerStatus {

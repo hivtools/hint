@@ -3,6 +3,7 @@ import {createLocalVue, RouterLinkStub, shallowMount} from "@vue/test-utils";
 import UserHeader from "../../../app/components/header/UserHeader.vue";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
 import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
+import HintrVersionMenu from "../../../app/components/header/HintrVersionMenu.vue";
 import {Language} from "../../../app/store/translations/locales";
 import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
@@ -83,6 +84,12 @@ describe("user header", () => {
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.findAll(LanguageMenu).length).toBe(1);
     });
+
+    it("renders hintr version menu", () => {
+        const store = createStore()
+        const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
+        expect(wrapper.findAll(HintrVersionMenu).length).toBe(1);
+    })
 
     it("contains bug report link", () => {
         const store = createStore()

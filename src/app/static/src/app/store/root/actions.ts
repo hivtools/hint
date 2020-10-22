@@ -8,7 +8,7 @@ import i18next from "i18next";
 import {api} from "../../apiService";
 import qs from "qs";
 
-export interface RootActions extends LanguageActions<RootState> {
+export interface RootActions extends LanguageActions<RootState>{
     validate: (store: ActionContext<RootState, RootState>) => void;
     fetchADRKey: (store: ActionContext<RootState, RootState>) => void;
     saveADRKey: (store: ActionContext<RootState, RootState>, key: string) => void;
