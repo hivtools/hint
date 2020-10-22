@@ -49,16 +49,16 @@ describe("Project history component", () => {
     }
 
     const testProjects = [
-            {
-                id: 1, name: "proj1", versions: [
-                    {id: "s11", created: isoDates[0], updated: isoDates[1], versionNumber: 1},
-                    {id: "s12", created: isoDates[1], updated: isoDates[2], versionNumber: 2}]
-            },
-            {
-                id: 2, name: "proj2", versions: [
-                    {id: "s21", created: isoDates[2], updated: isoDates[3], versionNumber: 1}]
-            }
-        ];
+        {
+            id: 1, name: "proj1", versions: [
+                {id: "s11", created: isoDates[0], updated: isoDates[1], versionNumber: 1},
+                {id: "s12", created: isoDates[1], updated: isoDates[2], versionNumber: 2}]
+        },
+        {
+            id: 2, name: "proj2", versions: [
+                {id: "s21", created: isoDates[2], updated: isoDates[3], versionNumber: 1}]
+        }
+    ];
 
     const getWrapper = (projects = testProjects) => {
         return mount(ProjectHistory, {store: createStore(projects), stubs: ["share-project"]});
@@ -78,25 +78,22 @@ describe("Project history component", () => {
         expect(v.at(1).text()).toBe(name);
         expect(v.at(2).text()).toBe(versionsCount === 1 ? "1 version" : `${versionsCount} versions`);
         expect(v.at(3).text()).toBe(formatDateTime(updatedIsoDate));
-        expectTranslated(v.at(4),"Load", "Charger", store);
+        expectTranslated(v.at(4), "Load", "Charger", store);
         expect(v.at(4).find("a").attributes("href")).toBe("");
         expectTranslated(v.at(5), "Delete", "Supprimer", store);
         if (switches.promoteProject) {
             expectTranslated(v.at(6), "Copy last updated to a new project", "Copier la dernière mise à jour dans un nouveau projet", store);
             expect(v.at(6).find("a").attributes("href")).toBe("");
-        }
-        else {
+        } else {
             if (switches.shareProject) {
                 expect(v.at(6).findAll(ShareProject).length).toBe(1);
-            }
-            else {
+            } else {
                 expect(v.length).toBe(6);
             }
         }
         if (switches.shareProject) {
             expect(wrapper.findAll(ShareProject).length).toBeGreaterThan(0);
-        }
-        else {
+        } else {
             expect(wrapper.findAll(ShareProject).length).toBe(0);
         }
         const versions = wrapper.find(`#versions-${id}`);
@@ -112,14 +109,13 @@ describe("Project history component", () => {
         expect(cells.at(1).text()).toBe(`v${versionNumber}`);
         expect(cells.at(2).text()).toBe(formatDateTime(updatedIsoDate));
         const loadLink = cells.at(3).find("a");
-        expectTranslated(loadLink,"Load", "Charger", store);
+        expectTranslated(loadLink, "Load", "Charger", store);
         const deleteLink = cells.at(4).find("a");
         expectTranslated(deleteLink, "Delete", "Supprimer", store);
         if (switches.promoteProject) {
             const copyLink = cells.at(5).find("a");
             expectTranslated(copyLink, "Copy to a new project", "Copier dans un nouveau projet", store);
-        }
-        else {
+        } else {
             expect(cells.length).toBe(5);
         }
     };
@@ -204,8 +200,8 @@ describe("Project history component", () => {
         expect(modal.classes()).toContain("show");
         expectTranslated(modal.find(".modal-body"), "Delete project?", "Supprimer ce projet?", store);
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0),"OK", "OK", store);
-        expectTranslated(buttons.at(1),"Cancel", "Annuler", store);
+        expectTranslated(buttons.at(0), "OK", "OK", store);
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
     });
 
     it("shows modal when click delete version link", async () => {
@@ -219,8 +215,8 @@ describe("Project history component", () => {
         expect(modal.classes()).toContain("show");
         expectTranslated(modal.find(".modal-body"), "Delete version?", "Supprimer cette version?", store);
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0),"OK", "OK", store);
-        expectTranslated(buttons.at(1),"Cancel", "Annuler", store);
+        expectTranslated(buttons.at(0), "OK", "OK", store);
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
     });
 
     it("invokes deleteProject action when confirm delete", async () => {
@@ -269,7 +265,7 @@ describe("Project history component", () => {
         expect(modal.classes).not.toContain("show");
     });
 
-    const testLoadVersionLink = async function(elementId: string, projectId: number, versionId: string) {
+    const testLoadVersionLink = async function (elementId: string, projectId: number, versionId: string) {
 
         const wrapper = getWrapper(testProjects);
         const versionLink = wrapper.find("#versions-1").find("a");
@@ -352,11 +348,13 @@ describe("Project history component", () => {
 
             expect(mockPromoteVersion.mock.calls.length).toBe(1);
             expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
-            {"name": "newProject",
-            "version": {
-                "projectId": 1,
-                "versionId": "s11",
-            }});
+                {
+                    "name": "newProject",
+                    "version": {
+                        "projectId": 1,
+                        "versionId": "s11",
+                    }
+                });
         }
     });
 

@@ -7,9 +7,9 @@ import {SurveyAndProgramMutation} from "./mutations";
 import qs from 'qs';
 
 export interface SurveyAndProgramActions {
-    importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: String) => void,
-    importProgram: (store: ActionContext<SurveyAndProgramState, RootState>, url: String) => void,
-    importANC: (store: ActionContext<SurveyAndProgramState, RootState>, url: String) => void,
+    importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
+    importProgram: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
+    importANC: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
     uploadSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
     uploadProgram: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
     uploadANC: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void

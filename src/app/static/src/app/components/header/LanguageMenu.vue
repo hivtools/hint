@@ -23,7 +23,7 @@
         currentLanguage: string
     }
 
-    export default Vue.extend<{}, Methods, Computed, {}>({
+    export default Vue.extend<unknown, Methods, Computed, unknown>({
         computed: {
             currentLanguage: mapStateProp<RootState, string>(null,
                 (state: RootState) => state.language.toUpperCase())

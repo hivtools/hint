@@ -13,7 +13,7 @@
 }
 
 .legend-element a {
-  color:  $theme-red;
+  color: $theme-red;
 }
 
 .legend i {
@@ -33,7 +33,7 @@
   width: 190px;
 }
 
-.legend-adjust input[type='number']{
+.legend-adjust input[type='number'] {
   width: 4rem;
   outline: none;
 }
@@ -65,7 +65,7 @@
   height: calc(1.5em + 0.75rem + 2px);
 }
 
-.vue-treeselect--disabled .vue-treeselect__single-value{
+.vue-treeselect--disabled .vue-treeselect__single-value {
   color: $gray-500;
 }
 
@@ -104,5 +104,5 @@
 
 .geojson-grey {
   @extend .geojson;
-  fill: rgb(200,200,200);
+  fill: rgb(200, 200, 200);
 }

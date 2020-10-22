@@ -1,4 +1,5 @@
 import {localStorageManager} from "../../app/localStorageManager";
+
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 localStorage.setItem("user", currentUser);
 localStorageManager.saveState({

@@ -1,5 +1,6 @@
 import {initialiseColourScaleFromMetadata} from "../../../../app/components/plots/choropleth/utils";
 import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
+
 describe("Choropleth utils", () => {
     it("initialiseColourScaleFromMetatata sets min and max from meta", () => {
         const meta = {

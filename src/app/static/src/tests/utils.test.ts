@@ -124,13 +124,13 @@ describe("utils", () => {
         expect(result).toStrictEqual(new Set(["1", "2", "3"]));
     });
 
-    it ("rootOptionChildren returns expected filter options", () => {
+    it("rootOptionChildren returns expected filter options", () => {
         const regionOptions = [
             {id: "region1", label: "Region 1"},
             {id: "region2", label: "Region 2"}
         ];
 
-        const options = [{id: "country", label: "Country", children:regionOptions }];
+        const options = [{id: "country", label: "Country", children: regionOptions}];
 
         const result = rootOptionChildren(options);
         expect(result).toStrictEqual(regionOptions);
