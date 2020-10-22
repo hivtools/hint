@@ -7,8 +7,7 @@ import { HintrVersionState } from './hintrVersion';
 
 
 export enum HintrVersionMutation {
-    HintrVersionFetched = "HintrVersionFetched",
-    HintrVersionError = "HintrVersionError"
+    HintrVersionFetched = "HintrVersionFetched"
 }
 
 export const mutations: MutationTree<HintrVersionState> = {
