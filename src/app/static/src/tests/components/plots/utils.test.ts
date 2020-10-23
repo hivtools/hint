@@ -516,22 +516,9 @@ describe("plot utils", () => {
                         children: []
                     }
                 ]
-            // }
-        //   ]
-        // },
-        // {
-        //   id: 'MWI12',
-        //   label: 'Region 2',
-        //   children: [
-        //     {
-        //       id: 'MWI121',
-        //       label: 'City 3',
-        //       children: []
-        //     }
-        //   ]
-        }
-      ]
-  }
+            }
+        ]
+    }
 
   it("findPath produces expected result when MWI111 selected", () => {
     const result = findPath('MWI111', dataset);
@@ -549,24 +536,6 @@ describe("plot utils", () => {
     const result = findPath('MWI111', {...dataset.children});
     expect(result).toEqual("Region 1");
   });
-
-//   it("findPath produces expected result when MWI111 selected", () => {
-//     const result = findPath('MWI111', dataset);
-//     expect(result).toEqual("Malawi/Region 1");
-// });
-// it("findPath produces expected result when MWI1 selected", () => {
-//     const result = findPath('MWI1', dataset);
-//     expect(result).toEqual("");
-// });
-// it("findPath produces expected result when MWI12 selected", () => {
-//     const result = findPath('MWI12', dataset);
-//     expect(result).toEqual("Malawi");
-// });
-// it("findPath produces expected result when MWI111 selected and begins in children array", () => {
-//     const result = findPath('MWI111', {...dataset.children});
-//     expect(result).toEqual("Region 1");
-// });
-
 
   it("it can formatOutput correctly", () => {
     expect(formatOutput(11111, '0,0', 1, 10)).toStrictEqual('11,110');

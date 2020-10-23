@@ -283,7 +283,7 @@
                         const area_name = feature.properties && feature.properties["area_name"];
 
                         const values = featureIndicators[area_id];
-                        const value = values && values!!.value;
+                        const value = values && values!.value;
                         
                         const stringVal = (value || value === 0) ? value.toString() : "";
                         layer.bindTooltip(`<div>
