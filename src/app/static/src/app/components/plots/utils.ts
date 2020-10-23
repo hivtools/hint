@@ -189,19 +189,25 @@ export const findPath = function (id: string, obj: any): any {
 
 var numeral = require('numeral')
 
-export const formatOutput = function (value: number | string, format: string, scale: number) {
+export const formatOutput = function (value: number | string, format: string, scale: number, accuracy: number | null) {
     let ans: number
+
     if (typeof(value) === 'string'){
         ans = parseFloat(value)
     } else ans = value
-    if (!format.includes('%')){
-        ans = Math.round(ans / scale) * scale
+
+    if (!format.includes('%') && scale){
+        ans = ans * scale
+    }
+
+    if (!format.includes('%') && accuracy){
+        ans = Math.round(ans / accuracy) * accuracy
     }
     return numeral(ans).format(format)
 };
 
 interface Indicator {
-    indicator: string, format: string, scale: number
+    indicator: string, format: string, scale: number, accuracy: number | null
 }
 
 export const findMetaData = function(indicators: Indicator[], indicatorId: string){

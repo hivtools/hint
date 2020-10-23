@@ -160,7 +160,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('PLHIV (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('10');
+        expect(wrapper.findAll('td').at(3).text()).toBe('100');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
     it('renders correct markup when 3.2 is selected only', () => {

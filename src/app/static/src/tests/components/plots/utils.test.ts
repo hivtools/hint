@@ -569,9 +569,10 @@ describe("plot utils", () => {
 
 
   it("it can formatOutput correctly", () => {
-    expect(formatOutput(11111, '0,0', 10)).toStrictEqual('11,110');
-    expect(formatOutput(0.01, '0.00%', 1)).toStrictEqual('1.00%');
-    expect(formatOutput('0.01', '0.00%', 10)).toStrictEqual('1.00%');
+    expect(formatOutput(11111, '0,0', 1, 10)).toStrictEqual('11,110');
+    expect(formatOutput(11111, '0,0', 10, 1)).toStrictEqual('111,110');
+    expect(formatOutput(0.01, '0.00%', 1, null)).toStrictEqual('1.00%');
+    expect(formatOutput('0.01', '0.00%', 10, null)).toStrictEqual('1.00%');
   });
 
   it("it can findMetaData correctly", () => {
