@@ -131,7 +131,7 @@ export const testData = {
         }
     ],
     indicators: [
-       {...plhiv}, {...prev}
+        {...plhiv}, {...prev}
     ],
     areaFilterId: "area",
     filters: [

@@ -7,7 +7,7 @@
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
             <l-map ref="map" style="height: 800px; width: 100%">
                 <template v-for="feature in currentFeatures">
-                    <l-geo-json ref=""
+                    <l-geo-json ref="" :key="feature.id"
                                 :geojson="feature"
                                 :options="options"
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">
@@ -31,10 +31,9 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import Treeselect from '@riophae/vue-treeselect';
     import {Feature} from "geojson";
-    import {LGeoJson, LMap, LTooltip} from "vue2-leaflet";
-    import {GeoJSON, Layer} from "leaflet";
+    import {LGeoJson, LMap} from "vue2-leaflet";
+    import {GeoJSON, Layer, GeoJSONOptions} from "leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import Filters from "../Filters.vue";
@@ -98,7 +97,7 @@
         selectedAreaFeatures: Feature[],
         selectedAreaIds: string[],
         colorIndicator: ChoroplethIndicatorMetadata,
-        options: L.GeoJSONOptions
+        options: GeoJSONOptions
     }
 
     const props = {
@@ -136,11 +135,9 @@
         components: {
             LMap,
             LGeoJson,
-            LTooltip,
             MapControl,
             MapLegend,
-            Filters,
-            Treeselect
+            Filters
         },
         props: props,
         data(): Data {
@@ -164,18 +161,18 @@
                     case  ColourScaleType.DynamicFull:
                         if (!this.fullIndicatorRanges.hasOwnProperty(indicator)) {
                             // cache the result in the fullIndicatorRanges object for future lookups
+                            /* eslint vue/no-side-effects-in-computed-properties: "off" */
                             this.fullIndicatorRanges[indicator] =
                                 getIndicatorRange(this.chartdata, this.colorIndicator)
                         }
                         return this.fullIndicatorRanges[indicator];
                     case  ColourScaleType.DynamicFiltered:
-                        const selectedCurrentLevelAreaIds = this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
                         return getIndicatorRange(
                             this.chartdata,
                             this.colorIndicator,
                             this.nonAreaFilters,
                             this.selections.selectedFilterOptions,
-                            selectedCurrentLevelAreaIds
+                            this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
                         );
                     case ColourScaleType.Custom:
                         return {
@@ -220,7 +217,7 @@
                 });
 
                 this.features.forEach((feature: Feature) => {
-                    const adminLevel = parseInt(feature.properties!!["area_level"]); //Country (e.g. "MWI") is level 0
+                    const adminLevel = parseInt(feature.properties!["area_level"]); //Country (e.g. "MWI") is level 0
                     if (result[adminLevel]) {
                         result[adminLevel].push(feature);
                     }
@@ -237,13 +234,13 @@
                 return this.featuresByLevel[this.selections.detail] || [];
             },
             currentLevelFeatureIds() {
-                return this.currentFeatures.map(f => f.properties!!["area_id"]);
+                return this.currentFeatures.map(f => f.properties!["area_id"]);
             },
             indicatorNameLookup() {
                 return toIndicatorNameLookup(this.indicators)
             },
             areaFilter() {
-                return this.filters.find((f: Filter) => f.id == this.areaFilterId)!!;
+                return this.filters.find((f: Filter) => f.id == this.areaFilterId)!;
             },
             nonAreaFilters() {
                 return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
@@ -260,12 +257,12 @@
             },
             selectedAreaFeatures(): Feature[] {
                 if (this.initialised) {
-                    return this.selectedAreaFilterOptions.map(o => this.getFeatureFromAreaId(o.id)!!);
+                    return this.selectedAreaFilterOptions.map(o => this.getFeatureFromAreaId(o.id)!);
                 }
                 return [];
             },
             colorIndicator(): ChoroplethIndicatorMetadata {
-                return this.indicators.find(i => i.indicator == this.selections.indicatorId)!!;
+                return this.indicators.find(i => i.indicator == this.selections.indicatorId)!;
             },
             indicatorColourScale(): ColourScaleSettings | null {
                 const current = this.colourScales[this.selections.indicatorId];
@@ -336,12 +333,12 @@
                 }
             },
             showColor(feature: Feature) {
-                return !!this.featureIndicators[feature.properties!!.area_id] &&
-                    !!this.featureIndicators[feature.properties!!.area_id];
+                return !!this.featureIndicators[feature.properties!.area_id] &&
+                    !!this.featureIndicators[feature.properties!.area_id];
             },
             getColor: function (feature: Feature) {
                 if (this.showColor(feature)) {
-                    return this.featureIndicators[feature.properties!!.area_id].color;
+                    return this.featureIndicators[feature.properties!.area_id].color;
                 } else {
                     //show a lighter grey than the outlines if no data
                     //so unselected regions are still distinguishable
@@ -363,12 +360,10 @@
             updateColourScale: function (colourScale: ColourScaleSettings) {
                 const newColourScales = {...this.colourScales};
                 newColourScales[this.selections.indicatorId] = colourScale;
-
-                this.$emit("updateColourScales", newColourScales);
-
+                this.$emit("update-colour-scales", newColourScales);
             },
             getFeatureFromAreaId(areaId: string): Feature {
-                return this.features.find((f: Feature) => f.properties!!.area_id == areaId)!!;
+                return this.features.find((f: Feature) => f.properties!.area_id == areaId)!;
             },
             normalizeIndicators(node: ChoroplethIndicatorMetadata) {
                 return {id: node.indicator, label: node.name};

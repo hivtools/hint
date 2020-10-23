@@ -8,7 +8,7 @@ import {emptyState, storeOptions, RootState} from "../../app/root";
 import {mockErrorsState, mockProjectsState, mockRootState} from "../mocks";
 import {mutations as versionsMutations} from "../../app/store/projects/mutations";
 import {mutations as errorMutations} from "../../app/store/errors/mutations";
-import { getters } from "../../app/store/root/getters";
+import {getters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
 
 const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState> = {}) => {
@@ -67,9 +67,9 @@ describe("Reset confirmation modal", () => {
         expectRenderedSteps(rendered);
 
         const buttons = rendered.findAll("button");
-        expectTranslated(buttons.at(0),"Discard these steps and keep editing",
+        expectTranslated(buttons.at(0), "Discard these steps and keep editing",
             "Ignorer ces étapes et poursuivre la modification", store);
-        expectTranslated(buttons.at(1),"Cancel editing so I can save my work",
+        expectTranslated(buttons.at(1), "Cancel editing so I can save my work",
             "Annuler l'édition pour que je puisse sauvegarder mon travail", store);
 
         expect(rendered.find(LoadingSpinner).exists()).toBe(false);
@@ -154,7 +154,7 @@ describe("Reset confirmation modal", () => {
         expect(mockNewVersion.mock.calls.length).toBe(1);
     });
 
-    it("when currentVersion changes, sets waitingForVersion to false and invokes continue editing, if waitingForVersion is true",  async () => {
+    it("when currentVersion changes, sets waitingForVersion to false and invokes continue editing, if waitingForVersion is true", async () => {
         const mockContinueEditing = jest.fn();
         const rendered = mount(ResetConfirmation, {
             data() {
@@ -259,7 +259,7 @@ describe("Reset confirmation modal", () => {
             "Étape 2: Télécharger les données d'enquête et de programme", store);
         expectTranslated(steps.at(1), "Step 3: Model options",
             "Étape 3: Options des modèles", store);
-        expectTranslated(steps.at(2),"Step 4: Fit model",
+        expectTranslated(steps.at(2), "Step 4: Fit model",
             "Étape 4: Ajuster le modèle", store);
     };
 

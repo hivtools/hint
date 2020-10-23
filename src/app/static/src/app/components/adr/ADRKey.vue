@@ -91,7 +91,7 @@
         tooltipContent: string
     }
 
-    export default Vue.extend<Data, Methods, Computed, {}>({
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
                 editableKey: "",

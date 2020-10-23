@@ -31,7 +31,7 @@ describe("progress bar", () => {
             }
         });
 
-            expect(wrapper.classes()).toStrictEqual(["my-2", "not-started"]);
+        expect(wrapper.classes()).toStrictEqual(["my-2", "not-started"]);
     });
 
     it("has in-progress class if in progress", () => {

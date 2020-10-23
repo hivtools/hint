@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 
-HERE=$(readlink -f "$(dirname $0)")
+HERE=$(realpath "$(dirname $0)")
 NETWORK=hint_nw
 HINT=hint
 DB=hint_db

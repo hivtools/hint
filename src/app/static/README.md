@@ -19,6 +19,13 @@ with the suffix `.itest.ts` treated as integration tests. Config for each can be
 all dependencies by running `./scripts/run-dev-dependencies-for-integration-tests.sh` from this
 directory
 
+## Linting
+On CI we run `eslint` and the build will fail if there are any errors. To check your code locally,
+run `npm run lint`. We are using the basic Typescript and Vue recommendations. Our only custom rule is that
+nested content under both the `<template>` and `<script>` tags in a Vue component should be indented by 4
+spaces. We have IntelliJ project style files included in this repo, so making your code conform with indenting rules
+is as simple as running IntelliJ's auto-formatting command (<kbd>ctrl + alt + l</kbd> in Linux)
+
 ### Compiling
 - sass is compiled using gulp - this task can be triggered by running `npm run sass` 
 - js is bundled using webpack - this task can be triggered by running `npm run js`

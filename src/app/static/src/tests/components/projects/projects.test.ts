@@ -17,7 +17,7 @@ describe("Projects component", () => {
                        mockRouterPush = jest.fn(),
                        isGuest = false) => {
 
-        const store =  new Vuex.Store({
+        const store = new Vuex.Store({
             state: emptyState(),
             getters: {
                 isGuest: () => isGuest
@@ -59,7 +59,7 @@ describe("Projects component", () => {
             "Votre travail est organisé en projets. Chaque projet contient ses propres données et paramètres.", store);
         expectTranslated(wrapper.find("input"), "Project name",
             "Nom du projet", store, "placeholder");
-        expectTranslated(wrapper.find("button"),"Create project",
+        expectTranslated(wrapper.find("button"), "Create project",
             "Créer un projet", store);
         expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
         expect(wrapper.find(ErrorAlert).exists()).toBe(false);
@@ -107,14 +107,14 @@ describe("Projects component", () => {
         expect(mockCreateProject.mock.calls[0][1]).toBe("newProject");
     });
 
-    it("clicking back to current project link invokes router", () =>{
+    it("clicking back to current project link invokes router", () => {
         const mockRouterPush = jest.fn();
         const wrapper = createSut({currentProject}, jest.fn(), mockRouterPush);
 
         wrapper.find("#projects-header a").trigger("click");
 
         expect(mockRouterPush.mock.calls.length).toBe(1);
-        expect(mockRouterPush.mock.calls[0][0]).toStrictEqual( "/");
+        expect(mockRouterPush.mock.calls[0][0]).toStrictEqual("/");
     });
 
     it("displays spinner if loading", () => {
@@ -129,6 +129,6 @@ describe("Projects component", () => {
         await Vue.nextTick();
 
         expect(mockRouterPush.mock.calls.length).toBe(1);
-        expect(mockRouterPush.mock.calls[0][0]).toStrictEqual( "/");
+        expect(mockRouterPush.mock.calls[0][0]).toStrictEqual("/");
     });
 });
