@@ -9,5 +9,3 @@ export const store = new Vuex.Store<RootState>(storeOptions);
 registerTranslations(store);
 
 export const inactiveFeatures: string[] = [];
-
-store.dispatch({type: "projects/getCurrentProject"}, {root: true});

@@ -99,7 +99,7 @@ class ProjectRepositoryTests
     }
 
     @Test
-    fun `getProjectFromVersionId throws project exception if version id does not exist`()
+    fun `getProjectFromVersionId throws project exception if project does not exist`()
     {
 
         assertThatThrownBy {
@@ -109,7 +109,7 @@ class ProjectRepositoryTests
     }
 
     @Test
-    fun `getProjectFromVersionId throws project exception if version id does not belong to user`()
+    fun `getProjectFromVersionId throws project exception if project does not belong to user`()
     {
         val uid = setupUser()
         val projectId = sut.saveNewProject(uid, "testProjectRepo")
