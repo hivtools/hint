@@ -7,7 +7,7 @@ import {api} from "../../apiService";
 import {ProjectsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
-import {Project, VersionDetails, VersionIds} from "../../types";
+import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
 
 export interface versionPayload {
     version: VersionIds,
@@ -17,6 +17,7 @@ export interface versionPayload {
 export interface ProjectsActions {
     createProject: (store: ActionContext<ProjectsState, RootState>, name: string) => void,
     getProjects: (store: ActionContext<ProjectsState, RootState>) => void
+    getCurrentProject: (store: ActionContext<ProjectsState, RootState>) => void
     uploadVersionState: (store: ActionContext<ProjectsState, RootState>) => void,
     newVersion: (store: ActionContext<ProjectsState, RootState>) => void,
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
@@ -66,6 +67,16 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .withSuccess(ProjectsMutations.SetPreviousProjects)
             .withError(ProjectsMutations.ProjectError)
             .get<Project[]>("/projects/");
+    },
+
+    async getCurrentProject(context) {
+        const {rootGetters} = context;
+        if (!rootGetters.isGuest) {
+            await api<ProjectsMutations, ProjectsMutations>(context)
+                .withSuccess(ProjectsMutations.SetCurrentProject)
+                .withError(ProjectsMutations.ProjectError)
+                .get<CurrentProject>("/project/current");
+        }
     },
 
     async uploadVersionState(context) {

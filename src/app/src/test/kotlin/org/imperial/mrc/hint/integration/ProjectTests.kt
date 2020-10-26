@@ -192,6 +192,22 @@ class ProjectTests : VersionFileTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can get current project`(isAuthorized: IsAuthorized)
+    {
+
+        val createResult = createProject()
+        val result = testRestTemplate.getForEntity<String>("/project/current")
+        assertSecureWithSuccess(isAuthorized,createResult,null)
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = getResponseData(result)
+            assertThat(data["project"]["name"].asText()).isEqualTo("testProject")
+        }
+
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can get version details`(isAuthorized: IsAuthorized)
     {
         var projectId:Int? =null
