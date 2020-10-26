@@ -45,7 +45,7 @@
             coarseOutputUrl: function () {
                 return `/download/coarse-output/${this.modelRunId}`
             },
-            summaryReportUrl: function (){
+            summaryReportUrl: function () {
                 return `/download/summary/${this.modelRunId}`
             }
         },
