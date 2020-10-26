@@ -65,7 +65,7 @@
 
     const namespace = "modelOptions";
 
-    export default Vue.extend<Data, Methods, Computed, {}>({
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
                 showConfirmation: false
@@ -73,6 +73,10 @@
         },
         name: "ModelOptions",
         computed: {
+            ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
+                loading: s => s.fetching,
+                valid: s => s.valid
+            }),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
             selectText() {
@@ -83,10 +87,6 @@
             },
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
-            ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
-                loading: s => s.fetching,
-                valid: s => s.valid
-            }),
             modelOptions: {
                 get() {
                     return this.$store.state.modelOptions.optionsFormMeta

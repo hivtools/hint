@@ -6,7 +6,7 @@
             <h4 v-translate="'shareProject'"></h4>
             <div v-if="!cloningProject">
                 <div v-html="instructions" id="instructions"></div>
-                <div class="row mb-2" v-for="(email, index) in emailsToShareWith">
+                <div class="row mb-2" v-for="(email, index) in emailsToShareWith" :key="index">
                     <div class="col">
                         <input autocomplete="no"
                                @keyup.enter="$event.target.blur()"

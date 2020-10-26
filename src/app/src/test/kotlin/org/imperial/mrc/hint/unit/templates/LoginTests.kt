@@ -1,8 +1,8 @@
 package org.imperial.mrc.hint.unit.templates
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.ui.ConcurrentModel
-import org.assertj.core.api.Assertions.assertThat
 
 class LoginTests
 {

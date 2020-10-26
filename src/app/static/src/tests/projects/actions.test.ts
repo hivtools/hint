@@ -8,7 +8,7 @@ import {serialiseState} from "../../app/localStorageManager";
 
 describe("Projects actions", () => {
     beforeEach(() => {
-        mockAxios.reset();  
+        mockAxios.reset();
         // stop apiService logging to console
         console.log = jest.fn();
         console.info = jest.fn();
@@ -116,7 +116,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("gets projects and commits mutation on successful response", async(done) => {
+    it("gets projects and commits mutation on successful response", async (done) => {
         const testProjects = [{id: 1, name: "v1", versions: []}];
         mockAxios.onGet("/projects/")
             .reply(200, mockSuccess(testProjects));
@@ -136,10 +136,27 @@ describe("Projects actions", () => {
         });
     });
 
+    it("gets current project and commits mutation on successful response", async(done) => {
+        const testProjects = [{id: 1, name: "v1", versions: []}];
+        mockAxios.onGet("/project/current")
+            .reply(200, mockSuccess(testProjects));
+
+        const commit = jest.fn();
+        const state = mockProjectsState();
+        const rootGetters = {isGuest: false}
+
+        actions.getCurrentProject({commit, state, rootState, rootGetters} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetCurrentProject, payload: testProjects});
+            done();
+        });
+    });
+
     it("if current version, createProject uploads current version before post to new project endpoint", async (done) => {
         mockAxios.onPost(`/project/`)
             .reply(200, mockSuccess("TestProject"));
-        mockAxios.onPost( "/project/1/version/version-id/state/")
+        mockAxios.onPost("/project/1/version/version-id/state/")
             .reply(200, mockSuccess("ok"));
 
         const commit = jest.fn();
@@ -159,7 +176,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("gets projects and sets error on unsuccessful response", async(done) => {
+    it("gets projects and sets error on unsuccessful response", async (done) => {
         mockAxios.onGet("/projects/")
             .reply(500, mockFailure("TestError"));
 
@@ -172,6 +189,26 @@ describe("Projects actions", () => {
             expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
             const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
             expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: ProjectsMutations.ProjectError,
+                payload: expectedError
+            });
+            done();
+        });
+    });
+
+    it("gets current project and sets error on unsuccessful response", async(done) => {
+        mockAxios.onGet("/project/current")
+            .reply(500, mockFailure("TestError"));
+
+        const commit = jest.fn();
+        const state = mockProjectsState();
+        const rootGetters = {isGuest: false}
+
+        actions.getCurrentProject({commit, state, rootState, rootGetters} as any);
+
+        setTimeout(() => {
+            const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
+            expect(commit.mock.calls[0][0]).toStrictEqual({
                 type: ProjectsMutations.ProjectError,
                 payload: expectedError
             });
@@ -356,7 +393,10 @@ describe("Projects actions", () => {
         setTimeout(() => {
             expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
             const expectedError = {detail: "test error", error: "OTHER_ERROR"};
-            expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.ProjectError, payload: expectedError});
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: ProjectsMutations.ProjectError,
+                payload: expectedError
+            });
             done();
         });
     });
@@ -385,7 +425,10 @@ describe("Projects actions", () => {
         actions.deleteProject({commit, dispatch, state, rootState} as any, 1);
         setTimeout(() => {
             const expectedError = {detail: "TEST ERROR", error: "OTHER_ERROR"};
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ProjectError, payload: expectedError});
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: ProjectsMutations.ProjectError,
+                payload: expectedError
+            });
             done();
         });
     });
@@ -425,7 +468,10 @@ describe("Projects actions", () => {
         actions.deleteVersion({commit, dispatch, state, rootState} as any, {projectId: 1, versionId: "testVersion"});
         setTimeout(() => {
             const expectedError = {detail: "TEST ERROR", error: "OTHER_ERROR"};
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ProjectError, payload: expectedError});
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: ProjectsMutations.ProjectError,
+                payload: expectedError
+            });
             done();
         });
     });
@@ -439,5 +485,55 @@ describe("Projects actions", () => {
             .reply(200, mockSuccess("OK"));
         actions.deleteVersion({commit, dispatch, state, rootState} as any, {projectId: 1, versionId: "testVersion"});
         expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
+    });
+
+    it("promoteVersion creates new project containing replicated version", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockProjectsState({
+            currentProject: mockProject,
+            currentVersion: mockProject.versions[0]
+        });
+
+        const stateUrl = "/project/1/version/testVersion/promote";
+        mockAxios.onPost(stateUrl, "name=newProject")
+            .reply(200, mockSuccess("OK"));
+
+        const versionPayload = {
+            version: {projectId: 1, versionId: "testVersion"},
+            name: "newProject"
+        }
+        actions.promoteVersion({commit, state, rootState, dispatch} as any, versionPayload);
+
+        setTimeout(() => {
+            const posted = mockAxios.history.post[0].data;
+            expect(posted).toEqual("name=newProject");
+
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            expect(commit.mock.calls.length).toBe(0);
+            done();
+        });
+    });
+
+    it("promoteVersion commits ErrorAdded on failure", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = {};
+        mockAxios.onPost("project/1/version/testVersion/promote")
+            .reply(500, mockFailure("TEST ERROR"));
+
+        const versionPayload = {
+            version: {projectId: 1, versionId: "testVersion"},
+            name: "newProject"
+        }
+        actions.promoteVersion({commit, dispatch, state, rootState} as any, versionPayload);
+        setTimeout(() => {
+            const expectedError = {detail: "TEST ERROR", error: "OTHER_ERROR"};
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: `errors/${ErrorsMutation.ErrorAdded}`,
+                payload: expectedError
+            });
+            done();
+        });
     });
 });

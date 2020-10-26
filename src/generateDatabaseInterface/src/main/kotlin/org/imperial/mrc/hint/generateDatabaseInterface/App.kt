@@ -1,3 +1,5 @@
+@file:Suppress("WarningOnMainUnusedParameterMigration")
+
 package org.imperial.mrc.hint.generateDatabaseInterface
 
 import org.jooq.util.GenerationTool

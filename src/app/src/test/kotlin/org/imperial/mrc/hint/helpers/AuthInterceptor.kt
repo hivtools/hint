@@ -9,11 +9,13 @@ import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.util.LinkedMultiValueMap
 
-class AuthInterceptor(restTemplate: TestRestTemplate, password: String = "password") : ClientHttpRequestInterceptor {
+class AuthInterceptor(restTemplate: TestRestTemplate, password: String = "password") : ClientHttpRequestInterceptor
+{
 
     private val sessionCookie: String
 
-    init {
+    init
+    {
         val map = LinkedMultiValueMap<String, String>()
         map.add("username", "test.user@example.com")
         map.add("password", password)
@@ -30,7 +32,8 @@ class AuthInterceptor(restTemplate: TestRestTemplate, password: String = "passwo
         this.sessionCookie = cookies.first { it.startsWith("JSESSIONID") }.split("=")[1]
     }
 
-    override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
+    override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse
+    {
         request.headers.add("Cookie", "JSESSIONID=$sessionCookie")
         return execution.execute(request, body)
     }

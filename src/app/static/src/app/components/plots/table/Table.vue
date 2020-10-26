@@ -28,12 +28,14 @@
                     <div class="small">{{ data.item.areaHierarchy }}</div>
                 </template>
                 <template v-for="i in indicators" v-slot:[`cell(${i.indicator})`]="data">
-                    <div>{{ data.item[i.indicator] }}</div>
-                    <div class="small" v-if="data.item[`${i.indicator}_lower`]">
-                        ({{ data.item[`${i.indicator}_lower`] }} – {{ data.item[`${i.indicator}_upper`] }})
+                    <div :key="i.indicator">
+                        <div class="value">{{ data.item[i.indicator] }}</div>
+                        <div class="small" v-if="data.item[`${i.indicator}_lower`]">
+                            ({{ data.item[`${i.indicator}_lower`] }} – {{ data.item[`${i.indicator}_upper`] }})
+                        </div>
                     </div>
                 </template>
-                <template v-slot:emptyfiltered="scope">
+                <template v-slot:emptyfiltered>
                     <p class="text-center" v-translate="'noRecords'"></p>
                 </template>
             </b-table>
@@ -116,7 +118,7 @@
         }
     }
 
-    export default Vue.extend<{}, {}, Computed, Props>({
+    export default Vue.extend<unknown, unknown, Computed, Props>({
         name: "table-view",
         props: props,
         data() {
@@ -136,7 +138,7 @@
                 return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
             },
             areaFilter() {
-                return this.filters.find((f: Filter) => f.id == this.areaFilterId)!!;
+                return this.filters.find((f: Filter) => f.id == this.areaFilterId)!;
             },
             flattenedAreas() {
                 if (this.selections.detail === 0 || !this.selections.detail) {
@@ -145,7 +147,8 @@
                 return this.areaFilter ? flattenOptions(this.areaFilter.options) : {};
             },
             selectedAreaIds() {
-                const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+                const selectedAreaIdSet =
+                    flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
                 const areaArray = Array.from(selectedAreaIdSet);
                 if (this.selections.detail === 0) {
                     return [areaArray[0]]

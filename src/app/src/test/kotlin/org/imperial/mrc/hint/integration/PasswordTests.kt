@@ -18,31 +18,37 @@ import org.springframework.http.MediaType
 import org.springframework.util.LinkedMultiValueMap
 import java.nio.file.Files
 
-class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDatabaseTests() {
+class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDatabaseTests()
+{
 
-    companion object {
+    companion object
+    {
         @BeforeAll
         @JvmStatic
-        fun setUp() {
+        fun setUp()
+        {
             WriteToDiskEmailManager.cleanOutputDirectory()
         }
     }
 
     private val expectedSuccessResponse = "{\"errors\":[],\"status\":\"success\",\"data\":true}"
 
-    private fun expectedErrorResponse(errorMessage: String): String {
+    private fun expectedErrorResponse(errorMessage: String): String
+    {
         return "{\"data\":{},\"status\":\"failure\"," +
                 "\"errors\":[{\"detail\":\"$errorMessage\",\"error\":\"OTHER_ERROR\"}]}"
     }
 
     @AfterEach
-    override fun tearDown() {
+    override fun tearDown()
+    {
         super.tearDown()
         WriteToDiskEmailManager.cleanOutputDirectory()
     }
 
     @Test
-    fun `request reset password link generates email to disk`() {
+    fun `request reset password link generates email to disk`()
+    {
         val lines = requestPasswordResetLinkAndReadEmail()
 
         assertThat(lines.contains("This is an automated email from HINT. We have received a request to reset the" +
@@ -52,7 +58,8 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
     }
 
     @Test
-    fun `can reset password with valid token`() {
+    fun `can reset password with valid token`()
+    {
         val lines = requestPasswordResetLinkAndReadEmail()
         val token = getTokenFromEmailText(lines)
 
@@ -74,7 +81,8 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
     }
 
     @Test
-    fun `cannot reset password with invalid token`() {
+    fun `cannot reset password with invalid token`()
+    {
         val map = LinkedMultiValueMap<String, String>()
         map.add("token", "blah")
         map.add("password", "newpassword")
@@ -90,7 +98,8 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
     }
 
     @Test
-    fun `cannot reset password which is too short`() {
+    fun `cannot reset password which is too short`()
+    {
         val lines = requestPasswordResetLinkAndReadEmail()
         val token = getTokenFromEmailText(lines)
 
@@ -107,13 +116,15 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
         assertThat(entity.body).isEqualTo(expectedErrorResponse("Password must be at least 6 characters long."))
     }
 
-    private fun getTokenFromEmailText(emailText: String): String {
+    private fun getTokenFromEmailText(emailText: String): String
+    {
         val regex = Regex("token=(.*)\\n")
         val match = regex.find(emailText)
         return match!!.groups[1]!!.value
     }
 
-    private fun requestPasswordResetLinkAndReadEmail(): String {
+    private fun requestPasswordResetLinkAndReadEmail(): String
+    {
         val map = LinkedMultiValueMap<String, String>()
         map.add("email", "test.user@example.com")
 

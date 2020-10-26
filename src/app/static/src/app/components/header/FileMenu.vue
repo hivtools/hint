@@ -14,7 +14,7 @@
         </drop-down>
         <modal :open="hasError">
             <h4 v-translate="'loadError'"></h4>
-            <p>{{loadError}}</p>
+            <p>{{ loadError }}</p>
             <template v-slot:footer>
                 <button type="button"
                         class="btn btn-red"
@@ -160,7 +160,7 @@
                     const file = input.files[0];
                     if (this.isGuest) {
                         this.loadAction({file, projectName: null});
-                    } else  {
+                    } else {
                         this.fileToLoad = file;
                         this.requestProjectName = true;
                     }

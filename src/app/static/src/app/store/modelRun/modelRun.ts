@@ -37,7 +37,7 @@ export const modelRunGetters = {
     }
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 const existingState = localStorageManager.getState();
 
 export const modelRun: Module<ModelRunState, RootState> = {

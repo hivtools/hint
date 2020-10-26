@@ -57,7 +57,7 @@
             value: [Array, String]
         },
         data() {
-            const idArray =  Array.isArray(this.value) ? this.value : [this.value];
+            const idArray = Array.isArray(this.value) ? this.value : [this.value];
             const flatOptions = Object.values(flattenOptions(this.options));
             const selected = flatOptions.filter((o: FilterOption) => idArray.includes(o.id));
             return {

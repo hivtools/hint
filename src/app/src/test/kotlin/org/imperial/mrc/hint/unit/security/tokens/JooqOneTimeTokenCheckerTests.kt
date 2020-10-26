@@ -13,7 +13,7 @@ class JooqOneTimeTokenCheckerTests
     @Test
     fun `Calls tokenRepo validateOneTimeToken`()
     {
-        val mockRepo = mock<TokenRepository>{
+        val mockRepo = mock<TokenRepository> {
             on { validateOneTimeToken("testToken") } doReturn true
         }
 

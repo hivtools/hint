@@ -1,10 +1,10 @@
 package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.doReturn
-import org.junit.jupiter.api.Test
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.controllers.LoginController
+import org.junit.jupiter.api.Test
 import org.springframework.ui.ConcurrentModel
 import javax.servlet.http.HttpServletRequest
 
@@ -29,7 +29,7 @@ class LoginControllerTests
     fun `can get login view and model query string parameters`()
     {
         val model = ConcurrentModel()
-        val mockRequest = mock<HttpServletRequest>{
+        val mockRequest = mock<HttpServletRequest> {
             on { this.getParameter("username") } doReturn "testUser"
             on { this.getParameter("error") } doReturn "CredentialsException"
         }

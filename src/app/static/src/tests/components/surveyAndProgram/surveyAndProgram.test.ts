@@ -19,6 +19,7 @@ import {mutations} from "../../../app/store/surveyAndProgram/mutations";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {mutations as selectionsMutations} from "../../../app/store/plottingSelections/mutations";
 import {ColourScaleSelections, ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
+import {expectTranslated} from "../../testHelpers";
 
 const localVue = createLocalVue();
 
@@ -66,11 +67,13 @@ describe("Survey and programme component", () => {
                     }),
                     getters: {
                         selectedSAPColourScales: () => {
-                            return {prevalence: {
+                            return {
+                                prevalence: {
                                     type: ColourScaleType.Custom,
                                     customMin: 1,
                                     customMax: 2
-                                }} as ColourScaleSelections
+                                }
+                            } as ColourScaleSelections
                         }
                     },
                     mutations: selectionsMutations
@@ -138,11 +141,13 @@ describe("Survey and programme component", () => {
         expect(choro.props().featureLevels).toBe("TEST LEVEL LABELS");
         expect(choro.props().indicators).toStrictEqual(["TEST INDICATORS"]);
         expect(choro.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
-        expect(choro.props().colourScales).toEqual({prevalence: {
-            type: ColourScaleType.Custom,
+        expect(choro.props().colourScales).toEqual({
+            prevalence: {
+                type: ColourScaleType.Custom,
                 customMin: 1,
                 customMax: 2
-        }});
+            }
+        });
 
     });
 
@@ -190,22 +195,25 @@ describe("Survey and programme component", () => {
     });
 
     it("survey tab is enabled when survey data is present", () => {
-        expectTabEnabled({survey: mockSurveyResponse(), selectedDataType: DataType.Survey}, "Household Survey", 0);
+        expectTabEnabled({survey: mockSurveyResponse(), selectedDataType: DataType.Survey},
+            "Household Survey", "Enquête de ménage", 0);
     });
 
     it("programme (ART) tab is enabled when programme data is present", () => {
-        expectTabEnabled({program: mockProgramResponse(), selectedDataType: DataType.Survey}, "ART", 1);
+        expectTabEnabled({program: mockProgramResponse(), selectedDataType: DataType.Survey},
+            "ART", "ART", 1);
     });
 
     it("ANC tab is enabled when ANC data is present", () => {
-        expectTabEnabled({anc: mockAncResponse(), selectedDataType: DataType.Survey}, "ANC Testing", 2);
+        expectTabEnabled({anc: mockAncResponse(), selectedDataType: DataType.Survey},
+            "ANC Testing", "Test de clinique prénatale", 2);
     });
 
-    function expectTabEnabled(state: Partial<SurveyAndProgramState>, name: string, index: number) {
+    function expectTabEnabled(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string, index: number) {
         const store = createStore(state);
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         expect(wrapper.findAll(".nav-link").at(index).classes()).not.toContain("disabled");
-        expect(wrapper.findAll(".nav-link").at(index).text()).toBe(name);
+        expectTranslated(wrapper.findAll(".nav-link").at(index), englishName, frenchName, store);
         expect(wrapper.findAll(".nav-link.disabled").length).toBe(2);
     }
 
@@ -278,17 +286,17 @@ describe("Survey and programme component", () => {
         expect(table.props().indicators).toStrictEqual(["TEST INDICATORS"]);
         expect(table.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
         expect(table.props().countryAreaFilterOption).toStrictEqual(
-                {
-                  "children":[
+            {
+                "children": [
                     {
-                      "id": "region 1",
+                        "id": "region 1",
                     },
                     {
-                      "id": "region 2",
+                        "id": "region 2",
                     },
-                  ],
-                  "id": "country",
-                }
+                ],
+                "id": "country",
+            }
         );
     });
 

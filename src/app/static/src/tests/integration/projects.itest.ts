@@ -160,4 +160,29 @@ describe("Projects actions", () => {
             done();
         });
     });
+
+    it("can promote version", async (done) => {
+        const state = initialProjectsState();
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        await actions.createProject({commit, rootState, state} as any, "v1");
+        expect(commit.mock.calls.length).toBe(2);
+
+        const createdProject = commit.mock.calls[1][0]["payload"];
+        state.currentProject = createdProject;
+        state.currentVersion = createdProject.versions[0];
+        const versionPayload = {
+            version: {projectId: state.currentProject!.id, versionId: state.currentVersion!.id},
+            name: 'newProject'
+        };
+
+        const newCommit = jest.fn();
+        await actions.promoteVersion({newCommit, dispatch, state, rootState} as any, versionPayload);
+        setTimeout(() => {
+            expect(newCommit.mock.calls.length).toBe(0);
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            done();
+        });
+    });
 });

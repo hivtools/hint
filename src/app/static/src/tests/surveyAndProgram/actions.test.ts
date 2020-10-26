@@ -120,7 +120,7 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
-        await actions.importProgram({commit, rootState} as any,"some-url");
+        await actions.importProgram({commit, rootState} as any, "some-url");
 
         checkProgrammeImportUpload(commit)
     });
@@ -348,7 +348,7 @@ describe("Survey and programme actions", () => {
             SurveyAndProgramMutation.ANCUpdated]);
     });
 
-    it ("selects data type", () => {
+    it("selects data type", () => {
         const commit = jest.fn();
         actions.selectDataType({commit} as any, DataType.ANC);
         expect(commit).toBeCalledTimes(1);

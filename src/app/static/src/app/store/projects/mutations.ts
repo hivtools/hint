@@ -1,7 +1,8 @@
 import {MutationTree} from "vuex";
 import {ProjectsState} from "./projects";
-import {PayloadWithType, Version, Project, VersionIds} from "../../types";
+import {PayloadWithType, Version, Project, VersionIds, CurrentProject} from "../../types";
 import {Error} from "../../generated";
+import {router} from "../../router";
 
 export enum ProjectsMutations {
     SetLoading = "SetLoading",
@@ -12,7 +13,8 @@ export enum ProjectsMutations {
     VersionUploadSuccess = "VersionUploadSuccess",
     ClearCurrentVersion = "ClearCurrentVersion",
     CloneProjectError = "CloneProjectError",
-    CloningProject = "CloningProject"
+    CloningProject = "CloningProject",
+    SetCurrentProject = "SetCurrentProject"
 }
 
 export const mutations: MutationTree<ProjectsState> = {
@@ -55,5 +57,15 @@ export const mutations: MutationTree<ProjectsState> = {
     [ProjectsMutations.ClearCurrentVersion](state: ProjectsState) {
         state.currentProject = null;
         state.currentVersion = null;
+    },
+    [ProjectsMutations.SetCurrentProject](state: ProjectsState, action: PayloadWithType<CurrentProject>) {
+        state.currentProject = action.payload.project;
+        state.currentVersion = action.payload.version;
+        // The action which invokes this mutation, fetching current project, is only invoked for logged in users
+        // so it is safe to redirect to /projects here if no current project
+        if ((state.currentProject == null) && (router.currentRoute.path == "/"))
+        {
+            router.push('/projects');
+        }
     }
 };

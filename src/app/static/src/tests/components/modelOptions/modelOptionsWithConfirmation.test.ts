@@ -11,7 +11,7 @@ import {mockModelOptionsState, mockRootState} from "../../mocks";
 import {DynamicForm} from "@reside-ic/vue-dynamic-form";
 import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import { getters } from "../../../app/store/root/getters";
+import {getters} from "../../../app/store/root/getters";
 
 declare var currentUser: string;
 currentUser = "guest";
@@ -37,7 +37,7 @@ describe("Model options component when edit confirmation is required", () => {
 
     const createStore = (props: Partial<ModelOptionsState>,
                          mutations: MutationTree<ModelOptionsState> = mockMutations,
-                         actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) =>{
+                         actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) => {
         const store = new Vuex.Store({
             getters: getters,
             state: mockRootState(),

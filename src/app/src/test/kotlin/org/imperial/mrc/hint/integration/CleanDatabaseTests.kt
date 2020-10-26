@@ -8,7 +8,6 @@ import org.jooq.Table
 import org.junit.jupiter.api.AfterEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.core.env.Environment
 import org.springframework.test.context.ActiveProfiles
@@ -17,7 +16,8 @@ import java.io.File
 
 @ActiveProfiles(profiles = ["dev"])
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-abstract class CleanDatabaseTests {
+abstract class CleanDatabaseTests
+{
 
     @Autowired
     protected lateinit var dsl: DSLContext
@@ -32,12 +32,14 @@ abstract class CleanDatabaseTests {
     lateinit var restTemplateBuilder: RestTemplateBuilder
 
     @AfterEach
-    fun tearDown() {
+    fun tearDown()
+    {
         File(tmpUploadDirectory).deleteRecursively()
 
         val tableFields = Tables::class.java.fields
 
-        for (tableField in tableFields) {
+        for (tableField in tableFields)
+        {
             val table = tableField.get(null) as Table<*>
             dsl.truncate(table)
                     .cascade()
@@ -46,7 +48,6 @@ abstract class CleanDatabaseTests {
         }
 
         userRepo.addUser("test.user@example.com", "password")
-        userRepo.addUser("guest", "guest")
     }
 }
 

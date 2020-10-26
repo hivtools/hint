@@ -52,7 +52,7 @@ export const metadataGetters = {
     }
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 const existingState = localStorageManager.getState();
 
 export const metadata: Module<MetadataState, RootState> = {

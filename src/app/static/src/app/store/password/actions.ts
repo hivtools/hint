@@ -24,14 +24,14 @@ export const actions: ActionTree<PasswordState, PasswordState> & PasswordActions
         await api<PasswordActionTypes, PasswordActionErrorTypes>(context)
             .withError("RequestResetLinkError")
             .withSuccess("ResetLinkRequested")
-            .postAndReturn<Boolean>("/password/request-reset-link/", qs.stringify({email: email}));
+            .postAndReturn<boolean>("/password/request-reset-link/", qs.stringify({email: email}));
     },
 
     async resetPassword(context, payload) {
         await api<PasswordActionTypes, PasswordActionErrorTypes>(context)
             .withError("ResetPasswordError")
             .withSuccess("ResetPassword")
-            .postAndReturn<Boolean>("/password/reset-password/", qs.stringify({
+            .postAndReturn<boolean>("/password/reset-password/", qs.stringify({
                 token: payload.token,
                 password: payload.password
             }));

@@ -1,5 +1,6 @@
 import {mockProjectsState} from "../mocks";
 import {mutations, ProjectsMutations} from "../../app/store/projects/mutations";
+import {router} from '../../app/router';
 
 describe("Projects mutations", () => {
     const testNow = Date.now();
@@ -99,5 +100,15 @@ describe("Projects mutations", () => {
         mutations[ProjectsMutations.ClearCurrentVersion](state);
         expect(state.currentProject).toBeNull();
         expect(state.currentVersion).toBeNull();
+    });
+
+    it("pushes router to projects if logged in user and currentProject not set", () => {
+        const state = mockProjectsState({currentProject: null, currentVersion: null});
+        const mockRouterPush = jest.fn();
+        router.push = mockRouterPush;
+        mutations[ProjectsMutations.SetCurrentProject](state, {payload: false})
+
+        expect(mockRouterPush.mock.calls.length).toBe(1);
+        expect(mockRouterPush.mock.calls[0][0]).toBe("/projects");
     });
 });

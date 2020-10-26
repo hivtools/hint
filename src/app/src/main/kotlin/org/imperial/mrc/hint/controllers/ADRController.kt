@@ -6,8 +6,8 @@ import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
-import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
@@ -27,22 +27,28 @@ class ADRController(private val encryption: Encryption,
                     apiClient: HintrAPIClient,
                     session: Session,
                     versionRepository: VersionRepository) :
-        HintrController(fileManager, apiClient, session, versionRepository) {
+        HintrController(fileManager, apiClient, session, versionRepository)
+{
 
     @GetMapping("/key")
-    fun getAPIKey(): ResponseEntity<String> {
+    fun getAPIKey(): ResponseEntity<String>
+    {
         val userId = session.getUserProfile().id
         val encryptedKey = userRepository.getADRKey(userId)
-        val key = if (encryptedKey != null) {
+        val key = if (encryptedKey != null)
+        {
             encryption.decrypt(encryptedKey)
-        } else {
+        }
+        else
+        {
             null
         }
         return SuccessResponse(key).asResponseEntity()
     }
 
     @PostMapping("/key")
-    fun saveAPIKey(@RequestParam("key") key: String): ResponseEntity<String> {
+    fun saveAPIKey(@RequestParam("key") key: String): ResponseEntity<String>
+    {
         val userId = session.getUserProfile().id
         val encryptedKey = encryption.encrypt(key)
         userRepository.saveADRKey(userId, encryptedKey)
@@ -50,40 +56,50 @@ class ADRController(private val encryption: Encryption,
     }
 
     @DeleteMapping("/key")
-    fun deleteAPIKey(): ResponseEntity<String> {
+    fun deleteAPIKey(): ResponseEntity<String>
+    {
         val userId = session.getUserProfile().id
         userRepository.deleteADRKey(userId)
         return SuccessResponse(null).asResponseEntity()
     }
 
     @GetMapping("/datasets")
-    fun getDatasets(@RequestParam showInaccessible: Boolean = false): ResponseEntity<String> {
+    fun getDatasets(@RequestParam showInaccessible: Boolean = false): ResponseEntity<String>
+    {
         val adr = adrClientBuilder.build()
         var url = "package_search?q=type:${appProperties.adrDatasetSchema}"
-        url = if (showInaccessible) {
+        url = if (showInaccessible)
+        {
             // this flag is used for testing but will never
             // actually be passed by the front-end
             url
-        } else {
+        }
+        else
+        {
             "$url&hide_inaccessible_resources=true"
         }
         val response = adr.get(url)
-        return if (response.statusCode != HttpStatus.OK) {
+        return if (response.statusCode != HttpStatus.OK)
+        {
             response
-        } else {
+        }
+        else
+        {
             val data = objectMapper.readTree(response.body!!)["data"]["results"]
             SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
         }
     }
 
     @GetMapping("/datasets/{id}")
-    fun getDataset(@PathVariable id: String): ResponseEntity<String> {
+    fun getDataset(@PathVariable id: String): ResponseEntity<String>
+    {
         val adr = adrClientBuilder.build()
         return adr.get("package_show?id=${id}")
     }
 
     @GetMapping("/schemas")
-    fun getFileTypeMappings(): ResponseEntity<String> {
+    fun getFileTypeMappings(): ResponseEntity<String>
+    {
         return SuccessResponse(
                 mapOf("baseUrl" to appProperties.adrUrl,
                         "anc" to appProperties.adrANCSchema,
@@ -95,32 +111,38 @@ class ADRController(private val encryption: Encryption,
     }
 
     @PostMapping("/pjnz")
-    fun importPJNZ(@RequestParam url: String): ResponseEntity<String> {
+    fun importPJNZ(@RequestParam url: String): ResponseEntity<String>
+    {
         return saveAndValidate(url, FileType.PJNZ)
     }
 
     @PostMapping("/shape")
-    fun importShape(@RequestParam url: String): ResponseEntity<String> {
+    fun importShape(@RequestParam url: String): ResponseEntity<String>
+    {
         return saveAndValidate(url, FileType.Shape)
     }
 
     @PostMapping("/population")
-    fun importPopulation(@RequestParam url: String): ResponseEntity<String> {
+    fun importPopulation(@RequestParam url: String): ResponseEntity<String>
+    {
         return saveAndValidate(url, FileType.Population)
     }
 
     @PostMapping("/survey")
-    fun importSurvey(@RequestParam url: String): ResponseEntity<String> {
+    fun importSurvey(@RequestParam url: String): ResponseEntity<String>
+    {
         return saveAndValidate(url, FileType.Survey)
     }
 
     @PostMapping("/programme")
-    fun importProgramme(@RequestParam url: String): ResponseEntity<String> {
+    fun importProgramme(@RequestParam url: String): ResponseEntity<String>
+    {
         return saveAndValidate(url, FileType.Programme)
     }
 
     @PostMapping("/anc")
-    fun importANC(@RequestParam url: String): ResponseEntity<String> {
+    fun importANC(@RequestParam url: String): ResponseEntity<String>
+    {
         return saveAndValidate(url, FileType.ANC)
     }
 }
