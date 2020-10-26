@@ -30,11 +30,15 @@ import {initialMetadataState, MetadataState} from "../app/store/metadata/metadat
 import {initialLoadState, LoadState} from "../app/store/load/load";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
 import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
-import {initialPlottingSelectionsState, PlottingSelectionsState} from "../app/store/plottingSelections/plottingSelections";
+import {
+    initialPlottingSelectionsState,
+    PlottingSelectionsState
+} from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
 import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
 import {Dataset, DatasetResource} from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
+import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -62,6 +66,13 @@ export const mockSurveyAndProgramState = (props?: Partial<SurveyAndProgramState>
 export const mockModelRunState = (props?: Partial<ModelRunState>) => {
     return {
         ...initialModelRunState(),
+        ...props
+    }
+};
+
+export const mockHintrVersionState = (props?: Partial<HintrVersionState>): HintrVersionState  => {
+    return {
+        ...initialHintrVersionState(),
         ...props
     }
 };
@@ -160,7 +171,7 @@ export const mockFailure = (errorMessage: string): Response => {
     }
 };
 
-export const mockError = (errorMessage: string):Error => {
+export const mockError = (errorMessage: string): Error => {
     return {error: "OTHER_ERROR", detail: errorMessage};
 };
 

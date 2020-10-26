@@ -11,7 +11,7 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
-router.addRoutes( [
+router.addRoutes([
     {path: "/", component: Stepper},
     {path: "/projects", component: Projects}
 ]);
@@ -40,11 +40,5 @@ export const app = new Vue({
         this.loadModelRun();
         this.getADRSchemas();
         this.getCurrentProject();
-        // store.dispatch({type: "projects/getCurrentProject"}, {root: true});
     }
-    // },
-    // mounted() {
-    //     store.dispatch({type: "projects/getCurrentProject"}, {root: true});
-
-    // }
 });

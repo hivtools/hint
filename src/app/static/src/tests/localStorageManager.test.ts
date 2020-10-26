@@ -7,7 +7,9 @@ import {
     mockModelRunState,
     mockPlottingSelections,
     mockStepperState,
-    mockSurveyAndProgramState
+    mockSurveyAndProgramState,
+    mockProjectsState,
+    mockHintrVersionState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -27,7 +29,9 @@ describe("LocalStorageManager", () => {
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey})
+            surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey}),
+            projects: mockProjectsState(),
+            hintrVersion: mockHintrVersionState()
         } as RootState;
 
         const result = serialiseState(mockRoot);
@@ -39,7 +43,9 @@ describe("LocalStorageManager", () => {
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: {selectedDataType: DataType.Survey}
+            surveyAndProgram: {selectedDataType: DataType.Survey},
+            projects: mockProjectsState(),
+            hintrVersion: mockHintrVersionState()
         });
     });
 
@@ -55,7 +61,9 @@ describe("LocalStorageManager", () => {
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: mockSurveyAndProgramState()
+            surveyAndProgram: mockSurveyAndProgramState(),
+            projects: mockProjectsState(),
+            hintrVersion: mockHintrVersionState()
         } as RootState;
 
         const result = serialiseState(mockRoot);
@@ -69,7 +77,9 @@ describe("LocalStorageManager", () => {
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: {selectedDataType: null}
+            surveyAndProgram: {selectedDataType: null},
+            projects: mockProjectsState(),
+            hintrVersion: mockHintrVersionState()
         });
     });
 

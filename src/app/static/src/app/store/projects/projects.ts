@@ -28,7 +28,7 @@ export const initialProjectsState = (): ProjectsState => {
     }
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const projects: Module<ProjectsState, RootState> = {
     namespaced,

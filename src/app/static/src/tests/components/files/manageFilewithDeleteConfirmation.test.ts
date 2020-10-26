@@ -6,7 +6,7 @@ import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
 import {mockFile, mockRootState} from "../../mocks";
 import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import { getters } from "../../../app/store/root/getters";
+import {getters} from "../../../app/store/root/getters";
 
 declare let currentUser: string;
 currentUser = "guest";

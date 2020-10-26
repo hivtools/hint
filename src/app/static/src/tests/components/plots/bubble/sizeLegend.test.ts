@@ -3,9 +3,10 @@ import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {getRadius} from "../../../../app/components/plots/bubble/utils";
 import {LControl} from "vue2-leaflet";
 
-const getWrapper  = () => {
+const getWrapper = () => {
 
-    return shallowMount(SizeLegend, {propsData: {
+    return shallowMount(SizeLegend, {
+        propsData: {
             minRadius: 10,
             maxRadius: 110,
             indicatorRange: {min: 1, max: 101}
@@ -25,15 +26,15 @@ const expectedCircles = () => {
     result.push({y: 220, radius: 10, text: "<1.175", textY: 210});
 
     let r = getRadius(11, 1, 101, 10, 110);
-    result.push({y: 230-r, radius: r, text: "11", textY: 230-(2*r)});
+    result.push({y: 230 - r, radius: r, text: "11", textY: 230 - (2 * r)});
 
     r = getRadius(26, 1, 101, 10, 110);
-    result.push({y: 230-r, radius: r, text: "26",textY: 230-(2*r)});
+    result.push({y: 230 - r, radius: r, text: "26", textY: 230 - (2 * r)});
 
     r = getRadius(51, 1, 101, 10, 110);
-    result.push({y: 230-r, radius: r, text: "51", textY: 230-(2*r)});
+    result.push({y: 230 - r, radius: r, text: "51", textY: 230 - (2 * r)});
 
-    result.push({y: 120, radius: 110, text: "101",textY: 10});
+    result.push({y: 120, radius: 110, text: "101", textY: 10});
 
     return result;
 };
@@ -110,7 +111,8 @@ describe("SizeLegend component", () => {
     });
 
     it("renders text for circle with 0 value as expected", () => {
-        const wrapper =  shallowMount(SizeLegend, {propsData: {
+        const wrapper = shallowMount(SizeLegend, {
+            propsData: {
                 minRadius: 10,
                 maxRadius: 110,
                 indicatorRange: {min: 0, max: 0.1}
@@ -122,7 +124,8 @@ describe("SizeLegend component", () => {
     });
 
     it("renders large numbers as expected", () => {
-        const wrapper =  shallowMount(SizeLegend, {propsData: {
+        const wrapper = shallowMount(SizeLegend, {
+            propsData: {
                 minRadius: 10,
                 maxRadius: 100,
                 indicatorRange: {min: 2000, max: 10000}

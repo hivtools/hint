@@ -57,7 +57,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<RootMutation, ProjectsMutations>(context)
             .withSuccess(RootMutation.SetProject, true)
             .withError(ProjectsMutations.ProjectError)
-            .postAndReturn<String>("/project/", qs.stringify({name}));
+            .postAndReturn<string>("/project/", qs.stringify({name}));
     },
 
     async getProjects(context) {

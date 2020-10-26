@@ -12,7 +12,7 @@ describe("Metadata mutations", () => {
         const testResponse = mockPlottingMetadataResponse();
         const testState = mockMetadataState({plottingMetadataError: mockError("previous error")});
         mutations.PlottingMetadataFetched(testState, {
-            payload:testResponse
+            payload: testResponse
         });
         expect(testState.plottingMetadata).toStrictEqual(testResponse);
         expect(testState.plottingMetadataError).toBe(null);

@@ -114,18 +114,30 @@ describe("modelOutput module", () => {
             allowMultiple: true,
             options: [{id: "child1", label: "child label 1"}]
         });
-        expect(result[1]).toStrictEqual({id: "age", column_id: "age_group_id", label: "Age", allowMultiple: false, options: []});
-        expect(result[2]).toStrictEqual({id: "quarter", column_id: "quarter_id", label: "Quarter", allowMultiple: false, options: []});
+        expect(result[1]).toStrictEqual({
+            id: "age",
+            column_id: "age_group_id",
+            label: "Age",
+            allowMultiple: false,
+            options: []
+        });
+        expect(result[2]).toStrictEqual({
+            id: "quarter",
+            column_id: "quarter_id",
+            label: "Quarter",
+            allowMultiple: false,
+            options: []
+        });
     });
 
     it("gets countryAreaFilterOption", async () => {
-      const result = modelOutputGetters.countryAreaFilterOption(mockModelOutputState(), null, rootState, null);
-      expect(result).toStrictEqual({ 
+        const result = modelOutputGetters.countryAreaFilterOption(mockModelOutputState(), null, rootState, null);
+        expect(result).toStrictEqual({
             children: [{id: "child1", label: "child label 1"}],
             id: "id1",
             label: "label 1"
-      });
-  });
+        });
+    });
 
     const expectOutputPlotFilters = (filters: Filter[]) => {
         expect(filters.length).toEqual(3);

@@ -1,10 +1,10 @@
-import { shallowMount} from '@vue/test-utils';
+import {shallowMount} from '@vue/test-utils';
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import {mockError} from "../mocks";
 
 describe("Error alert component", () => {
 
-    const noTraceProps =  {
+    const noTraceProps = {
         error: mockError("Error text")
     };
 
@@ -30,10 +30,10 @@ describe("Error alert component", () => {
     it("renders error value if detail is not present", () => {
         const wrapper = shallowMount(ErrorAlert, {
             propsData: {
-            error: {
-                error: "TEST ERROR TYPE",
+                error: {
+                    error: "TEST ERROR TYPE",
                     detail: null
-            }
+                }
             }
         });
 

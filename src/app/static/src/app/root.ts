@@ -29,6 +29,7 @@ import {
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 import {Language} from "./store/translations/locales";
 import {ADRSchemas} from "./types";
+import { initialHintrVersionState, hintrVersion, HintrVersionState } from "./store/hintrVersion/hintrVersion";
 
 export interface TranslatableState {
     language: Language
@@ -36,6 +37,7 @@ export interface TranslatableState {
 
 export interface RootState extends TranslatableState {
     version: string,
+    hintrVersion: HintrVersionState,
     adrDatasets: any[],
     adrKey: string | null,
     adrKeyError: Error | null,
@@ -80,7 +82,7 @@ const resetState = (store: Store<RootState>) => {
 
             const type = stripNamespace(mutation.type);
 
-            if (type[0] =="baseline" && BaselineUpdates.includes(type[1] as BaselineMutation)) {
+            if (type[0] == "baseline" && BaselineUpdates.includes(type[1] as BaselineMutation)) {
                 store.commit(RootMutation.ResetSelectedDataType);
                 store.commit(RootMutation.ResetOptions);
                 store.commit(RootMutation.ResetOutputs);
@@ -110,6 +112,7 @@ export const emptyState = (): RootState => {
         adrSchemas: null,
         language: Language.en,
         version: '0.0.0',
+        hintrVersion: initialHintrVersionState(),
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
         surveyAndProgram: initialSurveyAndProgramState(),
@@ -138,7 +141,8 @@ export const storeOptions: StoreOptions<RootState> = {
         stepper,
         load,
         errors,
-        projects
+        projects,
+        hintrVersion
     },
     actions: actions,
     mutations: mutations,

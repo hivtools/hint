@@ -1,4 +1,4 @@
- <template>
+<template>
     <div>
         <button class="btn btn-red btn-lg"
                 v-on:click="run"
@@ -34,7 +34,6 @@
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
     import {mapActionsByNames, mapGettersByNames, mapStateProps} from "../../utils";
-    import {BProgress} from "bootstrap-vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import {ProgressPhase} from "../../generated";
     import ProgressBar from "../progress/ProgressBar.vue";
@@ -61,9 +60,9 @@
         runModelWithParams: () => void;
     }
 
-    const namespace: string = 'modelRun';
+    const namespace = 'modelRun';
 
-    export default Vue.extend<{}, Methods, Computed, {}>({
+    export default Vue.extend<unknown, Methods, Computed, unknown>({
         name: "ModelRun",
         computed: {
             ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
@@ -95,7 +94,6 @@
         components: {
             Modal,
             Tick,
-            BProgress,
             ErrorAlert,
             ProgressBar,
             LoadingSpinner

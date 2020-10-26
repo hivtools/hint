@@ -77,11 +77,11 @@ describe("Model run actions", () => {
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
     });
 
-    it ("makeCancelRunRequest makes call to API", async () => {
+    it("makeCancelRunRequest makes call to API", async () => {
         const commit = jest.fn();
 
         const apiService = api<ModelRunMutation, ModelRunMutation>({commit, rootState} as any)
-                            .withError("ExpectedPostFailure" as ModelRunMutation);
+            .withError("ExpectedPostFailure" as ModelRunMutation);
 
         await makeCancelRunRequest(apiService, "1234");
         expect(commit.mock.calls[0][0]["type"]).toBe("ExpectedPostFailure");

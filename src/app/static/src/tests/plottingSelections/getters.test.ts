@@ -11,7 +11,7 @@ describe("PlottingSelections getters", () => {
                     program: "PROGRAM" as any,
                     anc: "ANC" as any
                 })
-            });
+        });
 
         const rootState = mockRootState();
 

@@ -16,7 +16,7 @@ describe("Download Results component", () => {
             modules: {
                 modelRun: {
                     namespaced: true,
-                    state: mockModelRunState({ modelRunId: "testId" })
+                    state: mockModelRunState({modelRunId: "testId"})
                 }
             }
         });

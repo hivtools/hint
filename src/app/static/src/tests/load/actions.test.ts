@@ -28,7 +28,7 @@ describe("Load actions", () => {
                 projectName: "project name"
             });
 
-        const interval = setInterval(()=> {
+        const interval = setInterval(() => {
             if (dispatch.mock.calls.length > 0) {
                 expect(dispatch.mock.calls[0][0]).toEqual("setFiles");
                 expect(dispatch.mock.calls[0][1].savedFileContents).toEqual("Test File Contents");
@@ -45,7 +45,7 @@ describe("Load actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "LoadStateCleared", payload: null});
     });
 
-    it("loadVersion sets files and updates store state", async(done) => {
+    it("loadVersion sets files and updates store state", async (done) => {
         mockAxios.onPost(`/session/files/`)
             .reply(200, mockSuccess({}));
         const commit = jest.fn();
@@ -95,7 +95,12 @@ describe("Load actions", () => {
         const commit = jest.fn();
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
         const dispatch = jest.fn();
-        const testRootState = jest.fn();
+        const testRootState = {
+            projects: {
+                currentProject: "TEST PROJECT",
+                currentVersion: "TEST VERSION"
+            }
+        };
         const rootGetters = {isGuest: false};
         const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"projects": {}}}));
 
@@ -112,7 +117,10 @@ describe("Load actions", () => {
 
         //should also hand on to updateState action, with updated project state
         expect(dispatch.mock.calls[1][0]).toEqual("updateStoreState");
-        expect(dispatch.mock.calls[1][1]).toStrictEqual({projects: {}});
+        expect(dispatch.mock.calls[1][1]).toStrictEqual(
+            {
+                projects: {currentProject: "TEST PROJECT", currentVersion: "TEST VERSION"}
+            });
     });
 
     it("calls loadFailed mutation with invalid checksum", async () => {

@@ -4,14 +4,15 @@
             <div class="col-sm-6 col-md-8">
                 <form>
                     <manage-file label="PJNZ"
-                                     :valid="pjnz.valid"
-                                     :error="pjnz.error || plottingMetadataError"
-                                     :upload="uploadPJNZ"
-                                     :delete-file="deletePJNZ"
-                                     :existingFileName="pjnz.existingFileName"
-                                     accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
-                                     name="pjnz">
-                        <label class="mb-0" v-if="country"><strong v-translate="'country'"></strong>: {{country}}</label>
+                                 :valid="pjnz.valid"
+                                 :error="pjnz.error || plottingMetadataError"
+                                 :upload="uploadPJNZ"
+                                 :delete-file="deletePJNZ"
+                                 :existingFileName="pjnz.existingFileName"
+                                 accept="PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP"
+                                 name="pjnz">
+                        <label class="mb-0" v-if="country">
+                            <strong v-translate="'country'"></strong>: {{ country }}</label>
                     </manage-file>
                     <manage-file label="shape"
                                  :valid="shape.valid"
@@ -54,7 +55,7 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ManageFile from "../files/ManageFile.vue";
 
-    const namespace: string = 'baseline';
+    const namespace = 'baseline';
 
     export default Vue.extend({
         name: "Baseline",
