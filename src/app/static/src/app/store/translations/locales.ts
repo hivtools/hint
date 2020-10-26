@@ -41,7 +41,7 @@ export interface Translations {
     download: string,
     downloadResults: string,
     downloadCoarseOutput: string,
-    downloadSummaryReport:String,
+    downloadSummaryReport:string,
     edit: string,
     email: string,
     emailValidation: string,
