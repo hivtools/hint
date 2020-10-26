@@ -35,10 +35,12 @@ describe("Download Results component", () => {
             "Télécharger les résultats grossiers du groupe d'âge", store);
 
         const links = wrapper.findAll("a");
-        expect(links.length).toBe(2);
+        expect(links.length).toBe(3);
         expectTranslated(links.at(0), "Export", "Exporter", store);
         expect(links.at(0).attributes().href).toEqual("/download/spectrum/testId");
         expectTranslated(links.at(1), "Download", "Télécharger", store);
         expect(links.at(1).attributes().href).toEqual("/download/coarse-output/testId");
+        expectTranslated(links.at(2), "Download", "Télécharger", store);
+        expect(links.at(2).attributes().href).toEqual("/download/summary/testId")
     });
 });

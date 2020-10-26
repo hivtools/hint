@@ -11,6 +11,11 @@
                 <span v-translate="'download'"></span>
                 <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
             </a>
+            <h4 class="mt-4" v-translate="'downloadSummaryOutput'"></h4>
+            <a class="btn btn-red btn-lg my-3" :href=summaryReportUrl>
+                <span v-translate="'download'"></span>
+                <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+            </a>
         </div>
     </div>
 </template>
@@ -24,7 +29,8 @@
     interface Computed {
         modelRunId: string,
         spectrumUrl: string,
-        coarseOutputUrl: string
+        coarseOutputUrl: string,
+        summaryReportUrl: string
     }
 
     export default Vue.extend<unknown, unknown, Computed>({
@@ -38,6 +44,9 @@
             },
             coarseOutputUrl: function () {
                 return `/download/coarse-output/${this.modelRunId}`
+            },
+            summaryReportUrl: function (){
+                return `/download/summary/${this.modelRunId}`
             }
         },
         components: {
