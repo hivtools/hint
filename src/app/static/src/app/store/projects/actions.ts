@@ -70,12 +70,14 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
 
     async getCurrentProject(context) {
-        const {rootGetters} = context;
+        const {rootGetters, commit} = context;
         if (!rootGetters.isGuest) {
+            commit({type: ProjectsMutations.SetLoading, payload: true});
             await api<ProjectsMutations, ProjectsMutations>(context)
                 .withSuccess(ProjectsMutations.SetCurrentProject)
                 .withError(ProjectsMutations.ProjectError)
                 .get<CurrentProject>("/project/current");
+            commit({type: ProjectsMutations.SetLoading, payload: false});
         }
     },
 
