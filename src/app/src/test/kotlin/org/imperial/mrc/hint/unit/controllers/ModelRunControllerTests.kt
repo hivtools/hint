@@ -64,6 +64,20 @@ class ModelRunControllerTests
     }
 
     @Test
+    fun `can calibrate`()
+    {
+        val modelCalibrationOptions = ModelRunOptions(mapOf(), mapOf())
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { calibrate("testId", modelCalibrationOptions) } doReturn mockResponse
+        }
+        val sut = ModelRunController(mock(), mockAPIClient)
+
+        val result = sut.calibrate("testId", modelCalibrationOptions)
+        assertThat(result).isSameAs(mockResponse)
+
+    }
+
+    @Test
     fun `can get options`()
     {
         val mockFiles: Map<String, VersionFileWithPath> = mapOf()
@@ -77,6 +91,17 @@ class ModelRunControllerTests
         val sut = ModelRunController(mockFileManager, mockAPIClient)
 
         val result = sut.options()
+        assertThat(result).isSameAs(mockResponse)
+    }
+
+    @Test
+    fun `can get calibration options`()
+    {
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { getModelCalibrationOptions() } doReturn mockResponse
+        }
+        val sut = ModelRunController(mock(), mockAPIClient)
+        val result = sut.calibrationOptions()
         assertThat(result).isSameAs(mockResponse)
     }
 
