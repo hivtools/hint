@@ -79,7 +79,7 @@
             },
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
-            complete: mapGetterByName(namespace, "complete"),
+            complete: mapStateProp<ModelCalibrateState, boolean>(namespace, state => state.complete),
             calibrateOptions: {
                 get() {
                     return this.$store.state.modelCalibrate.optionsFormMeta

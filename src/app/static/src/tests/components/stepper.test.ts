@@ -90,8 +90,7 @@ describe("Stepper component", () => {
                 },
                 modelCalibrate: {
                     namespaced: true,
-                    state: mockModelCalibrateState(),
-                    getters: modelCalibrateGetters,
+                    state: mockModelCalibrateState()
                 },
                 stepper: {
                     namespaced: true,
