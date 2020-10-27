@@ -63,4 +63,11 @@ describe("ModelCalibrate mutations", () => {
         expect(state.error).toBe(error);
         expect(state.calibrating).toBe(false);
     });
+
+    it("sets options", () => {
+        const state = mockModelCalibrateState();
+        const options = { "testOption": "testValue" };
+        mutations[ModelCalibrateMutation.SetOptionsData](state, {payload: options});
+        expect(state.options).toBe(options);
+    });
 });
