@@ -23,11 +23,11 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
 
 export const modelCalibrateGetters = {
     complete: (state: ModelCalibrateState) => {
-        return state.complete; //TODO: replace with result check when available, and update modelRun complete too - what will that now return?
+        return state.complete;
     }
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 const existingState = localStorageManager.getState();
 
 export const modelCalibrate: Module<ModelCalibrateState, RootState> = {

@@ -27,7 +27,6 @@
 
     import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
     import {ModelCalibrateMutation} from "../../store/modelCalibrate/mutations";
-    import ResetConfirmation from "../ResetConfirmation.vue";
     import {StepDescription} from "../../store/stepper/stepper";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
@@ -98,8 +97,7 @@
         components: {
             DynamicForm,
             LoadingSpinner,
-            Tick,
-            ResetConfirmation
+            Tick
         },
         mounted() {
             this.fetchOptions();
