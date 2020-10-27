@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 
-HERE=$(readlink -f "$(dirname $0)")
+HERE=$(realpath  "$(dirname $0)")
 . $HERE/common
 
 export NODE_ENV=production
