@@ -148,7 +148,9 @@ describe("Projects actions", () => {
         actions.getCurrentProject({commit, state, rootState, rootGetters} as any);
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetCurrentProject, payload: testProjects});
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.SetCurrentProject, payload: testProjects});
+            expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: false});
             done();
         });
     });
@@ -207,11 +209,13 @@ describe("Projects actions", () => {
         actions.getCurrentProject({commit, state, rootState, rootGetters} as any);
 
         setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
             const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
-            expect(commit.mock.calls[0][0]).toStrictEqual({
+            expect(commit.mock.calls[1][0]).toStrictEqual({
                 type: ProjectsMutations.ProjectError,
                 payload: expectedError
             });
+            expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: false});
             done();
         });
     });
