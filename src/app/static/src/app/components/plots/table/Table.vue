@@ -47,7 +47,7 @@
 <script lang="ts">
     import Vue from "vue";
     import i18next from "i18next";
-    import {findPath, iterateDataValues} from "../utils";
+    import {findPath, iterateDataValues, formatOutput} from "../utils";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {Dict, Filter} from "../../../types";
     import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
@@ -181,8 +181,7 @@
                                 filterValues[f.id] = row[f.column_id]
                             }
                         });
-                        const upper = row.upper
-                        const lower = row.lower
+                        const {upper, lower} = row
                         filteredValues.push({areaId, filterValues, indicatorMeta, value, upper, lower});
                     });
                 const displayRows: Dict<any> = {};
@@ -202,9 +201,11 @@
                             ...filterLabels,
                         }
                     }
-                    displayRows[key][current.indicatorMeta.indicator] = current.value;
-                    current.lower ? displayRows[key][`${current.indicatorMeta.indicator}_lower`] = current.lower : '';
-                    current.upper ? displayRows[key][`${current.indicatorMeta.indicator}_upper`] = current.upper : '';
+                    const {value, upper, lower} = current
+                    const { indicator, format, scale, accuracy } = current.indicatorMeta
+                    displayRows[key][indicator] = formatOutput(value, format, scale, accuracy);
+                    displayRows[key][`${indicator}_lower`] = lower ? formatOutput(lower, format, scale, accuracy): '';
+                    displayRows[key][`${indicator}_upper`] = upper ? formatOutput(upper, format, scale, accuracy): '';
                 });
                 return Object.values(displayRows);
             },

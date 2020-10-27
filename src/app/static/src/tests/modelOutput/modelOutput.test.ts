@@ -29,7 +29,10 @@ describe("modelOutput module", () => {
                         indicator_column: "indicator_id",
                         indicator_value: "2",
                         name: "Prevalence",
-                        value_column: "mean"
+                        value_column: "mean",
+                        format: "0.00%",
+                        scale: 1,
+                        accuracy: null
                     },
                     {
                         error_high_column: "upper",
@@ -38,7 +41,10 @@ describe("modelOutput module", () => {
                         indicator_column: "indicator_id",
                         indicator_value: "4",
                         name: "ART coverage",
-                        value_column: "mean"
+                        value_column: "mean",
+                        format: "0.00%",
+                        scale: 1,
+                        accuracy: null
                     }
                 ]
             },
