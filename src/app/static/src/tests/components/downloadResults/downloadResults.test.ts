@@ -33,6 +33,8 @@ describe("Download Results component", () => {
             "Exporter des sorties de modèles pour Spectrum", store);
         expectTranslated(headers.at(1), "Download coarse age group outputs",
             "Télécharger les résultats grossiers du groupe d'âge", store);
+        expectTranslated(headers.at(2), "Download summary report",
+            "Télécharger le rapport de synthèse", store);
 
         const links = wrapper.findAll("a");
         expect(links.length).toBe(3);
