@@ -43,7 +43,7 @@ import VersionStatus from "../../app/components/projects/VersionStatus.vue";
 import {RootState} from "../../app/root";
 import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {modelCalibrateGetters} from "../../app/store/modelCalibrate/modelCalibrate";
-import {getters as rootGetters} from "../../app/store/root/getters";r
+import {getters as rootGetters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
 
 const localVue = createLocalVue();
