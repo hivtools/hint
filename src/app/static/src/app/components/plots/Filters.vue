@@ -1,12 +1,12 @@
 <template>
     <div>
         <h4 v-translate="'filters'"></h4>
-        <div :id="'filter-' + filter.id" v-for="filter in filters" class="form-group">
+        <div :id="'filter-' + filter.id" v-for="filter in filters" :key="filter.id" class="form-group">
             <filter-select :value="getSelectedFilterValues(filter.id)"
                            :multiple="filter.allowMultiple"
                            :label="filter.label"
                            :options="filter.options"
-                           :disabled="filter.options.length==0"
+                           :disabled="filter.options.length===0"
                            @select="onFilterSelect(filter, $event)"></filter-select>
         </div>
     </div>
@@ -37,7 +37,7 @@
         }
     };
 
-    export default Vue.extend<{}, Methods, {}, Props>({
+    export default Vue.extend<unknown, Methods, unknown, Props>({
         name: "Filters",
         components: {FilterSelect},
         props: props,

@@ -40,10 +40,11 @@ import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {ProjectsState} from "../../app/store/projects/projects";
 import VersionStatus from "../../app/components/projects/VersionStatus.vue";
-import {emptyState, storeOptions, RootState} from "../../app/root";
-import { getters as rootGetters } from "../../app/store/root/getters";
+import {RootState} from "../../app/root";
 import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {modelCalibrateGetters} from "../../app/store/modelCalibrate/modelCalibrate";
+import {getters as rootGetters} from "../../app/store/root/getters";
+import {expectTranslated} from "../testHelpers";
 
 const localVue = createLocalVue();
 
@@ -89,8 +90,7 @@ describe("Stepper component", () => {
                 },
                 modelCalibrate: {
                     namespaced: true,
-                    state: mockModelCalibrateState(),
-                    getters: modelCalibrateGetters,
+                    state: mockModelCalibrateState()
                 },
                 stepper: {
                     namespaced: true,
@@ -140,11 +140,12 @@ describe("Stepper component", () => {
     });
 
     it("renders loading spinner while states are not ready", () => {
-
         const wrapper = createSut();
+        const store = wrapper.vm.$store;
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
-        expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
+        expectTranslated(wrapper.find("#loading-message"), "Loading your data",
+            "Chargement de vos données", store);
     });
 
     it("renders loading spinner while ready but loadingFromFile", () => {
@@ -156,10 +157,12 @@ describe("Stepper component", () => {
             {ready: true},
             {},
             {loadingState: LoadingState.SettingFiles});
+        const store = wrapper.vm.$store;
 
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
-        expect(wrapper.find("#loading-message").text()).toBe("Loading your data");
+        expectTranslated(wrapper.find("#loading-message"), "Loading your data",
+            "Chargement de vos données", store);
     });
 
     it("does not render loading spinner once states are ready", () => {
@@ -228,7 +231,7 @@ describe("Stepper component", () => {
 
     it("renders version status", () => {
         const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
-       expect(wrapper.find(VersionStatus).exists()).toBe(true);
+        expect(wrapper.find(VersionStatus).exists()).toBe(true);
     });
 
     it("step connector is enabled if next step is", () => {
@@ -522,7 +525,7 @@ describe("Stepper component", () => {
     it("pushes router to projects if logged in user and currentProject not set", () => {
         const mockRouterPush = jest.fn();
         //current user is set in jest.config and currentProject is not set be default in the wrapper
-        const wrapper = createSut({}, {}, {}, {}, {}, {}, {},  mockRouterPush);
+        const wrapper = createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(1);
         expect(mockRouterPush.mock.calls[0][0]).toBe("/projects");
@@ -538,7 +541,7 @@ describe("Stepper component", () => {
     it("does not push router to projects if logged in user and currentProject set", () => {
         const mockRouterPush = jest.fn();
         const projectsState = {currentProject: {id: 1, name: "testProject", versions: []}};
-        const wrapper =  createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
+        const wrapper = createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });
@@ -546,7 +549,7 @@ describe("Stepper component", () => {
     it("does not push router to projects if project is loading", () => {
         const mockRouterPush = jest.fn();
         const projectsState = {loading: true};
-        const wrapper =  createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
+        const wrapper = createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });

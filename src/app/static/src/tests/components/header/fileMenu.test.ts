@@ -21,6 +21,8 @@ import {LoadingState} from "../../../app/store/load/load";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {Language} from "../../../app/store/translations/locales";
+import {expectTranslated} from "../../testHelpers";
+import {emptyState} from "../../../app/root";
 
 // jsdom has only implemented navigate up to hashes, hence appending a hash here to the base url
 const mockCreateObjectUrl = jest.fn(() => "http://localhost#1234");
@@ -90,17 +92,18 @@ describe("File menu", () => {
     };
 
     it("downloads file", (done) => {
+        const store = createStore();
         const wrapper = mount(FileMenu,
             {
                 propsData: {title: "naomi"},
-                store: createStore()
+                store
             });
 
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         let link = wrapper.findAll(".dropdown-item").at(0);
         link.trigger("mousedown");
-        expect(link.text()).toBe("Save");
+        expectTranslated(link, "Save", "Sauvegarder", store as any);
 
         const hiddenLink = wrapper.find({ref: "save"});
         expect(hiddenLink.attributes("href")).toBe("http://localhost#1234");
@@ -139,15 +142,13 @@ describe("File menu", () => {
     });
 
     it("opens file dialog on click load", (done) => {
-        const wrapper = mount(FileMenu,
-            {
-                store: createStore()
-            });
+        const store = createStore();
+        const wrapper = mount(FileMenu, {store});
 
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         const link = wrapper.findAll(".dropdown-item").at(1);
-        expect(link.text()).toBe("Load");
+        expectTranslated(link, "Load", "Charger", store as any);
 
         const input = wrapper.find("input").element as HTMLInputElement;
         input.addEventListener("click", function () {
@@ -214,25 +215,24 @@ describe("File menu", () => {
 
     it("modal can be dismissed", () => {
         const clearErrorMock = jest.fn();
-        const wrapper = mount(FileMenu,
-            {
-                store: createStore({
-                    load: {
-                        namespaced: true,
-                        state: mockLoadState({
-                            loadingState: LoadingState.LoadFailed,
-                            loadError: mockError("test error")
-                        }),
-                        actions: {
-                            clearLoadState: clearErrorMock
-                        }
-                    }
-                })
-            });
+        const store = createStore({
+            load: {
+                namespaced: true,
+                state: mockLoadState({
+                    loadingState: LoadingState.LoadFailed,
+                    loadError: mockError("test error")
+                }),
+                actions: {
+                    clearLoadState: clearErrorMock
+                }
+            }
+        });
+
+        const wrapper = mount(FileMenu, {store});
 
         const modal = wrapper.find(Modal);
         modal.find(".btn").trigger("click");
-        expect(modal.find(".btn").text()).toBe("OK");
+        expectTranslated(modal.find(".btn"), "OK", "OK", store as any);
         expect(clearErrorMock.mock.calls.length).toBe(1);
     });
 

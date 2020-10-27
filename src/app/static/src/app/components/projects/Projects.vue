@@ -1,12 +1,13 @@
 <template>
     <div>
         <div v-if="!loading" id="projects-content" class="row">
+            <p class="text-muted" v-translate="'projectDescription'"></p>
             <div id="projects-header" class="lead col-12">
                 <span v-translate="'projectsHeaderCreate'"></span>
                 <span v-if="currentProject">
                     <span v-translate="'or'"></span>
                     <a v-translate="'projectsHeaderReturn'"
-                       href="#" @click="handleCurrentProjectClick"></a> ({{currentProject.name}})
+                       href="#" @click="handleCurrentProjectClick"></a> ({{ currentProject.name }})
                 </span>
             </div>
             <div class="my-3 col-6 clearfix">
@@ -67,7 +68,7 @@
 
     import ProjectsMixin from "./ProjectsMixin";
 
-    export default ProjectsMixin.extend<Data, Methods, Computed, {}>({
+    export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
         computed: {
             ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
                 currentProject: state => state.currentProject,
@@ -76,12 +77,12 @@
                 loading: state => state.loading
             }),
             isGuest: mapGetterByName(null, "isGuest"),
-            disableCreate: function() {
+            disableCreate: function () {
                 return !this.newProjectName || this.invalidName;
             }
         },
         methods: {
-            handleCurrentProjectClick: function(e: Event) {
+            handleCurrentProjectClick: function (e: Event) {
                 e.preventDefault();
                 this.$router.push('/');
             },
@@ -89,9 +90,9 @@
             getProjects: mapActionByName(namespace, "getProjects")
         },
         beforeMount() {
-          if (this.isGuest) {
-              this.$router.push("/");
-          }
+            if (this.isGuest) {
+                this.$router.push("/");
+            }
         },
         mounted() {
             this.getProjects();

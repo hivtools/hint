@@ -558,7 +558,7 @@ describe("BubblePlot component", () => {
         const newColourScale = {type: ColourScaleType.DynamicFiltered, customMin: -5, customMax: 5};
         legend.vm.$emit("update", newColourScale);
 
-        expect(wrapper.emitted("updateColourScales").length).toBe(1);
-        expect(wrapper.emitted("updateColourScales")[0][0]).toStrictEqual({prevalence: newColourScale});
+        expect(wrapper.emitted("update-colour-scales").length).toBe(1);
+        expect(wrapper.emitted("update-colour-scales")[0][0]).toStrictEqual({prevalence: newColourScale});
     });
 });

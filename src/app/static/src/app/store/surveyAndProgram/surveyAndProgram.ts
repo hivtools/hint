@@ -31,7 +31,7 @@ export const initialSurveyAndProgramState = (): SurveyAndProgramState => {
     }
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 const existingState = localStorageManager.getState();
 export const surveyAndProgram: Module<SurveyAndProgramState, RootState> = {

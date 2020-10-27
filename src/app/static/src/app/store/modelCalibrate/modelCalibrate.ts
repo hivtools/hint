@@ -28,19 +28,13 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
     }
 };
 
-export const modelCalibrateGetters = {
-    complete: (state: ModelCalibrateState) => {
-        return state.complete;
-    }
-};
+const namespaced = true;
 
-const namespaced: boolean = true;
 const existingState = localStorageManager.getState();
 
 export const modelCalibrate: Module<ModelCalibrateState, RootState> = {
     namespaced,
     state: {...initialModelCalibrateState(), ...existingState && existingState.modelCalibrate},
     mutations,
-    actions,
-    getters: modelCalibrateGetters
+    actions
 };

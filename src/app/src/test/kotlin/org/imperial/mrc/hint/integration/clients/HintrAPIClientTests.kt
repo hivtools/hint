@@ -106,6 +106,15 @@ class HintrApiClientTests
     }
 
     @Test
+    fun `can get version`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val metadataVersion = sut.getVersion()
+
+        JSONValidator().validateSuccess(metadataVersion.body!!, "VersionInfo")
+    }
+
+    @Test
     fun `can cancel model run`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())

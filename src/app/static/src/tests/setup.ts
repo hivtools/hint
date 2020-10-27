@@ -23,8 +23,8 @@ Object.defineProperty((global as any).Element.prototype, 'innerText', {
 i18next.init({
     lng: Language.en,
     resources: {
-        en: { translation: locales.en },
-        fr: { translation: locales.fr }
+        en: {translation: locales.en},
+        fr: {translation: locales.fr}
     },
     fallbackLng: Language.en
 });

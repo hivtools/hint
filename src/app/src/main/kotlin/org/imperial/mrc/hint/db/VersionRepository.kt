@@ -29,11 +29,13 @@ interface VersionRepository
     fun setFilesForVersion(versionId: String, files: Map<String, VersionFile?>)
     fun saveVersionState(versionId: String, projectId: Int, userId: String, state: String)
     fun copyVersion(parentVersionId: String, newVersionId: String, projectId: Int, userId: String)
+    fun promoteVersion(parentVersionId: String, newVersionId: String, newProjectId: Int, userId: String)
     fun cloneVersion(parentVersionId: String, newVersionId: String, newProjectId: Int)
 
     fun getVersionDetails(versionId: String, projectId: Int, userId: String): VersionDetails
 
     fun deleteVersion(versionId: String, projectId: Int, userId: String)
+    fun versionExists(versionId: String, userId: String): Boolean
 }
 
 @Component
@@ -243,13 +245,39 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
         setFilesForVersion(newVersionId, files)
     }
 
-    override fun deleteVersion(versionId: String, projectId: Int, userId: String)
+    override fun promoteVersion(parentVersionId: String, newVersionId: String, newProjectId: Int, userId: String)
     {
+        val versionNumber = getNextVersionNumber(newProjectId)
+        dsl.insertInto(PROJECT_VERSION)
+                .set(PROJECT_VERSION.ID, newVersionId)
+                .set(PROJECT_VERSION.PROJECT_ID, newProjectId)
+                .set(PROJECT_VERSION.VERSION_NUMBER, versionNumber)
+                .set(PROJECT_VERSION.STATE, dsl.select(PROJECT_VERSION.STATE)
+                        .from(PROJECT_VERSION)
+                        .where(PROJECT_VERSION.ID.eq(parentVersionId)))
+                .execute()
+
+        val files = getVersionFiles(parentVersionId)
+        setFilesForVersion(newVersionId, files)
+    }
+
+    override fun deleteVersion(versionId: String, projectId: Int, userId: String) {
         checkVersionExists(versionId, projectId, userId);
         dsl.update(PROJECT_VERSION)
                 .set(PROJECT_VERSION.DELETED, true)
                 .where(PROJECT_VERSION.ID.eq(versionId))
                 .execute()
+    }
+
+    override fun versionExists(versionId: String, userId: String): Boolean
+    {
+        return dsl.select(PROJECT_VERSION.ID)
+                .from(PROJECT_VERSION)
+                .join(PROJECT)
+                .on(PROJECT_VERSION.PROJECT_ID.eq(PROJECT.ID))
+                .where(PROJECT_VERSION.ID.eq(versionId))
+                .and(PROJECT.USER_ID.eq(userId))
+                .fetchAny() != null
     }
 
     private fun checkVersionExists(versionId: String, projectId: Int, userId: String)

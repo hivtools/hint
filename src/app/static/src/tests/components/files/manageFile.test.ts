@@ -7,9 +7,10 @@ import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
 import {mockError, mockFile} from "../../mocks";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
-import Vuex from "vuex";
-import {emptyState} from "../../../app/root";
+import Vuex, {Store} from "vuex";
+import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {expectTranslated} from "../../testHelpers";
 
 describe("Manage file component", () => {
 
@@ -32,9 +33,9 @@ describe("Manage file component", () => {
         return store;
     };
 
-    const createSut = (props?: any, slots?: Slots) => {
+    const createSut = (props?: any, slots?: Slots, store?: Store<RootState>) => {
         return shallowMount(ManageFile, {
-            store: createStore(),
+            store: store || createStore(),
             propsData: {
                 error: null,
                 label: "PJNZ",
@@ -71,10 +72,12 @@ describe("Manage file component", () => {
     });
 
     it("renders existing file name if present", () => {
+        const store = createStore();
         const wrapper = createSut({
             existingFileName: "existing-name.csv"
-        });
-        expect(wrapper.find("label.file-name").text()).toContain("File: existing-name.csv");
+        }, undefined, store);
+        expectTranslated(wrapper.find("label.file-name strong"), "File", "Fichier", store);
+        expect(wrapper.find("label.file-name").text()).toContain("existing-name.csv");
     });
 
     it("does not render tick if valid is false", () => {

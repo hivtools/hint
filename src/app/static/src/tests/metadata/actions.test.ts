@@ -44,6 +44,9 @@ describe("Metadata actions", () => {
         const commit = jest.fn();
         await actions.getPlottingMetadata({commit, rootState} as any, "Malawi");
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: "PlottingMetadataError", payload: mockError("Test Error")});
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "PlottingMetadataError",
+            payload: mockError("Test Error")
+        });
     }
 });

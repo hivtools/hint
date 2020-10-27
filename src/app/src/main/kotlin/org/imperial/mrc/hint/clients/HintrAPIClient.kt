@@ -33,6 +33,8 @@ interface HintrAPIClient
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun getModelCalibrationOptions(): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
+    fun getVersion():ResponseEntity<String>
+    fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
 }
 
 @Component
@@ -141,6 +143,18 @@ class HintrFuelAPIClient(
                 .asResponseEntity()
     }
 
+    override fun getVersion(): ResponseEntity<String>
+    {
+        return get("hintr/version")
+    }
+
+    override fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
+    {
+        return "$baseUrl/download/summary/${id}"
+                .httpDownload()
+                .getStreamingResponseEntity(::head)
+    }
+
     override fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
     {
         return "$baseUrl/download/spectrum/${id}"
@@ -154,5 +168,7 @@ class HintrFuelAPIClient(
                 .httpDownload()
                 .getStreamingResponseEntity(::head)
     }
+
+
 
 }

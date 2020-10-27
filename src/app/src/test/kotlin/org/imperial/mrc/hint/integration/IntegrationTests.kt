@@ -33,6 +33,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     @BeforeEach
     fun beforeEach(info: TestInfo)
     {
+        userRepo.addUser("guest", "guest")
         val isAuthorized = info.displayName.contains("TRUE")
         if (isAuthorized)
         {
@@ -74,6 +75,35 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
 
         testRestTemplate.postForEntity<String>("/disease/survey/",
                 getTestEntity("survey.csv"))
+    }
+
+    fun assertSecureWithHttpStatus(isAuthorized: IsAuthorized,
+                                responseEntity: ResponseEntity<String>,
+                                schemaName: String?, httpStatus: HttpStatus)
+    {
+
+        when (isAuthorized)
+        {
+            IsAuthorized.TRUE ->
+            {
+                Assertions.assertThat(responseEntity.headers.contentType!!.toString())
+                        .contains("application/json")
+
+                if (responseEntity.statusCode != httpStatus)
+                {
+                    Assertions.fail<String>("Expected $httpStatus but got error: ${responseEntity.body}")
+                }
+                if (schemaName != null)
+                {
+                    JSONValidator().validateSuccess(responseEntity.body!!, schemaName)
+                }
+
+            }
+            IsAuthorized.FALSE ->
+            {
+                assertUnauthorized(responseEntity)
+            }
+        }
     }
 
     fun assertSecureWithSuccess(isAuthorized: IsAuthorized,

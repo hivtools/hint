@@ -22,4 +22,11 @@ class DownloadController(val apiClient: HintrAPIClient)
     {
         return apiClient.downloadCoarseOutput(id)
     }
+
+    @GetMapping("/summary/{id}")
+    @ResponseBody
+    fun getSummary(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
+    {
+        return apiClient.downloadSummary(id)
+    }
 }

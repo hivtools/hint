@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.unit.controllers
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.NullNode
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -32,8 +33,9 @@ class ProjectsControllerTests
 
     private val mockSession = mock<Session> {
         on { getUserProfile() } doReturn mockProfile
-        on { generateNewVersionId() } doReturn "testVersion"
+        on { generateVersionId() } doReturn "testVersion"
         on { userIsGuest() } doReturn false
+        on { getVersionId() } doReturn "testVersion"
     }
 
     private val mockVersion = Version("testVersion", "createdTime", "updatedTime", 1)
@@ -101,6 +103,47 @@ class ProjectsControllerTests
         val versions = projects[0]["versions"] as ArrayNode
         assertThat(versions.count()).isEqualTo(1)
         assertExpectedVersion(versions[0])
+    }
+
+    @Test
+    fun `gets current Project`()
+    {
+        val mockVersion = Version("testVersion", "createdTime", "updatedTime", 1)
+        val mockProject = Project(99, "testProject", listOf(mockVersion))
+        val mockProjectRepo = mock<ProjectRepository> {
+            on { getProjectFromVersionId("testVersion", "testUser") } doReturn mockProject
+        }
+        val mockVersionRepo = mock<VersionRepository> {
+            on { versionExists("testVersion", "testUser") } doReturn true
+            on { getVersion("testVersion")} doReturn mockVersion
+        }
+
+        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock())
+        val result = sut.getCurrentProject()
+
+        val resultJson = parser.readTree(result.body)["data"]
+        val projectNode = resultJson["project"]
+        val versionNode = resultJson["version"]
+        assertThat(projectNode["id"].asInt()).isEqualTo(99)
+        assertThat(projectNode["name"].asText()).isEqualTo("testProject")
+        assertThat(versionNode["id"].asText()).isEqualTo("testVersion")
+    }
+
+    @Test
+    fun `returns null when no current Project`()
+    {
+        val mockVersionRepo = mock<VersionRepository> {
+            on { versionExists("testVersion", "testUser") } doReturn false
+        }
+
+        val sut = ProjectsController(mockSession, mockVersionRepo, mock(), mock())
+        val result = sut.getCurrentProject()
+
+        val resultJson = parser.readTree(result.body)["data"]
+        val projectNode = resultJson["project"]
+        val versionNode = resultJson["version"]
+        assertThat(projectNode is NullNode).isEqualTo(true)
+        assertThat(versionNode is NullNode).isEqualTo(true)
     }
 
     @Test
@@ -214,8 +257,24 @@ class ProjectsControllerTests
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
-    private fun assertExpectedVersion(node: JsonNode)
+    @Test
+    fun `promotes version to project`()
     {
+        val mockVersionRepo = mock<VersionRepository>()
+        val mockProjectRepo = mock<ProjectRepository> {
+            on { getProject(1, "testUser") } doReturn Project(1, "p1", listOf(Version("v1", "createdTime", "updatedTime", 1),
+                    Version("v2", "createdTime", "updatedTime", 1)))
+        }
+        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock())
+        val result = sut.promoteVersion(1, "testVersion", "newProjectName")
+        
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        verify(mockProjectRepo).saveNewProject("testUser", "newProjectName")
+        verify(mockVersionRepo).promoteVersion("testVersion", "testVersion", 0, "testUser")
+        verify(mockVersionRepo).getVersion("testVersion")
+    }
+
+    private fun assertExpectedVersion(node: JsonNode) {
         assertThat(node["id"].asText()).isEqualTo("testVersion")
         assertThat(node["created"].asText()).isEqualTo("createdTime")
         assertThat(node["updated"].asText()).isEqualTo("updatedTime")

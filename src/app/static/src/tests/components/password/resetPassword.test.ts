@@ -6,6 +6,7 @@ import Vuex, {Store} from "vuex";
 import {mockError, mockPasswordState} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import LoggedOutHeader from "../../../app/components/header/LoggedOutHeader.vue";
+import {expectTranslatedWithStoreType} from "../../testHelpers";
 
 const localVue = createLocalVue();
 
@@ -31,23 +32,28 @@ describe("Reset password component", () => {
     };
 
     const createSut = (store: Store<PasswordState>) => {
-        return shallowMount(ResetPassword, {store, localVue, propsData: {
+        return shallowMount(ResetPassword, {
+            store, localVue, propsData: {
                 token: "testToken",
                 title: "Naomi"
-            }});
+            }
+        });
     };
 
 
     it("renders form with no error", () => {
         const store = createStore({
             passwordWasReset: false,
-            resetPasswordError: null});
+            resetPasswordError: null
+        });
 
         const wrapper = createSut(store);
 
-        expect(wrapper.find("h3").text()).toEqual("Enter a new password");
+        expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Enter a new password",
+            "Veuillez entrer un nouveau mot de passe", store);
         expect((wrapper.find("input[type='password']").element as HTMLInputElement).value).toEqual("");
-        expect((wrapper.find("input[type='submit']").element as HTMLInputElement).value).toEqual("Update password");
+        expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='submit']"),
+            "Update password", "Mettre à jour le mot de passe", store, "value");
         expect(wrapper.findAll("error-alert-stub").length).toEqual(0);
         expect(wrapper.findAll("#password-was-reset").length).toEqual(0);
     });
@@ -56,15 +62,23 @@ describe("Reset password component", () => {
         const error = mockError("test error");
         const store = createStore({
             passwordWasReset: false,
-            resetPasswordError: error});
+            resetPasswordError: error
+        });
 
         const wrapper = createSut(store);
 
-        expect(wrapper.find("h3").text()).toEqual("Enter a new password");
+        expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Enter a new password",
+            "Veuillez entrer un nouveau mot de passe", store);
         expect((wrapper.find("input[type='password']").element as HTMLInputElement).value).toEqual("");
-        expect((wrapper.find("input[type='submit']").element as HTMLInputElement).value).toEqual("Update password");
+        expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='submit']"),
+            "Update password", "Mettre à jour le mot de passe", store, "value");
         expect(wrapper.findAll("error-alert-stub").length).toEqual(1);
         expect(wrapper.find("error-alert-stub").props().error).toBe(error);
+        expectTranslatedWithStoreType<PasswordState>(wrapper.find("#request-new-link"),
+            "This password reset link is not valid. It may have expired or already been used.\n" +
+            "Please request another link here.",
+            "Ce lien de réinitialisation du mot de passe n'est pas valide. Il peut avoir expiré ou avoir déjà été utilisé. " +
+            "Veuillez cliquer ici pour demander un autre lien.", store);
         expect((wrapper.find("#request-new-link a").element as HTMLLinkElement).href)
             .toEqual("http://localhost/password/forgot-password");
         expect(wrapper.findAll("#password-was-reset").length).toEqual(0);
@@ -73,16 +87,20 @@ describe("Reset password component", () => {
     it("renders form with password reset success message and hides form", () => {
         const store = createStore({
             passwordWasReset: true,
-            resetPasswordError: null});
+            resetPasswordError: null
+        });
 
         const wrapper = createSut(store);
 
-        expect(wrapper.find("h3").text()).toEqual("Enter a new password");
+        expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Enter a new password",
+            "Veuillez entrer un nouveau mot de passe", store);
         expect(wrapper.findAll("input[type='password']").length).toEqual(0);
         expect(wrapper.findAll("input[type='submit']").length).toEqual(0);
         expect(wrapper.findAll("error-alert-stub").length).toEqual(0);
         expect(wrapper.findAll("#password-was-reset").length).toEqual(1);
-        expect(wrapper.find("#password-was-reset").text()).toEqual("Thank you, your password has been updated. Click here to login.");
+        expectTranslatedWithStoreType<PasswordState>(wrapper.find("#password-was-reset"),
+            "Thank you, your password has been updated. Click here to login.",
+            "Merci, votre mot de passe a été mis à jour. Cliquez ici pour vous connecter.", store);
     });
 
     it("invokes resetPassword action", (done) => {

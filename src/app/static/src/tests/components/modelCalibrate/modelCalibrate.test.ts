@@ -2,7 +2,7 @@ import Vuex, {ActionTree, MutationTree, Store} from "vuex";
 import {mockError, mockModelCalibrateState, mockRootState} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {RootState} from "../../../app/root";
-import {ModelCalibrateState, modelCalibrateGetters} from "../../../app/store/modelCalibrate/modelCalibrate";;
+import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";;
 import {mount, shallowMount} from "@vue/test-utils";
 import ModelCalibrate from "../../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {DynamicControlType, DynamicForm} from "@reside-ic/vue-dynamic-form";
@@ -21,7 +21,6 @@ describe("Model calibrate component", () => {
                 modelCalibrate: {
                     namespaced: true,
                     state: mockModelCalibrateState(state),
-                    getters: modelCalibrateGetters,
                     actions: {
                         fetchModelCalibrateOptions: fetchAction,
                         calibrate: calibrateAction

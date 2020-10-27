@@ -20,6 +20,7 @@ class DownloadTests : SecureIntegrationTests()
         testRestTemplate.getForEntity<String>("/")
     }
 
+
     private fun waitForModelRunResult(): String
     {
 
@@ -44,6 +45,15 @@ class DownloadTests : SecureIntegrationTests()
         assertSuccess(responseEntity)
         assertResponseHasExpectedDownloadHeaders(responseEntity)
 
+    }
+
+    @Test
+    fun `can download summary data`()
+    {
+        val id = waitForModelRunResult()
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/summary/$id")
+        assertSuccess(responseEntity)
+        assertResponseHasExpectedDownloadHeaders(responseEntity)
     }
 
 

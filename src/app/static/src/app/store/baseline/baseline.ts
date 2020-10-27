@@ -52,7 +52,7 @@ export const baselineGetters = {
 
 const getters = baselineGetters;
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 const existingState = localStorageManager.getState();
 

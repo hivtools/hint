@@ -32,7 +32,6 @@
 
     import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
     import {ModelCalibrateMutation} from "../../store/modelCalibrate/mutations";
-    import ResetConfirmation from "../ResetConfirmation.vue";
     import {StepDescription} from "../../store/stepper/stepper";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
@@ -66,7 +65,7 @@
 
     const namespace = "modelCalibrate";
 
-    export default Vue.extend<Data, Methods, Computed, {}>({
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "ModelCalibrate",
         data() {
             return {
@@ -74,8 +73,12 @@
             }
         },
         computed: {
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
+            ...mapStateProps<ModelCalibrateState, keyof Computed>(namespace, {
+                loading: s => s.fetching,
+                calibrating: s => s.calibrating,
+                error: s => s.error
+            }),
+            currentLanguage: mapStateProp<RootState, Language>(null, (state: RootState) => state.language),
             selectText() {
                 return i18next.t("select", this.currentLanguage)
             },
@@ -87,12 +90,7 @@
             },
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
-            ...mapStateProps<ModelCalibrateState, keyof Computed>(namespace, {
-                loading: s => s.fetching,
-                calibrating: s => s.calibrating,
-                error: s => s.error
-            }),
-            complete: mapGetterByName(namespace, "complete"),
+            complete: mapStateProp<ModelCalibrateState, boolean>(namespace, state => state.complete),
             calibrateOptions: {
                 get() {
                     return this.$store.state.modelCalibrate.optionsFormMeta
@@ -114,7 +112,6 @@
             DynamicForm,
             LoadingSpinner,
             Tick,
-            ResetConfirmation,
             ErrorAlert
         },
         mounted() {

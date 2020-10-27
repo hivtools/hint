@@ -409,8 +409,8 @@ describe("Choropleth component", () => {
         };
         legend.vm.$emit("update", newScale);
 
-        expect(wrapper.emitted("updateColourScales").length).toBe(1);
-        expect(wrapper.emitted("updateColourScales")[0][0]).toStrictEqual({
+        expect(wrapper.emitted("update-colour-scales").length).toBe(1);
+        expect(wrapper.emitted("update-colour-scales")[0][0]).toStrictEqual({
             prevalence: newScale
         });
     });
@@ -420,8 +420,8 @@ describe("Choropleth component", () => {
             selections: {...propsData.selections, indicatorId: "plhiv"}
         });
 
-        expect(wrapper.emitted("updateColourScales").length).toBe(1);
-        expect(wrapper.emitted("updateColourScales")[0][0]).toStrictEqual({
+        expect(wrapper.emitted("update-colour-scales").length).toBe(1);
+        expect(wrapper.emitted("update-colour-scales")[0][0]).toStrictEqual({
             ...propsData.colourScales,
             plhiv: {
                 type: ColourScaleType.Default,

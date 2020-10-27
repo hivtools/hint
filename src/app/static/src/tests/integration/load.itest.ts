@@ -97,12 +97,6 @@ describe("load actions", () => {
                         fromADR: false
                     }
             });
-        const savedProjectState = mockSaveToLocalStorage.mock.calls[0][0].projects;
-        expect(savedProjectState.currentProject.id).toBeGreaterThan(0);
-        expect(savedProjectState.currentProject.name).toBe("new project");
-        expect(savedProjectState.currentProject.versions.length).toBe(1);
-        expect(savedProjectState.currentVersion.id).toBeTruthy();
-        expect(savedProjectState.currentVersion.versionNumber).toBe(1);
         expect(mockSaveToLocalStorage.mock.calls[0][0].baseline).toBe("TEST BASELINE");
     });
 
