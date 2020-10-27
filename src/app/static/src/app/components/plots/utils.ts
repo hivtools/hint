@@ -190,7 +190,10 @@ export const formatOutput = function (value: number | string, format: string, sc
     if (!format.includes('%') && accuracy){
         ans = Math.round(ans / accuracy) * accuracy
     }
-    return numeral(ans).format(format)
+
+    if (format){
+        return numeral(ans).format(format)
+    } else return ans
 };
 
 interface Indicator {
@@ -198,10 +201,5 @@ interface Indicator {
 }
 
 export const findMetaData = function(indicators: Indicator[], indicatorId: string){
-    return indicators.reduce((acc: Indicator, value: Indicator) => {
-    if (value.indicator === indicatorId){
-        acc = value
-    }
-    return acc
-});
+    return indicators.find(i => i.indicator == indicatorId)
 }

@@ -204,8 +204,8 @@
                     const {value, upper, lower} = current
                     const { indicator, format, scale, accuracy } = current.indicatorMeta
                     displayRows[key][indicator] = formatOutput(value, format, scale, accuracy);
-                    lower ? displayRows[key][`${indicator}_lower`] = formatOutput(lower, format, scale, accuracy): '';
-                    upper ? displayRows[key][`${indicator}_upper`] = formatOutput(upper, format, scale, accuracy): '';
+                    displayRows[key][`${indicator}_lower`] = lower ? formatOutput(lower, format, scale, accuracy): '';
+                    displayRows[key][`${indicator}_upper`] = upper ? formatOutput(upper, format, scale, accuracy): '';
                 });
                 return Object.values(displayRows);
             },

@@ -288,7 +288,7 @@
                         const stringVal = (value || value === 0) ? value.toString() : "";
                         layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
-                                <br/>${formatOutput(stringVal, indicatorMetaData.format, indicatorMetaData.scale, indicatorMetaData.accuracy)}
+                                <br/>${formatOutput(stringVal, indicatorMetaData!.format, indicatorMetaData!.scale, indicatorMetaData!.accuracy)}
                             </div>`);
                     }
                 }

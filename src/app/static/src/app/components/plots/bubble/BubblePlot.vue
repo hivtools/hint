@@ -398,8 +398,8 @@
                 const sizeIndicatorMetaData = findMetaData(this.indicators, this.selections.sizeIndicatorId);
                 return `<div>
                                 <strong>${area_name}</strong>
-                                <br/>${colorIndicatorName}: ${formatOutput(colorValue, colorIndicatorMetaData.format, colorIndicatorMetaData.scale, colorIndicatorMetaData.accuracy)}
-                                <br/>${sizeIndicatorName}: ${formatOutput(sizeValue, sizeIndicatorMetaData.format, sizeIndicatorMetaData.scale, sizeIndicatorMetaData.accuracy)}
+                                <br/>${colorIndicatorName}: ${formatOutput(colorValue, colorIndicatorMetaData!.format, colorIndicatorMetaData!.scale, colorIndicatorMetaData!.accuracy)}
+                                <br/>${sizeIndicatorName}: ${formatOutput(sizeValue, sizeIndicatorMetaData!.format, sizeIndicatorMetaData!.scale, sizeIndicatorMetaData!.accuracy)}
                             </div>`;
             },
             getSelectedFilterValues(filterId: string) {
