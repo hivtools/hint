@@ -22,6 +22,25 @@ describe("Projects mutations", () => {
         (console.error as jest.Mock).mockClear();
     });
 
+    it("sets cloningProject and resets error", () => {
+        const state = mockProjectsState({cloneProjectError: "test error" as any});
+
+        mutations[ProjectsMutations.CloningProject](state, {payload: true});
+        expect(state.cloningProject).toBe(true);
+        expect(state.cloneProjectError).toBe(null);
+
+        mutations[ProjectsMutations.CloningProject](state, {payload: null});
+        expect(state.cloningProject).toBe(false);
+    });
+
+    it("sets cloneProjectError and resets cloningProject", () => {
+        const state = mockProjectsState({cloningProject: true});
+
+        mutations[ProjectsMutations.CloneProjectError](state, {payload: "error"});
+        expect(state.cloningProject).toBe(false);
+        expect(state.cloneProjectError).toBe("error");
+    });
+
     it("sets loading", () => {
         const state = mockProjectsState({error: "test error"} as any);
 
