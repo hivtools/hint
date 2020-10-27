@@ -43,6 +43,13 @@ class ModelRunTests : SecureIntegrationTests()
         assertSuccess(responseEntity, "ModelRunOptions")
     }
 
+    @Test
+    fun `can get model calibration options`()
+    {
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/calibration-options/")
+        assertSuccess(responseEntity, "ModelRunOptions")
+    }
+
 
     @Test
     fun `can run model`()
@@ -50,6 +57,16 @@ class ModelRunTests : SecureIntegrationTests()
         val entity = getModelRunEntity()
         val responseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
         assertSuccess(responseEntity, "ModelSubmitResponse")
+    }
+
+    @Test
+    fun `can calibrate model`()
+    {
+        val entity = getModelRunEntity()
+        val responseEntity = testRestTemplate.postForEntity<String>("/model/calibrate/1234", entity)
+        assertError(responseEntity,
+                HttpStatus.BAD_REQUEST,
+                "FAILED_TO_RETRIEVE_RESULT", "Failed to fetch result")
     }
 
 

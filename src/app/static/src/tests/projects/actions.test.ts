@@ -112,6 +112,25 @@ describe("Projects actions", () => {
         });
     });
 
+    it("gets current project and commits mutation on successful response", async(done) => {
+        const testProjects = [{id: 1, name: "v1", versions: []}];
+        mockAxios.onGet("/project/current")
+            .reply(200, mockSuccess(testProjects));
+
+        const commit = jest.fn();
+        const state = mockProjectsState();
+        const rootGetters = {isGuest: false}
+
+        actions.getCurrentProject({commit, state, rootState, rootGetters} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.SetCurrentProject, payload: testProjects});
+            expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: false});
+            done();
+        });
+    });
+
     it("if current version, createProject uploads current version before post to new project endpoint", async (done) => {
         mockAxios.onPost(`/project/`)
             .reply(200, mockSuccess("TestProject"));
@@ -151,6 +170,28 @@ describe("Projects actions", () => {
                 type: ProjectsMutations.ProjectError,
                 payload: expectedError
             });
+            done();
+        });
+    });
+
+    it("gets current project and sets error on unsuccessful response", async(done) => {
+        mockAxios.onGet("/project/current")
+            .reply(500, mockFailure("TestError"));
+
+        const commit = jest.fn();
+        const state = mockProjectsState();
+        const rootGetters = {isGuest: false}
+
+        actions.getCurrentProject({commit, state, rootState, rootGetters} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
+            const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: ProjectsMutations.ProjectError,
+                payload: expectedError
+            });
+            expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: false});
             done();
         });
     });
