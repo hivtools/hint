@@ -233,7 +233,7 @@ describe("Model run actions", () => {
         });
     });
 
-    it("cancel run calls endpoint and commits mutation", async() => {
+    it("cancel run calls endpoint and commits mutation", async () => {
         const commit = jest.fn();
         const state = mockModelRunState({modelRunId: "123"});
 

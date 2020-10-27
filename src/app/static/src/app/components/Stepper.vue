@@ -11,6 +11,7 @@
                       @jump="jump">
                 </step>
                 <div class="col step-connector" v-if="step.number < steps.length"
+                     :key="step.number + 'conn'"
                      :class="[{'enabled': isEnabled(step.number + 1)}]">
                     <hr/>
                 </div>
@@ -68,7 +69,7 @@
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
-    import { mapGettersByNames, mapStateProps} from "../utils";
+    import {mapGettersByNames, mapStateProps} from "../utils";
     import {Project} from "../types";
     import {ProjectsState} from "../store/projects/projects";
 
@@ -86,9 +87,9 @@
         loading: boolean
     }
 
-    const namespace: string = 'stepper';
+    const namespace = 'stepper';
 
-    export default Vue.extend<{}, any, ComputedState & ComputedGetters, {}>({
+    export default Vue.extend<unknown, any, ComputedState & ComputedGetters, unknown>({
         computed: {
             ...mapStateProps<StepperState, keyof ComputedState>(namespace, {
                 activeStep: state => state.activeStep,
@@ -111,7 +112,7 @@
             ...mapActions(namespace, ["jump", "next"]),
             ...mapActions(["validate"]),
             back() {
-                this.jump(this.activeStep -1);
+                this.jump(this.activeStep - 1);
             },
             isActive(num: number) {
                 return !this.loading && this.activeStep == num;
@@ -127,7 +128,7 @@
         },
         created() {
             //redirect to Projects if logged in with no currentProject
-            if ((!this.isGuest) && (this.currentProject== null) && (!this.projectLoading)) {
+            if ((!this.isGuest) && (this.currentProject == null) && (!this.projectLoading)) {
                 this.$router.push('/projects');
             }
         },

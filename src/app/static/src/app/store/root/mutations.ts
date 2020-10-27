@@ -1,6 +1,6 @@
 import {MutationTree} from "vuex";
 import {emptyState, RootState} from "../../root";
-import {Error} from "../../generated";
+import {Error, HintrVersionResponse} from "../../generated";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
@@ -55,6 +55,7 @@ export const mutations: MutationTree<RootState> = {
             adrDatasets: state.adrDatasets,
             adrSchemas: state.adrSchemas,
             version: state.version,
+            hintrVersion: state.hintrVersion,
             language: state.language,
             adrKey: state.adrKey,
             adrKeyError: state.adrKeyError,
@@ -88,6 +89,7 @@ export const mutations: MutationTree<RootState> = {
         const resetState: RootState = {
             ...emptyState(),
             language: state.language,
+            hintrVersion: state.hintrVersion,
             adrDatasets: state.adrDatasets,
             adrSchemas: state.adrSchemas,
             adrKey: state.adrKey,

@@ -15,6 +15,7 @@ interface ProjectRepository
     fun getProjects(userId: String): List<Project>
     fun deleteProject(projectId: Int, userId: String)
     fun getProject(projectId: Int, userId: String): Project
+    fun getProjectFromVersionId(versionId: String, userId: String): Project
 }
 
 @Component
@@ -43,6 +44,19 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
         }
 
         return mapProject(projectRecord)
+    }
+
+    override fun getProjectFromVersionId(versionId: String, userId: String): Project
+    {
+        val projectId = dsl.select(PROJECT_VERSION.PROJECT_ID)
+                .from(PROJECT_VERSION)
+                .join(PROJECT)
+                .on(PROJECT_VERSION.PROJECT_ID.eq(PROJECT.ID))
+                .where(PROJECT_VERSION.ID.eq(versionId))
+                .and(PROJECT.USER_ID.eq(userId))
+                .fetchAny() ?: throw ProjectException("projectDoesNotExist")
+
+        return getProject(projectId[PROJECT_VERSION.PROJECT_ID], userId)
     }
 
     override fun saveNewProject(userId: String, projectName: String): Int

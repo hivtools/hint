@@ -82,8 +82,8 @@ export const freezer = {
             return Object.freeze(data.map(d => freezer.deepFreeze(d)))
         }
         if (data != null && typeof data === "object") {
-            for (let prop in data) {
-                if (data.hasOwnProperty(prop)) {
+            for (const prop in data) {
+                if (Object.prototype.hasOwnProperty.call(data, prop)) {
                     data[prop] = freezer.deepFreeze(data[prop])
                 }
             }
@@ -171,7 +171,7 @@ export const findResource = (datasetWithResources: any, resourceType: string): D
 const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
 
 export const validateEmail = (test: string): boolean => {
-    return emailRegex.test(test.replace(/\s*/g,""))
+    return emailRegex.test(test.replace(/\s*/g, ""))
 }
 
 export const versionLabel = (version: Version) => `v${version.versionNumber}`;

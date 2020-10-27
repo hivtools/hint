@@ -10,7 +10,7 @@ import {expectTranslated} from "../../testHelpers";
 
 describe("Version status component", () => {
     const getWrapper = (projectsState: Partial<ProjectsState> = {}) => {
-        const store =  new Vuex.Store({
+        const store = new Vuex.Store({
             state: emptyState(),
             modules: {
                 projects: {

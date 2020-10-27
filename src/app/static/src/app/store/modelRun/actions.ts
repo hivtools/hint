@@ -1,4 +1,4 @@
-import {ActionContext, ActionTree, Commit} from "vuex";
+import {ActionContext, ActionTree} from "vuex";
 import {ModelRunState} from "./modelRun";
 import {RootState} from "../../root";
 import {api, APIService} from "../../apiService";
@@ -74,13 +74,13 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
         commit({type: "RunCancelled", payload: null});
         const apiService = api<ModelRunMutation, ModelRunMutation>(context)
-                    .ignoreSuccess()
-                    .ignoreErrors();
+            .ignoreSuccess()
+            .ignoreErrors();
 
-        await makeCancelRunRequest(apiService,modelRunId)
+        await makeCancelRunRequest(apiService, modelRunId)
     }
 };
 
-export async function makeCancelRunRequest(api: APIService<ModelRunMutation, ModelRunMutation>, modelRunId: string){
+export async function makeCancelRunRequest(api: APIService<ModelRunMutation, ModelRunMutation>, modelRunId: string) {
     return await api.postAndReturn<null>(`/model/cancel/${modelRunId}`);
 }

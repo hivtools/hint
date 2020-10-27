@@ -37,7 +37,7 @@ describe("ShareProject", () => {
 
         expect(wrapper.find(Modal).props("open")).toBe(false);
         const link = wrapper.find("a");
-        expectTranslated(link, "Share" ,"Partager", store);
+        expectTranslated(link, "Share", "Partager", store);
         link.trigger("click");
         expect(wrapper.find(Modal).props("open")).toBe(true);
     });

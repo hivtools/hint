@@ -26,11 +26,15 @@ interface HintrAPIClient
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
+    fun calibrate(id: String, calibrationOptions: ModelRunOptions): ResponseEntity<String>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
     fun downloadCoarseOutput(id: String): ResponseEntity<StreamingResponseBody>
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
+    fun getModelCalibrationOptions(): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
+    fun getVersion():ResponseEntity<String>
+    fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
 }
 
 @Component
@@ -100,6 +104,12 @@ class HintrFuelAPIClient(
         return get("model/result/${id}")
     }
 
+    override fun calibrate(id: String, calibrationOptions: ModelRunOptions): ResponseEntity<String>
+    {
+        val json = objectMapper.writeValueAsString(calibrationOptions)
+        return postJson("model/calibrate/${id}", json)
+    }
+
     override fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     {
         return get("meta/plotting/${iso3}")
@@ -109,6 +119,11 @@ class HintrFuelAPIClient(
     {
         val json = objectMapper.writeValueAsString(files)
         return postJson("model/options", json)
+    }
+
+    override fun getModelCalibrationOptions(): ResponseEntity<String>
+    {
+        return postEmpty("model/calibration-options")
     }
 
     override fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
@@ -128,6 +143,18 @@ class HintrFuelAPIClient(
                 .asResponseEntity()
     }
 
+    override fun getVersion(): ResponseEntity<String>
+    {
+        return get("hintr/version")
+    }
+
+    override fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
+    {
+        return "$baseUrl/download/summary/${id}"
+                .httpDownload()
+                .getStreamingResponseEntity(::head)
+    }
+
     override fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
     {
         return "$baseUrl/download/spectrum/${id}"
@@ -141,5 +168,7 @@ class HintrFuelAPIClient(
                 .httpDownload()
                 .getStreamingResponseEntity(::head)
     }
+
+
 
 }

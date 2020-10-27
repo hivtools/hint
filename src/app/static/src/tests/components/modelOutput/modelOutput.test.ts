@@ -258,17 +258,17 @@ describe("ModelOutput component", () => {
 
         const choro = wrapper.find(Choropleth);
         const newColourScales = {test: "NEW COLOUR SCALES"};
-        choro.vm.$emit("updateColourScales", newColourScales);
+        choro.vm.$emit("update-colour-scales", newColourScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(newColourScales);
     });
 
     it("commits updated colour scale from bubble plot", () => {
-        const store = getStore( {selectedTab: "bubble"});
+        const store = getStore({selectedTab: "bubble"});
         const wrapper = shallowMount(ModelOutput, {store, localVue});
 
         const bubble = wrapper.find(BubblePlot);
         const bubbleColourScales = {test: "NEW BUBBLE COLOUR SCALES"};
-        bubble.vm.$emit("updateColourScales", bubbleColourScales);
+        bubble.vm.$emit("update-colour-scales", bubbleColourScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(bubbleColourScales);
     });
 
@@ -337,7 +337,10 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
         const table = wrapper.findAll("table-view-stub").at(1);
-        expect(table.props().selections).toStrictEqual({colorIndicatorId: "art_coverage", sizeIndicatorId: "current_art"});
+        expect(table.props().selections).toStrictEqual({
+            colorIndicatorId: "art_coverage",
+            sizeIndicatorId: "current_art"
+        });
         expect(table.props().indicators).toStrictEqual(
             [
                 {
@@ -366,7 +369,8 @@ describe("ModelOutput component", () => {
             selectedFilterOptions: {
                 region: {id: "r1", label: "region 1"},
                 age: {id: "a1", label: "0-4"}
-            }});
+            }
+        });
         expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
     });

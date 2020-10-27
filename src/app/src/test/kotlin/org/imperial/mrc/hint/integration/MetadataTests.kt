@@ -20,4 +20,11 @@ class MetadataTests : SecureIntegrationTests()
         val responseEntity = testRestTemplate.getForEntity<String>("/meta/plotting/MWI/")
         assertSuccess(responseEntity, "PlottingMetadataResponse")
     }
+
+    @Test
+    fun `can get version`()
+    {
+        val responseEntity = testRestTemplate.getForEntity<String>("/meta/hintr/version/")
+        assertSuccess(responseEntity, "VersionInfo")
+    }
 }

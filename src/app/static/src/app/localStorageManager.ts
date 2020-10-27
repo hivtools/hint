@@ -15,10 +15,11 @@ export const serialiseState = (rootState: RootState): Partial<RootState> => {
         modelOutput: rootState.modelOutput,
         modelCalibrate: rootState.modelCalibrate,
         stepper: rootState.stepper,
-        metadata: {...rootState.metadata, plottingMetadataError: null},
+        metadata: {...rootState.metadata, plottingMetadataError:null},
         plottingSelections: rootState.plottingSelections,
         surveyAndProgram: {selectedDataType: rootState.surveyAndProgram.selectedDataType} as any,
-        projects: rootState.projects
+        projects: rootState.projects,
+        hintrVersion: rootState.hintrVersion
     };
 };
 

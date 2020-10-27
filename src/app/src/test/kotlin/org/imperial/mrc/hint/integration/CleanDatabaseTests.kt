@@ -48,7 +48,6 @@ abstract class CleanDatabaseTests
         }
 
         userRepo.addUser("test.user@example.com", "password")
-        userRepo.addUser("guest", "guest")
     }
 }
 

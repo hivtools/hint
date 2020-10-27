@@ -37,39 +37,39 @@
                          @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"></filters>
             </div>
             <div v-if="showChoropleth" class="col-md-9">
-                    <ul class="nav nav-tabs">
-                        <li class="nav-item">
-                            <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)" v-translate="'survey'"></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)" v-translate="'ART'">ART</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)" v-translate="'ANC'">ANC</a>
-                        </li>
-                    </ul>
-                    <choropleth :chartdata="data"
-                                :filters="filters"
-                                :features="features"
-                                :feature-levels="featureLevels"
-                                :indicators="sapIndicatorsMetadata"
-                                :selections="plottingSelections"
-                                :include-filters="false"
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)"
+                           v-translate="'survey'"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)" v-translate="'ART'">ART</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)" v-translate="'ANC'">ANC</a>
+                    </li>
+                </ul>
+                <choropleth :chartdata="data"
+                            :filters="filters"
+                            :features="features"
+                            :feature-levels="featureLevels"
+                            :indicators="sapIndicatorsMetadata"
+                            :selections="plottingSelections"
+                            :include-filters="false"
+                            :area-filter-id="areaFilterId"
+                            :colour-scales="selectedSAPColourScales"
+                            @update="updateChoroplethSelections({payload: $event})"
+                            @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
+                <div>
+                    <table-view :tabledata="data"
                                 :area-filter-id="areaFilterId"
-                                :colour-scales="selectedSAPColourScales"
-                                @update="updateChoroplethSelections({payload: $event})"
-                                @updateColourScales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
-                    <div>
-                        <table-view :tabledata="data"
-                                    :area-filter-id="areaFilterId"
-                                    :filters="filters"
-                                    :countryAreaFilterOption="countryAreaFilterOption"
-                                    :indicators="filterTableIndicators"
-                                    :selections="plottingSelections"
-
-                                    :selectedFilterOptions="plottingSelections.selectedFilterOptions"
-                        ></table-view>
-                    </div>
+                                :filters="filters"
+                                :countryAreaFilterOption="countryAreaFilterOption"
+                                :indicators="filterTableIndicators"
+                                :selections="plottingSelections"
+                                :selectedFilterOptions="plottingSelections.selectedFilterOptions"
+                    ></table-view>
+                </div>
             </div>
         </div>
     </div>
@@ -90,10 +90,12 @@
     import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
     import ManageFile from "../files/ManageFile.vue";
 
-    const namespace: string = 'surveyAndProgram';
+    const namespace = 'surveyAndProgram';
+
     interface Data {
         areaFilterId: string
     }
+
     interface Computed {
         selectedDataType: DataType,
         filters: Filter[],
@@ -107,10 +109,10 @@
         features: Feature[],
         featureLevels: LevelLabel[],
         plottingSelections: ChoroplethSelections,
-        selectedIndicator: any[],
-        filterTableIndicators: any[]
+        filterTableIndicators: ChoroplethIndicatorMetadata[]
     }
-    export default Vue.extend<Data, {}, Computed, {}>({
+
+    export default Vue.extend<Data, unknown, Computed, unknown>({
         name: "SurveyAndProgram",
         data: () => {
             return {
@@ -118,9 +120,6 @@
             };
         },
         computed: {
-            filterTableIndicators(){
-                return this.sapIndicatorsMetadata.filter((val: any):any => val.indicator === this.plottingSelections.indicatorId)
-            },
             ...mapState<RootState>({
                 selectedDataType: ({surveyAndProgram}) => {
                     return surveyAndProgram.selectedDataType;
@@ -132,7 +131,10 @@
                     valid: !!surveyAndProgram.anc,
                     error: surveyAndProgram.ancError,
                     existingFileName: surveyAndProgram.anc && surveyAndProgram.anc.filename,
-                    tabClass: {"disabled": !surveyAndProgram.anc, "active": surveyAndProgram.selectedDataType == DataType.ANC}
+                    tabClass: {
+                        "disabled": !surveyAndProgram.anc,
+                        "active": surveyAndProgram.selectedDataType == DataType.ANC
+                    }
                 } as PartialFileUploadProps),
                 programme: ({surveyAndProgram}) => ({
                     valid: surveyAndProgram.program != null,
@@ -158,7 +160,10 @@
             }),
             ...mapGettersByNames(namespace, ["data", "filters", "countryAreaFilterOption"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
-            ...mapGetters("plottingSelections", ["selectedSAPColourScales"])
+            ...mapGetters("plottingSelections", ["selectedSAPColourScales"]),
+            filterTableIndicators() {
+                return this.sapIndicatorsMetadata.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.plottingSelections.indicatorId)
+            }
         },
         methods: {
             ...mapActions({
@@ -174,8 +179,6 @@
                 updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections",
                 updateSAPColourScales: "plottingSelections/updateSAPColourScales",
             }),
-        },
-        created() {
         },
         components: {
             Choropleth,

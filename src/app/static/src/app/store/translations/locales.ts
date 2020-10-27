@@ -104,7 +104,7 @@ export interface Translations {
     PJNZ: string,
     population: string,
     project: string,
-    projectDescription:string,
+    projectDescription: string,
     projectHistory: string,
     projectName: string,
     projects: string,

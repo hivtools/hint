@@ -5,14 +5,16 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         <div class="ml-2">
             <div class="form-check">
                 <label class="form-check-label">
-                    <input id="type-input-default" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.Default"
+                    <input id="type-input-default" class="form-check-input" type="radio" name="scaleType"
+                           :value="ColourScaleType.Default"
                            v-model="colourScaleToAdjust.type" @change="update">
                     <span v-translate="'default'"></span>
                 </label>
             </div>
             <div class="form-check mt-1">
                 <label class="form-check-label">
-                    <input id="type-input-custom" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.Custom"
+                    <input id="type-input-custom" class="form-check-input" type="radio" name="scaleType"
+                           :value="ColourScaleType.Custom"
                            v-model="colourScaleToAdjust.type" @change="update">
                     <span v-translate="'custom'"></span>
                 </label>
@@ -23,7 +25,8 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                     <div class="row p-0 mb-2">
                         <label for="custom-min-input" class="col col-form-label col-2"><span v-translate="'min'"></span></label>
                         <div class="col pt-1">
-                            <input id="custom-min-input" type="number" :step="step" v-model.number="colourScaleToAdjust.customMin"
+                            <input id="custom-min-input" type="number" :step="step"
+                                   v-model.number="colourScaleToAdjust.customMin"
                                    :max="colourScaleToAdjust.customMax"
                                    @change="update" @keyup="update" :disabled="disableCustom">
                         </div>
@@ -31,7 +34,8 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                     <div class="row">
                         <label class="col col-form-label col-2" for="custom-max-input"><span v-translate="'max'"></span></label>
                         <div class="col pt-1">
-                            <input id="custom-max-input" type="number" :step="step" v-model.number="colourScaleToAdjust.customMax"
+                            <input id="custom-max-input" type="number" :step="step"
+                                   v-model.number="colourScaleToAdjust.customMax"
                                    :min="colourScaleToAdjust.customMin"
                                    @change="update" @keyup="update" :disabled="disableCustom">
                         </div>
@@ -44,7 +48,8 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         <div class="ml-2">
             <div class="form-check mt-1">
                 <label class="form-check-label">
-                    <input id="type-input-dynamic-full" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.DynamicFull"
+                    <input id="type-input-dynamic-full" class="form-check-input" type="radio" name="scaleType"
+                           :value="ColourScaleType.DynamicFull"
                            v-model="colourScaleToAdjust.type" @change="update">
                     <span v-translate="'entireDataset'"></span>
                 </label>
@@ -53,14 +58,15 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         <div class="ml-2">
             <div class="form-check mt-1">
                 <label class="form-check-label">
-                    <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" name="scaleType" :value="ColourScaleType.DynamicFiltered"
+                    <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" name="scaleType"
+                           :value="ColourScaleType.DynamicFiltered"
                            v-model="colourScaleToAdjust.type" @change="update">
                     <span v-translate="'filteredDataset'"></span>
                 </label>
             </div>
         </div>
 
-        <div class="text-danger">{{invalidMsg}}</div>
+        <div class="text-danger">{{ invalidMsg }}</div>
     </div>
 </template>
 
@@ -70,14 +76,14 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     import i18next from "i18next";
 
     interface Props {
-        show: Boolean,
+        show: boolean,
         colourScale: ColourScaleSettings,
         step: number
     }
 
     interface Computed {
-        disableCustom: Boolean,
-        invalidMsg: String | null
+        disableCustom: boolean,
+        invalidMsg: string | null
     }
 
     interface Data {
@@ -91,13 +97,13 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "MapAdjustScale",
         props: {
-           show: Boolean,
-           colourScale: Object,
+            show: Boolean,
+            colourScale: Object,
             step: Number
         },
         data(): any {
             return {
-                colourScaleToAdjust:  {...this.colourScale},
+                colourScaleToAdjust: {...this.colourScale},
                 ColourScaleType
             };
         },
@@ -117,14 +123,14 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
             }
         },
         methods: {
-            update: function(){
+            update: function () {
                 if (this.invalidMsg == null) {
                     this.$emit("update", this.colourScaleToAdjust)
                 }
             }
         },
         watch: {
-            colourScale: function(){
+            colourScale: function () {
                 this.colourScaleToAdjust = {...this.colourScale};
             }
         }

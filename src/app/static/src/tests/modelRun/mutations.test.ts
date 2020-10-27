@@ -70,7 +70,7 @@ describe("Model run mutations", () => {
         const error1 = mockError("1");
         const error2 = mockError("2");
         const error3 = mockError("3");
-        const error4 =  mockError("4");
+        const error4 = mockError("4");
         const testState = mockModelRunState({
             errors: [error1, error2, error3, error4],
             statusPollId: 999,
@@ -87,13 +87,13 @@ describe("Model run mutations", () => {
                 error: "Unable to retrieve model run status. Please retry the model run, or contact support if the error persists.",
                 detail: null
             }
-         ]);
+        ]);
         expect(testState.statusPollId).toEqual(-1);
         expect(testState.status).toStrictEqual({});
         expect(testState.modelRunId).toStrictEqual("");
     });
 
-    it ("run status error ads errors and does not stop polling if max errors not exceeded", () => {
+    it("run status error ads errors and does not stop polling if max errors not exceeded", () => {
         const testState = mockModelRunState({
             errors: [],
             statusPollId: 999,
@@ -109,7 +109,7 @@ describe("Model run mutations", () => {
         expect(testState.modelRunId).toStrictEqual("123");
     });
 
-    it ("cancel run resets state", () => {
+    it("cancel run resets state", () => {
         const testState = mockModelRunState({
             modelRunId: "123",
             statusPollId: 1,

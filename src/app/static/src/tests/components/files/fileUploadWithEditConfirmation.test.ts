@@ -5,7 +5,7 @@ import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
 import {mockFile, mockRootState} from "../../mocks";
 import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import { getters } from "../../../app/store/root/getters";
+import {getters} from "../../../app/store/root/getters";
 
 describe("File upload component", () => {
 
@@ -26,7 +26,7 @@ describe("File upload component", () => {
                 projects: {
                     namespaced: true
                 },
-                errors:  {
+                errors: {
                     namespaced: true
                 }
             }

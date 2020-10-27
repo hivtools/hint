@@ -100,7 +100,7 @@ describe("Baseline upload component", () => {
     it("shows pjnz error, not metadata error, if both are present", () => {
         const pjnzError = mockError("File upload went wrong");
         const plottingMetadataError = mockError("Metadata went wrong");
-        const store = createSut({pjnzError},{plottingMetadataError});
+        const store = createSut({pjnzError}, {plottingMetadataError});
         const wrapper = shallowMount(Baseline, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props().error).toBe(pjnzError);
     });
