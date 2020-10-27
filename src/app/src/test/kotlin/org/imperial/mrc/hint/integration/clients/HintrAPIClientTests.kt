@@ -74,6 +74,29 @@ class HintrApiClientTests
     }
 
     @Test
+    fun `can calibrate`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val versionInfo = mapOf(
+                "hintr" to "1.0.0",
+                "naomi" to "1.0.0",
+                "rrq" to "1.0.0"
+        )
+        val result = sut.calibrate("1234", ModelRunOptions(emptyMap(), versionInfo))
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
+    }
+
+    @Test
+    fun `can get model calibration options`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.getModelCalibrationOptions()
+        assertThat(result.statusCodeValue).isEqualTo(200)
+        JSONValidator().validateSuccess(result.body!!, "ModelRunOptions")
+    }
+
+    @Test
     fun `can get plotting metadata`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())

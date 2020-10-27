@@ -34,12 +34,27 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.getResult(id)
     }
 
+    @PostMapping("/calibrate/{id}")
+    @ResponseBody
+    fun calibrate(@PathVariable("id") id: String, @RequestBody calibrationOptions: ModelRunOptions)
+            : ResponseEntity<String>
+    {
+        return apiClient.calibrate(id, calibrationOptions)
+    }
+
     @GetMapping("/options/")
     @ResponseBody
     fun options(): ResponseEntity<String>
     {
         val allFiles = fileManager.getFiles(FileType.Shape, FileType.Survey, FileType.Programme, FileType.ANC)
         return apiClient.getModelRunOptions(allFiles)
+    }
+
+    @GetMapping("/calibration-options/")
+    @ResponseBody
+    fun calibrationOptions(): ResponseEntity<String>
+    {
+        return apiClient.getModelCalibrationOptions()
     }
 
     @PostMapping("/cancel/{id}")
