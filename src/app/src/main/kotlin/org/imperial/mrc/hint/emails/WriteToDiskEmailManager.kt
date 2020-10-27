@@ -9,8 +9,10 @@ import java.time.Instant
 
 class WriteToDiskEmailManager(appProperties: AppProperties,
                               oneTimeTokenManager: OneTimeTokenManager)
-    : BaseEmailManager(appProperties, oneTimeTokenManager) {
-    override fun sendEmail(data: EmailData, emailAddress: String) {
+    : BaseEmailManager(appProperties, oneTimeTokenManager)
+{
+    override fun sendEmail(data: EmailData, emailAddress: String)
+    {
         val text = data.text
         outputDirectory.mkdirs()
         val file = File(outputDirectory, Instant.now().toString())
@@ -18,11 +20,13 @@ class WriteToDiskEmailManager(appProperties: AppProperties,
         logger.info("Wrote email to ${file.absolutePath}")
     }
 
-    companion object {
+    companion object
+    {
         private val logger: Logger = LoggerFactory.getLogger(WriteToDiskEmailManager::class.java)
         val outputDirectory = File("/tmp/hint_emails")
 
-        fun cleanOutputDirectory() {
+        fun cleanOutputDirectory()
+        {
             outputDirectory.mkdirs()
             outputDirectory.listFiles().forEach {
                 it.delete()

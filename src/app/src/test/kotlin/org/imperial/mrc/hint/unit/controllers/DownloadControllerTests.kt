@@ -9,12 +9,14 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.ResponseEntity
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
-class DownloadControllerTests {
+class DownloadControllerTests
+{
     @Test
-    fun `downloads spectrum data`() {
+    fun `downloads spectrum data`()
+    {
         val mockResponse = mock<ResponseEntity<StreamingResponseBody>>()
-        val mockAPIClient = mock<HintrAPIClient>{
-            on {downloadSpectrum("id1")} doReturn mockResponse
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { downloadSpectrum("id1") } doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
@@ -23,14 +25,15 @@ class DownloadControllerTests {
     }
 
     @Test
-    fun `downloads summary data`() {
+    fun `downloads coarse output data`()
+    {
         val mockResponse = mock<ResponseEntity<StreamingResponseBody>>()
-        val mockAPIClient = mock<HintrAPIClient>{
-            on {downloadSummary("id1")} doReturn mockResponse
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { downloadCoarseOutput("id1") } doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
-        val result = sut.getSummary("id1")
+        val result = sut.getCoarseOutput("id1")
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 }

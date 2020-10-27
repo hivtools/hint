@@ -122,4 +122,8 @@ a.down::after {
   display: none;
 }
 
+.form-control.is-invalid {
+  background-image: none;
+}
+
 
