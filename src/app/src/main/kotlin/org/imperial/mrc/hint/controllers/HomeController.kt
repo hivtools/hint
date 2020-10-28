@@ -3,6 +3,8 @@ package org.imperial.mrc.hint.controllers
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.security.Session
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
@@ -23,5 +25,11 @@ class HomeController(
         model["title"] = appProperties.applicationTitle
         model["user"] = userProfile.id
         return "index"
+    }
+
+    @GetMapping("/metrics")
+    fun metrics(): ResponseEntity<String>
+    {
+        return ResponseEntity("running 1", HttpStatus.OK)
     }
 }
