@@ -6,6 +6,7 @@ import {RootState} from "../../root";
 import {ModelCalibrateMutation} from "./mutations";
 import {ModelRunMutation} from "../modelRun/mutations";
 import {ModelResultResponse} from "../../generated";
+import {freezer} from "../../utils";
 
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
@@ -34,12 +35,14 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         commit(ModelCalibrateMutation.SetOptionsData, options);
         commit(ModelCalibrateMutation.Calibrating);
         const response = await api<ModelRunMutation, ModelCalibrateMutation>(context)
-            .withSuccess(ModelRunMutation.RunResultFetched)
+            .ignoreSuccess()
             .withError(ModelCalibrateMutation.SetError)
             .freezeResponse()
             .postAndReturn<ModelResultResponse>(`/model/calibrate/${modelRunId}`, {options, version});
 
         if (response) {
+            const data = freezer.deepFreeze(response.data);
+            commit({type: `modelRun/${ModelRunMutation.RunResultFetched}`, payload: data}, {root: true});
             commit(ModelCalibrateMutation.Calibrated);
         }
     }

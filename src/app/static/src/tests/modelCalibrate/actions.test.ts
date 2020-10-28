@@ -10,6 +10,7 @@ import {
 import {actions} from "../../app/store/modelCalibrate/actions";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
+import {freezer} from "../../app/utils";
 
 const rootState = mockRootState();
 describe("ModelCalibrate actions", () => {
@@ -48,7 +49,7 @@ describe("ModelCalibrate actions", () => {
         const mockOptions = {"param_1": "value 1"};
         const url = `/model/calibrate/123A`;
         mockAxios.onPost(url).reply(200, mockSuccess("TEST"));
-
+        const freezeSpy = jest.spyOn(freezer, "deepFreeze");
         await actions.calibrate({commit, state, rootState: root} as any, mockOptions);
 
         expect(mockAxios.history.post.length).toBe(1);
@@ -59,8 +60,9 @@ describe("ModelCalibrate actions", () => {
         expect(commit.mock.calls[0][0]).toBe(ModelCalibrateMutation.SetOptionsData);
         expect(commit.mock.calls[0][1]).toBe(mockOptions);
         expect(commit.mock.calls[1][0]).toBe(ModelCalibrateMutation.Calibrating);
-        expect(commit.mock.calls[2][0].type).toBe(ModelRunMutation.RunResultFetched);
+        expect(commit.mock.calls[2][0].type).toBe("modelRun/RunResultFetched");
         expect(commit.mock.calls[2][0].payload).toBe("TEST");
+        expect(freezeSpy.mock.calls[0][0]).toBe("TEST");
         expect(commit.mock.calls[3][0]).toBe(ModelCalibrateMutation.Calibrated);
     });
 

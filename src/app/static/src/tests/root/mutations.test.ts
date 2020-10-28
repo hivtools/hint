@@ -12,6 +12,7 @@ import {
     mockModelOptionsState,
     mockModelOutputState,
     mockModelRunState,
+    mockModelCalibrateState,
     mockPlottingSelections,
     mockRootState,
     mockStepperState,
@@ -32,6 +33,7 @@ import {initialErrorsState} from "../../app/store/errors/errors";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
 import {router} from '../../app/router';
+import {initialModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 
 describe("Root mutations", () => {
 
@@ -43,6 +45,7 @@ describe("Root mutations", () => {
             modelOptions: mockModelOptionsState({valid: true}),
             modelOutput: mockModelOutputState({selectedTab: "Barchart"}),
             modelRun: mockModelRunState({modelRunId: "123", ready: true}),
+            modelCalibrate: mockModelCalibrateState({complete: true}),
             plottingSelections: mockPlottingSelections({barchart: {indicatorId: "Test Indicator"} as BarchartSelections}),
             stepper: mockStepperState({activeStep: 7}),
             load: mockLoadState({loadError: mockError("Test Load Error")}),
@@ -185,7 +188,8 @@ describe("Root mutations", () => {
 
         const state = mockRootState({
             modelRun: mockModelRunState({modelRunId: "TEST"}),
-            modelOutput: {selectedTab: "TEST"}
+            modelOutput: {selectedTab: "TEST"},
+            modelCalibrate: mockModelCalibrateState({complete: true})
         });
 
         state.plottingSelections.barchart.xAxisId = "test";
@@ -205,6 +209,8 @@ describe("Root mutations", () => {
         expect(state.plottingSelections.outputChoropleth.detail).toBe(-1);
         expect(state.plottingSelections.sapChoropleth.detail).toBe(2);
         expect(state.plottingSelections.colourScales.anc.testIndicator.type).toBe(ColourScaleType.Custom);
+
+        expect(state.modelCalibrate).toStrictEqual(initialModelCalibrateState())
     });
 
     it("can change language", () => {
