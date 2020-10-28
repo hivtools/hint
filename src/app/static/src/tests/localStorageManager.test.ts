@@ -99,5 +99,14 @@ describe("LocalStorageManager", () => {
         result = localStorageManager.getState();
         expect(result).toBe(null);
         expect(localStorage.getItem("user")).toBe(currentUser);
-    })
+    });
+
+    it("saves to local storage", () => {
+        const spy = jest.spyOn(Storage.prototype, "setItem");
+        const testState = {baseline: mockBaselineState()};
+        localStorageManager.savePartialState(testState);
+
+        expect(spy.mock.calls[0][0]).toBe("hintAppState_v1.0.0");
+        expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
+    });
 });

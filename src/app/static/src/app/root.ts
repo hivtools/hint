@@ -113,7 +113,7 @@ export const emptyState = (): RootState => {
         adrDatasets: [],
         adrSchemas: null,
         language: Language.en,
-        version: '0.0.0',
+        version: '1.0.0',
         hintrVersion: initialHintrVersionState(),
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),

@@ -1,6 +1,6 @@
 import {RootState} from "./root";
 
-const appStateKey = "appState";
+const appStateKey = "hintAppState_v1.0.0";
 
 export const serialiseState = (rootState: RootState): Partial<RootState> => {
     return {
