@@ -31,6 +31,7 @@ import {Language} from "./store/translations/locales";
 import {ADRSchemas} from "./types";
 import {modelCalibrate, initialModelCalibrateState, ModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 import { initialHintrVersionState, hintrVersion, HintrVersionState } from "./store/hintrVersion/hintrVersion";
+import {currentHintVersion} from "./hintVersion";
 
 export interface TranslatableState {
     language: Language
@@ -113,7 +114,7 @@ export const emptyState = (): RootState => {
         adrDatasets: [],
         adrSchemas: null,
         language: Language.en,
-        version: '1.0.0',
+        version: currentHintVersion,
         hintrVersion: initialHintrVersionState(),
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),

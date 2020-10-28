@@ -3,6 +3,7 @@ import {actions} from "../../app/store/load/actions";
 import {LoadingState} from "../../app/store/load/load";
 import {addCheckSum} from "../../app/utils";
 import {localStorageManager} from "../../app/localStorageManager";
+import {currentHintVersion} from "../../app/hintVersion";
 
 const rootState = mockRootState();
 
@@ -75,7 +76,7 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
         const dispatch = jest.fn();
         const rootGetters = {isGuest: true};
-        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": "1.0.0"}}));
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": currentHintVersion}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: null}
         );
@@ -85,7 +86,7 @@ describe("Load actions", () => {
 
         //should also hand on to updateState action
         expect(dispatch.mock.calls[0][0]).toEqual("updateStoreState");
-        expect(dispatch.mock.calls[0][1]).toStrictEqual({"version": "1.0.0"});
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({"version": currentHintVersion});
     });
 
     it("if not guest, creates project and updates saved State before setting files", async () => {
@@ -96,13 +97,14 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
         const dispatch = jest.fn();
         const testRootState = {
+            version: currentHintVersion,
             projects: {
                 currentProject: "TEST PROJECT",
                 currentVersion: "TEST VERSION"
             }
         };
         const rootGetters = {isGuest: false};
-        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"projects": {}}}));
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {version: currentHintVersion, projects: {}}}));
 
         await actions.setFiles({commit, state, dispatch, rootState: testRootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: "new project"}
@@ -119,7 +121,7 @@ describe("Load actions", () => {
         expect(dispatch.mock.calls[1][0]).toEqual("updateStoreState");
         expect(dispatch.mock.calls[1][1]).toStrictEqual(
             {
-                projects: {currentProject: "TEST PROJECT", currentVersion: "TEST VERSION"}
+                version: currentHintVersion, projects: {currentProject: "TEST PROJECT", currentVersion: "TEST VERSION"}
             });
     });
 
@@ -155,7 +157,7 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.LoadFailed});
         const dispatch = jest.fn();
         const rootGetters = {isGuest: true};
-        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {version: "1.0.0"}}));
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {version: currentHintVersion}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: null}
         );
