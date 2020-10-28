@@ -184,7 +184,7 @@ describe("Load actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
         expect(commit.mock.calls[1][0].type).toStrictEqual("LoadFailed");
-        expect(commit.mock.calls[1][0].payload).toStrictEqual({detail: "Unable to load file created by older version of HINT."});
+        expect(commit.mock.calls[1][0].payload).toStrictEqual({detail: "Unable to load file created by older version of the application."});
 
         //should not hand on to updateState action
         expect(dispatch.mock.calls.length).toEqual(0);
@@ -205,7 +205,7 @@ describe("Load actions", () => {
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
         expect(commit.mock.calls[1][0].type).toStrictEqual("LoadFailed");
-        expect(commit.mock.calls[1][0].payload).toStrictEqual({detail: "Unable to load file created by older version of HINT."});
+        expect(commit.mock.calls[1][0].payload).toStrictEqual({detail: "Unable to load file created by older version of the application."});
 
         //should not hand on to updateState action
         expect(dispatch.mock.calls.length).toEqual(0);

@@ -61,7 +61,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         if (majorVersion(savedState.version) != majorVersion(currentHintVersion)) {
             commit({
                 type: "LoadFailed",
-                payload: {detail: "Unable to load file created by older version of HINT."}
+                payload: {detail: "Unable to load file created by older version of the application."}
             });
             return;
         }
