@@ -78,8 +78,8 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     }
 
     fun assertSecureWithHttpStatus(isAuthorized: IsAuthorized,
-                                responseEntity: ResponseEntity<String>,
-                                schemaName: String?, httpStatus: HttpStatus)
+                                   responseEntity: ResponseEntity<String>,
+                                   schemaName: String?, httpStatus: HttpStatus)
     {
 
         when (isAuthorized)
