@@ -4,6 +4,7 @@ const appStateKey = "hintAppState_v1.0.0";
 
 export const serialiseState = (rootState: RootState): Partial<RootState> => {
     return {
+        version: rootState.version,
         baseline: {selectedDataset: rootState.baseline.selectedDataset} as any,
         modelRun: {
             ...rootState.modelRun,

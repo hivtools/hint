@@ -75,7 +75,7 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
         const dispatch = jest.fn();
         const rootGetters = {isGuest: true};
-        const fileContents = addCheckSum('{"files": "TEST FILES", "state": "TEST STATE"}');
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": "1.0.0"}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: null}
         );
@@ -85,7 +85,7 @@ describe("Load actions", () => {
 
         //should also hand on to updateState action
         expect(dispatch.mock.calls[0][0]).toEqual("updateStoreState");
-        expect(dispatch.mock.calls[0][1]).toStrictEqual("TEST STATE");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({"version": "1.0.0"});
     });
 
     it("if not guest, creates project and updates saved State before setting files", async () => {
@@ -155,7 +155,7 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.LoadFailed});
         const dispatch = jest.fn();
         const rootGetters = {isGuest: true};
-        const fileContents = addCheckSum('{"files": "TEST FILES", "state": "TEST STATE"}');
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {version: "1.0.0"}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: null}
         );
@@ -166,6 +166,69 @@ describe("Load actions", () => {
         //should not hand on to updateState action
         expect(dispatch.mock.calls.length).toEqual(0);
     });
+
+    it("calls loadFailed mutation when loaded state's version is not current", async () => {
+        mockAxios.onPost(`/session/files/`)
+            .reply(200, mockSuccess({}));
+
+        const commit = jest.fn();
+        const state = mockLoadState({loadingState: LoadingState.UpdatingState});
+        const dispatch = jest.fn();
+        const rootGetters = {isGuest: true};
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": "0.0.0"}}));
+        await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
+            {savedFileContents: fileContents, projectName: null}
+        );
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
+        expect(commit.mock.calls[1][0].type).toStrictEqual("LoadFailed");
+        expect(commit.mock.calls[1][0].payload).toStrictEqual({detail: "Unable to load file created by older version of HINT."});
+
+        //should not hand on to updateState action
+        expect(dispatch.mock.calls.length).toEqual(0);
+    });
+
+    it("calls loadFailed mutation when loaded state does not contain a version", async () => {
+        mockAxios.onPost(`/session/files/`)
+            .reply(200, mockSuccess({}));
+
+        const commit = jest.fn();
+        const state = mockLoadState({loadingState: LoadingState.UpdatingState});
+        const dispatch = jest.fn();
+        const rootGetters = {isGuest: true};
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {}}));
+        await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
+            {savedFileContents: fileContents, projectName: null}
+        );
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
+        expect(commit.mock.calls[1][0].type).toStrictEqual("LoadFailed");
+        expect(commit.mock.calls[1][0].payload).toStrictEqual({detail: "Unable to load file created by older version of HINT."});
+
+        //should not hand on to updateState action
+        expect(dispatch.mock.calls.length).toEqual(0);
+    });
+
+    it("can load file when state differs by minor version", async () => {
+
+        mockAxios.onPost(`/session/files/`)
+            .reply(200, mockSuccess({}));
+
+        const commit = jest.fn();
+        const state = mockLoadState({loadingState: LoadingState.UpdatingState});
+        const dispatch = jest.fn();
+        const rootGetters = {isGuest: true};
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": "1.1.0"}}));
+        await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
+            {savedFileContents: fileContents, projectName: null}
+        );
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
+        expect(commit.mock.calls[1][0]).toStrictEqual({type: "UpdatingState", payload: {}});
+        expect(dispatch.mock.calls[0][0]).toEqual("updateStoreState");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({"version": "1.1.0"});
+    });
+
 
     it("updateStoreState saves file state to local storage and reloads page", async () => {
         const mockSaveToLocalStorage = jest.fn();

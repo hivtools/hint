@@ -21,6 +21,7 @@ declare const currentUser: string; // set in jest config, or on the index page w
 describe("LocalStorageManager", () => {
     it("serialiseState removes errors, saves selected data type", async () => {
         const mockRoot = {
+            version: "1.0.0",
             baseline: mockBaselineState(),
             modelRun: mockModelRunState({
                 errors: [mockError("modelRunError1"), mockError("modelRunError2")]
@@ -38,6 +39,7 @@ describe("LocalStorageManager", () => {
 
         const result = serialiseState(mockRoot);
         expect(result).toStrictEqual({
+            version: "1.0.0",
             baseline: {selectedDataset: null},
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
@@ -55,6 +57,7 @@ describe("LocalStorageManager", () => {
     it("serialiseState saves selectedDataset from baseline", async () => {
         const dataset = mockDataset();
         const mockRoot = {
+            version: "1.0.0",
             baseline: mockBaselineState({
                 selectedDataset: dataset
             }),
@@ -72,6 +75,7 @@ describe("LocalStorageManager", () => {
 
         const result = serialiseState(mockRoot);
         expect(result).toStrictEqual({
+            version: "1.0.0",
             baseline: {
                 selectedDataset: dataset
             },

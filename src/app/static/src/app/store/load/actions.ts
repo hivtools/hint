@@ -56,6 +56,15 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const files = objectContents.files;
         const savedState = objectContents.state;
 
+        const majorVersion = (s: string) => s ? s.split(".")[0] : null;
+        if (majorVersion(savedState.version) != majorVersion(rootState.version)) {
+            commit({
+                type: "LoadFailed",
+                payload: {detail: "Unable to load file created by older version of HINT."}
+            });
+            return;
+        }
+
         if (!rootGetters.isGuest) {
             await (dispatch("projects/createProject", projectName, {root: true}));
             savedState.projects.currentProject = rootState.projects.currentProject;
