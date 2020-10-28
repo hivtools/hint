@@ -35,7 +35,8 @@ interface HintrAPIClient
     fun cancelModelRun(id: String): ResponseEntity<String>
     fun getVersion(): ResponseEntity<String>
     fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
-    fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
+    fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions):
+            ResponseEntity<String>
 }
 
 @Component
