@@ -89,7 +89,7 @@
         ColourScaleType
     } from "../../../store/plottingSelections/plottingSelections";
     import {getFeatureIndicators} from "./utils";
-    import {getIndicatorRange, toIndicatorNameLookup} from "../utils";
+    import {getIndicatorRange, toIndicatorNameLookup, formatOutput, findMetaData} from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
@@ -393,10 +393,13 @@
 
                 const colorIndicatorName = this.indicatorNameLookup[colorIndicator];
                 const sizeIndicatorName = this.indicatorNameLookup[sizeIndicator];
+
+                const colorIndicatorMetaData = findMetaData(this.indicators, this.selections.colorIndicatorId);
+                const sizeIndicatorMetaData = findMetaData(this.indicators, this.selections.sizeIndicatorId);
                 return `<div>
                                 <strong>${area_name}</strong>
-                                <br/>${colorIndicatorName}: ${colorValue}
-                                <br/>${sizeIndicatorName}: ${sizeValue}
+                                <br/>${colorIndicatorName}: ${formatOutput(colorValue, colorIndicatorMetaData!.format, colorIndicatorMetaData!.scale, colorIndicatorMetaData!.accuracy)}
+                                <br/>${sizeIndicatorName}: ${formatOutput(sizeValue, sizeIndicatorMetaData!.format, sizeIndicatorMetaData!.scale, sizeIndicatorMetaData!.accuracy)}
                             </div>`;
             },
             getSelectedFilterValues(filterId: string) {

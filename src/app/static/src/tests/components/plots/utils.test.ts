@@ -3,7 +3,7 @@ import {
     getColor,
     getIndicatorRange,
     toIndicatorNameLookup,
-    roundToContext, colourScaleStepFromMetadata, roundRange, iterateDataValues, findPath
+    roundToContext, colourScaleStepFromMetadata, roundRange, iterateDataValues, findPath, formatOutput, findMetaData
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 import {Filter} from "../../../app/generated";
@@ -39,7 +39,10 @@ describe("plot utils", () => {
                 invert_scale: false,
                 indicator: "test",
                 value_column: "",
-                name: ""
+                name: "",
+                format: "0.00%",
+                scale: 1,
+                accuracy: null
             },
             {
                 min: 0,
@@ -57,7 +60,10 @@ describe("plot utils", () => {
                 invert_scale: false,
                 indicator: "test",
                 value_column: "",
-                name: ""
+                name: "",
+                format: "0.00%",
+                scale: 1,
+                accuracy: null
             },
             {
                 min: 0.5,
@@ -82,7 +88,10 @@ describe("plot utils", () => {
             min: 0,
             max: 0,
             colour: "interpolateGreys",
-            invert_scale: false
+            invert_scale: false,
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         };
 
         let result = getIndicatorRange(data, plhiv);
@@ -96,7 +105,10 @@ describe("plot utils", () => {
             min: 0,
             max: 0,
             colour: "interpolateGreys",
-            invert_scale: false
+            invert_scale: false,
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         };
         result = getIndicatorRange(data, prev);
 
@@ -121,7 +133,10 @@ describe("plot utils", () => {
                 min: 0,
                 max: 1,
                 colour: "interpolateGreys",
-                invert_scale: false
+                invert_scale: false,
+                format: "0.00%",
+                scale: 1,
+                accuracy: null
             };
 
         const filters = [{
@@ -147,7 +162,10 @@ describe("plot utils", () => {
                 invert_scale: false,
                 indicator: "test",
                 value_column: "",
-                name: ""
+                name: "",
+                format: "0.00%",
+                scale: 1,
+                accuracy: null
             },
             {min: 0, max: 1});
 
@@ -160,7 +178,10 @@ describe("plot utils", () => {
             invert_scale: true,
             indicator: "test",
             value_column: "",
-            name: ""
+            name: "",
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         }, {min: 0, max: 1});
         expect(invertedResult).toEqual("rgb(0, 0, 0)");
     });
@@ -173,7 +194,10 @@ describe("plot utils", () => {
             invert_scale: false,
             indicator: "test",
             value_column: "",
-            name: ""
+            name: "",
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         }, {min: 0, max: 1});
 
         expect(result).toEqual("rgb(151, 151, 151)");
@@ -188,7 +212,10 @@ describe("plot utils", () => {
             invert_scale: false,
             indicator: "test",
             value_column: "",
-            name: ""
+            name: "",
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         }, {min: 1, max: 2});
 
         expect(result).toEqual("rgb(255, 255, 255)");
@@ -202,7 +229,10 @@ describe("plot utils", () => {
             invert_scale: false,
             indicator: "test",
             value_column: "",
-            name: ""
+            name: "",
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         }, {min: 1, max: 2});
 
         expect(result).toEqual("rgb(0, 0, 0)");
@@ -216,7 +246,10 @@ describe("plot utils", () => {
             invert_scale: false,
             indicator: "test",
             value_column: "",
-            name: ""
+            name: "",
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         };
         let result = getColor(-0.45, metadata, {min: -0.45, max: 0});
         expect(result).toEqual("rgb(255, 255, 255)");
@@ -240,7 +273,10 @@ describe("plot utils", () => {
             invert_scale: false,
             indicator: "test",
             value_column: "",
-            name: ""
+            name: "",
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         };
         let result = getColor(-10, metadata, {min: -10, max: 10});
         expect(result).toEqual("rgb(255, 255, 255)");
@@ -264,7 +300,10 @@ describe("plot utils", () => {
             invert_scale: false,
             indicator: "test",
             value_column: "",
-            name: ""
+            name: "",
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         };
         let result = getColor(-10, metadata, {min: -10, max: -5});
         expect(result).toEqual("rgb(255, 255, 255)");
@@ -289,7 +328,10 @@ describe("plot utils", () => {
                 min: 0,
                 max: 0,
                 colour: "interpolateGreys",
-                invert_scale: false
+                invert_scale: false,
+                format: "0.00%",
+                scale: 1,
+                accuracy: null
             },
             {
                 indicator: "prevalence",
@@ -298,7 +340,10 @@ describe("plot utils", () => {
                 min: 0,
                 max: 0,
                 colour: "interpolateGreys",
-                invert_scale: false
+                invert_scale: false,
+                format: "0.00%",
+                scale: 1,
+                accuracy: null
             }
         ];
         expect(toIndicatorNameLookup(indicators)).toStrictEqual({
@@ -359,11 +404,17 @@ describe("plot utils", () => {
         const indicators = [
             {
                 indicator: "plhiv", value_column: "value", indicator_column: "indicator", indicator_value: "plhiv",
-                name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+                name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false,
+                format: "0.00%",
+                scale: 1,
+                accuracy: null
             },
             {
                 indicator: "prevalence", value_column: "value", indicator_column: "indicator", indicator_value: "prev",
-                name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+                name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false,
+                format: "0.00%",
+                scale: 1,
+                accuracy: null
             }
         ];
 
@@ -399,11 +450,17 @@ describe("plot utils", () => {
         const indicators = [
             {
                 indicator: "plhiv", value_column: "value", indicator_column: "indicator", indicator_value: "plhiv",
-                name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+                name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false,
+                format: "0.00%",
+                scale: 1,
+                accuracy: null
             },
             {
                 indicator: "prevalence", value_column: "value", indicator_column: "indicator", indicator_value: "prev",
-                name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+                name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false,
+                format: "0.00%",
+                scale: 1,
+                accuracy: null
             }
         ];
 
@@ -463,20 +520,52 @@ describe("plot utils", () => {
         ]
     }
 
-    it("findPath produces expected result when MWI111 selected", () => {
-        const result = findPath('MWI111', dataset);
-        expect(result).toEqual("Malawi/Region 1");
-    });
-    it("findPath produces expected result when MWI1 selected", () => {
-        const result = findPath('MWI1', dataset);
-        expect(result).toEqual("");
-    });
-    it("findPath produces expected result when MWI12 selected", () => {
-        const result = findPath('MWI12', dataset);
-        expect(result).toEqual("Malawi");
-    });
-    it("findPath produces expected result when MWI111 selected and begins in children array", () => {
-        const result = findPath('MWI111', {...dataset.children});
-        expect(result).toEqual("Region 1");
-    });
+  it("findPath produces expected result when MWI111 selected", () => {
+    const result = findPath('MWI111', dataset);
+    expect(result).toEqual("Malawi/Region 1");
+  });
+  it("findPath produces expected result when MWI1 selected", () => {
+    const result = findPath('MWI1', dataset);
+    expect(result).toEqual("");
+  });
+  it("findPath produces expected result when MWI12 selected", () => {
+    const result = findPath('MWI12', dataset);
+    expect(result).toEqual("Malawi");
+  });
+  it("findPath produces expected result when MWI111 selected and begins in children array", () => {
+    const result = findPath('MWI111', {...dataset.children});
+    expect(result).toEqual("Region 1");
+  });
+
+  it("it can formatOutput correctly", () => {
+    expect(formatOutput(11111, '0,0', 1, 10)).toStrictEqual('11,110');
+    expect(formatOutput(11111, '0,0', 10, 1)).toStrictEqual('111,110');
+    expect(formatOutput(0.01, '0.00%', 1, null)).toStrictEqual('1.00%');
+    expect(formatOutput('0.01', '0.00%', 10, null)).toStrictEqual('1.00%');
+    expect(formatOutput('1', '', 1, 1)).toStrictEqual(1);
+    expect(formatOutput(1, '', 1, 1)).toStrictEqual(1);
+  });
+
+  it("it can findMetaData correctly", () => {
+    const indicators = [
+        {
+            indicator: "plhiv", value_column: "value", indicator_column: "indicator", indicator_value: "plhiv",
+            name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false,
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
+        },
+        {
+            indicator: "prevalence", value_column: "value", indicator_column: "indicator", indicator_value: "prev",
+            name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false,
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
+        }
+    ];
+    expect(findMetaData(indicators, 'plhiv')).toStrictEqual(indicators[0]);
+    expect(findMetaData(indicators, 'prevalence')).toStrictEqual(indicators[1]);
+  });
+
 });
+

@@ -33,12 +33,16 @@ describe("Download Results component", () => {
             "Exporter des sorties de modèles pour Spectrum", store);
         expectTranslated(headers.at(1), "Download coarse age group outputs",
             "Télécharger les résultats grossiers du groupe d'âge", store);
+        expectTranslated(headers.at(2), "Download summary report",
+            "Télécharger le rapport de synthèse", store);
 
         const links = wrapper.findAll("a");
-        expect(links.length).toBe(2);
+        expect(links.length).toBe(3);
         expectTranslated(links.at(0), "Export", "Exporter", store);
         expect(links.at(0).attributes().href).toEqual("/download/spectrum/testId");
         expectTranslated(links.at(1), "Download", "Télécharger", store);
         expect(links.at(1).attributes().href).toEqual("/download/coarse-output/testId");
+        expectTranslated(links.at(2), "Download", "Télécharger", store);
+        expect(links.at(2).attributes().href).toEqual("/download/summary/testId")
     });
 });

@@ -1,6 +1,7 @@
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
+import numeral from 'numeral';
 
 export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
                          colourRange: NumericRange) => {
@@ -162,15 +163,43 @@ const roundToPlaces = function (value: number, decPl: number) {
 // Iteratively passes through the layers of a FilterOption object to find the regional hierarchy above the supplied id
 // Takes param any for obj and returns any because it will iterate through both objects (the NestedFilterOption) and arrays (the array of child options), treating array indices as keys
 export const findPath = function (id: string, obj: any): any {
-    for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            if (id === obj[key]) return "";
-            else if (obj[key] && typeof obj[key] === "object") {
-                const path = findPath(id, obj[key]);
-                if (path != undefined) {
-                    return ((obj.label ? obj.label + "/" : "") + path).replace(/\/$/, '');
-                }
-            }
-        }
+  for(const key in obj) {                                         
+      if(obj.hasOwnProperty(key)) {                         
+          if(id === obj[key]) return "";                      
+          else if(obj[key] && typeof obj[key] === "object") {   
+            const path = findPath(id, obj[key]);               
+              if (path != undefined) {
+                return ((obj.label ? obj.label + "/": "") + path).replace(/\/$/, '');   
+              }              
+          }
+      }
+  }
+};
+
+export const formatOutput = function (value: number | string, format: string, scale: number, accuracy: number | null) {
+    let ans: number
+
+    if (typeof(value) === 'string'){
+        ans = parseFloat(value)
+    } else ans = value
+
+    if (!format.includes('%') && scale){
+        ans = ans * scale
     }
+
+    if (!format.includes('%') && accuracy){
+        ans = Math.round(ans / accuracy) * accuracy
+    }
+
+    if (format){
+        return numeral(ans).format(format)
+    } else return ans
+};
+
+interface Indicator {
+    indicator: string, format: string, scale: number, accuracy: number | null
+}
+
+export const findMetaData = function(indicators: Indicator[], indicatorId: string){
+    return indicators.find(i => i.indicator == indicatorId)
 }

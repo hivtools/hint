@@ -27,6 +27,30 @@ describe("Projects actions", () => {
         versions: [{id: "version-id", created: "", updated: "", versionNumber: 1}]
     };
 
+    it("updates CloningProject on successful clone", async () => {
+        const commit = jest.fn();
+        mockAxios.onPost(`/project/123/clone`)
+            .reply(200, mockSuccess(null));
+
+        await actions.cloneProject({rootState, commit} as any, {projectId: 123, emails: []});
+        expect(commit.mock.calls[1][0]).toEqual({
+            type: ProjectsMutations.CloningProject,
+            payload: null
+        });
+    });
+
+    it("sets CloneProjectError on failed clone", async () => {
+        const commit = jest.fn();
+        mockAxios.onPost(`/project/123/clone`)
+            .reply(500, mockFailure("error"));
+
+        await actions.cloneProject({rootState, commit} as any, {projectId: 123, emails: []});
+        expect(commit.mock.calls[1][0]).toEqual({
+            type: ProjectsMutations.CloneProjectError,
+            payload: mockError("error")
+        });
+    });
+
     it("userExists returns true if user exists", async () => {
         mockAxios.onGet(`/user/test.user@example.com/exists`)
             .reply(200, mockSuccess(true));
