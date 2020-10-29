@@ -9,6 +9,7 @@ import {ShapeResponse} from "../../app/generated";
 import Vuex from "vuex";
 import {emptyState} from "../../app/root";
 import {localStorageManager} from "../../app/localStorageManager";
+import {currentHintVersion} from "../../app/hintVersion";
 
 const fs = require("fs");
 const FormData = require("form-data");
@@ -30,7 +31,9 @@ describe("load actions", () => {
         const commit = jest.fn();
         const fakeState = JSON.stringify({
             files: {"shape": shape},
-            state: {}
+            state: {
+                version: currentHintVersion
+            }
         });
         const fakeFileContents = addCheckSum(fakeState);
         const rootGetters = {isGuest: true};
@@ -53,6 +56,7 @@ describe("load actions", () => {
         const fakeState = JSON.stringify({
             files: {"shape": shape},
             state: {
+                version: currentHintVersion,
                 projects: {},
                 baseline: "TEST BASELINE"
             }

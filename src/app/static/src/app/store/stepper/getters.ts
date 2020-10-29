@@ -22,8 +22,9 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
             2: rootGetters['surveyAndProgram/complete'],
             3: rootGetters['modelOptions/complete'],
             4: rootGetters['modelRun/complete'],
-            5: rootGetters['modelRun/complete'],
-            6: false
+            5: rootState.modelCalibrate.complete,
+            6: rootState.modelCalibrate.complete,
+            7: false
         }
     },
     laterCompleteSteps: (state: StepperState, getters: any) => {

@@ -1,9 +1,11 @@
 import {RootState} from "./root";
+import {currentHintVersion} from "./hintVersion";
 
-const appStateKey = "appState";
+const appStateKey = `hintAppState_v${currentHintVersion}`;
 
 export const serialiseState = (rootState: RootState): Partial<RootState> => {
     return {
+        version: rootState.version,
         baseline: {selectedDataset: rootState.baseline.selectedDataset} as any,
         modelRun: {
             ...rootState.modelRun,
@@ -13,6 +15,7 @@ export const serialiseState = (rootState: RootState): Partial<RootState> => {
         },
         modelOptions: rootState.modelOptions,
         modelOutput: rootState.modelOutput,
+        modelCalibrate: rootState.modelCalibrate,
         stepper: rootState.stepper,
         metadata: {...rootState.metadata, plottingMetadataError:null},
         plottingSelections: rootState.plottingSelections,

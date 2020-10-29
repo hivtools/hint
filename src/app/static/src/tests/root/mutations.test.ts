@@ -12,6 +12,7 @@ import {
     mockModelOptionsState,
     mockModelOutputState,
     mockModelRunState,
+    mockModelCalibrateState,
     mockPlottingSelections,
     mockRootState,
     mockStepperState,
@@ -32,6 +33,7 @@ import {initialErrorsState} from "../../app/store/errors/errors";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
 import {router} from '../../app/router';
+import {initialModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 
 describe("Root mutations", () => {
 
@@ -42,9 +44,10 @@ describe("Root mutations", () => {
             surveyAndProgram: mockSurveyAndProgramState({surveyError: mockError("Test Survey Error"), ready: true}),
             modelOptions: mockModelOptionsState({valid: true}),
             modelOutput: mockModelOutputState({selectedTab: "Barchart"}),
-            modelRun: mockModelRunState({modelRunId: "123"}),
+            modelRun: mockModelRunState({modelRunId: "123", ready: true}),
+            modelCalibrate: mockModelCalibrateState({complete: true}),
             plottingSelections: mockPlottingSelections({barchart: {indicatorId: "Test Indicator"} as BarchartSelections}),
-            stepper: mockStepperState({activeStep: 6}),
+            stepper: mockStepperState({activeStep: 7}),
             load: mockLoadState({loadError: mockError("Test Load Error")}),
             errors: mockErrorsState({errors: [mockError("Test Error")]})
         });
@@ -59,10 +62,10 @@ describe("Root mutations", () => {
         expect(state.surveyAndProgram).toStrictEqual(modules.includes("surveyAndProgram") ? popState.surveyAndProgram :
             mockSurveyAndProgramState({ready: true}));
         expect(state.modelOptions).toStrictEqual(modules.includes("modelOptions") ? popState.modelOptions : initialModelOptionsState());
+        expect(state.modelRun).toStrictEqual(modules.includes("modelRun") ? popState.modelRun : mockModelRunState({ready: true}));
 
         //These modules are always reset
         expect(state.modelOutput).toStrictEqual(initialModelOutputState());
-        expect(state.modelRun).toStrictEqual(mockModelRunState({ready: true}));
         expect(state.plottingSelections).toStrictEqual(initialPlottingSelectionsState());
         expect(state.load).toStrictEqual(initialLoadState());
         expect(state.errors).toStrictEqual(initialErrorsState());
@@ -111,7 +114,7 @@ describe("Root mutations", () => {
 
         mutations.Reset(state, {payload: 4});
 
-        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "modelOptions"], state);
+        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "modelOptions", "modelRun"], state);
         expect(state.stepper.activeStep).toBe(4);
     });
 
@@ -120,8 +123,17 @@ describe("Root mutations", () => {
 
         mutations.Reset(state, {payload: 5});
 
-        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "modelOptions"], state);
-        expect(state.stepper.activeStep).toBe(4);
+        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "modelOptions", "modelRun", "modelCalibrate"], state);
+        expect(state.stepper.activeStep).toBe(5);
+    });
+
+    it("can reset state where max valid step is 6", () => {
+        const state = populatedState();
+
+        mutations.Reset(state, {payload: 6});
+
+        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "modelOptions", "modelRun", "modelCalibrate"], state);
+        expect(state.stepper.activeStep).toBe(5);
     });
 
     it("sets selected data type to null if no valid type available", () => {
@@ -176,7 +188,8 @@ describe("Root mutations", () => {
 
         const state = mockRootState({
             modelRun: mockModelRunState({modelRunId: "TEST"}),
-            modelOutput: {selectedTab: "TEST"}
+            modelOutput: {selectedTab: "TEST"},
+            modelCalibrate: mockModelCalibrateState({complete: true})
         });
 
         state.plottingSelections.barchart.xAxisId = "test";
@@ -196,6 +209,8 @@ describe("Root mutations", () => {
         expect(state.plottingSelections.outputChoropleth.detail).toBe(-1);
         expect(state.plottingSelections.sapChoropleth.detail).toBe(2);
         expect(state.plottingSelections.colourScales.anc.testIndicator.type).toBe(ColourScaleType.Custom);
+
+        expect(state.modelCalibrate).toStrictEqual(initialModelCalibrateState())
     });
 
     it("can change language", () => {
