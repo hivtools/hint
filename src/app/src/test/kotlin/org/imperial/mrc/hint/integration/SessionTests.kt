@@ -13,16 +13,19 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 
-class SessionTests : SecureIntegrationTests() {
+class SessionTests : SecureIntegrationTests()
+{
 
     @BeforeEach
-    fun setup() {
+    fun setup()
+    {
         authorize()
         testRestTemplate.getForEntity<String>("/")
     }
 
     @Test
-    fun `can set session files`() {
+    fun `can set session files`()
+    {
 
         val postFileEntity = getTestEntity("Botswana2018.PJNZ")
         val uploadResult = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postFileEntity)
@@ -39,15 +42,17 @@ class SessionTests : SecureIntegrationTests() {
 
 
     @Test
-    fun `set session files fails with invalid hash`() {
+    fun `set session files fails with invalid hash`()
+    {
         val postEntity = getJsonEntity("badhash")
 
         val responseEntity = testRestTemplate.postForEntity<String>("/session/files/", postEntity)
         assertError(responseEntity, HttpStatus.BAD_REQUEST, "OTHER_ERROR")
     }
 
-    private fun getJsonEntity(hash: String): HttpEntity<String> {
-        val files = mapOf("pjnz" to VersionFile(hash, "file1"))
+    private fun getJsonEntity(hash: String): HttpEntity<String>
+    {
+        val files = mapOf("pjnz" to VersionFile(hash, "file1", false))
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val jsonString = ObjectMapper().writeValueAsString(files)

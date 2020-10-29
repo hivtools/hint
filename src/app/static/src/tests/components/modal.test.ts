@@ -40,7 +40,7 @@ describe("modal", () => {
         expect(wrapper.find(".modal-body").text()).toBe("TEST");
     });
 
-    it ("does not include footer if footer slot is missing", () => {
+    it("does not include footer if footer slot is missing", () => {
         const wrapper = shallowMount(Modal, {
             propsData: {
                 open: true
@@ -53,7 +53,7 @@ describe("modal", () => {
         expect(wrapper.findAll(".modal-footer").length).toBe(0);
     });
 
-    it ("includes footer slot if provided", () => {
+    it("includes footer slot if provided", () => {
         const wrapper = shallowMount(Modal, {
             propsData: {
                 open: true

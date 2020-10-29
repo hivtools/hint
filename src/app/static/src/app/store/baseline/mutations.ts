@@ -24,7 +24,8 @@ export enum BaselineMutation {
     Validated = "Validated",
     BaselineError = "Error",
     SetDataset = "SetDataset",
-    UpdateDatasetResources = "UpdateDatasetResources"
+    UpdateDatasetResources = "UpdateDatasetResources",
+    MarkDatasetResourcesUpdated = "MarkDatasetResourcesUpdated"
 }
 
 export const BaselineUpdates = [
@@ -35,19 +36,33 @@ export const BaselineUpdates = [
 
 export const mutations: MutationTree<BaselineState> = {
 
+    [BaselineMutation.MarkDatasetResourcesUpdated](state: BaselineState) {
+        if (state.selectedDataset) {
+            const resources = state.selectedDataset.resources;
+            Object.keys(resources).map((k: string) => {
+                const key = k as keyof DatasetResourceSet;
+                if (resources[key]) {
+                    resources[key]!.outOfDate = false;
+                }
+            });
+        }
+    },
+
     [BaselineMutation.UpdateDatasetResources](state: BaselineState, payload: DatasetResourceSet) {
         if (state.selectedDataset) {
             const resources = state.selectedDataset.resources;
             Object.keys(resources).map((k: string) => {
                 const key = k as keyof DatasetResourceSet;
                 if (!payload[key]) {
+                    // resource has been removed from the dataset
+                    resources[key] = null;
                     return;
                 }
-                if (!resources[key] || (resources[key]!!.revisionId != payload[key]!!.revisionId)) {
+                if (!resources[key] || (resources[key]!.revisionId != payload[key]!.revisionId)) {
                     // previous data was null OR has a different revision id
                     // so update metadata and mark as out of date
                     resources[key] = payload[key];
-                    resources[key]!!.outOfDate = true;
+                    resources[key]!.outOfDate = true;
                 }
             })
         }

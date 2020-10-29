@@ -14,7 +14,7 @@
                               @click="edit"
                               v-translate="'add'"></a>
                               <span>/</span>
-                            <a :href="adrUrl"
+                            <a :href="'https://adr.unaids.org/me/'"
                                target="_blank"
                                v-translate="'getAccessKey'"
                                v-tooltip="tooltipContent"></a>
@@ -85,14 +85,13 @@
 
     interface Computed {
         key: string | null
-        adrUrl: string
         currentLanguage: Language
         keyText: string
         error: Error | null
         tooltipContent: string
     }
 
-    export default Vue.extend<Data, Methods, Computed, {}>({
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
                 editableKey: "",
@@ -102,8 +101,6 @@
         computed: {
             key: mapStateProp<RootState, string | null>(null,
                 (state: RootState) => state.adrKey),
-            adrUrl: mapStateProp<RootState, string>(null,
-                (state: RootState) => state.adrSchemas!!.baseUrl),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
             error: mapStateProp<RootState, Error | null>(null,

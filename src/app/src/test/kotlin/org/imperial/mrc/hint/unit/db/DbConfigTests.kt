@@ -8,10 +8,12 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.DbConfig
 import org.junit.jupiter.api.Test
 
-class DbConfigTests {
+class DbConfigTests
+{
 
     @Test
-    fun `gets DataSource with configured username and password`() {
+    fun `gets DataSource with configured username and password`()
+    {
         val appProps = mock<AppProperties> {
             on { dbUser } doReturn "db_username"
             on { dbPassword } doReturn "db_pw"

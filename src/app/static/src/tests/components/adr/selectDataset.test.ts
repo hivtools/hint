@@ -87,7 +87,8 @@ describe("select dataset", () => {
                     state: mockBaselineState(baselineProps),
                     actions: baselineActions,
                     mutations: {
-                        [BaselineMutation.SetDataset]: setDatasetMock
+                        [BaselineMutation.SetDataset]: setDatasetMock,
+                        [BaselineMutation.MarkDatasetResourcesUpdated]: markResourcesUpdatedMock
                     }
                 },
                 surveyAndProgram: {
@@ -150,10 +151,40 @@ describe("select dataset", () => {
         expect(mockTooltipDirective.mock.calls[0][0].innerHTML)
             .toContain("<circle cx=\"12\" cy=\"12\" r=\"10\"></circle>"); // tooltip should be on the icon
         expect(mockTooltipDirective.mock.calls[0][1].value)
-            .toBe("This dataset has been updated in the ADR. Use the refresh button to import the latest files.");
+            .toBe("The following files have been updated in the ADR: PJNZ. Use the refresh button to import the latest files.");
     });
 
-    it("renders modal and spinner while refreshing", async (done) => {
+    it("refreshes out of date baseline files", async () => {
+        const fakeDataset = mockDataset();
+        fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"});
+        fakeDataset.resources.pop = mockDatasetResource({outOfDate: true, url: "pop.url"});
+        fakeDataset.resources.shape = mockDatasetResource({outOfDate: true, url: "shape.url"});
+
+        const store = getStore({selectedDataset: fakeDataset});
+        const rendered = shallowMount(SelectDataset, {store, sync: false});
+        rendered.findAll("button").at(0).trigger("click");
+        await Vue.nextTick();
+        expect(rendered.find(Modal).props("open")).toBe(true);
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect((baselineActions.importPJNZ as Mock).mock.calls[0][1]).toBe("pjnz.url");
+        expect((baselineActions.importPopulation as Mock).mock.calls[0][1]).toBe("pop.url");
+        expect((baselineActions.importShape as Mock).mock.calls[0][1]).toBe("shape.url");
+    });
+
+    it("marks resources as updated after refreshing", async () => {
+        const fakeDataset = mockDataset();
+        fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"})
+        const store = getStore({selectedDataset: fakeDataset});
+        const rendered = shallowMount(SelectDataset, {store, sync: false});
+        rendered.findAll("button").at(0).trigger("click");
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(markResourcesUpdatedMock.mock.calls.length).toBe(1);
+    });
+
+    it("renders modal and spinner while refreshing", async () => {
         const fakeDataset = mockDataset();
         fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"})
         const store = getStore({selectedDataset: fakeDataset});
@@ -165,12 +196,67 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).props("open")).toBe(true);
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
 
-        setTimeout(() => {
-            expect(rendered.find(Modal).props("open")).toBe(false);
-            expect(rendered.findAll(LoadingSpinner).length).toBe(0);
-            done();
-        }, 200);
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
     });
+
+    it("refreshes survey & program files if any baseline file is refreshed and pre-existing shape file present",
+        async () => {
+            const fakeDataset = mockDataset();
+            fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"});
+            fakeDataset.resources.survey = mockDatasetResource({url: "survey.url"});
+            fakeDataset.resources.program = mockDatasetResource({url: "program.url"});
+            fakeDataset.resources.anc = mockDatasetResource({url: "anc.url"});
+            const store = getStore({selectedDataset: fakeDataset, shape: mockShapeResponse()});
+            const rendered = shallowMount(SelectDataset, {store, sync: false});
+            rendered.findAll("button").at(0).trigger("click");
+            await Vue.nextTick();
+            await Vue.nextTick();
+            await Vue.nextTick();
+            expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.url");
+            expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.url");
+            expect((surveyProgramActions.importANC as Mock).mock.calls[0][1]).toBe("anc.url");
+        });
+
+    it("refreshes survey & program files if any baseline file is refreshed and shape file included in resources",
+        async () => {
+            const fakeDataset = mockDataset();
+            fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"});
+            fakeDataset.resources.survey = mockDatasetResource({url: "survey.url"});
+            fakeDataset.resources.program = mockDatasetResource({url: "program.url"});
+            fakeDataset.resources.anc = mockDatasetResource({url: "anc.url"});
+            fakeDataset.resources.shape = mockDatasetResource();
+            const store = getStore({selectedDataset: fakeDataset});
+            const rendered = shallowMount(SelectDataset, {store, sync: false});
+            rendered.findAll("button").at(0).trigger("click");
+            await Vue.nextTick();
+            await Vue.nextTick();
+            await Vue.nextTick();
+            expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.url");
+            expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.url");
+            expect((surveyProgramActions.importANC as Mock).mock.calls[0][1]).toBe("anc.url");
+        });
+
+    it("refreshes survey & program files if out of date",
+        async () => {
+            const fakeDataset = mockDataset();
+            fakeDataset.resources.survey = mockDatasetResource({url: "survey.url", outOfDate: true});
+            fakeDataset.resources.program = mockDatasetResource({url: "program.url", outOfDate: true});
+            fakeDataset.resources.anc = mockDatasetResource({url: "anc.url", outOfDate: true});
+            fakeDataset.resources.shape = mockDatasetResource();
+            const store = getStore({selectedDataset: fakeDataset});
+            const rendered = shallowMount(SelectDataset, {store, sync: false});
+            rendered.findAll("button").at(0).trigger("click");
+            await Vue.nextTick();
+            await Vue.nextTick();
+            await Vue.nextTick();
+            expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.url");
+            expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.url");
+            expect((surveyProgramActions.importANC as Mock).mock.calls[0][1]).toBe("anc.url");
+        });
 
     it("renders selected dataset if it exists", () => {
         const rendered = shallowMount(SelectDataset, {

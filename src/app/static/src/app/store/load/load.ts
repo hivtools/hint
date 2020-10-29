@@ -18,7 +18,7 @@ export const initialLoadState = (): LoadState => {
     }
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const load: Module<LoadState, RootState> = {
     namespaced,

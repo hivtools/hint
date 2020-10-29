@@ -2,19 +2,17 @@
     <div>
         <modal :open="open">
             <h4 v-if="isGuest" v-translate="'haveYouSaved'"></h4>
-            <h4 v-if="!isGuest">Save version?</h4>
+            <h4 v-if="!isGuest" v-translate="'saveVersion'"></h4>
 
             <p v-translate="'discardWarning'"></p>
             <ul>
-                <li v-for="step in laterCompleteSteps">
-                    Step {{step.number}}: <span v-translate="step.textKey"></span>
+                <li v-for="step in laterCompleteSteps" :key="step.number">
+                    <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
                 </li>
             </ul>
 
-            <p v-if="isGuest"  v-translate="'savePrompt'"></p>
-            <p v-if="!isGuest">
-                These steps will automatically be saved in a version. You will be able to reload this version from the Projects page.
-            </p>
+            <p v-if="isGuest" v-translate="'savePrompt'"></p>
+            <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
 
             <template v-if="!waitingForVersion" v-slot:footer>
                 <button type="button"
@@ -39,7 +37,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import { mapGetters } from 'vuex';
+    import {mapGetters} from 'vuex';
     import Modal from "./Modal.vue";
     import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
     import {StepDescription} from "../store/stepper/stepper";
@@ -60,12 +58,12 @@
     }
 
     interface Data {
-        waitingForVersion:  boolean
+        waitingForVersion: boolean
     }
 
-    export default Vue.extend<Data, {}, Computed, any>({
+    export default Vue.extend<Data, unknown, Computed, any>({
         props: ["open", "continueEditing", "cancelEditing"],
-        data: function() {
+        data: function () {
             return {
                 waitingForVersion: false
             }
@@ -81,7 +79,7 @@
             })
         },
         methods: {
-            handleConfirm: function() {
+            handleConfirm: function () {
                 if (this.isGuest) {
                     this.continueEditing();
                 } else {
@@ -92,13 +90,13 @@
             newVersion: mapActionByName("projects", "newVersion")
         },
         watch: {
-            currentVersionId: function() {
+            currentVersionId: function () {
                 if (this.waitingForVersion) {
                     this.waitingForVersion = false;
                     this.continueEditing();
                 }
             },
-            errorsCount: function(newVal, oldVal) {
+            errorsCount: function (newVal, oldVal) {
                 if (this.waitingForVersion && (newVal > oldVal)) {
                     this.waitingForVersion = false;
                     this.cancelEditing();

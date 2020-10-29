@@ -9,6 +9,8 @@ import {MetadataState} from "../../../app/store/metadata/metadata";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {expectTranslated} from "../../testHelpers";
+import {emptyState} from "../../../app/root";
 
 const localVue = createLocalVue();
 
@@ -36,6 +38,7 @@ describe("Baseline upload component", () => {
         };
 
         const store = new Vuex.Store({
+            state: emptyState(),
             modules: {
                 baseline: {
                     namespaced: true,
@@ -76,7 +79,8 @@ describe("Baseline upload component", () => {
     it("country name is passed to file upload component if country is present", () => {
         const store = createSut({country: "Malawi"});
         const wrapper = shallowMount(Baseline, {store, localVue});
-        expect(wrapper.findAll(ManageFile).at(0).find("label").text()).toBe("Country: Malawi");
+        expectTranslated(wrapper.findAll(ManageFile).at(0).find("label"),
+            "Country: Malawi", "Pays: Malawi", store);
     });
 
     it("passes pjnz error to file upload", () => {
@@ -96,7 +100,7 @@ describe("Baseline upload component", () => {
     it("shows pjnz error, not metadata error, if both are present", () => {
         const pjnzError = mockError("File upload went wrong");
         const plottingMetadataError = mockError("Metadata went wrong");
-        const store = createSut({pjnzError},{plottingMetadataError});
+        const store = createSut({pjnzError}, {plottingMetadataError});
         const wrapper = shallowMount(Baseline, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props().error).toBe(pjnzError);
     });
@@ -112,7 +116,7 @@ describe("Baseline upload component", () => {
         const store = createSut({validating: true});
         const wrapper = shallowMount(Baseline, {store, localVue});
         const validating = wrapper.find("#baseline-validating");
-        expect(validating.text()).toEqual("Validating...");
+        expectTranslated(validating.find("span"), "Validating...", "Validation en cours...", store);
         expect(validating.findAll(LoadingSpinner).length).toEqual(1)
     });
 

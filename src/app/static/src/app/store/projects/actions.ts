@@ -7,19 +7,62 @@ import {api} from "../../apiService";
 import {ProjectsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
-import {Project, VersionDetails, VersionIds} from "../../types";
+import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
+
+export interface versionPayload {
+    version: VersionIds,
+    name: string
+}
 
 export interface ProjectsActions {
     createProject: (store: ActionContext<ProjectsState, RootState>, name: string) => void,
     getProjects: (store: ActionContext<ProjectsState, RootState>) => void
+    getCurrentProject: (store: ActionContext<ProjectsState, RootState>) => void
     uploadVersionState: (store: ActionContext<ProjectsState, RootState>) => void,
     newVersion: (store: ActionContext<ProjectsState, RootState>) => void,
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
     deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
     deleteVersion: (store: ActionContext<ProjectsState, RootState>, versionIds: VersionIds) => void
+    promoteVersion: (store: ActionContext<ProjectsState, RootState>, versionPayload: versionPayload) => void,
+    userExists: (store: ActionContext<ProjectsState, RootState>, email: string) => Promise<boolean>
+    cloneProject: (store: ActionContext<ProjectsState, RootState>, payload: CloneProjectPayload) => void
+}
+
+export interface CloneProjectPayload {
+    projectId: number
+    emails: string[]
 }
 
 export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
+
+    // unlike most actions, rather than committing a mutation this returns a boolean
+    // value which can be used directly by the caller
+    async userExists(context, email) {
+        const result = await api(context)
+            .ignoreSuccess()
+            .ignoreErrors()
+            .get<boolean>(`/user/${email}/exists`);
+
+        if (result) {
+            return result.data
+        } else {
+            // an error occurred, probably because the email address wasn't in a valid format
+            return false
+        }
+    },
+
+    async cloneProject(context, payload) {
+        const {commit} = context;
+        commit({type: ProjectsMutations.CloningProject, payload: true});
+
+        const emails = "emails=" + payload.emails.join(",");
+
+        await api<ProjectsMutations, ProjectsMutations>(context)
+            .withSuccess(ProjectsMutations.CloningProject)
+            .withError(ProjectsMutations.CloneProjectError)
+            .postAndReturn(`/project/${payload.projectId}/clone`, emails);
+    },
+
     async createProject(context, name) {
         const {commit, state} = context;
 
@@ -32,7 +75,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<RootMutation, ProjectsMutations>(context)
             .withSuccess(RootMutation.SetProject, true)
             .withError(ProjectsMutations.ProjectError)
-            .postAndReturn<String>("/project/", qs.stringify({name}));
+            .postAndReturn<string>("/project/", qs.stringify({name}));
     },
 
     async getProjects(context) {
@@ -42,6 +85,18 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .withSuccess(ProjectsMutations.SetPreviousProjects)
             .withError(ProjectsMutations.ProjectError)
             .get<Project[]>("/projects/");
+    },
+
+    async getCurrentProject(context) {
+        const {rootGetters, commit} = context;
+        if (!rootGetters.isGuest) {
+            commit({type: ProjectsMutations.SetLoading, payload: true});
+            await api<ProjectsMutations, ProjectsMutations>(context)
+                .withSuccess(ProjectsMutations.SetCurrentProject)
+                .withError(ProjectsMutations.ProjectError)
+                .get<CurrentProject>("/project/current");
+            commit({type: ProjectsMutations.SetLoading, payload: false});
+        }
     },
 
     async uploadVersionState(context) {
@@ -70,7 +125,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
     async loadVersion(context, version) {
         const {commit, dispatch, state} = context;
-
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<ProjectsMutations, ProjectsMutations>(context)
             .ignoreSuccess()
@@ -113,7 +167,21 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .then(() => {
                 dispatch("getProjects");
             });
-    }
+    },
+
+    async promoteVersion(context, versionPayload: versionPayload) {
+        const {state, dispatch} = context;
+        const {projectId, versionId} = versionPayload.version
+        const name = versionPayload.name
+
+        await api<ProjectsMutations, ErrorsMutation>(context)
+            .ignoreSuccess()
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
+            .postAndReturn(`/project/${projectId}/version/${versionId}/promote`, qs.stringify({name}))
+            .then(() => {
+                dispatch("getProjects");
+            });
+    },
 };
 
 async function immediateUploadVersionState(context: ActionContext<ProjectsState, RootState>) {

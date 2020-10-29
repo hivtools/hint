@@ -1,4 +1,5 @@
-import {mount, shallowMount} from "@vue/test-utils";
+import {mount, shallowMount, Wrapper} from "@vue/test-utils";
+import Vue from "vue";
 import Vuex from "vuex";
 import {
     mockAncResponse,
@@ -20,6 +21,8 @@ import {LoadingState} from "../../../app/store/load/load";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {Language} from "../../../app/store/translations/locales";
+import {expectTranslated} from "../../testHelpers";
+import {emptyState} from "../../../app/root";
 
 // jsdom has only implemented navigate up to hashes, hence appending a hash here to the base url
 const mockCreateObjectUrl = jest.fn(() => "http://localhost#1234");
@@ -58,9 +61,14 @@ describe("File menu", () => {
         }
     };
 
-    const createStore = (customModules = {}) => {
+    const createStore = (customModules = {}, isGuest = true) => {
         const store = new Vuex.Store({
-            state: {language: Language.en},
+            state: {
+                language: Language.en
+            },
+            getters: {
+                isGuest: () => isGuest
+            },
             modules: {
                 ...storeModules,
                 ...customModules
@@ -70,18 +78,32 @@ describe("File menu", () => {
         return store;
     };
 
+    const triggerSelectFile = (wrapper: Wrapper<FileMenu>, testFile: File) => {
+        const vm = wrapper.vm;
+        const input = wrapper.find("input");
+
+        //Can't programmatically construct a FileList to give to the real rendered input element, so we need to trick
+        //the component with a mocked ref
+        (vm.$refs as any).loadFile = {
+            files: [testFile]
+        };
+
+        input.trigger("change");
+    };
+
     it("downloads file", (done) => {
+        const store = createStore();
         const wrapper = mount(FileMenu,
             {
                 propsData: {title: "naomi"},
-                store: createStore()
+                store
             });
 
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         let link = wrapper.findAll(".dropdown-item").at(0);
         link.trigger("mousedown");
-        expect(link.text()).toBe("Save");
+        expectTranslated(link, "Save", "Sauvegarder", store as any);
 
         const hiddenLink = wrapper.find({ref: "save"});
         expect(hiddenLink.attributes("href")).toBe("http://localhost#1234");
@@ -120,15 +142,13 @@ describe("File menu", () => {
     });
 
     it("opens file dialog on click load", (done) => {
-        const wrapper = mount(FileMenu,
-            {
-                store: createStore()
-            });
+        const store = createStore();
+        const wrapper = mount(FileMenu, {store});
 
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         const link = wrapper.findAll(".dropdown-item").at(1);
-        expect(link.text()).toBe("Load");
+        expectTranslated(link, "Load", "Charger", store as any);
 
         const input = wrapper.find("input").element as HTMLInputElement;
         input.addEventListener("click", function () {
@@ -139,7 +159,7 @@ describe("File menu", () => {
         link.trigger("mousedown");
     });
 
-    it("invokes load action when file selected from dialog", () => {
+    it("invokes load action when file selected from dialog, when user is guest", () => {
         const mockLoadAction = jest.fn();
 
         const wrapper = mount(FileMenu,
@@ -155,19 +175,12 @@ describe("File menu", () => {
                 })
             });
 
-        const input = wrapper.find("input");
-
-        const vm = wrapper.vm;
         const testFile = mockFile("test filename", "test file contents");
-        //Can't programmatically construct a FileList to give to the real rendered input element, so we need to trick
-        //the component with a mocked ref
-        (vm.$refs as any).loadFile = {
-            files: [testFile]
-        };
-
-        input.trigger("change");
+        triggerSelectFile(wrapper, testFile);
         expect(mockLoadAction.mock.calls.length).toEqual(1);
-        expect(mockLoadAction.mock.calls[0][1]).toBe(testFile)
+        expect(mockLoadAction.mock.calls[0][1].file).toBe(testFile);
+        expect(mockLoadAction.mock.calls[0][1].projectName).toBeNull();
+        expect(wrapper.find("#load-project-name").props("open")).toBe(false);
     });
 
     it("does not open modal if no load error", () => {
@@ -202,26 +215,93 @@ describe("File menu", () => {
 
     it("modal can be dismissed", () => {
         const clearErrorMock = jest.fn();
+        const store = createStore({
+            load: {
+                namespaced: true,
+                state: mockLoadState({
+                    loadingState: LoadingState.LoadFailed,
+                    loadError: mockError("test error")
+                }),
+                actions: {
+                    clearLoadState: clearErrorMock
+                }
+            }
+        });
+
+        const wrapper = mount(FileMenu, {store});
+
+        const modal = wrapper.find(Modal);
+        modal.find(".btn").trigger("click");
+        expectTranslated(modal.find(".btn"), "OK", "OK", store as any);
+        expect(clearErrorMock.mock.calls.length).toBe(1);
+    });
+
+    it("shows project name modal when file selected from dialog, when user is not guest", () => {
+        const wrapper = mount(FileMenu, {store: createStore({}, false)});
+        const testFile = mockFile("test filename", "test file contents");
+        triggerSelectFile(wrapper, testFile);
+
+        expect(wrapper.find("#load-project-name").props("open")).toBe(true);
+        expect((wrapper.vm as any).fileToLoad).toBe(testFile);
+    });
+
+    it("clicking confirm load to project button invokes load action", async () => {
+        const mockLoadAction = jest.fn();
+        const testFile = mockFile("test filename", "test file contents");
+
         const wrapper = mount(FileMenu,
             {
+                data: () => {
+                    return {requestProjectName: true, fileToLoad: testFile}
+                },
                 store: createStore({
                     load: {
                         namespaced: true,
-                        state: mockLoadState({
-                            loadingState: LoadingState.LoadFailed,
-                            loadError: mockError("test error")
-                        }),
+                        state: mockLoadState(),
                         actions: {
-                            clearLoadState: clearErrorMock
+                            load: mockLoadAction
                         }
                     }
                 })
             });
 
-        const modal = wrapper.find(Modal);
-        modal.find(".btn").trigger("click");
-        expect(modal.find(".btn").text()).toBe("OK");
-        expect(clearErrorMock.mock.calls.length).toBe(1);
+        wrapper.find("#project-name-input").setValue("new project");
+        wrapper.find("#confirm-load-project").trigger("click");
+        await Vue.nextTick();
+        expect(mockLoadAction.mock.calls.length).toEqual(1);
+        expect(mockLoadAction.mock.calls[0][1].file).toBe(testFile);
+        expect(mockLoadAction.mock.calls[0][1].projectName).toBe("new project");
+        expect(wrapper.find("#load-project-name").props("open")).toBe(false);
     });
 
+    it("clicking cancel from project name modal hides modal", () => {
+        const wrapper = mount(FileMenu,
+            {
+                data: () => {
+                    return {requestProjectName: true}
+                },
+                store: createStore({}, false)
+            });
+
+        const modal = wrapper.find("#load-project-name");
+        expect(modal.props("open")).toBe(true);
+        modal.find("#cancel-load-project").trigger("click");
+        expect(modal.props("open")).toBe(false);
+    });
+
+    it("confirm load to project button is disabled when project name is empty", () => {
+        const wrapper = mount(FileMenu,
+            {
+                data: () => {
+                    return {requestProjectName: true}
+                },
+                store: createStore({}, false)
+            });
+
+        const confirmButton = wrapper.find("#confirm-load-project");
+        expect(confirmButton.attributes("disabled")).toBe("disabled");
+
+        wrapper.find("#project-name-input").setValue("test");
+        expect(confirmButton.attributes("disabled")).toBeUndefined();
+    });
 });

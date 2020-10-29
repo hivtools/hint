@@ -1,11 +1,11 @@
 <template>
     <div class="pt-1 text-danger">
-        <div class="error-message">{{message}}</div>
-        <div v-if="hasTrace" >
+        <div class="error-message">{{ message }}</div>
+        <div v-if="hasTrace">
             <a href="#" @click="toggleTrace" :class="cssClass"><strong>stack trace</strong></a>
             <div v-if="showTrace" class="ml-3">
                 <div v-for="(traceMessage, index) in error.trace" :key="index" class="error-trace">
-                    {{traceMessage}}
+                    {{ traceMessage }}
                 </div>
             </div>
         </div>
@@ -17,7 +17,7 @@
     import {Error} from "../generated";
 
     interface Data {
-        showTrace: Boolean
+        showTrace: boolean
     }
 
     interface Props {
@@ -25,9 +25,9 @@
     }
 
     interface Computed {
-        message: String,
-        hasTrace: Boolean,
-        cssClass: String
+        message: string,
+        hasTrace: boolean,
+        cssClass: string
     }
 
     interface Methods {
@@ -44,18 +44,18 @@
             }
         },
         computed: {
-            message: function() {
+            message: function () {
                 return this.error.detail ? this.error.detail : this.error.error
             },
-            hasTrace: function() {
+            hasTrace: function () {
                 return !!this.error.trace && this.error.trace.length > 0
             },
-            cssClass: function() {
+            cssClass: function () {
                 return this.showTrace ? "up" : "down";
             }
         },
         methods: {
-            toggleTrace: function() {
+            toggleTrace: function () {
                 this.showTrace = !this.showTrace;
             }
         }

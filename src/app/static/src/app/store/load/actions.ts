@@ -11,24 +11,36 @@ export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded"
 export type LoadErrorActionTypes = "LoadFailed"
 
 export interface LoadActions {
-    load: (store: ActionContext<LoadState, RootState>, file: File) => void
-    setFiles: (store: ActionContext<LoadState, RootState>, savedFileContents: string) => void
+    load: (store: ActionContext<LoadState, RootState>, payload: loadPayload) => void
+    setFiles: (store: ActionContext<LoadState, RootState>, payload: setFilesPayload) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
 }
 
+export interface loadPayload {
+    file: File,
+    projectName: string | null
+}
+
+export interface setFilesPayload {
+    savedFileContents: string,
+    projectName: string | null
+}
+
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
-    load({dispatch}, file) {
+    load({dispatch}, payload) {
+        const {file, projectName} = payload;
         const reader = new FileReader();
-        reader.addEventListener('loadend', function() {
-            dispatch("setFiles", reader.result as string);
+        reader.addEventListener('loadend', function () {
+            dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
         });
         reader.readAsText(file);
     },
 
-    async setFiles(context, savedFileContents) {
-        const {commit} = context;
+    async setFiles(context, payload) {
+        const {savedFileContents, projectName} = payload;
+        const {commit, rootState, rootGetters, dispatch} = context;
         commit({type: "SettingFiles", payload: null});
 
         const objectContents = verifyCheckSum(savedFileContents);
@@ -44,14 +56,20 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const files = objectContents.files;
         const savedState = objectContents.state;
 
-        await getFilesAndLoad(context, files, savedState)
+        if (!rootGetters.isGuest) {
+            await (dispatch("projects/createProject", projectName, {root: true}));
+            savedState.projects.currentProject = rootState.projects.currentProject;
+            savedState.projects.currentVersion = rootState.projects.currentVersion;
+        }
+
+        await getFilesAndLoad(context, files, savedState);
     },
 
     async loadFromVersion(context, versionDetails) {
         const {commit} = context;
         commit({type: "SettingFiles", payload: null});
 
-        router.push("/", () => {
+       router.push("/", () => {
             getFilesAndLoad(context, versionDetails.files, JSON.parse(versionDetails.state));
         });
 
@@ -78,7 +96,7 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, fil
         .withError("LoadFailed")
         .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
         .then(() => {
-            if (state.loadingState == LoadingState.UpdatingState) {
+            if (state.loadingState != LoadingState.LoadFailed) {
                 dispatch("updateStoreState", savedState);
             }
         });

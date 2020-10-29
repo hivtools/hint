@@ -10,29 +10,44 @@ import org.imperial.mrc.hint.helpers.getTestEntity
 import org.imperial.mrc.hint.models.ModelRunOptions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.*
+import javax.annotation.PostConstruct
 
-abstract class SecureIntegrationTests : CleanDatabaseTests() {
+abstract class SecureIntegrationTests : CleanDatabaseTests()
+{
 
-    @Autowired
-    lateinit var testRestTemplate: TestRestTemplate
+    protected lateinit var testRestTemplate: TestRestTemplate
+
+    @PostConstruct
+    fun getTemplate()
+    {
+        val builder = restTemplateBuilder
+                .rootUri("http://localhost:" + env.getProperty("local.server.port"))
+
+        this.testRestTemplate = TestRestTemplate(builder)
+    }
 
     @BeforeEach
-    fun beforeEach(info: TestInfo) {
+    fun beforeEach(info: TestInfo)
+    {
+        userRepo.addUser("guest", "guest")
         val isAuthorized = info.displayName.contains("TRUE")
-        if (isAuthorized) {
+        if (isAuthorized)
+        {
             authorize()
             testRestTemplate.getForEntity<String>("/")
-        } else {
+        }
+        else
+        {
             clear()
         }
     }
 
-    protected fun getModelRunEntity(): HttpEntity<String> {
+    protected fun getModelRunEntity(): HttpEntity<String>
+    {
         uploadMinimalFiles()
         val optionsResponseEntity = testRestTemplate.getForEntity<String>("/model/options/")
         val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
@@ -47,7 +62,8 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
 
     protected val parser = ObjectMapper()
 
-    protected fun uploadMinimalFiles() {
+    protected fun uploadMinimalFiles()
+    {
         testRestTemplate.postForEntity<String>("/baseline/shape/",
                 getTestEntity("malawi.geojson"))
 
@@ -61,65 +77,110 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                 getTestEntity("survey.csv"))
     }
 
-    fun assertSecureWithSuccess(isAuthorized: IsAuthorized,
+    fun assertSecureWithHttpStatus(isAuthorized: IsAuthorized,
                                 responseEntity: ResponseEntity<String>,
-                                schemaName: String?) {
+                                schemaName: String?, httpStatus: HttpStatus)
+    {
 
-        when (isAuthorized) {
-            IsAuthorized.TRUE -> {
+        when (isAuthorized)
+        {
+            IsAuthorized.TRUE ->
+            {
                 Assertions.assertThat(responseEntity.headers.contentType!!.toString())
-                        .isEqualTo("application/json")
+                        .contains("application/json")
 
-                if (responseEntity.statusCode != HttpStatus.OK) {
-                    Assertions.fail<String>("Expected OK response but got error: ${responseEntity.body}")
+                if (responseEntity.statusCode != httpStatus)
+                {
+                    Assertions.fail<String>("Expected $httpStatus but got error: ${responseEntity.body}")
                 }
-                if (schemaName != null) {
+                if (schemaName != null)
+                {
                     JSONValidator().validateSuccess(responseEntity.body!!, schemaName)
                 }
 
             }
-            IsAuthorized.FALSE -> {
+            IsAuthorized.FALSE ->
+            {
                 assertUnauthorized(responseEntity)
             }
         }
     }
 
     fun assertSecureWithSuccess(isAuthorized: IsAuthorized,
-                                responseEntity: ResponseEntity<ByteArray>) {
+                                responseEntity: ResponseEntity<String>,
+                                schemaName: String?)
+    {
 
-        when (isAuthorized) {
-            IsAuthorized.TRUE -> {
+        when (isAuthorized)
+        {
+            IsAuthorized.TRUE ->
+            {
+                Assertions.assertThat(responseEntity.headers.contentType!!.toString())
+                        .contains("application/json")
+
+                if (responseEntity.statusCode != HttpStatus.OK)
+                {
+                    Assertions.fail<String>("Expected OK response but got error: ${responseEntity.body}")
+                }
+                if (schemaName != null)
+                {
+                    JSONValidator().validateSuccess(responseEntity.body!!, schemaName)
+                }
+
+            }
+            IsAuthorized.FALSE ->
+            {
+                assertUnauthorized(responseEntity)
+            }
+        }
+    }
+
+    fun assertSecureWithSuccess(isAuthorized: IsAuthorized,
+                                responseEntity: ResponseEntity<ByteArray>)
+    {
+
+        when (isAuthorized)
+        {
+            IsAuthorized.TRUE ->
+            {
                 assertSuccess(responseEntity)
             }
-            IsAuthorized.FALSE -> {
+            IsAuthorized.FALSE ->
+            {
                 assertUnauthorized(responseEntity)
             }
         }
     }
 
     fun assertSuccess(responseEntity: ResponseEntity<String>,
-                      schemaName: String?) {
+                      schemaName: String?)
+    {
 
         Assertions.assertThat(responseEntity.headers.contentType!!.toString())
                 .isEqualTo("application/json")
 
-        if (responseEntity.statusCode != HttpStatus.OK) {
+        if (responseEntity.statusCode != HttpStatus.OK)
+        {
             Assertions.fail<String>("Expected OK response but got error: ${responseEntity.body}")
         }
-        if (schemaName != null) {
+        if (schemaName != null)
+        {
             JSONValidator().validateSuccess(responseEntity.body!!, schemaName)
         }
     }
 
-    fun <T> assertUnauthorized(responseEntity: ResponseEntity<T>) {
+    fun <T> assertUnauthorized(responseEntity: ResponseEntity<T>)
+    {
         Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 
-    fun <T> assertSuccess(responseEntity: ResponseEntity<T>) {
+    fun <T> assertSuccess(responseEntity: ResponseEntity<T>)
+    {
         Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
     }
 
-    fun <T> assertLoginLocation(responseEntity: ResponseEntity<T>) {
+    fun <T> assertLoginLocation(responseEntity: ResponseEntity<T>)
+    {
         Assertions.assertThat(responseEntity.headers.location!!.toString()).isEqualTo("/login")
     }
 
@@ -128,15 +189,19 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                               httpStatus: HttpStatus,
                               errorCode: String,
                               errorDetail: String? = null,
-                              errorTrace: String? = null) {
+                              errorTrace: String? = null)
+    {
 
-        when (isAuthorized) {
-            IsAuthorized.TRUE -> {
+        when (isAuthorized)
+        {
+            IsAuthorized.TRUE ->
+            {
                 Assertions.assertThat(responseEntity.headers.contentType!!.toString()).isEqualTo("application/json")
                 Assertions.assertThat(responseEntity.statusCode).isEqualTo(httpStatus)
                 JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail, errorTrace)
             }
-            IsAuthorized.FALSE -> {
+            IsAuthorized.FALSE ->
+            {
                 assertUnauthorized(responseEntity)
             }
         }
@@ -146,7 +211,8 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
                     httpStatus: HttpStatus,
                     errorCode: String,
                     errorDetail: String? = null,
-                    errorTrace: String? = null) {
+                    errorTrace: String? = null)
+    {
 
         Assertions.assertThat(responseEntity.headers.contentType!!.toString()).isEqualTo("application/json")
         Assertions.assertThat(responseEntity.statusCode).isEqualTo(httpStatus)
@@ -154,20 +220,24 @@ abstract class SecureIntegrationTests : CleanDatabaseTests() {
 
     }
 
-    enum class IsAuthorized {
+    enum class IsAuthorized
+    {
         TRUE,
         FALSE
     }
 
-    private fun clear() {
+    private fun clear()
+    {
         testRestTemplate.restTemplate.interceptors.clear()
     }
 
-    protected fun authorize() {
+    protected fun authorize()
+    {
         testRestTemplate.restTemplate.interceptors.add(AuthInterceptor(testRestTemplate))
     }
 
-    protected fun getResponseData(entity: ResponseEntity<String>): JsonNode {
+    protected fun getResponseData(entity: ResponseEntity<String>): JsonNode
+    {
         return ObjectMapper().readTree(entity.body)["data"]
     }
 }

@@ -1,16 +1,23 @@
 <template>
-   <div class="row">
-       <div class="col-sm-12">
-           <h4 v-translate="'exportOutputs'"></h4>
-           <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>
-               <span v-translate="'export'"></span> <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-           </a>
-           <h4 class="mt-4" v-translate="'downloadSummary'"></h4>
-           <a class="btn btn-red btn-lg my-3" :href=summaryUrl>
-               <span v-translate="'download'"></span>  <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-           </a>
-       </div>
-   </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h4 v-translate="'exportOutputs'"></h4>
+            <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>
+                <span v-translate="'export'"></span>
+                <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+            </a>
+            <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
+            <a class="btn btn-red btn-lg my-3" :href=coarseOutputUrl>
+                <span v-translate="'download'"></span>
+                <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+            </a>
+            <h4 class="mt-4" v-translate="'downloadSummaryReport'"></h4>
+            <a class="btn btn-red btn-lg my-3" :href=summaryReportUrl>
+                <span v-translate="'download'"></span>
+                <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+            </a>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -22,19 +29,23 @@
     interface Computed {
         modelRunId: string,
         spectrumUrl: string,
-        summaryUrl: string
+        coarseOutputUrl: string,
+        summaryReportUrl: string
     }
 
-    export default Vue.extend<{}, {}, Computed>({
+    export default Vue.extend<unknown, unknown, Computed>({
         name: "downloadResults",
         computed: {
             ...mapStateProps<ModelRunState, keyof Computed>("modelRun", {
                 modelRunId: state => state.modelRunId
             }),
-            spectrumUrl: function() {
-                    return `/download/spectrum/${this.modelRunId}`
+            spectrumUrl: function () {
+                return `/download/spectrum/${this.modelRunId}`
             },
-            summaryUrl: function() {
+            coarseOutputUrl: function () {
+                return `/download/coarse-output/${this.modelRunId}`
+            },
+            summaryReportUrl: function () {
                 return `/download/summary/${this.modelRunId}`
             }
         },

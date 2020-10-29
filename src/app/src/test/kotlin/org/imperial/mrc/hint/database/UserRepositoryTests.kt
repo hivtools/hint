@@ -19,7 +19,8 @@ import org.springframework.transaction.annotation.Transactional
 @ExtendWith(SpringExtension::class)
 
 @Transactional
-class UserRepositoryTests {
+class UserRepositoryTests
+{
 
     @Autowired
     private lateinit var sut: UserRepository
@@ -35,7 +36,8 @@ class UserRepositoryTests {
     private val testKey = "123-some-key"
 
     @Test
-    fun `can save new API key`() {
+    fun `can save new API key`()
+    {
         userRepo.addUser(testEmail, "pw")
 
         val encryptedKey = encryption.encrypt(testKey)
@@ -46,7 +48,8 @@ class UserRepositoryTests {
     }
 
     @Test
-    fun `can update API key`() {
+    fun `can update API key`()
+    {
         userRepo.addUser(testEmail, "pw")
         val encryptedKey = encryption.encrypt(testKey)
         val newEncryptedKey = encryption.encrypt("new-key-456")
@@ -60,7 +63,8 @@ class UserRepositoryTests {
 
 
     @Test
-    fun `can delete API key`() {
+    fun `can delete API key`()
+    {
         userRepo.addUser(testEmail, "pw")
         val encryptedKey = encryption.encrypt(testKey)
 
@@ -75,7 +79,8 @@ class UserRepositoryTests {
     }
 
     @Test
-    fun `can retrieve API key`() {
+    fun `can retrieve API key`()
+    {
         userRepo.addUser(testEmail, "pw")
         val encryptedKey = encryption.encrypt(testKey)
 
@@ -85,7 +90,8 @@ class UserRepositoryTests {
     }
 
     @Test
-    fun `returns null if API key does not exist`() {
+    fun `returns null if API key does not exist`()
+    {
         userRepo.addUser(testEmail, "pw")
         val result = sut.getADRKey(testEmail)
         assertThat(result).isEqualTo(null)

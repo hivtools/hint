@@ -409,8 +409,8 @@ describe("Choropleth component", () => {
         };
         legend.vm.$emit("update", newScale);
 
-        expect(wrapper.emitted("updateColourScales").length).toBe(1);
-        expect(wrapper.emitted("updateColourScales")[0][0]).toStrictEqual({
+        expect(wrapper.emitted("update-colour-scales").length).toBe(1);
+        expect(wrapper.emitted("update-colour-scales")[0][0]).toStrictEqual({
             prevalence: newScale
         });
     });
@@ -420,8 +420,8 @@ describe("Choropleth component", () => {
             selections: {...propsData.selections, indicatorId: "plhiv"}
         });
 
-        expect(wrapper.emitted("updateColourScales").length).toBe(1);
-        expect(wrapper.emitted("updateColourScales")[0][0]).toStrictEqual({
+        expect(wrapper.emitted("update-colour-scales").length).toBe(1);
+        expect(wrapper.emitted("update-colour-scales")[0][0]).toStrictEqual({
             ...propsData.colourScales,
             plhiv: {
                 type: ColourScaleType.Default,
@@ -484,7 +484,7 @@ describe("Choropleth component", () => {
         onEachFeatureFunction(mockFeature, mockLayer);
         expect(mockLayer.bindTooltip.mock.calls[0][0]).toEqual(`<div>
                             <strong>Area 1</strong>
-                            <br/>0.01
+                            <br/>1.00%
                         </div>`);
 
         const mockZeroValueFeature = {
@@ -497,7 +497,7 @@ describe("Choropleth component", () => {
         onEachFeatureFunction(mockZeroValueFeature, mockLayer);
         expect(mockLayer.bindTooltip.mock.calls[1][0]).toEqual(`<div>
                             <strong>Area 2</strong>
-                            <br/>0
+                            <br/>0.00%
                         </div>`);
 
     });

@@ -9,10 +9,12 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
-class TranslationTests : SecureIntegrationTests() {
+class TranslationTests : SecureIntegrationTests()
+{
 
     @Test
-    fun `returns translated error message when accept language is fr`() {
+    fun `returns translated error message when accept language is fr`()
+    {
         authorize()
         testRestTemplate.getForEntity<String>("/")
         val headers = HttpHeaders()
@@ -24,6 +26,6 @@ class TranslationTests : SecureIntegrationTests() {
         assertError(responseEntity,
                 HttpStatus.BAD_REQUEST,
                 "INVALID_FILE",
-                "Le fichier doit être de type PJNZ, zip, mais il est du type geojson,geojson,geojson.")
+                "Le fichier doit être de type PJNZ, zip, mais il est du type geojson.")
     }
 }

@@ -9,7 +9,7 @@ import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import ADRIntegration from "../../../app/components/adr/ADRIntegration.vue";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import {mutations, RootMutation} from "../../../app/store/root/mutations";
-import { getters } from "../../../app/store/root/getters";
+import {getters} from "../../../app/store/root/getters";
 
 describe("adr integration", () => {
 

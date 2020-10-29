@@ -34,7 +34,7 @@ export const initialStepperState = (): StepperState => {
             },
             {
                 number: 4,
-                textKey: "runModel"
+                textKey: "fitModel"
             },
             {
                 number: 5,
@@ -48,7 +48,7 @@ export const initialStepperState = (): StepperState => {
 };
 
 
-const namespaced: boolean = true;
+const namespaced = true;
 const existingState = localStorageManager.getState();
 
 export const stepper: Module<StepperState, RootState> = {

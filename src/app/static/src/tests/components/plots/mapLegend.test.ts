@@ -74,7 +74,7 @@ describe("Map legend component", () => {
                     colour: "interpolateGreys",
                     invert_scale: false
                 },
-                colourRange: { min: -0.45, max: 0}
+                colourRange: {min: -0.45, max: 0}
             }
         });
         const levels = rangeWrapper.findAll(".level");
@@ -115,16 +115,16 @@ describe("Map legend component", () => {
 
         const noScaleWrapper = shallowMount(MapLegend, {
             propsData: {
-                    metadata: {
-                        max: 10,
-                        min: 0,
-                        colour: "interpolateGreys",
-                        invert_scale: false
-                    },
-                    colourScale: null,
-                    colourRange
-                    },
-                });
+                metadata: {
+                    max: 10,
+                    min: 0,
+                    colour: "interpolateGreys",
+                    invert_scale: false
+                },
+                colourScale: null,
+                colourRange
+            },
+        });
         expect(noScaleWrapper.find("#adjust-scale").exists()).toBe(false);
     });
 

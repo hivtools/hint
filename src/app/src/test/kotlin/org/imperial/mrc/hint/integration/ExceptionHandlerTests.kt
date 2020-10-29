@@ -14,8 +14,6 @@ import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.helpers.tmpUploadDirectory
 import org.imperial.mrc.hint.helpers.unexpectedErrorRegex
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
 import org.postgresql.util.PSQLException
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.core.io.FileSystemResource
@@ -29,12 +27,14 @@ import org.springframework.web.context.request.WebRequest
 import java.io.File
 import java.lang.reflect.UndeclaredThrowableException
 
-class ExceptionHandlerTests : SecureIntegrationTests() {
+class ExceptionHandlerTests : SecureIntegrationTests()
+{
 
     private val mockException = mock<HttpMessageNotWritableException>()
 
     @Test
-    fun `route not found errors are correctly formatted`() {
+    fun `route not found errors are correctly formatted`()
+    {
         val entity = testRestTemplate.getForEntity("/nonsense/route/", String::class.java)
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
         JSONValidator().validateError(entity.body!!,
@@ -44,7 +44,8 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
     }
 
     @Test
-    fun `bad requests are correctly formatted`() {
+    fun `bad requests are correctly formatted`()
+    {
         val testFile = File("$tmpUploadDirectory/whatever.csv")
         testFile.parentFile.mkdirs()
         testFile.createNewFile()
@@ -64,7 +65,8 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
     }
 
     @Test
-    fun `unexpected errors are correctly formatted`() {
+    fun `unexpected errors are correctly formatted`()
+    {
         val mockErrorCodeGenerator = mock<ErrorCodeGenerator> {
             on { newCode() } doReturn "1234"
         }
@@ -82,7 +84,8 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
     }
 
     @Test
-    fun `unexpected error message is translated if language accept header is passed`() {
+    fun `unexpected error message is translated if language accept header is passed`()
+    {
         val mockErrorCodeGenerator = mock<ErrorCodeGenerator> {
             on { newCode() } doReturn "1234"
         }
@@ -103,7 +106,8 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
     }
 
     @Test
-    fun `unexpected error message is in english if no translations are available`() {
+    fun `unexpected error message is in english if no translations are available`()
+    {
         val mockErrorCodeGenerator = mock<ErrorCodeGenerator> {
             on { newCode() } doReturn "1234"
         }
@@ -124,7 +128,8 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
     }
 
     @Test
-    fun `translated error message falls back to key if no value is present`() {
+    fun `translated error message falls back to key if no value is present`()
+    {
         val sut = HintExceptionHandler(mock(), mock())
         val result = sut.handleHintException(HintException("badKey"), mock())
         JSONValidator().validateError(result.body!!.toString(),
@@ -133,7 +138,8 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
     }
 
     @Test
-    fun `does not include original message from arbitrary exceptions`() {
+    fun `does not include original message from arbitrary exceptions`()
+    {
         val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
         val result = sut.handleArbitraryException(PSQLException("some message", mock()), mock())
         JSONValidator().validateError(result.body!!.toString(),
@@ -143,7 +149,8 @@ class ExceptionHandlerTests : SecureIntegrationTests() {
     }
 
     @Test
-    fun `handles HintExceptions thrown inside UndeclaredThrowableException`() {
+    fun `handles HintExceptions thrown inside UndeclaredThrowableException`()
+    {
         val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
         val fakeError = UndeclaredThrowableException(HintException("some message", HttpStatus.BAD_REQUEST))
         val result = sut.handleArbitraryException(fakeError, mock())

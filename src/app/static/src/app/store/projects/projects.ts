@@ -13,7 +13,9 @@ export interface ProjectsState {
     loading: boolean,
     error: Error | null,
     versionUploadPending: boolean,
-    versionTime: Date | null
+    versionTime: Date | null,
+    cloneProjectError: Error | null,
+    cloningProject: boolean
 }
 
 export const initialProjectsState = (): ProjectsState => {
@@ -24,17 +26,17 @@ export const initialProjectsState = (): ProjectsState => {
         loading: false,
         error: null,
         versionUploadPending: false,
-        versionTime: null
+        versionTime: null,
+        cloneProjectError: null,
+        cloningProject: false
     }
 };
 
-const namespaced: boolean = true;
-
-const existingState = localStorageManager.getState();
+const namespaced = true;
 
 export const projects: Module<ProjectsState, RootState> = {
     namespaced,
-    state: {...initialProjectsState(), ...existingState && existingState.projects},
+    state: initialProjectsState(),
     mutations,
     actions
 };

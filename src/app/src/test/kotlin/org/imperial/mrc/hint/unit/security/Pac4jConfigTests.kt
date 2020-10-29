@@ -1,10 +1,10 @@
 package org.imperial.mrc.hint.unit.security
 
-import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.security.HintDbProfileService
 import org.imperial.mrc.hint.security.Pac4jConfig
 import org.imperial.mrc.hint.security.SecurePasswordEncoder
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.pac4j.core.client.BaseClient
 import org.pac4j.core.context.session.J2ESessionStore

@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ProjectVersion extends TableImpl<ProjectVersionRecord> {
 
-    private static final long serialVersionUID = 1314486779;
+    private static final long serialVersionUID = 343706417;
 
     /**
      * The reference instance of <code>public.project_version</code>
@@ -88,6 +88,11 @@ public class ProjectVersion extends TableImpl<ProjectVersionRecord> {
      * The column <code>public.project_version.deleted</code>.
      */
     public final TableField<ProjectVersionRecord, Boolean> DELETED = createField("deleted", org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+
+    /**
+     * The column <code>public.project_version.version_number</code>.
+     */
+    public final TableField<ProjectVersionRecord, Integer> VERSION_NUMBER = createField("version_number", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * Create a <code>public.project_version</code> table reference

@@ -10,7 +10,10 @@ describe("Bubble plot utils", () => {
         min: 0,
         max: 1,
         colour: "interpolateGreys",
-        invert_scale: false
+        invert_scale: false,
+        format: "0.00%",
+        scale: 1,
+        accuracy: null
     };
     const prev = {
         indicator: "prevalence",
@@ -19,7 +22,10 @@ describe("Bubble plot utils", () => {
         min: 0,
         max: 1,
         colour: "interpolateGreys",
-        invert_scale: false
+        invert_scale: false,
+        format: "0.00%",
+        scale: 1,
+        accuracy: null
     };
 
     const selectedFeatureIds = ["MWI_1_1", "MWI_1_2"];
@@ -61,11 +67,17 @@ describe("Bubble plot utils", () => {
     it("can get feature indicators from long format data", () => {
         const plhivLong = {
             indicator: "plhiv", value_column: "value", indicator_column: "indicator", indicator_value: "plhiv",
-            name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+            name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false,
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         };
         const prevLong = {
             indicator: "prevalence", value_column: "value", indicator_column: "indicator", indicator_value: "prev",
-            name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false
+            name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false,
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
         };
 
         const data = [

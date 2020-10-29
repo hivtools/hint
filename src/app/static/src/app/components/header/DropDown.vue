@@ -28,7 +28,7 @@
         right: boolean
     }
 
-    export default Vue.extend<Data, Methods, {}, keyof Props>({
+    export default Vue.extend<Data, Methods, unknown, keyof Props>({
         props: ["text", "right"],
         data(): Data {
             return {

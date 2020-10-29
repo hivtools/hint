@@ -13,7 +13,7 @@ export const initialErrorsState = (): ErrorsState => {
     }
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const errors: Module<ErrorsState, RootState> = {
     namespaced,

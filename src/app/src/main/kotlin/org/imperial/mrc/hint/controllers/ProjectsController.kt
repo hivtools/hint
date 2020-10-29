@@ -1,20 +1,19 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.db.ProjectRepository
+import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.exceptions.UserException
+import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.models.*
-import org.imperial.mrc.hint.models.SuccessResponse
-import org.imperial.mrc.hint.models.Project
-import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.bind.annotation.PostMapping
 
 @RestController
 class ProjectsController(private val session: Session,
                          private val versionRepository: VersionRepository,
-                         private val projectRepository: ProjectRepository)
+                         private val projectRepository: ProjectRepository,
+                         private val userLogic: UserLogic)
 {
     @PostMapping("/project/")
     @ResponseBody
@@ -23,7 +22,8 @@ class ProjectsController(private val session: Session,
         val projectId = projectRepository.saveNewProject(userId(), name)
 
         //Generate new version id and set it as the session variable, and save new version to db
-        val newVersionId = session.generateNewVersionId()
+        val newVersionId = session.generateVersionId()
+        session.setVersionId(newVersionId)
         versionRepository.saveVersion(newVersionId, projectId)
 
         val version = versionRepository.getVersion(newVersionId)
@@ -31,12 +31,30 @@ class ProjectsController(private val session: Session,
         return SuccessResponse(project).asResponseEntity()
     }
 
+    @PostMapping("/project/{projectId}/clone")
+    @ResponseBody
+    fun cloneProjectToUser(@PathVariable("projectId") projectId: Int,
+                           @RequestParam("emails") emails: List<String>): ResponseEntity<String>
+    {
+
+        val userIds = emails.map { userLogic.getUser(it)?.id ?: throw UserException("userDoesNotExist") }
+        val currentProject = projectRepository.getProject(projectId, userId())
+        userIds.forEach {
+            val newProjectId = projectRepository.saveNewProject(it, currentProject.name)
+            currentProject.versions.forEach {
+                versionRepository.cloneVersion(it.id, session.generateVersionId(), newProjectId)
+            }
+        }
+        return SuccessResponse(null).asResponseEntity()
+    }
+
     @PostMapping("/project/{projectId}/version/")
     fun newVersion(@PathVariable("projectId") projectId: Int,
                    @RequestParam("parent") parentVersionId: String): ResponseEntity<String>
     {
-        val newVersionId = session.generateNewVersionId()
-        versionRepository.copyVersion(parentVersionId, newVersionId,projectId, userId())
+        val newVersionId = session.generateVersionId()
+        session.setVersionId(newVersionId)
+        versionRepository.copyVersion(parentVersionId, newVersionId, projectId, userId())
         val newVersion = versionRepository.getVersion(newVersionId)
         return SuccessResponse(newVersion).asResponseEntity();
     }
@@ -49,6 +67,22 @@ class ProjectsController(private val session: Session,
     {
         versionRepository.saveVersionState(versionId, projectId, userId(), state)
         return EmptySuccessResponse.asResponseEntity()
+    }
+
+    @PostMapping("/project/{projectId}/version/{versionId}/promote")
+    @ResponseBody
+    fun promoteVersion(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("versionId") versionId: String,
+        @RequestParam("name") name: String): ResponseEntity<String>
+    {
+        val newProjectId = projectRepository.saveNewProject(userId(), name)
+        val newVersionId = session.generateVersionId()
+        versionRepository.promoteVersion(versionId, newVersionId, newProjectId, userId())
+
+        val version = versionRepository.getVersion(newVersionId)
+        val project = Project(newProjectId, name, listOf(version))
+        return SuccessResponse(project).asResponseEntity()
     }
 
     @GetMapping("project/{projectId}/version/{versionId}")
@@ -66,11 +100,15 @@ class ProjectsController(private val session: Session,
     fun getProjects(): ResponseEntity<String>
     {
         val projects =
-                if (session.userIsGuest()) {
+                if (session.userIsGuest())
+                {
                     listOf<Project>()
-                } else {
+                }
+                else
+                {
                     projectRepository.getProjects(userId())
                 }
+
         return SuccessResponse(projects).asResponseEntity()
     }
 
@@ -89,6 +127,25 @@ class ProjectsController(private val session: Session,
     {
         projectRepository.deleteProject(projectId, userId())
         return EmptySuccessResponse.asResponseEntity()
+    }
+
+    @GetMapping("/project/current")
+    @ResponseBody
+    fun getCurrentProject(): ResponseEntity<String>
+    {
+        val versionId = session.getVersionId()
+        val currentProject = if (versionRepository.versionExists(versionId, userId()))
+        {
+            val version = versionRepository.getVersion(versionId)
+            val project = projectRepository.getProjectFromVersionId(versionId, userId())
+            CurrentProject(project, version)
+        }
+        else
+        {
+            CurrentProject(null, null)
+        }
+
+        return SuccessResponse(currentProject).asResponseEntity()
     }
 
     private fun userId(): String

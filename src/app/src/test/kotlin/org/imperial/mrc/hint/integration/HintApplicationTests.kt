@@ -15,25 +15,42 @@ import org.springframework.util.LinkedMultiValueMap
 import java.io.File
 
 
-class HintApplicationTests : SecureIntegrationTests() {
+class HintApplicationTests : SecureIntegrationTests()
+{
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `unauthorized users can access index as guest`(isAuthorized: IsAuthorized) {
+    fun `all users can access index`(isAuthorized: IsAuthorized)
+    {
+        testAllUserAccess("/", isAuthorized)
+    }
 
-        val rootEntity = testRestTemplate.getForEntity<String>("/")
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `all users can access projects`(isAuthorized: IsAuthorized)
+    {
+        testAllUserAccess("/projects", isAuthorized)
+    }
+
+    private fun testAllUserAccess(url: String, isAuthorized: IsAuthorized)
+    {
+        val rootEntity = testRestTemplate.getForEntity<String>(url)
         assertThat(rootEntity.statusCode).isEqualTo(HttpStatus.OK)
-        if (isAuthorized == IsAuthorized.TRUE) {
+        if (isAuthorized == SecureIntegrationTests.IsAuthorized.TRUE)
+        {
             assertThat(rootEntity.body!!).doesNotContain("<title>Login</title>")
             assertThat(rootEntity.body!!).contains("var currentUser = \"test.user@example.com\"")
-        } else {
+        }
+        else
+        {
             assertThat(rootEntity.body!!).doesNotContain("<title>Login</title>")
             assertThat(rootEntity.body!!).contains("var currentUser = \"guest\"")
         }
     }
 
     @Test
-    fun `redirect back to login page on login with incorrect correct credentials`() {
+    fun `redirect back to login page on login with incorrect correct credentials`()
+    {
         val map = LinkedMultiValueMap<String, String>()
         map.add("username", "test.user@example.com")
         map.add("password", "badpassword")
@@ -51,19 +68,24 @@ class HintApplicationTests : SecureIntegrationTests() {
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `authorized users and guest user can access REST endpoints`(isAuthorized: IsAuthorized) {
+    fun `authorized users and guest user can access REST endpoints`(isAuthorized: IsAuthorized)
+    {
         val entity = testRestTemplate.getForEntity<String>("/baseline/pjnz/")
-        if (isAuthorized == IsAuthorized.TRUE) {
+        if (isAuthorized == IsAuthorized.TRUE)
+        {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
             assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
-        } else {
+        }
+        else
+        {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
             assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
         }
     }
 
     @Test
-    fun `can get static resources`() {
+    fun `can get static resources`()
+    {
         val testCssFile = File("static/public/css").listFiles()!!.find { it.extension == "css" }!!
         val path = testCssFile.path.split("/").drop(1).joinToString("/")
         val entity = testRestTemplate.getForEntity<String>("/$path")
@@ -72,7 +94,8 @@ class HintApplicationTests : SecureIntegrationTests() {
     }
 
     @Test
-    fun `static responses are gzipped`() {
+    fun `static responses are gzipped`()
+    {
         disableAutomaticDecompression()
         val headers = HttpHeaders()
         headers.set("Accept-Encoding", "gzip")
@@ -84,7 +107,8 @@ class HintApplicationTests : SecureIntegrationTests() {
     }
 
     @Test
-    fun `api responses are gzipped`() {
+    fun `api responses are gzipped`()
+    {
         authorize()
         disableAutomaticDecompression()
         testRestTemplate.getForEntity<String>("/")
@@ -93,7 +117,8 @@ class HintApplicationTests : SecureIntegrationTests() {
         assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
     }
 
-    private fun disableAutomaticDecompression() {
+    private fun disableAutomaticDecompression()
+    {
         // the apache http client decompresses the response and removes the content encoding header by default
         val client = HttpClients.custom()
                 .disableContentCompression()

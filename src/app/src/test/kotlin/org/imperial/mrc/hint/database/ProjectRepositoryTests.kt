@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.AssertionsForClassTypes
 import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
@@ -25,7 +26,8 @@ import java.time.temporal.ChronoUnit
 @ActiveProfiles(profiles = ["test"])
 @SpringBootTest
 @Transactional
-class ProjectRepositoryTests {
+class ProjectRepositoryTests
+{
     @Autowired
     private lateinit var sut: ProjectRepository
 
@@ -39,6 +41,83 @@ class ProjectRepositoryTests {
     private lateinit var dsl: DSLContext
 
     private val testEmail = "test@test.com"
+
+    @Test
+    fun `can get project`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        versionRepo.saveVersion("v1", projectId)
+        val project = sut.getProject(projectId, uid)
+        assertThat(project.name).isEqualTo("testProjectRepo")
+        assertThat(project.id).isEqualTo(projectId)
+        assertThat(project.versions.count()).isEqualTo(1)
+        assertThat(project.versions[0].versionNumber).isEqualTo(1)
+        assertThat(project.versions[0].id).isEqualTo("v1")
+        assertThat(project.versions[0].created).isNotNull()
+        assertThat(project.versions[0].updated).isNotNull()
+    }
+
+    @Test
+    fun `getProject throws project exception if project id does not exist`()
+    {
+
+        assertThatThrownBy {
+            sut.getProject(1234, "uid")
+        }.isInstanceOf(ProjectException::class.java)
+                .hasMessageContaining("projectDoesNotExist")
+    }
+
+    @Test
+    fun `getProject throws project exception if project id does not belong to user`()
+    {
+
+        val uid = setupUser()
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        assertThatThrownBy {
+            sut.getProject(projectId, "testProjectRepo")
+        }.isInstanceOf(ProjectException::class.java)
+                .hasMessageContaining("projectDoesNotExist")
+    }
+
+    @Test
+    fun `can get project from version id`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        versionRepo.saveVersion("v1", projectId)
+        val project = sut.getProjectFromVersionId("v1", uid)
+        assertThat(project.name).isEqualTo("testProjectRepo")
+        assertThat(project.id).isEqualTo(projectId)
+        assertThat(project.versions.count()).isEqualTo(1)
+        assertThat(project.versions[0].versionNumber).isEqualTo(1)
+        assertThat(project.versions[0].id).isEqualTo("v1")
+        assertThat(project.versions[0].created).isNotNull()
+        assertThat(project.versions[0].updated).isNotNull()
+    }
+
+    @Test
+    fun `getProjectFromVersionId throws project exception if project does not exist`()
+    {
+
+        assertThatThrownBy {
+            sut.getProjectFromVersionId("v1", "uid")
+        }.isInstanceOf(ProjectException::class.java)
+                .hasMessageContaining("projectDoesNotExist")
+    }
+
+    @Test
+    fun `getProjectFromVersionId throws project exception if project does not belong to user`()
+    {
+        val uid = setupUser()
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        assertThatThrownBy {
+            sut.getProjectFromVersionId("v1", "testProjectRepo")
+        }.isInstanceOf(ProjectException::class.java)
+                .hasMessageContaining("projectDoesNotExist")
+    }
 
     @Test
     fun `can save new project`()
@@ -71,7 +150,7 @@ class ProjectRepositoryTests {
 
         val projectId = sut.saveNewProject(uid, "testProjectRepo")
         val versionId1 = "testVersion"
-        val versionId2= "testVersion2"
+        val versionId2 = "testVersion2"
         versionRepo.saveVersion(versionId1, projectId)
         versionRepo.saveVersion(versionId2, projectId)
 
@@ -110,13 +189,13 @@ class ProjectRepositoryTests {
         val v2Id = insertProject("v2", userId)
         val anotherProject = insertProject("v2", anotherUserId) //should not be returned
 
-        insertVersion("v1s1", v1Id, ago_4h, ago_3h, false)
-        insertVersion("v1s2", v1Id, ago_2h, ago_2h, false)
+        insertVersion("v1s1", v1Id, ago_4h, ago_3h, false, 1)
+        insertVersion("v1s2", v1Id, ago_2h, ago_2h, false, 2)
 
-        insertVersion("deletedVersion", v2Id, ago_1h, now(), true) //should not be returned
-        insertVersion("v2s1", v2Id, ago_3h, ago_1h, false)
+        insertVersion("deletedVersion", v2Id, ago_1h, now(), true, 2) //should not be returned
+        insertVersion("v2s1", v2Id, ago_3h, ago_1h, false, 1)
 
-        insertVersion("anotherVersion", anotherProject, ago_1h, ago_1h, false)
+        insertVersion("anotherVersion", anotherProject, ago_1h, ago_1h, false, 3)
 
         val projects = sut.getProjects(userId)
         assertThat(projects.count()).isEqualTo(2)
@@ -128,6 +207,7 @@ class ProjectRepositoryTests {
         assertThat(p2.versions[0].id).isEqualTo("v2s1")
         assertThat(p2.versions[0].created).isEqualTo(format(ago_3h))
         assertThat(p2.versions[0].updated).isEqualTo(format(ago_1h))
+        assertThat(p2.versions[0].versionNumber).isEqualTo(1)
 
         val p1 = projects[1]
         assertThat(p1.id).isEqualTo(v1Id)
@@ -136,15 +216,17 @@ class ProjectRepositoryTests {
         assertThat(p1.versions[0].id).isEqualTo("v1s2")
         assertThat(p1.versions[0].created).isEqualTo(format(ago_2h))
         assertThat(p1.versions[0].updated).isEqualTo(format(ago_2h))
+        assertThat(p1.versions[0].versionNumber).isEqualTo(2)
         assertThat(p1.versions[1].id).isEqualTo("v1s1")
         assertThat(p1.versions[1].created).isEqualTo(format(ago_4h))
         assertThat(p1.versions[1].updated).isEqualTo(format(ago_3h))
+        assertThat(p1.versions[1].versionNumber).isEqualTo(1)
     }
 
-    private fun setupUser(): String
+    private fun setupUser(email: String = testEmail): String
     {
-        userRepo.addUser(testEmail, "pw")
-       return userRepo.getUser(testEmail)!!.id
+        userRepo.addUser(email, "pw")
+        return userRepo.getUser(email)!!.id
     }
 
     private fun format(time: Instant): String
@@ -163,15 +245,17 @@ class ProjectRepositoryTests {
         return saved[PROJECT.ID]
     }
 
-    private fun insertVersion(versionId: String, projectId: Int, created: Instant, updated: Instant, deleted: Boolean)
+    private fun insertVersion(versionId: String, projectId: Int, created: Instant, updated: Instant, deleted: Boolean,
+                              versionNumber: Int)
     {
         dsl.insertInto(PROJECT_VERSION,
                 PROJECT_VERSION.ID,
                 PROJECT_VERSION.PROJECT_ID,
                 PROJECT_VERSION.CREATED,
                 PROJECT_VERSION.UPDATED,
-                PROJECT_VERSION.DELETED)
-                .values(versionId, projectId, Timestamp.from(created), Timestamp.from(updated), deleted)
+                PROJECT_VERSION.DELETED,
+                PROJECT_VERSION.VERSION_NUMBER)
+                .values(versionId, projectId, Timestamp.from(created), Timestamp.from(updated), deleted, versionNumber)
                 .execute()
     }
 }

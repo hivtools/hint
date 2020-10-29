@@ -4,8 +4,9 @@ import {FilterOption, Error} from "./generated";
 export interface PayloadWithType<T> extends Payload {
     payload: T
 }
+
 export interface PartialFileUploadProps {
-    valid: Boolean,
+    valid: boolean,
     error: Error | null,
     existingFileName: string
 }
@@ -28,7 +29,7 @@ export interface LevelLabel {
 
 export type Dict<V> = { [k: string]: V }
 
-export type IndicatorValuesDict= Dict<IndicatorValues>;
+export type IndicatorValuesDict = Dict<IndicatorValues>;
 
 export type BubbleIndicatorValuesDict = Dict<BubbleIndicatorValues>;
 
@@ -66,13 +67,19 @@ export interface NumericRange {
 export interface Version {
     id: string,
     created: string,
-    updated: string
+    updated: string,
+    versionNumber: number
 }
 
 export interface Project {
     id: number,
     name: string,
     versions: Version[]
+}
+
+export interface CurrentProject {
+    project: Project | null,
+    version: Version | null
 }
 
 export interface VersionDetails {
@@ -104,7 +111,7 @@ export interface Dataset {
     id: string
     title: string
     url: string,
-    resources:  DatasetResourceSet
+    resources: DatasetResourceSet
 }
 
 export interface ADRSchemas {

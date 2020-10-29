@@ -30,7 +30,7 @@
                                @select="onFilterSelect(areaFilter, $event)">
                 </filter-select>
             </div>
-            <div :id="'filter-' + filter.id" v-for="filter in nonAreaFilters" class="form-group">
+            <div :id="'filter-' + filter.id" v-for="filter in nonAreaFilters" :key="filter.id" class="form-group">
                 <filter-select :value="getSelectedFilterValues(filter.id)"
                                :multiple="false"
                                :label="filter.label"
@@ -41,11 +41,13 @@
         <div id="chart" class="col-md-9">
             <l-map ref="map" style="height: 800px; width: 100%">
                 <template v-for="feature in currentFeatures">
-                    <l-geo-json ref=""
+                    <l-geo-json :key="feature.id"
+                                ref=""
                                 :geojson="feature"
                                 :optionsStyle="style">
                     </l-geo-json>
                     <l-circle-marker v-if="showBubble(feature)"
+                                     :key="feature.id"
                                      :lat-lng="[feature.properties.center_y, feature.properties.center_x]"
                                      :radius="getRadius(feature)"
                                      :fill-opacity="0.75"
@@ -87,7 +89,7 @@
         ColourScaleType
     } from "../../../store/plottingSelections/plottingSelections";
     import {getFeatureIndicators} from "./utils";
-    import {getIndicatorRange, toIndicatorNameLookup} from "../utils";
+    import {getIndicatorRange, toIndicatorNameLookup, formatOutput, findMetaData} from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
@@ -211,7 +213,7 @@
                     !!this.selections.colorIndicatorId && !!this.selections.sizeIndicatorId;
             },
             currentLevelFeatureIds() {
-                return this.currentFeatures.map(f => f.properties!!["area_id"]);
+                return this.currentFeatures.map(f => f.properties!["area_id"]);
             },
             sizeRange() {
                 if (!this.initialised) {
@@ -220,6 +222,7 @@
                 const sizeId = this.selections.sizeIndicatorId;
                 if (!this.fullIndicatorRanges.hasOwnProperty(sizeId)) {
                     // cache the result in the fullIndicatorRanges object for future lookups
+                    /* eslint vue/no-side-effects-in-computed-properties: "off" */
                     this.fullIndicatorRanges[sizeId] =
                         getIndicatorRange(this.chartdata, this.sizeIndicator)
                 }
@@ -235,19 +238,18 @@
                     case  ColourScaleType.DynamicFull:
                         if (!this.fullIndicatorRanges.hasOwnProperty(colorId)) {
                             // cache the result in the fullIndicatorRanges object for future lookups
+                            /* eslint vue/no-side-effects-in-computed-properties: "off" */
                             this.fullIndicatorRanges[colorId] =
                                 getIndicatorRange(this.chartdata, this.colorIndicator)
                         }
                         return this.fullIndicatorRanges[colorId];
                     case ColourScaleType.DynamicFiltered:
-                        const selectedCurrentLevelAreaIds = this.selectedAreaIds
-                            .filter(a => this.currentLevelFeatureIds.indexOf(a) > -1);
                         return getIndicatorRange(
                             this.chartdata,
                             this.colorIndicator,
                             this.nonAreaFilters,
                             this.selections.selectedFilterOptions,
-                            selectedCurrentLevelAreaIds
+                            this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
                         );
                     case ColourScaleType.Custom:
                         return {
@@ -290,7 +292,7 @@
                 });
 
                 this.features.forEach((feature: Feature) => {
-                    const adminLevel = parseInt(feature.properties!!["area_level"]); //Country (e.g. "MWI") is level 0
+                    const adminLevel = parseInt(feature.properties!["area_level"]); //Country (e.g. "MWI") is level 0
                     if (result[adminLevel]) {
                         result[adminLevel].push(feature);
                     }
@@ -311,7 +313,7 @@
                 return toIndicatorNameLookup(this.indicators)
             },
             areaFilter() {
-                return this.filters.find((f: Filter) => f.id == this.areaFilterId)!!;
+                return this.filters.find((f: Filter) => f.id == this.areaFilterId)!;
             },
             nonAreaFilters() {
                 return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
@@ -331,7 +333,7 @@
             },
             selectedAreaFeatures(): Feature[] {
                 if (this.selectedAreaFilterOptions && this.selectedAreaFilterOptions.length > 0) {
-                    return this.selectedAreaFilterOptions.map(o => this.getFeatureFromAreaId(o.id)!!);
+                    return this.selectedAreaFilterOptions.map(o => this.getFeatureFromAreaId(o.id)!);
                 }
                 return [];
             },
@@ -339,13 +341,13 @@
                 return this.areaFilter.options[0]
             },
             countryFeature(): Feature | null {
-                return this.countryFilterOption ? this.getFeatureFromAreaId(this.countryFilterOption.id)!! : null;
+                return this.countryFilterOption ? this.getFeatureFromAreaId(this.countryFilterOption.id)! : null;
             },
             colorIndicator(): ChoroplethIndicatorMetadata {
-                return this.indicators.find(i => i.indicator == this.selections.colorIndicatorId)!!;
+                return this.indicators.find(i => i.indicator == this.selections.colorIndicatorId)!;
             },
             sizeIndicator(): ChoroplethIndicatorMetadata {
-                return this.indicators.find(i => i.indicator == this.selections.sizeIndicatorId)!!;
+                return this.indicators.find(i => i.indicator == this.selections.sizeIndicatorId)!;
             },
             colourIndicatorScale(): ColourScaleSettings | null {
                 const current = this.colourScales[this.selections.colorIndicatorId];
@@ -368,16 +370,16 @@
                 }
             },
             showBubble(feature: Feature) {
-                return !!this.featureIndicators[feature.properties!!.area_id] &&
-                    !!this.featureIndicators[feature.properties!!.area_id]
-                    && !!this.featureIndicators[feature.properties!!.area_id].value
-                    && !!this.featureIndicators[feature.properties!!.area_id].sizeValue
+                return !!this.featureIndicators[feature.properties!.area_id] &&
+                    !!this.featureIndicators[feature.properties!.area_id]
+                    && !!this.featureIndicators[feature.properties!.area_id].value
+                    && !!this.featureIndicators[feature.properties!.area_id].sizeValue
             },
             getRadius: function (feature: Feature) {
-                return this.featureIndicators[feature.properties!!.area_id].radius;
+                return this.featureIndicators[feature.properties!.area_id].radius;
             },
             getColor: function (feature: Feature) {
-                return this.featureIndicators[feature.properties!!.area_id].color;
+                return this.featureIndicators[feature.properties!.area_id].color;
             },
             getTooltip: function (feature: Feature) {
                 const area_id = feature.properties && feature.properties["area_id"];
@@ -386,15 +388,18 @@
                 const values = this.featureIndicators[area_id];
                 const colorIndicator = this.selections.colorIndicatorId;
                 const sizeIndicator = this.selections.sizeIndicatorId;
-                const colorValue = values && values!!.value;
-                const sizeValue = values && values!!.sizeValue;
+                const colorValue = values && values!.value;
+                const sizeValue = values && values!.sizeValue;
 
                 const colorIndicatorName = this.indicatorNameLookup[colorIndicator];
                 const sizeIndicatorName = this.indicatorNameLookup[sizeIndicator];
+
+                const colorIndicatorMetaData = findMetaData(this.indicators, this.selections.colorIndicatorId);
+                const sizeIndicatorMetaData = findMetaData(this.indicators, this.selections.sizeIndicatorId);
                 return `<div>
                                 <strong>${area_name}</strong>
-                                <br/>${colorIndicatorName}: ${colorValue}
-                                <br/>${sizeIndicatorName}: ${sizeValue}
+                                <br/>${colorIndicatorName}: ${formatOutput(colorValue, colorIndicatorMetaData!.format, colorIndicatorMetaData!.scale, colorIndicatorMetaData!.accuracy)}
+                                <br/>${sizeIndicatorName}: ${formatOutput(sizeValue, sizeIndicatorMetaData!.format, sizeIndicatorMetaData!.scale, sizeIndicatorMetaData!.accuracy)}
                             </div>`;
             },
             getSelectedFilterValues(filterId: string) {
@@ -419,7 +424,7 @@
                 this.$emit("update", newSelections)
             },
             getFeatureFromAreaId(areaId: string): Feature {
-                return this.features.find((f: Feature) => f.properties!!.area_id == areaId)!!;
+                return this.features.find((f: Feature) => f.properties!.area_id == areaId)!;
             },
             normalizeIndicators(node: ChoroplethIndicatorMetadata) {
                 return {id: node.indicator, label: node.name};
@@ -427,8 +432,7 @@
             updateColourScale: function (colourScale: ColourScaleSettings) {
                 const newColourScales = {...this.colourScales};
                 newColourScales[this.selections.colorIndicatorId] = colourScale;
-
-                this.$emit("updateColourScales", newColourScales);
+                this.$emit("update-colour-scales", newColourScales);
             },
         },
         watch:

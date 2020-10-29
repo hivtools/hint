@@ -8,7 +8,8 @@ import {emptyState, storeOptions, RootState} from "../../app/root";
 import {mockErrorsState, mockProjectsState, mockRootState} from "../mocks";
 import {mutations as versionsMutations} from "../../app/store/projects/mutations";
 import {mutations as errorMutations} from "../../app/store/errors/mutations";
-import { getters } from "../../app/store/root/getters";
+import {getters} from "../../app/store/root/getters";
+import {expectTranslated} from "../testHelpers";
 
 const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState> = {}) => {
     const store = new Vuex.Store({
@@ -20,7 +21,7 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
                 getters: {
                     laterCompleteSteps: () => [{number: 2, textKey: "uploadSurvey"},
                         {number: 3, textKey: "modelOptions"},
-                        {number: 4, textKey: "runModel"}]
+                        {number: 4, textKey: "fitModel"}]
                 }
             },
             errors: {
@@ -45,48 +46,61 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
 describe("Reset confirmation modal", () => {
 
     it("renders as expected for guest user", () => {
+        const store = createStore(jest.fn(), {currentUser: 'guest'});
         const rendered = mount(ResetConfirmation, {
             propsData: {
                 continueEditing: jest.fn(),
                 cancelEditing: jest.fn()
             },
-            store: createStore(jest.fn(), {currentUser: 'guest'})
+            store
         });
 
-        expect(rendered.find("h4").text()).toBe("Have you saved your work?");
-        expect(rendered.find("p").text())
-            .toContain("Changing this will result in the following steps being discarded:");
-        expect(rendered.findAll("p").at(1).text()).toBe("You may want to save your work before continuing.");
+        expectTranslated(rendered.find("h4"), "Have you saved your work?",
+            "Avez-vous sauvegardé votre travail ?", store);
+        expectTranslated(rendered.findAll("p").at(0),
+            "Changing this will result in the following steps being discarded:",
+            "Si vous modifiez ce paramètre, les étapes suivantes seront abandonnées :", store);
+        expectTranslated(rendered.findAll("p").at(1),
+            "You may want to save your work before continuing.",
+            "Vous devriez peut-être sauvegarder votre travail avant de poursuivre.", store);
 
         expectRenderedSteps(rendered);
 
         const buttons = rendered.findAll("button");
-        expect(buttons.at(0).text()).toBe("Discard these steps and keep editing");
-        expect(buttons.at(1).text()).toBe("Cancel editing so I can save my work");
+        expectTranslated(buttons.at(0), "Discard these steps and keep editing",
+            "Ignorer ces étapes et poursuivre la modification", store);
+        expectTranslated(buttons.at(1), "Cancel editing so I can save my work",
+            "Annuler l'édition pour que je puisse sauvegarder mon travail", store);
 
         expect(rendered.find(LoadingSpinner).exists()).toBe(false);
     });
 
     it("renders as expected for logged in user", () => {
+        const store = createStore();
         const rendered = mount(ResetConfirmation, {
             propsData: {
                 continueEditing: jest.fn(),
                 cancelEditing: jest.fn()
             },
-            store: createStore()
+            store
         });
 
-        expect(rendered.find("h4").text()).toBe("Save version?");
-        expect(rendered.find("p").text())
-            .toContain("Changing this will result in the following steps being discarded:");
-        expect(rendered.findAll("p").at(1).text())
-            .toBe("These steps will automatically be saved in a version. You will be able to reload this version from the Projects page.");
+        expectTranslated(rendered.find("h4"), "Save version?",
+            "Sauvegarder la version?", store);
+        expectTranslated(rendered.findAll("p").at(0),
+            "Changing this will result in the following steps being discarded:",
+            "Si vous modifiez ce paramètre, les étapes suivantes seront abandonnées :", store);
+        expectTranslated(rendered.findAll("p").at(1),
+            "These steps will automatically be saved in a version. You will be able to reload this version from the Projects page.",
+            "Ces étapes seront automatiquement sauvegardées dans une version. Vous pourrez recharger cette version depuis la page Projets.",
+            store);
 
         expectRenderedSteps(rendered);
 
         const buttons = rendered.findAll("button");
-        expect(buttons.at(0).text()).toBe("Save version and keep editing");
-        expect(buttons.at(1).text()).toBe("Cancel editing");
+        expectTranslated(buttons.at(0), "Save version and keep editing",
+            "Sauvegarder la version et continuer à modifier", store);
+        expectTranslated(buttons.at(1), "Cancel editing", "Annuler l'édition", store);
 
         expect(rendered.find(LoadingSpinner).exists()).toBe(false);
     });
@@ -140,7 +154,7 @@ describe("Reset confirmation modal", () => {
         expect(mockNewVersion.mock.calls.length).toBe(1);
     });
 
-    it("when currentVersion changes, sets waitingForVersion to false and invokes continue editing, if waitingForVersion is true",  async () => {
+    it("when currentVersion changes, sets waitingForVersion to false and invokes continue editing, if waitingForVersion is true", async () => {
         const mockContinueEditing = jest.fn();
         const rendered = mount(ResetConfirmation, {
             data() {
@@ -238,11 +252,15 @@ describe("Reset confirmation modal", () => {
     });
 
     const expectRenderedSteps = (rendered: Wrapper<any>) => {
+        const store = rendered.vm.$store;
         const steps = rendered.findAll("li");
         expect(steps.length).toBe(3);
-        expect(steps.at(0).text()).toBe("Step 2: Upload survey and programme data");
-        expect(steps.at(1).text()).toBe("Step 3: Model options");
-        expect(steps.at(2).text()).toBe("Step 4: Run model");
+        expectTranslated(steps.at(0), "Step 2: Upload survey and programme data",
+            "Étape 2: Télécharger les données d'enquête et de programme", store);
+        expectTranslated(steps.at(1), "Step 3: Model options",
+            "Étape 3: Options des modèles", store);
+        expectTranslated(steps.at(2), "Step 4: Fit model",
+            "Étape 4: Ajuster le modèle", store);
     };
 
 });

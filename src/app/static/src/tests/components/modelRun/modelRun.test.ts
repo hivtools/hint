@@ -21,6 +21,7 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {expectTranslated} from "../../testHelpers";
 
 const localVue = createLocalVue();
 
@@ -71,7 +72,7 @@ describe("Model run component", () => {
         const store = createStore();
         const wrapper = shallowMount(ModelRun, {store, localVue});
         const button = wrapper.find("button");
-        expect(button.text()).toBe("Run model");
+        expect(button.text()).toBe("Fit model");
         button.trigger("click");
 
         setTimeout(() => {
@@ -161,7 +162,8 @@ describe("Model run component", () => {
 
         const wrapper = mount(ModelRun, {store, localVue});
         expect(wrapper.find(Modal).props().open).toBe(true);
-        expect(wrapper.find(Modal).find("h4").text()).toBe("Initialising model run");
+        expectTranslated(wrapper.find(Modal).find("h4"), "Initialising model fitting",
+            "Initialisation de l'ajustement du modèle", store);
         expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.find(Modal).findAll(ProgressBar).length).toBe(0);
     });
@@ -246,7 +248,8 @@ describe("Model run component", () => {
             status: {id: "1234", success: true, done: true} as ModelStatusResponse
         });
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.find("#model-run-complete").text()).toBe("Model run complete");
+        expectTranslated(wrapper.find("#model-run-complete"), "Model fitting complete",
+            "Ajustement du modèle terminé", store);
         expect(wrapper.findAll(Tick).length).toBe(1);
     });
 
@@ -285,7 +288,7 @@ describe("Model run component", () => {
         expect(errorAlerts.length).toBe(0);
     });
 
-    it("cancel run button invokes action to cancel model run", (done) => {
+    it("cancel fitting button invokes action to cancel model fitting", (done) => {
 
         const store = createStore({
             status: mockModelStatusResponse({id: "123", done: false}),

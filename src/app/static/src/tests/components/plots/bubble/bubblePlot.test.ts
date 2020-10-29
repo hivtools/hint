@@ -77,8 +77,8 @@ describe("BubblePlot component", () => {
         expect(circles.at(0).props().radius).toEqual(getRadius(10, 1, 20, 10, 70));
         expect(circles.at(0).find(LTooltip).props().content).toEqual(`<div>
                             <strong>North West</strong>
-                            <br/>Prevalence: 0.1
-                            <br/>PLHIV: 10
+                            <br/>Prevalence: 10.00%
+                            <br/>PLHIV: 100
                         </div>`);
         const meta = propsData.indicators[1];
         const colourRange = {min: meta.min, max: meta.max};
@@ -90,8 +90,8 @@ describe("BubblePlot component", () => {
         expect(circles.at(1).props().radius).toEqual(getRadius(20, 1, 20, 10, 70));
         expect(circles.at(1).find(LTooltip).props().content).toEqual(`<div>
                             <strong>North East</strong>
-                            <br/>Prevalence: 0.2
-                            <br/>PLHIV: 20
+                            <br/>Prevalence: 20.00%
+                            <br/>PLHIV: 200
                         </div>`);
         color = getColor(0.2, meta, colourRange);
         expect(circles.at(1).props().color).toEqual(color);
@@ -558,7 +558,7 @@ describe("BubblePlot component", () => {
         const newColourScale = {type: ColourScaleType.DynamicFiltered, customMin: -5, customMax: 5};
         legend.vm.$emit("update", newColourScale);
 
-        expect(wrapper.emitted("updateColourScales").length).toBe(1);
-        expect(wrapper.emitted("updateColourScales")[0][0]).toStrictEqual({prevalence: newColourScale});
+        expect(wrapper.emitted("update-colour-scales").length).toBe(1);
+        expect(wrapper.emitted("update-colour-scales")[0][0]).toStrictEqual({prevalence: newColourScale});
     });
 });

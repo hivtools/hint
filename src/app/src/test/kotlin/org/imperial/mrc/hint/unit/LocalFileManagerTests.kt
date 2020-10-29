@@ -19,7 +19,8 @@ import org.springframework.mock.web.MockMultipartFile
 import java.io.BufferedInputStream
 import java.io.File
 
-class LocalFileManagerTests {
+class LocalFileManagerTests
+{
 
     private val tmpUploadDirectory = "tmp"
 
@@ -32,16 +33,18 @@ class LocalFileManagerTests {
     }
 
     private val allFilesMap = FileType.values().associate {
-        it.toString() to VersionFile("${it}hash", "${it}filename")
+        it.toString() to VersionFile("${it}hash", "${it}filename", false)
     }
 
     @AfterEach
-    fun tearDown() {
+    fun tearDown()
+    {
         File(tmpUploadDirectory).deleteRecursively()
     }
 
     @Test
-    fun `saves file if file is new and returns details`() {
+    fun `saves file if file is new and returns details`()
+    {
 
         val mockStateRepository = mock<VersionRepository> {
             on { saveNewHash(any()) } doReturn true
@@ -57,10 +60,12 @@ class LocalFileManagerTests {
         assertThat(file.path).isEqualTo("tmp/C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
         assertThat(file.filename).isEqualTo("some-file-name.pjnz")
         assertThat(file.hash).isEqualTo("C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
+        assertThat(file.fromADR).isEqualTo(false)
     }
 
     @Test
-    fun `does not save file if file matches an existing hash and returns details`() {
+    fun `does not save file if file matches an existing hash and returns details`()
+    {
 
         val mockStateRepository = mock<VersionRepository> {
             on { saveNewHash(any()) } doReturn false
@@ -75,10 +80,12 @@ class LocalFileManagerTests {
         assertThat(file.path).isEqualTo("tmp/C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
         assertThat(file.filename).isEqualTo("some-file-name.pjnz")
         assertThat(file.hash).isEqualTo("C7FF8823DAD31FE80CBB73D9B1FB779E.pjnz")
+        assertThat(file.fromADR).isEqualTo(false)
     }
 
     @Test
-    fun `saves file from ADR if file is new and returns details`() {
+    fun `saves file from ADR if file is new and returns details`()
+    {
 
         val mockStateRepository = mock<VersionRepository> {
             on { saveNewHash(any()) } doReturn true
@@ -97,10 +104,12 @@ class LocalFileManagerTests {
         assertThat(file.path).isEqualTo("tmp/9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.filename).isEqualTo("name.csv")
         assertThat(file.hash).isEqualTo("9473FDD0D880A43C21B7778D34872157.csv")
+        assertThat(file.fromADR).isEqualTo(true)
     }
 
     @Test
-    fun `does not save file from ADR if file matches an existing hash and returns details`() {
+    fun `does not save file from ADR if file matches an existing hash and returns details`()
+    {
 
         val mockStateRepository = mock<VersionRepository> {
             on { saveNewHash(any()) } doReturn false
@@ -117,14 +126,16 @@ class LocalFileManagerTests {
         assertThat(file.path).isEqualTo("tmp/9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.filename).isEqualTo("name.csv")
         assertThat(file.hash).isEqualTo("9473FDD0D880A43C21B7778D34872157.csv")
+        assertThat(file.fromADR).isEqualTo(true)
     }
 
     @Test
-    fun `gets file if it exists`() {
+    fun `gets file if it exists`()
+    {
 
         val mockStateRepository = mock<VersionRepository> {
             on { saveNewHash(any()) } doReturn true
-            on { getVersionFile(any(), any()) } doReturn VersionFile("test", "filename")
+            on { getVersionFile(any(), any()) } doReturn VersionFile("test", "filename", false)
         }
 
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock())
@@ -136,7 +147,8 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `returns null if no file exists`() {
+    fun `returns null if no file exists`()
+    {
 
         val sut = LocalFileManager(mockSession, mock(), mockProperties, mock())
         assertThat(sut.getFile(FileType.Survey))
@@ -144,7 +156,8 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `gets all file paths`() {
+    fun `gets all file paths`()
+    {
 
         val stateRepo = mock<VersionRepository> {
             on { getHashesForVersion("fake-id") } doReturn mapOf("survey" to "hash.csv")
@@ -158,7 +171,8 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `gets all files`() {
+    fun `gets all files`()
+    {
 
         val stateRepo = mock<VersionRepository> {
             on { getVersionFiles("fake-id") } doReturn allFilesMap
@@ -177,7 +191,8 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `only gets files that match the given includes`() {
+    fun `only gets files that match the given includes`()
+    {
 
         val stateRepo = mock<VersionRepository> {
             on { getVersionFiles("fake-id") } doReturn allFilesMap
@@ -191,12 +206,13 @@ class LocalFileManagerTests {
     }
 
     @Test
-    fun `sets files for session`() {
+    fun `sets files for session`()
+    {
 
         val stateRepo = mock<VersionRepository>()
 
         val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
-        val files = mapOf("pjnz" to VersionFile("hash1", "file1"))
+        val files = mapOf("pjnz" to VersionFile("hash1", "file1", false))
         sut.setAllFiles(files)
 
         verify(stateRepo).setFilesForVersion("fake-id", files)

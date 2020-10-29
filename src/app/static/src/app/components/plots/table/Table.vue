@@ -28,12 +28,14 @@
                     <div class="small">{{ data.item.areaHierarchy }}</div>
                 </template>
                 <template v-for="i in indicators" v-slot:[`cell(${i.indicator})`]="data">
-                    <div>{{ data.item[i.indicator] }}</div>
-                    <div class="small" v-if="data.item[`${i.indicator}_lower`]">
-                        ({{ data.item[`${i.indicator}_lower`] }} – {{ data.item[`${i.indicator}_upper`] }})
+                    <div :key="i.indicator">
+                        <div class="value">{{ data.item[i.indicator] }}</div>
+                        <div class="small" v-if="data.item[`${i.indicator}_lower`]">
+                            ({{ data.item[`${i.indicator}_lower`] }} – {{ data.item[`${i.indicator}_upper`] }})
+                        </div>
                     </div>
                 </template>
-                <template v-slot:emptyfiltered="scope">
+                <template v-slot:emptyfiltered>
                     <p class="text-center" v-translate="'noRecords'"></p>
                 </template>
             </b-table>
@@ -45,7 +47,7 @@
 <script lang="ts">
     import Vue from "vue";
     import i18next from "i18next";
-    import {findPath, iterateDataValues} from "../utils";
+    import {findPath, iterateDataValues, formatOutput} from "../utils";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {Dict, Filter} from "../../../types";
     import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
@@ -116,7 +118,7 @@
         }
     }
 
-    export default Vue.extend<{}, {}, Computed, Props>({
+    export default Vue.extend<unknown, unknown, Computed, Props>({
         name: "table-view",
         props: props,
         data() {
@@ -136,7 +138,7 @@
                 return this.filters.filter((f: Filter) => f.id != this.areaFilterId);
             },
             areaFilter() {
-                return this.filters.find((f: Filter) => f.id == this.areaFilterId)!!;
+                return this.filters.find((f: Filter) => f.id == this.areaFilterId)!;
             },
             flattenedAreas() {
                 if (this.selections.detail === 0 || !this.selections.detail) {
@@ -145,7 +147,8 @@
                 return this.areaFilter ? flattenOptions(this.areaFilter.options) : {};
             },
             selectedAreaIds() {
-                const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+                const selectedAreaIdSet =
+                    flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
                 const areaArray = Array.from(selectedAreaIdSet);
                 if (this.selections.detail === 0) {
                     return [areaArray[0]]
@@ -178,8 +181,7 @@
                                 filterValues[f.id] = row[f.column_id]
                             }
                         });
-                        const upper = row.upper
-                        const lower = row.lower
+                        const {upper, lower} = row
                         filteredValues.push({areaId, filterValues, indicatorMeta, value, upper, lower});
                     });
                 const displayRows: Dict<any> = {};
@@ -199,9 +201,11 @@
                             ...filterLabels,
                         }
                     }
-                    displayRows[key][current.indicatorMeta.indicator] = current.value;
-                    current.lower ? displayRows[key][`${current.indicatorMeta.indicator}_lower`] = current.lower : '';
-                    current.upper ? displayRows[key][`${current.indicatorMeta.indicator}_upper`] = current.upper : '';
+                    const {value, upper, lower} = current
+                    const { indicator, format, scale, accuracy } = current.indicatorMeta
+                    displayRows[key][indicator] = formatOutput(value, format, scale, accuracy);
+                    displayRows[key][`${indicator}_lower`] = lower ? formatOutput(lower, format, scale, accuracy): '';
+                    displayRows[key][`${indicator}_upper`] = upper ? formatOutput(upper, format, scale, accuracy): '';
                 });
                 return Object.values(displayRows);
             },

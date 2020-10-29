@@ -7,9 +7,11 @@ import org.springframework.http.ResponseEntity
 class ErrorDetail(private val httpStatus: HttpStatus,
                   val detail: String,
                   val error: String = defaultError,
-                  val trace: List<String>? = null) {
+                  val trace: List<String>? = null)
+{
 
-    companion object {
+    companion object
+    {
         const val defaultError = "OTHER_ERROR"
     }
 

@@ -3,7 +3,7 @@
         <div class="content">
             <div class="alert alert-danger alert-dismissible fade-show" role="alert">
                 <p v-for="(error, index) in errors" :key="index">
-                    {{error}}
+                    {{ error }}
                 </p>
                 <button type="button" class="close" @click="dismissAll">
                     <span aria-hidden="true">&times;</span>
@@ -39,7 +39,7 @@
 
     }
 
-    export default Vue.extend<{}, Methods, Computed, Props>({
+    export default Vue.extend<unknown, Methods, Computed, Props>({
         name: "Errors",
         props: {
             title: String

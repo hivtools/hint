@@ -41,7 +41,9 @@ const propsData = {
         "min": 0,
         "max": 0.5,
         "colour": "interpolateMagma",
-        "invert_scale": true
+        "invert_scale": true,
+        "format": "0.00%",
+        "scale": 1
     }],
     tabledata: [
         ...testData.chartdata,
@@ -86,7 +88,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.1');
+        expect(wrapper.findAll('td').at(3).text()).toBe('10.00%');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
     it('renders correct markup when male selected', () => {
@@ -106,7 +108,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Male');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.1');
+        expect(wrapper.findAll('td').at(3).text()).toBe('10.00%');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
     it('renders correct markup when detail set to 3', () => {
@@ -123,7 +125,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.01');
+        expect(wrapper.findAll('td').at(3).text()).toBe('1.00%');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
     it('renders correct markup when no data are available for selected filters', () => {
@@ -148,7 +150,7 @@ describe('Table from testdata', () => {
             },
             indicators: [{
                 ...propsData.indicators,
-                indicator: "plhiv", value_column: "plhiv", name: "PLHIV"
+                indicator: "plhiv", value_column: "plhiv", name: "PLHIV", format: "0,0", scale: 10
             }]
         });
         expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
@@ -158,7 +160,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('PLHIV (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('10');
+        expect(wrapper.findAll('td').at(3).text()).toBe('100');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
     it('renders correct markup when 3.2 is selected only', () => {
@@ -201,7 +203,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.3');
+        expect(wrapper.findAll('td').at(3).text()).toBe('30.00%');
         expect(wrapper.findAll('tr').length).toBe(2);
     });
     it('renders correct markup when 3.2 is selected only and detail is set to 3', () => {
@@ -245,7 +247,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0');
+        expect(wrapper.findAll('td').at(3).text()).toBe('0.00%');
         expect(wrapper.findAll('tr').length).toBe(2);
     });
     it('renders correct markup when detail set to 0', () => {
@@ -291,7 +293,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.5');
+        expect(wrapper.findAll('td').at(3).text()).toBe('50.00%');
         expect(wrapper.findAll('tr').length).toBe(2);
     });
     it('renders correct markup when detail set to null', () => {
@@ -356,7 +358,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.5');
+        expect(wrapper.findAll('td').at(3).text()).toBe('50.00%');
         expect(wrapper.findAll('tr').length).toBe(2);
     });
     it('renders correct markup when detail set to 0 but 3.2 is selected', () => {
@@ -410,7 +412,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.5');
+        expect(wrapper.findAll('td').at(3).text()).toBe('50.00%');
         expect(wrapper.findAll('tr').length).toBe(2);
     });
 
@@ -423,7 +425,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sexe (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.1');
+        expect(wrapper.findAll('td').at(3).text()).toBe('10.00%');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
     it('renders correct markup when sorting by HIV prevalence ascending', () => {
@@ -436,7 +438,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Descending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.1');
+        expect(wrapper.findAll('td').at(3).text()).toBe('10.00%');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
     it('renders correct markup when sorting by HIV prevalence descending', () => {
@@ -449,7 +451,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.3');
+        expect(wrapper.findAll('td').at(3).text()).toBe('30.00%');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
     it('renders correct markup when filtering by 4.2', () => {
@@ -462,7 +464,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.3');
+        expect(wrapper.findAll('td').at(3).text()).toBe('30.00%');
         expect(wrapper.findAll('tr').length).toBe(2);
     });
     it('clicking clear button clears filter and resets table', () => {
@@ -476,7 +478,7 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.1');
+        expect(wrapper.findAll('td').at(3).text()).toBe('10.00%');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
 
@@ -487,7 +489,7 @@ describe('Table from testdata', () => {
                     ...propsData.tabledata[0], upper: 100, lower: 0
                 },
                 {
-                    ...propsData.tabledata[1], upper: 99, lower: 1
+                    ...propsData.tabledata[1], upper: 0.9, lower: 0.01
                 },
                 {
                     ...propsData.tabledata[2], upper: 98, lower: 2
@@ -511,8 +513,8 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).find("div").text()).toBe('0.1');
-        expect(wrapper.findAll('td').at(3).find(".small").text()).toBe('(1 – 99)');
+        expect(wrapper.findAll('td').at(3).find(".value").text()).toBe('10.00%');
+        expect(wrapper.findAll('td').at(3).find(".small").text()).toBe('(1.00% – 90.00%)');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
 })

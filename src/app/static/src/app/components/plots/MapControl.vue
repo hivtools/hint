@@ -85,13 +85,15 @@
             }
         },
         computed: {
-            detailOptions: function(){
-               return this.levelLabels.filter(l => l.display).map(l => {
-                        return {id: l.id, label: l.area_level_label}
-                    });
+            detailOptions: function () {
+                return this.levelLabels.filter(l => l.display).map(l => {
+                    return {id: l.id, label: l.area_level_label}
+                });
             },
-            indicatorOptions: function() {
-                return this.indicatorsMetadata.map((i: ChoroplethIndicatorMetadata) => { return {id: i.indicator, label: i.name}; });
+            indicatorOptions: function () {
+                return this.indicatorsMetadata.map((i: ChoroplethIndicatorMetadata) => {
+                    return {id: i.indicator, label: i.name};
+                });
             }
         },
         methods: {

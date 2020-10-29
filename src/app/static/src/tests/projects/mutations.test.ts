@@ -1,5 +1,6 @@
 import {mockProjectsState} from "../mocks";
 import {mutations, ProjectsMutations} from "../../app/store/projects/mutations";
+import {router} from '../../app/router';
 
 describe("Projects mutations", () => {
     const testNow = Date.now();
@@ -8,7 +9,7 @@ describe("Projects mutations", () => {
     const mockProject = {
         id: 1,
         name: "v1",
-        versions: [{id: "OLD VERSION", created: "old created time", updated: "old updated time"}]
+        versions: [{id: "OLD VERSION", created: "old created time", updated: "old updated time", versionNumber: 1}]
     };
 
     const consoleSpy = jest.fn();
@@ -19,6 +20,25 @@ describe("Projects mutations", () => {
 
     afterEach(() => {
         (console.error as jest.Mock).mockClear();
+    });
+
+    it("sets cloningProject and resets error", () => {
+        const state = mockProjectsState({cloneProjectError: "test error" as any});
+
+        mutations[ProjectsMutations.CloningProject](state, {payload: true});
+        expect(state.cloningProject).toBe(true);
+        expect(state.cloneProjectError).toBe(null);
+
+        mutations[ProjectsMutations.CloningProject](state, {payload: null});
+        expect(state.cloningProject).toBe(false);
+    });
+
+    it("sets cloneProjectError and resets cloningProject", () => {
+        const state = mockProjectsState({cloningProject: true});
+
+        mutations[ProjectsMutations.CloneProjectError](state, {payload: "error"});
+        expect(state.cloningProject).toBe(false);
+        expect(state.cloneProjectError).toBe("error");
     });
 
     it("sets loading", () => {
@@ -80,5 +100,15 @@ describe("Projects mutations", () => {
         mutations[ProjectsMutations.ClearCurrentVersion](state);
         expect(state.currentProject).toBeNull();
         expect(state.currentVersion).toBeNull();
+    });
+
+    it("pushes router to projects if logged in user and currentProject not set", () => {
+        const state = mockProjectsState({currentProject: null, currentVersion: null});
+        const mockRouterPush = jest.fn();
+        router.push = mockRouterPush;
+        mutations[ProjectsMutations.SetCurrentProject](state, {payload: false})
+
+        expect(mockRouterPush.mock.calls.length).toBe(1);
+        expect(mockRouterPush.mock.calls[0][0]).toBe("/projects");
     });
 });

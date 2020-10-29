@@ -6,7 +6,7 @@ import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
 import {mockFile, mockRootState} from "../../mocks";
 import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import { getters } from "../../../app/store/root/getters";
+import {getters} from "../../../app/store/root/getters";
 
 declare let currentUser: string;
 currentUser = "guest";
@@ -15,7 +15,7 @@ describe("File upload component", () => {
 
     const mockGetters = {
         editsRequireConfirmation: () => true,
-        laterCompleteSteps: () => [{number: 4, textKey: "runModel"}]
+        laterCompleteSteps: () => [{number: 4, textKey: "fitModel"}]
     };
 
     const createStore = (partialRootState: Partial<RootState> = {}) => {

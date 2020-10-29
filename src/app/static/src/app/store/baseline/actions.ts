@@ -10,9 +10,9 @@ import {DatasetResourceSet} from "../../types";
 
 export interface BaselineActions {
     refreshDatasetMetadata: (store: ActionContext<BaselineState, RootState>) => void
-    importPJNZ: (store: ActionContext<BaselineState, RootState>, url: String) => void
-    importShape: (store: ActionContext<BaselineState, RootState>, url: String) => void,
-    importPopulation: (store: ActionContext<BaselineState, RootState>, url: String) => void,
+    importPJNZ: (store: ActionContext<BaselineState, RootState>, url: string) => void
+    importShape: (store: ActionContext<BaselineState, RootState>, url: string) => void,
+    importPopulation: (store: ActionContext<BaselineState, RootState>, url: string) => void,
     uploadPJNZ: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void
     uploadShape: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void,
     uploadPopulation: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void,
@@ -85,7 +85,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async refreshDatasetMetadata(context) {
         const {commit, state, rootState} = context
         if (state.selectedDataset) {
-            const schemas = rootState.adrSchemas!!
+            const schemas = rootState.adrSchemas!
             await api(context)
                 .ignoreErrors()
                 .ignoreSuccess()

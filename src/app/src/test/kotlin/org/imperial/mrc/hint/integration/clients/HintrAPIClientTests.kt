@@ -10,41 +10,46 @@ import org.imperial.mrc.hint.models.ModelRunOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.junit.jupiter.api.Test
 
-class HintrApiClientTests {
+class HintrApiClientTests
+{
 
     @Test
-    fun `can validate baseline individual`() {
+    fun `can validate baseline individual`()
+    {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val file = VersionFileWithPath("fakepath", "hash", "filename")
+        val file = VersionFileWithPath("fakepath", "hash", "filename", false)
         val result = sut.validateBaselineIndividual(file, FileType.PJNZ)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")
     }
 
     @Test
-    fun `can validate baseline combined`() {
+    fun `can validate baseline combined`()
+    {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.validateBaselineCombined( mapOf(
-                "pjnz" to VersionFileWithPath("fakePjnz", "pjnzHash", "pjnzFile"),
-                "shape" to VersionFileWithPath("fakeShape", "shapeHash", "shapeFile"),
-                "population" to VersionFileWithPath("fakePop", "popHash", "popFile")
-            )
+        val result = sut.validateBaselineCombined(mapOf(
+                "pjnz" to VersionFileWithPath("fakePjnz", "pjnzHash", "pjnzFile", false),
+                "shape" to VersionFileWithPath("fakeShape", "shapeHash", "shapeFile", false),
+                "population" to VersionFileWithPath("fakePop", "popHash", "popFile", false)
+        )
         )
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_BASELINE")
     }
 
     @Test
-    fun `can validate survey and programme`() {
+    fun `can validate survey and programme`()
+    {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val file = VersionFileWithPath("fakepath", "hash", "filename")
+        val file = VersionFileWithPath("fakepath", "hash", "filename", false)
         val result = sut.validateSurveyAndProgramme(file, "fakepath", FileType.ANC)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")
     }
 
     @Test
-    fun `can submit model run`() {
+    fun `can submit model run`()
+    {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.submit(emptyMap(), ModelRunOptions(emptyMap(), emptyMap()))
         assertThat(result.statusCodeValue).isEqualTo(400)
@@ -52,13 +57,16 @@ class HintrApiClientTests {
     }
 
     @Test
-    fun `can get model run status`() {
+    fun `can get model run status`()
+    {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.getStatus("1234")
         JSONValidator().validateSuccess(result.body!!, "ModelStatusResponse")
     }
+
     @Test
-    fun `can get model run result`() {
+    fun `can get model run result`()
+    {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.getResult("1234")
         assertThat(result.statusCodeValue).isEqualTo(400)
@@ -66,7 +74,31 @@ class HintrApiClientTests {
     }
 
     @Test
-    fun `can get plotting metadata`() {
+    fun `can calibrate`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val versionInfo = mapOf(
+                "hintr" to "1.0.0",
+                "naomi" to "1.0.0",
+                "rrq" to "1.0.0"
+        )
+        val result = sut.calibrate("1234", ModelRunOptions(emptyMap(), versionInfo))
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
+    }
+
+    @Test
+    fun `can get model calibration options`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.getModelCalibrationOptions()
+        assertThat(result.statusCodeValue).isEqualTo(200)
+        JSONValidator().validateSuccess(result.body!!, "ModelRunOptions")
+    }
+
+    @Test
+    fun `can get plotting metadata`()
+    {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val metadataResult = sut.getPlottingMetadata("MWI");
 
@@ -74,7 +106,17 @@ class HintrApiClientTests {
     }
 
     @Test
-    fun `can cancel model run`() {
+    fun `can get version`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val metadataVersion = sut.getVersion()
+
+        JSONValidator().validateSuccess(metadataVersion.body!!, "VersionInfo")
+    }
+
+    @Test
+    fun `can cancel model run`()
+    {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.cancelModelRun("1234")
         assertThat(result.statusCodeValue).isEqualTo(400)
