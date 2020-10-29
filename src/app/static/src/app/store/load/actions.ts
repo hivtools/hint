@@ -6,6 +6,7 @@ import {verifyCheckSum} from "../../utils";
 import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
+import {currentHintVersion} from "../../hintVersion";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError"
 export type LoadErrorActionTypes = "LoadFailed"
@@ -55,6 +56,15 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         const files = objectContents.files;
         const savedState = objectContents.state;
+
+        const majorVersion = (s: string) => s ? s.split(".")[0] : null;
+        if (majorVersion(savedState.version) != majorVersion(currentHintVersion)) {
+            commit({
+                type: "LoadFailed",
+                payload: {detail: "Unable to load file created by older version of the application."}
+            });
+            return;
+        }
 
         if (!rootGetters.isGuest) {
             await (dispatch("projects/createProject", projectName, {root: true}));

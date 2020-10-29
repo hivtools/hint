@@ -142,6 +142,7 @@ export const mutations: MutationTree<RootState> = {
     [RootMutation.ResetOutputs](state: RootState) {
         Object.assign(state.modelRun, initialModelRunState());
         state.modelRun.ready = true;
+        Object.assign(state.modelCalibrate, initialModelCalibrateState());
         Object.assign(state.modelOutput, initialModelOutputState());
         const sapSelections = state.plottingSelections.sapChoropleth;
         const colourScales = state.plottingSelections.colourScales;
