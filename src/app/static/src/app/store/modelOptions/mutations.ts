@@ -2,8 +2,9 @@ import {MutationTree} from 'vuex';
 import {ModelOptionsState} from "./modelOptions";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {PayloadWithType} from "../../types";
-import {updateForm} from "./utils";
+import {updateForm} from "../../utils";
 import {VersionInfo, Error} from "../../generated";
+
 
 export enum ModelOptionsMutation {
     UnValidate = "UnValidate",
