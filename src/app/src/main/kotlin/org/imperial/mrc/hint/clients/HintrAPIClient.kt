@@ -35,6 +35,7 @@ interface HintrAPIClient
     fun cancelModelRun(id: String): ResponseEntity<String>
     fun getVersion():ResponseEntity<String>
     fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
+    fun get(url: String): ResponseEntity<String>
 }
 
 @Component
