@@ -118,6 +118,9 @@ class ProjectsController(private val session: Session,
                       @PathVariable("versionId") versionId: String): ResponseEntity<String>
     {
         versionRepository.deleteVersion(versionId, projectId, userId())
+        if (session.getVersionId() == versionId){
+            session.setVersionId(null)
+        }
         return EmptySuccessResponse.asResponseEntity()
     }
 
@@ -126,6 +129,10 @@ class ProjectsController(private val session: Session,
     fun deleteProject(@PathVariable("projectId") projectId: Int): ResponseEntity<String>
     {
         projectRepository.deleteProject(projectId, userId())
+        val currentProject = projectRepository.getProjectFromVersionId(session.getVersionId(), userId())
+        if (currentProject.id == projectId){
+            session.setVersionId(null)
+        }
         return EmptySuccessResponse.asResponseEntity()
     }
 
@@ -152,4 +159,5 @@ class ProjectsController(private val session: Session,
     {
         return session.getUserProfile().id
     }
+
 }
