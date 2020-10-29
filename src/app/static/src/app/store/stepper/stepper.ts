@@ -38,10 +38,14 @@ export const initialStepperState = (): StepperState => {
             },
             {
                 number: 5,
-                textKey: "reviewOutput"
+                textKey: "calibrateModel"
             },
             {
                 number: 6,
+                textKey: "reviewOutput"
+            },
+            {
+                number: 7,
                 textKey: "downloadResults"
             }]
     }

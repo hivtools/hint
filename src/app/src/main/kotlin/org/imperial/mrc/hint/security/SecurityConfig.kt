@@ -74,7 +74,7 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
         return versionId
     }
 
-    fun setVersionId(value: String)
+    fun setVersionId(value: String?)
     {
         pac4jConfig.sessionStore.set(webContext, VERSION_ID, value)
     }

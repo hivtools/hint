@@ -9,6 +9,7 @@ import {
     mockStepperState,
     mockSurveyAndProgramState,
     mockProjectsState,
+    mockModelCalibrateState,
     mockHintrVersionState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
@@ -20,12 +21,14 @@ declare const currentUser: string; // set in jest config, or on the index page w
 describe("LocalStorageManager", () => {
     it("serialiseState removes errors, saves selected data type", async () => {
         const mockRoot = {
+            version: "1.0.0",
             baseline: mockBaselineState(),
             modelRun: mockModelRunState({
                 errors: [mockError("modelRunError1"), mockError("modelRunError2")]
             }),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
+            modelCalibrate: mockModelCalibrateState(),
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
@@ -36,10 +39,12 @@ describe("LocalStorageManager", () => {
 
         const result = serialiseState(mockRoot);
         expect(result).toStrictEqual({
+            version: "1.0.0",
             baseline: {selectedDataset: null},
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
+            modelCalibrate: mockModelCalibrateState(),
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
@@ -52,12 +57,14 @@ describe("LocalStorageManager", () => {
     it("serialiseState saves selectedDataset from baseline", async () => {
         const dataset = mockDataset();
         const mockRoot = {
+            version: "1.0.0",
             baseline: mockBaselineState({
                 selectedDataset: dataset
             }),
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
+            modelCalibrate: mockModelCalibrateState(),
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
@@ -68,12 +75,14 @@ describe("LocalStorageManager", () => {
 
         const result = serialiseState(mockRoot);
         expect(result).toStrictEqual({
+            version: "1.0.0",
             baseline: {
                 selectedDataset: dataset
             },
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
+            modelCalibrate: mockModelCalibrateState(),
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
@@ -94,5 +103,14 @@ describe("LocalStorageManager", () => {
         result = localStorageManager.getState();
         expect(result).toBe(null);
         expect(localStorage.getItem("user")).toBe(currentUser);
-    })
+    });
+
+    it("saves to local storage", () => {
+        const spy = jest.spyOn(Storage.prototype, "setItem");
+        const testState = {baseline: mockBaselineState()};
+        localStorageManager.savePartialState(testState);
+
+        expect(spy.mock.calls[0][0]).toBe("hintAppState_v1.0.0");
+        expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
+    });
 });

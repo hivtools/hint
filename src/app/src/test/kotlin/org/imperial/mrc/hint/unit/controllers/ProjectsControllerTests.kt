@@ -115,7 +115,7 @@ class ProjectsControllerTests
         }
         val mockVersionRepo = mock<VersionRepository> {
             on { versionExists("testVersion", "testUser") } doReturn true
-            on { getVersion("testVersion")} doReturn mockVersion
+            on { getVersion("testVersion") } doReturn mockVersion
         }
 
         val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock())
@@ -247,13 +247,85 @@ class ProjectsControllerTests
     }
 
     @Test
+    fun `deleting current version clears current version`()
+    {
+        val mockRepo = mock<VersionRepository>()
+        val mockSession = mock<Session> {
+            on { getUserProfile() } doReturn mockProfile
+            on { getVersionId() } doReturn "testVersion"
+        }
+        val sut = ProjectsController(mockSession, mockRepo, mock(), mock())
+        val result = sut.deleteVersion(1, "testVersion")
+
+        verify(mockRepo).deleteVersion("testVersion", 1, "testUser")
+        verify(mockSession).setVersionId(null)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `deleting non-current version does not clear current version`()
+    {
+        val mockRepo = mock<VersionRepository>()
+        val mockSession = mock<Session> {
+            on { getUserProfile() } doReturn mockProfile
+            on { getVersionId() } doReturn "testVersion"
+        }
+        val sut = ProjectsController(mockSession, mockRepo, mock(), mock())
+        val result = sut.deleteVersion(1, "anotherVersion")
+
+        verify(mockRepo).deleteVersion("anotherVersion", 1, "testUser")
+        verify(mockSession, Times(0)).setVersionId(null)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
     fun `can delete project`()
     {
-        val mockRepo = mock<ProjectRepository>()
+        val mockRepo = mock<ProjectRepository>() {
+            on { getProjectFromVersionId("testVersion", "testUser") } doReturn Project(123, "project", listOf())
+        }
         val sut = ProjectsController(mockSession, mock(), mockRepo, mock())
         val result = sut.deleteProject(1)
 
         verify(mockRepo).deleteProject(1, "testUser")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `deleting parent project of current version clears current version`()
+    {
+        val mockRepo = mock<ProjectRepository>() {
+            on { getProjectFromVersionId("testVersion", "testUser") } doReturn Project(123, "project", listOf())
+        }
+        val mockSession = mock<Session> {
+            on { getUserProfile() } doReturn mockProfile
+            on { getVersionId() } doReturn "testVersion"
+        }
+
+        val sut = ProjectsController(mockSession, mock(), mockRepo, mock())
+        val result = sut.deleteProject(123)
+
+        verify(mockRepo).deleteProject(123, "testUser")
+        verify(mockSession).setVersionId(null)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `deleting project unrelated to current version does not clear current version`()
+    {
+        val mockRepo = mock<ProjectRepository>() {
+            on { getProjectFromVersionId("testVersion", "testUser") } doReturn Project(345, "project", listOf())
+        }
+        val mockSession = mock<Session> {
+            on { getUserProfile() } doReturn mockProfile
+            on { getVersionId() } doReturn "testVersion"
+        }
+
+        val sut = ProjectsController(mockSession, mock(), mockRepo, mock())
+        val result = sut.deleteProject(123)
+
+        verify(mockRepo).deleteProject(123, "testUser")
+        verify(mockSession, Times(0)).setVersionId(null)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -267,14 +339,15 @@ class ProjectsControllerTests
         }
         val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock())
         val result = sut.promoteVersion(1, "testVersion", "newProjectName")
-        
+
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         verify(mockProjectRepo).saveNewProject("testUser", "newProjectName")
         verify(mockVersionRepo).promoteVersion("testVersion", "testVersion", 0, "testUser")
         verify(mockVersionRepo).getVersion("testVersion")
     }
 
-    private fun assertExpectedVersion(node: JsonNode) {
+    private fun assertExpectedVersion(node: JsonNode)
+    {
         assertThat(node["id"].asText()).isEqualTo("testVersion")
         assertThat(node["created"].asText()).isEqualTo("createdTime")
         assertThat(node["updated"].asText()).isEqualTo("updatedTime")

@@ -44,8 +44,9 @@
                 <survey-and-program v-if="isActive(2)"></survey-and-program>
                 <model-options v-if="isActive(3)"></model-options>
                 <model-run v-if="isActive(4)"></model-run>
-                <model-output v-if="isActive(5)"></model-output>
-                <download-results v-if="isActive(6)"></download-results>
+                <model-calibrate v-if="isActive(5)"></model-calibrate>
+                <model-output v-if="isActive(6)"></model-output>
+                <download-results v-if="isActive(7)"></download-results>
             </div>
         </div>
     </div>
@@ -61,6 +62,7 @@
     import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import ModelRun from "./modelRun/ModelRun.vue";
+    import ModelCalibrate from "./modelCalibrate/ModelCalibrate.vue";
     import ModelOutput from "./modelOutput/ModelOutput.vue";
     import DownloadResults from "./downloadResults/DownloadResults.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
@@ -137,6 +139,7 @@
             SurveyAndProgram,
             LoadingSpinner,
             ModelRun,
+            ModelCalibrate,
             ModelOutput,
             ModelOptions,
             DownloadResults,

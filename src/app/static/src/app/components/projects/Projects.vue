@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="!loading" id="projects-content" class="row">
-            <p class="text-muted" v-translate="'projectDescription'"></p>
+            <p class="text-muted col" v-translate="'projectDescription'"></p>
             <div id="projects-header" class="lead col-12">
                 <span v-translate="'projectsHeaderCreate'"></span>
                 <span v-if="currentProject">
