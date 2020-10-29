@@ -15,6 +15,7 @@
             <span v-translate="'optionsValid'"></span>
             <tick color="#e31837" width="20px"></tick>
         </h4>
+        <error-alert v-if="hasValidateError" :error="validateError"></error-alert>
         <reset-confirmation :continue-editing="continueEditing"
                             :cancel-editing="cancelEditing"
                             :steps="laterCompleteSteps"
@@ -37,6 +38,7 @@
     import {StepDescription} from "../../store/stepper/stepper";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     interface Methods {
         fetchOptions: () => void
@@ -52,6 +54,7 @@
         modelOptions: DynamicFormMeta
         loading: boolean
         valid: boolean
+        errorMessage: String
         editsRequireConfirmation: boolean
         laterCompleteSteps: StepDescription[]
         currentLanguage: Language
@@ -74,8 +77,10 @@
         name: "ModelOptions",
         computed: {
             ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
-                loading: s => s.fetching,
-                valid: s => s.valid
+                loading: state => state.fetching,
+                valid: state => state.valid,
+                validateError: state => state.validateError,
+                hasValidateError: state => !!state.validateError
             }),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
@@ -111,15 +116,16 @@
                 this.showConfirmation = false;
             },
             update: mapMutationByName(namespace, ModelOptionsMutation.Update),
-            validate: mapMutationByName(namespace, ModelOptionsMutation.Validate),
             unValidate: mapMutationByName(namespace, ModelOptionsMutation.UnValidate),
-            fetchOptions: mapActionByName(namespace, "fetchModelRunOptions")
+            fetchOptions: mapActionByName(namespace, "fetchModelRunOptions"),
+            validate: mapActionByName(namespace, "validateModelOptions")
         },
         components: {
             DynamicForm,
             LoadingSpinner,
             Tick,
-            ResetConfirmation
+            ResetConfirmation,
+            ErrorAlert
         },
         mounted() {
             this.fetchOptions();

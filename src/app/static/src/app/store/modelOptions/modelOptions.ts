@@ -4,7 +4,7 @@ import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
 import {actions} from "./actions";
-import {VersionInfo} from "../../generated";
+import {VersionInfo, Error} from "../../generated";
 
 export interface ModelOptionsState {
     optionsFormMeta: DynamicFormMeta
@@ -12,6 +12,7 @@ export interface ModelOptionsState {
     valid: boolean
     fetching: boolean
     version: VersionInfo
+    validateError: Error | null
 }
 
 export const initialModelOptionsState = (): ModelOptionsState => {
@@ -20,7 +21,8 @@ export const initialModelOptionsState = (): ModelOptionsState => {
         options: {},
         valid: false,
         fetching: false,
-        version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"}
+        version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
+        validateError: null
     }
 };
 

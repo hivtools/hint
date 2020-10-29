@@ -1,15 +1,21 @@
-import {mockModelOptionsState} from "../mocks";
+import {mockError, mockModelOptionsState} from "../mocks";
 import {ModelOptionsMutation, mutations} from "../../app/store/modelOptions/mutations";
 import {DynamicFormMeta, NumberControl} from "@reside-ic/vue-dynamic-form";
 import {VersionInfo} from "../../app/generated";
 
 describe("Model run options mutations", () => {
 
-    it("validates and saves options", () => {
+    it("saves options", () => {
         const state = mockModelOptionsState();
         mutations[ModelOptionsMutation.Validate](state, {"test": 123});
-        expect(state.valid).toBe(true);
         expect(state.options).toStrictEqual({"test": 123});
+    });
+
+    it("validates can mutate error", () => {
+        const error = mockError("validation error occured");
+        const state = mockModelOptionsState();
+        mutations[ModelOptionsMutation.hasValidationError](state, {payload: error});
+        expect(state.validateError).toStrictEqual(error);
     });
 
     it("un-validates", () => {

@@ -1,12 +1,14 @@
 import {ModelOptionsState} from "./modelOptions";
-import {ActionContext, ActionTree} from "vuex";
-import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {ActionContext, ActionTree, Payload} from "vuex";
+import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {api} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelOptionsMutation} from "./mutations";
+import { ModelOptionsValidate } from "../../generated";
 
 export interface ModelOptionsActions {
     fetchModelRunOptions: (store: ActionContext<ModelOptionsState, RootState>) => void
+    validateModelOptions: (store: ActionContext<ModelOptionsState, RootState>, payload: DynamicFormData) => void
 }
 
 export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsActions = {
@@ -22,5 +24,17 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
         if (response) {
             commit({type: ModelOptionsMutation.SetModelOptionsVersion, payload: response.version});
         }
+    },
+
+    async validateModelOptions(context, payload) {
+        const {commit, rootState} = context;
+        commit(ModelOptionsMutation.Validate, payload);
+        const options = rootState.modelOptions.options;
+        const version = rootState.modelOptions.version;
+        await api<ModelOptionsMutation, ModelOptionsMutation>(context)
+            .withSuccess(ModelOptionsMutation.IsValidOptions)
+            .withError(ModelOptionsMutation.hasValidationError)
+            .postAndReturn<ModelOptionsValidate>("/model/validate/options/", {options, version})
+
     }
 };

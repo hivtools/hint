@@ -1,5 +1,6 @@
 import {actions} from "../../app/store/modelOptions/actions";
-import {mockAxios, mockRootState, mockSuccess} from "../mocks";
+import { ModelOptionsMutation } from "../../app/store/modelOptions/mutations";
+import {mockAxios, mockModelOptionsState, mockRootState, mockSuccess} from "../mocks";
 
 const rootState = mockRootState();
 describe("model run options actions", () => {
@@ -29,6 +30,22 @@ describe("model run options actions", () => {
             type: "SetModelOptionsVersion",
             payload: "v1"
         });
+    });
+
+
+    it("fetches validation options", async () => {
+        mockAxios.onPost("/model/validate/options/").reply(200, mockSuccess("TEST", "v1"));
+        const commit = jest.fn();
+        const payload = jest.fn();
+        await actions.validateModelOptions({commit, rootState} as any, payload as any);
+
+        expect(commit.mock.calls[0][0]).toStrictEqual(ModelOptionsMutation.Validate);
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: ModelOptionsMutation.IsValidOptions,
+            payload: "TEST"
+        });
+
     });
 
 });
