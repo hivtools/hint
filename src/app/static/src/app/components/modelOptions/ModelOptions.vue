@@ -54,7 +54,7 @@
         modelOptions: DynamicFormMeta
         loading: boolean
         valid: boolean
-        errorMessage: String
+        errorMessage: string
         editsRequireConfirmation: boolean
         laterCompleteSteps: StepDescription[]
         currentLanguage: Language
