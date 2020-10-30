@@ -95,16 +95,11 @@ describe("Model options component", () => {
         expect(rendered.findAll(Tick).length).toBe(0);
     });
 
-    it("does not display error message if no validation error", () => {
-        const store = createStore({validateError: null});
-        const rendered = shallowMount(ModelOptions, {store});
-        expect(rendered.findAll(ErrorAlert).length).toBe(0);
-    })
-
     it("does display error message when error occured", () => {
         const error = mockError("validation error occured")
         const store = createStore({validateError: error});
         const rendered = shallowMount(ModelOptions, {store});
+        expect(rendered.findAll(ErrorAlert).length).toBe(1);
         expect(rendered.find(ErrorAlert).props().error).toBe(error);
     })
 
