@@ -16,6 +16,7 @@ import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
 import BubblePlot from "../../../app/components/plots/bubble/BubblePlot.vue";
 import {expectTranslated} from "../../testHelpers";
+import {BarchartIndicator} from "../../../app/types";
 
 const localVue = createLocalVue();
 
@@ -118,6 +119,19 @@ describe("ModelOutput component", () => {
         expect(bubble.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
         expect(bubble.props().indicators).toStrictEqual(["TEST BUBBLE INDICATORS"]);
         expect(bubble.props().colourScales).toStrictEqual({test: "TEST OUTPUT COLOUR SCALES"});
+    });
+
+    it("renders barchart", () => {
+        const store = getStore({selectedTab: "bar"});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const vm = wrapper.vm as any;
+
+        const barchart = wrapper.find(BarChartWithFilters);
+        expect(barchart.props().chartData).toStrictEqual(["TEST DATA"]);
+        expect(barchart.props().filterConfig).toBe(vm.filterConfig);
+        expect(barchart.props().indicators).toStrictEqual(["TEST BARCHART INDICATORS"]);
+        expect(barchart.props().selections).toBe(vm.barchartSelections);
+        expect(barchart.props().formatFunction).toBe(vm.formatBarchartValue);
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
@@ -396,5 +410,29 @@ describe("ModelOutput component", () => {
                 {"indicator": "art_coverage", "indicator_value": "4"}
             ]
         );
+    });
+
+    it("formatBarchartValue formats value", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+
+        const indicator: BarchartIndicator = {
+            indicator: "testIndicator",
+            value_column: "val_col",
+            indicator_column: "ind_col",
+            indicator_value: "",
+            name: "Test Indicator",
+            error_low_column: "err_lo",
+            error_high_column: "err_hi",
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
+        };
+        expect((wrapper.vm as any).formatBarchartValue(0.29, indicator)).toBe("29.00%");
+
+        indicator.format = "0";
+        indicator.scale = 10;
+        indicator.accuracy = 100;
+        expect((wrapper.vm as any).formatBarchartValue(4231, indicator)).toBe("42300");
     });
 });
