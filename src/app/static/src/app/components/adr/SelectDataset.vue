@@ -71,6 +71,8 @@
         refresh: () => void
         refreshDatasetMetadata: () => void
         markResourcesUpdated: () => void
+        startPolling: () => void
+        stopPolling: () => void
     }
 
     interface Computed {
@@ -88,7 +90,8 @@
     interface Data {
         open: boolean
         loading: boolean
-        newDatasetId: string | null
+        newDatasetId: string | null,
+        pollingId: NodeJS.Timeout | null
     }
 
     const names: { [k in keyof DatasetResourceSet]: string } = {
@@ -105,7 +108,8 @@
             return {
                 open: false,
                 loading: false,
-                newDatasetId: null
+                newDatasetId: null,
+                pollingId: null
             }
         },
         components: {Modal, TreeSelect, LoadingSpinner, InfoIcon},
@@ -211,6 +215,8 @@
                 this.open = false;
             },
             async refresh() {
+                this.stopPolling();
+
                 this.loading = true;
                 this.open = true;
                 const {pjnz, pop, shape, survey, program, anc} = this.selectedDataset!.resources;
@@ -236,13 +242,27 @@
                 this.markResourcesUpdated();
                 this.loading = false;
                 this.open = false;
+
+                this.startPolling();
             },
             toggleModal() {
                 this.open = !this.open;
+            },
+            startPolling() {
+                this.pollingId = setInterval(this.refreshDatasetMetadata, 10000);
+            },
+            stopPolling() {
+                if (this.pollingId) {
+                    clearInterval(this.pollingId);
+                }
             }
-        },
+         },
         mounted() {
             this.refreshDatasetMetadata();
+            this.startPolling();
+        },
+        beforeDestroy() {
+            this.stopPolling();
         }
     })
 </script>
