@@ -45,7 +45,5 @@ describe("model run options actions", () => {
             type: ModelOptionsMutation.IsValidOptions,
             payload: "TEST"
         });
-
     });
-
 });
