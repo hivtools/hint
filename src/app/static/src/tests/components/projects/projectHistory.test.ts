@@ -323,6 +323,21 @@ describe("Project history component", () => {
         }
     });
 
+    it("methods for rename and cancel rename work regardless of feature switch", async () => {
+        const wrapper = getWrapper();
+        const mockPreventDefault = jest.fn()
+        const mockEvent = { preventDefault: mockPreventDefault }
+        wrapper.setData({ projectToRename: null })
+        const vm = wrapper.vm as any
+        
+        vm.renameProject(mockEvent, 123);
+        expect(vm.projectToRename).toBe(123);
+        expect(mockPreventDefault.mock.calls.length).toStrictEqual(1);
+
+        vm.cancelRename();
+        expect(vm.projectToRename).toBe(null);
+    });
+
     it("shows modal when copy project link is clicked and removes it when cancel is clicked", async () => {
         if (switches.promoteProject && !switches.renameProject) {
             const wrapper = getWrapper();
