@@ -9,12 +9,12 @@ import {VersionInfo, Error} from "../../generated";
 export enum ModelOptionsMutation {
     UnValidate = "UnValidate",
     Validate = "Validate",
-    IsValidOptions = "IsValidOptions",
     Update = "Update",
     FetchingModelOptions = "FetchingModelOptions",
     ModelOptionsFetched = "ModelOptionsFetched",
     SetModelOptionsVersion = "SetModelOptionsVersion",
-    hasValidationError = "hasValidationError"
+    HasValidationError = "HasValidationError",
+    LoadUpdatedOptions = "LoadUpdatedOptions"
 }
 
 export const ModelOptionsUpdates = [ModelOptionsMutation.Update, ModelOptionsMutation.UnValidate];
@@ -24,16 +24,16 @@ export const mutations: MutationTree<ModelOptionsState> = {
         state.valid = false;
     },
 
-    [ModelOptionsMutation.Validate](state: ModelOptionsState, payload: DynamicFormData) {
+    [ModelOptionsMutation.Validate](state: ModelOptionsState) {
+        state.valid = true;
+    },
+
+    [ModelOptionsMutation.LoadUpdatedOptions](state: ModelOptionsState, payload: DynamicFormData) {
         state.options = payload;
         state.validateError = null;
     },
 
-    [ModelOptionsMutation.IsValidOptions](state: ModelOptionsState) {
-        state.valid = true;
-    },
-
-    [ModelOptionsMutation.hasValidationError](state: ModelOptionsState, action: PayloadWithType<Error>) {
+    [ModelOptionsMutation.HasValidationError](state: ModelOptionsState, action: PayloadWithType<Error>) {
         state.validateError = action.payload;
     },
 

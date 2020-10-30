@@ -39,10 +39,10 @@ describe("model run options actions", () => {
         const payload = jest.fn();
         await actions.validateModelOptions({commit, rootState} as any, payload as any);
 
-        expect(commit.mock.calls[0][0]).toStrictEqual(ModelOptionsMutation.Validate);
+        expect(commit.mock.calls[0][0]).toStrictEqual(ModelOptionsMutation.LoadUpdatedOptions);
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: ModelOptionsMutation.IsValidOptions,
+            type: ModelOptionsMutation.Validate,
             payload: "TEST"
         });
     });
