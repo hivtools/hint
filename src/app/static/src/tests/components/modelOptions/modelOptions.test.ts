@@ -138,12 +138,26 @@ describe("Model options component", () => {
         });
     });
 
-    it("dispatches fetch event when form submit event is fired", async() => {
+    it("dispatches fetch run option event when form submit event is fired", () => {
         const fetchMock = jest.fn();
+        const store = createStore({}, mockMutations, { 
+
+            ...mockActions,
+            fetchModelRunOptions: fetchMock
+
+        });
+        const rendered = shallowMount(ModelOptions, {
+            store
+        });
+        
+        expect(fetchMock.mock.calls.length).toBe(1);
+    });
+
+    it("dispatches validation event when form submit event is fired", async() => {
         const validateMock = jest.fn();
         const store = createStore({}, mockMutations, { 
 
-            fetchModelRunOptions: fetchMock,
+            ...mockActions,
             validateModelOptions: validateMock
 
         });
@@ -154,8 +168,5 @@ describe("Model options component", () => {
 
         await Vue.nextTick();
         expect(validateMock.mock.calls.length).toBe(1);
-        expect(fetchMock.mock.calls.length).toBe(1);
-        
     });
-
 });
