@@ -4,12 +4,19 @@
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingOptions'"></h2>
         </div>
-        <dynamic-form v-if="!loading"
+        <dynamic-form ref="form"
+                      v-if="!loading"
                       v-model="calibrateOptions"
-                      :submit-text="submitText"
                       @submit="calibrate"
                       :required-text="requiredText"
-                      :select-text="selectText"></dynamic-form>
+                      :select-text="selectText"
+                      :include-submit-button="false"></dynamic-form>
+        <button class="btn"
+                :class="calibrating ? 'btn-secondary' : 'btn-submit'"
+                :disabled="calibrating"
+                @click="submitForm">
+            {{submitText}}
+        </button>
         <div v-if="calibrating" id="calibrating" class="mt-3">
             <loading-spinner size="xs"></loading-spinner>
             <span v-translate="'calibrating'"></span>
@@ -42,6 +49,7 @@
         fetchOptions: () => void
         calibrate: (data: DynamicFormData) => void
         update: (data: DynamicFormMeta) => void
+        submitForm: (e: Event) => void
     }
 
     interface Computed {
@@ -106,7 +114,10 @@
         methods: {
             update: mapMutationByName(namespace, ModelCalibrateMutation.Update),
             calibrate: mapActionByName(namespace,"calibrate"),
-            fetchOptions: mapActionByName(namespace, "fetchModelCalibrateOptions")
+            fetchOptions: mapActionByName(namespace, "fetchModelCalibrateOptions"),
+            submitForm() {
+                (this.$refs.form as any).submit()
+            }
         },
         components: {
             DynamicForm,
