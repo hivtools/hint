@@ -11,7 +11,8 @@
                       :required-text="requiredText"
                       :select-text="selectText"
                       :include-submit-button="false"></dynamic-form>
-        <button class="btn"
+        <button v-if="!loading"
+                class="btn"
                 :class="calibrating ? 'btn-secondary' : 'btn-submit'"
                 :disabled="calibrating"
                 @click="submitForm">

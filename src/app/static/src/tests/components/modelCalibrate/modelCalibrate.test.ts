@@ -66,6 +66,7 @@ describe("Model calibrate component", () => {
         expect(wrapper.find("#calibration-complete").exists()).toBe(false);
         expect(wrapper.find(ErrorAlert).exists()).toBe(false);
         expect(wrapper.find("#calibrating").exists()).toBe(false);
+        expect(wrapper.find("button").exists()).toBe(false);
     });
 
     it("invokes fetch options action on mount", () => {
@@ -84,10 +85,14 @@ describe("Model calibrate component", () => {
         const form = wrapper.find(DynamicForm);
         expect(form.attributes("required-text")).toBe("required");
         expect(form.attributes("select-text")).toBe("Select...");
-        expectTranslated(form.find("button"), "Calibrate", "Calibrer", store);
+        expect(form.props("includeSubmitButton")).toBe(false);
         expect(form.find("h3").text()).toBe("Test Section");
         expect(form.find(".text-muted").text()).toBe("Just a test section");
         expect((form.find("input").element as HTMLInputElement).value).toBe("5");
+        expectTranslated(wrapper.find("button"), "Calibrate", "Calibrer", store);
+        expect(wrapper.find("button").classes()).toContain("btn-submit");
+        expect(wrapper.find("button").classes()).not.toContain("btn-secondary");
+        expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(false);
         expect(wrapper.find("#calibration-complete").exists()).toBe(false);
     });
 
@@ -106,12 +111,15 @@ describe("Model calibrate component", () => {
         expect(wrapper.find(ErrorAlert).props("error")).toBe(error);
     });
 
-    it("renders calibrating message", () => {
+    it("renders as expected while calibrating", () => {
         const store = getStore({calibrating: true});
         const wrapper = getWrapper(store);
         expect(wrapper.find("#calibrating").find(LoadingSpinner).exists()).toBe(true);
         expectTranslated(wrapper.find("#calibrating"), "Calibrating...",
             "Calibrage en cours...", store);
+        expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(true);
+        expect(wrapper.find("button").classes()).toContain("btn-secondary");
+        expect(wrapper.find("button").classes()).not.toContain("btn-submit");
     });
 
     it("setting options value commits update mutation", () => {
@@ -129,7 +137,7 @@ describe("Model calibrate component", () => {
         const mockCalibrate = jest.fn();
         const store = getStore({optionsFormMeta: mockOptionsFormMeta}, jest.fn(), mockCalibrate);
         const wrapper = mount(ModelCalibrate, {store});
-        wrapper.find(DynamicForm).find("button").trigger("click");
+        wrapper.find("button").trigger("click");
         expect(mockCalibrate.mock.calls.length).toBe(1);
 
     });
