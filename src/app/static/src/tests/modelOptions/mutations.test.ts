@@ -19,6 +19,12 @@ describe("Model run options mutations", () => {
         expect(state.validateError).toStrictEqual(error);
     });
 
+    it("can valid option", () => {
+        const state = mockModelOptionsState();
+        mutations[ModelOptionsMutation.IsValidOptions](state);
+        expect(state.valid).toBe(true);
+    });
+
     it("un-validates", () => {
         const state = mockModelOptionsState({
             valid: true

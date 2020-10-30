@@ -4,8 +4,7 @@ declare const currentUser: string; // set in jest config, or on the index page w
 localStorage.setItem("user", currentUser);
 localStorageManager.saveState({
     modelOptions: {
-        options: "TEST",
-        valid: false
+        options: "TEST"
     },
     surveyAndProgram: {},
     baseline: {}
@@ -16,5 +15,4 @@ import {modelOptions, ModelOptionsState} from "../../app/store/modelOptions/mode
 it("loads initial state from local storage", () => {
     const state = modelOptions.state as ModelOptionsState;
     expect(state.options).toBe("TEST");
-    expect(state.valid).toBe(false);
 });
