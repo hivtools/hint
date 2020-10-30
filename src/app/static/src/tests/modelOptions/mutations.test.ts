@@ -5,17 +5,16 @@ import {VersionInfo} from "../../app/generated";
 
 describe("Model run options mutations", () => {
 
-    it("saves options", () => {
+    it("does not set valid to true when save options", () => {
         const state = mockModelOptionsState();
         mutations[ModelOptionsMutation.Validate](state, {"test": 123});
         expect(state.options).toStrictEqual({"test": 123});
+        expect(state.valid).toBe(false);
     });
 
     it("can mutate validation error", () => {
         const error = mockError("validation error occured");
-        const state = mockModelOptionsState({
-            valid: false
-        });
+        const state = mockModelOptionsState();
         mutations[ModelOptionsMutation.hasValidationError](state, {payload: error});
         expect(state.validateError).toStrictEqual(error);
     });
