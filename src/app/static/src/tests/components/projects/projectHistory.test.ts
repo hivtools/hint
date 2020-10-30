@@ -78,27 +78,35 @@ describe("Project history component", () => {
         expect(v.at(1).text()).toBe(name);
         expect(v.at(2).text()).toBe(versionsCount === 1 ? "1 version" : `${versionsCount} versions`);
         expect(v.at(3).text()).toBe(formatDateTime(updatedIsoDate));
-        expectTranslated(v.at(4), "Load", "Charger", store);
-        expect(v.at(4).find("a").attributes("href")).toBe("");
-        expectTranslated(v.at(5), "Delete", "Supprimer", store);
-        if (switches.promoteProject) {
-            expectTranslated(v.at(6), "Copy last updated to a new project", "Copier la dernière mise à jour dans un nouveau projet", store);
-            expect(v.at(6).find("a").attributes("href")).toBe("");
-        } else {
-            if (switches.shareProject) {
-                expect(v.at(6).findAll(ShareProject).length).toBe(1);
+        if (switches.renameProject) {
+            expectTranslated(v.at(4), "Rename project", "Renommer le projet", store);
+            expect(v.at(4).find("a").attributes("href")).toBe("");
+            expectTranslated(v.at(5), "Load", "Charger", store);
+            expect(v.at(5).find("a").attributes("href")).toBe("");
+            expectTranslated(v.at(6), "Delete", "Supprimer", store);
+        } else { 
+            expectTranslated(v.at(4), "Load", "Charger", store);
+            expect(v.at(4).find("a").attributes("href")).toBe("");
+            expectTranslated(v.at(5), "Delete", "Supprimer", store);
+            if (switches.promoteProject) {
+                expectTranslated(v.at(6), "Copy last updated to a new project", "Copier la dernière mise à jour dans un nouveau projet", store);
+                expect(v.at(6).find("a").attributes("href")).toBe("");
             } else {
-                expect(v.length).toBe(6);
+                if (switches.shareProject) {
+                    expect(v.at(7).findAll(ShareProject).length).toBe(1);
+                } else {
+                    expect(v.length).toBe(6);
+                }
             }
+            if (switches.shareProject) {
+                expect(wrapper.findAll(ShareProject).length).toBeGreaterThan(0);
+            } else {
+                expect(wrapper.findAll(ShareProject).length).toBe(0);
+            }
+            const versions = wrapper.find(`#versions-${id}`);
+            expect(versions.classes()).toContain("collapse");
+            expect(versions.attributes("style")).toBe("display: none;");
         }
-        if (switches.shareProject) {
-            expect(wrapper.findAll(ShareProject).length).toBeGreaterThan(0);
-        } else {
-            expect(wrapper.findAll(ShareProject).length).toBe(0);
-        }
-        const versions = wrapper.find(`#versions-${id}`);
-        expect(versions.classes()).toContain("collapse");
-        expect(versions.attributes("style")).toBe("display: none;");
     };
 
     const testRendersVersion = (row: Wrapper<any>, id: string, updatedIsoDate: string, versionNumber: number,
@@ -108,14 +116,21 @@ describe("Project history component", () => {
         expect(cells.at(0).text()).toBe("");
         expect(cells.at(1).text()).toBe(`v${versionNumber}`);
         expect(cells.at(2).text()).toBe(formatDateTime(updatedIsoDate));
-        const loadLink = cells.at(3).find("a");
+        if (switches.renameProject) {
+        const loadLink = cells.at(4).find("a");
         expectTranslated(loadLink, "Load", "Charger", store);
-        const deleteLink = cells.at(4).find("a");
+        const deleteLink = cells.at(5).find("a");
         expectTranslated(deleteLink, "Delete", "Supprimer", store);
-        if (switches.promoteProject) {
+        } else {
+            const loadLink = cells.at(3).find("a");
+            expectTranslated(loadLink, "Load", "Charger", store);
+            const deleteLink = cells.at(4).find("a");
+            expectTranslated(deleteLink, "Delete", "Supprimer", store);
+        }
+        if (switches.promoteProject && !switches.renameProject) {
             const copyLink = cells.at(5).find("a");
             expectTranslated(copyLink, "Copy to a new project", "Copier dans un nouveau projet", store);
-        } else {
+        } else if (!switches.renameProject) {
             expect(cells.length).toBe(5);
         }
     };
@@ -190,6 +205,7 @@ describe("Project history component", () => {
     });
 
     it("shows modal when click delete project link", async () => {
+        if (!switches.renameProject) {
         const wrapper = getWrapper();
         const store = wrapper.vm.$store;
         const deleteLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("a");
@@ -202,9 +218,11 @@ describe("Project history component", () => {
         const buttons = modal.find(".modal-footer").findAll("button");
         expectTranslated(buttons.at(0), "OK", "OK", store);
         expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
+        }
     });
 
     it("shows modal when click delete version link", async () => {
+        if (!switches.renameProject) {
         const wrapper = getWrapper();
         const store = wrapper.vm.$store;
         const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("a");
@@ -217,10 +235,11 @@ describe("Project history component", () => {
         const buttons = modal.find(".modal-footer").findAll("button");
         expectTranslated(buttons.at(0), "OK", "OK", store);
         expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
+        }
     });
 
     it("invokes deleteProject action when confirm delete", async () => {
-
+        if (!switches.renameProject) {
         const wrapper = getWrapper(testProjects);
         const deleteLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("a");
         deleteLink.trigger("click");
@@ -232,10 +251,11 @@ describe("Project history component", () => {
 
         expect(mockDeleteProject.mock.calls.length).toBe(1);
         expect(mockDeleteProject.mock.calls[0][1]).toBe(1);
+        }
     });
 
     it("invokes deleteVersion action when confirm delete", async () => {
-
+        if (!switches.renameProject) {
         const wrapper = getWrapper(testProjects);
         const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("a");
         deleteLink.trigger("click");
@@ -247,6 +267,7 @@ describe("Project history component", () => {
 
         expect(mockDeleteVersion.mock.calls.length).toBe(1);
         expect(mockDeleteVersion.mock.calls[0][1]).toStrictEqual({projectId: 1, versionId: "s11"});
+        }
     });
 
     it("hides modal and does not invoke action when click cancel", async () => {
@@ -266,17 +287,59 @@ describe("Project history component", () => {
     });
 
     const testLoadVersionLink = async function (elementId: string, projectId: number, versionId: string) {
-
+        if (!switches.renameProject) {
         const wrapper = getWrapper(testProjects);
         const versionLink = wrapper.find("#versions-1").find("a");
         versionLink.trigger("click");
         await Vue.nextTick();
         expect(mockLoad.mock.calls.length).toBe(1);
         expect(mockLoad.mock.calls[0][1]).toStrictEqual({projectId: 1, versionId: "s11"});
+        }
     };
 
+    it("shows modal when rename project link is clicked and removes it when cancel is clicked", async () => {
+        if (switches.renameProject) {
+            const wrapper = getWrapper();
+            const store = wrapper.vm.$store;
+            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("a");
+            renameLink.trigger("click");
+            await Vue.nextTick();
+
+            const modal = wrapper.findAll(".modal").at(2);
+            expect(modal.classes()).toContain("show");
+            expectTranslated(modal.find(".modal-body h4"), "Please enter a new name for the project",
+                "Entrez un nouveau nom pour le projet", store);
+
+            const input = modal.find("input")
+            expectTranslated(input, "Project name", "Nom du projet", store, "placeholder");
+            const buttons = modal.find(".modal-footer").findAll("button");
+            expectTranslated(buttons.at(0), "Rename project", "Renommer le projet", store);
+            expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
+
+            const cancelButton = buttons.at(1);
+            cancelButton.trigger("click");
+            await Vue.nextTick();
+            expect(modal.classes()).not.toContain("show");
+        }
+    });
+
+    it("methods for rename and cancel rename work regardless of feature switch", async () => {
+        const wrapper = getWrapper();
+        const mockPreventDefault = jest.fn()
+        const mockEvent = { preventDefault: mockPreventDefault }
+        wrapper.setData({ projectToRename: null })
+        const vm = wrapper.vm as any
+        
+        vm.renameProject(mockEvent, 123);
+        expect(vm.projectToRename).toBe(123);
+        expect(mockPreventDefault.mock.calls.length).toStrictEqual(1);
+
+        vm.cancelRename();
+        expect(vm.projectToRename).toBe(null);
+    });
+
     it("shows modal when copy project link is clicked and removes it when cancel is clicked", async () => {
-        if (switches.promoteProject) {
+        if (switches.promoteProject && !switches.renameProject) {
             const wrapper = getWrapper();
             const store = wrapper.vm.$store;
             const copyLink = wrapper.find("#p-1").findAll(".project-cell").at(6).find("a");
@@ -304,7 +367,7 @@ describe("Project history component", () => {
     });
 
     it("shows modal when copy version link is clicked and removes it when cancel is clicked", async () => {
-        if (switches.promoteProject) {
+        if (switches.promoteProject && !switches.renameProject) {
             const wrapper = getWrapper();
             const store = wrapper.vm.$store;
             const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
@@ -331,7 +394,7 @@ describe("Project history component", () => {
     });
 
     it("invokes promoteVersion action when confirm copy", async () => {
-        if (switches.promoteProject) {
+        if (switches.promoteProject && !switches.renameProject) {
             const wrapper = getWrapper(testProjects);
             const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
             copyLink.trigger("click");
