@@ -11,9 +11,11 @@ describe("Model run options mutations", () => {
         expect(state.options).toStrictEqual({"test": 123});
     });
 
-    it("validates can mutate error", () => {
+    it("can mutate validation error", () => {
         const error = mockError("validation error occured");
-        const state = mockModelOptionsState();
+        const state = mockModelOptionsState({
+            valid: false
+        });
         mutations[ModelOptionsMutation.hasValidationError](state, {payload: error});
         expect(state.validateError).toStrictEqual(error);
     });
