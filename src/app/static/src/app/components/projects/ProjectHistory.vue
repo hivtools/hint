@@ -33,6 +33,12 @@
                 <div class="col-md-3 project-cell">
                     {{ format(p.versions[0].updated) }}
                 </div>
+                <div class="col-md-1 project-cell"
+                    v-if="renameProjectIsEnabled">
+                    <a @click="renameProject($event, p.id)" 
+                    href="" 
+                    v-translate="'renameProject'"></a>
+                </div>
                 <div class="col-md-1 project-cell">
                     <a @click="loadVersion($event, p.id, p.versions[0].id)"
                        href=""
@@ -70,6 +76,9 @@
                     </div>
                     <div class="col-md-3 version-cell">
                         {{ format(v.updated) }}
+                    </div>
+                    <div class="col-md-1 version-cell"
+                    v-if="renameProjectIsEnabled">
                     </div>
                     <div class="col-md-1 version-cell">
                         <a @click="loadVersion($event, p.id, v.id)"
@@ -129,6 +138,24 @@
                         v-translate="'cancel'"></button>
             </template>
         </modal>
+        <modal :open="projectToRename">
+            <h4 v-translate="'renameProjectHeader'"></h4>
+            <input type="text" 
+                   class="form-control" 
+                   v-translate:placeholder="'projectName'" 
+                   v-model="renamedProjectName">
+            <template v-slot:footer>
+                <button type="button"
+                    class="btn btn-red"
+                    v-translate="'renameProject'">
+                </button>
+                <button type="button"
+                    class="btn btn-white"
+                    @click="cancelRename"
+                    v-translate="'cancel'">
+                </button>
+            </template>
+        </modal>
     </div>
 </template>
 
@@ -151,11 +178,14 @@
     interface Data {
         projectToDelete: number | null;
         versionToDelete: VersionIds | null;
+        renamedProjectName: string;
+        projectToRename: number | null;
         versionToPromote: VersionIds | null;
         newProjectName: string;
         selectedVersionNumber: string;
         shareProjectIsEnabled: boolean;
         promoteProjectIsEnabled: boolean;
+        renameProjectIsEnabled: boolean;
     }
 
     interface Computed {
@@ -187,6 +217,8 @@
         createProject: (name: string) => void;
         getProjects: () => void;
         versionLabel: (version: Version) => string;
+        renameProject: (event: Event, projectId: number) => void;
+        cancelRename: () => void;
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
@@ -199,6 +231,9 @@
                 selectedVersionNumber: "",
                 shareProjectIsEnabled: switches.shareProject,
                 promoteProjectIsEnabled: switches.promoteProject,
+                renameProjectIsEnabled: switches.renameProject,
+                projectToRename: null,
+                renamedProjectName: ''
             };
         },
         computed: {
@@ -223,6 +258,13 @@
             loadVersion(event: Event, projectId: number, versionId: string) {
                 event.preventDefault();
                 this.loadAction({projectId, versionId});
+            },
+            renameProject(event: Event, projectId: number) {
+               event.preventDefault();
+               this.projectToRename = projectId;
+            },
+            cancelRename() {
+               this.projectToRename = null;
             },
             deleteProject(event: Event, projectId: number) {
                 event.preventDefault();

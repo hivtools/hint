@@ -37,6 +37,7 @@ interface HintrAPIClient
     fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
     fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions):
             ResponseEntity<String>
+    fun get(url: String): ResponseEntity<String>
 }
 
 @Component
