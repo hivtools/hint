@@ -91,7 +91,7 @@
         open: boolean
         loading: boolean
         newDatasetId: string | null,
-        pollingId: NodeJS.Timeout | null
+        pollingId: number | null
     }
 
     const names: { [k in keyof DatasetResourceSet]: string } = {
@@ -249,11 +249,11 @@
                 this.open = !this.open;
             },
             startPolling() {
-                this.pollingId = setInterval(this.refreshDatasetMetadata, 10000);
+                this.pollingId = window.setInterval(this.refreshDatasetMetadata, 10000);
             },
             stopPolling() {
                 if (this.pollingId) {
-                    clearInterval(this.pollingId);
+                    window.clearInterval(this.pollingId);
                 }
             }
          },
