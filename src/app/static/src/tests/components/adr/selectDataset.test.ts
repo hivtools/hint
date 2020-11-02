@@ -99,13 +99,20 @@ describe("select dataset", () => {
         });
     }
 
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+
     afterEach(() => {
         jest.resetAllMocks();
     });
 
-    it("refreshes selected dataset metdata on mount", () => {
+    it("refreshes selected dataset metdata on mount and sets interval to poll refresh", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
+        expect((rendered.vm as any).pollingId).not.toBeNull();
         expect((baselineActions.refreshDatasetMetadata as Mock).mock.calls.length).toBe(1);
+        jest.advanceTimersByTime(10000);
+        expect((baselineActions.refreshDatasetMetadata as Mock).mock.calls.length).toBe(2);
     });
 
     it("renders select dataset button when no dataset is selected", () => {
@@ -182,6 +189,27 @@ describe("select dataset", () => {
         await Vue.nextTick();
 
         expect(markResourcesUpdatedMock.mock.calls.length).toBe(1);
+    });
+
+    it("refresh stops and starts polling for dataset metadata changes", async () => {
+        const fakeDataset = mockDataset();
+        fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"})
+        const store = getStore({selectedDataset: fakeDataset});
+        const rendered = shallowMount(SelectDataset, {store, sync: false});
+
+        const oldPollingId = (rendered.vm as any).pollingId;
+        const clearIntervalSpy = jest.spyOn(window, "clearInterval");
+        const setIntervalSpy = jest.spyOn(window, "setInterval");
+
+        rendered.findAll("button").at(0).trigger("click");
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(clearIntervalSpy.mock.calls[0][0]).toBe(oldPollingId);
+        expect(setIntervalSpy.mock.calls[0][0]).toBe((rendered.vm as any).refreshDatasetMetadata);
+        expect(setIntervalSpy.mock.calls[0][1]).toBe(10000);
+        expect((rendered.vm as any).pollingId).not.toBe(oldPollingId);
     });
 
     it("renders modal and spinner while refreshing", async () => {
@@ -532,6 +560,14 @@ describe("select dataset", () => {
 
         expect(rendered.findAll(LoadingSpinner).length).toBe(0);
         expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("stops polling dataset metadata on beforeDestroy", () => {
+        const rendered = shallowMount(SelectDataset, {store: getStore()});
+        const pollingId = (rendered.vm as any).pollingId;
+        const spy = jest.spyOn(window, "clearInterval");
+        rendered.destroy();
+        expect(spy.mock.calls[0][0]).toBe(pollingId);
     });
 
 });
