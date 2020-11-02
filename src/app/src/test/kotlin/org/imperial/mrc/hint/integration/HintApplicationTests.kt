@@ -32,6 +32,15 @@ class HintApplicationTests : SecureIntegrationTests()
         testAllUserAccess("/projects", isAuthorized)
     }
 
+    @Test
+    fun `all users can access metrics`()
+    {
+        val response = testRestTemplate.getForEntity<String>("/metrics")
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body).isEqualTo("running 1\nbusy_workers 0\nidle_workers 2\n" +
+                "paused_workers 0\nexited_workers 0\nlost_workers 0\nlive_workers 2")
+    }
+
     private fun testAllUserAccess(url: String, isAuthorized: IsAuthorized)
     {
         val rootEntity = testRestTemplate.getForEntity<String>(url)
