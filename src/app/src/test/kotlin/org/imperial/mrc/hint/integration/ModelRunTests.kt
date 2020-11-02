@@ -63,9 +63,9 @@ class ModelRunTests : SecureIntegrationTests()
     @Test
     fun `can validate model options`()
     {
-        val entity = getModelRunEntity()
+        val entity = getValidationOptions()
         val responseEntity = testRestTemplate.postForEntity<String>("/model/validate/options/", entity)
-        Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
     }
 
     @Test
