@@ -42,9 +42,15 @@ class HomeController(
         val statuses = mutableMapOf("busy" to 0, "idle" to 0, "paused" to 0, "exited" to 0, "lost" to 0)
         data.fields().forEach {
             val s = it.value.asText().toLowerCase()
-            statuses[s] = (statuses[s] ?: 0) + 1
+            statuses[s] = statuses.valueOrZero(s) + 1
         }
+        statuses["live"] = statuses.valueOrZero("busy") + statuses.valueOrZero("idle") + statuses.valueOrZero("paused")
         val statusNums = statuses.map { "${it.key}_workers ${it.value}" }.joinToString("\n")
         return ResponseEntity("running 1\n$statusNums", HttpStatus.OK)
     }
+}
+
+fun Map<String, Int>.valueOrZero(key: String): Int
+{
+    return this[key] ?: 0
 }

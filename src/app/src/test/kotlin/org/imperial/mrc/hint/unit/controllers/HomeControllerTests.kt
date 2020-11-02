@@ -13,7 +13,8 @@ class HomeControllerTests
 {
     private val fakeAPIResponseBody = "{\"status\":\"success\",\"errors\":null," +
             "\"data\":{\"chocolatey_whippet_2\":\"IDLE\",\"chocolatey_whippet_1\":\"IDLE\"," +
-            "\"chocolatey_whippet_3\":\"PAUSED\", \"chocolatey_whippet_4\":\"EXITED\"}}"
+            "\"chocolatey_whippet_3\":\"PAUSED\", \"chocolatey_whippet_4\":\"EXITED\"," +
+            "\"chocolatey_whippet_5\":\"BUSY\"}}"
 
     @Test
     fun `gets metrics for each worker status type`()
@@ -24,7 +25,7 @@ class HomeControllerTests
         val sut = HomeController(mock(), mock(), mock(), mockAPIClient)
         val result = sut.metrics()
         assertThat(result.body)
-                .isEqualTo("running 1\nbusy_workers 0\nidle_workers 2" +
-                        "\npaused_workers 1\nexited_workers 1\nlost_workers 0")
+                .isEqualTo("running 1\nbusy_workers 1\nidle_workers 2" +
+                        "\npaused_workers 1\nexited_workers 1\nlost_workers 0\nlive_workers 4")
     }
 }
