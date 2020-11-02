@@ -155,6 +155,26 @@ class ProjectsController(private val session: Session,
         return SuccessResponse(currentProject).asResponseEntity()
     }
 
+    //  fun promoteVersion(
+    //     @PathVariable("projectId") projectId: Int,
+    //     @PathVariable("versionId") versionId: String,
+    //     @RequestParam("name") name: String): ResponseEntity<String>
+    // {
+
+    @PostMapping("/project/{projectId}/rename")
+    @ResponseBody
+    fun renameProject(
+        @PathVariable("projectId") projectId: Int,
+        @RequestParam("name") name: String): ResponseEntity<String>
+    {
+        projectRepository.renameProject(projectId, userId(), name)
+        val currentProject = projectRepository.getProjectFromVersionId(session.getVersionId(), userId())
+        if (currentProject.id == projectId){
+            session.setVersionId(null)
+        }
+        return EmptySuccessResponse.asResponseEntity()
+    }
+
     private fun userId(): String
     {
         return session.getUserProfile().id

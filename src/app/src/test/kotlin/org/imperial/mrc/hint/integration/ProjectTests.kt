@@ -296,6 +296,43 @@ class ProjectTests : VersionFileTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can rename project`(isAuthorized: IsAuthorized)
+    {
+        val createResult = createProject()
+        assertSecureWithSuccess(isAuthorized,createResult,null)
+
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val createProjectData = getResponseData(createResult)
+            val projectId = createProjectData["id"].asInt()
+            createProjectData["versions"] as ArrayNode
+
+            var result = testRestTemplate.getForEntity<String>("/projects/")
+            var data = getResponseData(result) as ArrayNode
+            assertThat(data.count()).isEqualTo(1)
+
+            val map = LinkedMultiValueMap<String, String>()
+            map.add("name", "renamedProject")
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+            val httpEntity = HttpEntity(map, headers)
+
+            testRestTemplate.postForEntity<String>("/project/$projectId/rename", httpEntity)
+
+            result = testRestTemplate.getForEntity<String>("/projects/")
+            data = getResponseData(result) as ArrayNode
+            assertThat(data.count()).isEqualTo(1)
+
+            val renamedProject = dsl.selectFrom(PROJECT)
+                    .where(PROJECT.ID.eq(projectId))
+                    .fetchOne()
+
+            assertThat(renamedProject[PROJECT.NAME]).isEqualTo("renamedProject")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can return expected English error when delete nonexistent project`(isAuthorized: IsAuthorized)
     {
         val headers = getStandardHeaders("en")

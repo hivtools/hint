@@ -16,6 +16,8 @@ interface ProjectRepository
     fun deleteProject(projectId: Int, userId: String)
     fun getProject(projectId: Int, userId: String): Project
     fun getProjectFromVersionId(versionId: String, userId: String): Project
+    fun renameProject(projectId: Int, userId: String, newName: String)
+    
 }
 
 @Component
@@ -100,6 +102,27 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 .set(PROJECT_VERSION.DELETED, true)
                 .where(PROJECT_VERSION.PROJECT_ID.eq(projectId))
                 .execute()
+    }
+
+    override fun renameProject(projectId: Int, userId: String, name: String)
+    {
+        checkProjectExists(projectId, userId)
+        dsl.update(PROJECT)
+            .set(PROJECT.NAME, name)
+            .where(PROJECT.USER_ID.eq(userId))
+            .and(PROJECT.ID.eq(projectId))
+            .execute()
+    //     dsl.update(PROJECT_VERSION)
+    //             .set(PROJECT_VERSION.DELETED, true)
+    //             .where(PROJECT_VERSION.PROJECT_ID.eq(projectId))
+    //             .execute()
+
+    // val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME)
+    //             .values(userId, projectName)
+    //             .returning(PROJECT.ID)
+    //             .fetchOne()
+
+        // return result[PROJECT.ID]
     }
 
     private fun checkProjectExists(projectId: Int, userId: String)
