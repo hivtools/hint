@@ -155,12 +155,6 @@ class ProjectsController(private val session: Session,
         return SuccessResponse(currentProject).asResponseEntity()
     }
 
-    //  fun promoteVersion(
-    //     @PathVariable("projectId") projectId: Int,
-    //     @PathVariable("versionId") versionId: String,
-    //     @RequestParam("name") name: String): ResponseEntity<String>
-    // {
-
     @PostMapping("/project/{projectId}/rename")
     @ResponseBody
     fun renameProject(
