@@ -282,8 +282,8 @@
                         name: this.renamedProjectName
                     };
                     this.renameProjectAction(projectPayload);
-                    this.versionToPromote = null;
-                    this.newProjectName = "";
+                    this.projectToRename = null;
+                    this.renamedProjectName = "";
                 }
             },
             deleteProject(event: Event, projectId: number) {
