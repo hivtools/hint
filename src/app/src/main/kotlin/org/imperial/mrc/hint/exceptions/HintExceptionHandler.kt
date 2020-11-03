@@ -3,16 +3,22 @@ package org.imperial.mrc.hint.exceptions
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.ErrorDetail.Companion.defaultError
+import org.springframework.beans.ConversionNotSupportedException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.lang.Nullable
+import org.springframework.http.converter.HttpMessageNotWritableException
+import org.springframework.web.HttpMediaTypeNotAcceptableException
+import org.springframework.web.HttpMediaTypeNotSupportedException
+import org.springframework.web.HttpRequestMethodNotSupportedException
+import org.springframework.web.bind.MissingPathVariableException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException
+import org.springframework.web.servlet.ModelAndView
+import org.springframework.web.servlet.NoHandlerFoundException
 import java.lang.reflect.UndeclaredThrowableException
 import java.text.MessageFormat
 import java.util.*
@@ -21,23 +27,10 @@ import java.util.*
 @ControllerAdvice
 class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                            private val appProperties: AppProperties)
-    : ResponseEntityExceptionHandler()
 {
 
-    override fun handleExceptionInternal(e: Exception,
-                                         @Nullable body: Any?,
-                                         headers: HttpHeaders,
-                                         status: HttpStatus,
-                                         request: WebRequest): ResponseEntity<Any>
-    {
-        logger.error(e.message)
-        // this handles standard Spring MVC exceptions which do not contain
-        // sensitive info so we return the original error message here
-        return unexpectedError(status, request, e.message)
-    }
-
     @ExceptionHandler(Exception::class)
-    fun handleArbitraryException(e: Exception, request: WebRequest): ResponseEntity<Any>
+    fun handleArbitraryException(e: Exception, request: WebRequest): Any
     {
         val error = if (e is UndeclaredThrowableException)
         {
@@ -47,20 +40,58 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         {
             e
         }
-        if (error is HintException)
+
+        when (error)
         {
-            return handleHintException(e.cause as HintException, request)
+            is HintException ->
+            {
+                return handleHintException(e.cause as HintException, request)
+            }
+            is HttpRequestMethodNotSupportedException ->
+            {
+                return unexpectedError(HttpStatus.METHOD_NOT_ALLOWED, request)
+            }
+            is HttpMediaTypeNotAcceptableException ->
+            {
+                return unexpectedError(HttpStatus.NOT_ACCEPTABLE, request)
+            }
+            is HttpMediaTypeNotSupportedException ->
+            {
+                return unexpectedError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, request)
+            }
+            is AsyncRequestTimeoutException ->
+            {
+                return unexpectedError(HttpStatus.SERVICE_UNAVAILABLE, request)
+            }
+            is MissingPathVariableException ->
+            {
+                return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
+            }
+            is ConversionNotSupportedException ->
+            {
+                return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
+            }
+            is HttpMessageNotWritableException ->
+            {
+                return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
+            }
+            is NoHandlerFoundException ->
+            {
+                return viewErrorPage("404")
+            }
+            else
+
+                //logger.error(error)
+                // for security reasons we should not return arbitrary errors to the frontend
+                // so do not pass the original error message here
+            -> return unexpectedError(HttpStatus.BAD_REQUEST, request)
         }
-        logger.error(error)
-        // for security reasons we should not return arbitrary errors to the frontend
-        // so do not pass the original error message here
-        return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
     }
 
     @ExceptionHandler(HintException::class)
     fun handleHintException(e: HintException, request: WebRequest): ResponseEntity<Any>
     {
-        logger.error(e.message)
+        //logger.error(e.message)
         return translatedError(e.key, e.httpStatus, request)
     }
 
@@ -111,12 +142,17 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                 .toResponseEntity()
     }
 
-}
+    private fun viewErrorPage(page: String): ModelAndView
+    {
+        return ModelAndView(page)
+    }
 
-// resource bundles are encoded with ISO-8859-1
-fun ResourceBundle.getUTF8String(key: String): String
-{
-    return this.getString(key)
-            .toByteArray(Charsets.ISO_8859_1)
-            .toString(Charsets.UTF_8)
+    // resource bundles are encoded with ISO-8859-1
+    fun ResourceBundle.getUTF8String(key: String): String
+    {
+        return this.getString(key)
+                .toByteArray(Charsets.ISO_8859_1)
+                .toString(Charsets.UTF_8)
+    }
+
 }
