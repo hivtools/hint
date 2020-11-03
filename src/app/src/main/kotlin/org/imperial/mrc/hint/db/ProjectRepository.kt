@@ -112,17 +112,6 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
             .where(PROJECT.USER_ID.eq(userId))
             .and(PROJECT.ID.eq(projectId))
             .execute()
-    //     dsl.update(PROJECT_VERSION)
-    //             .set(PROJECT_VERSION.DELETED, true)
-    //             .where(PROJECT_VERSION.PROJECT_ID.eq(projectId))
-    //             .execute()
-
-    // val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME)
-    //             .values(userId, projectName)
-    //             .returning(PROJECT.ID)
-    //             .fetchOne()
-
-        // return result[PROJECT.ID]
     }
 
     private fun checkProjectExists(projectId: Int, userId: String)
