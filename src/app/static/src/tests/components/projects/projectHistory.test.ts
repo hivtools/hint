@@ -493,4 +493,16 @@ describe("Project history component", () => {
             expect(mockRenameProject.mock.calls.length).toBe(0);
         }
     });
+
+    it("cannot invoke confirmRename if no project is selected", async () => {
+            const wrapper = getWrapper(testProjects);
+            wrapper.setData({ projectToRename: null });
+            wrapper.setData({ renamedProjectName: "renamedProject" })
+            const vm = wrapper.vm as any
+            vm.confirmRename("renamedProject");
+            await Vue.nextTick();
+            expect(mockRenameProject.mock.calls.length).toBe(0);
+            expect(vm.projectToRename).toBe(null);
+            expect(vm.renamedProjectName).toBe("renamedProject");
+    });
 });
