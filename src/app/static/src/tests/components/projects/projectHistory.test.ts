@@ -446,6 +446,7 @@ describe("Project history component", () => {
     it("invokes renameProject action when confirm rename", async () => {
         if (switches.renameProject) {
             const wrapper = getWrapper(testProjects);
+            const vm = wrapper.vm as any
             const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("a");
             renameLink.trigger("click");
             await Vue.nextTick();
@@ -455,6 +456,8 @@ describe("Project history component", () => {
             const renameBtn = modal.find(".modal-footer").findAll("button").at(0);
             input.setValue("renamedProject");
             expect(renameBtn.attributes("disabled")).toBe(undefined);
+            expect(vm.projectToRename).toBe(1);
+            expect(vm.renamedProjectName).toBe("renamedProject");
             renameBtn.trigger("click");
 
             await Vue.nextTick();
@@ -465,6 +468,9 @@ describe("Project history component", () => {
                     "name": "renamedProject",
                     "projectId": 1
                 });
+            expect(vm.projectToRename).toBe(null);
+            expect(vm.renamedProjectName).toBe("");
+            
         }
     });
 
