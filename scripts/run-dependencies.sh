@@ -46,6 +46,4 @@ docker run --rm --network=$NETWORK \
   $DB_MIGRATE_IMAGE \
   -url=jdbc:postgresql://$DB/hint
 
-HERE=$(dirname "$0")
-"$HERE"/add-test-user.sh
-
+$HERE/add-test-user.sh

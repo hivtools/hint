@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -ex
-
-HERE=$(dirname $0)
+HERE=$(realpath "$(dirname $0)")
 . $HERE/common
 
 NETWORK=hint_nw
 HINT=hint
-TEST_CONFIG=$HERE/src/app/static/test.properties
-HINT_IMAGE=mrcide/$HINT:$GIT_BRANCH
+TEST_CONFIG=$HERE/../src/app/static/test.properties
+
+$HERE/../scripts/run-dependencies.sh
 
 # Build and run docker image of app
 $HERE/build.sh node

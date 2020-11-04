@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -ex
-HERE=$(dirname $0)
+HERE=$(realpath "$(dirname $0)")
 
 if [ "$BUILDKITE" = "true" ]; then
     GIT_ID=${BUILDKITE_COMMIT:0:7}
@@ -33,7 +33,3 @@ export APP_DOCKER_BRANCH_TAG=$ORG/hint:$GIT_BRANCH
 export USER_CLI_COMMIT_TAG=$ORG/hint-user-cli:$GIT_ID
 export USER_CLI_BRANCH_TAG=$ORG/hint-user-cli:$GIT_BRANCH
 
-function cleardocker() {
-  $HERE/../scripts/clear-docker.sh
-}
-trap cleardocker EXIT
