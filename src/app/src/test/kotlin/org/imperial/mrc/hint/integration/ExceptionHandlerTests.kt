@@ -70,7 +70,8 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         val result = sut.handleException(mockException, mock())
         JSONValidator().validateError(result!!.body!!.toString(),
                 "OTHER_ERROR",
-                "An unexpected error occurred. If you see this message while you are using AppTitle at a workshop, " +
+                "An unexpected error occurred. If you see this message while you are using " +
+                        "AppTitle at a workshop, " +
                         "please contact your workshop technical support and show them this code: 1234. " +
                         "Otherwise please contact support at support@email.com and quote this code: 1234")
     }
@@ -92,7 +93,8 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         val result = sut.handleException(mockException, mockRequest)
         JSONValidator().validateError(result!!.body!!.toString(),
                 "OTHER_ERROR",
-                "Une erreur inattendue s'est produite. Si vous voyez ce message pendant que vous utilisez AppTitle dans un atelier, " +
+                "Une erreur inattendue s'est produite. Si vous voyez ce message pendant " +
+                        "que vous utilisez AppTitle dans un atelier, " +
                         "veuillez contacter le support technique de votre atelier et leur indiquer ce code : 1234. " +
                         "Sinon, veuillez contacter le support à support@email.com et citer ce code : 1234")
     }
@@ -114,7 +116,8 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         val result = sut.handleException(mockException, mockRequest)
         JSONValidator().validateError(result!!.body!!.toString(),
                 "OTHER_ERROR",
-                "An unexpected error occurred. If you see this message while you are using AppTitle at a workshop, " +
+                "An unexpected error occurred. If you see this message while you are " +
+                        "using AppTitle at a workshop, " +
                         "please contact your workshop technical support and show them this code: 1234. " +
                         "Otherwise please contact support at support@email.com and quote this code: 1234")
     }
