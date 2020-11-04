@@ -36,11 +36,8 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     fun `route not found errors are correctly formatted`()
     {
         val entity = testRestTemplate.getForEntity("/nonsense/route/", String::class.java)
-        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        JSONValidator().validateError(entity.body!!,
-                "OTHER_ERROR",
-                unexpectedErrorRegex,
-                "No handler found for GET /nonsense/route/")
+        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(entity.body).contains("404 Error Page")
     }
 
     @Test
@@ -56,12 +53,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         val badPostEntity = HttpEntity(body, headers)
 
         val entity = testRestTemplate.postForEntity<String>("/disease/survey/", badPostEntity)
-
-        assertError(entity,
-                HttpStatus.BAD_REQUEST,
-                "OTHER_ERROR",
-                unexpectedErrorRegex,
-                "Required request part 'file' is not present")
+        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
@@ -138,10 +130,10 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `does not include original message from arbitrary exceptions`()
+    fun `does not include original message from handle exceptions`()
     {
         val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
-        val result = sut.handleArbitraryException(PSQLException("some message", mock()), mock())
+        val result = sut.handleException(PSQLException("some message", mock()), mock())
         JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
                 unexpectedErrorRegex)
@@ -153,7 +145,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     {
         val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
         val fakeError = UndeclaredThrowableException(HintException("some message", HttpStatus.BAD_REQUEST))
-        val result = sut.handleArbitraryException(fakeError, mock())
+        val result = sut.handleException(fakeError, mock())
         JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
                 "some message")

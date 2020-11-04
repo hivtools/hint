@@ -4,22 +4,30 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.ErrorDetail.Companion.defaultError
 import org.springframework.beans.ConversionNotSupportedException
+import org.springframework.beans.TypeMismatchException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.http.converter.HttpMessageNotWritableException
 import org.springframework.web.HttpMediaTypeNotAcceptableException
 import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.HttpRequestMethodNotSupportedException
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingPathVariableException
+import org.springframework.web.bind.MissingServletRequestParameterException
+import org.springframework.web.bind.ServletRequestBindingException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException
+import org.springframework.web.multipart.support.MissingServletRequestPartException
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.NoHandlerFoundException
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import java.lang.reflect.UndeclaredThrowableException
+import java.net.BindException
 import java.text.MessageFormat
 import java.util.*
 
@@ -29,8 +37,14 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                            private val appProperties: AppProperties)
 {
 
+    @ExceptionHandler(NoHandlerFoundException::class)
+    fun handleNoHandlerFoundException(e: Exception, request: WebRequest): ModelAndView
+    {
+        return viewErrorPage("404")
+    }
+
     @ExceptionHandler(Exception::class)
-    fun handleArbitraryException(e: Exception, request: WebRequest): Any
+    fun handleException(e: Exception, request: WebRequest): ResponseEntity<Any>
     {
         val error = if (e is UndeclaredThrowableException)
         {
@@ -63,28 +77,40 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
             {
                 return unexpectedError(HttpStatus.SERVICE_UNAVAILABLE, request)
             }
-            is MissingPathVariableException ->
+            is MissingServletRequestParameterException ->
             {
-                return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
+                return unexpectedError(HttpStatus.BAD_REQUEST, request)
             }
-            is ConversionNotSupportedException ->
+            is ServletRequestBindingException ->
             {
-                return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
+                return unexpectedError(HttpStatus.BAD_REQUEST, request)
             }
-            is HttpMessageNotWritableException ->
+            is TypeMismatchException ->
             {
-                return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
+                return unexpectedError(HttpStatus.BAD_REQUEST, request)
             }
-            is NoHandlerFoundException ->
+            is HttpMessageNotReadableException ->
             {
-                return viewErrorPage("404")
+                return unexpectedError(HttpStatus.BAD_REQUEST, request)
+            }
+            is MethodArgumentNotValidException ->
+            {
+                return unexpectedError(HttpStatus.BAD_REQUEST, request)
+            }
+            is MissingServletRequestPartException ->
+            {
+                return unexpectedError(HttpStatus.BAD_REQUEST, request)
+            }
+            is BindException ->
+            {
+                return unexpectedError(HttpStatus.BAD_REQUEST, request)
             }
             else
 
                 //logger.error(error)
                 // for security reasons we should not return arbitrary errors to the frontend
                 // so do not pass the original error message here
-            -> return unexpectedError(HttpStatus.BAD_REQUEST, request)
+            -> return unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
         }
     }
 
