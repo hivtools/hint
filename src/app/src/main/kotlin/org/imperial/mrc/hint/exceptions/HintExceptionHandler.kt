@@ -129,7 +129,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
 
     fun handleOtherExceptions(error: Throwable?, request: WebRequest): ResponseEntity<Any>
     {
-        val otherExceptions: ResponseEntity<Any>
+        var otherExceptions: ResponseEntity<Any>? = null
 
         when (error)
         {
@@ -177,8 +177,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
             {
                 otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request)
             }
-            else
-                // for security reasons we should not return arbitrary errors to the frontend
+            else // for security reasons we should not return arbitrary errors to the frontend
                 // so do not pass the original error message here
             -> otherExceptions = unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
         }
