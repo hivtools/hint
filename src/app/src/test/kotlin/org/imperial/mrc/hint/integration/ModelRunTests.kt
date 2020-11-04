@@ -66,6 +66,7 @@ class ModelRunTests : SecureIntegrationTests()
         val entity = getValidationOptions()
         val responseEntity = testRestTemplate.postForEntity<String>("/model/validate/options/", entity)
         Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+        assertSuccess(responseEntity, "ModelOptionsValidate")
     }
 
     @Test
@@ -77,7 +78,6 @@ class ModelRunTests : SecureIntegrationTests()
                 HttpStatus.BAD_REQUEST,
                 "FAILED_TO_RETRIEVE_RESULT", "Failed to fetch result")
     }
-
 
     @Test
     fun `can cancel run model`()
