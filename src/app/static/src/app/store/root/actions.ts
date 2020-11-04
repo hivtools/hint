@@ -32,7 +32,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             //Invalidate any steps which come after the first invalid step
             const maxValidStep = Math.min(...invalidSteps) - 1;
 
-            const promises = [];
+            const promises: Promise<any>[] = [];
 
             if (maxValidStep < 1) {
                 promises.push(dispatch("baseline/deleteAll"));

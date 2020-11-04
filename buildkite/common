@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -ex
+HERE=$(dirname $0)
+
+if [ "$BUILDKITE" = "true" ]; then
+    GIT_ID=${BUILDKITE_COMMIT:0:7}
+else
+    GIT_ID=$(git rev-parse --short=7 HEAD)
+fi
+
+if [ "$BUILDKITE" = "true" ]; then
+    GIT_BRANCH=$BUILDKITE_BRANCH
+else
+    GIT_BRANCH=$(git symbolic-ref --short HEAD)
+fi
+
+# Deal with dependabot tags which look like
+#
+#   dependabot/npm_and_yarn/app/lodash-4.17.19
+#
+# But docker does not like
+GIT_BRANCH=$(echo $GIT_BRANCH | sed 's;/;-;g')
+
+BUILDKITE_DOCKER_AUTH_PATH=/var/lib/buildkite-agent/.docker/config.json
+
+# Export env vars needed for running test dependencies
+export ORG=mrcide
+export GIT_ID=$GIT_ID
+export GIT_BRANCH=$GIT_BRANCH
+export BUILD_ENV_TAG=$ORG/hint-shared-build-env:$GIT_ID
+export APP_DOCKER_COMMIT_TAG=$ORG/hint:$GIT_ID
+export APP_DOCKER_BRANCH_TAG=$ORG/hint:$GIT_BRANCH
+export USER_CLI_COMMIT_TAG=$ORG/hint-user-cli:$GIT_ID
+export USER_CLI_BRANCH_TAG=$ORG/hint-user-cli:$GIT_BRANCH
+
+function cleardocker() {
+  $HERE/../scripts/clear-docker.sh
+}
+trap cleardocker EXIT
