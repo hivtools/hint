@@ -13,7 +13,7 @@
         <button v-if="outOfDateMessage" class="btn btn-white ml-2" @click="refresh" v-translate="'refresh'"></button>
         <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{ selectText }}</button>
         <modal id="dataset" :open="open">
-            <h4 v-if="!loading" v-translate="'refresh'"></h4>
+            <h4 v-if="!loading" v-translate="'browseADR'"></h4>
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
                 <tree-select :multiple="false"
