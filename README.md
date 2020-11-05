@@ -36,6 +36,10 @@ If the database schema has changed, you can regenerate the database interface co
 by running `./src/gradlew -p src :generateDatabaseInterface:run` while the database container is running.
 
 ### Distribution
-A docker image containing the app is created by running `./scripts/build-app.sh`. This is run as part of 
-the Travis build. 
-Run `docker run -p 8080:8080 mrcide/hint:branch_name` to run a built image.
+A docker image containing the app is created as part of the BuildKite build. To create such an image locally,
+run `./buildkite/make-build-env.sh` followed by `./buildkite/build.sh`. A CLI image is also created as part of 
+the BuildKite build, using `./buildkite/build-cli.sh`.
+
+Run `docker run -p 8080:8080 --name hint mrcide/hint:branch_name` to run a built image. The app will not start until 
+config is provided at `/etc/hint/config.properties`. This config is added during deployment with 
+[hint-deploy](https://github.com/mrc-ide/hint-deploy)

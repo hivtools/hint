@@ -3,6 +3,8 @@ set -ex
 HERE=$(dirname $0)
 . $HERE/common
 
+# Optional spring profile argument passed when building a testing image
+# If it is passed, also use it as the image tag
 if [ -z "$1" ]; then
   TAG=$APP_DOCKER_COMMIT_TAG
 else
@@ -21,3 +23,6 @@ docker build --tag=hint-build \
 docker run \
   -v /var/run/docker.sock:/var/run/docker.sock \
   hint-build
+
+# We push created docker image in a separate script so that this script can be re-used
+# to build a local image for front-end integration testing
