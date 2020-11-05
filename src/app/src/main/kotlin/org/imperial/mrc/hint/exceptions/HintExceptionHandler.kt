@@ -6,6 +6,7 @@ import org.imperial.mrc.hint.models.ErrorDetail.Companion.defaultError
 import org.springframework.beans.TypeMismatchException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -32,11 +33,11 @@ import java.util.*
 class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                            private val appProperties: AppProperties)
 {
-
     @ExceptionHandler(NoHandlerFoundException::class)
-    fun handleNoHandlerFoundException(): ModelAndView
+    fun handleNoHandlerFoundException(error: Exception, request: WebRequest): Any
     {
-        return viewErrorPage("404")
+        val page = "404"
+        return handleErrorPage(page, error, request)
     }
 
     @ExceptionHandler(Exception::class)
@@ -114,9 +115,19 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                 .toResponseEntity()
     }
 
-    private fun viewErrorPage(page: String): ModelAndView
+    private fun handleErrorPage(page: String, e: Exception, request: WebRequest): Any
     {
-        return ModelAndView(page)
+        val header = request.getHeader(HttpHeaders.ACCEPT)
+        return if (header!!.contains("html"))
+        {
+            val model = ModelAndView(page)
+            model.status = HttpStatus.NOT_FOUND
+            model
+        }
+        else
+        {
+            unexpectedError(HttpStatus.NOT_FOUND, request, e.message)
+        }
     }
 
     // resource bundles are encoded with ISO-8859-1
@@ -129,53 +140,53 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
 
     fun handleOtherExceptions(error: Throwable?, request: WebRequest): ResponseEntity<Any>
     {
-        var otherExceptions: ResponseEntity<Any>? = null
+        val otherExceptions: ResponseEntity<Any>
 
         when (error)
         {
             is HttpRequestMethodNotSupportedException ->
             {
-                otherExceptions = unexpectedError(HttpStatus.METHOD_NOT_ALLOWED, request)
+                otherExceptions = unexpectedError(HttpStatus.METHOD_NOT_ALLOWED, request, error.message)
             }
             is HttpMediaTypeNotAcceptableException ->
             {
-                otherExceptions = unexpectedError(HttpStatus.NOT_ACCEPTABLE, request)
+                otherExceptions = unexpectedError(HttpStatus.NOT_ACCEPTABLE, request, error.message)
             }
             is HttpMediaTypeNotSupportedException ->
             {
-                otherExceptions = unexpectedError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, request)
+                otherExceptions = unexpectedError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, request, error.message)
             }
             is AsyncRequestTimeoutException ->
             {
-                otherExceptions = unexpectedError(HttpStatus.SERVICE_UNAVAILABLE, request)
+                otherExceptions = unexpectedError(HttpStatus.SERVICE_UNAVAILABLE, request, error.message)
             }
             is MissingServletRequestParameterException ->
             {
-                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request)
+                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request, error.message)
             }
             is ServletRequestBindingException ->
             {
-                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request)
+                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request, error.message)
             }
             is TypeMismatchException ->
             {
-                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request)
+                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request, error.message)
             }
             is HttpMessageNotReadableException ->
             {
-                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request)
+                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request, error.message)
             }
             is MethodArgumentNotValidException ->
             {
-                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request)
+                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request, error.message)
             }
             is MissingServletRequestPartException ->
             {
-                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request)
+                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request, error.message)
             }
             is BindException ->
             {
-                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request)
+                otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request, error.message)
             }
             else // for security reasons we should not return arbitrary errors to the frontend
                 // so do not pass the original error message here

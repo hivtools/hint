@@ -17,15 +17,15 @@ import org.junit.jupiter.api.Test
 import org.postgresql.util.PSQLException
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.core.io.FileSystemResource
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.http.*
 import org.springframework.http.converter.HttpMessageNotWritableException
 import org.springframework.util.LinkedMultiValueMap
+import org.springframework.web.client.RestTemplate
 import org.springframework.web.context.request.WebRequest
+import org.springframework.web.servlet.NoHandlerFoundException
 import java.io.File
 import java.lang.reflect.UndeclaredThrowableException
+import java.util.*
 
 class ExceptionHandlerTests : SecureIntegrationTests()
 {
@@ -36,7 +36,24 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     fun `route not found errors are correctly formatted`()
     {
         val entity = testRestTemplate.getForEntity("/nonsense/route/", String::class.java)
-        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        JSONValidator().validateError(entity.body!!,
+                "OTHER_ERROR",
+                unexpectedErrorRegex,
+                "No handler found for GET /nonsense/route/")
+    }
+
+    @Test
+    fun `not found page is correctly rendered when header accepts html`()
+    {
+        val headers: HttpHeaders = HttpHeaders()
+        headers.accept = Collections.singletonList(MediaType.TEXT_HTML)
+        val httpEntity = HttpEntity("body", headers)
+
+        val entity = testRestTemplate.exchange("/nonsense/route/",
+                HttpMethod.GET, httpEntity, String::class.java)
+
+        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
         Assertions.assertThat(entity.body).contains("404 Error Page")
     }
 
@@ -53,7 +70,12 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         val badPostEntity = HttpEntity(body, headers)
 
         val entity = testRestTemplate.postForEntity<String>("/disease/survey/", badPostEntity)
-        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+
+        assertError(entity,
+                HttpStatus.BAD_REQUEST,
+                "OTHER_ERROR",
+                unexpectedErrorRegex,
+                "Required request part 'file' is not present")
     }
 
     @Test
@@ -68,7 +90,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         }
         val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
         val result = sut.handleException(mockException, mock())
-        JSONValidator().validateError(result!!.body!!.toString(),
+        JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
                 "An unexpected error occurred. If you see this message while you are using " +
                         "AppTitle at a workshop, " +
@@ -91,7 +113,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         }
         val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
         val result = sut.handleException(mockException, mockRequest)
-        JSONValidator().validateError(result!!.body!!.toString(),
+        JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
                 "Une erreur inattendue s'est produite. Si vous voyez ce message pendant " +
                         "que vous utilisez AppTitle dans un atelier, " +
@@ -114,7 +136,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         }
         val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
         val result = sut.handleException(mockException, mockRequest)
-        JSONValidator().validateError(result!!.body!!.toString(),
+        JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
                 "An unexpected error occurred. If you see this message while you are " +
                         "using AppTitle at a workshop, " +
