@@ -122,7 +122,7 @@ describe("select dataset", () => {
     it("renders select dataset button when no dataset is selected", () => {
         let store = getStore()
         const rendered = shallowMount(SelectDataset, {store});
-        expectTranslated(rendered.find("button"), "Select ADR dataset", "Sélectionnez l'ensemble de données ADR", store);
+        expectTranslated(rendered.find("button"), "Select ADR dataset", "Sélectionner l’ensemble de données ADR", store);
     });
 
     it("renders edit dataset button when dataset is already selected", () => {
@@ -295,7 +295,7 @@ describe("select dataset", () => {
             selectedDataset: fakeDataset
         })
         const rendered = shallowMount(SelectDataset, { store });
-        expectTranslated(rendered.find(".font-weight-bold"), "Selected dataset:", "Ensemble de données sélectionné:", store);
+        expectTranslated(rendered.find(".font-weight-bold"), "Selected dataset:", "Ensemble de données sélectionné :", store);
         expect(rendered.find("a").text()).toBe("Some data");
         expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
     });
