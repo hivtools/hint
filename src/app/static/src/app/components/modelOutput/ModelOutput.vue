@@ -47,6 +47,7 @@
                     :filter-config="filterConfig"
                     :indicators="barchartIndicators"
                     :selections="barchartSelections"
+                    :formatFunction="formatBarchartValue"
                     @update="updateBarchartSelections({payload: $event})"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
@@ -116,6 +117,7 @@
     import {LevelLabel} from "../../types";
     import {mapState} from "vuex";
     import {ChoroplethIndicatorMetadata} from "../../generated";
+    import {formatOutput} from "../plots/utils";
 
     const namespace = 'filteredData';
 
@@ -128,6 +130,7 @@
         updateBarchartSelections: (data: BarchartSelections) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
         updateOutputColourScales: (colourScales: ColourScaleSelections) => void
+        formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string
     }
 
     interface Computed {
@@ -223,7 +226,10 @@
             ...mapMutationsByNames<keyof Methods>("plottingSelections",
                 ["updateBarchartSelections", "updateBubblePlotSelections", "updateOutputChoroplethSelections",
                     "updateOutputColourScales"]),
-            tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected)
+            tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
+            formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
+                return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
+            }
         },
         components: {
             BarChartWithFilters,
