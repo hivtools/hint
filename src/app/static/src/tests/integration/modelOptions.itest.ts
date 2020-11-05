@@ -43,19 +43,7 @@ describe("model options actions integration", () => {
     
     it("can validate model options", async () => {
         const commit = jest.fn();
-        const options =  {
-        anc_prevalence_year1:"2018",
-        anc_art_coverage_year1 : "2018",
-        anc_prevalence_year2 : "2018",
-        area_level : "4",
-        area_scope : "MWI",
-        artattend : "false",
-        artattend_log_gamma_offset : -4,
-        artattend_t2 : "true",
-        calendar_quarter_t1 : "CY2018Q3",
-        calendar_quarter_t2 : "CY2019Q4",
-        calendar_quarter_t3 : "CY2020Q3"
-       }
+        const options =  jest.fn()
         const version = jest.fn()
       
         const mockState = {
