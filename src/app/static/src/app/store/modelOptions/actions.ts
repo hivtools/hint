@@ -31,7 +31,6 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
         commit(ModelOptionsMutation.LoadUpdatedOptions, payload);
         const options = rootState.modelOptions.options;
         const version = rootState.modelOptions.version;
-        console.log(options)
         await api<ModelOptionsMutation, ModelOptionsMutation>(context)
             .withSuccess(ModelOptionsMutation.Validate)
             .withError(ModelOptionsMutation.HasValidationError)
