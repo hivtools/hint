@@ -193,15 +193,14 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         const {state, dispatch, commit} = context;
         const {projectId, name} = projectPayload
 
-        if (state.currentProject && state.currentProject.id === projectId) {
-            commit({type: ProjectsMutations.ClearCurrentVersion});
-        }
-
         await api<ProjectsMutations, ErrorsMutation>(context)
             .ignoreSuccess()
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`/project/${projectId}/rename`, qs.stringify({name}))
             .then(() => {
+                if (state.currentProject && state.currentProject.id === projectId) {
+                    dispatch("getCurrentProject")
+                }
                 dispatch("getProjects");
             });
     },

@@ -322,12 +322,7 @@ class ProjectTests : VersionFileTests()
             result = testRestTemplate.getForEntity<String>("/projects/")
             data = getResponseData(result) as ArrayNode
             assertThat(data.count()).isEqualTo(1)
-
-            val renamedProject = dsl.selectFrom(PROJECT)
-                    .where(PROJECT.ID.eq(projectId))
-                    .fetchOne()
-
-            assertThat(renamedProject[PROJECT.NAME]).isEqualTo("renamedProject")
+            assertThat(data[0]["name"].asText()).isEqualTo("renamedProject")
         }
     }
 

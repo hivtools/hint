@@ -162,10 +162,6 @@ class ProjectsController(private val session: Session,
         @RequestParam("name") name: String): ResponseEntity<String>
     {
         projectRepository.renameProject(projectId, userId(), name)
-        val currentProject = projectRepository.getProjectFromVersionId(session.getVersionId(), userId())
-        if (currentProject.id == projectId){
-            session.setVersionId(null)
-        }
         return EmptySuccessResponse.asResponseEntity()
     }
 
