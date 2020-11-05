@@ -96,7 +96,8 @@ export interface VersionIds {
 }
 
 export interface DatasetResource {
-    revisionId: string
+    lastModified: string,
+    metadataModified: string,
     url: string
     outOfDate: boolean
 }

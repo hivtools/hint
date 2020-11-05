@@ -27,19 +27,18 @@ describe("select dataset", () => {
         survey: "survey"
     }
 
-    const pjnz = {resource_type: schemas.pjnz, url: "pjnz.pjnz", revision_id: "pj1234"}
-    const shape = {resource_type: schemas.shape, url: "shape.geojson", revision_id: "sh1234"}
-    const pop = {resource_type: schemas.population, url: "pop.csv", revision_id: "po1234"}
-    const survey = {resource_type: schemas.survey, url: "survey.csv", revision_id: "su1234"}
-    const program = {resource_type: schemas.programme, url: "program.csv", revision_id: "pr1234"}
-    const anc = {resource_type: schemas.anc, url: "anc.csv", revision_id: "an1234"}
+    const pjnz = {resource_type: schemas.pjnz, url: "pjnz.pjnz", last_modified: "2020-11-01", metadata_modified: "2020-11-02"}
+    const shape = {resource_type: schemas.shape, url: "shape.geojson", last_modified: "2020-11-03", metadata_modified: "2020-11-04"}
+    const pop = {resource_type: schemas.population, url: "pop.csv", last_modified: "2020-11-05", metadata_modified: "2020-11-06"}
+    const survey = {resource_type: schemas.survey, url: "survey.csv", last_modified: "2020-11-07", metadata_modified: "2020-11-08"}
+    const program = {resource_type: schemas.programme, url: "program.csv", last_modified: "2020-11-07", metadata_modified: "2020-11-08"}
+    const anc = {resource_type: schemas.anc, url: "anc.csv", last_modified: "2020-11-09", metadata_modified: "2020-11-10"}
 
     const fakeRawDatasets = [{
         id: "id1",
         title: "Some data",
         organization: {title: "org"},
         name: "some-data",
-        revision_id: "456",
         type: "naomi-data",
         resources: []
     }]
@@ -53,7 +52,7 @@ describe("select dataset", () => {
             program: null,
             pop: null,
             survey: null,
-            shape: mockDatasetResource({url: "shape.geojson", revisionId: "sh1234"}),
+            shape: mockDatasetResource({url: "shape.geojson", lastModified: "2020-11-03", metadataModified: "2020-11-04"}),
             anc: null
         }
     }

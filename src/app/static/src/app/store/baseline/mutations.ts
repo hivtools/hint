@@ -58,8 +58,9 @@ export const mutations: MutationTree<BaselineState> = {
                     resources[key] = null;
                     return;
                 }
-                if (!resources[key] || (resources[key]!.revisionId != payload[key]!.revisionId)) {
-                    // previous data was null OR has a different revision id
+                if (!resources[key] || (resources[key]!.lastModified != payload[key]!.lastModified)
+                        || (resources[key]!.metadataModified != payload[key]!.metadataModified)) {
+                    // previous data was null OR has a different last modified or metadata modified
                     // so update metadata and mark as out of date
                     resources[key] = payload[key];
                     resources[key]!.outOfDate = true;

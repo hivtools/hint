@@ -354,18 +354,18 @@ describe("Baseline actions", () => {
         expect(mockAxios.history["delete"].length).toBe(3)
     });
 
-    it("refreshes dataset metdata", async () => {
+    it("refreshes dataset metadata", async () => {
 
         mockAxios.onGet("/adr/datasets/1234")
             .reply(200, mockSuccess({
                 resources: [
-                    {url: "something.com", revision_id: "po1234", resource_type: "pop"},
-                    {url: "something.com", revision_id: "pj1234", resource_type: "pjnz"},
-                    {url: "something.com", revision_id: "sh1234", resource_type: "shape"},
-                    {url: "something.com", revision_id: "su1234", resource_type: "survey"},
-                    {url: "something.com", revision_id: "pr1234", resource_type: "program"},
-                    {url: "something.com", revision_id: "an1234", resource_type: "anc"},
-                    {url: "something.com", revision_id: "ra1234", resource_type: "random"},
+                    {url: "something.com", last_modified: "2020-11-01", metadata_modified: "2020-11-02", resource_type: "pop"},
+                    {url: "something.com", last_modified: "2020-11-03", metadata_modified: "2020-11-04", resource_type: "pjnz"},
+                    {url: "something.com", last_modified: "2020-11-05", metadata_modified: "2020-11-06", resource_type: "shape"},
+                    {url: "something.com", last_modified: "2020-11-07", metadata_modified: "2020-11-08", resource_type: "survey"},
+                    {url: "something.com", last_modified: "2020-11-09", metadata_modified: "2020-11-10", resource_type: "program"},
+                    {url: "something.com", last_modified: "2020-11-11", metadata_modified: "2020-11-12", resource_type: "anc"},
+                    {url: "something.com", last_modified: "2020-10-01", metadata_modified: "2020-10-02", resource_type: "random"},
 
                 ]
             }))
@@ -379,12 +379,12 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[0][0]).toBe(BaselineMutation.UpdateDatasetResources);
         expect(commit.mock.calls[0][1]).toEqual({
-            pjnz: mockDatasetResource({url: "something.com", revisionId: "pj1234"}),
-            shape: mockDatasetResource({url: "something.com", revisionId: "sh1234"}),
-            pop: mockDatasetResource({url: "something.com", revisionId: "po1234"}),
-            survey: mockDatasetResource({url: "something.com", revisionId: "su1234"}),
-            program: mockDatasetResource({url: "something.com", revisionId: "pr1234"}),
-            anc: mockDatasetResource({url: "something.com", revisionId: "an1234"})
+            pjnz: mockDatasetResource({url: "something.com", lastModified: "2020-11-03", metadataModified: "2020-11-04",}),
+            shape: mockDatasetResource({url: "something.com", lastModified: "2020-11-05", metadataModified: "2020-11-06"}),
+            pop: mockDatasetResource({url: "something.com", lastModified: "2020-11-01", metadataModified: "2020-11-02"}),
+            survey: mockDatasetResource({url: "something.com", lastModified: "2020-11-07", metadataModified: "2020-11-08"}),
+            program: mockDatasetResource({url: "something.com", lastModified: "2020-11-09", metadataModified: "2020-11-10"}),
+            anc: mockDatasetResource({url: "something.com", lastModified: "2020-11-11", metadataModified: "2020-11-12",})
         });
     });
 
@@ -393,7 +393,7 @@ describe("Baseline actions", () => {
         mockAxios.onGet("/adr/datasets/1234")
             .reply(200, mockSuccess({
                 resources: [
-                    {url: "something.com", revision_id: "ra1234", resource_type: "random"},
+                    {url: "something.com", last_modified: "2020-11-01", metadata_modified: "2020-11-02", resource_type: "random"},
 
                 ]
             }))
