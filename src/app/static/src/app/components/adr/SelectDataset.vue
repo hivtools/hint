@@ -203,7 +203,11 @@
             importANC: mapActionByName("surveyAndProgram", "importANC"),
             findResource(datasetWithResources: any, resourceType: string) {
                 const metadata = datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
-                return metadata ? {url: metadata.url, revisionId: metadata.revision_id, outOfDate: false} : null
+                return metadata ? {
+                    url: metadata.url,
+                    lastModified: metadata.last_modified,
+                    metadataModified: metadata.metadata_modified,
+                    outOfDate: false} : null
             },
             async importDataset() {
                 this.loading = true;
