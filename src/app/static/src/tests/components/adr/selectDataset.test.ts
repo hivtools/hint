@@ -345,7 +345,7 @@ describe("select dataset", () => {
             {adrDatasets: [{...fakeRawDatasets[0], resources: [shape]}]}
         )
         const rendered = mount(SelectDataset, {
-            store, sync: false, stubs: ["tree-select"]
+            store, stubs: ["tree-select"]
         });
         rendered.find("button").trigger("click");
 
@@ -354,8 +354,7 @@ describe("select dataset", () => {
         expect(rendered.findAll(TreeSelect).length).toBe(1);
         expect(rendered.find(Modal).findAll("button").length).toBe(2);
         expect(rendered.findAll("p").length).toBe(0);
-        expect(rendered.find("h4").text()).toBe("Browse ADR");
-        // expectTranslated(rendered.find("h4"), "Browse ADR", "Parcourir ADR", store);
+        expectTranslated(rendered.find("h4"), "Browse ADR", "Chercher ADR", store);
 
         rendered.setData({newDatasetId: "id1"});
         rendered.find(Modal).find("button").trigger("click");
@@ -368,12 +367,10 @@ describe("select dataset", () => {
         expect(rendered.findAll(TreeSelect).length).toBe(0);
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
         expect(buttons.length).toBe(0);
-        expect(rendered.find("p").text())
-            .toBe("Importing files - this may take several minutes. Please do not close your browser.");
-        // expectTranslated(rendered.find("p"), 
-        // "Importing files - this may take several minutes. Please do not close your browser.", 
-        // "Importation de fichiers - cela peut prendre plusieurs minutes. Veuillez ne pas fermer votre navigateur.", 
-        // store);
+        expectTranslated(rendered.find("p"), 
+        "Importing files - this may take several minutes. Please do not close your browser.", 
+        "Importation de fichiers - cela peut prendre plusieurs minutes. Veuillez ne pas fermer votre navigateur.", 
+        store);
         expect(rendered.findAll("h4").length).toBe(0);
 
         await Vue.nextTick();
