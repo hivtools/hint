@@ -15,7 +15,7 @@ class ADRClientTests
     fun `can parse successful response from ADR`()
     {
         val sut = ADRFuelClient(ConfiguredAppProperties(), "fakekey")
-        val response = sut.get("/organization_list_for_user")
+        val response = sut.get("organization_list_for_user")
         assertThat(response.statusCodeValue).isEqualTo(200)
         val data = ObjectMapper().readValue<JsonNode>(response.body!!)["data"]
         assertThat(data.isArray).isTrue()
@@ -26,7 +26,7 @@ class ADRClientTests
     fun `can parse error response from ADR`()
     {
         val sut = ADRFuelClient(ConfiguredAppProperties(), "fakekey")
-        val response = sut.get("/member_list?id=nonsense")
+        val response = sut.get("member_list?id=nonsense")
         assertThat(response.statusCodeValue).isEqualTo(500)
         val errors = ObjectMapper().readValue<JsonNode>(response.body!!)["errors"]
         assertThat(errors.isArray).isTrue()
@@ -39,7 +39,7 @@ class ADRClientTests
     fun `returns error if ADR response not correctly formatted`()
     {
         val sut = ADRFuelClient(ConfiguredAppProperties(), "fakekey")
-        val response = sut.get("/garbage")
+        val response = sut.get("garbage")
         assertThat(response.statusCodeValue).isEqualTo(500)
         val errors = ObjectMapper().readValue<JsonNode>(response.body!!)["errors"]
         assertThat(errors.isArray).isTrue()

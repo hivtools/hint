@@ -214,9 +214,20 @@ describe("Baseline mutations", () => {
         expect(testState.selectedDataset!!.resources.pjnz).toEqual({...fakeResource, outOfDate: true});
     });
 
-    it("UpdateDatasetResources marks resource as out of date and updates metadata if revision id changed", () => {
-        const oldResource = mockDatasetResource({revisionId: "1234"});
-        const newResouce = mockDatasetResource({revisionId: "5678"});
+    it("UpdateDatasetResources marks resource as out of date and updates metadata if last modified changed", () => {
+        const oldResource = mockDatasetResource({lastModified: "2020-11-04T00:00:00", metadataModified: "2020-11-03T00:00:00"});
+        const newResouce = mockDatasetResource({lastModified: "2020-11-05T00:00:00", metadataModified: "2020-11-03T00:00:00"});
+        const fakeDataset = mockDataset();
+        fakeDataset.resources.pjnz = oldResource;
+        const testState = mockBaselineState({selectedDataset: fakeDataset});
+        mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: newResouce} as any);
+
+        expect(testState.selectedDataset!!.resources.pjnz).toEqual({...newResouce, outOfDate: true});
+    });
+
+    it("UpdateDatasetResources marks resource as out of date and updates metadata if metadata modified changed", () => {
+        const oldResource = mockDatasetResource({lastModified: "2020-11-03T00:00:00", metadataModified: "2020-11-04T00:00:00"});
+        const newResouce = mockDatasetResource({lastModified: "2020-11-03T00:00:00", metadataModified: "2020-11-05T00:00:00"});
         const fakeDataset = mockDataset();
         fakeDataset.resources.pjnz = oldResource;
         const testState = mockBaselineState({selectedDataset: fakeDataset});
@@ -234,9 +245,11 @@ describe("Baseline mutations", () => {
         expect(testState.selectedDataset!!.resources.pjnz).toEqual(null);
     });
 
-    it("UpdateDatasetResources does nothing if revision ids match", () => {
-        const oldResource = mockDatasetResource({revisionId: "1234", outOfDate: false});
-        const newResource = mockDatasetResource({revisionId: "1234"});
+    it("UpdateDatasetResources does nothing if modified values both  match", () => {
+        const oldResource = mockDatasetResource({lastModified: "2020-11-03T00:00:00",
+                                                        metadataModified: "2020-11-04T00:00:00",outOfDate: false});
+        const newResource = mockDatasetResource({lastModified: "2020-11-03T00:00:00",
+                                                        metadataModified: "2020-11-04T00:00:00"});
         const fakeDataset = mockDataset();
         fakeDataset.resources.pjnz = oldResource;
         const testState = mockBaselineState({selectedDataset: fakeDataset});

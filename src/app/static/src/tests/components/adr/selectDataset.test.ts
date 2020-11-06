@@ -27,19 +27,18 @@ describe("select dataset", () => {
         survey: "survey"
     }
 
-    const pjnz = {resource_type: schemas.pjnz, url: "pjnz.pjnz", revision_id: "pj1234"}
-    const shape = {resource_type: schemas.shape, url: "shape.geojson", revision_id: "sh1234"}
-    const pop = {resource_type: schemas.population, url: "pop.csv", revision_id: "po1234"}
-    const survey = {resource_type: schemas.survey, url: "survey.csv", revision_id: "su1234"}
-    const program = {resource_type: schemas.programme, url: "program.csv", revision_id: "pr1234"}
-    const anc = {resource_type: schemas.anc, url: "anc.csv", revision_id: "an1234"}
+    const pjnz = {resource_type: schemas.pjnz, url: "pjnz.pjnz", last_modified: "2020-11-01", metadata_modified: "2020-11-02"}
+    const shape = {resource_type: schemas.shape, url: "shape.geojson", last_modified: "2020-11-03", metadata_modified: "2020-11-04"}
+    const pop = {resource_type: schemas.population, url: "pop.csv", last_modified: "2020-11-05", metadata_modified: "2020-11-06"}
+    const survey = {resource_type: schemas.survey, url: "survey.csv", last_modified: "2020-11-07", metadata_modified: "2020-11-08"}
+    const program = {resource_type: schemas.programme, url: "program.csv", last_modified: "2020-11-07", metadata_modified: "2020-11-08"}
+    const anc = {resource_type: schemas.anc, url: "anc.csv", last_modified: "2020-11-09", metadata_modified: "2020-11-10"}
 
     const fakeRawDatasets = [{
         id: "id1",
         title: "Some data",
         organization: {title: "org"},
         name: "some-data",
-        revision_id: "456",
         type: "naomi-data",
         resources: []
     }]
@@ -53,7 +52,7 @@ describe("select dataset", () => {
             program: null,
             pop: null,
             survey: null,
-            shape: mockDatasetResource({url: "shape.geojson", revisionId: "sh1234"}),
+            shape: mockDatasetResource({url: "shape.geojson", lastModified: "2020-11-03", metadataModified: "2020-11-04"}),
             anc: null
         }
     }
@@ -99,13 +98,20 @@ describe("select dataset", () => {
         });
     }
 
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+
     afterEach(() => {
         jest.resetAllMocks();
     });
 
-    it("refreshes selected dataset metdata on mount", () => {
+    it("refreshes selected dataset metdata on mount and sets interval to poll refresh", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
+        expect((rendered.vm as any).pollingId).not.toBeNull();
         expect((baselineActions.refreshDatasetMetadata as Mock).mock.calls.length).toBe(1);
+        jest.advanceTimersByTime(10000);
+        expect((baselineActions.refreshDatasetMetadata as Mock).mock.calls.length).toBe(2);
     });
 
     it("renders select dataset button when no dataset is selected", () => {
@@ -182,6 +188,27 @@ describe("select dataset", () => {
         await Vue.nextTick();
 
         expect(markResourcesUpdatedMock.mock.calls.length).toBe(1);
+    });
+
+    it("refresh stops and starts polling for dataset metadata changes", async () => {
+        const fakeDataset = mockDataset();
+        fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"})
+        const store = getStore({selectedDataset: fakeDataset});
+        const rendered = shallowMount(SelectDataset, {store, sync: false});
+
+        const oldPollingId = (rendered.vm as any).pollingId;
+        const clearIntervalSpy = jest.spyOn(window, "clearInterval");
+        const setIntervalSpy = jest.spyOn(window, "setInterval");
+
+        rendered.findAll("button").at(0).trigger("click");
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(clearIntervalSpy.mock.calls[0][0]).toBe(oldPollingId);
+        expect(setIntervalSpy.mock.calls[0][0]).toBe((rendered.vm as any).refreshDatasetMetadata);
+        expect(setIntervalSpy.mock.calls[0][1]).toBe(10000);
+        expect((rendered.vm as any).pollingId).not.toBe(oldPollingId);
     });
 
     it("renders modal and spinner while refreshing", async () => {
@@ -532,6 +559,14 @@ describe("select dataset", () => {
 
         expect(rendered.findAll(LoadingSpinner).length).toBe(0);
         expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("stops polling dataset metadata on beforeDestroy", () => {
+        const rendered = shallowMount(SelectDataset, {store: getStore()});
+        const pollingId = (rendered.vm as any).pollingId;
+        const spy = jest.spyOn(window, "clearInterval");
+        rendered.destroy();
+        expect(spy.mock.calls[0][0]).toBe(pollingId);
     });
 
 });

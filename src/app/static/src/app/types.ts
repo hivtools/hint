@@ -45,7 +45,10 @@ export interface BarchartIndicator {
     indicator_value: string,
     name: string,
     error_low_column: string,
-    error_high_column: string
+    error_high_column: string,
+    format: string,
+    scale: number,
+    accuracy: number | null
 }
 
 export interface Filter {
@@ -93,7 +96,8 @@ export interface VersionIds {
 }
 
 export interface DatasetResource {
-    revisionId: string
+    lastModified: string,
+    metadataModified: string,
     url: string
     outOfDate: boolean
 }

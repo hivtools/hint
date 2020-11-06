@@ -71,6 +71,8 @@
         refresh: () => void
         refreshDatasetMetadata: () => void
         markResourcesUpdated: () => void
+        startPolling: () => void
+        stopPolling: () => void
     }
 
     interface Computed {
@@ -88,7 +90,8 @@
     interface Data {
         open: boolean
         loading: boolean
-        newDatasetId: string | null
+        newDatasetId: string | null,
+        pollingId: number | null
     }
 
     const names: { [k in keyof DatasetResourceSet]: string } = {
@@ -105,7 +108,8 @@
             return {
                 open: false,
                 loading: false,
-                newDatasetId: null
+                newDatasetId: null,
+                pollingId: null
             }
         },
         components: {Modal, TreeSelect, LoadingSpinner, InfoIcon},
@@ -188,7 +192,11 @@
             importANC: mapActionByName("surveyAndProgram", "importANC"),
             findResource(datasetWithResources: any, resourceType: string) {
                 const metadata = datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
-                return metadata ? {url: metadata.url, revisionId: metadata.revision_id, outOfDate: false} : null
+                return metadata ? {
+                    url: metadata.url,
+                    lastModified: metadata.last_modified,
+                    metadataModified: metadata.metadata_modified,
+                    outOfDate: false} : null
             },
             async importDataset() {
                 this.loading = true;
@@ -211,6 +219,8 @@
                 this.open = false;
             },
             async refresh() {
+                this.stopPolling();
+
                 this.loading = true;
                 this.open = true;
                 const {pjnz, pop, shape, survey, program, anc} = this.selectedDataset!.resources;
@@ -236,13 +246,27 @@
                 this.markResourcesUpdated();
                 this.loading = false;
                 this.open = false;
+
+                this.startPolling();
             },
             toggleModal() {
                 this.open = !this.open;
+            },
+            startPolling() {
+                this.pollingId = window.setInterval(this.refreshDatasetMetadata, 10000);
+            },
+            stopPolling() {
+                if (this.pollingId) {
+                    window.clearInterval(this.pollingId);
+                }
             }
-        },
+         },
         mounted() {
             this.refreshDatasetMetadata();
+            this.startPolling();
+        },
+        beforeDestroy() {
+            this.stopPolling();
         }
     })
 </script>
