@@ -15,10 +15,12 @@ or to test locally, from root of hint repository:
 
 This will run the pushed container for the current commit. 
 
-To build and push the `hint-user-cli` container, run `./scripts/build` and `./scripts/push` from the userCLI folder.
-
 You can also run `/scripts/add-test-user.sh` after dependencies are running, to add a user `test.user@example.com` with
 password `password` 
+
+### Deployment
+To build and push the `hint-user-cli` container, run `./buildkite/build-cli.sh` from the root of this repo.
+This happens automatically during the BuildKite build.
 
 ### Commands
 #### Add user

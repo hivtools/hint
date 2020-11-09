@@ -185,4 +185,30 @@ describe("Projects actions", () => {
             done();
         });
     });
+
+    it("can rename project", async (done) => {
+        const state = initialProjectsState();
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        await actions.createProject({commit, rootState, state} as any, "v1");
+        expect(commit.mock.calls.length).toBe(2);
+
+        const createdProject = commit.mock.calls[1][0]["payload"];
+        state.currentProject = createdProject;
+        state.currentVersion = createdProject.versions[0];
+        const projectPayload = {
+            projectId: state.currentProject!.id,
+            name: 'renamedProject'
+        };
+
+        await actions.renameProject({commit, dispatch, state, rootState} as any, projectPayload);
+        setTimeout(() => {
+            expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
+            expect(commit.mock.calls.length).toBe(3);
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            done();
+        });
+    });
+
 });

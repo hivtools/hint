@@ -2,7 +2,7 @@ import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {RootState} from "../../root";
-import {ChoroplethIndicatorMetadata, PlottingMetadataResponse, Error} from "../../generated";
+import {ChoroplethIndicatorMetadata, PlottingMetadataResponse, Error, Metadata} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
 
@@ -31,7 +31,7 @@ export const metadataGetters = {
 
         const selectedDataType = rootState.surveyAndProgram.selectedDataType;
 
-        let metadataForType = null;
+        let metadataForType: Metadata | null = null;
         switch (selectedDataType) {
             case (DataType.ANC):
                 metadataForType = plottingMetadata.anc;

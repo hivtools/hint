@@ -1,5 +1,5 @@
 ## HINT - HIV Indicators Tool
-[![Build Status](https://travis-ci.com/mrc-ide/hint.svg?branch=master)](https://travis-ci.com/mrc-ide/hint)
+[![Build status](https://badge.buildkite.com/852c7813506262f88e18bcd995db00e718bf63dc493a2bd4d2.svg)](https://buildkite.com/mrc-ide/hint)
 [![codecov](https://codecov.io/gh/mrc-ide/hint/branch/master/graph/badge.svg)](https://codecov.io/gh/mrc-ide/hint)
 
 [SpringBoot](https://spring.io/projects/spring-boot) Kotlin web app for interfacing with the [Naomi model](https://github.com/mrc-ide/naomi-dev) for joint small-area estimation of HIV prevalence, ART coverage, and HIV incidence via the [hintr package](https://github.com/mrc-ide/hintr)
@@ -36,6 +36,10 @@ If the database schema has changed, you can regenerate the database interface co
 by running `./src/gradlew -p src :generateDatabaseInterface:run` while the database container is running.
 
 ### Distribution
-A docker image containing the app is created by running `./scripts/build-app.sh`. This is run as part of 
-the Travis build. 
-Run `docker run -p 8080:8080 mrcide/hint:branch_name` to run a built image.
+A docker image containing the app is created as part of the BuildKite build. To create such an image locally,
+run `./buildkite/make-build-env.sh` followed by `./buildkite/build.sh`. A CLI image is also created as part of 
+the BuildKite build, using `./buildkite/build-cli.sh`.
+
+Run `docker run -p 8080:8080 --name hint mrcide/hint:branch_name` to run a built image. The app will not start until 
+config is provided at `/etc/hint/config.properties`. This config is added during deployment with 
+[hint-deploy](https://github.com/mrc-ide/hint-deploy)
