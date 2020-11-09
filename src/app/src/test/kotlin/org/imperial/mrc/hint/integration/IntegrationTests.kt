@@ -60,6 +60,18 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         return HttpEntity(jsonString, headers)
     }
 
+    protected fun getValidationOptions(): HttpEntity<String>
+    {
+        uploadMinimalFiles()
+        val modelRunOptions = ModelRunOptions(getMockOptions(), emptyMap())
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        val jsonString = ObjectMapper().writeValueAsString(modelRunOptions)
+        return HttpEntity(jsonString, headers)
+    }
+
+
     protected val parser = ObjectMapper()
 
     protected fun uploadMinimalFiles()
@@ -78,8 +90,8 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     }
 
     fun assertSecureWithHttpStatus(isAuthorized: IsAuthorized,
-                                responseEntity: ResponseEntity<String>,
-                                schemaName: String?, httpStatus: HttpStatus)
+                                   responseEntity: ResponseEntity<String>,
+                                   schemaName: String?, httpStatus: HttpStatus)
     {
 
         when (isAuthorized)
@@ -239,5 +251,38 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     protected fun getResponseData(entity: ResponseEntity<String>): JsonNode
     {
         return ObjectMapper().readTree(entity.body)["data"]
+    }
+
+    fun getMockOptions(): Map<String, Any>
+    {
+        return mapOf("anc_art_coverage_year1" to "2018",
+                "anc_prevalence_year1" to "2018",
+                "anc_prevalence_year2" to "2018",
+                "area_level" to "4", "area_scope" to "MWI",
+                "artattend" to "false",
+                "artattend_log_gamma_offset" to -4,
+                "artattend_t2" to "true",
+                "calendar_quarter_t1" to "CY2018Q3",
+                "calendar_quarter_t2" to "CY2019Q4",
+                "calendar_quarter_t3" to "CY2020Q3",
+                "deff_artcov" to 1,
+                "deff_prev" to 1,
+                "deff_recent" to 1,
+                "include_art_t1" to "false",
+                "include_art_t2" to "false",
+                "max_iterations" to 250,
+                "no_of_samples" to 1000,
+                "permissive" to "false",
+                "rng_seed" to 28,
+                "spectrum_artnum_calibration_level" to "national",
+                "spectrum_artnum_calibration_strat" to "sex_age_coarse",
+                "spectrum_infections_calibration_level" to "national",
+                "spectrum_infections_calibration_strat" to "sex_age_coarse",
+                "spectrum_plhiv_calibration_level" to "national",
+                "spectrum_plhiv_calibration_strat" to "sex_age_coarse",
+                "spectrum_population_calibration" to "national",
+                "survey_art_coverage" to { "MWI2016PHIA" },
+                "survey_prevalence" to { "MWI2016PHIA" },
+                "survey_recently_infected" to { "MWI2016PHIA" })
     }
 }

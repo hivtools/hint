@@ -20,6 +20,14 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.submit(allFiles, modelRunOptions)
     }
 
+    @PostMapping("/validate/options/")
+    @ResponseBody
+    fun validateModelOptions(@RequestBody modelRunOptions: ModelRunOptions): ResponseEntity<String>
+    {
+        val allFiles = fileManager.getFiles()
+        return apiClient.validateModelOptions(allFiles, modelRunOptions)
+    }
+
     @GetMapping("/status/{id}")
     @ResponseBody
     fun status(@PathVariable("id") id: String): ResponseEntity<String>

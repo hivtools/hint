@@ -19,7 +19,8 @@ currentUser = "guest";
 describe("Model options component when edit confirmation is required", () => {
 
     const mockActions = {
-        fetchModelRunOptions: jest.fn()
+        fetchModelRunOptions: jest.fn(),
+        validateModelOptions: jest.fn()
     };
 
     const mockMutations = {
