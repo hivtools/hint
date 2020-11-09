@@ -26,6 +26,7 @@ describe("Project history component", () => {
     const mockDeleteVersion = jest.fn();
     const mockLoad = jest.fn();
     const mockPromoteVersion = jest.fn();
+    const mockRenameProject = jest.fn();
 
     function createStore(projects: Project[] = testProjects) {
         const store = new Vuex.Store({
@@ -38,7 +39,8 @@ describe("Project history component", () => {
                         deleteVersion: mockDeleteVersion,
                         deleteProject: mockDeleteProject,
                         loadVersion: mockLoad,
-                        promoteVersion: mockPromoteVersion
+                        promoteVersion: mockPromoteVersion,
+                        renameProject: mockRenameProject
                     }
                 }
             }
@@ -439,5 +441,68 @@ describe("Project history component", () => {
 
             expect(mockPromoteVersion.mock.calls.length).toBe(0);
         }
+    });
+
+    it("invokes renameProject action when confirm rename", async () => {
+        if (switches.renameProject) {
+            const wrapper = getWrapper(testProjects);
+            const vm = wrapper.vm as any
+            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("a");
+            renameLink.trigger("click");
+            await Vue.nextTick();
+
+            const modal = wrapper.findAll(".modal").at(2);
+            const input = modal.find("input");
+            const renameBtn = modal.find(".modal-footer").findAll("button").at(0);
+            input.setValue("renamedProject");
+            expect(renameBtn.attributes("disabled")).toBe(undefined);
+            expect(vm.projectToRename).toBe(1);
+            expect(vm.renamedProjectName).toBe("renamedProject");
+            renameBtn.trigger("click");
+
+            await Vue.nextTick();
+
+            expect(mockRenameProject.mock.calls.length).toBe(1);
+            expect(mockRenameProject.mock.calls[0][1]).toStrictEqual(
+                {
+                    "name": "renamedProject",
+                    "projectId": 1
+                });
+            expect(vm.projectToRename).toBe(null);
+            expect(vm.renamedProjectName).toBe("");
+            
+        }
+    });
+
+    it("cannot invoke renameProject action when input value is empty", async () => {
+        if (switches.renameProject) {
+            const wrapper = getWrapper(testProjects);
+            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("a");
+            renameLink.trigger("click");
+            await Vue.nextTick();
+
+            const modal = wrapper.findAll(".modal").at(2);
+            const input = modal.find("input");
+            const renameBtn = modal.find(".modal-footer").findAll("button").at(0);
+            input.setValue("");
+            expect(renameBtn.attributes("disabled")).toBe("disabled");
+            renameBtn.trigger("click");
+
+            await Vue.nextTick();
+
+            expect(mockRenameProject.mock.calls.length).toBe(0);
+        }
+    });
+
+    it("cannot invoke confirmRename if no project is selected", async () => {
+            const wrapper = getWrapper(testProjects);
+            wrapper.setData({ projectToRename: null });
+            wrapper.setData({ renamedProjectName: "renamedProject" })
+            const vm = wrapper.vm as any
+            vm.confirmRename("renamedProject");
+            await Vue.nextTick();
+            expect(mockRenameProject.mock.calls.length).toBe(0);
+            expect(vm.projectToRename).toBe(null);
+            expect(vm.renamedProjectName).toBe("renamedProject");
     });
 });

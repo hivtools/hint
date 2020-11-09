@@ -155,6 +155,16 @@ class ProjectsController(private val session: Session,
         return SuccessResponse(currentProject).asResponseEntity()
     }
 
+    @PostMapping("/project/{projectId}/rename")
+    @ResponseBody
+    fun renameProject(
+        @PathVariable("projectId") projectId: Int,
+        @RequestParam("name") name: String): ResponseEntity<String>
+    {
+        projectRepository.renameProject(projectId, userId(), name)
+        return EmptySuccessResponse.asResponseEntity()
+    }
+
     private fun userId(): String
     {
         return session.getUserProfile().id

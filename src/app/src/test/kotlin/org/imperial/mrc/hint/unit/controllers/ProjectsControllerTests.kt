@@ -346,6 +346,20 @@ class ProjectsControllerTests
         verify(mockVersionRepo).getVersion("testVersion")
     }
 
+    @Test
+    fun `can rename project`()
+    {
+        val mockRepo = mock<ProjectRepository>() {
+            on { getProjectFromVersionId("testVersion", "testUser") } doReturn Project(123, "project", listOf())
+        }
+        val sut = ProjectsController(mockSession, mock(), mockRepo, mock())
+        val result = sut.renameProject(1, "renamedProject")
+
+        verify(mockRepo).renameProject(1, "testUser", "renamedProject")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+
     private fun assertExpectedVersion(node: JsonNode)
     {
         assertThat(node["id"].asText()).isEqualTo("testVersion")
