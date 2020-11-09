@@ -37,6 +37,25 @@ class ModelRunControllerTests
     }
 
     @Test
+    fun `can validate modelOptions`()
+    {
+        val mockFiles = mapOf<String, VersionFileWithPath>()
+        val mockFileManager = mock<FileManager> {
+            on { getFiles() } doReturn mockFiles
+        }
+
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { validateModelOptions(mockFiles, modelRunOptions) } doReturn mockResponse
+        }
+
+        val sut = ModelRunController(mockFileManager, mockAPIClient)
+
+        val result = sut.validateModelOptions(modelRunOptions)
+        assertThat(result).isSameAs(mockResponse)
+
+    }
+
+    @Test
     fun `can get status`()
     {
         val mockFileManager = mock<FileManager>()

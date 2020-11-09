@@ -14,6 +14,11 @@ export interface versionPayload {
     name: string
 }
 
+export interface projectPayload {
+    projectId: number,
+    name: string
+}
+
 export interface ProjectsActions {
     createProject: (store: ActionContext<ProjectsState, RootState>, name: string) => void,
     getProjects: (store: ActionContext<ProjectsState, RootState>) => void
@@ -26,6 +31,7 @@ export interface ProjectsActions {
     promoteVersion: (store: ActionContext<ProjectsState, RootState>, versionPayload: versionPayload) => void,
     userExists: (store: ActionContext<ProjectsState, RootState>, email: string) => Promise<boolean>
     cloneProject: (store: ActionContext<ProjectsState, RootState>, payload: CloneProjectPayload) => void
+    renameProject: (store: ActionContext<ProjectsState, RootState>, projectPayload: projectPayload) => void
 }
 
 export interface CloneProjectPayload {
@@ -179,6 +185,22 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`/project/${projectId}/version/${versionId}/promote`, qs.stringify({name}))
             .then(() => {
+                dispatch("getProjects");
+            });
+    },
+
+    async renameProject(context, projectPayload: projectPayload) {
+        const {state, dispatch, commit} = context;
+        const {projectId, name} = projectPayload
+
+        await api<ProjectsMutations, ErrorsMutation>(context)
+            .ignoreSuccess()
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
+            .postAndReturn(`/project/${projectId}/rename`, qs.stringify({name}))
+            .then(() => {
+                if (state.currentProject && state.currentProject.id === projectId) {
+                    dispatch("getCurrentProject")
+                }
                 dispatch("getProjects");
             });
     },

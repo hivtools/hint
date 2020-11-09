@@ -141,12 +141,14 @@
         <modal :open="projectToRename">
             <h4 v-translate="'renameProjectHeader'"></h4>
             <input type="text" 
-                   class="form-control" 
+                   class="form-control"
                    v-translate:placeholder="'projectName'" 
                    v-model="renamedProjectName">
             <template v-slot:footer>
                 <button type="button"
-                    class="btn btn-red"
+                    class="btn btn-red" 
+                    :disabled="disableRename"
+                    @click="confirmRename(renamedProjectName)"
                     v-translate="'renameProject'">
                 </button>
                 <button type="button"
@@ -166,7 +168,7 @@
     import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel,} from "../../utils";
-    import {versionPayload} from "../../store/projects/actions";
+    import {versionPayload, projectPayload} from "../../store/projects/actions";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
@@ -190,6 +192,7 @@
 
     interface Computed {
         disableCreate: boolean;
+        disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
     }
@@ -214,11 +217,13 @@
         deleteProjectAction: (projectId: number) => void;
         deleteVersionAction: (versionIds: VersionIds) => void;
         promoteVersionAction: (versionPayload: versionPayload) => void;
+        renameProjectAction: (projectPayload: projectPayload) => void;
         createProject: (name: string) => void;
         getProjects: () => void;
         versionLabel: (version: Version) => string;
         renameProject: (event: Event, projectId: number) => void;
         cancelRename: () => void;
+        confirmRename: (name: string) => void;
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
@@ -239,6 +244,9 @@
         computed: {
             disableCreate: function () {
                 return !this.newProjectName;
+            },
+            disableRename: function () {
+                return !this.renamedProjectName;
             },
             promoteVersionHeader: function () {
                 return i18next.t("promoteVersionHeader", {
@@ -265,6 +273,18 @@
             },
             cancelRename() {
                this.projectToRename = null;
+               this.renamedProjectName = '';
+            },
+            async confirmRename(name) {
+                if (this.projectToRename) {
+                    const projectPayload: projectPayload = {
+                        projectId: this.projectToRename!,
+                        name: this.renamedProjectName
+                    };
+                    this.renameProjectAction(projectPayload);
+                    this.projectToRename = null;
+                    this.renamedProjectName = "";
+                }
             },
             deleteProject(event: Event, projectId: number) {
                 event.preventDefault();
@@ -312,6 +332,10 @@
                     this.newProjectName = "";
                 }
             },
+            renameProjectAction: mapActionByName<projectPayload>(
+                namespace,
+                "renameProject"
+            ),
             promoteVersionAction: mapActionByName<versionPayload>(
                 namespace,
                 "promoteVersion"

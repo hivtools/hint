@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.integration
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
@@ -50,13 +51,22 @@ class ModelRunTests : SecureIntegrationTests()
         assertSuccess(responseEntity, "ModelRunOptions")
     }
 
-
     @Test
     fun `can run model`()
     {
         val entity = getModelRunEntity()
         val responseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
         assertSuccess(responseEntity, "ModelSubmitResponse")
+    }
+
+
+    @Test
+    fun `can validate model options`()
+    {
+        val entity = getValidationOptions()
+        val responseEntity = testRestTemplate.postForEntity<String>("/model/validate/options/", entity)
+        Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+        assertSuccess(responseEntity, "ModelOptionsValidate")
     }
 
     @Test
@@ -68,7 +78,6 @@ class ModelRunTests : SecureIntegrationTests()
                 HttpStatus.BAD_REQUEST,
                 "FAILED_TO_RETRIEVE_RESULT", "Failed to fetch result")
     }
-
 
     @Test
     fun `can cancel run model`()

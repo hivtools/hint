@@ -3,7 +3,8 @@ import {ModelOptionsState} from "./modelOptions";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {PayloadWithType} from "../../types";
 import {updateForm} from "../../utils";
-import {VersionInfo} from "../../generated";
+import {VersionInfo, Error} from "../../generated";
+
 
 export enum ModelOptionsMutation {
     UnValidate = "UnValidate",
@@ -11,7 +12,9 @@ export enum ModelOptionsMutation {
     Update = "Update",
     FetchingModelOptions = "FetchingModelOptions",
     ModelOptionsFetched = "ModelOptionsFetched",
-    SetModelOptionsVersion = "SetModelOptionsVersion"
+    SetModelOptionsVersion = "SetModelOptionsVersion",
+    HasValidationError = "HasValidationError",
+    LoadUpdatedOptions = "LoadUpdatedOptions"
 }
 
 export const ModelOptionsUpdates = [ModelOptionsMutation.Update, ModelOptionsMutation.UnValidate];
@@ -21,10 +24,17 @@ export const mutations: MutationTree<ModelOptionsState> = {
         state.valid = false;
     },
 
-    [ModelOptionsMutation.Validate](state: ModelOptionsState, payload: DynamicFormData) {
-        state.options = payload;
-        // TODO validate from server
+    [ModelOptionsMutation.Validate](state: ModelOptionsState) {
         state.valid = true;
+    },
+
+    [ModelOptionsMutation.LoadUpdatedOptions](state: ModelOptionsState, payload: DynamicFormData) {
+        state.options = payload;
+        state.validateError = null;
+    },
+
+    [ModelOptionsMutation.HasValidationError](state: ModelOptionsState, action: PayloadWithType<Error>) {
+        state.validateError = action.payload;
     },
 
     [ModelOptionsMutation.Update](state: ModelOptionsState, payload: DynamicFormMeta) {

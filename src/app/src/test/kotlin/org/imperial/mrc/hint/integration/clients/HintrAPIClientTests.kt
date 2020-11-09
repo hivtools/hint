@@ -57,6 +57,16 @@ class HintrApiClientTests
     }
 
     @Test
+    fun `can validate model options`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+
+        val result = sut.validateModelOptions(emptyMap(), ModelRunOptions(emptyMap(), emptyMap()))
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "INVALID_INPUT")
+    }
+
+    @Test
     fun `can get model run status`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())

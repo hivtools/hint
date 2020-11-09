@@ -33,8 +33,10 @@ interface HintrAPIClient
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun getModelCalibrationOptions(): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
-    fun getVersion():ResponseEntity<String>
+    fun getVersion(): ResponseEntity<String>
     fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
+    fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions):
+            ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
 }
 
@@ -93,6 +95,17 @@ class HintrFuelAPIClient(
                         "data" to data))
 
         return postJson("model/submit", json)
+    }
+
+    override fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions)
+            : ResponseEntity<String>
+    {
+
+        val json = objectMapper.writeValueAsString(
+                mapOf("options" to modelRunOptions.options,
+                        "data" to data))
+
+        return postJson("validate/options", json)
     }
 
     override fun getStatus(id: String): ResponseEntity<String>
@@ -169,7 +182,6 @@ class HintrFuelAPIClient(
                 .httpDownload()
                 .getStreamingResponseEntity(::head)
     }
-
 
 
 }

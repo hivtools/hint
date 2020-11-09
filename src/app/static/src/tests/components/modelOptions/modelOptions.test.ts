@@ -3,7 +3,7 @@ import ModelOptions from "../../../app/components/modelOptions/ModelOptions.vue"
 import {DynamicForm} from "@reside-ic/vue-dynamic-form";
 import Vue from "vue";
 import Vuex, {ActionTree, MutationTree} from "vuex";
-import {mockModelOptionsState, mockRootState} from "../../mocks";
+import {mockError, mockModelOptionsState, mockRootState} from "../../mocks";
 import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
 import {DynamicControlSection} from "@reside-ic/vue-dynamic-form";
 import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";
@@ -14,11 +14,13 @@ import {RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {getters} from "../../../app/store/root/getters";
 import {expectTranslated} from "../../testHelpers";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 describe("Model options component", () => {
 
     const mockActions = {
-        fetchModelRunOptions: jest.fn()
+        fetchModelRunOptions: jest.fn(),
+        validateModelOptions: jest.fn()
     };
     const mockMutations = {
         [ModelOptionsMutation.Update]: jest.fn(),
@@ -93,6 +95,14 @@ describe("Model options component", () => {
         expect(rendered.findAll(Tick).length).toBe(0);
     });
 
+    it("does display error message when error occured", () => {
+        const error = mockError("validation error occured")
+        const store = createStore({validateError: error});
+        const rendered = shallowMount(ModelOptions, {store});
+        expect(rendered.findAll(ErrorAlert).length).toBe(1);
+        expect(rendered.find(ErrorAlert).props().error).toBe(error);
+    })
+
     it("triggers update mutation when dynamic form changes", async () => {
         const updateMock = jest.fn();
         const oldControlSection: DynamicControlSection = {
@@ -123,32 +133,35 @@ describe("Model options component", () => {
         });
     });
 
-    it("commits validate mutation when form submit event is fired", () => {
+    it("dispatches fetch run option event when form submit event is fired", () => {
+        const fetchMock = jest.fn();
+        const store = createStore({}, mockMutations, { 
+
+            ...mockActions,
+            fetchModelRunOptions: fetchMock
+
+        });
+        const rendered = shallowMount(ModelOptions, {
+            store
+        });
+        
+        expect(fetchMock.mock.calls.length).toBe(1);
+    });
+
+    it("dispatches validation event when form submit event is fired", async() => {
         const validateMock = jest.fn();
+        const store = createStore({}, mockMutations, { 
 
-        const store = createStore(
-            {
-                optionsFormMeta: {controlSections: []}
-            },
-            {
-                ...mockMutations,
-                [ModelOptionsMutation.Validate]: validateMock
-            });
+            ...mockActions,
+            validateModelOptions: validateMock
 
+        });
         const rendered = shallowMount(ModelOptions, {
             store
         });
         rendered.find(DynamicForm).vm.$emit("submit");
+
+        await Vue.nextTick();
         expect(validateMock.mock.calls.length).toBe(1);
     });
-
-    it("dispatches fetch event on mount", () => {
-        const fetchMock = jest.fn();
-        const store = createStore({}, mockMutations, {fetchModelRunOptions: fetchMock});
-        shallowMount(ModelOptions, {
-            store
-        });
-        expect(fetchMock.mock.calls.length).toBe(1);
-    });
-
 });
