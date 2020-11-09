@@ -76,7 +76,7 @@ describe("select dataset", () => {
     }
 
     const getStore = (baselineProps: Partial<BaselineState> = {}, rootProps: Partial<RootState> = {}) => {
-            const store = new Vuex.Store({
+        const store = new Vuex.Store({
             state: mockRootState({
                 adrSchemas: schemas,
                 adrDatasets: fakeRawDatasets,
@@ -372,7 +372,6 @@ describe("select dataset", () => {
         store);
         expect(rendered.findAll("h4").length).toBe(0);
 
-        await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
 
