@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.exceptions
 
+import org.apache.commons.logging.LogFactory
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.ErrorDetail.Companion.defaultError
@@ -33,9 +34,13 @@ import java.util.*
 class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                            private val appProperties: AppProperties)
 {
+    protected val logger = LogFactory.getLog(HintExceptionHandler::class.java)!!
+
     @ExceptionHandler(NoHandlerFoundException::class)
     fun handleNoHandlerFoundException(error: Exception, request: WebRequest): Any
     {
+        logger.error(error.message)
+
         val page = "404"
         return handleErrorPage(page, error, request)
     }
@@ -65,6 +70,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     @ExceptionHandler(HintException::class)
     fun handleHintException(e: HintException, request: WebRequest): ResponseEntity<Any>
     {
+        logger.error(e.message)
         return translatedError(e.key, e.httpStatus, request)
     }
 
@@ -188,11 +194,15 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
             {
                 otherExceptions = unexpectedError(HttpStatus.BAD_REQUEST, request, error.message)
             }
-            else // for security reasons we should not return arbitrary errors to the frontend
+            else
+            -> {
+                logger.error(error)
+
+                // for security reasons we should not return arbitrary errors to the frontend
                 // so do not pass the original error message here
-            -> otherExceptions = unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
+                otherExceptions = unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)
+            }
         }
         return otherExceptions
     }
-
 }

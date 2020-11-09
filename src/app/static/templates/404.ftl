@@ -10,14 +10,13 @@
 </head>
 <body>
 <div class ="error-page text-center mt-3">
-    <h1>404 Error Page </h1>
+    <h1>Page Not Found </h1>
     <p>The requested page was not found, check the URL and try again or go to our
-        <a href="https://naomi.unaids.org">homepage</a>.</p>
-    <hr>
+        <a href="/">homepage</a>.</p>
 </div>
-
+<hr>
 <div>
-    <a href="https://www.unaids.org"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5"/></a>
+    <a href="/"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5"/></a>
 </div>
 
 <div id="partner-logos" class="logos mx-auto mt-5">
