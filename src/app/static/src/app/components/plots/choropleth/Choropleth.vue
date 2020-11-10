@@ -389,6 +389,7 @@
         },
         mounted() {
             this.updateBounds();
+            console.log("colorIndicator", this.colorIndicator,"indicatorColourScale", this.indicatorColourScale,"colourRange", this.colourRange,"updateColourScale", this.updateColourScale)
         }
     });
 </script>

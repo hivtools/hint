@@ -74,11 +74,13 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     import Vue from "vue";
     import {ColourScaleSettings, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
     import i18next from "i18next";
+    import {formatOutput} from "./utils";
 
     interface Props {
         show: boolean,
         colourScale: ColourScaleSettings,
-        step: number
+        step: number,
+            metadata: any
     }
 
     interface Computed {
@@ -99,7 +101,8 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         props: {
             show: Boolean,
             colourScale: Object,
-            step: Number
+            step: Number,
+            metadata: Object
         },
         data(): any {
             return {
@@ -131,7 +134,27 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         },
         watch: {
             colourScale: function () {
-                this.colourScaleToAdjust = {...this.colourScale};
+                const { format, scale, accuracy} = this.metadata
+                let { customMax, customMin } = this.colourScale
+                // const customMaxFormatted = formatOutput(customMax, format, scale, accuracy)
+                // const customMinFormatted = formatOutput(customMin, format, scale, accuracy)
+                // if (typeof(customMaxFormatted) === 'string' && customMaxFormatted.includes('%')){
+                //     customMax = parseFloat(customMaxFormatted) / 100
+                // }
+                // if (typeof(customMinFormatted) === 'string' && customMinFormatted.includes('%')){
+                //     customMin = parseFloat(customMinFormatted) / 100
+                // }
+                // if (typeof(customMaxFormatted) === 'string'){
+                //     customMax = parseFloat(customMaxFormatted)
+                // }
+                // if (typeof(customMinFormatted) === 'string'){
+                //     customMin = parseFloat(customMinFormatted)
+                // }
+                this.colourScaleToAdjust = {
+                    ...this.colourScale,
+                    customMax,
+                    customMin
+                };
             }
         }
     });

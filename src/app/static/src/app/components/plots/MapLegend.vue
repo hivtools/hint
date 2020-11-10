@@ -2,12 +2,13 @@
     <l-control position="bottomright">
         <div class="legend-container">
             <map-adjust-scale class="legend-element legend-adjust map-control" :step="colourScaleStep"
-                              :show="showAdjust" :colour-scale="colourScale" @update="update">
+                              :show="showAdjust" :colour-scale="colourScale" @update="update" :metadata="metadata">
             </map-adjust-scale>
             <div class="legend-element map-control p-3">
                 <div class="legend" v-for="(level, index) in levels" v-bind:key="index">
                     <i v-bind:style="level.style"></i>
                     <span class="level">{{ level.val }}</span>
+                    <!-- <span class="level">{{ level.val }}</span> -->
                     <span class="hidden" style="display: none">{{ level.style }}</span>
                     <br/>
                 </div>
@@ -27,7 +28,8 @@
     import {
         colorFunctionFromName,
         colourScaleStepFromMetadata,
-        roundToContext
+        roundToContext,
+        formatOutput
     } from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {ColourScaleSettings} from "../../store/plottingSelections/plottingSelections";
@@ -42,7 +44,7 @@
     }
 
     interface Level {
-        val: number,
+        val: number | string,
         style: any
     }
 
@@ -86,6 +88,9 @@
             },
             levels: function () {
                 if (this.metadata) {
+                    const { format, scale, accuracy} = this.metadata
+                    // const max = formatOutput(this.colourRange.max, format, scale, accuracy);
+                    // const min = formatOutput(this.colourRange.min, format, scale, accuracy);
                     const max = this.colourRange.max;
                     const min = this.colourRange.min;
 
@@ -103,11 +108,22 @@
                             valAsProportion = 1 - valAsProportion;
                         }
 
-                        if (val >= 1000) {
+                        val = formatOutput(val, format, scale, accuracy)
+
+                        if ((typeof(val) === 'number' && val >= 1000)) {
                             val = numeral(val).format("0a")
                         }
+                        if ((typeof(val) === 'string' && !val.includes('%') && parseFloat(val) >= 1000)) {
+                            val = numeral(parseFloat(val)).format("0a")
+                        }
+
+                        // const formattedVal = formatOutput(val, format, scale, accuracy)
+                        // if (typeof(formattedVal) === 'string' && formattedVal.includes('%')){
+                        //     val = 
+                        // }
 
                         return {
+                            // val: formatOutput(val, format, scale, accuracy), style: {background: colorFunction(valAsProportion)}
                             val, style: {background: colorFunction(valAsProportion)}
                         }
                     });
