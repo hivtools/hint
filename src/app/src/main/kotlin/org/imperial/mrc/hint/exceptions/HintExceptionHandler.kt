@@ -34,7 +34,7 @@ import java.util.*
 class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                            private val appProperties: AppProperties)
 {
-    protected val logger = LogFactory.getLog(HintExceptionHandler::class.java)!!
+    private val logger = LogFactory.getLog(HintExceptionHandler::class.java)
 
     @ExceptionHandler(NoHandlerFoundException::class)
     fun handleNoHandlerFoundException(error: Exception, request: WebRequest): Any
