@@ -93,6 +93,7 @@
                     // const min = formatOutput(this.colourRange.min, format, scale, accuracy);
                     const max = this.colourRange.max;
                     const min = this.colourRange.min;
+                    console.log('format/min-max', format, scale, accuracy, max, min)
 
                     const colorFunction = colorFunctionFromName(this.metadata.colour);
                     const step = (max - min) / 5;
