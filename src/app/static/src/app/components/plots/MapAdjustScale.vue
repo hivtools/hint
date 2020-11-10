@@ -76,7 +76,6 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     import Vue from "vue";
     import {ColourScaleSettings, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
     import i18next from "i18next";
-    import {formatOutput} from "./utils";
 
     interface Props {
         show: boolean,
@@ -143,32 +142,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         },
         watch: {
             colourScale: function () {
-                const { format, scale, accuracy} = this.metadata
-                let { customMax, customMin } = this.colourScale
-                // const customMaxFormatted = formatOutput(customMax, format, scale, accuracy)
-                // const customMinFormatted = formatOutput(customMin, format, scale, accuracy)
-                // if (typeof(customMaxFormatted) === 'string' && customMaxFormatted.includes('%')){
-                //     customMax = parseFloat(customMaxFormatted) / 100
-                // }
-                // if (typeof(customMinFormatted) === 'string' && customMinFormatted.includes('%')){
-                //     customMin = parseFloat(customMinFormatted) / 100
-                // }
-                // if (typeof(customMaxFormatted) === 'string'){
-                //     customMax = parseFloat(customMaxFormatted)
-                // }
-                // if (typeof(customMinFormatted) === 'string'){
-                //     customMin = parseFloat(customMinFormatted)
-                // }
-                // if (!format.includes('%')){
-                //     customMax = customMax * scale
-                //     customMin = customMin * scale
-                // }
-
-                this.colourScaleToAdjust = {
-                    ...this.colourScale,
-                    customMax,
-                    customMin
-                };
+                this.colourScaleToAdjust = { ...this.colourScale };
             }
         }
     });
