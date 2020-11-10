@@ -17,15 +17,15 @@ import org.junit.jupiter.api.Test
 import org.postgresql.util.PSQLException
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.core.io.FileSystemResource
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.http.*
 import org.springframework.http.converter.HttpMessageNotWritableException
 import org.springframework.util.LinkedMultiValueMap
+import org.springframework.web.client.RestTemplate
 import org.springframework.web.context.request.WebRequest
+import org.springframework.web.servlet.NoHandlerFoundException
 import java.io.File
 import java.lang.reflect.UndeclaredThrowableException
+import java.util.*
 
 class ExceptionHandlerTests : SecureIntegrationTests()
 {
@@ -41,6 +41,20 @@ class ExceptionHandlerTests : SecureIntegrationTests()
                 "OTHER_ERROR",
                 unexpectedErrorRegex,
                 "No handler found for GET /nonsense/route/")
+    }
+
+    @Test
+    fun `not found page is correctly rendered when header accepts html`()
+    {
+        val headers: HttpHeaders = HttpHeaders()
+        headers.accept = Collections.singletonList(MediaType.TEXT_HTML)
+        val httpEntity = HttpEntity("body", headers)
+
+        val entity = testRestTemplate.exchange("/nonsense/route/",
+                HttpMethod.GET, httpEntity, String::class.java)
+
+        Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(entity.body).contains("404 Error Page")
     }
 
     @Test
@@ -76,9 +90,10 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         }
         val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
         val result = sut.handleException(mockException, mock())
-        JSONValidator().validateError(result!!.body!!.toString(),
+        JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
-                "An unexpected error occurred. If you see this message while you are using AppTitle at a workshop, " +
+                "An unexpected error occurred. If you see this message while you are using " +
+                        "AppTitle at a workshop, " +
                         "please contact your workshop technical support and show them this code: 1234. " +
                         "Otherwise please contact support at support@email.com and quote this code: 1234")
     }
@@ -98,9 +113,10 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         }
         val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
         val result = sut.handleException(mockException, mockRequest)
-        JSONValidator().validateError(result!!.body!!.toString(),
+        JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
-                "Une erreur inattendue s'est produite. Si vous voyez ce message pendant que vous utilisez AppTitle dans un atelier, " +
+                "Une erreur inattendue s'est produite. Si vous voyez ce message pendant " +
+                        "que vous utilisez AppTitle dans un atelier, " +
                         "veuillez contacter le support technique de votre atelier et leur indiquer ce code : 1234. " +
                         "Sinon, veuillez contacter le support à support@email.com et citer ce code : 1234")
     }
@@ -120,9 +136,10 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         }
         val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
         val result = sut.handleException(mockException, mockRequest)
-        JSONValidator().validateError(result!!.body!!.toString(),
+        JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
-                "An unexpected error occurred. If you see this message while you are using AppTitle at a workshop, " +
+                "An unexpected error occurred. If you see this message while you are " +
+                        "using AppTitle at a workshop, " +
                         "please contact your workshop technical support and show them this code: 1234. " +
                         "Otherwise please contact support at support@email.com and quote this code: 1234")
     }
@@ -138,10 +155,10 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `does not include original message from arbitrary exceptions`()
+    fun `does not include original message from handle exceptions`()
     {
         val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
-        val result = sut.handleArbitraryException(PSQLException("some message", mock()), mock())
+        val result = sut.handleException(PSQLException("some message", mock()), mock())
         JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
                 unexpectedErrorRegex)
@@ -153,7 +170,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     {
         val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
         val fakeError = UndeclaredThrowableException(HintException("some message", HttpStatus.BAD_REQUEST))
-        val result = sut.handleArbitraryException(fakeError, mock())
+        val result = sut.handleException(fakeError, mock())
         JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
                 "some message")
