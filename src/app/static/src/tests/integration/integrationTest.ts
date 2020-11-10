@@ -5,6 +5,8 @@ import {Language} from "../../app/store/translations/locales";
 const FormData = require("form-data");
 const service = new Service(axios);
 
+declare let appUrl: string; // configured by jest
+
 export const rootState = {language: Language.en};
 
 export const login = async () => {
@@ -12,7 +14,7 @@ export const login = async () => {
     formData.append('username', "test.user@example.com");
     formData.append('password', "password");
 
-    const res = await axios.post("http://localhost:8080/callback/",
+    const res = await axios.post(appUrl + "callback/",
         formData,
         {
             headers: formData.getHeaders(),
@@ -31,6 +33,6 @@ export const login = async () => {
     } as any);
 
     // GET the homepage to save the session
-    await axios.get("http://localhost:8080/");
+    await axios.get(appUrl);
 
 };

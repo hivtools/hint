@@ -5,7 +5,7 @@ HERE=$(realpath "$(dirname $0)")
 
 NETWORK=hint_nw
 HINT=hint
-TEST_CONFIG=$HERE/../src/app/static/test.properties
+TEST_CONFIG=$HERE/../src/app/static/scripts/test.properties
 
 $HERE/../scripts/run-dependencies.sh
 

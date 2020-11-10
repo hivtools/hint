@@ -190,7 +190,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
 
     async renameProject(context, projectPayload: projectPayload) {
-        const {state, dispatch, commit} = context;
+        const {state, dispatch} = context;
         const {projectId, name} = projectPayload
 
         await api<ProjectsMutations, ErrorsMutation>(context)

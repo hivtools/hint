@@ -9,6 +9,7 @@
     "build": "gulp copy-templates && gulp styles && webpack",
     "test": "jest -c jest.config.js",
     "integration-test": "jest -c jest.integration.config.js",
+    "integration-test-docker": "jest -c jest.integration.docker.config.js",
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx,vue"
   },
   "author": "",
