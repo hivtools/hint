@@ -58,7 +58,6 @@ export const getters = {
 
         const res = response(state);
         const filters = res ? res.filters : {} as any;
-        console.log('filters here', filters)
 
         result.push({
             id: "year",
