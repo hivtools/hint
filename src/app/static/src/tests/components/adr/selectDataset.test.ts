@@ -14,6 +14,8 @@ import {ADRSchemas} from "../../../app/types";
 import {RootState} from "../../../app/root";
 import {InfoIcon} from "vue-feather-icons";
 import Mock = jest.Mock;
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {expectTranslated} from "../../testHelpers";
 
 describe("select dataset", () => {
 
@@ -74,7 +76,7 @@ describe("select dataset", () => {
     }
 
     const getStore = (baselineProps: Partial<BaselineState> = {}, rootProps: Partial<RootState> = {}) => {
-        return new Vuex.Store({
+        const store = new Vuex.Store({
             state: mockRootState({
                 adrSchemas: schemas,
                 adrDatasets: fakeRawDatasets,
@@ -96,6 +98,8 @@ describe("select dataset", () => {
                 }
             }
         });
+        registerTranslations(store);
+        return store;
     }
 
     beforeEach(() => {
@@ -115,17 +119,17 @@ describe("select dataset", () => {
     });
 
     it("renders select dataset button when no dataset is selected", () => {
-        const rendered = shallowMount(SelectDataset, {store: getStore()});
-        expect(rendered.find("button").text()).toBe("Select ADR dataset");
+        let store = getStore()
+        const rendered = shallowMount(SelectDataset, {store});
+        expectTranslated(rendered.find("button"), "Select ADR dataset", "Sélectionner l’ensemble de données ADR", store);
     });
 
     it("renders edit dataset button when dataset is already selected", () => {
-        const rendered = shallowMount(SelectDataset, {
-            store: getStore({
-                selectedDataset: fakeDataset
-            })
-        });
-        expect(rendered.find("button").text()).toBe("Edit");
+        let store = getStore({
+            selectedDataset: fakeDataset
+        })
+        const rendered = shallowMount(SelectDataset, { store });
+        expectTranslated(rendered.find("button"), "Edit", "Éditer", store);
     });
 
     it("does not render refresh button or info icon when no resources are out of date", () => {
@@ -149,8 +153,8 @@ describe("select dataset", () => {
             stubs: ["tree-select"]
         });
         const buttons = rendered.findAll("button");
-        expect(buttons.at(0).text()).toBe("Refresh");
-        expect(buttons.at(1).text()).toBe("Edit");
+        expectTranslated(buttons.at(0), "Refresh", "Rafraîchir", store);
+        expectTranslated(buttons.at(1), "Edit", "Éditer", store);
 
         expect(rendered.findAll(InfoIcon).length).toBe(1);
 
@@ -286,12 +290,11 @@ describe("select dataset", () => {
         });
 
     it("renders selected dataset if it exists", () => {
-        const rendered = shallowMount(SelectDataset, {
-            store: getStore({
-                selectedDataset: fakeDataset
-            })
-        });
-        expect(rendered.find(".font-weight-bold").text()).toBe("Selected dataset:");
+        let store = getStore({
+            selectedDataset: fakeDataset
+        })
+        const rendered = shallowMount(SelectDataset, { store });
+        expectTranslated(rendered.find(".font-weight-bold"), "Selected dataset:", "Ensemble de données sélectionné :", store);
         expect(rendered.find("a").text()).toBe("Some data");
         expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
     });
@@ -337,10 +340,11 @@ describe("select dataset", () => {
     });
 
     it("sets current dataset", async () => {
+        let store = getStore({},
+            {adrDatasets: [{...fakeRawDatasets[0], resources: [shape]}]}
+        )
         const rendered = mount(SelectDataset, {
-            store: getStore({},
-                {adrDatasets: [{...fakeRawDatasets[0], resources: [shape]}]}
-            ), sync: false, stubs: ["tree-select"]
+            store, stubs: ["tree-select"]
         });
         rendered.find("button").trigger("click");
 
@@ -349,7 +353,7 @@ describe("select dataset", () => {
         expect(rendered.findAll(TreeSelect).length).toBe(1);
         expect(rendered.find(Modal).findAll("button").length).toBe(2);
         expect(rendered.findAll("p").length).toBe(0);
-        expect(rendered.find("h4").text()).toBe("Browse ADR");
+        expectTranslated(rendered.find("h4"), "Browse ADR", "Chercher ADR", store);
 
         rendered.setData({newDatasetId: "id1"});
         rendered.find(Modal).find("button").trigger("click");
@@ -362,11 +366,12 @@ describe("select dataset", () => {
         expect(rendered.findAll(TreeSelect).length).toBe(0);
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
         expect(buttons.length).toBe(0);
-        expect(rendered.find("p").text())
-            .toBe("Importing files - this may take several minutes. Please do not close your browser.");
+        expectTranslated(rendered.find("p"), 
+        "Importing files - this may take several minutes. Please do not close your browser.", 
+        "Importation de fichiers - cela peut prendre plusieurs minutes. Veuillez ne pas fermer votre navigateur.", 
+        store);
         expect(rendered.findAll("h4").length).toBe(0);
 
-        await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
 
