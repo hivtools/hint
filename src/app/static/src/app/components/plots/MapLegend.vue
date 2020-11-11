@@ -115,10 +115,11 @@
                             }
                         }
                         if (typeof(val) === 'string' && !val.includes('%')) {
-                            if (parseFloat(val) >= 1000  && parseFloat(val) < 10000 || parseFloat(val) >= 1000000 && parseFloat(val) < 10000000) {
-                                val = numeral(parseFloat(val)).format("0.0a")
-                            } else if (parseFloat(val) >= 1000){
-                                val = numeral(parseFloat(val)).format("0a")
+                            const pval = parseFloat(val)
+                            if (pval >= 1000  && pval < 10000 || pval >= 1000000 && pval < 10000000) {
+                                val = numeral(pval).format("0.0a")
+                            } else if (pval >= 1000){
+                                val = numeral(pval).format("0a")
                             }
                         }
 
