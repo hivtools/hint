@@ -71,6 +71,18 @@ describe("Manage file component", () => {
         expect(input.props().upload).toBe(uploadFn);
     });
 
+    it("renders can display ADR tag if file upload is from ADR", () => {
+
+        const uploadFn = jest.fn();
+        const wrapper = createSut({
+            name: "test-name",
+            upload: uploadFn,
+            hasValidAdr: true
+        });
+        const links = wrapper.find("a");
+        expect(links.text()).toBe("ADR");
+    });
+
     it("renders existing file name if present", () => {
         const store = createStore();
         const wrapper = createSut({

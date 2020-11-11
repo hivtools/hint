@@ -2,6 +2,7 @@
     <div class="form-group">
         <label class="font-weight-bold mb-0" v-translate="label"></label>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
+        <a class="mb-0" v-if="hasValidAdr" href="#">ADR</a>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <br/>
         <slot></slot>
@@ -60,6 +61,7 @@
         valid: boolean,
         error: Error,
         existingFileName: string,
+        hasValidAdr: boolean,
         name: string
     }
 
@@ -73,6 +75,7 @@
             "valid": Boolean,
             "error": Object,
             "existingFileName": String,
+            "hasValidAdr": Boolean,
             "name": String
         },
         data(): Data {

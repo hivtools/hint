@@ -5,6 +5,7 @@
                 <form>
                     <manage-file label="survey"
                                  :valid="survey.valid"
+                                 :adrValid="survey.adrValid"
                                  :error="survey.error"
                                  :upload="uploadSurvey"
                                  :delete-file="deleteSurvey"
@@ -14,6 +15,7 @@
                     </manage-file>
                     <manage-file label="ART"
                                  :valid="programme.valid"
+                                 :adrValid="programme.adrValid"
                                  :error="programme.error"
                                  :upload="uploadProgram"
                                  :delete-file="deleteProgram"
@@ -23,6 +25,7 @@
                     </manage-file>
                     <manage-file label="ANC"
                                  :valid="anc.valid"
+                                 :adrValid="anc.adrValid"
                                  :error="anc.error"
                                  :upload="uploadANC"
                                  :delete-file="deleteANC"
@@ -129,6 +132,7 @@
                 },
                 anc: ({surveyAndProgram}) => ({
                     valid: !!surveyAndProgram.anc,
+                    adrValid: surveyAndProgram.anc?.fromADR,
                     error: surveyAndProgram.ancError,
                     existingFileName: surveyAndProgram.anc && surveyAndProgram.anc.filename,
                     tabClass: {
@@ -138,6 +142,7 @@
                 } as PartialFileUploadProps),
                 programme: ({surveyAndProgram}) => ({
                     valid: surveyAndProgram.program != null,
+                    adrValid: surveyAndProgram.program?.fromADR,
                     error: surveyAndProgram.programError,
                     existingFileName: surveyAndProgram.program && surveyAndProgram.program.filename,
                     tabClass: {
@@ -147,6 +152,7 @@
                 } as PartialFileUploadProps),
                 survey: ({surveyAndProgram}) => ({
                     valid: surveyAndProgram.survey != null,
+                    adrValid: surveyAndProgram.survey?.fromADR,
                     error: surveyAndProgram.surveyError,
                     existingFileName: surveyAndProgram.survey && surveyAndProgram.survey.filename,
                     tabClass: {

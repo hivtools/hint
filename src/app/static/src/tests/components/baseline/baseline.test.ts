@@ -194,6 +194,34 @@ describe("Baseline upload component", () => {
         expectDeleteToDispatchAction(2, () => actions.deletePopulation, done);
     });
 
+    it("upload can set validAdr to true if data is from ADR", async () => {       
+        const store = createSut({country: "Malawi"});
+        const wrapper = shallowMount(Baseline, {store});
+
+        wrapper.findAll(ManageFile).at(0).setProps({hasValidAdr : true});
+        expect(wrapper.findAll(ManageFile).at(0).props().hasValidAdr).toBe(true);
+
+        wrapper.findAll(ManageFile).at(1).setProps({hasValidAdr : true});
+        expect(wrapper.findAll(ManageFile).at(1).props().hasValidAdr).toBe(true);
+
+        wrapper.findAll(ManageFile).at(2).setProps({hasValidAdr : true});
+        expect(wrapper.findAll(ManageFile).at(2).props().hasValidAdr).toBe(true);
+    });
+
+    it("upload can set validAdr to false if data is not from ADR", async () => {       
+        const store = createSut({country: "Malawi"});
+        const wrapper = shallowMount(Baseline, {store});
+
+        wrapper.findAll(ManageFile).at(0).setProps({hasValidAdr : false});
+        expect(wrapper.findAll(ManageFile).at(0).props().hasValidAdr).toBe(false);
+
+        wrapper.findAll(ManageFile).at(1).setProps({hasValidAdr : false});
+        expect(wrapper.findAll(ManageFile).at(1).props().hasValidAdr).toBe(false);
+
+        wrapper.findAll(ManageFile).at(2).setProps({hasValidAdr : false});
+        expect(wrapper.findAll(ManageFile).at(2).props().hasValidAdr).toBe(false);
+    });
+
     const expectUploadToDispatchAction = (index: number,
                                           action: () => jest.MockInstance<any, any>,
                                           done: jest.DoneCallback) => {
