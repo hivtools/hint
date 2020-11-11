@@ -181,8 +181,7 @@
     import i18next from "i18next";
     import {Project, Version, VersionIds} from "../../types";
     import {BCollapse, VBToggle} from "bootstrap-vue";
-    import {ChevronDownIcon, ChevronRightIcon, 
-    Trash2Icon, CopyIcon, RefreshCwIcon, EditIcon} from "vue-feather-icons";
+    import {ChevronDownIcon, ChevronRightIcon, Trash2Icon, CopyIcon, RefreshCwIcon, EditIcon} from "vue-feather-icons";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
     import {versionPayload, projectPayload} from "../../store/projects/actions";
