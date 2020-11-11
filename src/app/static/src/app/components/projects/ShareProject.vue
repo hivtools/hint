@@ -5,7 +5,6 @@
         @click="shareProject">
         <share-2-icon size="20"></share-2-icon>
         </button>
-     
         <modal :open="open">
             <h4 v-translate="'shareProject'"></h4>
             <div v-if="!cloningProject">
