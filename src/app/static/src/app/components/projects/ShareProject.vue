@@ -1,7 +1,11 @@
 <template>
     <div>
-        <a @click="shareProject" href=""
-           v-translate="'share'"></a>
+        <button class="btn btn-sm btn-red-icons" 
+        v-tooltip= "tooltipShare"
+        @click="shareProject">
+        <share-2-icon size="20"></share-2-icon>
+        </button>
+     
         <modal :open="open">
             <h4 v-translate="'shareProject'"></h4>
             <div v-if="!cloningProject">
@@ -60,6 +64,8 @@
     import {Language} from "../../store/translations/locales";
     import ErrorAlert from "../ErrorAlert.vue";
     import {CloneProjectPayload} from "../../store/projects/actions";
+    import {Share2Icon} from "vue-feather-icons";
+    import {VTooltip} from 'v-tooltip';
 
     interface EmailToShareWith {
         value: string
@@ -82,6 +88,7 @@
         invalidEmails: boolean
         cloneProjectError: Error | null
         cloningProject: boolean
+        tooltipShare: string
     }
 
     interface Methods {
@@ -164,12 +171,22 @@
             },
             invalidEmails() {
                 return this.emailsToShareWith.filter(e => e.value && !e.valid).length > 0
+            },
+
+            tooltipShare () {
+                 return i18next.t("share", {
+                    lng: this.currentLanguage,
+                });
             }
         },
         components: {
             Modal,
             LoadingSpinner,
-            ErrorAlert
+            ErrorAlert,
+            Share2Icon
+        },
+        directives: {
+            tooltip: VTooltip
         },
         watch: {
             cloningProject(newVal: boolean) {

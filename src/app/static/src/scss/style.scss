@@ -36,6 +36,14 @@ a {
   @include button-variant($theme-red, darken($theme-red, 10%))
 }
 
+.btn-red-icons {
+  color: $theme-red;
+
+  &:hover {
+    color: darken($theme-red, 10%);
+  }
+}
+
 #model-options .btn-submit {
   @extend .btn-red
 }
