@@ -138,7 +138,7 @@ describe("Map legend component", () => {
         const levels = rangeWrapper.findAll(".level");
         expect(levels.length).toBe(6);
 
-        expect(levels.at(0).text()).toBe("1k");
+        expect(levels.at(0).text()).toBe("1.0k");
         expect(levels.at(1).text()).toBe("900");
         expect(levels.at(2).text()).toBe("800");
         expect(levels.at(3).text()).toBe("700");
@@ -251,7 +251,7 @@ describe("Map legend component", () => {
         });
         const levels = wrapper.findAll(".level");
         expect(levels.at(0).text()).toBe("60k");
-        expect(levels.at(5).text()).toBe("1k");
+        expect(levels.at(5).text()).toBe("1.0k");
     });
 
     it("toggles show adjust scale", () => {

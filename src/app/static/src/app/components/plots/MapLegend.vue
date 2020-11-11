@@ -107,11 +107,19 @@
 
                         val = formatOutput(val, format, scale, accuracy)
 
-                        if ((typeof(val) === 'number' && val >= 1000)) {
-                            val = numeral(val).format("0a")
+                        if (typeof(val) === 'number') {
+                            if (val >= 1000 && val < 10000 || val >= 1000000 && val < 10000000) {
+                                val = numeral(val).format("0.0a")
+                            } else if (val >= 1000) {
+                                val = numeral(val).format("0a")
+                            }
                         }
-                        if ((typeof(val) === 'string' && !val.includes('%') && parseFloat(val) >= 1000)) {
-                            val = numeral(parseFloat(val)).format("0a")
+                        if (typeof(val) === 'string' && !val.includes('%')) {
+                            if (parseFloat(val) >= 1000  && parseFloat(val) < 10000 || parseFloat(val) >= 1000000 && parseFloat(val) < 10000000) {
+                                val = numeral(parseFloat(val)).format("0.0a")
+                            } else if (parseFloat(val) >= 1000){
+                                val = numeral(parseFloat(val)).format("0a")
+                            }
                         }
 
                         return {
