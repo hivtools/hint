@@ -24,23 +24,23 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                 <form novalidate>
                     <div class="row p-0 mb-2">
                         <label for="custom-min-input" class="col col-form-label col-2"><span v-translate="'min'"></span></label>
-                        <div class="col pt-1" :style="{paddingRight: 5 + 'px'}">
+                        <div class="col pt-1 pr-1">
                             <input id="custom-min-input" type="number" :step="step"
                                    v-model.number="colourScaleToAdjust.customMin"
                                    :max="colourScaleToAdjust.customMax"
                                    @change="update" @keyup="update" :disabled="disableCustom">
                         </div>
-                        <p v-if="colourScaleToAdjust.customMin" class="col col-form-label" :style="{paddingLeft: 0}">{{ scaleText}}</p>
+                        <p v-if="colourScaleToAdjust.customMin" class="col col-form-label pl-0">{{ scaleText}}</p>
                     </div>
                     <div class="row">
                         <label class="col col-form-label col-2" for="custom-max-input"><span v-translate="'max'"></span></label>
-                        <div class="col pt-1" :style="{paddingRight: 5 + 'px'}">
+                        <div class="col pt-1 pr-1">
                             <input id="custom-max-input" type="number" :step="step"
                                    v-model.number="colourScaleToAdjust.customMax"
                                    :min="colourScaleToAdjust.customMin"
                                    @change="update" @keyup="update" :disabled="disableCustom">
                         </div>
-                        <p v-if="colourScaleToAdjust.customMax" class="col col-form-label" :style="{paddingLeft: 0}">{{ scaleText}}</p>
+                        <p v-if="colourScaleToAdjust.customMax" class="col col-form-label pl-0">{{ scaleText}}</p>
                     </div>
                 </form>
             </div>
