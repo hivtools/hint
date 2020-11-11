@@ -37,7 +37,7 @@ describe("survey and program getters", () => {
         const testState = getTestState({selectedDataType: dataType});
 
         const filters = getters.filters(testState, null, testRootState as any);
-        expect(filters.length).toBe(5);
+        expect(filters.length).toBe(6);
         expect(filters[0]).toStrictEqual({
             id: "area",
             column_id: "area_id",
@@ -53,12 +53,20 @@ describe("survey and program getters", () => {
             options: [`${DataType[dataType]} year`]
         });
 
+        expect(filters[2]).toStrictEqual({
+            id: "calendar_quarter",
+            column_id: "calendar_quarter",
+            label: "calendar",
+            allowMultiple: false,
+            options: []
+        });
+
         const countryAreaFilterOption = getters.countryAreaFilterOption(testState, null, testRootState as any);
         expect(countryAreaFilterOption).toStrictEqual({children: ["REGION OPTIONS"]});
 
         const sexFilterOptions = shouldIncludeSexOptions ?
             [{id: "both", label: "both"}, {id: "female", label: "female"}, {id: "male", label: "male"}] : [];
-        expect(filters[2]).toStrictEqual({
+        expect(filters[3]).toStrictEqual({
             id: "sex",
             column_id: "sex",
             label: "sex",
@@ -66,7 +74,7 @@ describe("survey and program getters", () => {
             options: sexFilterOptions
         });
 
-        expect(filters[3]).toStrictEqual({
+        expect(filters[4]).toStrictEqual({
             id: "age",
             column_id: "age_group",
             label: "age",
@@ -75,7 +83,7 @@ describe("survey and program getters", () => {
         });
 
         const surveyOptions = dataType == DataType.Survey ? [`Survey survey`] : [];
-        expect(filters[4]).toStrictEqual({
+        expect(filters[5]).toStrictEqual({
             id: "survey",
             column_id: "survey_id",
             label: "survey",

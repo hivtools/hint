@@ -14,6 +14,7 @@ export interface Translations {
     back: string,
     browseADR: string,
     bubble: string,
+    calendar: string,
     calibrate: string,
     calibrateModel: string,
     calibrating: string,
@@ -176,6 +177,7 @@ const en: Translations = {
     back: "back",
     browseADR: "Browse ADR",
     bubble: "Bubble Plot",
+    calendar: "Period",
     calibrate: "Calibrate",
     calibrateModel: "Calibrate model",
     calibrating: "Calibrating...",
@@ -326,7 +328,7 @@ const en: Translations = {
     validate: "Validate",
     validating: "Validating...",
     xAxis: "X Axis",
-    year: "Year"
+    year: "Period"
 };
 
 const fr: Partial<Translations> = {
@@ -346,6 +348,7 @@ const fr: Partial<Translations> = {
     badUsernamePassword: "Le nom d'utilisateur ou le mot de passe est incorrect",
     browseADR: "Chercher ADR",
     bubble: "Graphique à bulles",
+    calendar: "Période",
     calibrate: "Calibrer",
     calibrateModel: "Calibrer le modèle",
     calibrating: "Calibrage en cours...",
@@ -495,7 +498,7 @@ const fr: Partial<Translations> = {
     validate: "Valider",
     validating: "Validation en cours...",
     xAxis: "Axe X",
-    year: "An"
+    year: "Période"
 };
 
 export const locales = {

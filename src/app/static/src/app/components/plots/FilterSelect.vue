@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div  v-if="!disabled">
         <label :class="'font-weight-bold' + (disabled ? ' disabled-label' : '')" v-translate="label"></label>
         <treeselect id="survey-filters" :multiple=multiple
                     :clearable="false"

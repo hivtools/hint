@@ -58,12 +58,21 @@ export const getters = {
 
         const res = response(state);
         const filters = res ? res.filters : {} as any;
+        console.log('filters here', filters)
 
         result.push({
             id: "year",
             column_id: "year",
             label: "year",
             options: filters.year || [],
+            allowMultiple: false
+        });
+
+        result.push({
+            id: "calendar_quarter",
+            column_id: "calendar_quarter",
+            label: "calendar",
+            options: filters.calendar_quarter || [],
             allowMultiple: false
         });
 
