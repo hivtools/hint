@@ -58,7 +58,7 @@
                     </button>
                 </div>
                 
-                <div class="col-md-2 project-cell" v-if="promoteProjectIsEnabled"
+                <div class="col-md-1 project-cell" v-if="promoteProjectIsEnabled"
                 v-tooltip ="tooltipContent('copyLatestToNewProject')">
                     <button class=" btn btn-sm btn-red-icons"
                          @click="promoteVersion(
@@ -104,7 +104,7 @@
                         <trash-2-icon size="20"></trash-2-icon>
                         </button>
                     </div>
-                    <div class="col-md-2 version-cell"
+                    <div class="col-md-1 version-cell"
                          v-if="promoteProjectIsEnabled"
                          v-tooltip ="tooltipContent('copyToNewProject')">
                          <button class=" btn btn-sm btn-red-icons"
