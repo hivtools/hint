@@ -310,7 +310,7 @@ describe("Project history component", () => {
             const modal = wrapper.findAll(".modal").at(2);
             expect(modal.classes()).toContain("show");
             expectTranslated(modal.find(".modal-body h4"), "Please enter a new name for the project",
-                "Entrez un nouveau nom pour le projet", store);
+                "Veuillez entrer un nouveau nom pour le projet", store);
 
             const input = modal.find("input")
             expectTranslated(input, "Project name", "Nom du projet", store, "placeholder");
