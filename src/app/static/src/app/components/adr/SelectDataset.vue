@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex">
         <div v-if="selectedDataset" style="margin-top:8px">
-            <span class="font-weight-bold">Selected dataset:</span>
+            <span class="font-weight-bold" v-translate="'selectedDataset'"></span>
             <a :href="selectedDataset.url" target="_blank">{{ selectedDataset.title }}</a>
             <span class="color-red">
                 <info-icon size="20"
@@ -10,15 +10,16 @@
                            style="vertical-align: text-bottom;"></info-icon>
             </span>
         </div>
-        <button v-if="outOfDateMessage" class="btn btn-white ml-2" @click="refresh">Refresh</button>
+        <button v-if="outOfDateMessage" class="btn btn-white ml-2" @click="refresh" v-translate="'refresh'"></button>
         <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{ selectText }}</button>
         <modal id="dataset" :open="open">
-            <h4 v-if="!loading">Browse ADR</h4>
-            <p v-if="loading">Importing files - this may take several minutes. Please do not close your browser.</p>
+            <h4 v-if="!loading" v-translate="'browseADR'"></h4>
+            <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
                 <tree-select :multiple="false"
                              :searchable="true"
                              :options="datasetOptions"
+                             :placeholder="select"
                              v-model="newDatasetId">
                     <label slot="option-label"
                            slot-scope="{ node }"
@@ -32,19 +33,21 @@
             <template v-slot:footer v-if="!loading">
                 <button type="button"
                         class="btn btn-white"
+                        v-translate="'import'"
                         @click="importDataset">
-                    Import
                 </button>
                 <button type="button"
                         class="btn btn-white"
+                        v-translate="'cancel'"
                         @click="toggleModal">
-                    Cancel
                 </button>
             </template>
         </modal>
     </div>
 </template>
 <script lang="ts">
+    import i18next from "i18next";
+    import {Language} from "../../store/translations/locales";
     import Vue from "vue"
     import TreeSelect from '@riophae/vue-treeselect'
     import {mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
@@ -84,8 +87,11 @@
         selectText: string,
         outOfDateMessage: string,
         outOfDateResources: { [k in keyof DatasetResourceSet]?: true }
-        hasShapeFile: boolean
+        hasShapeFile: boolean,
+        currentLanguage: Language,
+        select: string
     }
+    
 
     interface Data {
         open: boolean
@@ -152,9 +158,9 @@
             },
             selectText() {
                 if (this.selectedDataset) {
-                    return "Edit"
+                    return i18next.t('editBtn', {lng: this.currentLanguage})
                 } else {
-                    return "Select ADR dataset"
+                    return i18next.t('selectADR', {lng: this.currentLanguage})
                 }
             },
             outOfDateResources() {
@@ -178,7 +184,12 @@
                     return ""
                 }
                 return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`
-            }
+            },
+            select(){
+                return i18next.t('select', {lng: this.currentLanguage})
+            },
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language)
         },
         methods: {
             setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),

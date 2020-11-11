@@ -375,7 +375,7 @@ describe("ShareProject", () => {
 
         const link = wrapper.find("button");
         link.trigger("click");
-        expectTranslated(wrapper.find(Modal).find("h4"), "Share project", "Partagez projet", store);
+        expectTranslated(wrapper.find(Modal).find("h4"), "Share project", "Partager ce project", store);
     });
 
     it("translates instructions", () => {
