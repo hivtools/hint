@@ -142,7 +142,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         },
         watch: {
             colourScale: function () {
-                this.colourScaleToAdjust = { ...this.colourScale };
+                this.colourScaleToAdjust = {...this.colourScale};
             }
         }
     });

@@ -8,7 +8,6 @@
                 <div class="legend" v-for="(level, index) in levels" v-bind:key="index">
                     <i v-bind:style="level.style"></i>
                     <span class="level">{{ level.val }}</span>
-                    <!-- <span class="level">{{ level.val }}</span> -->
                     <span class="hidden" style="display: none">{{ level.style }}</span>
                     <br/>
                 </div>
