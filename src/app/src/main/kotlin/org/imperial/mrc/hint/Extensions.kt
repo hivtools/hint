@@ -7,6 +7,8 @@ import com.github.kittinunf.fuel.core.Parameters
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.requests.DownloadRequest
+import org.apache.commons.logging.LogFactory
+import org.imperial.mrc.hint.exceptions.HintExceptionHandler
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -64,6 +66,7 @@ fun Response.asResponseEntity(): ResponseEntity<String> {
         }
 
     } catch (e: IOException) {
+        LogFactory.getLog(HintExceptionHandler::class.java).error(e.message)
         ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Could not parse response.")
                 .toResponseEntity() as ResponseEntity<String>
     }
