@@ -21,6 +21,7 @@ class ErrorLoggingFilterTests
 
         val mockRequest = mock<HttpServletRequest> {
             on { servletPath } doReturn "/test"
+            on { method } doReturn "POST"
         }
 
         val mockOutputStream = mock<ServletOutputStream>()
@@ -44,7 +45,7 @@ class ErrorLoggingFilterTests
         sut.doFilter(mockRequest, mockResponse, mockChain)
 
         //Assert expected messages logged
-        verify(mockLogger).error("ERROR: 500 response for /test")
+        verify(mockLogger).error("ERROR: 500 response for POST /test")
         verify(mockLogger).error("TEST BODY")
         verifyNoMoreInteractions(mockLogger)
 
@@ -77,6 +78,7 @@ class ErrorLoggingFilterTests
 
         val mockRequest = mock<HttpServletRequest> {
             on { servletPath } doReturn "/download/test"
+            on { method } doReturn "GET"
         }
 
         val mockResponse = mock<HttpServletResponse> {
@@ -88,7 +90,7 @@ class ErrorLoggingFilterTests
         val sut = ErrorLoggingFilter(mockLogger)
         sut.doFilter(mockRequest, mockResponse, mockChain)
 
-        verify(mockLogger).error("ERROR: 500 response for /download/test")
+        verify(mockLogger).error("ERROR: 500 response for GET /download/test")
         verifyNoMoreInteractions(mockLogger)
 
         //verify doFilter was called with unwrapped response
