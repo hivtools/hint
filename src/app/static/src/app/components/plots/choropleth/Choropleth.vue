@@ -277,6 +277,7 @@
             options() {
                 const featureIndicators = this.featureIndicators;
                 const indicatorMetaData = findMetaData(this.indicators, this.selections.indicatorId);
+                console.log('indicatorMetaData', indicatorMetaData, 'colourIndicator', this.colorIndicator)
                 return {
                     onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
                         const area_id = feature.properties && feature.properties["area_id"];

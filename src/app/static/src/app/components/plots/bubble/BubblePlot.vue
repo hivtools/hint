@@ -66,7 +66,7 @@
                             :colour-scale="colourIndicatorScale"
                             @update="updateColourScale"
                 ></map-legend>
-                <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius"></size-legend>
+                <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius" :metadata="sizeIndicator"></size-legend>
             </l-map>
         </div>
     </div>
@@ -153,6 +153,7 @@
         colourRange: NumericRange,
         colourIndicatorScale: ColourScaleSettings | null
         selectedAreaIds: string[]
+        // sizeIndicatorMetaData: Object
     }
 
     const props = {
@@ -358,7 +359,10 @@
                     this.updateColourScale(newScale);
                     return newScale;
                 }
-            },
+            }
+            // sizeIndicatorMetaData() {
+            //      return findMetaData(this.indicators, this.selections.sizeIndicatorId)
+            //     }
         },
         methods: {
             updateBounds: function () {
@@ -396,6 +400,7 @@
 
                 const colorIndicatorMetaData = findMetaData(this.indicators, this.selections.colorIndicatorId);
                 const sizeIndicatorMetaData = findMetaData(this.indicators, this.selections.sizeIndicatorId);
+                // console.log('sizeIndicator', this.sizeIndicator, 'sizeIndicatorMetaData', sizeIndicatorMetaData)
                 return `<div>
                                 <strong>${area_name}</strong>
                                 <br/>${colorIndicatorName}: ${formatOutput(colorValue, colorIndicatorMetaData!.format, colorIndicatorMetaData!.scale, colorIndicatorMetaData!.accuracy)}

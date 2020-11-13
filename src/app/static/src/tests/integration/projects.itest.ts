@@ -204,9 +204,10 @@ describe("Projects actions", () => {
 
         await actions.renameProject({commit, dispatch, state, rootState} as any, projectPayload);
         setTimeout(() => {
-            expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
-            expect(commit.mock.calls.length).toBe(3);
-            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            expect(commit.mock.calls.length).toBe(2);
+            expect(dispatch.mock.calls.length).toBe(2);
+            expect(dispatch.mock.calls[0][0]).toBe("getCurrentProject");
+            expect(dispatch.mock.calls[1][0]).toBe("getProjects");
             done();
         });
     });

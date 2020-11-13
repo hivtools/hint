@@ -19,6 +19,8 @@
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
     import numeral from "numeral";
+    import {formatOutput} from "./../utils";
+    import {ChoroplethIndicatorMetadata} from "../../../generated";
 
     interface Circle {
         y: number,
@@ -34,7 +36,8 @@
     interface Props {
         indicatorRange: NumericRange,
         minRadius: number,
-        maxRadius: number
+        maxRadius: number,
+        metadata: ChoroplethIndicatorMetadata
     }
 
     interface Computed {
@@ -55,7 +58,8 @@
         props: {
             "indicatorRange": Object,
             "minRadius": Number,
-            "maxRadius": Number
+            "maxRadius": Number,
+            "metadata": Object
         },
         components: {
             LControl
@@ -96,8 +100,26 @@
             circleFromRadius: function (r: number, value: number, under = false) {
                 const y = this.height - r;
 
-                let text = value > 1000 ? numeral(value).format("0.0a") : (+value.toFixed(3)).toString();
-                if (under && text != "0") {
+                // let text = value > 1000 ? numeral(value).format("0.0a") : (+value.toFixed(3)).toString();
+                // if (under && text != '0') {
+                //     text = "<" + text;
+                // }
+
+                const { format, scale, accuracy} = this.metadata;
+                let text = formatOutput(value, format, scale, null)
+
+                    if (typeof(text) === "string" && !text.includes('%')) {
+                        text = parseFloat(text)
+                    }
+                    if (typeof text == "number") {
+                        if (text >= 1000 && text < 10000 || text >= 1000000 && text < 10000000) {
+                            text = numeral(text).format("0.0a")
+                        } else if (text >= 1000) {
+                            text = numeral(text).format("0a")
+                        } else text = text.toString()
+                    }
+                    const zeros = ['0', '0%', '0.0%', '0.00%']
+                    if (under && !zeros.includes(text)) {
                     text = "<" + text;
                 }
 

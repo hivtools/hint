@@ -104,22 +104,18 @@
                         if (this.metadata.invert_scale) {
                             valAsProportion = 1 - valAsProportion;
                         }
+                        console.log(min, max, format, scale, accuracy, this.metadata.min, this.metadata.max)
 
-                        val = formatOutput(val, format, scale, accuracy)
+                        val = formatOutput(val, format, scale, null)
 
-                        if (typeof(val) === 'number') {
+                        if (typeof(val) === "string" && !val.includes('%')) {
+                            val = parseFloat(val)
+                        }
+                        if (typeof val == "number") {
                             if (val >= 1000 && val < 10000 || val >= 1000000 && val < 10000000) {
                                 val = numeral(val).format("0.0a")
                             } else if (val >= 1000) {
                                 val = numeral(val).format("0a")
-                            }
-                        }
-                        if (typeof(val) === 'string' && !val.includes('%')) {
-                            const pval = parseFloat(val)
-                            if (pval >= 1000  && pval < 10000 || pval >= 1000000 && pval < 10000000) {
-                                val = numeral(pval).format("0.0a")
-                            } else if (pval >= 1000){
-                                val = numeral(pval).format("0a")
                             }
                         }
 
