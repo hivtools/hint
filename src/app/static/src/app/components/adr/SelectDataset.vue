@@ -210,6 +210,7 @@
                     outOfDate: false} : null
             },
             async importDataset() {
+                if(this.newDatasetId){ 
                 this.loading = true;
                 this.setDataset(this.newDataset);
 
@@ -228,6 +229,7 @@
 
                 this.loading = false;
                 this.open = false;
+                }
             },
             async refresh() {
                 this.stopPolling();
