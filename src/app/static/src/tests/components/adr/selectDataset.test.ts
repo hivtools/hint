@@ -14,6 +14,8 @@ import {ADRSchemas} from "../../../app/types";
 import {RootState} from "../../../app/root";
 import {InfoIcon} from "vue-feather-icons";
 import Mock = jest.Mock;
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {expectTranslated} from "../../testHelpers";
 
 describe("select dataset", () => {
 
@@ -27,21 +29,61 @@ describe("select dataset", () => {
         survey: "survey"
     }
 
-    const pjnz = {resource_type: schemas.pjnz, url: "pjnz.pjnz", last_modified: "2020-11-01", metadata_modified: "2020-11-02"}
-    const shape = {resource_type: schemas.shape, url: "shape.geojson", last_modified: "2020-11-03", metadata_modified: "2020-11-04"}
-    const pop = {resource_type: schemas.population, url: "pop.csv", last_modified: "2020-11-05", metadata_modified: "2020-11-06"}
-    const survey = {resource_type: schemas.survey, url: "survey.csv", last_modified: "2020-11-07", metadata_modified: "2020-11-08"}
-    const program = {resource_type: schemas.programme, url: "program.csv", last_modified: "2020-11-07", metadata_modified: "2020-11-08"}
-    const anc = {resource_type: schemas.anc, url: "anc.csv", last_modified: "2020-11-09", metadata_modified: "2020-11-10"}
+    const pjnz = {
+        resource_type: schemas.pjnz,
+        url: "pjnz.pjnz",
+        last_modified: "2020-11-01",
+        metadata_modified: "2020-11-02"
+    }
+    const shape = {
+        resource_type: schemas.shape,
+        url: "shape.geojson",
+        last_modified: "2020-11-03",
+        metadata_modified: "2020-11-04"
+    }
+    const pop = {
+        resource_type: schemas.population,
+        url: "pop.csv",
+        last_modified: "2020-11-05",
+        metadata_modified: "2020-11-06"
+    }
+    const survey = {
+        resource_type: schemas.survey,
+        url: "survey.csv",
+        last_modified: "2020-11-07",
+        metadata_modified: "2020-11-08"
+    }
+    const program = {
+        resource_type: schemas.programme,
+        url: "program.csv",
+        last_modified: "2020-11-07",
+        metadata_modified: "2020-11-08"
+    }
+    const anc = {
+        resource_type: schemas.anc,
+        url: "anc.csv",
+        last_modified: "2020-11-09",
+        metadata_modified: "2020-11-10"
+    }
 
-    const fakeRawDatasets = [{
-        id: "id1",
-        title: "Some data",
-        organization: {title: "org"},
-        name: "some-data",
-        type: "naomi-data",
-        resources: []
-    }]
+    const fakeRawDatasets = [
+        {
+            id: "id1",
+            title: "Some data",
+            organization: {title: "org"},
+            name: "some-data",
+            type: "naomi-data",
+            resources: []
+        },
+        {
+            id: "id2",
+            title: "Some data 2",
+            organization: {title: "org"},
+            name: "some-data",
+            type: "naomi-data",
+            resources: []
+        }
+    ]
 
     const fakeDataset = {
         id: "id1",
@@ -52,7 +94,29 @@ describe("select dataset", () => {
             program: null,
             pop: null,
             survey: null,
-            shape: mockDatasetResource({url: "shape.geojson", lastModified: "2020-11-03", metadataModified: "2020-11-04"}),
+            shape: mockDatasetResource({
+                url: "shape.geojson",
+                lastModified: "2020-11-03",
+                metadataModified: "2020-11-04"
+            }),
+            anc: null
+        }
+    }
+
+    const fakeDataset2 = {
+        id: "id2",
+        title: "Some data 2",
+        url: "www.adr.com/naomi-data/some-data",
+        resources: {
+            pjnz: null,
+            program: null,
+            pop: null,
+            survey: null,
+            shape: mockDatasetResource({
+                url: "shape.geojson",
+                lastModified: "2020-11-03",
+                metadataModified: "2020-11-04"
+            }),
             anc: null
         }
     }
@@ -74,7 +138,7 @@ describe("select dataset", () => {
     }
 
     const getStore = (baselineProps: Partial<BaselineState> = {}, rootProps: Partial<RootState> = {}) => {
-        return new Vuex.Store({
+        const store = new Vuex.Store({
             state: mockRootState({
                 adrSchemas: schemas,
                 adrDatasets: fakeRawDatasets,
@@ -96,6 +160,8 @@ describe("select dataset", () => {
                 }
             }
         });
+        registerTranslations(store);
+        return store;
     }
 
     beforeEach(() => {
@@ -115,17 +181,17 @@ describe("select dataset", () => {
     });
 
     it("renders select dataset button when no dataset is selected", () => {
-        const rendered = shallowMount(SelectDataset, {store: getStore()});
-        expect(rendered.find("button").text()).toBe("Select ADR dataset");
+        let store = getStore()
+        const rendered = shallowMount(SelectDataset, {store});
+        expectTranslated(rendered.find("button"), "Select ADR dataset", "Sélectionner l’ensemble de données ADR", store);
     });
 
     it("renders edit dataset button when dataset is already selected", () => {
-        const rendered = shallowMount(SelectDataset, {
-            store: getStore({
-                selectedDataset: fakeDataset
-            })
-        });
-        expect(rendered.find("button").text()).toBe("Edit");
+        let store = getStore({
+            selectedDataset: fakeDataset
+        })
+        const rendered = shallowMount(SelectDataset, {store});
+        expectTranslated(rendered.find("button"), "Edit", "Éditer", store);
     });
 
     it("does not render refresh button or info icon when no resources are out of date", () => {
@@ -149,8 +215,8 @@ describe("select dataset", () => {
             stubs: ["tree-select"]
         });
         const buttons = rendered.findAll("button");
-        expect(buttons.at(0).text()).toBe("Refresh");
-        expect(buttons.at(1).text()).toBe("Edit");
+        expectTranslated(buttons.at(0), "Refresh", "Rafraîchir", store);
+        expectTranslated(buttons.at(1), "Edit", "Éditer", store);
 
         expect(rendered.findAll(InfoIcon).length).toBe(1);
 
@@ -286,12 +352,11 @@ describe("select dataset", () => {
         });
 
     it("renders selected dataset if it exists", () => {
-        const rendered = shallowMount(SelectDataset, {
-            store: getStore({
-                selectedDataset: fakeDataset
-            })
-        });
-        expect(rendered.find(".font-weight-bold").text()).toBe("Selected dataset:");
+        let store = getStore({
+            selectedDataset: fakeDataset
+        })
+        const rendered = shallowMount(SelectDataset, {store});
+        expectTranslated(rendered.find(".font-weight-bold"), "Selected dataset:", "Ensemble de données sélectionné :", store);
         expect(rendered.find("a").text()).toBe("Some data");
         expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
     });
@@ -324,23 +389,35 @@ describe("select dataset", () => {
         expect(select.props("multiple")).toBe(false);
         expect(select.props("searchable")).toBe(true);
 
-        const expectedOptions = [{
-            id: "id1",
-            label: "Some data",
-            customLabel: `Some data
+        const expectedOptions = [
+            {
+                id: "id1",
+                label: "Some data",
+                customLabel: `Some data
                     <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
                         (some-data)<br/>
                         <span class="font-weight-bold">org</span>
                     </div>`
-        }]
+            },
+            {
+                id: "id2",
+                label: "Some data 2",
+                customLabel: `Some data 2
+                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                        (some-data)<br/>
+                        <span class="font-weight-bold">org</span>
+                    </div>`
+            }
+        ]
         expect(select.props("options")).toStrictEqual(expectedOptions);
     });
 
     it("sets current dataset", async () => {
+        let store = getStore({},
+            {adrDatasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
         const rendered = mount(SelectDataset, {
-            store: getStore({},
-                {adrDatasets: [{...fakeRawDatasets[0], resources: [shape]}]}
-            ), sync: false, stubs: ["tree-select"]
+            store, stubs: ["tree-select"]
         });
         rendered.find("button").trigger("click");
 
@@ -349,24 +426,25 @@ describe("select dataset", () => {
         expect(rendered.findAll(TreeSelect).length).toBe(1);
         expect(rendered.find(Modal).findAll("button").length).toBe(2);
         expect(rendered.findAll("p").length).toBe(0);
-        expect(rendered.find("h4").text()).toBe("Browse ADR");
+        expectTranslated(rendered.find("h4"), "Browse ADR", "Chercher ADR", store);
 
-        rendered.setData({newDatasetId: "id1"});
+        rendered.setData({newDatasetId: "id2"});
         rendered.find(Modal).find("button").trigger("click");
 
         await Vue.nextTick();
-        expect(setDatasetMock.mock.calls[0][1]).toEqual(fakeDataset);
+        expect(setDatasetMock.mock.calls[0][1]).toEqual(fakeDataset2);
 
         // loading spinner should render and buttons hidden
         const buttons = rendered.find(Modal).findAll("button");
         expect(rendered.findAll(TreeSelect).length).toBe(0);
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
         expect(buttons.length).toBe(0);
-        expect(rendered.find("p").text())
-            .toBe("Importing files - this may take several minutes. Please do not close your browser.");
+        expectTranslated(rendered.find("p"),
+            "Importing files - this may take several minutes. Please do not close your browser.",
+            "Importation de fichiers - cela peut prendre plusieurs minutes. Veuillez ne pas fermer votre navigateur.",
+            store);
         expect(rendered.findAll("h4").length).toBe(0);
 
-        await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
 

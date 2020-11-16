@@ -13,11 +13,12 @@ $HERE/run-dependencies-for-integration-tests.sh
 
 # Create an image based on the shared build env that compiles and tests the front-end
 docker build --tag hint-test \
-	--build-arg GIT_ID=$GIT_ID \
+  --build-arg GIT_ID=$GIT_ID \
+  --build-arg CODECOV_TOKEN=$CODECOV_TOKEN \
   -f $HERE/test-front-end.dockerfile \
-	.
+  .
 
 # Run the created image
 docker run --rm \
-    --network=hint_nw \
-    hint-test
+  --network=hint_nw \
+  hint-test

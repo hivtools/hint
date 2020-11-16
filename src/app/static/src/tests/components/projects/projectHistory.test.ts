@@ -1,4 +1,4 @@
-import {mount, Wrapper} from "@vue/test-utils";
+import {mount, shallowMount, Wrapper} from "@vue/test-utils";
 import ProjectHistory from "../../../app/components/projects/ProjectHistory.vue";
 import {formatDateTime} from "../../../app/utils";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
@@ -10,6 +10,7 @@ import {mockProjectsState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
 import {switches} from "../../../app/featureSwitches";
 import ShareProject from "../../../app/components/projects/ShareProject.vue";
+import {Language} from "../../../app/store/translations/locales";
 
 describe("Project history component", () => {
 
@@ -62,13 +63,48 @@ describe("Project history component", () => {
         }
     ];
 
-    const getWrapper = (projects = testProjects) => {
+
+    const getWrapper = (projects = testProjects) =>  {
         return mount(ProjectHistory, {store: createStore(projects), stubs: ["share-project"]});
     };
 
+    it("renders icons without an error", async () => {
+        const wrapper = getWrapper(testProjects);
+        expect(wrapper.find("copy-icon").exists).toBeTruthy();
+        expect(wrapper.find("trash-2-icon").exists).toBeTruthy();
+        expect(wrapper.find("refresh-cw-icon").exists).toBeTruthy();
+        expect(wrapper.find("edit-icon").exists).toBeTruthy();
+    });
+    
+    it("can render tooltips without an error", () => {
+        const mockTooltip = jest.fn();
+        const store = createStore(testProjects)
+        shallowMount(ProjectHistory, {store,
+             directives: {"tooltip": mockTooltip} });
+
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Rename project");
+        expect(mockTooltip.mock.calls[1][1].value).toBe("Load");
+        expect(mockTooltip.mock.calls[2][1].value).toBe("Delete");
+        expect(mockTooltip.mock.calls[3][1].value).toBe("Copy last updated to a new project");
+        expect(mockTooltip.mock.calls[6][1].value).toBe("Copy to a new project");
+    });
+
+    it("can render tooltips in french without an error", () => {
+        const mockTooltip = jest.fn();
+        const store = createStore(testProjects)
+        store.state.language = Language.fr;
+        shallowMount(ProjectHistory, {store,
+        directives: {"tooltip": mockTooltip} });
+
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Renommer le projet");
+        expect(mockTooltip.mock.calls[1][1].value).toBe("Charger");
+        expect(mockTooltip.mock.calls[2][1].value).toBe("Supprimer");
+        expect(mockTooltip.mock.calls[3][1].value).toBe("Copier la dernière mise à jour dans un nouveau projet");
+        expect(mockTooltip.mock.calls[6][1].value).toBe("Copier dans un nouveau projet");
+    });
+
     const testRendersProject = (wrapper: Wrapper<any>, id: number, name: string, updatedIsoDate: string,
                                 versionsCount: number) => {
-        const store = wrapper.vm.$store;
         const v = wrapper.find(`#p-${id}`).findAll(".project-cell");
         const button = v.at(0).find("button");
         expect(button.classes()).toContain("collapsed");
@@ -80,35 +116,15 @@ describe("Project history component", () => {
         expect(v.at(1).text()).toBe(name);
         expect(v.at(2).text()).toBe(versionsCount === 1 ? "1 version" : `${versionsCount} versions`);
         expect(v.at(3).text()).toBe(formatDateTime(updatedIsoDate));
-        if (switches.renameProject) {
-            expectTranslated(v.at(4), "Rename project", "Renommer le projet", store);
-            expect(v.at(4).find("a").attributes("href")).toBe("");
-            expectTranslated(v.at(5), "Load", "Charger", store);
-            expect(v.at(5).find("a").attributes("href")).toBe("");
-            expectTranslated(v.at(6), "Delete", "Supprimer", store);
-        } else { 
-            expectTranslated(v.at(4), "Load", "Charger", store);
-            expect(v.at(4).find("a").attributes("href")).toBe("");
-            expectTranslated(v.at(5), "Delete", "Supprimer", store);
-            if (switches.promoteProject) {
-                expectTranslated(v.at(6), "Copy last updated to a new project", "Copier la dernière mise à jour dans un nouveau projet", store);
-                expect(v.at(6).find("a").attributes("href")).toBe("");
-            } else {
-                if (switches.shareProject) {
-                    expect(v.at(7).findAll(ShareProject).length).toBe(1);
-                } else {
-                    expect(v.length).toBe(6);
-                }
-            }
-            if (switches.shareProject) {
-                expect(wrapper.findAll(ShareProject).length).toBeGreaterThan(0);
-            } else {
-                expect(wrapper.findAll(ShareProject).length).toBe(0);
-            }
-            const versions = wrapper.find(`#versions-${id}`);
+
+        if (switches.shareProject) {
+            expect(wrapper.findAll(ShareProject).length).toBeGreaterThan(0);
+        } else {
+            expect(wrapper.findAll(ShareProject).length).toBe(0);
+        }
+        const versions = wrapper.find(`#versions-${id}`);
             expect(versions.classes()).toContain("collapse");
             expect(versions.attributes("style")).toBe("display: none;");
-        }
     };
 
     const testRendersVersion = (row: Wrapper<any>, id: string, updatedIsoDate: string, versionNumber: number,
@@ -118,23 +134,6 @@ describe("Project history component", () => {
         expect(cells.at(0).text()).toBe("");
         expect(cells.at(1).text()).toBe(`v${versionNumber}`);
         expect(cells.at(2).text()).toBe(formatDateTime(updatedIsoDate));
-        if (switches.renameProject) {
-        const loadLink = cells.at(4).find("a");
-        expectTranslated(loadLink, "Load", "Charger", store);
-        const deleteLink = cells.at(5).find("a");
-        expectTranslated(deleteLink, "Delete", "Supprimer", store);
-        } else {
-            const loadLink = cells.at(3).find("a");
-            expectTranslated(loadLink, "Load", "Charger", store);
-            const deleteLink = cells.at(4).find("a");
-            expectTranslated(deleteLink, "Delete", "Supprimer", store);
-        }
-        if (switches.promoteProject && !switches.renameProject) {
-            const copyLink = cells.at(5).find("a");
-            expectTranslated(copyLink, "Copy to a new project", "Copier dans un nouveau projet", store);
-        } else if (!switches.renameProject) {
-            expect(cells.length).toBe(5);
-        }
     };
 
     it("renders as expected ", () => {
@@ -144,12 +143,17 @@ describe("Project history component", () => {
         expect(wrapper.find("h5").text()).toBe("Project history");
 
         const headers = wrapper.find("#headers").findAll(".header-cell");
-        expect(headers.length).toBe(4);
+        expect(headers.length).toBe(9);
         expect(headers.at(0).text()).toBe("");
         expectTranslated(headers.at(1), "Project name", "Nom du projet", store);
         expectTranslated(headers.at(2), "Versions", "Versions", store);
         expectTranslated(headers.at(3), "Last updated", "Dernière mise à jour", store);
-
+        expectTranslated(headers.at(4), "Rename", "Renommer", store);
+        expectTranslated(headers.at(5), "Load", "Charger", store);
+        expectTranslated(headers.at(6), "Delete", "Supprimer", store);
+        expectTranslated(headers.at(7), "Copy to", "Copier", store);
+        expectTranslated(headers.at(8), "Share", "Partager", store);
+        
         testRendersProject(wrapper, 1, "proj1", isoDates[1], 2);
         const proj1Versions = wrapper.find("#versions-1");
         const proj1VersionRows = proj1Versions.findAll(".row");
@@ -164,7 +168,7 @@ describe("Project history component", () => {
         testRendersVersion(proj2VersionRows.at(0), "s21", isoDates[3], 1, store);
 
         const modal = wrapper.find(".modal");
-        expect(modal.classes).not.toContain("show");
+        expect(modal.classes).not.toContain("show");         
     });
 
     it("can expand project row", async (done) => {
@@ -210,7 +214,7 @@ describe("Project history component", () => {
         if (!switches.renameProject) {
         const wrapper = getWrapper();
         const store = wrapper.vm.$store;
-        const deleteLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("a");
+        const deleteLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
         deleteLink.trigger("click");
         await Vue.nextTick();
 
@@ -227,7 +231,7 @@ describe("Project history component", () => {
         if (!switches.renameProject) {
         const wrapper = getWrapper();
         const store = wrapper.vm.$store;
-        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("a");
+        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("button");
         deleteLink.trigger("click");
         await Vue.nextTick();
 
@@ -243,7 +247,7 @@ describe("Project history component", () => {
     it("invokes deleteProject action when confirm delete", async () => {
         if (!switches.renameProject) {
         const wrapper = getWrapper(testProjects);
-        const deleteLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("a");
+        const deleteLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
         deleteLink.trigger("click");
         await Vue.nextTick();
 
@@ -259,7 +263,7 @@ describe("Project history component", () => {
     it("invokes deleteVersion action when confirm delete", async () => {
         if (!switches.renameProject) {
         const wrapper = getWrapper(testProjects);
-        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("a");
+        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("button");
         deleteLink.trigger("click");
         await Vue.nextTick();
 
@@ -275,7 +279,7 @@ describe("Project history component", () => {
     it("hides modal and does not invoke action when click cancel", async () => {
 
         const wrapper = getWrapper(testProjects);
-        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("a");
+        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("button");
         deleteLink.trigger("click");
         await Vue.nextTick();
 
@@ -291,7 +295,7 @@ describe("Project history component", () => {
     const testLoadVersionLink = async function (elementId: string, projectId: number, versionId: string) {
         if (!switches.renameProject) {
         const wrapper = getWrapper(testProjects);
-        const versionLink = wrapper.find("#versions-1").find("a");
+        const versionLink = wrapper.find("#versions-1").find("button");
         versionLink.trigger("click");
         await Vue.nextTick();
         expect(mockLoad.mock.calls.length).toBe(1);
@@ -303,14 +307,14 @@ describe("Project history component", () => {
         if (switches.renameProject) {
             const wrapper = getWrapper();
             const store = wrapper.vm.$store;
-            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("a");
+            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("button");
             renameLink.trigger("click");
             await Vue.nextTick();
 
             const modal = wrapper.findAll(".modal").at(2);
             expect(modal.classes()).toContain("show");
             expectTranslated(modal.find(".modal-body h4"), "Please enter a new name for the project",
-                "Entrez un nouveau nom pour le projet", store);
+                "Veuillez entrer un nouveau nom pour le projet", store);
 
             const input = modal.find("input")
             expectTranslated(input, "Project name", "Nom du projet", store, "placeholder");
@@ -344,7 +348,7 @@ describe("Project history component", () => {
         if (switches.promoteProject && !switches.renameProject) {
             const wrapper = getWrapper();
             const store = wrapper.vm.$store;
-            const copyLink = wrapper.find("#p-1").findAll(".project-cell").at(6).find("a");
+            const copyLink = wrapper.find("#p-1").findAll(".project-cell").at(6).find("button");
             copyLink.trigger("click");
             await Vue.nextTick();
 
@@ -372,7 +376,7 @@ describe("Project history component", () => {
         if (switches.promoteProject && !switches.renameProject) {
             const wrapper = getWrapper();
             const store = wrapper.vm.$store;
-            const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
+            const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("button");
             copyLink.trigger("click");
             await Vue.nextTick();
 
@@ -398,7 +402,7 @@ describe("Project history component", () => {
     it("invokes promoteVersion action when confirm copy", async () => {
         if (switches.promoteProject && !switches.renameProject) {
             const wrapper = getWrapper(testProjects);
-            const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
+            const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("button");
             copyLink.trigger("click");
             await Vue.nextTick();
 
@@ -426,7 +430,7 @@ describe("Project history component", () => {
     it("cannot invoke promoteVersion action when input value is empty", async () => {
         if (switches.promoteProject) {
             const wrapper = getWrapper(testProjects);
-            const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("a");
+            const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("button");
             copyLink.trigger("click");
             await Vue.nextTick();
 
@@ -447,7 +451,7 @@ describe("Project history component", () => {
         if (switches.renameProject) {
             const wrapper = getWrapper(testProjects);
             const vm = wrapper.vm as any
-            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("a");
+            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("button");
             renameLink.trigger("click");
             await Vue.nextTick();
 
@@ -477,7 +481,7 @@ describe("Project history component", () => {
     it("cannot invoke renameProject action when input value is empty", async () => {
         if (switches.renameProject) {
             const wrapper = getWrapper(testProjects);
-            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("a");
+            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("button");
             renameLink.trigger("click");
             await Vue.nextTick();
 
