@@ -7,6 +7,8 @@ import com.github.kittinunf.fuel.core.Parameters
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.requests.DownloadRequest
+import org.apache.commons.logging.LogFactory
+import org.imperial.mrc.hint.exceptions.HintExceptionHandler
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -21,16 +23,21 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
-fun httpStatusFromCode(code: Int): HttpStatus {
+fun httpStatusFromCode(code: Int): HttpStatus
+{
     val status = HttpStatus.resolve(code) ?: return HttpStatus.INTERNAL_SERVER_ERROR
-    return if (status <= HttpStatus.NOT_FOUND) {
+    return if (status <= HttpStatus.NOT_FOUND)
+    {
         status
-    } else {
+    }
+    else
+    {
         HttpStatus.INTERNAL_SERVER_ERROR
     }
 }
 
-fun headersToMultiMap(headers: Headers): MultiValueMap<String, String> {
+fun headersToMultiMap(headers: Headers): MultiValueMap<String, String>
+{
     val result = LinkedMultiValueMap<String, String>()
     headers.entries.forEach {
         result.addAll(it.key, it.value.toList())
@@ -39,43 +46,60 @@ fun headersToMultiMap(headers: Headers): MultiValueMap<String, String> {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun Response.asResponseEntity(): ResponseEntity<String> {
+fun Response.asResponseEntity(): ResponseEntity<String>
+{
     val httpStatus = httpStatusFromCode(this.statusCode)
-
-    if (this.statusCode == -1) {
+    val logger = LogFactory.getLog(HintExceptionHandler::class.java)
+    if (this.statusCode == -1)
+    {
         return ErrorDetail(httpStatus, "No response returned. The request may have timed out.")
                 .toResponseEntity() as ResponseEntity<String>
     }
 
-    return try {
+    return try
+    {
         val body = this.body().asString("application/json")
         val json = ObjectMapper().readTree(body)
-        if (!json.has("status") && !json.has("success")) {
-            throw IOException()
+        if (!json.has("status") && !json.has("success"))
+        {
+            logger.error(json)
+            throw IOException("Response does not have status or success properties")
         }
-        return if (json.has("status")) {
+        return if (json.has("status"))
+        {
             // this is a hintr response, so already conforms to our response schema
             ResponseEntity.status(httpStatus)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(body)
-        } else {
+        }
+        else
+        {
             // this is an ADR response, so convert to our response schema
             formatADRResponse(json)
         }
 
-    } catch (e: IOException) {
+    }
+    catch (e: IOException)
+    {
+        logger.error(e.message)
         ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Could not parse response.")
                 .toResponseEntity() as ResponseEntity<String>
     }
 }
 
 @Suppress("UNCHECKED_CAST")
-fun formatADRResponse(json: JsonNode): ResponseEntity<String> {
-
-    return if (json["success"].asBoolean()) {
+fun formatADRResponse(json: JsonNode): ResponseEntity<String>
+{
+    val logger = LogFactory.getLog(HintExceptionHandler::class.java)
+    logger.info("Parsing ADR response")
+    return if (json["success"].asBoolean())
+    {
         SuccessResponse(json["result"])
                 .asResponseEntity()
-    } else {
+    }
+    else
+    {
+        logger.error(json)
         // ckan API always returns a 200, even when the request errors,
         // so just return a 500 for every error response
         ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -87,7 +111,8 @@ fun formatADRResponse(json: JsonNode): ResponseEntity<String> {
 }
 
 fun Request.getStreamingResponseEntity(headRequest: (url: String, parameters: Parameters?) -> Request)
-        : ResponseEntity<StreamingResponseBody> {
+        : ResponseEntity<StreamingResponseBody>
+{
 
     val responseBody = StreamingResponseBody { outputStream: OutputStream ->
         //return an empty input stream to the body - don't need to re-use it

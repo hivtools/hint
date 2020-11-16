@@ -40,7 +40,7 @@ class ErrorLoggingFilter(private val logger: Logger = LoggerFactory.getLogger(Er
 
         if (HttpStatus.valueOf(response.status) >= HttpStatus.NOT_FOUND)
         {
-            val message = "ERROR: ${response.status} response for ${request.servletPath}"
+            val message = "ERROR: ${response.status} response for ${request.method} ${request.servletPath}"
             logger.error(message)
 
             //log content
