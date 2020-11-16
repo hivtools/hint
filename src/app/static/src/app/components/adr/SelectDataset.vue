@@ -31,7 +31,8 @@
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <template v-slot:footer v-if="!loading">
-                <button type="button"
+                <button type="button" 
+                        :disabled ="!newDatasetId"
                         class="btn btn-white"
                         v-translate="'import'"
                         @click="importDataset">
@@ -141,7 +142,7 @@
                 }))
             },
             newDataset() {
-                const fullMetaData = this.datasets.find(d => d.id = this.newDatasetId);
+                const fullMetaData = this.datasets.find(d => d.id == this.newDatasetId);
                 return fullMetaData && {
                     id: fullMetaData.id,
                     title: fullMetaData.title,
@@ -211,26 +212,22 @@
             },
             async importDataset() {
                 if(this.newDatasetId){ 
-                this.loading = true;
-                this.setDataset(this.newDataset);
-
-                const {pjnz, pop, shape, survey, program, anc} = this.newDataset.resources
-
-                await Promise.all([
+                    this.loading = true;
+                    this.setDataset(this.newDataset);
+                    const {pjnz, pop, shape, survey, program, anc} = this.newDataset.resources
+                    await Promise.all([
                     pjnz && this.importPJNZ(pjnz.url),
                     pop && this.importPopulation(pop.url),
                     shape && this.importShape(shape.url)]);
-
-                (shape || this.hasShapeFile) && await Promise.all([
+                    (shape || this.hasShapeFile) && await Promise.all([
                     survey && this.importSurvey(survey.url),
                     program && this.importProgram(program.url),
                     anc && this.importANC(anc.url)
-                ]);
-
-                this.loading = false;
-                this.open = false;
-                }
-            },
+                    ]);
+                    this.loading = false;
+                    this.open = false;
+                    }
+                    },
             async refresh() {
                 this.stopPolling();
 
