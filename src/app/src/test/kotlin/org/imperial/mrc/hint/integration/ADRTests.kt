@@ -79,8 +79,7 @@ class ADRTests : SecureIntegrationTests()
         {
             val data = ObjectMapper().readTree(result.body!!)["data"]
             assertThat(data.isArray).isTrue()
-            // the test api key has access to exactly 1 dataset
-            assertThat(data.count()).isEqualTo(1)
+            assertThat(data.any()).isTrue()
         }
     }
 
