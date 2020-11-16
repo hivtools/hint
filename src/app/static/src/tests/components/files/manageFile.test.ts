@@ -77,9 +77,9 @@ describe("Manage file component", () => {
         const wrapper = createSut({
             name: "test-name",
             upload: uploadFn,
-            hasValidAdr: true
+            fromADR: true
         });
-        const links = wrapper.find("a");
+        const links = wrapper.find("span");
         expect(links.text()).toBe("ADR");
     });
 

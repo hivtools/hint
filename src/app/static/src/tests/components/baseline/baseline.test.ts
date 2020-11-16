@@ -1,7 +1,7 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
-import {mockBaselineState, mockError, mockMetadataState, mockPopulationResponse, mockShapeResponse} from "../../mocks";
+import {mockBaselineState, mockError, mockMetadataState, mockPJNZResponse, mockPopulationResponse, mockShapeResponse} from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import Baseline from "../../../app/components/baseline/Baseline.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
@@ -194,32 +194,62 @@ describe("Baseline upload component", () => {
         expectDeleteToDispatchAction(2, () => actions.deletePopulation, done);
     });
 
-    it("upload can set validAdr to true if data is from ADR", async () => {       
-        const store = createSut({country: "Malawi"});
-        const wrapper = shallowMount(Baseline, {store});
+    it("can return true when fromADR", async () => { 
+        const store = createSut({
+            pjnz: {
+                "fromADR": "ADR",
+                "filters": {
+                    "year": ""
+                }
+            } as any,
+            population: {
+                "fromADR": "ADR",
+                "filters": {
+                    "year": ""
+                }
+            } as any,
+            shape: {
+                "fromADR": "ADR",
+                "filters": {
+                    "year": ""
+                }
+            } as any
+        });
+        const wrapper = shallowMount(Baseline, {store, localVue});
 
-        wrapper.findAll(ManageFile).at(0).setProps({hasValidAdr : true});
-        expect(wrapper.findAll(ManageFile).at(0).props().hasValidAdr).toBe(true);
-
-        wrapper.findAll(ManageFile).at(1).setProps({hasValidAdr : true});
-        expect(wrapper.findAll(ManageFile).at(1).props().hasValidAdr).toBe(true);
-
-        wrapper.findAll(ManageFile).at(2).setProps({hasValidAdr : true});
-        expect(wrapper.findAll(ManageFile).at(2).props().hasValidAdr).toBe(true);
+        expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(true);
+        expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(true);
+        expect(wrapper.findAll("manage-file-stub").at(2).props().fromADR).toBe(true);
+        
     });
 
-    it("upload can set validAdr to false if data is not from ADR", async () => {       
-        const store = createSut({country: "Malawi"});
-        const wrapper = shallowMount(Baseline, {store});
+    it("can return false when not fromADR", async () => { 
+        const store = createSut({
+            pjnz: {
+                "fromADR": "",
+                "filters": {
+                    "year": ""
+                }
+            } as any,
+            population: {
+                "fromADR": "",
+                "filters": {
+                    "year": ""
+                }
+            } as any,
+            shape: {
+                "fromADR": "",
+                "filters": {
+                    "year": ""
+                }
+            } as any
+        });
+        const wrapper = shallowMount(Baseline, {store, localVue});
 
-        wrapper.findAll(ManageFile).at(0).setProps({hasValidAdr : false});
-        expect(wrapper.findAll(ManageFile).at(0).props().hasValidAdr).toBe(false);
-
-        wrapper.findAll(ManageFile).at(1).setProps({hasValidAdr : false});
-        expect(wrapper.findAll(ManageFile).at(1).props().hasValidAdr).toBe(false);
-
-        wrapper.findAll(ManageFile).at(2).setProps({hasValidAdr : false});
-        expect(wrapper.findAll(ManageFile).at(2).props().hasValidAdr).toBe(false);
+        expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(false);
+        expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(false);
+        expect(wrapper.findAll("manage-file-stub").at(2).props().fromADR).toBe(false);
+        
     });
 
     const expectUploadToDispatchAction = (index: number,
