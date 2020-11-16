@@ -197,19 +197,19 @@ describe("Baseline upload component", () => {
     it("can return true when fromADR", async () => { 
         const store = createSut({
             pjnz: {
-                "fromADR": "ADR",
+                "fromADR": true,
                 "filters": {
                     "year": ""
                 }
             } as any,
             population: {
-                "fromADR": "ADR",
+                "fromADR": true,
                 "filters": {
                     "year": ""
                 }
             } as any,
             shape: {
-                "fromADR": "ADR",
+                "fromADR": true,
                 "filters": {
                     "year": ""
                 }

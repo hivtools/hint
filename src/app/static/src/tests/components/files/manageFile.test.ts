@@ -79,8 +79,8 @@ describe("Manage file component", () => {
             upload: uploadFn,
             fromADR: true
         });
-        const links = wrapper.find("span");
-        expect(links.text()).toBe("ADR");
+        const spans = wrapper.find("span");
+        expect(spans.text()).toBe("ADR");
     });
 
     it("renders existing file name if present", () => {

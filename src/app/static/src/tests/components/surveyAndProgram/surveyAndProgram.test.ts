@@ -304,19 +304,19 @@ describe("Survey and programme component", () => {
     it("can return true when fromADR", async () => { 
         const store = createStore({
             survey: {
-                "fromADR": "ADR",
+                "fromADR": true,
                 "filters": {
                     "year": "TEST YEAR FILTERS"
                 }
             } as any,
             anc: {
-                "fromADR": "ADR",
+                "fromADR": true,
                 "filters": {
                     "year": "TEST YEAR FILTERS"
                 }
             } as any,
             program: {
-                "fromADR": "ADR",
+                "fromADR": true,
                 "filters": {
                     "year": "TEST YEAR FILTERS"
                 }
