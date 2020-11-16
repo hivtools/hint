@@ -28,7 +28,8 @@
         colorFunctionFromName,
         colourScaleStepFromMetadata,
         roundToContext,
-        formatOutput
+        formatOutput,
+        formatLegend
     } from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {ColourScaleSettings} from "../../store/plottingSelections/plottingSelections";
@@ -106,18 +107,20 @@
                         }
                         console.log(min, max, format, scale, accuracy, this.metadata.min, this.metadata.max)
 
-                        val = formatOutput(val, format, scale, null)
+                        // val = formatOutput(val, format, scale, null)
 
-                        if (typeof(val) === "string" && !val.includes('%')) {
-                            val = parseFloat(val)
-                        }
-                        if (typeof val == "number") {
-                            if (val >= 1000 && val < 10000 || val >= 1000000 && val < 10000000) {
-                                val = numeral(val).format("0.0a")
-                            } else if (val >= 1000) {
-                                val = numeral(val).format("0a")
-                            }
-                        }
+                        // if (typeof(val) === "string" && !val.includes('%')) {
+                        //     val = parseFloat(val)
+                        // }
+                        // if (typeof val == "number") {
+                        //     if (val >= 1000 && val < 10000 || val >= 1000000 && val < 10000000) {
+                        //         val = numeral(val).format("0.0a")
+                        //     } else if (val >= 1000) {
+                        //         val = numeral(val).format("0a")
+                        //     }
+                        // }
+
+                        val = formatLegend(val, format, scale)
 
                         return {
                             val, style: {background: colorFunction(valAsProportion)}

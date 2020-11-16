@@ -9,7 +9,8 @@ const getWrapper = () => {
         propsData: {
             minRadius: 10,
             maxRadius: 110,
-            indicatorRange: {min: 1, max: 101}
+            indicatorRange: {min: 1, max: 101},
+            metadata: { format: '', accuracy: null}
         }
     });
 };
@@ -115,7 +116,8 @@ describe("SizeLegend component", () => {
             propsData: {
                 minRadius: 10,
                 maxRadius: 110,
-                indicatorRange: {min: 0, max: 0.1}
+                indicatorRange: {min: 0, max: 0.1},
+                metadata: { format: '0', accuracy: 0.1}
             }
         });
         const zeroText = wrapper.findAll("text").at(0);
@@ -128,7 +130,8 @@ describe("SizeLegend component", () => {
             propsData: {
                 minRadius: 10,
                 maxRadius: 100,
-                indicatorRange: {min: 2000, max: 10000}
+                indicatorRange: {min: 2000, max: 10000},
+                metadata: { format: '0.0', accuracy: 1}
             }
         });
 
@@ -136,6 +139,6 @@ describe("SizeLegend component", () => {
         expect(firstText.text()).toBe("<2.0k");
 
         const lastText = wrapper.findAll("text").at(4);
-        expect(lastText.text()).toBe("10.0k");
+        expect(lastText.text()).toBe("10k");
     });
 });

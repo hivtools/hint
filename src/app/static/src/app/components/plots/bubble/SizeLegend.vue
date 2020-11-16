@@ -19,7 +19,7 @@
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
     import numeral from "numeral";
-    import {formatOutput} from "./../utils";
+    import {formatOutput, formatLegend} from "./../utils";
     import {ChoroplethIndicatorMetadata} from "../../../generated";
 
     interface Circle {
@@ -106,20 +106,21 @@
                 // }
 
                 const { format, scale, accuracy} = this.metadata;
-                let text = formatOutput(value, format, scale, null)
+                // let text = formatOutput(value, format, scale, null)
 
-                    if (typeof(text) === "string" && !text.includes('%')) {
-                        text = parseFloat(text)
-                    }
-                    if (typeof text == "number") {
-                        if (text >= 1000 && text < 10000 || text >= 1000000 && text < 10000000) {
-                            text = numeral(text).format("0.0a")
-                        } else if (text >= 1000) {
-                            text = numeral(text).format("0a")
-                        } else text = text.toString()
-                    }
-                    const zeros = ['0', '0%', '0.0%', '0.00%']
-                    if (under && !zeros.includes(text)) {
+                // if (typeof(text) === "string" && !text.includes('%')) {
+                //     text = parseFloat(text)
+                // }
+                // if (typeof text == "number") {
+                //     if (text >= 1000 && text < 10000 || text >= 1000000 && text < 10000000) {
+                //         text = numeral(text).format("0.0a")
+                //     } else if (text >= 1000) {
+                //         text = numeral(text).format("0a")
+                //     } else text = text.toString()
+                // }
+                let text = formatLegend(value, format, scale)
+                const zeros = ['0', '0%', '0.0%', '0.00%']
+                if (under && !zeros.includes(text)) {
                     text = "<" + text;
                 }
 
