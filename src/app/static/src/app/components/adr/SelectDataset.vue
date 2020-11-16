@@ -91,7 +91,7 @@
         currentLanguage: Language,
         select: string
     }
-    
+
 
     interface Data {
         open: boolean
@@ -141,7 +141,7 @@
                 }))
             },
             newDataset() {
-                const fullMetaData = this.datasets.find(d => d.id = this.newDatasetId);
+                const fullMetaData = this.datasets.find(d => d.id == this.newDatasetId);
                 return fullMetaData && {
                     id: fullMetaData.id,
                     title: fullMetaData.title,
@@ -185,7 +185,7 @@
                 }
                 return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`
             },
-            select(){
+            select() {
                 return i18next.t('select', {lng: this.currentLanguage})
             },
             currentLanguage: mapStateProp<RootState, Language>(null,
@@ -207,7 +207,8 @@
                     url: metadata.url,
                     lastModified: metadata.last_modified,
                     metadataModified: metadata.metadata_modified,
-                    outOfDate: false} : null
+                    outOfDate: false
+                } : null
             },
             async importDataset() {
                 this.loading = true;
@@ -271,7 +272,7 @@
                     window.clearInterval(this.pollingId);
                 }
             }
-         },
+        },
         mounted() {
             this.refreshDatasetMetadata();
             this.startPolling();
