@@ -81,7 +81,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         show: boolean,
         colourScale: ColourScaleSettings,
         step: number,
-            metadata: any
+        metadata: any
     }
 
     interface Computed {

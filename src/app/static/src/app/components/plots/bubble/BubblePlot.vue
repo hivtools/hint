@@ -153,7 +153,6 @@
         colourRange: NumericRange,
         colourIndicatorScale: ColourScaleSettings | null
         selectedAreaIds: string[]
-        // sizeIndicatorMetaData: Object
     }
 
     const props = {
@@ -360,9 +359,6 @@
                     return newScale;
                 }
             }
-            // sizeIndicatorMetaData() {
-            //      return findMetaData(this.indicators, this.selections.sizeIndicatorId)
-            //     }
         },
         methods: {
             updateBounds: function () {
@@ -397,12 +393,8 @@
 
                 const colorIndicatorName = this.indicatorNameLookup[colorIndicator];
                 const sizeIndicatorName = this.indicatorNameLookup[sizeIndicator];
-
-                // const colorIndicatorMetaData = findMetaData(this.indicators, this.selections.colorIndicatorId);
-                // const sizeIndicatorMetaData = findMetaData(this.indicators, this.selections.sizeIndicatorId);
                 const { format, scale, accuracy } = this.colorIndicator!;
                 const { format: formatS, scale: scaleS, accuracy: accuracyS } = this.sizeIndicator!;
-                // console.log('sizeIndicator', this.sizeIndicator, 'sizeIndicatorMetaData', sizeIndicatorMetaData)
                 return `<div>
                                 <strong>${area_name}</strong>
                                 <br/>${colorIndicatorName}: ${formatOutput(colorValue, format, scale, accuracy)}

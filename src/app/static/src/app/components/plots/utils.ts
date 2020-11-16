@@ -214,11 +214,3 @@ export const formatLegend = function(text: string | number, format: string, scal
         }
     return text
 }
-
-// interface Indicator {
-//     indicator: string, format: string, scale: number, accuracy: number | null
-// }
-
-// export const findMetaData = function(indicators: Indicator[], indicatorId: string){
-//     return indicators.find(i => i.indicator == indicatorId)
-// }
