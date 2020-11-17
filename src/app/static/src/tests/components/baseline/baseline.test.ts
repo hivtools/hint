@@ -1,7 +1,7 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
-import {mockBaselineState, mockError, mockMetadataState, mockPopulationResponse, mockShapeResponse} from "../../mocks";
+import {mockBaselineState, mockError, mockMetadataState, mockPJNZResponse, mockPopulationResponse, mockShapeResponse} from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import Baseline from "../../../app/components/baseline/Baseline.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
@@ -192,6 +192,64 @@ describe("Baseline upload component", () => {
 
     it("remove population dispatches baseline/deletePopulation", (done) => {
         expectDeleteToDispatchAction(2, () => actions.deletePopulation, done);
+    });
+
+    it("can return true when fromADR", async () => { 
+        const store = createSut({
+            pjnz: {
+                "fromADR": true,
+                "filters": {
+                    "year": ""
+                }
+            } as any,
+            population: {
+                "fromADR": true,
+                "filters": {
+                    "year": ""
+                }
+            } as any,
+            shape: {
+                "fromADR": true,
+                "filters": {
+                    "year": ""
+                }
+            } as any
+        });
+        const wrapper = shallowMount(Baseline, {store, localVue});
+
+        expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(true);
+        expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(true);
+        expect(wrapper.findAll("manage-file-stub").at(2).props().fromADR).toBe(true);
+        
+    });
+
+    it("can return false when not fromADR", async () => { 
+        const store = createSut({
+            pjnz: {
+                "fromADR": "",
+                "filters": {
+                    "year": ""
+                }
+            } as any,
+            population: {
+                "fromADR": "",
+                "filters": {
+                    "year": ""
+                }
+            } as any,
+            shape: {
+                "fromADR": "",
+                "filters": {
+                    "year": ""
+                }
+            } as any
+        });
+        const wrapper = shallowMount(Baseline, {store, localVue});
+
+        expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(false);
+        expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(false);
+        expect(wrapper.findAll("manage-file-stub").at(2).props().fromADR).toBe(false);
+        
     });
 
     const expectUploadToDispatchAction = (index: number,

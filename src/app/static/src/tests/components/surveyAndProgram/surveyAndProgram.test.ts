@@ -20,6 +20,7 @@ import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {mutations as selectionsMutations} from "../../../app/store/plottingSelections/mutations";
 import {ColourScaleSelections, ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import {expectTranslated} from "../../testHelpers";
+import ManageFile from "../../../app/components/files/ManageFile.vue";
 
 const localVue = createLocalVue();
 
@@ -298,6 +299,63 @@ describe("Survey and programme component", () => {
                 "id": "country",
             }
         );
+    });
+
+    it("can return true when fromADR", async () => { 
+        const store = createStore({
+            survey: {
+                "fromADR": true,
+                "filters": {
+                    "year": "TEST YEAR FILTERS"
+                }
+            } as any,
+            anc: {
+                "fromADR": true,
+                "filters": {
+                    "year": "TEST YEAR FILTERS"
+                }
+            } as any,
+            program: {
+                "fromADR": true,
+                "filters": {
+                    "year": "TEST YEAR FILTERS"
+                }
+            } as any
+        });
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+
+        expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(true);
+        expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(true);
+        expect(wrapper.findAll("manage-file-stub").at(2).props().fromADR).toBe(true);
+    });
+
+    it("can return false when not fromADR", async () => { 
+        const store = createStore({
+            survey: {
+                "fromADR": "",
+                "filters": {
+                    "year": "TEST YEAR FILTERS"
+                }
+            } as any,
+            anc: {
+                "fromADR": "",
+                "filters": {
+                    "year": "TEST YEAR FILTERS"
+                }
+            } as any,
+            program: {
+                "fromADR": "",
+                "filters": {
+                    "year": "TEST YEAR FILTERS"
+                }
+            } as any
+        });
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+
+        expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(false);
+        expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(false);
+        expect(wrapper.findAll("manage-file-stub").at(2).props().fromADR).toBe(false);
+        
     });
 
 });
