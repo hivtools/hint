@@ -20,6 +20,7 @@
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
     import numeral from "numeral";
+    import {ChoroplethIndicatorMetadata} from "../../../generated";
 
     interface Circle {
         y: number,
@@ -36,7 +37,7 @@
         indicatorRange: NumericRange,
         minRadius: number,
         maxRadius: number,
-        metadata: Object
+        metadata: ChoroplethIndicatorMetadata
     }
 
     interface Computed {
