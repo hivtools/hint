@@ -12,7 +12,7 @@ object KeyHelper
 {
 
     private const val KEY_PATH = "/etc/hint/token_key"
-    private const val KEY_SIZE = 1024
+    private const val KEY_SIZE = 4096
 
     private val keyFactory = KeyFactory.getInstance("RSA")
     private val logger: Logger = LoggerFactory.getLogger(KeyHelper::class.java)

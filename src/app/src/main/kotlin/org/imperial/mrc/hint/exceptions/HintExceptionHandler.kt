@@ -39,7 +39,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     @ExceptionHandler(NoHandlerFoundException::class)
     fun handleNoHandlerFoundException(error: Exception, request: WebRequest): Any
     {
-        logger.error(error.message)
+        logger.error(error.message, error)
 
         val page = "404"
         return handleErrorPage(page, error, request)
@@ -70,7 +70,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     @ExceptionHandler(HintException::class)
     fun handleHintException(e: HintException, request: WebRequest): ResponseEntity<Any>
     {
-        logger.error(e.message)
+        logger.error(e.message, e)
         return translatedError(e.key, e.httpStatus, request)
     }
 
@@ -196,7 +196,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
             }
             else
             -> {
-                logger.error(error)
+                logger.error(error?.message, error)
 
                 // for security reasons we should not return arbitrary errors to the frontend
                 // so do not pass the original error message here
