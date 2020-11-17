@@ -231,7 +231,7 @@ export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): Pro
         filename: "test.csv",
         data: [],
         hash: "1234.csv",
-        filters: {"age": [], "year": [], indicators: []},
+        filters: {"age": [], "calendar_quarter": [], indicators: []},
         ...props
     }
 };
@@ -250,7 +250,7 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
 export const mockProgramFilters = (props: Partial<ProgrammeFilters> = {}): ProgrammeFilters => {
     return {
         age: [],
-        year: [],
+        calendar_quarter: [],
         indicators: [],
         ...props
     }
@@ -309,6 +309,7 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
             age_group: "1",
             calendar_quarter: "1",
             indicator_id: 1,
+            indicator: 'mock',
             lower: 0.5,
             mean: 0.5,
             mode: 0.5,

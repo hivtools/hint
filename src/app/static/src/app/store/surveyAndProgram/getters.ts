@@ -67,6 +67,14 @@ export const getters = {
             allowMultiple: false
         });
 
+        result.push({
+            id: "calendar_quarter",
+            column_id: "calendar_quarter",
+            label: "calendar",
+            options: filters.calendar_quarter || [],
+            allowMultiple: false
+        });
+
         const sexFilterOptionsForType =
             state.selectedDataType == DataType.Survey || state.selectedDataType == DataType.Program ? sexFilterOptions : [];
 

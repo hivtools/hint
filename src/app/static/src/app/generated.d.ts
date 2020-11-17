@@ -9,13 +9,13 @@ export interface AncDataRow {
   age_group: string;
   year: number;
   anc_clients: number;
-  ancrt_hiv_status?: number;
-  ancrt_known_pos: number;
-  ancrt_already_art: number;
-  ancrt_tested: number;
-  ancrt_test_pos: number;
-  prevalence: number;
-  art_coverage: number;
+  anc_hiv_status?: number;
+  anc_known_pos: number;
+  anc_already_art: number;
+  anc_tested: number;
+  anc_tested_pos: number;
+  anc_prevalence: number;
+  anc_art_coverage: number;
   [k: string]: any;
 }
 export interface AncFilters {
@@ -33,13 +33,13 @@ export type AncResponseData = {
   age_group: string;
   year: number;
   anc_clients: number;
-  ancrt_hiv_status?: number;
-  ancrt_known_pos: number;
-  ancrt_already_art: number;
-  ancrt_tested: number;
-  ancrt_test_pos: number;
-  prevalence: number;
-  art_coverage: number;
+  anc_hiv_status?: number;
+  anc_known_pos: number;
+  anc_already_art: number;
+  anc_tested: number;
+  anc_tested_pos: number;
+  anc_prevalence: number;
+  anc_art_coverage: number;
   [k: string]: any;
 }[];
 export interface BarchartDefaults {
@@ -55,6 +55,7 @@ export interface BarchartIndicator {
   value_column: string;
   indicator_column: string;
   indicator_value: string;
+  indicator_sort_order?: number;
   name: string;
   error_low_column: string;
   error_high_column: string;
@@ -68,6 +69,7 @@ export interface BarchartMetadata {
     value_column: string;
     indicator_column: string;
     indicator_value: string;
+    indicator_sort_order?: number;
     name: string;
     error_low_column: string;
     error_high_column: string;
@@ -101,6 +103,7 @@ export interface ChoroplethIndicatorMetadata {
   error_high_column?: string;
   indicator_column?: string;
   indicator_value?: string;
+  indicator_sort_order?: number;
   name: string;
   min: number;
   max: number;
@@ -118,6 +121,7 @@ export interface ChoroplethMetadata {
     error_high_column?: string;
     indicator_column?: string;
     indicator_value?: string;
+    indicator_sort_order?: number;
     name: string;
     min: number;
     max: number;
@@ -237,7 +241,7 @@ export type ModelResultData = {
   sex: string;
   age_group: string;
   calendar_quarter: string;
-  indicator_id: number;
+  indicator: string;
   mode: number | null;
   mean: number | null;
   lower: number | null;
@@ -250,7 +254,7 @@ export interface ModelResultResponse {
     sex: string;
     age_group: string;
     calendar_quarter: string;
-    indicator_id: number;
+    indicator: string;
     mode: number | null;
     mean: number | null;
     lower: number | null;
@@ -264,6 +268,7 @@ export interface ModelResultResponse {
         value_column: string;
         indicator_column: string;
         indicator_value: string;
+        indicator_sort_order?: number;
         name: string;
         error_low_column: string;
         error_high_column: string;
@@ -298,6 +303,7 @@ export interface ModelResultResponse {
         error_high_column?: string;
         indicator_column?: string;
         indicator_value?: string;
+        indicator_sort_order?: number;
         name: string;
         min: number;
         max: number;
@@ -326,7 +332,7 @@ export interface ModelResultRow {
   sex: string;
   age_group: string;
   calendar_quarter: string;
-  indicator_id: number;
+  indicator: string;
   mode: number | null;
   mean: number | null;
   lower: number | null;
@@ -518,6 +524,7 @@ export type ChoroplethMetadata = {
   error_high_column?: string;
   indicator_column?: string;
   indicator_value?: string;
+  indicator_sort_order?: number;
   name: string;
   min: number;
   max: number;
@@ -544,10 +551,10 @@ export interface Metadata {
 export type PopulationResponseData = null;
 export interface ProgrammeDataRow {
   area_id: string;
-  year: number;
+  calendar_quarter: string;
   sex: string;
   age_group: string;
-  current_art: number;
+  art_current: number;
   [k: string]: any;
 }
 export interface ProgrammeFilters {
@@ -555,7 +562,7 @@ export interface ProgrammeFilters {
     label: string;
     id: string;
   }[];
-  year: {
+  calendar_quarter: {
     label: string;
     id: string;
   }[];
@@ -566,10 +573,10 @@ export interface ProgrammeFilters {
 }
 export type ProgrammeResponseData = {
   area_id: string;
-  year: number;
+  calendar_quarter: string;
   sex: string;
   age_group: string;
-  current_art: number;
+  art_current: number;
   [k: string]: any;
 }[];
 export interface ProgressPhase {
@@ -625,12 +632,13 @@ export interface SurveyDataRow {
   area_id: string;
   sex: string;
   age_group: string;
-  n_cluster: number;
-  n_obs: number;
-  est: number;
-  se: number;
-  ci_l: number | null;
-  ci_u: number | null;
+  n_clusters: number;
+  n_observations: number;
+  n_eff_kish?: number;
+  estimate: number;
+  std_error: number;
+  ci_lower: number | null;
+  ci_upper: number | null;
   [k: string]: any;
 }
 export interface SurveyFilters {
@@ -654,12 +662,13 @@ export type SurveyResponseData = {
   area_id: string;
   sex: string;
   age_group: string;
-  n_cluster: number;
-  n_obs: number;
-  est: number;
-  se: number;
-  ci_l: number | null;
-  ci_u: number | null;
+  n_clusters: number;
+  n_observations: number;
+  n_eff_kish?: number;
+  estimate: number;
+  std_error: number;
+  ci_lower: number | null;
+  ci_upper: number | null;
   [k: string]: any;
 }[];
 export type URI = string;
@@ -750,10 +759,10 @@ export interface ProgrammeResponse {
   type: "programme";
   data: {
     area_id: string;
-    year: number;
+    calendar_quarter: string;
     sex: string;
     age_group: string;
-    current_art: number;
+    art_current: number;
     [k: string]: any;
   }[];
   filters: {
@@ -761,7 +770,7 @@ export interface ProgrammeResponse {
       label: string;
       id: string;
     }[];
-    year: {
+    calendar_quarter: {
       label: string;
       id: string;
     }[];
@@ -781,13 +790,13 @@ export interface AncResponse {
     age_group: string;
     year: number;
     anc_clients: number;
-    ancrt_hiv_status?: number;
-    ancrt_known_pos: number;
-    ancrt_already_art: number;
-    ancrt_tested: number;
-    ancrt_test_pos: number;
-    prevalence: number;
-    art_coverage: number;
+    anc_hiv_status?: number;
+    anc_known_pos: number;
+    anc_already_art: number;
+    anc_tested: number;
+    anc_tested_pos: number;
+    anc_prevalence: number;
+    anc_art_coverage: number;
     [k: string]: any;
   }[];
   filters: {
@@ -813,12 +822,13 @@ export interface SurveyResponse {
     area_id: string;
     sex: string;
     age_group: string;
-    n_cluster: number;
-    n_obs: number;
-    est: number;
-    se: number;
-    ci_l: number | null;
-    ci_u: number | null;
+    n_clusters: number;
+    n_observations: number;
+    n_eff_kish?: number;
+    estimate: number;
+    std_error: number;
+    ci_lower: number | null;
+    ci_upper: number | null;
     [k: string]: any;
   }[];
   filters: {
