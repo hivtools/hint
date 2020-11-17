@@ -10,6 +10,7 @@ export interface ModelOptionsState {
     optionsFormMeta: DynamicFormMeta
     options: DynamicFormData
     valid: boolean
+    validating: boolean
     fetching: boolean
     version: VersionInfo
     validateError: Error | null
@@ -20,6 +21,7 @@ export const initialModelOptionsState = (): ModelOptionsState => {
         optionsFormMeta: {controlSections: []},
         options: {},
         valid: false,
+        validating: false,
         fetching: false,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         validateError: null

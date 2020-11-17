@@ -26,7 +26,8 @@ describe("Model options component", () => {
         [ModelOptionsMutation.Update]: jest.fn(),
         [ModelOptionsMutation.Validate]: jest.fn(),
         [ModelOptionsMutation.ModelOptionsFetched]: jest.fn(),
-        [ModelOptionsMutation.FetchingModelOptions]: jest.fn()
+        [ModelOptionsMutation.FetchingModelOptions]: jest.fn(),
+        [ModelOptionsMutation.Validating]: jest.fn()
     };
 
     const mockGetters = {
@@ -68,6 +69,7 @@ describe("Model options component", () => {
         const rendered = shallowMount(ModelOptions, {store});
         expect(rendered.findAll(DynamicForm).length).toBe(1);
         expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find("#validating").exists()).toBe(false);
     });
 
     it("displays loading spinner while fetching is true", () => {
@@ -79,12 +81,21 @@ describe("Model options component", () => {
             "Chargement de vos options.", store);
     });
 
+    it("renders as expected while validating", () => {
+        const store = createStore({validating: true});
+        const rendered = shallowMount(ModelOptions, {store});
+        expect(rendered.find("#validating").find(LoadingSpinner).exists()).toBe(true);
+        expectTranslated(rendered.find("#validating"), "Validating...",
+            "Validation en cours...", store);
+    });
+
     it("displays tick and message if valid is true", () => {
         const store = createStore({valid: true});
         const rendered = shallowMount(ModelOptions, {store});
         expectTranslated(rendered.find("h4"), "Options are valid",
             "Les options sont valides", store);
         expect(rendered.findAll(Tick).length).toBe(1);
+        expect(rendered.find("#validating").exists()).toBe(false);
     });
 
 
