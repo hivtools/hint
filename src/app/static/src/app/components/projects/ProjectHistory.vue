@@ -6,8 +6,8 @@
             <div class="col-md-2 header-cell" v-translate="'projectName'"></div>
             <div class="col-md-1 header-cell">Versions</div>
             <div class="col-md-3 header-cell" v-translate="'lastUpdated'"></div>
-            <div class="col-md-1 header-cell" v-translate="'renameProjectHistoryHeader'"></div>
             <div class="col-md-1 header-cell" v-translate="'load'"></div>
+            <div class="col-md-1 header-cell" v-translate="'renameProjectHistoryHeader'"></div>
             <div class="col-md-1 header-cell" v-translate="'delete'"></div>
             <div class="col-md-1 header-cell" v-translate="'copyToNewProjectHistoryHeader'"></div>
             <div class="col-md-1 header-cell" v-translate="'share'"></div>
@@ -39,6 +39,13 @@
                     {{ format(p.versions[0].updated) }}
                 </div>
                 <div class="col-md-1 project-cell"
+                v-tooltip ="tooltipContent('load')">
+                    <button class=" btn btn-sm btn-red-icons"
+                    @click="loadVersion($event, p.id, p.versions[0].id)">
+                    <refresh-cw-icon size="20"></refresh-cw-icon>
+                    </button>
+                </div>
+                 <div class="col-md-1 project-cell"
                 v-tooltip ="tooltipContent('renameProject')"
                     v-if="renameProjectIsEnabled">
                     <button class="btn btn-sm btn-red-icons"
@@ -46,15 +53,6 @@
                     <edit-icon size="20"></edit-icon>
                     </button>
                 </div>
-
-                <div class="col-md-1 project-cell"
-                v-tooltip ="tooltipContent('load')">
-                    <button class=" btn btn-sm btn-red-icons"
-                    @click="loadVersion($event, p.id, p.versions[0].id)">
-                    <refresh-cw-icon size="20"></refresh-cw-icon>
-                    </button>
-                </div>
-
                 <div class="col-md-1 project-cell" 
                 v-tooltip ="tooltipContent('delete')">
                     <button class=" btn btn-sm btn-red-icons"
@@ -62,7 +60,6 @@
                     <trash-2-icon size="20"></trash-2-icon>
                     </button>
                 </div>
-                
                 <div class="col-md-1 project-cell" v-if="promoteProjectIsEnabled"
                 v-tooltip ="tooltipContent('copyLatestToNewProject')">
                     <button class=" btn btn-sm btn-red-icons"
