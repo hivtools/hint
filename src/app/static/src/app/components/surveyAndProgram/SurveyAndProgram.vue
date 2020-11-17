@@ -122,10 +122,6 @@
                 areaFilterId: "area"
             };
         },
-        mounted(){
-            console.log('filterTableIndicators', this.filterTableIndicators)
-            console.log('sapIndicatorsMetadata', this.sapIndicatorsMetadata)
-        },
         computed: {
             ...mapState<RootState>({
                 selectedDataType: ({surveyAndProgram}) => {

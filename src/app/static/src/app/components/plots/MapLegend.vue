@@ -69,13 +69,6 @@
             "colourScale": Object,
             "colourRange": Object
         },
-        // mounted(){
-        //     console.log('metadata', this.metadata)
-
-        //     console.log('colourScale', this.colourScale)
-
-        //     console.log('colourRange', this.colourRange)
-        // },
         components: {
             LControl,
             MapAdjustScale

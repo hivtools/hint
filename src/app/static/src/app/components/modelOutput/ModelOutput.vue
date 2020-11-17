@@ -158,10 +158,6 @@
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "ModelOutput",
-        mounted(){
-            console.log('bubblePlotIndicators', this.bubblePlotIndicators)
-            console.log('filteredBubblePlotIndicators', this.filteredBubblePlotIndicators)
-        },
         created() {
             if (!this.selectedTab) {
                 this.tabSelected(this.tabs[0]);

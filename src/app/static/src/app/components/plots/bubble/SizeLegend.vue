@@ -60,9 +60,6 @@
             "maxRadius": Number,
             "metadata": Object
         },
-        // mounted(){
-        //     console.log('indicatorRange', this.indicatorRange)
-        // },
         components: {
             LControl
         },
