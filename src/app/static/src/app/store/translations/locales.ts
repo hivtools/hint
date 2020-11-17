@@ -328,7 +328,7 @@ const en: Translations = {
     validate: "Validate",
     validating: "Validating...",
     xAxis: "X Axis",
-    year: "Period"
+    year: "Year"
 };
 
 const fr: Partial<Translations> = {
@@ -498,7 +498,7 @@ const fr: Partial<Translations> = {
     validate: "Valider",
     validating: "Validation en cours...",
     xAxis: "Axe X",
-    year: "Période"
+    year: "An"
 };
 
 export const locales = {

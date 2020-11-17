@@ -42,7 +42,7 @@ describe("FilterSelect component", () => {
         expect(label.classes().indexOf("disabled-label")).toBe(-1);
     });
 
-    it("does not render TreeSelect if disabled", () => {
+    it("renders TreeSelect with null value and placeholder if disabled", () => {
         const wrapper = shallowMount(FilterSelect, {
             store,
             propsData:
@@ -54,14 +54,32 @@ describe("FilterSelect component", () => {
                 }
         });
 
-        const treeSelect = wrapper.findAll(TreeSelect);
-        expect(treeSelect.length).toBe(0);
+        const treeSelect = wrapper.find(TreeSelect);
+        expect(treeSelect.props("value")).toBeNull();
+        expect(treeSelect.props("disabled")).toBe(true);
+        expect(treeSelect.props("options")).toStrictEqual(testOptions);
+        expect(treeSelect.props("placeholder")).toEqual("Not used");
+
+        expect(treeSelect.props("clearable")).toBe(false);
+        expect(treeSelect.props("multiple")).toBe(false);
+
+        const label = wrapper.find("label");
+        expect(label.classes()).toContain("disabled-label");
     });
 
     it("emits indicator-changed event with indicator", () => {
         const wrapper = shallowMount(FilterSelect, {store, propsData: {label: "label", options: testOptions}});
         wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "2");
         expect(wrapper.emitted("input")[0][0]).toBe("2");
+    });
+
+    it("does not emit input event if disabled", () => {
+        const wrapper = shallowMount(FilterSelect, {
+            store,
+            propsData: {label: "label", options: testOptions, disabled: true}
+        });
+        wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "2");
+        expect(wrapper.emitted("input")).toBeUndefined();
     });
 
     it("emits select event with added value when multi-select", () => {
