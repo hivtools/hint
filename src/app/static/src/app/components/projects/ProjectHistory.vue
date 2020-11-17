@@ -30,7 +30,9 @@
                     </button>
                 </div>
                 <div class="col-md-2 project-cell">
-                    {{ p.name }}
+                    <span
+                    v-on:click="loadVersion($event, p.id, v.id)">
+                    {{ p.name }}</span>
                 </div>
                 <div class="col-md-1 project-cell">
                     <small class="text-muted">{{ versionCountLabel(p) }}</small>
