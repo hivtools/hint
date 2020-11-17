@@ -5,6 +5,7 @@
                               :show="showAdjust" :colour-scale="colourScale" @update="update">
             </map-adjust-scale>
             <div class="legend-element map-control p-3">
+            <label v-if="metadata">{{metadata.name}}</label>
                 <div class="legend" v-for="(level, index) in levels" v-bind:key="index">
                     <i v-bind:style="level.style"></i>
                     <span class="level">{{ level.val }}</span>
@@ -68,6 +69,13 @@
             "colourScale": Object,
             "colourRange": Object
         },
+        // mounted(){
+        //     console.log('metadata', this.metadata)
+
+        //     console.log('colourScale', this.colourScale)
+
+        //     console.log('colourRange', this.colourRange)
+        // },
         components: {
             LControl,
             MapAdjustScale

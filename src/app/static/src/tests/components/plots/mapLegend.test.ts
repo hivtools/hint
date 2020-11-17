@@ -44,7 +44,8 @@ describe("Map legend component", () => {
                 max: 2,
                 min: 1,
                 colour: "interpolateGreys",
-                invert_scale: false
+                invert_scale: false,
+                name: "indicator"
             },
             colourScale: {
                 type: ColourScaleType.Default,
@@ -53,6 +54,11 @@ describe("Map legend component", () => {
             },
             colourRange
         }
+    });
+
+    it("renders the label", () => {
+        const label = wrapper.find("label");
+        expect(label.text()).toBe("indicator");
     });
 
     it("calculates 6 levels from min to max", () => {
@@ -72,7 +78,8 @@ describe("Map legend component", () => {
                     max: 2,
                     min: 1,
                     colour: "interpolateGreys",
-                    invert_scale: false
+                    invert_scale: false,
+                    name: "indicator"
                 },
                 colourRange: {min: -0.45, max: 0}
             }
@@ -95,7 +102,8 @@ describe("Map legend component", () => {
                     max: 2,
                     min: 1,
                     colour: "interpolateGreys",
-                    invert_scale: false
+                    invert_scale: false,
+                    name: "indicator"
                 },
                 colourRange: {min: 3, max: 3}
             }
@@ -119,7 +127,8 @@ describe("Map legend component", () => {
                     max: 10,
                     min: 0,
                     colour: "interpolateGreys",
-                    invert_scale: false
+                    invert_scale: false,
+                    name: "indicator"
                 },
                 colourScale: null,
                 colourRange
@@ -135,7 +144,8 @@ describe("Map legend component", () => {
                     max: 2,
                     min: 1,
                     colour: "interpolateGreys",
-                    invert_scale: true
+                    invert_scale: true,
+                    name: "indicator"
                 },
                 colourScale: {
                     type: ColourScaleType.Default
@@ -171,7 +181,8 @@ describe("Map legend component", () => {
                     max: 60000,
                     min: 1000,
                     colour: "interpolateGreys",
-                    invert_scale: false
+                    invert_scale: false,
+                    name: "indicator"
                 },
                 colourScale: {
                     type: ColourScaleType.Default
@@ -195,7 +206,8 @@ describe("Map legend component", () => {
                     max: 20,
                     min: 0,
                     colour: "interpolateGreys",
-                    invert_scale: false
+                    invert_scale: false,
+                    name: "indicator"
                 },
                 colourRange,
                 colourScale
@@ -226,7 +238,8 @@ describe("Map legend component", () => {
                     max: 20,
                     min: 1,
                     colour: "interpolateGreys",
-                    invert_scale: false
+                    invert_scale: false,
+                    name: "indicator"
                 },
                 colourScale: {type: ColourScaleType.Default},
                 colourRange

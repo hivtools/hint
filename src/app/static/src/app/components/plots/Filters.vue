@@ -41,6 +41,10 @@
         name: "Filters",
         components: {FilterSelect},
         props: props,
+        mounted(){
+            console.log('filters', this.filters)
+            console.log('selectedFilterOptions', this.selectedFilterOptions)
+        },
         methods: {
             getSelectedFilterValues(filterId: string) {
                 return (this.selectedFilterOptions[filterId] || []).map(o => o.id);

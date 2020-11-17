@@ -66,7 +66,7 @@
                             :colour-scale="colourIndicatorScale"
                             @update="updateColourScale"
                 ></map-legend>
-                <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius"></size-legend>
+                <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius" :metadata="sizeIndicator"></size-legend>
             </l-map>
         </div>
     </div>
