@@ -171,10 +171,10 @@
                     id: d.id,
                     label: d.title,
                     customLabel: `${d.title}
-                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                        (${d.name})<br/>
-                        <span class="font-weight-bold">${d.organization.title}</span>
-                    </div>`,
+                        <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                            (${d.name})<br/>
+                            <span class="font-weight-bold">${d.organization.title}</span>
+                        </div>`,
                 }));
             },
             newDataset() {
