@@ -92,7 +92,7 @@
         currentLanguage: Language,
         select: string
     }
-    
+
 
     interface Data {
         open: boolean
@@ -186,7 +186,7 @@
                 }
                 return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`
             },
-            select(){
+            select() {
                 return i18next.t('select', {lng: this.currentLanguage})
             },
             currentLanguage: mapStateProp<RootState, Language>(null,
@@ -208,7 +208,8 @@
                     url: metadata.url,
                     lastModified: metadata.last_modified,
                     metadataModified: metadata.metadata_modified,
-                    outOfDate: false} : null
+                    outOfDate: false
+                } : null
             },
             async importDataset() {
                 if(this.newDatasetId){ 
@@ -270,7 +271,7 @@
                     window.clearInterval(this.pollingId);
                 }
             }
-         },
+        },
         mounted() {
             this.refreshDatasetMetadata();
             this.startPolling();

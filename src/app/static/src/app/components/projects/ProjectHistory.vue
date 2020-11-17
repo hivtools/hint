@@ -6,6 +6,11 @@
             <div class="col-md-2 header-cell" v-translate="'projectName'"></div>
             <div class="col-md-1 header-cell">Versions</div>
             <div class="col-md-3 header-cell" v-translate="'lastUpdated'"></div>
+            <div class="col-md-1 header-cell" v-translate="'renameProjectHistoryHeader'"></div>
+            <div class="col-md-1 header-cell" v-translate="'load'"></div>
+            <div class="col-md-1 header-cell" v-translate="'delete'"></div>
+            <div class="col-md-1 header-cell" v-translate="'copyToNewProjectHistoryHeader'"></div>
+            <div class="col-md-1 header-cell" v-translate="'share'"></div>
         </div>
         <hr/>
         <div v-for="p in projects" :key="p.id">
@@ -34,33 +39,43 @@
                     {{ format(p.versions[0].updated) }}
                 </div>
                 <div class="col-md-1 project-cell"
+                v-tooltip ="tooltipContent('renameProject')"
                     v-if="renameProjectIsEnabled">
-                    <a @click="renameProject($event, p.id)" 
-                    href="" 
-                    v-translate="'renameProject'"></a>
+                    <button class="btn btn-sm btn-red-icons"
+                    @click="renameProject($event, p.id)">
+                    <edit-icon size="20"></edit-icon>
+                    </button>
                 </div>
-                <div class="col-md-1 project-cell">
-                    <a @click="loadVersion($event, p.id, p.versions[0].id)"
-                       href=""
-                       v-translate="'load'"></a>
+
+                <div class="col-md-1 project-cell"
+                v-tooltip ="tooltipContent('load')">
+                    <button class=" btn btn-sm btn-red-icons"
+                    @click="loadVersion($event, p.id, p.versions[0].id)">
+                    <refresh-cw-icon size="20"></refresh-cw-icon>
+                    </button>
                 </div>
-                <div class="col-md-1 project-cell">
-                    <a @click="deleteProject($event, p.id)"
-                       href=""
-                       v-translate="'delete'"></a>
+
+                <div class="col-md-1 project-cell" 
+                v-tooltip ="tooltipContent('delete')">
+                    <button class=" btn btn-sm btn-red-icons"
+                    @click= "deleteProject($event, p.id)">
+                    <trash-2-icon size="20"></trash-2-icon>
+                    </button>
                 </div>
-                <div class="col-md-2 project-cell"
-                     v-if="promoteProjectIsEnabled">
-                    <a @click="promoteVersion(
+                
+                <div class="col-md-1 project-cell" v-if="promoteProjectIsEnabled"
+                v-tooltip ="tooltipContent('copyLatestToNewProject')">
+                    <button class=" btn btn-sm btn-red-icons"
+                         @click="promoteVersion(
                                 $event,
                                 p.id,
                                 p.versions[0].id,
                                 p.versions[0].versionNumber
-                            )"
-                       href=""
-                       v-translate="'copyLatestToNewProject'"
-                    ></a>
+                            )">
+                            <copy-icon size="20"></copy-icon>
+                    </button>
                 </div>
+
                 <div class="col-md-1 project-cell" v-if="shareProjectIsEnabled">
                     <share-project :project="p"></share-project>
                 </div>
@@ -80,25 +95,31 @@
                     <div class="col-md-1 version-cell"
                     v-if="renameProjectIsEnabled">
                     </div>
-                    <div class="col-md-1 version-cell">
-                        <a @click="loadVersion($event, p.id, v.id)"
-                           href=""
-                           v-translate="'load'"></a>
+                    <div class="col-md-1 version-cell" 
+                    v-tooltip ="tooltipContent('load')">
+                        <button class=" btn btn-sm btn-red-icons"
+                        @click="loadVersion($event, p.id, v.id)">
+                        <refresh-cw-icon size="20"></refresh-cw-icon>
+                        </button>
                     </div>
-                    <div class="col-md-1 version-cell">
-                        <a @click="deleteVersion($event, p.id, v.id)"
-                           href=""
-                           v-translate="'delete'"></a>
+                    <div class="col-md-1 version-cell"
+                    v-tooltip ="tooltipContent('delete')">
+                        <button class=" btn btn-sm btn-red-icons"
+                        @click="deleteVersion($event, p.id, v.id)">
+                        <trash-2-icon size="20"></trash-2-icon>
+                        </button>
                     </div>
-                    <div class="col-md-2 version-cell"
-                         v-if="promoteProjectIsEnabled">
-                        <a @click="promoteVersion(
+                    <div class="col-md-1 version-cell"
+                         v-if="promoteProjectIsEnabled"
+                         v-tooltip ="tooltipContent('copyToNewProject')">
+                         <button class=" btn btn-sm btn-red-icons"
+                         @click="promoteVersion(
                                     $event,
                                     p.id,
                                     v.id,
-                                    v.versionNumber)"
-                           href=""
-                           v-translate="'copyToNewProject'"></a>
+                                    v.versionNumber)">
+                            <copy-icon size="20"></copy-icon>
+                    </button>
                     </div>
                 </div>
             </b-collapse>
@@ -165,15 +186,16 @@
     import i18next from "i18next";
     import {Project, Version, VersionIds} from "../../types";
     import {BCollapse, VBToggle} from "bootstrap-vue";
-    import {ChevronDownIcon, ChevronRightIcon} from "vue-feather-icons";
+    import {ChevronDownIcon, ChevronRightIcon, Trash2Icon, CopyIcon, RefreshCwIcon, EditIcon} from "vue-feather-icons";
     import Modal from "../Modal.vue";
-    import {formatDateTime, mapActionByName, mapStateProp, versionLabel,} from "../../utils";
+    import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
     import {versionPayload, projectPayload} from "../../store/projects/actions";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
     import {switches} from "../../featureSwitches";
+    import {VTooltip} from 'v-tooltip';
 
     const namespace = "projects";
 
@@ -224,6 +246,7 @@
         renameProject: (event: Event, projectId: number) => void;
         cancelRename: () => void;
         confirmRename: (name: string) => void;
+        tooltipContent: (tooltipValue: string) => string;
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
@@ -359,16 +382,27 @@
                 namespace,
                 "deleteVersion"
             ),
+
+             tooltipContent(tooltipValue: string) {
+                return i18next.t(tooltipValue, {
+                    lng: this.currentLanguage,
+                });
+            }
         },
         components: {
             BCollapse,
             ChevronDownIcon,
             ChevronRightIcon,
+            CopyIcon,
+            Trash2Icon,
+            RefreshCwIcon,
+            EditIcon,
             Modal,
             ShareProject,
         },
         directives: {
             "b-toggle": VBToggle,
+            "tooltip": VTooltip
         },
     });
 </script>
