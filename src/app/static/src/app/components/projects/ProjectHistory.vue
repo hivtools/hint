@@ -30,7 +30,10 @@
                     </button>
                 </div>
                 <div class="col-md-2 project-cell">
+                    <a href="#"
+                    @click="loadVersion($event, p.id, p.versions[0].id)">
                     {{ p.name }}
+                    </a>
                 </div>
                 <div class="col-md-1 project-cell">
                     <small class="text-muted">{{ versionCountLabel(p) }}</small>

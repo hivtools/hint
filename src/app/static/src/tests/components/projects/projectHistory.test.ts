@@ -82,8 +82,8 @@ describe("Project history component", () => {
         shallowMount(ProjectHistory, {store,
              directives: {"tooltip": mockTooltip} });
 
-        expect(mockTooltip.mock.calls[0][1].value).toBe("Rename project");
-        expect(mockTooltip.mock.calls[1][1].value).toBe("Load");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Load");
+        expect(mockTooltip.mock.calls[1][1].value).toBe("Rename project");
         expect(mockTooltip.mock.calls[2][1].value).toBe("Delete");
         expect(mockTooltip.mock.calls[3][1].value).toBe("Copy last updated to a new project");
         expect(mockTooltip.mock.calls[6][1].value).toBe("Copy to a new project");
@@ -96,8 +96,8 @@ describe("Project history component", () => {
         shallowMount(ProjectHistory, {store,
         directives: {"tooltip": mockTooltip} });
 
-        expect(mockTooltip.mock.calls[0][1].value).toBe("Renommer le projet");
-        expect(mockTooltip.mock.calls[1][1].value).toBe("Charger");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Charger");
+        expect(mockTooltip.mock.calls[1][1].value).toBe("Renommer le projet");
         expect(mockTooltip.mock.calls[2][1].value).toBe("Supprimer");
         expect(mockTooltip.mock.calls[3][1].value).toBe("Copier la dernière mise à jour dans un nouveau projet");
         expect(mockTooltip.mock.calls[6][1].value).toBe("Copier dans un nouveau projet");
@@ -114,6 +114,7 @@ describe("Project history component", () => {
         expect(svg.at(1).classes()).toContain("when-open");
         expect(svg.at(1).classes()).toContain("feather-chevron-down");
         expect(v.at(1).text()).toBe(name);
+        expect(v.at(1).find("a").text()).toContain(name);
         expect(v.at(2).text()).toBe(versionsCount === 1 ? "1 version" : `${versionsCount} versions`);
         expect(v.at(3).text()).toBe(formatDateTime(updatedIsoDate));
 
@@ -148,8 +149,8 @@ describe("Project history component", () => {
         expectTranslated(headers.at(1), "Project name", "Nom du projet", store);
         expectTranslated(headers.at(2), "Versions", "Versions", store);
         expectTranslated(headers.at(3), "Last updated", "Dernière mise à jour", store);
-        expectTranslated(headers.at(4), "Rename", "Renommer", store);
-        expectTranslated(headers.at(5), "Load", "Charger", store);
+        expectTranslated(headers.at(4), "Load", "Charger", store);
+        expectTranslated(headers.at(5), "Rename", "Renommer", store);
         expectTranslated(headers.at(6), "Delete", "Supprimer", store);
         expectTranslated(headers.at(7), "Copy to", "Copier", store);
         expectTranslated(headers.at(8), "Share", "Partager", store);
@@ -307,7 +308,7 @@ describe("Project history component", () => {
         if (switches.renameProject) {
             const wrapper = getWrapper();
             const store = wrapper.vm.$store;
-            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("button");
+            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
             renameLink.trigger("click");
             await Vue.nextTick();
 
@@ -451,7 +452,7 @@ describe("Project history component", () => {
         if (switches.renameProject) {
             const wrapper = getWrapper(testProjects);
             const vm = wrapper.vm as any
-            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(4).find("button");
+            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
             renameLink.trigger("click");
             await Vue.nextTick();
 
