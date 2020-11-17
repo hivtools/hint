@@ -42,4 +42,4 @@ the BuildKite build, using `./buildkite/build-cli.sh`.
 
 Run `docker run -p 8080:8080 --name hint mrcide/hint:branch_name` to run a built image. The app will not start until 
 config is provided at `/etc/hint/config.properties`. This config is added during deployment with 
-[hint-deploy](https://github.com/mrc-ide/hint-deploy)
+[hint-deploy](https://github.com/mrc-ide/hint-deploy)a
