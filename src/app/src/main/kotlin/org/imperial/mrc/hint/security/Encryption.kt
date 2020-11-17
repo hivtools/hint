@@ -8,18 +8,18 @@ import javax.crypto.Cipher
 @Component
 class Encryption
 {
-
-    val cipher: Cipher = Cipher.getInstance(ALGORITHM)
     val keyPair: KeyPair = KeyHelper.keyPair
 
     fun encrypt(plainText: String): ByteArray
     {
+        val cipher: Cipher = Cipher.getInstance(ALGORITHM)
         cipher.init(Cipher.ENCRYPT_MODE, keyPair.public)
         return cipher.doFinal(plainText.toBytes())
     }
 
     fun decrypt(cipherText: ByteArray): String
     {
+        val cipher = Cipher.getInstance(ALGORITHM)
         cipher.init(Cipher.DECRYPT_MODE, keyPair.private)
         return cipher.doFinal(cipherText).toISOString()
     }
