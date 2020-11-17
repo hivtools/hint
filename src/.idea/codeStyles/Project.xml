@@ -19,15 +19,6 @@
       </option>
       <option name="LBRACE_ON_NEXT_LINE" value="true" />
     </JetCodeStyleSettings>
-    <VueCodeStyleSettings>
-      <option name="INDENT_CHILDREN_OF_TOP_LEVEL" value="template, script" />
-    </VueCodeStyleSettings>
-    <codeStyleSettings language="Vue">
-      <indentOptions>
-        <option name="INDENT_SIZE" value="4" />
-        <option name="TAB_SIZE" value="4" />
-      </indentOptions>
-    </codeStyleSettings>
     <codeStyleSettings language="kotlin">
       <option name="ELSE_ON_NEW_LINE" value="true" />
       <option name="CATCH_ON_NEW_LINE" value="true" />
