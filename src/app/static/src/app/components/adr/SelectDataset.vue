@@ -108,36 +108,20 @@ interface Methods {
   stopPolling: () => void;
 }
 
-<<<<<<< HEAD
 interface Computed {
-  schemas: ADRSchemas;
-  datasets: any[];
-  datasetOptions: any[];
-  selectedDataset: Dataset | null;
-  newDataset: Dataset;
-  selectText: string;
-  outOfDateMessage: string;
-  outOfDateResources: { [k in keyof DatasetResourceSet]?: true };
-  hasShapeFile: boolean;
-  currentLanguage: Language;
-  select: string;
+  schemas: ADRSchemas
+  datasets: any[]
+  datasetOptions: any[]
+  selectedDataset: Dataset | null
+  newDataset: Dataset
+  selectText: string,
+  outOfDateMessage: string,
+  outOfDateResources: { [k in keyof DatasetResourceSet]?: true }
+  hasShapeFile: boolean,
+  currentLanguage: Language,
+  select: string
 }
-=======
-    interface Computed {
-        schemas: ADRSchemas
-        datasets: any[]
-        datasetOptions: any[]
-        selectedDataset: Dataset | null
-        newDataset: Dataset
-        selectText: string,
-        outOfDateMessage: string,
-        outOfDateResources: { [k in keyof DatasetResourceSet]?: true }
-        hasShapeFile: boolean,
-        currentLanguage: Language,
-        select: string
-    }
 
->>>>>>> master
 
 interface Data {
   open: boolean;
@@ -188,36 +172,33 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
         id: d.id,
         label: d.title,
         customLabel: `${d.title}
-                        <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                            (${d.name})<br/>
-                            <span class="font-weight-bold">${d.organization.title}</span>
-                        </div>`,
+                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                        (${d.name})<br/>
+                        <span class="font-weight-bold">${d.organization.title}</span>
+                    </div>`,
       }));
     },
     newDataset() {
-      const fullMetaData = this.datasets.find((d) => d.id == this.newDatasetId);
-      return (
-          fullMetaData && {
-            id: fullMetaData.id,
-            title: fullMetaData.title,
-            url: `${this.schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`,
-            resources: {
-              pjnz: this.findResource(fullMetaData, this.schemas.pjnz),
-              shape: this.findResource(fullMetaData, this.schemas.shape),
-              pop: this.findResource(fullMetaData, this.schemas.population),
-              survey: this.findResource(fullMetaData, this.schemas.survey),
-              program: this.findResource(fullMetaData, this.schemas.programme),
-              anc: this.findResource(fullMetaData, this.schemas.anc),
-            },
-<<<<<<< HEAD
-          }
-      );
+      const fullMetaData = this.datasets.find(d => d.id == this.newDatasetId);
+      return fullMetaData && {
+        id: fullMetaData.id,
+        title: fullMetaData.title,
+        url: `${this.schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`,
+        resources: {
+          pjnz: this.findResource(fullMetaData, this.schemas.pjnz),
+          shape: this.findResource(fullMetaData, this.schemas.shape),
+          pop: this.findResource(fullMetaData, this.schemas.population),
+          survey: this.findResource(fullMetaData, this.schemas.survey),
+          program: this.findResource(fullMetaData, this.schemas.programme),
+          anc: this.findResource(fullMetaData, this.schemas.anc)
+        }
+      }
     },
     selectText() {
       if (this.selectedDataset) {
-        return i18next.t("editBtn", {lng: this.currentLanguage});
+        return i18next.t('editBtn', {lng: this.currentLanguage})
       } else {
-        return i18next.t("selectADR", {lng: this.currentLanguage});
+        return i18next.t('selectADR', {lng: this.currentLanguage})
       }
     },
     outOfDateResources() {
@@ -232,35 +213,26 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
           outOfDateResources[key] = true;
         }
       });
-      return outOfDateResources;
+      return outOfDateResources
     },
     outOfDateMessage() {
       const updatedNames = Object.keys(this.outOfDateResources)
-          .map((r) => names[r as keyof DatasetResourceSet])
-          .join(", ");
+          .map(r => names[r as keyof DatasetResourceSet]).join(", ")
       if (Object.keys(this.outOfDateResources).length == 0) {
-        return "";
+        return ""
       }
-      return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`;
+      return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`
     },
     select() {
-      return i18next.t("select", {lng: this.currentLanguage});
+      return i18next.t('select', {lng: this.currentLanguage})
     },
-    currentLanguage: mapStateProp<RootState, Language>(
-        null,
-        (state: RootState) => state.language
-    ),
+    currentLanguage: mapStateProp<RootState, Language>(null,
+        (state: RootState) => state.language)
   },
   methods: {
     setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
-    refreshDatasetMetadata: mapActionByName(
-        "baseline",
-        "refreshDatasetMetadata"
-    ),
-    markResourcesUpdated: mapMutationByName(
-        "baseline",
-        BaselineMutation.MarkDatasetResourcesUpdated
-    ),
+    refreshDatasetMetadata: mapActionByName("baseline", "refreshDatasetMetadata"),
+    markResourcesUpdated: mapMutationByName("baseline", BaselineMutation.MarkDatasetResourcesUpdated),
     importPJNZ: mapActionByName("baseline", "importPJNZ"),
     importShape: mapActionByName("baseline", "importShape"),
     importPopulation: mapActionByName("baseline", "importPopulation"),
@@ -268,134 +240,38 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
     importProgram: mapActionByName("surveyAndProgram", "importProgram"),
     importANC: mapActionByName("surveyAndProgram", "importANC"),
     findResource(datasetWithResources: any, resourceType: string) {
-      const metadata = datasetWithResources.resources.find(
-          (r: any) => r.resource_type == resourceType
-      );
-      return metadata
-          ? {
-            url: metadata.url,
-            lastModified: metadata.last_modified,
-            metadataModified: metadata.metadata_modified,
-            outOfDate: false,
-          }
-          : null;
+      const metadata = datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
+      return metadata ? {
+        url: metadata.url,
+        lastModified: metadata.last_modified,
+        metadataModified: metadata.metadata_modified,
+        outOfDate: false
+      } : null
     },
     async importDataset() {
       if (this.newDatasetId) {
         this.loading = true;
         this.setDataset(this.newDataset);
-        const {pjnz, pop, shape, survey, program, anc} = this.newDataset.resources;
+
+        const {pjnz, pop, shape, survey, program, anc} = this.newDataset.resources
+
         await Promise.all([
           pjnz && this.importPJNZ(pjnz.url),
           pop && this.importPopulation(pop.url),
-          shape && this.importShape(shape.url),
-        ]);
-        (shape || this.hasShapeFile) &&
-        (await Promise.all([
+          shape && this.importShape(shape.url)]);
+
+        (shape || this.hasShapeFile) && await Promise.all([
           survey && this.importSurvey(survey.url),
           program && this.importProgram(program.url),
-          anc && this.importANC(anc.url),
-        ]));
+          anc && this.importANC(anc.url)
+        ]);
+
         this.loading = false;
         this.open = false;
       }
     },
     async refresh() {
       this.stopPolling();
-=======
-            newDataset() {
-                const fullMetaData = this.datasets.find(d => d.id == this.newDatasetId);
-                return fullMetaData && {
-                    id: fullMetaData.id,
-                    title: fullMetaData.title,
-                    url: `${this.schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`,
-                    resources: {
-                        pjnz: this.findResource(fullMetaData, this.schemas.pjnz),
-                        shape: this.findResource(fullMetaData, this.schemas.shape),
-                        pop: this.findResource(fullMetaData, this.schemas.population),
-                        survey: this.findResource(fullMetaData, this.schemas.survey),
-                        program: this.findResource(fullMetaData, this.schemas.programme),
-                        anc: this.findResource(fullMetaData, this.schemas.anc)
-                    }
-                }
-            },
-            selectText() {
-                if (this.selectedDataset) {
-                    return i18next.t('editBtn', {lng: this.currentLanguage})
-                } else {
-                    return i18next.t('selectADR', {lng: this.currentLanguage})
-                }
-            },
-            outOfDateResources() {
-                if (!this.selectedDataset) {
-                    return {};
-                }
-                const resources = this.selectedDataset.resources;
-                const outOfDateResources: { [k in keyof DatasetResourceSet]?: true } = {};
-                Object.keys(resources).map((k) => {
-                    const key = k as keyof DatasetResourceSet;
-                    if (resources[key] && resources[key]!.outOfDate) {
-                        outOfDateResources[key] = true;
-                    }
-                });
-                return outOfDateResources
-            },
-            outOfDateMessage() {
-                const updatedNames = Object.keys(this.outOfDateResources)
-                    .map(r => names[r as keyof DatasetResourceSet]).join(", ")
-                if (Object.keys(this.outOfDateResources).length == 0) {
-                    return ""
-                }
-                return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`
-            },
-            select() {
-                return i18next.t('select', {lng: this.currentLanguage})
-            },
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language)
-        },
-        methods: {
-            setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
-            refreshDatasetMetadata: mapActionByName("baseline", "refreshDatasetMetadata"),
-            markResourcesUpdated: mapMutationByName("baseline", BaselineMutation.MarkDatasetResourcesUpdated),
-            importPJNZ: mapActionByName("baseline", "importPJNZ"),
-            importShape: mapActionByName("baseline", "importShape"),
-            importPopulation: mapActionByName("baseline", "importPopulation"),
-            importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
-            importProgram: mapActionByName("surveyAndProgram", "importProgram"),
-            importANC: mapActionByName("surveyAndProgram", "importANC"),
-            findResource(datasetWithResources: any, resourceType: string) {
-                const metadata = datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
-                return metadata ? {
-                    url: metadata.url,
-                    lastModified: metadata.last_modified,
-                    metadataModified: metadata.metadata_modified,
-                    outOfDate: false
-                } : null
-            },
-            async importDataset() {
-                this.loading = true;
-                this.setDataset(this.newDataset);
-
-                const {pjnz, pop, shape, survey, program, anc} = this.newDataset.resources
-
-                await Promise.all([
-                    pjnz && this.importPJNZ(pjnz.url),
-                    pop && this.importPopulation(pop.url),
-                    shape && this.importShape(shape.url)]);
-
-                (shape || this.hasShapeFile) && await Promise.all([
-                    survey && this.importSurvey(survey.url),
-                    program && this.importProgram(program.url),
-                    anc && this.importANC(anc.url)
-                ]);
-
-                this.loading = false;
-                this.open = false;
-            },
-            async refresh() {
-                this.stopPolling();
->>>>>>> master
 
       this.loading = true;
       this.open = true;
@@ -433,7 +309,6 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
       this.loading = false;
       this.open = false;
 
-<<<<<<< HEAD
       this.startPolling();
     },
     toggleModal() {
@@ -446,7 +321,7 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
       if (this.pollingId) {
         window.clearInterval(this.pollingId);
       }
-    },
+    }
   },
   mounted() {
     this.refreshDatasetMetadata();
@@ -454,30 +329,6 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
   },
   beforeDestroy() {
     this.stopPolling();
-  },
-});
-=======
-                this.startPolling();
-            },
-            toggleModal() {
-                this.open = !this.open;
-            },
-            startPolling() {
-                this.pollingId = window.setInterval(this.refreshDatasetMetadata, 10000);
-            },
-            stopPolling() {
-                if (this.pollingId) {
-                    window.clearInterval(this.pollingId);
-                }
-            }
-        },
-        mounted() {
-            this.refreshDatasetMetadata();
-            this.startPolling();
-        },
-        beforeDestroy() {
-            this.stopPolling();
-        }
-    })
->>>>>>> master
+  }
+})
 </script>

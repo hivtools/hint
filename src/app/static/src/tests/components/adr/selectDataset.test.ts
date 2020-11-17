@@ -66,16 +66,7 @@ describe("select dataset", () => {
         metadata_modified: "2020-11-10"
     }
 
-<<<<<<< HEAD
-    const fakeRawDatasets = [{
-        id: "id1",
-        title: "Some data",
-        organization: {title: "org"},
-        name: "some-data",
-        type: "naomi-data",
-        resources: []
-    }]
-=======
+
     const fakeRawDatasets = [
         {
             id: "id1",
@@ -94,7 +85,6 @@ describe("select dataset", () => {
             resources: []
         }
     ]
->>>>>>> master
 
     const fakeDataset = {
         id: "id1",
@@ -110,8 +100,6 @@ describe("select dataset", () => {
                 lastModified: "2020-11-03",
                 metadataModified: "2020-11-04"
             }),
-<<<<<<< HEAD
-=======
             anc: null
         }
     }
@@ -130,7 +118,6 @@ describe("select dataset", () => {
                 lastModified: "2020-11-03",
                 metadataModified: "2020-11-04"
             }),
->>>>>>> master
             anc: null
         }
     }
@@ -403,17 +390,6 @@ describe("select dataset", () => {
         expect(select.props("multiple")).toBe(false);
         expect(select.props("searchable")).toBe(true);
 
-<<<<<<< HEAD
-        const expectedOptions = [{
-            id: "id1",
-            label: "Some data",
-            customLabel: `Some data
-                        <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                            (some-data)<br/>
-                            <span class="font-weight-bold">org</span>
-                        </div>`
-        }]
-=======
         const expectedOptions = [
             {
                 id: "id1",
@@ -434,7 +410,7 @@ describe("select dataset", () => {
                     </div>`
             }
         ]
->>>>>>> master
+
         expect(select.props("options")).toStrictEqual(expectedOptions);
     });
 
