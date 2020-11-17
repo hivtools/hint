@@ -66,6 +66,7 @@ describe("select dataset", () => {
         metadata_modified: "2020-11-10"
     }
 
+<<<<<<< HEAD
     const fakeRawDatasets = [{
         id: "id1",
         title: "Some data",
@@ -74,6 +75,26 @@ describe("select dataset", () => {
         type: "naomi-data",
         resources: []
     }]
+=======
+    const fakeRawDatasets = [
+        {
+            id: "id1",
+            title: "Some data",
+            organization: {title: "org"},
+            name: "some-data",
+            type: "naomi-data",
+            resources: []
+        },
+        {
+            id: "id2",
+            title: "Some data 2",
+            organization: {title: "org"},
+            name: "some-data",
+            type: "naomi-data",
+            resources: []
+        }
+    ]
+>>>>>>> master
 
     const fakeDataset = {
         id: "id1",
@@ -89,6 +110,27 @@ describe("select dataset", () => {
                 lastModified: "2020-11-03",
                 metadataModified: "2020-11-04"
             }),
+<<<<<<< HEAD
+=======
+            anc: null
+        }
+    }
+
+    const fakeDataset2 = {
+        id: "id2",
+        title: "Some data 2",
+        url: "www.adr.com/naomi-data/some-data",
+        resources: {
+            pjnz: null,
+            program: null,
+            pop: null,
+            survey: null,
+            shape: mockDatasetResource({
+                url: "shape.geojson",
+                lastModified: "2020-11-03",
+                metadataModified: "2020-11-04"
+            }),
+>>>>>>> master
             anc: null
         }
     }
@@ -361,6 +403,7 @@ describe("select dataset", () => {
         expect(select.props("multiple")).toBe(false);
         expect(select.props("searchable")).toBe(true);
 
+<<<<<<< HEAD
         const expectedOptions = [{
             id: "id1",
             label: "Some data",
@@ -370,12 +413,34 @@ describe("select dataset", () => {
                             <span class="font-weight-bold">org</span>
                         </div>`
         }]
+=======
+        const expectedOptions = [
+            {
+                id: "id1",
+                label: "Some data",
+                customLabel: `Some data
+                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                        (some-data)<br/>
+                        <span class="font-weight-bold">org</span>
+                    </div>`
+            },
+            {
+                id: "id2",
+                label: "Some data 2",
+                customLabel: `Some data 2
+                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                        (some-data)<br/>
+                        <span class="font-weight-bold">org</span>
+                    </div>`
+            }
+        ]
+>>>>>>> master
         expect(select.props("options")).toStrictEqual(expectedOptions);
     });
 
     it("sets current dataset", async () => {
         let store = getStore({},
-            {adrDatasets: [{...fakeRawDatasets[0], resources: [shape]}]}
+            {adrDatasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
         )
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
@@ -389,11 +454,11 @@ describe("select dataset", () => {
         expect(rendered.findAll("p").length).toBe(0);
         expectTranslated(rendered.find("h4"), "Browse ADR", "Chercher ADR", store);
 
-        rendered.setData({newDatasetId: "id1"});
+        rendered.setData({newDatasetId: "id2"});
         rendered.find(Modal).find("button").trigger("click");
 
         await Vue.nextTick();
-        expect(setDatasetMock.mock.calls[0][1]).toEqual(fakeDataset);
+        expect(setDatasetMock.mock.calls[0][1]).toEqual(fakeDataset2);
 
         // loading spinner should render and buttons hidden
         const buttons = rendered.find(Modal).findAll("button");

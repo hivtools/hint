@@ -11,6 +11,7 @@ import {ProjectsState} from "../../../app/store/projects/projects";
 import {mockProjectsState} from "../../mocks";
 import {mutations, ProjectsMutations} from "../../../app/store/projects/mutations";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import { Language } from "../../../app/store/translations/locales";
 
 describe("ShareProject", () => {
 
@@ -42,15 +43,13 @@ describe("ShareProject", () => {
             },
             store: createStore()
         });
-        const store = wrapper.vm.$store;
 
         expect(wrapper.find(Modal).props("open")).toBe(false);
-        const link = wrapper.find("a");
-        expectTranslated(link, "Share", "Partager", store);
+        const link = wrapper.find("button");
         link.trigger("click");
         expect(wrapper.find(Modal).props("open")).toBe(true);
     });
-
+    
     it("can cancel sharing", () => {
         const wrapper = mount(ShareProject, {
             propsData: {
@@ -59,7 +58,7 @@ describe("ShareProject", () => {
             store: createStore()
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         expect(wrapper.find(Modal).props("open")).toBe(true);
         const input = wrapper.find(Modal).find("input");
@@ -75,7 +74,7 @@ describe("ShareProject", () => {
             store: createStore(jest.fn().mockResolvedValue(false)),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const input = wrapper.find(Modal).find("input");
         input.setValue("bademail");
@@ -96,7 +95,7 @@ describe("ShareProject", () => {
             store: createStore(jest.fn().mockResolvedValue(true)),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const input = wrapper.find(Modal).find("input");
         input.setValue("goodemail");
@@ -118,7 +117,7 @@ describe("ShareProject", () => {
             store: createStore(userExists),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const input = wrapper.find(Modal).find("input");
         input.setValue("testingblurevent");
@@ -136,7 +135,7 @@ describe("ShareProject", () => {
             store: createStore(userExists),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const input = wrapper.find(Modal).find("input");
         input.trigger("blur");
@@ -152,7 +151,7 @@ describe("ShareProject", () => {
             store: createStore(),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const inputs = wrapper.find(Modal).findAll("input");
         expect(inputs.length).toBe(1);
@@ -170,7 +169,7 @@ describe("ShareProject", () => {
             store: createStore(),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const inputs = wrapper.find(Modal).findAll("input");
         expect(inputs.length).toBe(1);
@@ -187,7 +186,7 @@ describe("ShareProject", () => {
             store: createStore(),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const inputs = wrapper.find(Modal).findAll("input");
         expect(inputs.length).toBe(1);
@@ -210,7 +209,7 @@ describe("ShareProject", () => {
                 store: createStore(jest.fn().mockResolvedValue(false)),
             });
 
-            const link = wrapper.find("a");
+            const link = wrapper.find("button");
             link.trigger("click");
             const inputs = wrapper.find(Modal).findAll("input");
             expect(inputs.length).toBe(1);
@@ -235,7 +234,7 @@ describe("ShareProject", () => {
             store: createStore(),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const inputs = wrapper.find(Modal).findAll("input");
         expect(inputs.length).toBe(1);
@@ -258,7 +257,7 @@ describe("ShareProject", () => {
             store: createStore(),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         let inputs = wrapper.find(Modal).findAll("input");
         expect(inputs.length).toBe(1);
@@ -288,7 +287,7 @@ describe("ShareProject", () => {
             store: createStore(jest.fn().mockResolvedValue(true), cloneProject),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const input = wrapper.find(Modal).find("input");
         input.setValue("testing");
@@ -308,7 +307,7 @@ describe("ShareProject", () => {
             store: createStore(jest.fn(), jest.fn(), mockProjectsState({cloningProject: true})),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
     });
@@ -321,7 +320,7 @@ describe("ShareProject", () => {
             store: createStore(jest.fn(), jest.fn()),
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
     });
@@ -336,7 +335,7 @@ describe("ShareProject", () => {
                 store
             });
 
-            const link = wrapper.find("a");
+            const link = wrapper.find("button");
             link.trigger("click");
             expect(wrapper.find(Modal).props("open")).toBe(true);
             store.commit("projects/" + ProjectsMutations.CloningProject, {payload: false});
@@ -356,7 +355,7 @@ describe("ShareProject", () => {
                 store
             });
 
-            const link = wrapper.find("a");
+            const link = wrapper.find("button");
             link.trigger("click");
             expect(wrapper.find(Modal).props("open")).toBe(true);
             store.commit("projects/" + ProjectsMutations.CloneProjectError, {payload: {error: "E"}});
@@ -374,7 +373,7 @@ describe("ShareProject", () => {
             store: store
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         expectTranslated(wrapper.find(Modal).find("h4"), "Share project", "Partager ce project", store);
     });
@@ -388,7 +387,7 @@ describe("ShareProject", () => {
             store: store
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const expectedEnglish = "This will create a copy of p1 for the given users." +
             "Please enter the email addresses you would like to share " +
@@ -410,7 +409,7 @@ describe("ShareProject", () => {
             store: store
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const expectedEnglish = "This email address is not registered with Naomi";
         const expectedFrench = "Cette adresse e-mail n'est pas enregistrée dans Naomi"
@@ -427,7 +426,7 @@ describe("ShareProject", () => {
             store: store
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const buttons = wrapper.find(Modal).findAll("button");
 
@@ -444,12 +443,43 @@ describe("ShareProject", () => {
             store: store
         });
 
-        const link = wrapper.find("a");
+        const link = wrapper.find("button");
         link.trigger("click");
         const helpText = wrapper.find(Modal).find(".help-text");
 
         expectTranslated(helpText, "Please correct or remove invalid email addresses",
             "Veuillez entrer les adresses e-mails valide", store);
+    });
+
+    it("can render tooltips without an error", () => {
+        const mockTooltip = jest.fn();
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(),
+            directives: {"tooltip": mockTooltip}
+        });
+
+        expect(wrapper.find("share-2-icon").exists).toBeTruthy();
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Share");
+    });
+
+    it("can render share project tooltips without an error", () => {
+        const mockTooltip = jest.fn();
+        const store = createStore()
+        store.state.language = Language.fr
+
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: store,
+            directives: {"tooltip": mockTooltip}
+        });
+
+        expect(wrapper.find("share-2-icon").exists).toBeTruthy();
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Partager");
     });
 
 });

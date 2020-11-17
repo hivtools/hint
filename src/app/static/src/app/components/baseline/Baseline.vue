@@ -5,6 +5,7 @@
                 <form>
                     <manage-file label="PJNZ"
                                  :valid="pjnz.valid"
+                                 :fromADR="pjnz.fromADR"
                                  :error="pjnz.error || plottingMetadataError"
                                  :upload="uploadPJNZ"
                                  :delete-file="deletePJNZ"
@@ -16,6 +17,7 @@
                     </manage-file>
                     <manage-file label="shape"
                                  :valid="shape.valid"
+                                 :fromADR="shape.fromADR"
                                  :error="shape.error"
                                  :upload="uploadShape"
                                  :delete-file="deleteShape"
@@ -25,6 +27,7 @@
                     </manage-file>
                     <manage-file label="population"
                                  :valid="population.valid"
+                                 :fromADR="population.fromADR"
                                  :error="population.error"
                                  :upload="uploadPopulation"
                                  :delete-file="deletePopulation"
@@ -65,16 +68,19 @@
                 pjnz: state => ({
                     valid: !!state.country,
                     error: state.pjnzError,
+                    fromADR: !!state.pjnz?.fromADR,
                     existingFileName: state.pjnz && state.pjnz.filename
                 } as PartialFileUploadProps),
                 shape: state => ({
                     valid: state.shape != null,
                     error: state.shapeError,
+                    fromADR: !!state.shape?.fromADR,
                     existingFileName: state.shape && state.shape.filename
                 } as PartialFileUploadProps),
                 population: state => ({
                     valid: state.population != null,
                     error: state.populationError,
+                    fromADR: !!state.population?.fromADR,
                     existingFileName: state.population && state.population.filename
                 } as PartialFileUploadProps),
                 hasBaselineError: state => !!state.baselineError,
