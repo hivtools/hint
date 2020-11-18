@@ -70,8 +70,7 @@
                                 $event,
                                 p.id,
                                 p.versions[0].id,
-                                p.versions[0].versionNumber
-                            )">
+                                p.versions[0].versionNumber)">
                             <copy-icon size="20"></copy-icon>
                     </button>
                 </div>
