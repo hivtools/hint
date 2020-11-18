@@ -36,7 +36,7 @@ If the database schema has changed, you can regenerate the database interface co
 by running `./src/gradlew -p src :generateDatabaseInterface:run` while the database container is running.
 
 ### Versioning
-HINT Versions are recorded [here](NEWS.md). The latest version should match the value in currentHintVersion in
+HINT Versions are recorded [here](NEWS.md). The latest version should match the value of currentHintVersion in
 `src/app/static/src/app/hintVersion.ts`
 
 ### Distribution
