@@ -92,7 +92,6 @@
         select: string
     }
 
-
     interface Data {
         open: boolean
         loading: boolean
