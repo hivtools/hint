@@ -12,6 +12,9 @@ trap cleardocker EXIT
 # Run all dependencies
 $HERE/run-dependencies-for-integration-tests.sh
 
+# Wait for HINT to become responsive
+sleep 5
+
 # Create an image based on the shared build env that compiles and tests the front-end ADR integration
 docker build --tag hint-test-adr \
   --build-arg GIT_ID=$GIT_ID \
