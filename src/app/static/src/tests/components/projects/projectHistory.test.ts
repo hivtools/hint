@@ -280,8 +280,7 @@ describe("Project history component", () => {
     it("hides modal and does not invoke action when click cancel", async () => {
 
         const wrapper = getWrapper(testProjects);
-        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("button");
-        expect(deleteLink.element).toBe("test")
+        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("button");
         deleteLink.trigger("click");
         await Vue.nextTick();
 
