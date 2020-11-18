@@ -11,7 +11,6 @@ trap cleardocker EXIT
 # Create an image based on the shared build env that runs back-end ADR integration tests
 docker build --tag=hint-test-adr \
   --build-arg GIT_ID=$GIT_ID \
-  --build-arg CODECOV_TOKEN=$CODECOV_TOKEN \
   -f $HERE/test-adr.dockerfile \
   .
 
