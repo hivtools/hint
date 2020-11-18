@@ -2,9 +2,9 @@
     <div class="d-flex">
         <div v-if="selectedDataset" style="margin-top: 8px">
             <span class="font-weight-bold" v-translate="'selectedDataset'"></span>
-            <a :href="selectedDataset.url" target="_blank">{{
-                    selectedDataset.title
-                }}</a>
+            <a :href="selectedDataset.url" target="_blank">
+              {{selectedDataset.title}}
+                    </a>
             <span class="color-red">
         <info-icon
             size="20"
