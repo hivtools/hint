@@ -40,7 +40,7 @@ describe("Model run options mutations", () => {
     });
 
     it("can assert validating model option complete", () => {
-        const state = mockModelOptionsState();
+        const state = mockModelOptionsState({validating:true});
         mutations[ModelOptionsMutation.Validated](state);
         expect(state.validating).toBe(false);
     });
@@ -116,17 +116,6 @@ describe("Model run options mutations", () => {
         mutations.ModelOptionsFetched(state, {payload: newForm});
         expect(state.optionsFormMeta).toStrictEqual(expected);
         expect(state.fetching).toBe(false);
-    });
-
-    it("does not set validating to true if model asserts valid", () => {
-
-        const state = mockModelOptionsState({
-            valid: true,
-            optionsFormMeta: testForm
-        });
-
-        mutations.ModelOptionsFetched(state, {payload: testForm});
-        expect(state.validating).toBe(false);
     });
 
     it("sets valid to false if updated form differs from existing", () => {

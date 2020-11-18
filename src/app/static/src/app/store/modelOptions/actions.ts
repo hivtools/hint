@@ -32,13 +32,12 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
         commit(ModelOptionsMutation.LoadUpdatedOptions, payload);
         const options = rootState.modelOptions.options;
         const version = rootState.modelOptions.version;
-        const response = await api<ModelOptionsMutation, ModelOptionsMutation>(context)
+        await api<ModelOptionsMutation, ModelOptionsMutation>(context)
             .withSuccess(ModelOptionsMutation.Validate)
             .withError(ModelOptionsMutation.HasValidationError)
             .postAndReturn<ModelOptionsValidate>("/model/validate/options/", {options, version})
-
-        if(response) {
-            commit(ModelOptionsMutation.Validated);
-        }  
+            
+        commit(ModelOptionsMutation.Validated);
+        
     }
 };
