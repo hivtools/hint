@@ -18,3 +18,5 @@ docker run --rm -d \
   -v $HERE/../src/app/uploads:/uploads \
   -v $TEST_CONFIG:/etc/hint/config.properties \
   node
+
+sleep 5
