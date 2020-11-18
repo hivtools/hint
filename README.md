@@ -35,6 +35,10 @@ To run a specific test alone, add `--test` + the [fully qualified class name](ht
 If the database schema has changed, you can regenerate the database interface code (in /src/databaseInterface)
 by running `./src/gradlew -p src :generateDatabaseInterface:run` while the database container is running.
 
+### Versioning
+HINT Versions are recorded [here](NEWS.md). The latest version should match the value in currentHintVersion in
+`src/app/static/src/app/hintVersion.ts`
+
 ### Distribution
 A docker image containing the app is created as part of the BuildKite build. To create such an image locally,
 run `./buildkite/make-build-env.sh` followed by `./buildkite/build.sh`. A CLI image is also created as part of 
