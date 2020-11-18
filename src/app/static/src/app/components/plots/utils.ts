@@ -196,10 +196,21 @@ export const formatOutput = function (value: number | string, format: string, sc
     } else return ans
 };
 
-interface Indicator {
-    indicator: string, format: string, scale: number, accuracy: number | null
-}
+export const formatLegend = function(text: string | number, format: string, scale: number): string {
+    text = formatOutput(text, format, scale, null)
 
-export const findMetaData = function(indicators: Indicator[], indicatorId: string){
-    return indicators.find(i => i.indicator == indicatorId)
+        if (typeof(text) === "string" && text.includes(',')) {
+            text = text.replace(/,/g, '');
+        }
+        if (typeof(text) === "string" && !text.includes('%')) {
+            text = parseFloat(text)
+        }
+        if (typeof text == "number") {
+            if (text >= 1000 && text < 10000 || text >= 1000000 && text < 10000000) {
+                text = numeral(text).format("0.0a")
+            } else if (text >= 1000) {
+                text = numeral(text).format("0a")
+            } else text = text.toString()
+        }
+    return text
 }
