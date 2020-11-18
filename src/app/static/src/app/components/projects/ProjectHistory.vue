@@ -91,15 +91,15 @@
                     <div class="col-md-3 version-cell">
                         {{ format(v.updated) }}
                     </div>
-                    <div class="col-md-1 version-cell"
-                    v-if="renameProjectIsEnabled">
-                    </div>
                     <div class="col-md-1 version-cell" 
                     v-tooltip ="tooltipContent('load')">
                         <button class=" btn btn-sm btn-red-icons"
                         @click="loadVersion($event, p.id, v.id)">
                         <refresh-cw-icon size="20"></refresh-cw-icon>
                         </button>
+                    </div>
+                    <div class="col-md-1 version-cell"
+                    v-if="renameProjectIsEnabled">
                     </div>
                     <div class="col-md-1 version-cell"
                     v-tooltip ="tooltipContent('delete')">

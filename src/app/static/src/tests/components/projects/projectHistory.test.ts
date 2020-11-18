@@ -280,7 +280,7 @@ describe("Project history component", () => {
     it("hides modal and does not invoke action when click cancel", async () => {
 
         const wrapper = getWrapper(testProjects);
-        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(4).find("button");
+        const deleteLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("button");
         deleteLink.trigger("click");
         await Vue.nextTick();
 
@@ -291,7 +291,7 @@ describe("Project history component", () => {
         expect(mockDeleteVersion.mock.calls.length).toBe(0);
         const modal = wrapper.find(".modal");
         expect(modal.classes).not.toContain("show");
-    });
+    }); 
 
     const testLoadVersionLink = async function (elementId: string, projectId: number, versionId: string) {
         if (!switches.renameProject) {
