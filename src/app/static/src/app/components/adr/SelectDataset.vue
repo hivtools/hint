@@ -1,29 +1,48 @@
 <template>
     <div class="d-flex">
-        <div v-if="selectedDataset" style="margin-top:8px">
+        <div v-if="selectedDataset" style="margin-top: 8px">
             <span class="font-weight-bold" v-translate="'selectedDataset'"></span>
-            <a :href="selectedDataset.url" target="_blank">{{ selectedDataset.title }}</a>
+            <a :href="selectedDataset.url" target="_blank">
+              {{selectedDataset.title}}
+                    </a>
             <span class="color-red">
-                <info-icon size="20"
-                           v-if="outOfDateMessage"
-                           v-tooltip="outOfDateMessage"
-                           style="vertical-align: text-bottom;"></info-icon>
-            </span>
+        <info-icon
+            size="20"
+            v-if="outOfDateMessage"
+            v-tooltip="outOfDateMessage"
+            style="vertical-align: text-bottom"
+        ></info-icon>
+      </span>
         </div>
-        <button v-if="outOfDateMessage" class="btn btn-white ml-2" @click="refresh" v-translate="'refresh'"></button>
-        <button class="btn btn-red" :class="selectedDataset && 'ml-2'" @click="toggleModal">{{ selectText }}</button>
+        <button
+            v-if="outOfDateMessage"
+            class="btn btn-white ml-2"
+            @click="refresh"
+            v-translate="'refresh'"
+        ></button>
+        <button
+            class="btn btn-red"
+            :class="selectedDataset && 'ml-2'"
+            @click="toggleModal"
+        >
+            {{ selectText }}
+        </button>
         <modal id="dataset" :open="open">
             <h4 v-if="!loading" v-translate="'browseADR'"></h4>
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
-                <tree-select :multiple="false"
-                             :searchable="true"
-                             :options="datasetOptions"
-                             :placeholder="select"
-                             v-model="newDatasetId">
-                    <label slot="option-label"
-                           slot-scope="{ node }"
-                           v-html="node.raw.customLabel">
+                <tree-select
+                    :multiple="false"
+                    :searchable="true"
+                    :options="datasetOptions"
+                    :placeholder="select"
+                    v-model="newDatasetId"
+                >
+                    <label
+                        slot="option-label"
+                        slot-scope="{ node }"
+                        v-html="node.raw.customLabel"
+                    >
                     </label>
                 </tree-select>
             </div>
@@ -31,16 +50,19 @@
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <template v-slot:footer v-if="!loading">
-                <button type="button"
-                        class="btn btn-white"
-                        v-translate="'import'"
-                        @click="importDataset">
-                </button>
-                <button type="button"
-                        class="btn btn-white"
-                        v-translate="'cancel'"
-                        @click="toggleModal">
-                </button>
+                <button
+                    type="button"
+                    :disabled="!newDatasetId"
+                    class="btn btn-white"
+                    v-translate="'import'"
+                    @click="importDataset"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-white"
+                    v-translate="'cancel'"
+                    @click="toggleModal"
+                ></button>
             </template>
         </modal>
     </div>
@@ -48,34 +70,42 @@
 <script lang="ts">
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
-    import Vue from "vue"
-    import TreeSelect from '@riophae/vue-treeselect'
+    import Vue from "vue";
+    import TreeSelect from "@riophae/vue-treeselect";
     import {mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
     import {BaselineMutation} from "../../store/baseline/mutations";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {ADRSchemas, Dataset, DatasetResource, DatasetResourceSet} from "../../types";
+    import {
+        ADRSchemas,
+        Dataset,
+        DatasetResource,
+        DatasetResourceSet,
+    } from "../../types";
     import {InfoIcon} from "vue-feather-icons";
     import {VTooltip} from "v-tooltip";
 
     interface Methods {
-        setDataset: (dataset: Dataset) => void
-        importDataset: () => void
-        toggleModal: () => void
-        importPJNZ: (url: string) => Promise<void>
-        importShape: (url: string) => Promise<void>
-        importPopulation: (url: string) => Promise<void>
-        importSurvey: (url: string) => Promise<void>
-        importProgram: (url: string) => Promise<void>
-        importANC: (url: string) => Promise<void>
-        findResource: (datasetWithResources: any, resourceType: string) => DatasetResource | null
-        refresh: () => void
-        refreshDatasetMetadata: () => void
-        markResourcesUpdated: () => void
-        startPolling: () => void
-        stopPolling: () => void
+        setDataset: (dataset: Dataset) => void;
+        importDataset: () => void;
+        toggleModal: () => void;
+        importPJNZ: (url: string) => Promise<void>;
+        importShape: (url: string) => Promise<void>;
+        importPopulation: (url: string) => Promise<void>;
+        importSurvey: (url: string) => Promise<void>;
+        importProgram: (url: string) => Promise<void>;
+        importANC: (url: string) => Promise<void>;
+        findResource: (
+            datasetWithResources: any,
+            resourceType: string
+        ) => DatasetResource | null;
+        refresh: () => void;
+        refreshDatasetMetadata: () => void;
+        markResourcesUpdated: () => void;
+        startPolling: () => void;
+        stopPolling: () => void;
     }
 
     interface Computed {
@@ -92,12 +122,11 @@
         select: string
     }
 
-
     interface Data {
-        open: boolean
-        loading: boolean
-        newDatasetId: string | null,
-        pollingId: number | null
+        open: boolean;
+        loading: boolean;
+        newDatasetId: string | null;
+        pollingId: number | null;
     }
 
     const names: { [k in keyof DatasetResourceSet]: string } = {
@@ -106,8 +135,8 @@
         shape: "Shape file",
         survey: "Household Survey",
         program: "ART",
-        anc: "ANC"
-    }
+        anc: "ANC",
+    };
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
@@ -115,30 +144,38 @@
                 open: false,
                 loading: false,
                 newDatasetId: null,
-                pollingId: null
-            }
+                pollingId: null,
+            };
         },
         components: {Modal, TreeSelect, LoadingSpinner, InfoIcon},
-        directives: {"tooltip": VTooltip},
+        directives: {tooltip: VTooltip},
         computed: {
-            hasShapeFile: mapStateProp<BaselineState, boolean>("baseline",
-                (state: BaselineState) => !!state.shape),
-            schemas: mapStateProp<RootState, ADRSchemas>(null,
-                (state: RootState) => state.adrSchemas!),
-            selectedDataset: mapStateProp<BaselineState, Dataset | null>("baseline",
-                (state: BaselineState) => state.selectedDataset),
-            datasets: mapStateProp<RootState, any[]>(null,
-                (state: RootState) => state.adrDatasets),
+            hasShapeFile: mapStateProp<BaselineState, boolean>(
+                "baseline",
+                (state: BaselineState) => !!state.shape
+            ),
+            schemas: mapStateProp<RootState, ADRSchemas>(
+                null,
+                (state: RootState) => state.adrSchemas!
+            ),
+            selectedDataset: mapStateProp<BaselineState, Dataset | null>(
+                "baseline",
+                (state: BaselineState) => state.selectedDataset
+            ),
+            datasets: mapStateProp<RootState, any[]>(
+                null,
+                (state: RootState) => state.adrDatasets
+            ),
             datasetOptions() {
-                return this.datasets.map(d => ({
+                return this.datasets.map((d) => ({
                     id: d.id,
                     label: d.title,
                     customLabel: `${d.title}
                         <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
                             (${d.name})<br/>
                             <span class="font-weight-bold">${d.organization.title}</span>
-                        </div>`
-                }))
+                        </div>`,
+                }));
             },
             newDataset() {
                 const fullMetaData = this.datasets.find(d => d.id == this.newDatasetId);
@@ -211,24 +248,26 @@
                 } : null
             },
             async importDataset() {
-                this.loading = true;
-                this.setDataset(this.newDataset);
+                if (this.newDatasetId) {
+                    this.loading = true;
+                    this.setDataset(this.newDataset);
 
-                const {pjnz, pop, shape, survey, program, anc} = this.newDataset.resources
+                    const {pjnz, pop, shape, survey, program, anc} = this.newDataset.resources
 
-                await Promise.all([
-                    pjnz && this.importPJNZ(pjnz.url),
-                    pop && this.importPopulation(pop.url),
-                    shape && this.importShape(shape.url)]);
+                    await Promise.all([
+                        pjnz && this.importPJNZ(pjnz.url),
+                        pop && this.importPopulation(pop.url),
+                        shape && this.importShape(shape.url)]);
 
-                (shape || this.hasShapeFile) && await Promise.all([
-                    survey && this.importSurvey(survey.url),
-                    program && this.importProgram(program.url),
-                    anc && this.importANC(anc.url)
-                ]);
+                    (shape || this.hasShapeFile) && await Promise.all([
+                        survey && this.importSurvey(survey.url),
+                        program && this.importProgram(program.url),
+                        anc && this.importANC(anc.url)
+                    ]);
 
-                this.loading = false;
-                this.open = false;
+                    this.loading = false;
+                    this.open = false;
+                }
             },
             async refresh() {
                 this.stopPolling();
@@ -239,7 +278,10 @@
                 await Promise.all([
                     this.outOfDateResources["pjnz"] && pjnz && this.importPJNZ(pjnz.url),
                     this.outOfDateResources["pop"] && pop && this.importPopulation(pop.url),
-                    this.outOfDateResources["shape"] && shape && this.importShape(shape.url)]);
+                    this.outOfDateResources["shape"] &&
+                    shape &&
+                    this.importShape(shape.url),
+                ]);
 
                 const baselineUpdated =
                     this.outOfDateResources["pjnz"] ||
@@ -249,11 +291,18 @@
                 // if baseline files are updated, we have to re-import all survey & program files,
                 // regardless of whether they have changed, since updating the baseline files will
                 // have wiped these
-                (shape || this.hasShapeFile) && await Promise.all([
-                    (baselineUpdated || this.outOfDateResources["survey"]) && survey && this.importSurvey(survey.url),
-                    (baselineUpdated || this.outOfDateResources["program"]) && program && this.importProgram(program.url),
-                    (baselineUpdated || this.outOfDateResources["anc"]) && anc && this.importANC(anc.url)
-                ]);
+                (shape || this.hasShapeFile) &&
+                (await Promise.all([
+                    (baselineUpdated || this.outOfDateResources["survey"]) &&
+                    survey &&
+                    this.importSurvey(survey.url),
+                    (baselineUpdated || this.outOfDateResources["program"]) &&
+                    program &&
+                    this.importProgram(program.url),
+                    (baselineUpdated || this.outOfDateResources["anc"]) &&
+                    anc &&
+                    this.importANC(anc.url),
+                ]));
 
                 this.markResourcesUpdated();
                 this.loading = false;

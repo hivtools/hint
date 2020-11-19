@@ -20,6 +20,7 @@
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
     import numeral from "numeral";
+    import {formatOutput, formatLegend} from "./../utils";
     import {ChoroplethIndicatorMetadata} from "../../../generated";
 
     interface Circle {
@@ -100,8 +101,10 @@
             circleFromRadius: function (r: number, value: number, under = false) {
                 const y = this.height - r;
 
-                let text = value > 1000 ? numeral(value).format("0.0a") : (+value.toFixed(3)).toString();
-                if (under && text != "0") {
+                const { format, scale, accuracy} = this.metadata;
+                let text = formatLegend(value, format, scale)
+                const zeros = ['0', '0%', '0.0%', '0.00%']
+                if (under && !zeros.includes(text)) {
                     text = "<" + text;
                 }
 
