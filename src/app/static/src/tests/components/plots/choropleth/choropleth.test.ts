@@ -424,7 +424,7 @@ describe("Choropleth component", () => {
         expect(wrapper.emitted("update-colour-scales")[0][0]).toStrictEqual({
             ...propsData.colourScales,
             plhiv: {
-                type: ColourScaleType.DynamicFiltered,
+                type: ColourScaleType.Default,
                 customMin: 1,
                 customMax: 100
             }

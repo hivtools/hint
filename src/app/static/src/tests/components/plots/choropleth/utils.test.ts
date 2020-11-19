@@ -17,7 +17,7 @@ describe("Choropleth utils", () => {
         };
 
         const result = initialiseColourScaleFromMetadata(meta);
-        expect(result.type).toBe(ColourScaleType.DynamicFiltered);
+        expect(result.type).toBe(ColourScaleType.Default);
         expect(result.customMin).toBe(1.5);
         expect(result.customMax).toBe(2.5);
     });
