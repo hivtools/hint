@@ -26,6 +26,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create release
-        if: [steps.checkTag.outputs.exists != "true"]
+        if: steps.checkTag.outputs.exists != "true"
         run: echo "creating release..."
 
