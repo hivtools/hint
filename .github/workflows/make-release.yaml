@@ -27,7 +27,7 @@ jobs:
 
       - name: Set env
         run: |
-          if ["${{steps.checkTag.outputs.exists}}" == "false"];
+          if [ "${{steps.checkTag.outputs.exists}}" == "false" ];
           then
             echo "CREATE_RELEASE=true" >> GITHUB_ENV
           else
