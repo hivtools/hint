@@ -106,9 +106,10 @@ describe("Manage file component", () => {
         expect(wrapper.findAll(Tick).length).toBe(1);
     });
 
-    it("does not render remove link if filename is not present", () => {
+    it("does not render remove link if filename is not present and error is not present", () => {
         const wrapper = createSut({
-            existingFileName: null
+            existingFileName: null,
+            error: null
         });
         expect(wrapper.findAll("a").length).toBe(0);
     });
@@ -117,6 +118,21 @@ describe("Manage file component", () => {
         const removeHandler = jest.fn();
         const wrapper = createSut({
             existingFileName: "File.csv",
+            deleteFile: removeHandler
+        });
+        const removeLink = wrapper.find("a");
+        expect(removeLink.text()).toBe("remove");
+
+        removeLink.trigger("click");
+
+        expect(removeHandler.mock.calls.length).toBe(1);
+    });
+
+    it("renders remove link if error is present", () => {
+        const removeHandler = jest.fn();
+        const wrapper = createSut({
+            existingFileName: null,
+            error: mockError("test error"),
             deleteFile: removeHandler
         });
         const removeLink = wrapper.find("a");
