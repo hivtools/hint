@@ -33,6 +33,9 @@ jobs:
           else
             echo "CREATE_RELEASE=false" >> GITHUB_ENV
           fi
+      - name: Test
+        run: echo ${{env.CREATE_RELEASE}}
+
       - name: Create release
         if: env.CREATE_RELEASE
         run: echo "creating release..."
