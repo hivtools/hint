@@ -13,5 +13,11 @@ steps:
   - label: ":mag: Test back-end"
     command: buildkite/test.sh
 
+  - label: ":mag: Test ADR integration"
+    command: buildkite/test-adr.sh
+
   - label: ":mag: Test front-end"
     command: buildkite/test-front-end.sh
+
+  - label: ":mag: Test front-end ADR integration"
+    command: buildkite/test-adr-front-end-integration.sh
