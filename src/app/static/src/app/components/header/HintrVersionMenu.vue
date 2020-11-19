@@ -4,7 +4,6 @@
         <span class="dropdown-item" style="cursor: default;"> hintr    : v{{ hintrVersions.hintr }} </span>
         <span class="dropdown-item" style="cursor: default;"> rrq      : v{{ hintrVersions.rrq }} </span>
         <span class="dropdown-item" style="cursor: default;"> traduire : v{{ hintrVersions.traduire }}</span>
-        <span class="dropdown-item" style="cursor: default;"> hint : v{{ hintVersion }}</span>
     </drop-down>
 </template>
 
@@ -14,11 +13,9 @@
     import {RootState} from "../../root";
     import {mapActionByName, mapStateProp} from "../../utils";
     import DropDown from "./DropDown.vue";
-    import {currentHintVersion} from "../../hintVersion";
 
     interface Computed {
         hintrVersions: HintrVersionResponse;
-        hintVersion: string
     }
 
     interface Methods {
@@ -33,7 +30,6 @@
                 null,
                 (state: RootState) => state.hintrVersion.hintrVersion
             ),
-            hintVersion: () => currentHintVersion
         },
 
         methods: {

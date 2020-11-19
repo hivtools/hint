@@ -4,7 +4,6 @@ import HintrVersionMenu from "../../../app/components/header/HintrVersionMenu.vu
 import DropDown from "../../../app/components/header/DropDown.vue";
 import { mockHintrVersionState } from "../../mocks";
 import { emptyState } from "../../../app/root";
-import {currentHintVersion} from "../../../app/hintVersion";
 
 describe("Hintr Menu Version", () => {
 
@@ -25,22 +24,13 @@ describe("Hintr Menu Version", () => {
         return store;
     }
 
-    it("hintr version menu displays span for (5) items", async() => {
+    it("hintr version menu displays link for (4) items", async() => {
         const store = createStore();
         const wrapper = shallowMount(HintrVersionMenu, {
             store
         });
 
-        expect(wrapper.findAll("span").length).toBe(5);
-    });
-
-    it("hintr version menu displays current hint version", async() => {
-        const store = createStore();
-        const wrapper = shallowMount(HintrVersionMenu, {
-            store
-        });
-
-        expect(wrapper.findAll("span").at(4).text()).toBe(`hint : v${currentHintVersion}`);
+        expect(wrapper.findAll("span").length).toBe(4);
     });
 
     it("hintr version menu gets initial version placeholder before getter ", async() => {

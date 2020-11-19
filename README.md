@@ -47,6 +47,9 @@ Versions should follow the [semantic versioning](https://semver.org/) format, so
 - MINOR version when you add functionality in a backwards compatible manner, and
 - PATCH version when you make backwards compatible bug fixes.
 
+This may cause relatively frequently conflicts since more than one person is likely to be working on a new version at a
+time. In this case, you should give your branch its own new version number, rather than rolling your changes into the same 
+version number as changes from another branch. 
 
 ### Distribution
 A docker image containing the app is created as part of the BuildKite build. To create such an image locally,
