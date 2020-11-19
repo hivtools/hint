@@ -45,6 +45,7 @@ describe("Map legend component", () => {
                 min: 1,
                 colour: "interpolateGreys",
                 invert_scale: false,
+                name: "indicator",
                 format: '',
                 scale: 1,
                 accuracy: null
@@ -56,6 +57,11 @@ describe("Map legend component", () => {
             },
             colourRange
         }
+    });
+
+    it("renders the label", () => {
+        const label = wrapper.find("label");
+        expect(label.text()).toBe("indicator");
     });
 
     it("calculates 6 levels from min to max", () => {
@@ -76,6 +82,7 @@ describe("Map legend component", () => {
                     min: 1,
                     colour: "interpolateGreys",
                     invert_scale: false,
+                    name: "indicator",
                     format: '',
                     scale: 1,
                     accuracy: null
@@ -154,6 +161,7 @@ describe("Map legend component", () => {
                     min: 1,
                     colour: "interpolateGreys",
                     invert_scale: false,
+                    name: "indicator",
                     format: '',
                     scale: 1,
                     accuracy: null
@@ -181,6 +189,7 @@ describe("Map legend component", () => {
                     min: 0,
                     colour: "interpolateGreys",
                     invert_scale: false,
+                    name: "indicator",
                     format: '',
                     scale: 1,
                     accuracy: null
@@ -200,6 +209,7 @@ describe("Map legend component", () => {
                     min: 1,
                     colour: "interpolateGreys",
                     invert_scale: true,
+                    name: "indicator",
                     format: '',
                     scale: 1,
                     accuracy: null
@@ -239,6 +249,7 @@ describe("Map legend component", () => {
                     min: 1000,
                     colour: "interpolateGreys",
                     invert_scale: false,
+                    name: "indicator",
                     format: '',
                     scale: 1,
                     accuracy: null
@@ -266,6 +277,7 @@ describe("Map legend component", () => {
                     min: 0,
                     colour: "interpolateGreys",
                     invert_scale: false,
+                    name: "indicator",
                     format: '',
                     scale: 1,
                     accuracy: null
@@ -300,6 +312,7 @@ describe("Map legend component", () => {
                     min: 1,
                     colour: "interpolateGreys",
                     invert_scale: false,
+                    name: "indicator",
                     format: '',
                     scale: 1,
                     accuracy: null

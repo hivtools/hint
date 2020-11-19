@@ -5,6 +5,7 @@
                               :show="showAdjust" :colour-scale="colourScale" @update="update" :metadata="metadata">
             </map-adjust-scale>
             <div class="legend-element map-control p-3">
+            <label v-if="metadata">{{metadata.name}}</label>
                 <div class="legend" v-for="(level, index) in levels" v-bind:key="index">
                     <i v-bind:style="level.style"></i>
                     <span class="level">{{ level.val }}</span>

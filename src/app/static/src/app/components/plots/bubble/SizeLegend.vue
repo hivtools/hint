@@ -1,6 +1,7 @@
 <template>
     <l-control position="bottomleft">
-        <div class="map-control p-1">
+        <div class="map-control p-1 d-flex flex-column">
+            <label class="text-center pt-1 pb-1">{{metadata.name}}</label>
             <svg :width="width" :height="height">
                 <circle v-for="(circle, index) in circles" :key="'circle-' + index" stroke="#aaa" stroke-width="1"
                         fill-opacity="0"
