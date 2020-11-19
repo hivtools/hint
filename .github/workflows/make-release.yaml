@@ -28,5 +28,9 @@ jobs:
       - name: Test
         run: |
           echo tag=${{ env.RELEASE_VERSION }}
-          echo tagExists=${{ steps.checkTag.outputs.exists }}
+          echo tagNotExists=${{ !steps.checkTag.outputs.exists }}
+
+      - name: Create release
+        if: ${{ !steps.checkTag.outputs.exists }}
+        run: echo "creating release..."
 
