@@ -25,7 +25,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set env
+        run: |
+          doRelease = "false"
+          if ["${{steps.checkTag.outputs.exists}}" == "false] doRelease = true fi
+          echo "CREATE_RELEASE=$doRelease" >> GITHUB_ENV
+          echo "doRelease is $doRelease"
+
       - name: Create release
-        if: steps.checkTag.outputs.exists != "true"
+        if: env.CREATE_RELEASE
         run: echo "creating release..."
 
