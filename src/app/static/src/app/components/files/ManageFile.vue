@@ -6,7 +6,7 @@
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
         <br/>
         <slot></slot>
-        <label v-if="existingFileName" class="file-name">
+        <label v-if="existingFileName || error" class="file-name">
             <span>
                 <strong v-translate="'file'"></strong>: {{ existingFileName }}
             </span>
