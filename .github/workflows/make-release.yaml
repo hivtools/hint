@@ -1,0 +1,21 @@
+on:
+  push:
+    branches:
+      - master
+      - mrc-1949
+
+name: make-release
+
+jobs:
+  create-release:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Extract version
+        run: |
+          echo "RELEASE_VERSION=$(awk '($1 == "#") && ($2 == "hint"){print $3; exit;}' NEWS.md)" >> $GITHUB_ENV
+
+      - name: Test
+        run: echo ${ env.RELEASE_VERSION }
