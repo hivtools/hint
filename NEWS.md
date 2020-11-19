@@ -1,3 +1,7 @@
+# hint 1.0.1
+
+* Fix bug to allow removal of files with errors
+
 # hint 1.0.0
 
 * ADR integration
