@@ -138,6 +138,9 @@ describe("Manage file component", () => {
         const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
 
+        //should not render File label if no existing filename
+        expectTranslated(wrapper.find(".file-name"), "remove", "supprimer", wrapper.vm.$store);
+
         removeLink.trigger("click");
 
         expect(removeHandler.mock.calls.length).toBe(1);
