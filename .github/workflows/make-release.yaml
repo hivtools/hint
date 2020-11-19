@@ -30,7 +30,7 @@ jobs:
           doRelease = "false"
           if ["${{steps.checkTag.outputs.exists}}" == "false] doRelease = true fi
           echo "CREATE_RELEASE=$doRelease" >> GITHUB_ENV
-          echo "doRelease is $doRelease"
+          echo doRelease is $doRelease
 
       - name: Create release
         if: env.CREATE_RELEASE
