@@ -27,6 +27,6 @@ jobs:
 
       - name: Test
         run: |
-        echo tag=${{ env.RELEASE_VERSION }}
-        echo tagExists=${{ steps.checkTag.outputs.exists }}
+          echo tag=${{ env.RELEASE_VERSION }}
+          echo tagExists=${{ steps.checkTag.outputs.exists }}
 
