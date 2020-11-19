@@ -24,6 +24,11 @@
                             :colour-scale="indicatorColourScale"
                             :colour-range="colourRange"
                             @update="updateColourScale"></map-legend>
+                <l-control v-if="emptyFeature" position="bottomleft" class="color-red">
+                    <h4>
+                         <strong v-translate="'noMapData'"></strong>
+                    </h4>
+                </l-control>
             </l-map>
         </div>
     </div>
@@ -32,7 +37,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {Feature} from "geojson";
-    import {LGeoJson, LMap} from "vue2-leaflet";
+    import {LGeoJson, LMap, LControl} from "vue2-leaflet";
     import {GeoJSON, Layer, GeoJSONOptions} from "leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
@@ -97,7 +102,8 @@
         selectedAreaFeatures: Feature[],
         selectedAreaIds: string[],
         colorIndicator: ChoroplethIndicatorMetadata,
-        options: GeoJSONOptions
+        options: GeoJSONOptions,
+        emptyFeature : boolean
     }
 
     const props = {
@@ -137,7 +143,8 @@
             LGeoJson,
             MapControl,
             MapLegend,
-            Filters
+            Filters,
+            LControl
         },
         props: props,
         data(): Data {
@@ -153,6 +160,10 @@
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
                     !!this.selections.indicatorId;
+            },
+            emptyFeature () {
+                const isEmptyFeature = (this.currentFeatures.filter(filtered => !this.featureIndicators[filtered.properties!.area_id]))
+                return isEmptyFeature.length? true : false
             },
             colourRange() {
                 const indicator = this.selections.indicatorId;
@@ -286,10 +297,12 @@
                         const value = values && values!.value;
                         
                         const stringVal = (value || value === 0) ? value.toString() : "";
+                        if(stringVal) { 
                         layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${formatOutput(stringVal, indicatorMetaData!.format, indicatorMetaData!.scale, indicatorMetaData!.accuracy)}
                             </div>`);
+                            }
                     }
                 }
             }
