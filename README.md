@@ -39,6 +39,18 @@ by running `./src/gradlew -p src :generateDatabaseInterface:run` while the datab
 HINT Versions are recorded [here](NEWS.md). The latest version should match the value of currentHintVersion in
 `src/app/static/src/app/hintVersion.ts`
 
+If you make any change to the application which affects its functionality (i.e. anything other than a refactor, or
+documentation or CI change, you should update the version by adding an entry to NEWS.md and setting currentHintVersion).
+
+Versions should follow the [semantic versioning](https://semver.org/) format, so you should update the:
+- MAJOR version when you make incompatible changes (e.g. a change to serialised version state format),
+- MINOR version when you add functionality in a backwards compatible manner, and
+- PATCH version when you make backwards compatible bug fixes.
+
+This may cause relatively frequently conflicts since more than one person is likely to be working on a new version at a
+time. In this case, you should give your branch its own new version number, rather than rolling your changes into the same 
+version number as changes from another branch. 
+
 ### Distribution
 A docker image containing the app is created as part of the BuildKite build. To create such an image locally,
 run `./buildkite/make-build-env.sh` followed by `./buildkite/build.sh`. A CLI image is also created as part of 
