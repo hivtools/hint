@@ -9,6 +9,7 @@
 
 <script lang="ts">
     import Vue from "vue";
+    import {ActionMethod, mapActions} from "vuex";
     import {HintrVersionResponse} from "../../generated";
     import {RootState} from "../../root";
     import {mapActionByName, mapStateProp} from "../../utils";
