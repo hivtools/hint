@@ -27,10 +27,11 @@ jobs:
 
       - name: Set env
         run: |
-          doRelease = "false"
-          if ["${{steps.checkTag.outputs.exists}}" == "false] doRelease = true fi
-          echo "CREATE_RELEASE=$doRelease" >> GITHUB_ENV
-
+          if ["${{steps.checkTag.outputs.exists}}" == "false"]
+            echo "CREATE_RELEASE='true'" >> GITHUB_ENV
+          else
+             echo "CREATE_RELEASE='false'" >> GITHUB_ENV
+          fi
       - name: Create release
         if: env.CREATE_RELEASE
         run: echo "creating release..."
