@@ -79,13 +79,13 @@ describe("Choropleth component", () => {
         expect(legend.props().colourScale).toBe(propsData.colourScales.prevalence)
     });
 
-    it("renders user message on map when selections are empty", () => {
+    it("renders no data message on map when selections are empty", () => {
         const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
         const vm = wrapper.vm as any;
         expect(vm.emptyFeature).toBe(true);
     });
 
-    it("does not render user message on map when selections are not empty", () => {
+    it("does not render no data message on map when selections are not empty", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         expect(vm.emptyFeature).toBe(false);
