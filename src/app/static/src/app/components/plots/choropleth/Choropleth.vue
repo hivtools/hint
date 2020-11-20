@@ -13,7 +13,11 @@
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">
                     </l-geo-json>
                 </template>
-
+                <l-control v-if="emptyFeature" position="bottomleft">
+                    <span class="lead map-control px-3 py-2">
+                         <strong v-translate="'noMapData'"></strong>
+                    </span>
+                </l-control>
                 <map-control :initialDetail=selections.detail
                              :indicator=selections.indicatorId
                              :show-indicators="true"
@@ -21,11 +25,6 @@
                              :level-labels="featureLevels"
                              @detail-changed="onDetailChange"
                              @indicator-changed="onIndicatorChange"></map-control>
-                <l-control v-if="emptyFeature" position="bottomleft" class="color-red">
-                    <p class="lead">
-                         <strong v-translate="'noMapData'"></strong>
-                    </p>
-                </l-control>
                 <map-legend :metadata="colorIndicator"
                             :colour-scale="indicatorColourScale"
                             :colour-range="colourRange"
