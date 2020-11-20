@@ -37,6 +37,6 @@ jobs:
         run: echo ${{env.CREATE_RELEASE}}
 
       - name: Create release
-        if: [ "${{steps.checkTag.outputs.exists}}" == "false" ];
+        if: $[ "${{steps.checkTag.outputs.exists}}" == "false" ]
         run: echo "creating release..."
 
