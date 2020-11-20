@@ -14,4 +14,4 @@ Before you make a pull request, please ensure items on the checklist are checked
 
 - [ ] I have incremented version number
 - [ ] The build passed successfully
-- [ ] The build failed ADR tests
+- [ ] The build failed because of ADR tests
