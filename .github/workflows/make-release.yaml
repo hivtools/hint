@@ -25,18 +25,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set CREATE_RELEASE
-        run: |
-          if [ "${{steps.checkTag.outputs.exists}}" == "false" ];
-          then
-            echo "CREATE_RELEASE=true" >> $GITHUB_ENV
-          else
-            echo "CREATE_RELEASE=false" >> $GITHUB_ENV
-          fi
-      - name: Test
-        run: echo ${{env.CREATE_RELEASE}}
-
       - name: Create release
         if: $[ "${{steps.checkTag.outputs.exists}}" == "false" ]
-        run: echo "creating release..."
+        uses: actions/create-release@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            tag_name: v${{ env.RELEASE_VERSION }}
+            release_name: Release hint ${{ env.RELEASE_VERSION }}
+            draft: false
+            prerelease: false
 
