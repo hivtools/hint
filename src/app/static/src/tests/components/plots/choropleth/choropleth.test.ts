@@ -64,7 +64,7 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         expect(wrapper.findAll(Filters).length).toBe(1);
 
-        //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLA   Y IN FILTERS
+        //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLAY IN FILTERS
     });
 
     it("does not render filters if includeFilters is false", () => {
