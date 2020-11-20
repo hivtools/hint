@@ -27,7 +27,7 @@
     import {LControl} from 'vue2-leaflet';
     import {
         colorFunctionFromName,
-        colourScaleStepFromMetadata,
+        scaleStepFromMetadata,
         roundToContext,
         formatOutput,
         formatLegend
@@ -61,7 +61,7 @@
 
     interface Methods {
         toggleAdjust: (e: Event) => void
-        update: (colourScale: ScaleSettings) => void
+        update: (scale: ScaleSettings) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -85,7 +85,7 @@
                 return !!this.colourScale;
             },
             colourScaleStep: function () {
-                return this.metadata ? colourScaleStepFromMetadata(this.metadata) : 1;
+                return this.metadata ? scaleStepFromMetadata(this.metadata) : 1;
             },
             levels: function () {
                 if (this.metadata) {
@@ -122,8 +122,8 @@
                 e.preventDefault();
                 this.showAdjust = !this.showAdjust;
             },
-            update: function (colourScale: ScaleSettings) {
-                this.$emit("update", colourScale);
+            update: function (scale: ScaleSettings) {
+                this.$emit("update", scale);
             }
         }
     });

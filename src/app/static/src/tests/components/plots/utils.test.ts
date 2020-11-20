@@ -3,7 +3,7 @@ import {
     getColor,
     getIndicatorRange,
     toIndicatorNameLookup,
-    roundToContext, colourScaleStepFromMetadata, roundRange, iterateDataValues, findPath, formatOutput, formatLegend
+    roundToContext, scaleStepFromMetadata, roundRange, iterateDataValues, findPath, formatOutput, formatLegend
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 import {Filter} from "../../../app/generated";
@@ -372,12 +372,12 @@ describe("plot utils", () => {
         expect(roundToContext(-0.3614, [-0.45, 0])).toBe(-0.361);
     });
 
-    it("colourScaleStepFromMetadata returns expected value", () => {
+    it("scaleStepFromMetadata returns expected value", () => {
         const meta = {
             min: 0,
             max: 1
         };
-        expect(colourScaleStepFromMetadata(meta as any)).toBe(0.1);
+        expect(scaleStepFromMetadata(meta as any)).toBe(0.1);
     });
 
     it("roundRange rounds as expected", () => {

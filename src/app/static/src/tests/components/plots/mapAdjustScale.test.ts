@@ -352,7 +352,7 @@ describe("MapAdjustScale component", () => {
         expect(wrapper.emitted("update").length).toBe(1);
     });
 
-    it("updates colourScaleToAdjust when colourScale property changes", () => {
+    it("updates scaleToAdjust when scale property changes", () => {
         const wrapper = mount(MapAdjustScale, {
             store, propsData: {
                 metadata: {

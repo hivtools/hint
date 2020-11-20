@@ -128,7 +128,7 @@
         changeSelections: (newSelections: Partial<BubblePlotSelections>) => void,
         getFeatureFromAreaId: (id: string) => Feature,
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any,
-        updateColourScale: (colourScale: ScaleSettings) => void,
+        updateColourScale: (scale: ScaleSettings) => void,
     }
 
     interface Computed {
@@ -428,7 +428,7 @@
             normalizeIndicators(node: ChoroplethIndicatorMetadata) {
                 return {id: node.indicator, label: node.name};
             },
-            updateColourScale: function (colourScale: ScaleSettings) {
+            updateColourScale: function (scale: ScaleSettings) {
                 const newColourScales = {...this.colourScales};
                 newColourScales[this.selections.colorIndicatorId] = colourScale;
                 this.$emit("update-colour-scales", newColourScales);

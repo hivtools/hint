@@ -75,7 +75,7 @@
         onIndicatorChange: (newVal: string) => void,
         onFilterSelectionsChange: (newSelections: Dict<FilterOption[]>) => void,
         changeSelections: (newSelections: Partial<ChoroplethSelections>) => void,
-        updateColourScale: (colourScale: ScaleSettings) => void,
+        updateColourScale: (scale: ScaleSettings) => void,
         getFeatureFromAreaId: (id: string) => Feature,
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any
     }
@@ -357,7 +357,7 @@
             changeSelections(newSelections: Partial<ChoroplethSelections>) {
                 this.$emit("update", newSelections)
             },
-            updateColourScale: function (colourScale: ScaleSettings) {
+            updateColourScale: function (scale: ScaleSettings) {
                 const newColourScales = {...this.colourScales};
                 newColourScales[this.selections.indicatorId] = colourScale;
                 this.$emit("update-colour-scales", newColourScales);

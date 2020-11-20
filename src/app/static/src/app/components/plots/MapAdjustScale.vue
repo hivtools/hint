@@ -81,7 +81,7 @@ import {ScaleType} from "../../store/colourScales/colourScales";
 
     interface Props {
         show: boolean,
-        colourScale: ScaleSettings,
+        scale: ScaleSettings,
         step: number,
         metadata: any,
         hideStaticDefault: boolean,
@@ -95,7 +95,7 @@ import {ScaleType} from "../../store/colourScales/colourScales";
     }
 
     interface Data {
-        colourScaleToAdjust: ScaleSettings
+        scaleToAdjust: ScaleSettings
     }
 
     interface Methods {
@@ -106,7 +106,7 @@ import {ScaleType} from "../../store/colourScales/colourScales";
         name: "MapAdjustScale",
         props: {
             show: Boolean,
-            colourScale: Object,
+            scale: Object,
             step: Number,
             metadata: Object,
             hideStaticDefault: Boolean,
@@ -114,15 +114,15 @@ import {ScaleType} from "../../store/colourScales/colourScales";
         },
         data(): any {
             return {
-                colourScaleToAdjust: {...this.colourScale},
+                colourScaleToAdjust: {...this.scale},
                 ColourScaleType: ScaleType
             };
         },
         computed: {
             invalidMsg() {
                 let result = null;
-                if (this.colourScaleToAdjust.type == ScaleType.Custom) {
-                    if (this.colourScaleToAdjust.customMin >= this.colourScaleToAdjust.customMax) {
+                if (this.scaleToAdjust.type == ScaleType.Custom) {
+                    if (this.scaleToAdjust.customMin >= this.sScaleToAdjust.customMax) {
                         result = i18next.t("maxMustBeGreaterThanMin");
                     }
                 }
@@ -130,7 +130,7 @@ import {ScaleType} from "../../store/colourScales/colourScales";
                 return result;
             },
             disableCustom() {
-                return this.colourScaleToAdjust.type != ScaleType.Custom;
+                return this.scaleToAdjust.type != ScaleType.Custom;
             },
             scaleText(){
                 const { format, scale, accuracy} = this.metadata
@@ -142,13 +142,13 @@ import {ScaleType} from "../../store/colourScales/colourScales";
         methods: {
             update: function () {
                 if (this.invalidMsg == null) {
-                    this.$emit("update", this.colourScaleToAdjust)
+                    this.$emit("update", this.scaleToAdjust)
                 }
             }
         },
         watch: {
             colourScale: function () {
-                this.colourScaleToAdjust = {...this.colourScale};
+                this.scaleToAdjust = {...this.scale};
             }
         }
     });

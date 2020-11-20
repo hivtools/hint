@@ -1,5 +1,9 @@
 <template>
     <l-control position="bottomleft">
+        <map-adjust-scale class="legend-element legend-adjust map-control" :step="scaleStep"
+                          :show="showAdjust" :scale="sizeScale" @update="update" :metadata="metadata"
+                          :hide-static-custom="'true'" :hide-static-default="'true'">
+        </map-adjust-scale>
         <div class="map-control p-1 d-flex flex-column">
             <label class="text-center pt-1 pb-1">{{metadata.name}}</label>
             <svg :width="width" :height="height">
@@ -11,6 +15,12 @@
                 </text>
             </svg>
         </div>
+        <div v-if="adjustable" id="adjust-scale" class="mt-1">
+            <a @click="toggleAdjust" href="">
+                <span v-if="showAdjust" v-translate="'done'"></span>
+                <span v-if="!showAdjust" v-translate="'adjustScale'"></span>
+            </a>
+        </div>div>
     </l-control>
 </template>
 
@@ -20,8 +30,9 @@
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
     import numeral from "numeral";
-    import {formatOutput, formatLegend} from "./../utils";
+    import {formatOutput, formatLegend, scaleStepFromMetadata} from "./../utils";
     import {ChoroplethIndicatorMetadata} from "../../../generated";
+    import {ScaleSettings} from "../../../store/plottingSelections/plottingSelections";
 
     interface Circle {
         y: number,
@@ -31,7 +42,8 @@
     }
 
     interface Data {
-        steps: number[]
+        steps: number[],
+        showAdjust: boolean
     }
 
     interface Props {
@@ -39,19 +51,23 @@
         minRadius: number,
         maxRadius: number,
         metadata: ChoroplethIndicatorMetadata
+        colourScale: ScaleSettings,
     }
 
     interface Computed {
         circles: Circle[],
         width: number,
         height: number,
-        midX: number
+        midX: number,
+        scaleStep: number,
     }
 
     interface Methods {
         circleFromRadius: (r: number, value: number, under: boolean) => Circle,
         valueScalePointFromRadius: (r: number) => number
-        valueFromValueScalePoint: (valueScalePoint: number) => number
+        valueFromValueScalePoint: (valueScalePoint: number) => number,
+        toggleAdjust: (e: Event) => void,
+        update: (scale: ScaleSettings) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -60,14 +76,16 @@
             "indicatorRange": Object,
             "minRadius": Number,
             "maxRadius": Number,
-            "metadata": Object
+            "metadata": Object,
+            "colourScale": Object
         },
         components: {
             LControl
         },
         data: function () {
             return {
-                steps: [0.1, 0.25, 0.5, 1]
+                steps: [0.1, 0.25, 0.5, 1],
+                showAdjust: false
             }
         },
         computed: {
@@ -95,7 +113,10 @@
                 });
 
                 return [minCircle, ...nonMinCircles];
-            }
+            },
+            scaleStep: function () {
+                return this.metadata ? scaleStepFromMetadata(this.metadata) : 1;
+            },
         },
         methods: {
             circleFromRadius: function (r: number, value: number, under = false) {
@@ -117,6 +138,13 @@
             valueFromValueScalePoint: function (valueScalePoint: number) {
                 return (valueScalePoint * (this.indicatorRange.max - this.indicatorRange.min))
                     + this.indicatorRange.min;
+            },
+            toggleAdjust: function (e: Event) {
+                e.preventDefault();
+                this.showAdjust = !this.showAdjust;
+            },
+            update: function (scale: ScaleSettings) {
+                this.$emit("update", scale);
             }
         }
     });
