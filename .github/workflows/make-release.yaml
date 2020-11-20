@@ -25,7 +25,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Test
+      - name: Test tags
         run: |
           echo ${{steps.checkTag.outputs.exists}}
           echo [ "${{steps.checkTag.outputs.exists}}" == "false" ]
