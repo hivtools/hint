@@ -26,9 +26,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test
-        - run: |
-            echo ${{steps.checkTag.outputs.exists}}
-            echo $[ "${{steps.checkTag.outputs.exists}}" == "false" ]
+        run: |
+          echo ${{steps.checkTag.outputs.exists}}
+          echo $[ "${{steps.checkTag.outputs.exists}}" == "false" ]
 
       - name: Create release if tag does not exist
         if: $[ "${{steps.checkTag.outputs.exists}}" == "false" ]
