@@ -1,48 +1,50 @@
 import {ColourScaleType} from "../../store/colourScales/colourScales";
 <template>
     <div v-if="show" class="pt-2 pl-3">
-        <div><span v-translate="'static'"></span></div>
-        <div class="ml-2">
-            <div class="form-check">
-                <label class="form-check-label">
-                    <input id="type-input-default" class="form-check-input" type="radio" name="scaleType"
-                           :value="ColourScaleType.Default"
-                           v-model="colourScaleToAdjust.type" @change="update">
-                    <span v-translate="'default'"></span>
-                </label>
-            </div>
-            <div class="form-check mt-1">
-                <label class="form-check-label">
-                    <input id="type-input-custom" class="form-check-input" type="radio" name="scaleType"
-                           :value="ColourScaleType.Custom"
-                           v-model="colourScaleToAdjust.type" @change="update">
-                    <span v-translate="'custom'"></span>
-                </label>
-            </div>
+        <div v-if="!(hideStaticCustom && hideStaticDefault)" class="static-container">
+            <div><span v-translate="'static'"></span></div>
+            <div class="ml-2">
+                <div v-if="!hideStaticDefault" class="form-check static-default">
+                    <label class="form-check-label">
+                        <input id="type-input-default" class="form-check-input" type="radio" name="scaleType"
+                               :value="ColourScaleType.Default"
+                               v-model="colourScaleToAdjust.type" @change="update">
+                        <span v-translate="'default'"></span>
+                    </label>
+                </div>
+                <div v-if="!hideStaticCustom" class="form-check mt-1 static-custom">
+                    <label class="form-check-label">
+                        <input id="type-input-custom" class="form-check-input" type="radio" name="scaleType"
+                               :value="ColourScaleType.Custom"
+                               v-model="colourScaleToAdjust.type" @change="update">
+                        <span v-translate="'custom'"></span>
+                    </label>
+                </div>
 
-            <div class="mt-2 ml-2">
-                <form novalidate>
-                    <div class="row p-0 mb-2">
-                        <label for="custom-min-input" class="col col-form-label col-2"><span v-translate="'min'"></span></label>
-                        <div class="col pt-1 pr-1">
-                            <input id="custom-min-input" type="number" :step="step"
-                                   v-model.number="colourScaleToAdjust.customMin"
-                                   :max="colourScaleToAdjust.customMax"
-                                   @change="update" @keyup="update" :disabled="disableCustom">
+                <div v-if="!hideStaticCustom" class="mt-2 ml-2 static-custom-values">
+                    <form novalidate>
+                        <div class="row p-0 mb-2">
+                            <label for="custom-min-input" class="col col-form-label col-2"><span v-translate="'min'"></span></label>
+                            <div class="col pt-1 pr-1">
+                                <input id="custom-min-input" type="number" :step="step"
+                                       v-model.number="colourScaleToAdjust.customMin"
+                                       :max="colourScaleToAdjust.customMax"
+                                       @change="update" @keyup="update" :disabled="disableCustom">
+                            </div>
+                            <p v-if="colourScaleToAdjust.customMin" class="col col-form-label pl-0">{{ scaleText}}</p>
                         </div>
-                        <p v-if="colourScaleToAdjust.customMin" class="col col-form-label pl-0">{{ scaleText}}</p>
-                    </div>
-                    <div class="row">
-                        <label class="col col-form-label col-2" for="custom-max-input"><span v-translate="'max'"></span></label>
-                        <div class="col pt-1 pr-1">
-                            <input id="custom-max-input" type="number" :step="step"
-                                   v-model.number="colourScaleToAdjust.customMax"
-                                   :min="colourScaleToAdjust.customMin"
-                                   @change="update" @keyup="update" :disabled="disableCustom">
+                        <div class="row">
+                            <label class="col col-form-label col-2" for="custom-max-input"><span v-translate="'max'"></span></label>
+                            <div class="col pt-1 pr-1">
+                                <input id="custom-max-input" type="number" :step="step"
+                                       v-model.number="colourScaleToAdjust.customMax"
+                                       :min="colourScaleToAdjust.customMin"
+                                       @change="update" @keyup="update" :disabled="disableCustom">
+                            </div>
+                            <p v-if="colourScaleToAdjust.customMax" class="col col-form-label pl-0">{{ scaleText}}</p>
                         </div>
-                        <p v-if="colourScaleToAdjust.customMax" class="col col-form-label pl-0">{{ scaleText}}</p>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -81,7 +83,9 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         show: boolean,
         colourScale: ColourScaleSettings,
         step: number,
-        metadata: any
+        metadata: any,
+        hideStaticDefault: boolean,
+        hideStaticCustom: boolean
     }
 
     interface Computed {
@@ -104,7 +108,9 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
             show: Boolean,
             colourScale: Object,
             step: Number,
-            metadata: Object
+            metadata: Object,
+            hideStaticDefault: Boolean,
+            hideStaticCustom: Boolean
         },
         data(): any {
             return {

@@ -53,8 +53,7 @@ describe("MapAdjustScale component", () => {
     });
 
     it("renders as expected with custom scale", () => {
-        const wrapper = mount(MapAdjustScale, {
-            store, propsData: {
+        const wrapper = mount(MapAdjustScale, {store, propsData: {
                 metadata: {
                     max: 2,
                     min: 1,
@@ -170,6 +169,62 @@ describe("MapAdjustScale component", () => {
 
         expect((wrapper.find("#custom-min-input").element as HTMLInputElement).disabled).toBe(true);
         expect((wrapper.find("#custom-max-input").element as HTMLInputElement).disabled).toBe(true);
+    });
+
+    const showAllProps = {
+        metadata: {
+            max: 2,
+            min: 1,
+            format: '',
+            scale: 1,
+            accuracy: null
+        },
+        show: true,
+        step: 0.1,
+        colourScale: {
+            type: ColourScaleType.Custom,
+            customMin: 0,
+            customMax: 1
+        }
+    };
+
+    it("renders as expected when hide props both false", () => {
+        const wrapper = mount(MapAdjustScale, {store, propsData: showAllProps});
+
+        expect(wrapper.find(".static-container").exists()).toBe(true);
+        expect(wrapper.find(".static-default").exists()).toBe(true);
+        expect(wrapper.find(".static-custom").exists()).toBe(true);
+        expect(wrapper.find(".static-custom-values").exists()).toBe(true);
+    });
+
+    it("renders as expected when hide static defaults", () => {
+        const propsData = {...showAllProps, hideStaticDefault: true};
+        const wrapper = mount(MapAdjustScale, {store, propsData});
+
+        expect(wrapper.find(".static-container").exists()).toBe(true);
+        expect(wrapper.find(".static-default").exists()).toBe(false);
+        expect(wrapper.find(".static-custom").exists()).toBe(true);
+        expect(wrapper.find(".static-custom-values").exists()).toBe(true);
+    });
+
+    it("renders as expected when hide static custom", () => {
+        const propsData = {...showAllProps, hideStaticCustom: true};
+        const wrapper = mount(MapAdjustScale, {store, propsData});
+
+        expect(wrapper.find(".static-container").exists()).toBe(true);
+        expect(wrapper.find(".static-default").exists()).toBe(true);
+        expect(wrapper.find(".static-custom").exists()).toBe(false);
+        expect(wrapper.find(".static-custom-values").exists()).toBe(false);
+    });
+
+    it("renders as expected when hide static default and custom", () => {
+        const propsData = {...showAllProps, hideStaticDefault: true, hideStaticCustom: true};
+        const wrapper = mount(MapAdjustScale, {store, propsData});
+
+        expect(wrapper.find(".static-container").exists()).toBe(false);
+        expect(wrapper.find(".static-default").exists()).toBe(false);
+        expect(wrapper.find(".static-custom").exists()).toBe(false);
+        expect(wrapper.find(".static-custom-values").exists()).toBe(false);
     });
 
     it("emits update event when type changes", () => {
