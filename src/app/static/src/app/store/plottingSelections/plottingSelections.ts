@@ -80,7 +80,7 @@ export const initialChorplethSelections = (): ChoroplethSelections => {
 
 export const initialColourScaleSettings = (): ColourScaleSettings => {
     return {
-        type: ColourScaleType.Default,
+        type: ColourScaleType.DynamicFiltered,
         customMin: 0,
         customMax: 0
     }
