@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
-import {LGeoJson} from "vue2-leaflet";
+import {LControl, LGeoJson} from "vue2-leaflet";
 import {getFeatureIndicator} from "../../../../app/components/plots/choropleth/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
@@ -11,6 +11,7 @@ import {prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
 import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import Vue from "vue";
+import { expectTranslated } from "../../../testHelpers";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -76,6 +77,26 @@ describe("Choropleth component", () => {
         const legend = wrapper.find(MapLegend);
         expect(legend.props().metadata).toBe(propsData.indicators[1]);
         expect(legend.props().colourScale).toBe(propsData.colourScales.prevalence)
+    });
+
+    it("renders user message on map when selections are empty", () => {
+        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
+        const vm = wrapper.vm as any;
+        expect(vm.emptyFeature).toBe(true);
+    });
+
+    it("does not render user message on map when selections are not empty", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.emptyFeature).toBe(false);
+    });
+
+    it("renders can display user message on map", () => {
+        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
+        expect(wrapper.findAll(LControl).length).toBe(1)
+        const noMapData = wrapper.find(LControl).find("p")
+        expectTranslated(noMapData, "No data to display on map for these selections",
+        "Aucune donnée à afficher sur la carte pour ces sélections", store as any)
     });
 
     it("computes featureIndicators", () => {

@@ -25,9 +25,9 @@
                             :colour-range="colourRange"
                             @update="updateColourScale"></map-legend>
                 <l-control v-if="emptyFeature" position="bottomleft" class="color-red">
-                    <h4>
+                    <p class="lead">
                          <strong v-translate="'noMapData'"></strong>
-                    </h4>
+                    </p>
                 </l-control>
             </l-map>
         </div>
