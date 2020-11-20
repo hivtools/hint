@@ -1,7 +1,7 @@
 import {createLocalVue, shallowMount, WrapperArray} from '@vue/test-utils';
 import MapLegend from "../../../app/components/plots/MapLegend.vue";
 import {Vue} from "vue/types/vue";
-import {ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
+import {ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
@@ -51,7 +51,7 @@ describe("Map legend component", () => {
                 accuracy: null
             },
             colourScale: {
-                type: ColourScaleType.Default,
+                type: ScaleType.Default,
                 customMin: 1.5,
                 customMax: 2.5
             },
@@ -215,7 +215,7 @@ describe("Map legend component", () => {
                     accuracy: null
                 },
                 colourScale: {
-                    type: ColourScaleType.Default
+                    type: ScaleType.Default
                 },
                 colourRange
             }
@@ -255,7 +255,7 @@ describe("Map legend component", () => {
                     accuracy: null
                 },
                 colourScale: {
-                    type: ColourScaleType.Default
+                    type: ScaleType.Default
                 },
                 colourRange: {max: 60000, min: 1000}
             }
@@ -267,7 +267,7 @@ describe("Map legend component", () => {
 
     it("toggles show adjust scale", () => {
         const colourScale = {
-            type: ColourScaleType.Default
+            type: ScaleType.Default
         };
 
         const wrapper = shallowMount(MapLegend, {
@@ -317,13 +317,13 @@ describe("Map legend component", () => {
                     scale: 1,
                     accuracy: null
                 },
-                colourScale: {type: ColourScaleType.Default},
+                colourScale: {type: ScaleType.Default},
                 colourRange
             }
         });
 
         const newColourScale = {
-            type: ColourScaleType.Custom,
+            type: ScaleType.Custom,
             customMin: 0,
             customMax: 1
         };

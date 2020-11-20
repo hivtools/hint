@@ -13,7 +13,7 @@ import Vue from "vue";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {expectFilter, plhiv, prev, testData} from "../testHelpers"
-import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
+import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -35,7 +35,7 @@ const propsData = {
     },
     colourScales: {
         prevalence: {
-            type: ColourScaleType.Default,
+            type: ScaleType.Default,
             customMin: 0,
             customMax: 1
         }
@@ -162,7 +162,7 @@ describe("BubblePlot component", () => {
         wrapper.setProps({
             colourScales: {
                 prevalence: {
-                    type: ColourScaleType.Custom,
+                    type: ScaleType.Custom,
                     customMin: 1,
                     customMax: 2
                 }
@@ -178,7 +178,7 @@ describe("BubblePlot component", () => {
         wrapper.setProps({
             colourScales: {
                 prevalence: {
-                    type: ColourScaleType.DynamicFull,
+                    type: ScaleType.DynamicFull,
                     customMin: 1,
                     customMax: 2
                 }
@@ -194,7 +194,7 @@ describe("BubblePlot component", () => {
         wrapper.setProps({
             colourScales: {
                 prevalence: {
-                    type: ColourScaleType.DynamicFiltered,
+                    type: ScaleType.DynamicFiltered,
                     customMin: 1,
                     customMax: 2
                 }
@@ -555,7 +555,7 @@ describe("BubblePlot component", () => {
     it("emits event when colour scale updated", () => {
         const wrapper = getWrapper();
         const legend = wrapper.find(MapLegend);
-        const newColourScale = {type: ColourScaleType.DynamicFiltered, customMin: -5, customMax: 5};
+        const newColourScale = {type: ScaleType.DynamicFiltered, customMin: -5, customMax: 5};
         legend.vm.$emit("update", newColourScale);
 
         expect(wrapper.emitted("update-colour-scales").length).toBe(1);

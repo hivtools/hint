@@ -1,6 +1,6 @@
 import {mount, shallowMount} from '@vue/test-utils';
 import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
-import {ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
+import {ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
@@ -36,7 +36,7 @@ describe("MapAdjustScale component", () => {
                 show: true,
                 step: 0.1,
                 colourScale: {
-                    type: ColourScaleType.Default,
+                    type: ScaleType.Default,
                     customMin: 0,
                     customMax: 1
                 }
@@ -64,7 +64,7 @@ describe("MapAdjustScale component", () => {
                 show: true,
                 step: 0.1,
                 colourScale: {
-                    type: ColourScaleType.Custom,
+                    type: ScaleType.Custom,
                     customMin: 0,
                     customMax: 1
                 }
@@ -102,7 +102,7 @@ describe("MapAdjustScale component", () => {
                 show: true,
                 step: 0.1,
                 colourScale: {
-                    type: ColourScaleType.DynamicFull,
+                    type: ScaleType.DynamicFull,
                     customMin: 0,
                     customMax: 1
                 }
@@ -131,7 +131,7 @@ describe("MapAdjustScale component", () => {
                 show: true,
                 step: 0.1,
                 colourScale: {
-                    type: ColourScaleType.DynamicFull,
+                    type: ScaleType.DynamicFull,
                     customMin: 2,
                     customMax: 3
                 }
@@ -155,7 +155,7 @@ describe("MapAdjustScale component", () => {
                 show: true,
                 step: 0.1,
                 colourScale: {
-                    type: ColourScaleType.DynamicFiltered,
+                    type: ScaleType.DynamicFiltered,
                     customMin: 0,
                     customMax: 1
                 }
@@ -182,7 +182,7 @@ describe("MapAdjustScale component", () => {
         show: true,
         step: 0.1,
         colourScale: {
-            type: ColourScaleType.Custom,
+            type: ScaleType.Custom,
             customMin: 0,
             customMax: 1
         }
@@ -240,7 +240,7 @@ describe("MapAdjustScale component", () => {
                 show: true,
                 step: 0.1,
                 colourScale: {
-                    type: ColourScaleType.Default,
+                    type: ScaleType.Default,
                     customMin: 0,
                     customMax: 1
                 }
@@ -251,7 +251,7 @@ describe("MapAdjustScale component", () => {
 
         expect(wrapper.emitted("update").length).toBe(1);
         expect(wrapper.emitted("update")[0][0]).toStrictEqual({
-            type: ColourScaleType.Custom,
+            type: ScaleType.Custom,
             customMin: 0,
             customMax: 1
         });
@@ -260,7 +260,7 @@ describe("MapAdjustScale component", () => {
 
         expect(wrapper.emitted("update").length).toBe(2);
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({
-            type: ColourScaleType.Default,
+            type: ScaleType.Default,
             customMin: 0,
             customMax: 1
         });
@@ -269,7 +269,7 @@ describe("MapAdjustScale component", () => {
 
         expect(wrapper.emitted("update").length).toBe(3);
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({
-            type: ColourScaleType.DynamicFull,
+            type: ScaleType.DynamicFull,
             customMin: 0,
             customMax: 1
         });
@@ -278,7 +278,7 @@ describe("MapAdjustScale component", () => {
 
         expect(wrapper.emitted("update").length).toBe(4);
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({
-            type: ColourScaleType.DynamicFiltered,
+            type: ScaleType.DynamicFiltered,
             customMin: 0,
             customMax: 1
         });
@@ -297,7 +297,7 @@ describe("MapAdjustScale component", () => {
                 show: true,
                 step: 0.1,
                 colourScale: {
-                    type: ColourScaleType.Custom,
+                    type: ScaleType.Custom,
                     customMin: 0,
                     customMax: 1
                 }
@@ -308,7 +308,7 @@ describe("MapAdjustScale component", () => {
         wrapper.find("#custom-min-input").trigger("change");
         expect(wrapper.emitted("update").length).toBe(1);
         expect(wrapper.emitted("update")[0][0]).toStrictEqual({
-            type: ColourScaleType.Custom,
+            type: ScaleType.Custom,
             customMin: 0.5,
             customMax: 1
         });
@@ -317,7 +317,7 @@ describe("MapAdjustScale component", () => {
         wrapper.find("#custom-max-input").trigger("keyup");
         expect(wrapper.emitted("update").length).toBe(2);
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({
-            type: ColourScaleType.Custom,
+            type: ScaleType.Custom,
             customMin: 0.5,
             customMax: 1.5
         });
@@ -336,7 +336,7 @@ describe("MapAdjustScale component", () => {
                 show: true,
                 step: 0.1,
                 colourScale: {
-                    type: ColourScaleType.Custom,
+                    type: ScaleType.Custom,
                     customMin: 0,
                     customMax: 1
                 }
@@ -365,7 +365,7 @@ describe("MapAdjustScale component", () => {
                 show: true,
                 step: 0.1,
                 colourScale: {
-                    type: ColourScaleType.Custom,
+                    type: ScaleType.Custom,
                     customMin: 0,
                     customMax: 1
                 }
@@ -373,7 +373,7 @@ describe("MapAdjustScale component", () => {
         });
 
         const newScale = {
-            type: ColourScaleType.Default,
+            type: ScaleType.Default,
             customMin: 1,
             customMax: 2
         };

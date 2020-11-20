@@ -84,9 +84,9 @@
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {
         BubblePlotSelections,
-        ColourScaleSelections,
-        ColourScaleSettings,
-        ColourScaleType
+        ScaleSelections,
+        ScaleSettings,
+        ScaleType
     } from "../../../store/plottingSelections/plottingSelections";
     import {getFeatureIndicators} from "./utils";
     import {getIndicatorRange, toIndicatorNameLookup, formatOutput} from "../utils";
@@ -104,7 +104,7 @@
         filters: Filter[],
         selections: BubblePlotSelections,
         areaFilterId: string,
-        colourScales: ColourScaleSelections,
+        colourScales: ScaleSelections,
     }
 
     interface Data {
@@ -128,7 +128,7 @@
         changeSelections: (newSelections: Partial<BubblePlotSelections>) => void,
         getFeatureFromAreaId: (id: string) => Feature,
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any,
-        updateColourScale: (colourScale: ColourScaleSettings) => void,
+        updateColourScale: (colourScale: ScaleSettings) => void,
     }
 
     interface Computed {
@@ -151,7 +151,7 @@
         colorIndicator: ChoroplethIndicatorMetadata,
         sizeRange: NumericRange,
         colourRange: NumericRange,
-        colourIndicatorScale: ColourScaleSettings | null
+        colourIndicatorScale: ScaleSettings | null
         selectedAreaIds: string[]
     }
 
@@ -235,7 +235,7 @@
                 const colorId = this.selections.colorIndicatorId;
                 const type = this.colourScales[colorId] && this.colourScales[colorId].type;
                 switch (type) {
-                    case  ColourScaleType.DynamicFull:
+                    case  ScaleType.DynamicFull:
                         if (!this.fullIndicatorRanges.hasOwnProperty(colorId)) {
                             // cache the result in the fullIndicatorRanges object for future lookups
                             /* eslint vue/no-side-effects-in-computed-properties: "off" */
@@ -243,7 +243,7 @@
                                 getIndicatorRange(this.chartdata, this.colorIndicator)
                         }
                         return this.fullIndicatorRanges[colorId];
-                    case ColourScaleType.DynamicFiltered:
+                    case ScaleType.DynamicFiltered:
                         return getIndicatorRange(
                             this.chartdata,
                             this.colorIndicator,
@@ -251,12 +251,12 @@
                             this.selections.selectedFilterOptions,
                             this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
                         );
-                    case ColourScaleType.Custom:
+                    case ScaleType.Custom:
                         return {
                             min: this.colourScales[colorId].customMin,
                             max: this.colourScales[colorId].customMax
                         };
-                    case ColourScaleType.Default:
+                    case ScaleType.Default:
                     default:
                         return {max: this.colorIndicator.max, min: this.colorIndicator.min}
                 }
@@ -349,7 +349,7 @@
             sizeIndicator(): ChoroplethIndicatorMetadata {
                 return this.indicators.find(i => i.indicator == this.selections.sizeIndicatorId)!;
             },
-            colourIndicatorScale(): ColourScaleSettings | null {
+            colourIndicatorScale(): ScaleSettings | null {
                 const current = this.colourScales[this.selections.colorIndicatorId];
                 if (current) {
                     return current
@@ -428,7 +428,7 @@
             normalizeIndicators(node: ChoroplethIndicatorMetadata) {
                 return {id: node.indicator, label: node.name};
             },
-            updateColourScale: function (colourScale: ColourScaleSettings) {
+            updateColourScale: function (colourScale: ScaleSettings) {
                 const newColourScales = {...this.colourScales};
                 newColourScales[this.selections.colorIndicatorId] = colourScale;
                 this.$emit("update-colour-scales", newColourScales);

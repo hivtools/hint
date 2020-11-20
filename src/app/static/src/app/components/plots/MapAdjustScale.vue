@@ -1,4 +1,4 @@
-import {ColourScaleType} from "../../store/colourScales/colourScales";
+import {ScaleType} from "../../store/colourScales/colourScales";
 <template>
     <div v-if="show" class="pt-2 pl-3">
         <div v-if="!(hideStaticCustom && hideStaticDefault)" class="static-container">
@@ -76,12 +76,12 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
 
 <script lang="ts">
     import Vue from "vue";
-    import {ColourScaleSettings, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
+    import {ScaleSettings, ScaleType} from "../../store/plottingSelections/plottingSelections";
     import i18next from "i18next";
 
     interface Props {
         show: boolean,
-        colourScale: ColourScaleSettings,
+        colourScale: ScaleSettings,
         step: number,
         metadata: any,
         hideStaticDefault: boolean,
@@ -95,7 +95,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     }
 
     interface Data {
-        colourScaleToAdjust: ColourScaleSettings
+        colourScaleToAdjust: ScaleSettings
     }
 
     interface Methods {
@@ -115,13 +115,13 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
         data(): any {
             return {
                 colourScaleToAdjust: {...this.colourScale},
-                ColourScaleType
+                ColourScaleType: ScaleType
             };
         },
         computed: {
             invalidMsg() {
                 let result = null;
-                if (this.colourScaleToAdjust.type == ColourScaleType.Custom) {
+                if (this.colourScaleToAdjust.type == ScaleType.Custom) {
                     if (this.colourScaleToAdjust.customMin >= this.colourScaleToAdjust.customMax) {
                         result = i18next.t("maxMustBeGreaterThanMin");
                     }
@@ -130,7 +130,7 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                 return result;
             },
             disableCustom() {
-                return this.colourScaleToAdjust.type != ColourScaleType.Custom;
+                return this.colourScaleToAdjust.type != ScaleType.Custom;
             },
             scaleText(){
                 const { format, scale, accuracy} = this.metadata

@@ -104,7 +104,7 @@
     import {
         BarchartSelections,
         BubblePlotSelections,
-        ChoroplethSelections, ColourScaleSelections,
+        ChoroplethSelections, ScaleSelections,
         PlottingSelectionsState
     } from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
@@ -129,7 +129,7 @@
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: BarchartSelections) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
-        updateOutputColourScales: (colourScales: ColourScaleSelections) => void
+        updateOutputColourScales: (colourScales: ScaleSelections) => void
         formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string
     }
 
@@ -148,7 +148,7 @@
         featureLevels: LevelLabel[]
         currentLanguage: Language,
         filterConfig: FilterConfig,
-        colourScales: ColourScaleSelections,
+        colourScales: ScaleSelections,
         choroplethIndicators: ChoroplethIndicatorMetadata[],
         bubblePlotIndicators: ChoroplethIndicatorMetadata[],
         filteredChoroplethIndicators: ChoroplethIndicatorMetadata[],

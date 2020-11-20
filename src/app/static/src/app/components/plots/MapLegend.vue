@@ -33,14 +33,14 @@
         formatLegend
     } from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
-    import {ColourScaleSettings} from "../../store/plottingSelections/plottingSelections";
+    import {ScaleSettings} from "../../store/plottingSelections/plottingSelections";
     import MapAdjustScale from "./MapAdjustScale.vue";
     import {NumericRange} from "../../types";
     import numeral from 'numeral';
 
     interface Props {
         metadata: ChoroplethIndicatorMetadata,
-        colourScale: ColourScaleSettings,
+        colourScale: ScaleSettings,
         colourRange: NumericRange
     }
 
@@ -61,7 +61,7 @@
 
     interface Methods {
         toggleAdjust: (e: Event) => void
-        update: (colourScale: ColourScaleSettings) => void
+        update: (colourScale: ScaleSettings) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -122,7 +122,7 @@
                 e.preventDefault();
                 this.showAdjust = !this.showAdjust;
             },
-            update: function (colourScale: ColourScaleSettings) {
+            update: function (colourScale: ScaleSettings) {
                 this.$emit("update", colourScale);
             }
         }

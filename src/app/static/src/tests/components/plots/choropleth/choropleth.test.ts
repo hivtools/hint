@@ -9,7 +9,7 @@ import {emptyState} from "../../../../app/root";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import {prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
-import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
+import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import Vue from "vue";
 
 const localVue = createLocalVue();
@@ -32,7 +32,7 @@ const propsData = {
     includeFilters: true,
     colourScales: {
         prevalence: {
-            type: ColourScaleType.Custom,
+            type: ScaleType.Custom,
             customMin: 1,
             customMax: 2
         }
@@ -129,7 +129,7 @@ describe("Choropleth component", () => {
         wrapper.setProps({
             colourScales: {
                 prevalence: {
-                    type: ColourScaleType.Default,
+                    type: ScaleType.Default,
                     customMin: 1,
                     customMax: 2
                 }
@@ -145,7 +145,7 @@ describe("Choropleth component", () => {
         wrapper.setProps({
             colourScales: {
                 prevalence: {
-                    type: ColourScaleType.DynamicFull,
+                    type: ScaleType.DynamicFull,
                     customMin: 1,
                     customMax: 2
                 }
@@ -161,7 +161,7 @@ describe("Choropleth component", () => {
         wrapper.setProps({
             colourScales: {
                 prevalence: {
-                    type: ColourScaleType.DynamicFiltered,
+                    type: ScaleType.DynamicFiltered,
                     customMin: 1,
                     customMax: 2
                 }
@@ -403,7 +403,7 @@ describe("Choropleth component", () => {
 
         const legend = wrapper.find(MapLegend);
         const newScale = {
-            type: ColourScaleType.Custom,
+            type: ScaleType.Custom,
             customMin: 5,
             customMax: 10
         };
@@ -424,7 +424,7 @@ describe("Choropleth component", () => {
         expect(wrapper.emitted("update-colour-scales")[0][0]).toStrictEqual({
             ...propsData.colourScales,
             plhiv: {
-                type: ColourScaleType.DynamicFiltered,
+                type: ScaleType.DynamicFiltered,
                 customMin: 1,
                 customMax: 100
             }
