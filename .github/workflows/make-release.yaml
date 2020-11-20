@@ -25,7 +25,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set env
+      - name: Set CREATE_RELEASE
         run: |
           if [ "${{steps.checkTag.outputs.exists}}" == "false" ];
           then
@@ -37,6 +37,6 @@ jobs:
         run: echo ${{env.CREATE_RELEASE}}
 
       - name: Create release
-        if: env.CREATE_RELEASE
+        if: [ "${{steps.checkTag.outputs.exists}}" == "false" ];
         run: echo "creating release..."
 
