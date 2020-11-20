@@ -15,6 +15,7 @@ import {
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
 import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
+import { currentHintVersion } from "../app/hintVersion";
 
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 
@@ -110,7 +111,7 @@ describe("LocalStorageManager", () => {
         const testState = {baseline: mockBaselineState()};
         localStorageManager.savePartialState(testState);
 
-        expect(spy.mock.calls[0][0]).toBe("hintAppState_v1.0.0");
+        expect(spy.mock.calls[0][0]).toBe(`hintAppState_v${currentHintVersion}`);
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
     });
 });

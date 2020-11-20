@@ -1,3 +1,7 @@
+# hint 1.0.1
+
+* Display text on map when no data in selections.
+
 # hint 1.0.0
 
 * ADR integration
