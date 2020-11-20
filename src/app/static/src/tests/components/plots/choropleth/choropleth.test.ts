@@ -91,7 +91,7 @@ describe("Choropleth component", () => {
         expect(vm.emptyFeature).toBe(false);
     });
 
-    it("renders can display user message on map", () => {
+    it("renders can display translated no data message on map", () => {
         const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
         expect(wrapper.findAll(LControl).length).toBe(1)
         const noMapData = wrapper.find(LControl).find("p")
