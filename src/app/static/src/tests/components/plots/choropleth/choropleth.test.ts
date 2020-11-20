@@ -94,7 +94,7 @@ describe("Choropleth component", () => {
     it("renders can display translated no data message on map", () => {
         const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
         expect(wrapper.findAll(LControl).length).toBe(1)
-        const noMapData = wrapper.find(LControl).find("p")
+        const noMapData = wrapper.find(LControl).find("span")
         expectTranslated(noMapData, "No data to display on map for these selections",
         "Aucune donnée à afficher sur la carte pour ces sélections", store as any)
     });
