@@ -151,11 +151,6 @@
                     this.validate()
                 }
             }
-        },
-        mounted(){
-            // console.log('state steps', this.state.steps)
-            // console.log('state activeStep', this.state.activeStep)
-            // this.validate()
         }
     });
 

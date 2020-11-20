@@ -132,7 +132,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     async loadVersion(context, version) {
         const {commit, dispatch, state} = context;
         commit({type: ProjectsMutations.SetLoading, payload: true});
-        console.log('load version fired')
         await api<ProjectsMutations, ProjectsMutations>(context)
             .ignoreSuccess()
             .withError(ProjectsMutations.ProjectError)

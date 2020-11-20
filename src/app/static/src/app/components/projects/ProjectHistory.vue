@@ -289,7 +289,6 @@
             loadVersion(event: Event, projectId: number, versionId: string) {
                 event.preventDefault();
                 this.loadAction({projectId, versionId});
-                console.log("load action fired")
             },
             renameProject(event: Event, projectId: number) {
                event.preventDefault();

@@ -128,12 +128,7 @@
             ErrorAlert
         },
         mounted() {
-            // this.$store.state.modelOptions.optionsFormMeta
             this.fetchOptions();
-            // this.modelOptions()
-            // this.$store.state.modelOptions.optionsFormMeta
-            // this.validate({validate: null})
-            // console.log("mounted in modeOptions")
         }
     });
 </script>

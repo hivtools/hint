@@ -117,7 +117,7 @@ describe("Model run options mutations", () => {
         expect(state.valid).toBe(false);
     });
 
-    it("sets valid to false if updated form does not differ from existing but the state is not valid", () => {
+    it("sets valid to false if updated form matches the existing form but the state is not valid to begin with", () => {
 
         const state = mockModelOptionsState({
             valid: false,
