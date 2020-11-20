@@ -162,8 +162,8 @@
                     !!this.selections.indicatorId;
             },
             emptyFeature () {
-                const isEmptyFeature = (this.currentFeatures.filter(filtered => !this.featureIndicators[filtered.properties!.area_id]))
-                return isEmptyFeature.length? true : false
+                const isEmptyFeature = (this.currentFeatures.filter(filtered => !!this.featureIndicators[filtered.properties!.area_id]))
+                return isEmptyFeature.length? false : true
             },
             colourRange() {
                 const indicator = this.selections.indicatorId;
