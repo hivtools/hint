@@ -49,7 +49,7 @@
         ColourScaleSettings,
         ColourScaleType
     } from "../../../store/plottingSelections/plottingSelections";
-    import {getIndicatorRange, toIndicatorNameLookup, formatOutput, findMetaData} from "../utils";
+    import {getIndicatorRange, toIndicatorNameLookup, formatOutput} from "../utils";
     import {getFeatureIndicator, initialiseColourScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
@@ -287,7 +287,7 @@
             },
             options() {
                 const featureIndicators = this.featureIndicators;
-                const indicatorMetaData = findMetaData(this.indicators, this.selections.indicatorId);
+                const { format, scale, accuracy } = this.colorIndicator!;
                 return {
                     onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
                         const area_id = feature.properties && feature.properties["area_id"];
@@ -300,7 +300,7 @@
                         if(stringVal) { 
                         layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
-                                <br/>${formatOutput(stringVal, indicatorMetaData!.format, indicatorMetaData!.scale, indicatorMetaData!.accuracy)}
+                                <br/>${formatOutput(stringVal, format, scale, accuracy)}
                             </div>`);
                             }
                     }

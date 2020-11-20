@@ -66,6 +66,7 @@ describe("select dataset", () => {
         metadata_modified: "2020-11-10"
     }
 
+
     const fakeRawDatasets = [
         {
             id: "id1",
@@ -409,6 +410,7 @@ describe("select dataset", () => {
                     </div>`
             }
         ]
+
         expect(select.props("options")).toStrictEqual(expectedOptions);
     });
 
@@ -456,13 +458,13 @@ describe("select dataset", () => {
         const store = getStore({}, {
             adrDatasets: [{...fakeRawDatasets[0], resources: [pjnz, pop, shape]}]
         })
-        const rendered = mount(SelectDataset, {store, sync: false, stubs: ["tree-select"]});
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
         await Vue.nextTick();
 
         expect(rendered.findAll(TreeSelect).length).toBe(1);
-        rendered.setData({newDatasetId: "id1"});
+        rendered.setData({newDatasetId: "id1"})
         rendered.find(Modal).find("button").trigger("click");
 
         await Vue.nextTick();
@@ -486,7 +488,7 @@ describe("select dataset", () => {
         const store = getStore({}, {
             adrDatasets: [{...fakeRawDatasets[0], resources: [pjnz]}]
         })
-        const rendered = mount(SelectDataset, {store, sync: false, stubs: ["tree-select"]});
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
         await Vue.nextTick();
@@ -517,7 +519,7 @@ describe("select dataset", () => {
         const store = getStore({}, {
             adrDatasets: [{...fakeRawDatasets[0], resources: [shape, survey, program, anc]}]
         })
-        const rendered = mount(SelectDataset, {store, sync: false, stubs: ["tree-select"]});
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
         await Vue.nextTick();
@@ -547,7 +549,7 @@ describe("select dataset", () => {
         const store = getStore({}, {
             adrDatasets: [{...fakeRawDatasets[0], resources: [shape, survey]}]
         })
-        const rendered = mount(SelectDataset, {store, sync: false, stubs: ["tree-select"]});
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
         await Vue.nextTick();
@@ -577,7 +579,7 @@ describe("select dataset", () => {
         const store = getStore({}, {
             adrDatasets: [{...fakeRawDatasets[0], resources: [survey, program, anc]}]
         })
-        const rendered = mount(SelectDataset, {store, sync: false, stubs: ["tree-select"]});
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
         await Vue.nextTick();
@@ -585,8 +587,6 @@ describe("select dataset", () => {
         expect(rendered.findAll(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"});
         rendered.find(Modal).find("button").trigger("click");
-
-        await Vue.nextTick();
 
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
 
@@ -613,7 +613,7 @@ describe("select dataset", () => {
                 adrDatasets: [{...fakeRawDatasets[0], resources: [survey, program, anc]}]
             });
 
-        const rendered = mount(SelectDataset, {store, sync: false, stubs: ["tree-select"]});
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
         await Vue.nextTick();
@@ -647,4 +647,19 @@ describe("select dataset", () => {
         expect(spy.mock.calls[0][0]).toBe(pollingId);
     });
 
+    it("renders can not save when button is disabled", async () => {
+        const store = getStore({}, {
+            adrDatasets: [{...fakeRawDatasets[0], resources: [shape, survey]}]
+        })
+
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        rendered.find("button").trigger("click");
+        await Vue.nextTick();
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: ""});
+
+        expect(rendered.find(Modal).find("button").attributes("disabled")).toBe("disabled");
+
+    });
 });

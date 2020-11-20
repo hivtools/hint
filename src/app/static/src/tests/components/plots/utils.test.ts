@@ -3,7 +3,7 @@ import {
     getColor,
     getIndicatorRange,
     toIndicatorNameLookup,
-    roundToContext, colourScaleStepFromMetadata, roundRange, iterateDataValues, findPath, formatOutput, findMetaData
+    roundToContext, colourScaleStepFromMetadata, roundRange, iterateDataValues, findPath, formatOutput, formatLegend
 } from "../../../app/components/plots/utils";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 import {Filter} from "../../../app/generated";
@@ -546,25 +546,16 @@ describe("plot utils", () => {
     expect(formatOutput(1, '', 1, 1)).toStrictEqual(1);
   });
 
-  it("it can findMetaData correctly", () => {
-    const indicators = [
-        {
-            indicator: "plhiv", value_column: "value", indicator_column: "indicator", indicator_value: "plhiv",
-            name: "PLHIV", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false,
-            format: "0.00%",
-            scale: 1,
-            accuracy: null
-        },
-        {
-            indicator: "prevalence", value_column: "value", indicator_column: "indicator", indicator_value: "prev",
-            name: "Prevalence", min: 0, max: 0, colour: "interpolateGreys", invert_scale: false,
-            format: "0.00%",
-            scale: 1,
-            accuracy: null
-        }
-    ];
-    expect(findMetaData(indicators, 'plhiv')).toStrictEqual(indicators[0]);
-    expect(findMetaData(indicators, 'prevalence')).toStrictEqual(indicators[1]);
+it("it can formatLegend correctly", () => {
+    expect(formatLegend(11111, '0,0', 1)).toStrictEqual('11k');
+    expect(formatLegend(11111, '0,0', 10)).toStrictEqual('111k');
+    expect(formatLegend(11111, '0,0', 0.1)).toStrictEqual('1.1k');
+    expect(formatLegend(11111, '0,0', 100)).toStrictEqual('1.1m');
+    expect(formatLegend(11111, '0,0', 1000)).toStrictEqual('11m');
+    expect(formatLegend(0.01, '0.00%', 1)).toStrictEqual('1.00%');
+    expect(formatLegend('0.01', '0.00%', 10)).toStrictEqual('1.00%');
+    expect(formatLegend('1', '', 1)).toStrictEqual('1');
+    expect(formatLegend(1, '', 1)).toStrictEqual('1');
   });
 
 });

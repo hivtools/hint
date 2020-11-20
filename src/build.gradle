@@ -67,7 +67,11 @@ subprojects {
         testLogging {
             exceptionFormat = 'full'
         }
+        if (project.hasProperty('excludeADR')) {
+            exclude "org/imperial/mrc/hint/integration/adr/**"
+        }
     }
+
 
     configurations {
         all*.exclude module : 'spring-boot-starter-logging'
