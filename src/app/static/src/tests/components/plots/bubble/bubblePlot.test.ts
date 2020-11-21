@@ -42,9 +42,9 @@ const propsData = {
     },
     sizeScales: {
         plhiv: {
-            type: ScaleType.Default,
-            customMin: 0,
-            customMax: 1000
+            type: ScaleType.Custom,
+            customMin: 1,
+            customMax: 20
         }
     }
 };

@@ -137,6 +137,7 @@
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any,
         updateColourScale: (scale: ScaleSettings) => void,
         updateSizeScale: (scale: ScaleSettings) => void,
+        getRange: (indicator: ChoroplethIndicatorMetadata, scale: ScaleSettings) => NumericRange
     }
 
     interface Computed {
@@ -228,50 +229,12 @@
                 return this.currentFeatures.map(f => f.properties!["area_id"]);
             },
             sizeRange() {
-                if (!this.initialised) {
-                    return {max: 1, min: 0}
-                }
-                const sizeId = this.selections.sizeIndicatorId;
-                if (!this.fullIndicatorRanges.hasOwnProperty(sizeId)) {
-                    // cache the result in the fullIndicatorRanges object for future lookups
-                    /* eslint vue/no-side-effects-in-computed-properties: "off" */
-                    this.fullIndicatorRanges[sizeId] =
-                        getIndicatorRange(this.chartdata, this.sizeIndicator)
-                }
-                return this.fullIndicatorRanges[sizeId];
+                const sizeScale = this.sizeScales[this.selections.sizeIndicatorId];
+                return this.getRange(this.sizeIndicator, sizeScale);
             },
             colourRange() {
-                if (!this.initialised) {
-                    return {max: 1, min: 0}
-                }
-                const colorId = this.selections.colorIndicatorId;
-                const type = this.colourScales[colorId] && this.colourScales[colorId].type;
-                switch (type) {
-                    case  ScaleType.DynamicFull:
-                        if (!this.fullIndicatorRanges.hasOwnProperty(colorId)) {
-                            // cache the result in the fullIndicatorRanges object for future lookups
-                            /* eslint vue/no-side-effects-in-computed-properties: "off" */
-                            this.fullIndicatorRanges[colorId] =
-                                getIndicatorRange(this.chartdata, this.colorIndicator)
-                        }
-                        return this.fullIndicatorRanges[colorId];
-                    case ScaleType.DynamicFiltered:
-                        return getIndicatorRange(
-                            this.chartdata,
-                            this.colorIndicator,
-                            this.nonAreaFilters,
-                            this.selections.selectedFilterOptions,
-                            this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
-                        );
-                    case ScaleType.Custom:
-                        return {
-                            min: this.colourScales[colorId].customMin,
-                            max: this.colourScales[colorId].customMax
-                        };
-                    case ScaleType.Default:
-                    default:
-                        return {max: this.colorIndicator.max, min: this.colorIndicator.min}
-                }
+                const colourScale = this.colourScales[this.selections.colorIndicatorId];
+                return this.getRange(this.colorIndicator, colourScale);
             },
             selectedAreaIds() {
                 const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
@@ -425,6 +388,39 @@
             },
             getSelectedFilterValues(filterId: string) {
                 return (this.selections.selectedFilterOptions[filterId] || []).map(o => o.id);
+            },
+            getRange(indicator: ChoroplethIndicatorMetadata, scale: ScaleSettings) {
+                if (!this.initialised) {
+                    return {max: 1, min: 0}
+                }
+                const indicatorId = indicator.indicator;
+                const type = scale && scale.type;
+                switch (type) {
+                    case  ScaleType.DynamicFull:
+                        if (!this.fullIndicatorRanges.hasOwnProperty(indicatorId)) {
+                            // cache the result in the fullIndicatorRanges object for future lookups
+                            /* eslint vue/no-side-effects-in-computed-properties: "off" */
+                            this.fullIndicatorRanges[indicatorId] =
+                                getIndicatorRange(this.chartdata, indicator)
+                        }
+                        return this.fullIndicatorRanges[indicatorId];
+                    case ScaleType.DynamicFiltered:
+                        return getIndicatorRange(
+                            this.chartdata,
+                            indicator,
+                            this.nonAreaFilters,
+                            this.selections.selectedFilterOptions,
+                            this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
+                        );
+                    case ScaleType.Custom:
+                        return {
+                            min: scale.customMin,
+                            max: scale.customMax
+                        };
+                    case ScaleType.Default:
+                    default:
+                        return {max: indicator.max, min: indicator.min}
+                }
             },
             onDetailChange: function (newVal: number) {
                 this.changeSelections({detail: newVal});
