@@ -1,7 +1,7 @@
 <template>
     <l-control position="bottomright">
         <div class="legend-container">
-            <map-adjust-scale class="legend-element legend-adjust map-control" :step="colourScaleStep"
+            <map-adjust-scale class="legend-element legend-adjust map-control" name="colour" :step="colourScaleStep"
                               :show="showAdjust" :scale="colourScale" @update="update" :metadata="metadata">
             </map-adjust-scale>
             <div class="legend-element map-control p-3">

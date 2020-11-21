@@ -6,7 +6,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
             <div class="ml-2">
                 <div v-if="!hideStaticDefault" class="form-check static-default">
                     <label class="form-check-label">
-                        <input id="type-input-default" class="form-check-input" type="radio" name="scaleType"
+                        <input id="type-input-default" class="form-check-input" type="radio" :name="scaleTypeGroup"
                                :value="ScaleType.Default"
                                v-model="scaleToAdjust.type" @change="update">
                         <span v-translate="'default'"></span>
@@ -14,7 +14,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
                 </div>
                 <div v-if="!hideStaticCustom" class="form-check mt-1 static-custom">
                     <label class="form-check-label">
-                        <input id="type-input-custom" class="form-check-input" type="radio" name="scaleType"
+                        <input id="type-input-custom" class="form-check-input" type="radio" :name="scaleTypeGroup"
                                :value="ScaleType.Custom"
                                v-model="scaleToAdjust.type" @change="update">
                         <span v-translate="'custom'"></span>
@@ -52,7 +52,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
             <div class="ml-2">
                 <div class="form-check mt-1">
                     <label class="form-check-label">
-                        <input id="type-input-dynamic-full" class="form-check-input" type="radio" name="scaleType"
+                        <input id="type-input-dynamic-full" class="form-check-input" type="radio" :name="scaleTypeGroup"
                                :value="ScaleType.DynamicFull"
                                v-model="scaleToAdjust.type" @change="update">
                         <span v-translate="'entireDataset'"></span>
@@ -62,14 +62,13 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
             <div class="ml-2">
                 <div class="form-check mt-1">
                     <label class="form-check-label">
-                        <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" name="scaleType"
+                        <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" :name="scaleTypeGroup"
                                :value="ScaleType.DynamicFiltered"
                                v-model="scaleToAdjust.type" @change="update">
                         <span v-translate="'filteredDataset'"></span>
                     </label>
                 </div>
             </div>
-
             <div class="text-danger">{{ invalidMsg }}</div>
         </div>
     </div>
@@ -81,6 +80,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
     import i18next from "i18next";
 
     interface Props {
+        name: string,
         show: boolean,
         scale: ScaleSettings,
         step: number,
@@ -92,7 +92,8 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
     interface Computed {
         disableCustom: boolean,
         invalidMsg: string | null,
-        scaleText: string
+        scaleText: string,
+        scaleTypeGroup: string
     }
 
     interface Data {
@@ -106,6 +107,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "MapAdjustScale",
         props: {
+            name: String,
             show: Boolean,
             scale: Object,
             step: Number,
@@ -138,7 +140,8 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
                 if (!format.includes('%') && scale !== 1){
                     return `x ${scale}`
                 } else return ''
-            }
+            },
+            scaleTypeGroup() { return `${this.name}-scaleType`; }
         },
         methods: {
             update: function () {
