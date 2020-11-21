@@ -122,6 +122,7 @@ describe("ModelOutput component", () => {
         expect(bubble.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
         expect(bubble.props().indicators).toStrictEqual(["TEST BUBBLE INDICATORS"]);
         expect(bubble.props().colourScales).toStrictEqual({test: "TEST OUTPUT COLOUR SCALES"});
+        expect(bubble.props().sizeScales).toStrictEqual({test: "TEST OUTPUT BUBBLE SIZE SCALES"});
     });
 
     it("renders barchart", () => {
@@ -287,6 +288,16 @@ describe("ModelOutput component", () => {
         const bubbleColourScales = {test: "NEW BUBBLE COLOUR SCALES"};
         bubble.vm.$emit("update-colour-scales", bubbleColourScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(bubbleColourScales);
+    });
+
+    it("commits updated size scale from bubble plot", () => {
+        const store = getStore({selectedTab: "bubble"});
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+
+        const bubble = wrapper.find(BubblePlot);
+        const bubbleSizeScales = {test: "NEW BUBBLE SIZE SCALES"};
+        bubble.vm.$emit("update-colour-scales", bubbleSizeScales);
+        expect(store.state.plottingSelections.colourScales.output).toBe(bubbleSizeScales);
     });
 
     it("renders choropleth table", () => {

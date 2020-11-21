@@ -43,8 +43,8 @@ const propsData = {
     sizeScales: {
         plhiv: {
             type: ScaleType.Custom,
-            customMin: 1,
-            customMax: 20
+            customMin: 0,
+            customMax: 100
         }
     }
 };
@@ -81,7 +81,7 @@ describe("BubblePlot component", () => {
         const circles = wrapper.findAll(LCircleMarker);
         expect(circles.length).toBe(2);
         expect(circles.at(0).props().latLng).toEqual([-15.2047, 35.7083]);
-        expect(circles.at(0).props().radius).toEqual(getRadius(10, 1, 20, 10, 70));
+        expect(circles.at(0).props().radius).toEqual(getRadius(10, 0, 100, 10, 70));
         expect(circles.at(0).find(LTooltip).props().content).toEqual(`<div>
                             <strong>North West</strong>
                             <br/>Prevalence: 10.00%
@@ -94,7 +94,7 @@ describe("BubblePlot component", () => {
         expect(circles.at(0).props().fillColor).toEqual(color);
 
         expect(circles.at(1).props().latLng).toEqual([-15.2048, 35.7084]);
-        expect(circles.at(1).props().radius).toEqual(getRadius(20, 1, 20, 10, 70));
+        expect(circles.at(1).props().radius).toEqual(getRadius(20, 0, 100, 10, 70));
         expect(circles.at(1).find(LTooltip).props().content).toEqual(`<div>
                             <strong>North East</strong>
                             <br/>Prevalence: 20.00%
@@ -143,19 +143,49 @@ describe("BubblePlot component", () => {
     it("renders size legend", () => {
         const wrapper = getWrapper();
         const sizeLegend = wrapper.find(SizeLegend);
-        expect(sizeLegend.props().indicatorRange).toStrictEqual({min: 1, max: 20});
+        expect(sizeLegend.props().indicatorRange).toStrictEqual({min: 0, max: 100});
         expect(sizeLegend.props().minRadius).toBe(10);
         expect(sizeLegend.props().maxRadius).toBe(70);
+        expect(sizeLegend.props().sizeScale).toBe(propsData.sizeScales.plhiv);
     });
 
-    it("computes sizeRange", () => {
+    it("computes sizeRange", async () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
 
-        expect(vm.sizeRange).toStrictEqual({
-            min: 1,
-            max: 20
+        expect(vm.sizeRange).toStrictEqual({min: 0, max: 100});
+
+        wrapper.setProps({
+            sizeScales: {
+                plhiv: {type: ScaleType.Custom, customMin: 0, customMax: 50}
+            }
         });
+        await Vue.nextTick();
+        expect(vm.sizeRange).toStrictEqual({min: 0, max: 50});
+
+        wrapper.setProps({
+            sizeScales: {
+                plhiv: {type: ScaleType.DynamicFull}
+            }
+        });
+        await Vue.nextTick();
+        expect(vm.sizeRange).toStrictEqual({min: 1, max: 20});
+
+        wrapper.setProps({
+            sizeScales: {
+                plhiv: {type: ScaleType.DynamicFiltered}
+            },
+            selections: {
+                ...propsData.selections,
+                selectedFilterOptions: {
+                    age: [{id: "0:15", label: "0-15"}],
+                    sex: [{id: "male", label: "Male"}],
+                    area: []
+                }
+            }
+        });
+        await Vue.nextTick();
+        expect(vm.sizeRange).toStrictEqual({min: 19, max: 20});
     });
 
     it("computes colourRange", async () => {
@@ -238,8 +268,8 @@ describe("BubblePlot component", () => {
         const vm = wrapper.vm as any;
 
         const sizeRange = {
-            min: 1,
-            max: 20
+            min: 0,
+            max: 100
         };
         const colorRange = {
             min: 0,
@@ -405,9 +435,14 @@ describe("BubblePlot component", () => {
         expect((wrapper.vm as any).colorIndicator).toBe(propsData.indicators[1]);
     });
 
-    it("computes colouIndicatorScale", () => {
+    it("computes colourIndicatorScale", () => {
         const wrapper = getWrapper();
         expect((wrapper.vm as any).colourIndicatorScale).toStrictEqual(propsData.colourScales.prevalence);
+    });
+
+    it("computes sizeIndicatorScale", () => {
+        const wrapper = getWrapper();
+        expect((wrapper.vm as any).sizeIndicatorScale).toStrictEqual(propsData.sizeScales.plhiv);
     });
 
     it("updateBounds updates bounds of map from features geojson", () => {
@@ -509,7 +544,7 @@ describe("BubblePlot component", () => {
         });
     });
 
-    it("onSizeIndicatorSelect updates color indicator", () => {
+    it("onSizeIndicatorSelect updates size indicator", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         vm.onSizeIndicatorSelect("newIndicator");
@@ -568,5 +603,15 @@ describe("BubblePlot component", () => {
 
         expect(wrapper.emitted("update-colour-scales").length).toBe(1);
         expect(wrapper.emitted("update-colour-scales")[0][0]).toStrictEqual({prevalence: newColourScale});
+    });
+
+    it("emits event when size scale updated", () => {
+        const wrapper = getWrapper();
+        const legend = wrapper.find(SizeLegend);
+        const newSizeScale = {type: ScaleType.DynamicFiltered, customMin: -5, customMax: 5};
+        legend.vm.$emit("update", newSizeScale);
+
+        expect(wrapper.emitted("update-size-scales").length).toBe(1);
+        expect(wrapper.emitted("update-size-scales")[0][0]).toStrictEqual({plhiv: newSizeScale});
     });
 });

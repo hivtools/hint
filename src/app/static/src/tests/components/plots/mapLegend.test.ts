@@ -38,26 +38,26 @@ describe("Map legend component", () => {
             .getPropertyValue("background")).toBe("rgb(0, 0, 0)");
     };
 
-    const wrapper = shallowMount(MapLegend, {
-        propsData: {
-            metadata: {
-                max: 2,
-                min: 1,
-                colour: "interpolateGreys",
-                invert_scale: false,
-                name: "indicator",
-                format: '',
-                scale: 1,
-                accuracy: null
-            },
-            colourScale: {
-                type: ScaleType.Default,
+    const propsData = {
+        metadata: {
+            max: 2,
+            min: 1,
+            colour: "interpolateGreys",
+            invert_scale: false,
+            name: "indicator",
+            format: '',
+            scale: 1,
+            accuracy: null
+        },
+        colourScale: {
+            type: ScaleType.Default,
                 customMin: 1.5,
                 customMax: 2.5
-            },
-            colourRange
-        }
-    });
+        },
+        colourRange
+    };
+
+    const wrapper = shallowMount(MapLegend, {propsData});
 
     it("renders the label", () => {
         const label = wrapper.find("label");
@@ -72,6 +72,15 @@ describe("Map legend component", () => {
     it("renders icons with colors", () => {
         const icons = wrapper.findAll("i");
         expectIcons(icons);
+    });
+
+    it("renders MapAdjustScale as expected", () => {
+        const adjust = wrapper.find(MapAdjustScale);
+        expect(adjust.props("name")).toBe("colour");
+        expect(adjust.props("show")).toBe(false);
+        expect(adjust.props("scale")).toBe(propsData.colourScale);
+        expect(adjust.props("metadata")).toBe(propsData.metadata);
+        expect(adjust.props("step")).toBe(0.1);
     });
 
     it("calculates 6 levels from min to max with negative min", () => {
@@ -288,9 +297,6 @@ describe("Map legend component", () => {
         });
 
         const adjust = wrapper.find(MapAdjustScale);
-        expect(adjust.props().show).toBe(false);
-        expect(adjust.props().scale).toBe(colourScale);
-        expect(adjust.props().step).toBe(2);
 
         const showAdjust = wrapper.find(".adjust-scale a");
         expect(showAdjust.find("span").text()).toBe("Adjust scale");
