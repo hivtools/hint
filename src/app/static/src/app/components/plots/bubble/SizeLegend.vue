@@ -1,26 +1,28 @@
 <template>
     <l-control position="bottomleft">
-        <map-adjust-scale class="legend-element legend-adjust map-control" :step="scaleStep"
-                          :show="showAdjust" :scale="sizeScale" @update="update" :metadata="metadata"
-                          :hide-static-custom="'true'" :hide-static-default="'true'">
-        </map-adjust-scale>
-        <div class="map-control p-1 d-flex flex-column">
-            <label class="text-center pt-1 pb-1">{{metadata.name}}</label>
-            <svg :width="width" :height="height">
-                <circle v-for="(circle, index) in circles" :key="'circle-' + index" stroke="#aaa" stroke-width="1"
-                        fill-opacity="0"
-                        :r="circle.radius" :cx="midX" :cy="circle.y"></circle>
-                <text v-for="(circle, index) in circles" :key="'text-' + index" text-anchor="middle"
-                      :x="midX" :y="circle.textY">{{ circle.text }}
-                </text>
-            </svg>
+        <div class="legend-container">
+            <div class="legend-element map-control p-3">
+                <label class="text-center pt-1 pb-1 d-block">{{metadata.name}}</label>
+                <svg :width="width" :height="height" class="d-block">
+                    <circle v-for="(circle, index) in circles" :key="'circle-' + index" stroke="#aaa" stroke-width="1"
+                            fill-opacity="0"
+                            :r="circle.radius" :cx="midX" :cy="circle.y"></circle>
+                    <text v-for="(circle, index) in circles" :key="'text-' + index" text-anchor="middle"
+                          :x="midX" :y="circle.textY">{{ circle.text }}
+                    </text>
+                </svg>
+                <div class="adjust-scale mt-1">
+                    <a @click="toggleAdjust" href="" class="float-right">
+                        <span v-if="showAdjust" v-translate="'done'"></span>
+                        <span v-if="!showAdjust" v-translate="'adjustScale'"></span>
+                    </a>
+                </div>
+            </div>
+            <map-adjust-scale class="legend-element legend-adjust map-control" :step="scaleStep"
+                              :show="showAdjust" :scale="sizeScale" @update="update" :metadata="metadata"
+                              :hide-static-custom="true" :hide-static-default="true">
+            </map-adjust-scale>
         </div>
-        <div v-if="adjustable" id="adjust-scale" class="mt-1">
-            <a @click="toggleAdjust" href="">
-                <span v-if="showAdjust" v-translate="'done'"></span>
-                <span v-if="!showAdjust" v-translate="'adjustScale'"></span>
-            </a>
-        </div>div>
     </l-control>
 </template>
 
@@ -33,6 +35,7 @@
     import {formatOutput, formatLegend, scaleStepFromMetadata} from "./../utils";
     import {ChoroplethIndicatorMetadata} from "../../../generated";
     import {ScaleSettings} from "../../../store/plottingSelections/plottingSelections";
+    import MapAdjustScale from "../MapAdjustScale.vue";
 
     interface Circle {
         y: number,
@@ -51,7 +54,7 @@
         minRadius: number,
         maxRadius: number,
         metadata: ChoroplethIndicatorMetadata
-        colourScale: ScaleSettings,
+        sizeScale: ScaleSettings,
     }
 
     interface Computed {
@@ -77,10 +80,11 @@
             "minRadius": Number,
             "maxRadius": Number,
             "metadata": Object,
-            "colourScale": Object
+            "sizeScale": Object
         },
         components: {
-            LControl
+            LControl,
+            MapAdjustScale
         },
         data: function () {
             return {

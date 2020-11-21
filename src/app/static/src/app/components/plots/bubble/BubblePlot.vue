@@ -66,7 +66,13 @@
                             :colour-scale="colourIndicatorScale"
                             @update="updateColourScale"
                 ></map-legend>
-                <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius" :metadata="sizeIndicator"></size-legend>
+                <size-legend :indicatorRange="sizeRange"
+                             :max-radius="maxRadius"
+                             :min-radius="minRadius"
+                             :metadata="sizeIndicator"
+                             :size-scale="sizeIndicatorScale"
+                             @update="updateSizeScale"
+                ></size-legend>
             </l-map>
         </div>
     </div>
@@ -93,7 +99,7 @@
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
-    import {initialiseColourScaleFromMetadata} from "../choropleth/utils";
+    import {initialiseScaleFromMetadata} from "../choropleth/utils";
 
 
     interface Props {
@@ -105,6 +111,7 @@
         selections: BubblePlotSelections,
         areaFilterId: string,
         colourScales: ScaleSelections,
+        sizeScales: ScaleSelections
     }
 
     interface Data {
@@ -129,6 +136,7 @@
         getFeatureFromAreaId: (id: string) => Feature,
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any,
         updateColourScale: (scale: ScaleSettings) => void,
+        updateSizeScale: (scale: ScaleSettings) => void,
     }
 
     interface Computed {
@@ -152,6 +160,7 @@
         sizeRange: NumericRange,
         colourRange: NumericRange,
         colourIndicatorScale: ScaleSettings | null
+        sizeIndicatorScale: ScaleSettings | null
         selectedAreaIds: string[]
     }
 
@@ -180,6 +189,9 @@
         colourScales: {
             type: Object
         },
+        sizeScales: {
+            type: Object
+        }
     };
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -354,8 +366,18 @@
                 if (current) {
                     return current
                 } else {
-                    const newScale = initialiseColourScaleFromMetadata(this.colorIndicator);
+                    const newScale = initialiseScaleFromMetadata(this.colorIndicator);
                     this.updateColourScale(newScale);
+                    return newScale;
+                }
+            },
+            sizeIndicatorScale(): ScaleSettings | null {
+                const current = this.sizeScales[this.selections.sizeIndicatorId];
+                if (current) {
+                    return current
+                } else {
+                    const newScale = initialiseScaleFromMetadata(this.colorIndicator);
+                    this.updateSizeScale(newScale);
                     return newScale;
                 }
             }
@@ -430,8 +452,13 @@
             },
             updateColourScale: function (scale: ScaleSettings) {
                 const newColourScales = {...this.colourScales};
-                newColourScales[this.selections.colorIndicatorId] = colourScale;
+                newColourScales[this.selections.colorIndicatorId] = scale;
                 this.$emit("update-colour-scales", newColourScales);
+            },
+            updateSizeScale: function (scale: ScaleSettings) {
+                const newColourScales = {...this.sizeScales};
+                newColourScales[this.selections.sizeIndicatorId] = scale;
+                this.$emit("update-size-scales", newColourScales);
             },
         },
         watch:

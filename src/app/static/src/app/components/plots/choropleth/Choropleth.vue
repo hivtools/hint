@@ -45,7 +45,7 @@
         ScaleType
     } from "../../../store/plottingSelections/plottingSelections";
     import {getIndicatorRange, toIndicatorNameLookup, formatOutput} from "../utils";
-    import {getFeatureIndicator, initialiseColourScaleFromMetadata} from "./utils";
+    import {getFeatureIndicator, initialiseScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
 
@@ -269,7 +269,7 @@
                 if (current) {
                     return current
                 } else {
-                    const newScale = initialiseColourScaleFromMetadata(this.colorIndicator);
+                    const newScale = initialiseScaleFromMetadata(this.colorIndicator);
                     this.updateColourScale(newScale);
                     return newScale;
                 }
@@ -359,7 +359,7 @@
             },
             updateColourScale: function (scale: ScaleSettings) {
                 const newColourScales = {...this.colourScales};
-                newColourScales[this.selections.indicatorId] = colourScale;
+                newColourScales[this.selections.indicatorId] = scale;
                 this.$emit("update-colour-scales", newColourScales);
             },
             getFeatureFromAreaId(areaId: string): Feature {

@@ -2,6 +2,14 @@ import {shallowMount} from "@vue/test-utils";
 import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {getRadius} from "../../../../app/components/plots/bubble/utils";
 import {LControl} from "vue2-leaflet";
+import Vuex from "vuex";
+import {emptyState} from "../../../../app/root";
+import registerTranslations from "../../../../app/store/translations/registerTranslations";
+
+const store = new Vuex.Store({
+    state: emptyState()
+});
+registerTranslations(store);
 
 const getWrapper = () => {
 

@@ -180,7 +180,7 @@ describe("Map legend component", () => {
     });
 
     it("does not render adjust link if no colour scale", () => {
-        expect(wrapper.find("#adjust-scale").exists()).toBe(true);
+        expect(wrapper.find(".adjust-scale").exists()).toBe(true);
 
         const noScaleWrapper = shallowMount(MapLegend, {
             propsData: {
@@ -289,10 +289,10 @@ describe("Map legend component", () => {
 
         const adjust = wrapper.find(MapAdjustScale);
         expect(adjust.props().show).toBe(false);
-        expect(adjust.props().colourScale).toBe(colourScale);
+        expect(adjust.props().scale).toBe(colourScale);
         expect(adjust.props().step).toBe(2);
 
-        const showAdjust = wrapper.find("#adjust-scale a");
+        const showAdjust = wrapper.find(".adjust-scale a");
         expect(showAdjust.find("span").text()).toBe("Adjust scale");
 
         showAdjust.trigger("click");

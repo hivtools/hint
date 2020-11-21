@@ -16,7 +16,7 @@ describe("MapAdjustScale component", () => {
         const wrapper = shallowMount(MapAdjustScale, {
             store, propsData: {
                 show: false,
-                colourScale: {}
+                scale: {}
             }
         });
 
@@ -35,7 +35,7 @@ describe("MapAdjustScale component", () => {
                 },
                 show: true,
                 step: 0.1,
-                colourScale: {
+                scale: {
                     type: ScaleType.Default,
                     customMin: 0,
                     customMax: 1
@@ -63,7 +63,7 @@ describe("MapAdjustScale component", () => {
                 },
                 show: true,
                 step: 0.1,
-                colourScale: {
+                scale: {
                     type: ScaleType.Custom,
                     customMin: 0,
                     customMax: 1
@@ -101,7 +101,7 @@ describe("MapAdjustScale component", () => {
                 },
                 show: true,
                 step: 0.1,
-                colourScale: {
+                scale: {
                     type: ScaleType.DynamicFull,
                     customMin: 0,
                     customMax: 1
@@ -130,7 +130,7 @@ describe("MapAdjustScale component", () => {
                 },
                 show: true,
                 step: 0.1,
-                colourScale: {
+                scale: {
                     type: ScaleType.DynamicFull,
                     customMin: 2,
                     customMax: 3
@@ -154,7 +154,7 @@ describe("MapAdjustScale component", () => {
                 },
                 show: true,
                 step: 0.1,
-                colourScale: {
+                scale: {
                     type: ScaleType.DynamicFiltered,
                     customMin: 0,
                     customMax: 1
@@ -181,7 +181,7 @@ describe("MapAdjustScale component", () => {
         },
         show: true,
         step: 0.1,
-        colourScale: {
+        scale: {
             type: ScaleType.Custom,
             customMin: 0,
             customMax: 1
@@ -239,7 +239,7 @@ describe("MapAdjustScale component", () => {
                 },
                 show: true,
                 step: 0.1,
-                colourScale: {
+                scale: {
                     type: ScaleType.Default,
                     customMin: 0,
                     customMax: 1
@@ -296,7 +296,7 @@ describe("MapAdjustScale component", () => {
                 },
                 show: true,
                 step: 0.1,
-                colourScale: {
+                scale: {
                     type: ScaleType.Custom,
                     customMin: 0,
                     customMax: 1
@@ -335,7 +335,7 @@ describe("MapAdjustScale component", () => {
                 },
                 show: true,
                 step: 0.1,
-                colourScale: {
+                scale: {
                     type: ScaleType.Custom,
                     customMin: 0,
                     customMax: 1
@@ -364,7 +364,7 @@ describe("MapAdjustScale component", () => {
                 },
                 show: true,
                 step: 0.1,
-                colourScale: {
+                scale: {
                     type: ScaleType.Custom,
                     customMin: 0,
                     customMax: 1
@@ -377,9 +377,9 @@ describe("MapAdjustScale component", () => {
             customMin: 1,
             customMax: 2
         };
-        wrapper.setProps({colourScale: newScale});
+        wrapper.setProps({scale: newScale});
 
-        expect((wrapper.vm as any).colourScaleToAdjust).toStrictEqual(newScale);
+        expect((wrapper.vm as any).scaleToAdjust).toStrictEqual(newScale);
 
     });
 });

@@ -39,6 +39,13 @@ const propsData = {
             customMin: 0,
             customMax: 1
         }
+    },
+    sizeScales: {
+        plhiv: {
+            type: ScaleType.Default,
+            customMin: 0,
+            customMax: 1000
+        }
     }
 };
 
@@ -536,7 +543,8 @@ describe("BubblePlot component", () => {
                 {id: "age", label: "Age", column_id: "age", options: []},
                 {id: "sex", label: "Sex", column_id: "sex", options: []}
             ],
-            colourScales: {...propsData.colourScales}
+            colourScales: {...propsData.colourScales},
+            sizeScales: {...propsData.sizeScales}
         });
         const vm = wrapper.vm as any;
         vm.updateBounds = mockUpdateBounds;

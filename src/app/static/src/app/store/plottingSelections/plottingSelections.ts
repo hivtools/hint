@@ -83,7 +83,7 @@ export const initialChorplethSelections = (): ChoroplethSelections => {
     };
 };
 
-export const initialColourScaleSettings = (): ScaleSettings => {
+export const initialScaleSettings = (): ScaleSettings => {
     return {
         type: ScaleType.DynamicFiltered,
         customMin: 0,
