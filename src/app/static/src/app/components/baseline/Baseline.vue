@@ -85,7 +85,7 @@
                 } as PartialFileUploadProps),
                 hasBaselineError: state => !!state.baselineError,
                 baselineError: state => state.baselineError,
-                validating: state => state.validating
+                validating: state => state.validating,
             }),
             ...mapState<MetadataState>("metadata", {
                 plottingMetadataError: state => state.plottingMetadataError

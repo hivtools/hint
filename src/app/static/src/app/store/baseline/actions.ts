@@ -24,9 +24,35 @@ export interface BaselineActions {
     validate: (store: ActionContext<BaselineState, RootState>) => void
 }
 
+enum uploadFileType {
+    POPULATION = "population",
+    SHAPE = "shape",
+}
+
+let syncValidation = {
+    pjnz: false,
+    population: false,
+    shape: false,
+}
+
 const uploadCallback = (dispatch: Dispatch, response: any) => {
     if (response) {
-        dispatch('validate');
+        switch (response.data.type) {
+            case uploadFileType.POPULATION: {
+                syncValidation.population = true
+                if (syncValidation.pjnz && syncValidation.shape) {
+                    dispatch('validate');
+                }
+                break;
+            }
+            case uploadFileType.SHAPE: {
+                syncValidation.shape = true
+                if (syncValidation.pjnz && syncValidation.population) {
+                    dispatch('validate');
+                }
+                break;
+            }
+        }
     }
     dispatch("surveyAndProgram/deleteAll", {}, {root: true});
 }
@@ -48,7 +74,10 @@ async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootStat
         .then((response) => {
             if (response) {
                 dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
-                dispatch('validate');
+                syncValidation.pjnz = true
+                if (syncValidation.shape && syncValidation.population) {
+                    dispatch('validate');
+                }
             }
             dispatch("surveyAndProgram/deleteAll", {}, {root: true});
         });
@@ -63,7 +92,7 @@ async function uploadOrImportPopulation(context: ActionContext<BaselineState, Ro
         .freezeResponse()
         .postAndReturn<PopulationResponse>(options.url, options.payload)
         .then((response) => {
-            uploadCallback(dispatch, response);
+            uploadCallback(dispatch, response)
         });
 }
 
@@ -139,6 +168,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
                 if (response) {
                     commit({type: BaselineMutation.PJNZUpdated, payload: null});
                     dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+                    syncValidation.pjnz = false
                 }
             });
     },
@@ -151,6 +181,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
                 if (response) {
                     commit({type: BaselineMutation.ShapeUpdated, payload: null});
                     dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+                    syncValidation.shape = false
                 }
             });
     },
@@ -163,6 +194,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
                 if (response) {
                     commit({type: BaselineMutation.PopulationUpdated, payload: null});
                     dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+                    syncValidation.population = false
                 }
             });
     },
