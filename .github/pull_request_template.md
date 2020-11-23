@@ -9,5 +9,5 @@ Major - Minor - Patches - None
 
 ## Checklist
 
-- [ ] I have incremented version number, or version should not be updated
+- [ ] I have incremented version number, or version needs no increment
 - [ ] The build passed successfully, or failed because of ADR tests
