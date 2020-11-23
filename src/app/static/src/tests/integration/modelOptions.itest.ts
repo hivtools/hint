@@ -55,9 +55,9 @@ describe("model options actions integration", () => {
         }
         //passed mock params which will return validation error
         await actions.validateModelOptions({commit, rootState: mockState} as any, {options,version} as any);
-        expect(commit.mock.calls[0][0]).toBe(ModelOptionsMutation.LoadUpdatedOptions);
-        expect(commit.mock.calls[1][0]["type"]).toBe(ModelOptionsMutation.HasValidationError);
-        expect(commit.mock.calls[1][0]["payload"]["error"]).toBe("INVALID_INPUT")
-
+        expect(commit.mock.calls[0][0]).toBe(ModelOptionsMutation.Validating);
+        expect(commit.mock.calls[1][0]).toBe(ModelOptionsMutation.LoadUpdatedOptions);
+        expect(commit.mock.calls[2][0]["type"]).toBe(ModelOptionsMutation.HasValidationError);
+        expect(commit.mock.calls[2][0]["payload"]["error"]).toBe("INVALID_INPUT")
     });
 });

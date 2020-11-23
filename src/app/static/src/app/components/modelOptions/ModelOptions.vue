@@ -11,6 +11,11 @@
                       @submit="validate"
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
+
+        <div v-if="validating" id="validating" class="mt-3">
+            <loading-spinner size="xs"></loading-spinner>
+            <span v-translate="'validating'"></span>
+        </div>
         <h4 v-if="valid" class="mt-3">
             <span v-translate="'optionsValid'"></span>
             <tick color="#e31837" width="20px"></tick>
@@ -79,6 +84,7 @@
             ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
                 loading: state => state.fetching,
                 valid: state => state.valid,
+                validating: state => state.validating,
                 validateError: state => state.validateError,
                 hasValidateError: state => !!state.validateError
             }),

@@ -9,6 +9,8 @@ import {VersionInfo, Error} from "../../generated";
 export enum ModelOptionsMutation {
     UnValidate = "UnValidate",
     Validate = "Validate",
+    Validating = "Validating",
+    Validated = "Validated",
     Update = "Update",
     FetchingModelOptions = "FetchingModelOptions",
     ModelOptionsFetched = "ModelOptionsFetched",
@@ -26,6 +28,14 @@ export const mutations: MutationTree<ModelOptionsState> = {
 
     [ModelOptionsMutation.Validate](state: ModelOptionsState) {
         state.valid = true;
+    },
+
+    [ModelOptionsMutation.Validating](state: ModelOptionsState) {
+        state.validating = true;
+    },
+
+    [ModelOptionsMutation.Validated](state: ModelOptionsState) {
+        state.validating = false;
     },
 
     [ModelOptionsMutation.LoadUpdatedOptions](state: ModelOptionsState, payload: DynamicFormData) {
