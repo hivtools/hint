@@ -1,5 +1,5 @@
-import {initialiseColourScaleFromMetadata} from "../../../../app/components/plots/choropleth/utils";
-import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
+import {initialiseScaleFromMetadata} from "../../../../app/components/plots/choropleth/utils";
+import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 
 describe("Choropleth utils", () => {
     it("initialiseColourScaleFromMetatata sets min and max from meta", () => {
@@ -16,8 +16,8 @@ describe("Choropleth utils", () => {
             accuracy: null
         };
 
-        const result = initialiseColourScaleFromMetadata(meta);
-        expect(result.type).toBe(ColourScaleType.DynamicFiltered);
+        const result = initialiseScaleFromMetadata(meta);
+        expect(result.type).toBe(ScaleType.DynamicFiltered);
         expect(result.customMin).toBe(1.5);
         expect(result.customMax).toBe(2.5);
     });

@@ -1,7 +1,7 @@
 import {mutations} from "../../app/store/plottingSelections/mutations";
 import {mockColourScales, mockPlottingSelections} from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
-import {ColourScaleType} from "../../app/store/plottingSelections/plottingSelections";
+import {ScaleType} from "../../app/store/plottingSelections/plottingSelections";
 
 describe("Plotting selections mutations", () => {
 
@@ -66,9 +66,9 @@ describe("Plotting selections mutations", () => {
         });
     });
 
-    const colourScales = {
+    const testScales = {
         prevalence: {
-            type: ColourScaleType.Default
+            type: ScaleType.Default
         }
     };
 
@@ -76,43 +76,52 @@ describe("Plotting selections mutations", () => {
         const testState = mockPlottingSelections();
         mutations.updateOutputColourScales(testState, {
             type: "updateOutputColourScales",
-            payload: colourScales
+            payload: testScales
         });
-        expect(testState.colourScales.output).toBe(colourScales);
+        expect(testState.colourScales.output).toBe(testScales);
+    });
+
+    it("updateOutputBubbleSizeScales updates bubble size output scales", () => {
+        const testState = mockPlottingSelections();
+        mutations.updateOutputBubbleSizeScales(testState, {
+            type: "updateOutputBubbleSizeScales",
+            payload: testScales
+        });
+        expect(testState.bubbleSizeScales.output).toBe(testScales);
     });
 
     it("updateSAPColourScales updates colour scales correctly for survey", () => {
         const testState = mockPlottingSelections();
         mutations.updateSAPColourScales(testState, {
             type: "updateSAPColourScales",
-            payload: [DataType.Survey, colourScales]
+            payload: [DataType.Survey, testScales]
         });
-        expect(testState.colourScales.survey).toBe(colourScales);
+        expect(testState.colourScales.survey).toBe(testScales);
     });
 
     it("updateSAPColourScales updates colour scales correctly for program", () => {
         const testState = mockPlottingSelections();
         mutations.updateSAPColourScales(testState, {
             type: "updateSAPColourScales",
-            payload: [DataType.Program, colourScales]
+            payload: [DataType.Program, testScales]
         });
-        expect(testState.colourScales.program).toBe(colourScales);
+        expect(testState.colourScales.program).toBe(testScales);
     });
 
     it("updateSAPColourScales updates colour scales correctly for anc", () => {
         const testState = mockPlottingSelections();
         mutations.updateSAPColourScales(testState, {
             type: "updateSAPColourScales",
-            payload: [DataType.ANC, colourScales]
+            payload: [DataType.ANC, testScales]
         });
-        expect(testState.colourScales.anc).toBe(colourScales);
+        expect(testState.colourScales.anc).toBe(testScales);
     });
 
     it("updateSAPColourScales does nothgin if unknown DataType", () => {
         const testState = mockPlottingSelections();
         mutations.updateSAPColourScales(testState, {
             type: "updateSAPColourScales",
-            payload: [99 as DataType, colourScales]
+            payload: [99 as DataType, testScales]
         });
         expect(testState.colourScales.survey).toStrictEqual({});
         expect(testState.colourScales.program).toStrictEqual({});

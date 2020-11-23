@@ -70,8 +70,10 @@
                              :selections="bubblePlotSelections"
                              area-filter-id="area"
                              :colour-scales="colourScales"
+                             :size-scales="bubbleSizeScales"
                              @update="updateBubblePlotSelections({payload: $event})"
-                             @update-colour-scales="updateOutputColourScales({payload: $event})"></bubble-plot>
+                             @update-colour-scales="updateOutputColourScales({payload: $event})"
+                             @update-size-scales="updateOutputBubbleSizeScales({payload: $event})"></bubble-plot>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <table-view class="col-md-9"
@@ -104,7 +106,7 @@
     import {
         BarchartSelections,
         BubblePlotSelections,
-        ChoroplethSelections, ColourScaleSelections,
+        ChoroplethSelections, ScaleSelections,
         PlottingSelectionsState
     } from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
@@ -129,7 +131,8 @@
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: BarchartSelections) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
-        updateOutputColourScales: (colourScales: ColourScaleSelections) => void
+        updateOutputColourScales: (colourScales: ScaleSelections) => void
+        updateOutputBubbleSizeScales: (colourScales: ScaleSelections) => void
         formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string
     }
 
@@ -148,7 +151,8 @@
         featureLevels: LevelLabel[]
         currentLanguage: Language,
         filterConfig: FilterConfig,
-        colourScales: ColourScaleSelections,
+        colourScales: ScaleSelections,
+        bubbleSizeScales: ScaleSelections,
         choroplethIndicators: ChoroplethIndicatorMetadata[],
         bubblePlotIndicators: ChoroplethIndicatorMetadata[],
         filteredChoroplethIndicators: ChoroplethIndicatorMetadata[],
@@ -184,7 +188,8 @@
                 barchartSelections: state => state.barchart,
                 bubblePlotSelections: state => state.bubble,
                 choroplethSelections: state => state.outputChoropleth,
-                colourScales: state => state.colourScales.output
+                colourScales: state => state.colourScales.output,
+                bubbleSizeScales: state => state.bubbleSizeScales.output
             }),
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                     features: state => state.shape!.data.features as Feature[],
@@ -225,7 +230,7 @@
         methods: {
             ...mapMutationsByNames<keyof Methods>("plottingSelections",
                 ["updateBarchartSelections", "updateBubblePlotSelections", "updateOutputChoroplethSelections",
-                    "updateOutputColourScales"]),
+                    "updateOutputColourScales", "updateOutputBubbleSizeScales"]),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();

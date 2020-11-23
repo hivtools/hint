@@ -11,7 +11,8 @@ export interface PlottingSelectionsState {
     bubble: BubblePlotSelections,
     sapChoropleth: ChoroplethSelections,
     outputChoropleth: ChoroplethSelections,
-    colourScales: ColourScalesState
+    colourScales: ColourScalesState,
+    bubbleSizeScales: BubbleSizeScalesState
 }
 
 export interface BarchartSelections {
@@ -36,18 +37,22 @@ export interface ChoroplethSelections {
 }
 
 export interface ColourScalesState {
-    survey: ColourScaleSelections,
-    anc: ColourScaleSelections,
-    program: ColourScaleSelections,
-    output: ColourScaleSelections
+    survey: ScaleSelections,
+    anc: ScaleSelections,
+    program: ScaleSelections,
+    output: ScaleSelections
 }
 
-export enum ColourScaleType {Default, Custom, DynamicFull, DynamicFiltered}
+export interface BubbleSizeScalesState {
+    output: ScaleSelections
+}
 
-export type ColourScaleSelections = Dict<ColourScaleSettings>;
+export enum ScaleType {Default, Custom, DynamicFull, DynamicFiltered}
 
-export interface ColourScaleSettings {
-    type: ColourScaleType
+export type ScaleSelections = Dict<ScaleSettings>;
+
+export interface ScaleSettings {
+    type: ScaleType
     customMin: number,
     customMax: number
 }
@@ -78,9 +83,9 @@ export const initialChorplethSelections = (): ChoroplethSelections => {
     };
 };
 
-export const initialColourScaleSettings = (): ColourScaleSettings => {
+export const initialScaleSettings = (): ScaleSettings => {
     return {
-        type: ColourScaleType.DynamicFiltered,
+        type: ScaleType.DynamicFiltered,
         customMin: 0,
         customMax: 0
     }
@@ -95,13 +100,22 @@ export const initialColourScalesState = (): ColourScalesState => {
     }
 };
 
+
+export const initialBubbleSizeScalesState = (): BubbleSizeScalesState => {
+    return {
+        output: {}
+    }
+};
+
+
 export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
     return {
         barchart: initialBarchartSelections(),
         bubble: initialBubblePlotSelections(),
         sapChoropleth: initialChorplethSelections(),
         outputChoropleth: initialChorplethSelections(),
-        colourScales: initialColourScalesState()
+        colourScales: initialColourScalesState(),
+        bubbleSizeScales: initialBubbleSizeScalesState()
     }
 };
 

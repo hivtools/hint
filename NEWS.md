@@ -1,3 +1,7 @@
+# hint 1.1.0
+
+* Bubble plot size can be scaled by filtered dataset
+
 # hint 1.0.0
 
 * ADR integration

@@ -1,97 +1,103 @@
-import {ColourScaleType} from "../../store/colourScales/colourScales";
+import {ScaleType} from "../../store/plottingSelections/plottingSelections";
 <template>
     <div v-if="show" class="pt-2 pl-3">
-        <div><span v-translate="'static'"></span></div>
-        <div class="ml-2">
-            <div class="form-check">
-                <label class="form-check-label">
-                    <input id="type-input-default" class="form-check-input" type="radio" name="scaleType"
-                           :value="ColourScaleType.Default"
-                           v-model="colourScaleToAdjust.type" @change="update">
-                    <span v-translate="'default'"></span>
-                </label>
-            </div>
-            <div class="form-check mt-1">
-                <label class="form-check-label">
-                    <input id="type-input-custom" class="form-check-input" type="radio" name="scaleType"
-                           :value="ColourScaleType.Custom"
-                           v-model="colourScaleToAdjust.type" @change="update">
-                    <span v-translate="'custom'"></span>
-                </label>
-            </div>
+        <div v-if="!(hideStaticCustom && hideStaticDefault)" class="static-container">
+            <div><span v-translate="'static'"></span></div>
+            <div class="ml-2">
+                <div v-if="!hideStaticDefault" class="form-check static-default">
+                    <label class="form-check-label">
+                        <input id="type-input-default" class="form-check-input" type="radio" :name="scaleTypeGroup"
+                               :value="ScaleType.Default"
+                               v-model="scaleToAdjust.type" @change="update">
+                        <span v-translate="'default'"></span>
+                    </label>
+                </div>
+                <div v-if="!hideStaticCustom" class="form-check mt-1 static-custom">
+                    <label class="form-check-label">
+                        <input id="type-input-custom" class="form-check-input" type="radio" :name="scaleTypeGroup"
+                               :value="ScaleType.Custom"
+                               v-model="scaleToAdjust.type" @change="update">
+                        <span v-translate="'custom'"></span>
+                    </label>
+                </div>
 
-            <div class="mt-2 ml-2">
-                <form novalidate>
-                    <div class="row p-0 mb-2">
-                        <label for="custom-min-input" class="col col-form-label col-2"><span v-translate="'min'"></span></label>
-                        <div class="col pt-1 pr-1">
-                            <input id="custom-min-input" type="number" :step="step"
-                                   v-model.number="colourScaleToAdjust.customMin"
-                                   :max="colourScaleToAdjust.customMax"
-                                   @change="update" @keyup="update" :disabled="disableCustom">
+                <div v-if="!hideStaticCustom" class="mt-2 ml-2 static-custom-values">
+                    <form novalidate>
+                        <div class="row p-0 mb-2">
+                            <label for="custom-min-input" class="col col-form-label col-2"><span v-translate="'min'"></span></label>
+                            <div class="col pt-1 pr-1">
+                                <input id="custom-min-input" type="number" :step="step"
+                                       v-model.number="scaleToAdjust.customMin"
+                                       :max="scaleToAdjust.customMax"
+                                       @change="update" @keyup="update" :disabled="disableCustom">
+                            </div>
+                            <p v-if="scaleToAdjust.customMin" class="col col-form-label pl-0">{{ scaleText}}</p>
                         </div>
-                        <p v-if="colourScaleToAdjust.customMin" class="col col-form-label pl-0">{{ scaleText}}</p>
-                    </div>
-                    <div class="row">
-                        <label class="col col-form-label col-2" for="custom-max-input"><span v-translate="'max'"></span></label>
-                        <div class="col pt-1 pr-1">
-                            <input id="custom-max-input" type="number" :step="step"
-                                   v-model.number="colourScaleToAdjust.customMax"
-                                   :min="colourScaleToAdjust.customMin"
-                                   @change="update" @keyup="update" :disabled="disableCustom">
+                        <div class="row">
+                            <label class="col col-form-label col-2" for="custom-max-input"><span v-translate="'max'"></span></label>
+                            <div class="col pt-1 pr-1">
+                                <input id="custom-max-input" type="number" :step="step"
+                                       v-model.number="scaleToAdjust.customMax"
+                                       :min="scaleToAdjust.customMin"
+                                       @change="update" @keyup="update" :disabled="disableCustom">
+                            </div>
+                            <p v-if="scaleToAdjust.customMax" class="col col-form-label pl-0">{{ scaleText}}</p>
                         </div>
-                        <p v-if="colourScaleToAdjust.customMax" class="col col-form-label pl-0">{{ scaleText}}</p>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-
-        <div class="mt-1"><span v-translate="'fitToCurrentDataset'"></span></div>
-        <div class="ml-2">
-            <div class="form-check mt-1">
-                <label class="form-check-label">
-                    <input id="type-input-dynamic-full" class="form-check-input" type="radio" name="scaleType"
-                           :value="ColourScaleType.DynamicFull"
-                           v-model="colourScaleToAdjust.type" @change="update">
-                    <span v-translate="'entireDataset'"></span>
-                </label>
+        <div class="dynamic-container">
+            <div class="mt-1"><span v-translate="'fitToCurrentDataset'"></span></div>
+            <div class="ml-2">
+                <div class="form-check mt-1">
+                    <label class="form-check-label">
+                        <input id="type-input-dynamic-full" class="form-check-input" type="radio" :name="scaleTypeGroup"
+                               :value="ScaleType.DynamicFull"
+                               v-model="scaleToAdjust.type" @change="update">
+                        <span v-translate="'entireDataset'"></span>
+                    </label>
+                </div>
             </div>
-        </div>
-        <div class="ml-2">
-            <div class="form-check mt-1">
-                <label class="form-check-label">
-                    <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" name="scaleType"
-                           :value="ColourScaleType.DynamicFiltered"
-                           v-model="colourScaleToAdjust.type" @change="update">
-                    <span v-translate="'filteredDataset'"></span>
-                </label>
+            <div class="ml-2">
+                <div class="form-check mt-1">
+                    <label class="form-check-label">
+                        <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" :name="scaleTypeGroup"
+                               :value="ScaleType.DynamicFiltered"
+                               v-model="scaleToAdjust.type" @change="update">
+                        <span v-translate="'filteredDataset'"></span>
+                    </label>
+                </div>
             </div>
+            <div class="text-danger">{{ invalidMsg }}</div>
         </div>
-
-        <div class="text-danger">{{ invalidMsg }}</div>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {ColourScaleSettings, ColourScaleType} from "../../store/plottingSelections/plottingSelections";
+    import {ScaleSettings, ScaleType} from "../../store/plottingSelections/plottingSelections";
     import i18next from "i18next";
 
     interface Props {
+        name: string,
         show: boolean,
-        colourScale: ColourScaleSettings,
+        scale: ScaleSettings,
         step: number,
-        metadata: any
+        metadata: any,
+        hideStaticDefault: boolean,
+        hideStaticCustom: boolean
     }
 
     interface Computed {
         disableCustom: boolean,
         invalidMsg: string | null,
-        scaleText: string
+        scaleText: string,
+        scaleTypeGroup: string
     }
 
     interface Data {
-        colourScaleToAdjust: ColourScaleSettings
+        scaleToAdjust: ScaleSettings
     }
 
     interface Methods {
@@ -101,22 +107,25 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "MapAdjustScale",
         props: {
+            name: String,
             show: Boolean,
-            colourScale: Object,
+            scale: Object,
             step: Number,
-            metadata: Object
+            metadata: Object,
+            hideStaticDefault: Boolean,
+            hideStaticCustom: Boolean
         },
         data(): any {
             return {
-                colourScaleToAdjust: {...this.colourScale},
-                ColourScaleType
+                scaleToAdjust: {...this.scale},
+                ScaleType: ScaleType
             };
         },
         computed: {
             invalidMsg() {
                 let result = null;
-                if (this.colourScaleToAdjust.type == ColourScaleType.Custom) {
-                    if (this.colourScaleToAdjust.customMin >= this.colourScaleToAdjust.customMax) {
+                if (this.scaleToAdjust.type == ScaleType.Custom) {
+                    if (this.scaleToAdjust.customMin >= this.scaleToAdjust.customMax) {
                         result = i18next.t("maxMustBeGreaterThanMin");
                     }
                 }
@@ -124,25 +133,26 @@ import {ColourScaleType} from "../../store/colourScales/colourScales";
                 return result;
             },
             disableCustom() {
-                return this.colourScaleToAdjust.type != ColourScaleType.Custom;
+                return this.scaleToAdjust.type != ScaleType.Custom;
             },
             scaleText(){
                 const { format, scale, accuracy} = this.metadata
                 if (!format.includes('%') && scale !== 1){
                     return `x ${scale}`
                 } else return ''
-            }
+            },
+            scaleTypeGroup() { return `${this.name}-scaleType`; }
         },
         methods: {
             update: function () {
                 if (this.invalidMsg == null) {
-                    this.$emit("update", this.colourScaleToAdjust)
+                    this.$emit("update", this.scaleToAdjust)
                 }
             }
         },
         watch: {
-            colourScale: function () {
-                this.colourScaleToAdjust = {...this.colourScale};
+            scale: function () {
+                this.scaleToAdjust = {...this.scale};
             }
         }
     });

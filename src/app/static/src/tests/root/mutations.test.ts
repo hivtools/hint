@@ -23,7 +23,7 @@ import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../app/root";
 import {
     BarchartSelections,
-    ColourScaleType,
+    ScaleType,
     initialPlottingSelectionsState
 } from "../../app/store/plottingSelections/plottingSelections";
 import {initialMetadataState} from "../../app/store/metadata/metadata";
@@ -198,7 +198,7 @@ describe("Root mutations", () => {
         //These should not be reset
         state.plottingSelections.sapChoropleth.detail = 2;
         state.plottingSelections.colourScales.anc = {
-            testIndicator: {type: ColourScaleType.Custom} as any
+            testIndicator: {type: ScaleType.Custom} as any
         };
 
         mutations.ResetOutputs(state);
@@ -208,7 +208,7 @@ describe("Root mutations", () => {
         expect(state.plottingSelections.barchart.xAxisId).toBe("");
         expect(state.plottingSelections.outputChoropleth.detail).toBe(-1);
         expect(state.plottingSelections.sapChoropleth.detail).toBe(2);
-        expect(state.plottingSelections.colourScales.anc.testIndicator.type).toBe(ColourScaleType.Custom);
+        expect(state.plottingSelections.colourScales.anc.testIndicator.type).toBe(ScaleType.Custom);
 
         expect(state.modelCalibrate).toStrictEqual(initialModelCalibrateState())
     });

@@ -1,7 +1,7 @@
 import {createLocalVue, shallowMount, WrapperArray} from '@vue/test-utils';
 import MapLegend from "../../../app/components/plots/MapLegend.vue";
 import {Vue} from "vue/types/vue";
-import {ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
+import {ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
@@ -38,26 +38,26 @@ describe("Map legend component", () => {
             .getPropertyValue("background")).toBe("rgb(0, 0, 0)");
     };
 
-    const wrapper = shallowMount(MapLegend, {
-        propsData: {
-            metadata: {
-                max: 2,
-                min: 1,
-                colour: "interpolateGreys",
-                invert_scale: false,
-                name: "indicator",
-                format: '',
-                scale: 1,
-                accuracy: null
-            },
-            colourScale: {
-                type: ColourScaleType.Default,
+    const propsData = {
+        metadata: {
+            max: 2,
+            min: 1,
+            colour: "interpolateGreys",
+            invert_scale: false,
+            name: "indicator",
+            format: '',
+            scale: 1,
+            accuracy: null
+        },
+        colourScale: {
+            type: ScaleType.Default,
                 customMin: 1.5,
                 customMax: 2.5
-            },
-            colourRange
-        }
-    });
+        },
+        colourRange
+    };
+
+    const wrapper = shallowMount(MapLegend, {propsData});
 
     it("renders the label", () => {
         const label = wrapper.find("label");
@@ -72,6 +72,15 @@ describe("Map legend component", () => {
     it("renders icons with colors", () => {
         const icons = wrapper.findAll("i");
         expectIcons(icons);
+    });
+
+    it("renders MapAdjustScale as expected", () => {
+        const adjust = wrapper.find(MapAdjustScale);
+        expect(adjust.props("name")).toBe("colour");
+        expect(adjust.props("show")).toBe(false);
+        expect(adjust.props("scale")).toBe(propsData.colourScale);
+        expect(adjust.props("metadata")).toBe(propsData.metadata);
+        expect(adjust.props("step")).toBe(0.1);
     });
 
     it("calculates 6 levels from min to max with negative min", () => {
@@ -180,7 +189,7 @@ describe("Map legend component", () => {
     });
 
     it("does not render adjust link if no colour scale", () => {
-        expect(wrapper.find("#adjust-scale").exists()).toBe(true);
+        expect(wrapper.find(".adjust-scale").exists()).toBe(true);
 
         const noScaleWrapper = shallowMount(MapLegend, {
             propsData: {
@@ -215,7 +224,7 @@ describe("Map legend component", () => {
                     accuracy: null
                 },
                 colourScale: {
-                    type: ColourScaleType.Default
+                    type: ScaleType.Default
                 },
                 colourRange
             }
@@ -255,7 +264,7 @@ describe("Map legend component", () => {
                     accuracy: null
                 },
                 colourScale: {
-                    type: ColourScaleType.Default
+                    type: ScaleType.Default
                 },
                 colourRange: {max: 60000, min: 1000}
             }
@@ -267,7 +276,7 @@ describe("Map legend component", () => {
 
     it("toggles show adjust scale", () => {
         const colourScale = {
-            type: ColourScaleType.Default
+            type: ScaleType.Default
         };
 
         const wrapper = shallowMount(MapLegend, {
@@ -288,11 +297,8 @@ describe("Map legend component", () => {
         });
 
         const adjust = wrapper.find(MapAdjustScale);
-        expect(adjust.props().show).toBe(false);
-        expect(adjust.props().colourScale).toBe(colourScale);
-        expect(adjust.props().step).toBe(2);
 
-        const showAdjust = wrapper.find("#adjust-scale a");
+        const showAdjust = wrapper.find(".adjust-scale a");
         expect(showAdjust.find("span").text()).toBe("Adjust scale");
 
         showAdjust.trigger("click");
@@ -317,13 +323,13 @@ describe("Map legend component", () => {
                     scale: 1,
                     accuracy: null
                 },
-                colourScale: {type: ColourScaleType.Default},
+                colourScale: {type: ScaleType.Default},
                 colourRange
             }
         });
 
         const newColourScale = {
-            type: ColourScaleType.Custom,
+            type: ScaleType.Custom,
             customMin: 0,
             customMax: 1
         };
