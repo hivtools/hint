@@ -32,14 +32,24 @@
   margin-right: 8px;
 }
 
-#adjust-scale {
+.adjust-scale {
   min-width: 4.1rem;
+}
+
+.adjust-scale a {
   text-decoration: underline;
 }
 
 .legend-adjust {
-  height: 252px;
   width: 190px;
+}
+
+.legend-adjust .static-container {
+  height: 140px;
+}
+
+.legend-adjust .dynamic-container {
+  height: 80px;
 }
 
 .legend-adjust input[type='number'] {

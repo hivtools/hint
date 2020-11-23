@@ -1,8 +1,8 @@
 <template>
     <l-control position="bottomright">
         <div class="legend-container">
-            <map-adjust-scale class="legend-element legend-adjust map-control" :step="colourScaleStep"
-                              :show="showAdjust" :colour-scale="colourScale" @update="update" :metadata="metadata">
+            <map-adjust-scale class="legend-element legend-adjust map-control" name="colour" :step="colourScaleStep"
+                              :show="showAdjust" :scale="colourScale" @update="update" :metadata="metadata">
             </map-adjust-scale>
             <div class="legend-element map-control p-3">
             <label v-if="metadata">{{metadata.name}}</label>
@@ -12,7 +12,7 @@
                     <span class="hidden" style="display: none">{{ level.style }}</span>
                     <br/>
                 </div>
-                <div v-if="adjustable" id="adjust-scale" class="mt-1">
+                <div v-if="adjustable" class="adjust-scale mt-1">
                     <a @click="toggleAdjust" href="">
                         <span v-if="showAdjust" v-translate="'done'"></span>
                         <span v-if="!showAdjust" v-translate="'adjustScale'"></span>
@@ -27,20 +27,20 @@
     import {LControl} from 'vue2-leaflet';
     import {
         colorFunctionFromName,
-        colourScaleStepFromMetadata,
+        scaleStepFromMetadata,
         roundToContext,
         formatOutput,
         formatLegend
     } from "./utils";
     import {ChoroplethIndicatorMetadata} from "../../generated";
-    import {ColourScaleSettings} from "../../store/plottingSelections/plottingSelections";
+    import {ScaleSettings} from "../../store/plottingSelections/plottingSelections";
     import MapAdjustScale from "./MapAdjustScale.vue";
     import {NumericRange} from "../../types";
     import numeral from 'numeral';
 
     interface Props {
         metadata: ChoroplethIndicatorMetadata,
-        colourScale: ColourScaleSettings,
+        colourScale: ScaleSettings,
         colourRange: NumericRange
     }
 
@@ -61,7 +61,7 @@
 
     interface Methods {
         toggleAdjust: (e: Event) => void
-        update: (colourScale: ColourScaleSettings) => void
+        update: (scale: ScaleSettings) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -85,7 +85,7 @@
                 return !!this.colourScale;
             },
             colourScaleStep: function () {
-                return this.metadata ? colourScaleStepFromMetadata(this.metadata) : 1;
+                return this.metadata ? scaleStepFromMetadata(this.metadata) : 1;
             },
             levels: function () {
                 if (this.metadata) {
@@ -122,8 +122,8 @@
                 e.preventDefault();
                 this.showAdjust = !this.showAdjust;
             },
-            update: function (colourScale: ColourScaleSettings) {
-                this.$emit("update", colourScale);
+            update: function (scale: ScaleSettings) {
+                this.$emit("update", scale);
             }
         }
     });

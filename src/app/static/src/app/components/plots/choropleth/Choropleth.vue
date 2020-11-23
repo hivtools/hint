@@ -42,12 +42,12 @@
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {
         ChoroplethSelections,
-        ColourScaleSelections,
-        ColourScaleSettings,
-        ColourScaleType
+        ScaleSelections,
+        ScaleSettings,
+        ScaleType
     } from "../../../store/plottingSelections/plottingSelections";
     import {getIndicatorRange, toIndicatorNameLookup, formatOutput} from "../utils";
-    import {getFeatureIndicator, initialiseColourScaleFromMetadata} from "./utils";
+    import {getFeatureIndicator, initialiseScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
 
@@ -58,7 +58,7 @@
         chartdata: any[],
         filters: Filter[],
         selections: ChoroplethSelections,
-        colourScales: ColourScaleSelections,
+        colourScales: ScaleSelections,
         areaFilterId: string,
         includeFilters: boolean
     }
@@ -77,7 +77,7 @@
         onIndicatorChange: (newVal: string) => void,
         onFilterSelectionsChange: (newSelections: Dict<FilterOption[]>) => void,
         changeSelections: (newSelections: Partial<ChoroplethSelections>) => void,
-        updateColourScale: (colourScale: ColourScaleSettings) => void,
+        updateColourScale: (scale: ScaleSettings) => void,
         getFeatureFromAreaId: (id: string) => Feature,
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any
     }
@@ -91,7 +91,7 @@
         currentLevelFeatureIds: string[],
         maxLevel: number,
         indicatorNameLookup: Dict<string>,
-        indicatorColourScale: ColourScaleSettings | null,
+        indicatorColourScale: ScaleSettings | null,
         areaFilter: Filter,
         nonAreaFilters: Filter[],
         selectedAreaFilterOptions: FilterOption[],
@@ -166,7 +166,7 @@
                 const indicator = this.selections.indicatorId;
                 const type = this.colourScales[indicator] && this.colourScales[indicator].type;
                 switch (type) {
-                    case  ColourScaleType.DynamicFull:
+                    case  ScaleType.DynamicFull:
                         if (!this.fullIndicatorRanges.hasOwnProperty(indicator)) {
                             // cache the result in the fullIndicatorRanges object for future lookups
                             /* eslint vue/no-side-effects-in-computed-properties: "off" */
@@ -174,7 +174,7 @@
                                 getIndicatorRange(this.chartdata, this.colorIndicator)
                         }
                         return this.fullIndicatorRanges[indicator];
-                    case  ColourScaleType.DynamicFiltered:
+                    case  ScaleType.DynamicFiltered:
                         return getIndicatorRange(
                             this.chartdata,
                             this.colorIndicator,
@@ -182,12 +182,12 @@
                             this.selections.selectedFilterOptions,
                             this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
                         );
-                    case ColourScaleType.Custom:
+                    case ScaleType.Custom:
                         return {
                             min: this.colourScales[indicator].customMin,
                             max: this.colourScales[indicator].customMax
                         };
-                    case ColourScaleType.Default:
+                    case ScaleType.Default:
                     default:
                         if (!this.initialised) {
                             return {max: 1, min: 0}
@@ -272,12 +272,12 @@
             colorIndicator(): ChoroplethIndicatorMetadata {
                 return this.indicators.find(i => i.indicator == this.selections.indicatorId)!;
             },
-            indicatorColourScale(): ColourScaleSettings | null {
+            indicatorColourScale(): ScaleSettings | null {
                 const current = this.colourScales[this.selections.indicatorId];
                 if (current) {
                     return current
                 } else {
-                    const newScale = initialiseColourScaleFromMetadata(this.colorIndicator);
+                    const newScale = initialiseScaleFromMetadata(this.colorIndicator);
                     this.updateColourScale(newScale);
                     return newScale;
                 }
@@ -367,9 +367,9 @@
             changeSelections(newSelections: Partial<ChoroplethSelections>) {
                 this.$emit("update", newSelections)
             },
-            updateColourScale: function (colourScale: ColourScaleSettings) {
+            updateColourScale: function (scale: ScaleSettings) {
                 const newColourScales = {...this.colourScales};
-                newColourScales[this.selections.indicatorId] = colourScale;
+                newColourScales[this.selections.indicatorId] = scale;
                 this.$emit("update-colour-scales", newColourScales);
             },
             getFeatureFromAreaId(areaId: string): Feature {

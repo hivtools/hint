@@ -33,6 +33,18 @@ describe("Model run options mutations", () => {
         expect(state.valid).toBe(false);
     });
 
+    it("can assert validating model option start", () => {
+        const state = mockModelOptionsState();
+        mutations[ModelOptionsMutation.Validating](state);
+        expect(state.validating).toBe(true);
+    });
+
+    it("can assert validating model option complete", () => {
+        const state = mockModelOptionsState({validating:true});
+        mutations[ModelOptionsMutation.Validated](state);
+        expect(state.validating).toBe(false);
+    });
+
     it("saves version", () => {
         const state = mockModelOptionsState();
         const mockVersion: VersionInfo = {
@@ -114,6 +126,17 @@ describe("Model run options mutations", () => {
         });
 
         mutations.ModelOptionsFetched(state, {payload: newForm});
+        expect(state.valid).toBe(false);
+    });
+
+    it("sets valid to false if updated form matches the existing form but the state is not valid to begin with", () => {
+
+        const state = mockModelOptionsState({
+            valid: false,
+            optionsFormMeta: testForm
+        });
+
+        mutations.ModelOptionsFetched(state, {payload: testForm});
         expect(state.valid).toBe(false);
     });
 

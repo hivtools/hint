@@ -2,17 +2,31 @@ import {shallowMount} from "@vue/test-utils";
 import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {getRadius} from "../../../../app/components/plots/bubble/utils";
 import {LControl} from "vue2-leaflet";
+import Vuex from "vuex";
+import {emptyState} from "../../../../app/root";
+import registerTranslations from "../../../../app/store/translations/registerTranslations";
+import MapAdjustScale from "../../../../app/components/plots/MapAdjustScale.vue";
+import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
+
+const store = new Vuex.Store({
+    state: emptyState()
+});
+registerTranslations(store);
+
+const propsData = {
+    minRadius: 10,
+    maxRadius: 110,
+    indicatorRange: {min: 1, max: 101},
+    metadata: { format: '', accuracy: null, name: 'indicator'},
+    sizeScale: {
+        type: ScaleType.Default,
+        customMin: 1.5,
+        customMax: 2.5
+    }
+};
 
 const getWrapper = () => {
-
-    return shallowMount(SizeLegend, {
-        propsData: {
-            minRadius: 10,
-            maxRadius: 110,
-            indicatorRange: {min: 1, max: 101},
-            metadata: { format: '', accuracy: null, name: 'indicator'}
-        }
-    });
+    return shallowMount(SizeLegend, {propsData});
 };
 
 const expectCirclesEqual = (actual: any, expected: any) => {
@@ -115,6 +129,15 @@ describe("SizeLegend component", () => {
         });
     });
 
+    it("renders MapAdjustScale as expected", () => {
+        const wrapper = getWrapper();
+        const adjust = wrapper.find(MapAdjustScale);
+        expect(adjust.props("name")).toBe("size");
+        expect(adjust.props("show")).toBe(false);
+        expect(adjust.props("scale")).toBe(propsData.sizeScale);
+        expect(adjust.props("metadata")).toBe(propsData.metadata);
+    });
+
     it("renders text for circle with 0 value as expected", () => {
         const wrapper = shallowMount(SizeLegend, {
             propsData: {
@@ -144,5 +167,38 @@ describe("SizeLegend component", () => {
 
         const lastText = wrapper.findAll("text").at(4);
         expect(lastText.text()).toBe("10k");
+    });
+
+    it("toggles show adjust scale", () => {
+        const wrapper = getWrapper();
+
+        const adjust = wrapper.find(MapAdjustScale);
+
+        const showAdjust = wrapper.find(".adjust-scale a");
+        expect(showAdjust.find("span").text()).toBe("Adjust scale");
+
+        showAdjust.trigger("click");
+        expect(adjust.props().show).toBe(true);
+        expect(showAdjust.find("span").text()).toBe("Done");
+
+        showAdjust.trigger("click");
+        expect(adjust.props().show).toBe(false);
+        expect(showAdjust.find("span").text()).toBe("Adjust scale");
+    });
+
+    it("emits update event when scale changes", () => {
+        const wrapper = getWrapper();
+
+        const newScale = {
+            type: ScaleType.Custom,
+            customMin: 0,
+            customMax: 1
+        };
+
+        const adjust = wrapper.find(MapAdjustScale);
+        adjust.vm.$emit("update", newScale);
+
+        expect(wrapper.emitted("update").length).toBe(1);
+        expect(wrapper.emitted("update")[0][0]).toBe(newScale);
     });
 });

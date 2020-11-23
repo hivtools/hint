@@ -28,6 +28,7 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
 
     async validateModelOptions(context, payload) {
         const {commit, rootState} = context;
+        commit(ModelOptionsMutation.Validating);
         commit(ModelOptionsMutation.LoadUpdatedOptions, payload);
         const options = rootState.modelOptions.options;
         const version = rootState.modelOptions.version;
@@ -35,6 +36,8 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
             .withSuccess(ModelOptionsMutation.Validate)
             .withError(ModelOptionsMutation.HasValidationError)
             .postAndReturn<ModelOptionsValidate>("/model/validate/options/", {options, version})
-
+            
+        commit(ModelOptionsMutation.Validated);
+        
     }
 };

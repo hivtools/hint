@@ -15,7 +15,11 @@ import {
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
 import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
+<<<<<<< HEAD
 import { currentHintVersion } from "../app/hintVersion";
+=======
+import {currentHintVersion} from "../app/hintVersion";
+>>>>>>> master
 
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 

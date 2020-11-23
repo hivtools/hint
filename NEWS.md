@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 # hint 1.0.1
 
 * Display text on map when no data in selections.
+=======
+# hint 1.1.0
+
+* Bubble plot size can be scaled by filtered dataset
+>>>>>>> master
 
 # hint 1.0.0
 
