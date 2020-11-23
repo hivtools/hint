@@ -13,11 +13,7 @@
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">
                     </l-geo-json>
                 </template>
-                <l-control v-if="emptyFeature" position="bottomleft">
-                    <span class="lead map-control px-3 py-2">
-                         <strong v-translate="'noMapData'"></strong>
-                    </span>
-                </l-control>
+                <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <map-control :initialDetail=selections.detail
                              :indicator=selections.indicatorId
                              :show-indicators="true"
@@ -42,6 +38,7 @@
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import Filters from "../Filters.vue";
+    import MapEmptyFeature from "../MapEmptyFeature.vue";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {
         ChoroplethSelections,
@@ -103,7 +100,7 @@
         selectedAreaIds: string[],
         colorIndicator: ChoroplethIndicatorMetadata,
         options: GeoJSONOptions,
-        emptyFeature : boolean
+        emptyFeature: boolean
     }
 
     const props = {
@@ -144,7 +141,7 @@
             MapControl,
             MapLegend,
             Filters,
-            LControl
+            MapEmptyFeature
         },
         props: props,
         data(): Data {
@@ -161,9 +158,9 @@
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
                     !!this.selections.indicatorId;
             },
-            emptyFeature () {
-                const isEmptyFeature = (this.currentFeatures.filter(filtered => !!this.featureIndicators[filtered.properties!.area_id]))
-                return isEmptyFeature.length? false : true
+            emptyFeature() {
+                const nonEmptyFeature = (this.currentFeatures.filter(filtered => !!this.featureIndicators[filtered.properties!.area_id]))
+                return nonEmptyFeature.length == 0
             },
             colourRange() {
                 const indicator = this.selections.indicatorId;
@@ -287,7 +284,7 @@
             },
             options() {
                 const featureIndicators = this.featureIndicators;
-                const { format, scale, accuracy } = this.colorIndicator!;
+                const {format, scale, accuracy} = this.colorIndicator!;
                 return {
                     onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
                         const area_id = feature.properties && feature.properties["area_id"];
@@ -295,14 +292,14 @@
 
                         const values = featureIndicators[area_id];
                         const value = values && values!.value;
-                        
+
                         const stringVal = (value || value === 0) ? value.toString() : "";
-                        if(stringVal) { 
-                        layer.bindTooltip(`<div>
+                        if (stringVal) {
+                            layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${formatOutput(stringVal, format, scale, accuracy)}
                             </div>`);
-                            }
+                        }
                     }
                 }
             }

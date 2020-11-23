@@ -11,7 +11,8 @@ import {prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
 import {ColourScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import Vue from "vue";
-import { expectTranslated } from "../../../testHelpers";
+import {expectTranslated} from "../../../testHelpers";
+import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -79,24 +80,28 @@ describe("Choropleth component", () => {
         expect(legend.props().colourScale).toBe(propsData.colourScales.prevalence)
     });
 
-    it("renders no data message on map when selections are empty", () => {
+    it("computes emptyFeatures returns true when selections are empty", () => {
         const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
         const vm = wrapper.vm as any;
         expect(vm.emptyFeature).toBe(true);
     });
 
-    it("does not render no data message on map when selections are not empty", () => {
+    it("computes emptyFeatures does not return true when selections are selected", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         expect(vm.emptyFeature).toBe(false);
     });
 
-    it("renders can display translated no data message on map", () => {
+    it("render does not display translated no data message on map", () => {
+        const wrapper = getWrapper();
+        expect(wrapper.findAll(MapEmptyFeature).length).toBe(0)
+        expect(wrapper.find(MapEmptyFeature).exists()).toBe(false)
+    });
+
+    it("render can display translated no data message on map", () => {
         const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
-        expect(wrapper.findAll(LControl).length).toBe(1)
-        const noMapData = wrapper.find(LControl).find("span")
-        expectTranslated(noMapData, "No data to display on map for these selections",
-        "Aucune donnée à afficher sur la carte pour ces sélections", store as any)
+        expect(wrapper.findAll(MapEmptyFeature).length).toBe(1)
+        expect(wrapper.find(MapEmptyFeature).exists()).toBe(true)
     });
 
     it("computes featureIndicators", () => {
