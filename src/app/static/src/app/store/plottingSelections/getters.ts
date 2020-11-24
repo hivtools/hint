@@ -1,9 +1,9 @@
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../root";
-import {ColourScaleSelections, PlottingSelectionsState} from "./plottingSelections";
+import {ScaleSelections, PlottingSelectionsState} from "./plottingSelections";
 
 export const getters = {
-    selectedSAPColourScales: (state: PlottingSelectionsState, getters: any, rootState: RootState): ColourScaleSelections => {
+    selectedSAPColourScales: (state: PlottingSelectionsState, getters: any, rootState: RootState): ScaleSelections => {
         const dataType = rootState.surveyAndProgram.selectedDataType;
         switch (dataType) {
             case DataType.Survey:

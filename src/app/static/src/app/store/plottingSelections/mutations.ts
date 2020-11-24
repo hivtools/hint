@@ -3,7 +3,7 @@ import {
     PlottingSelectionsState,
     BarchartSelections,
     BubblePlotSelections,
-    ChoroplethSelections, ColourScaleSelections, ColourScalesState
+    ChoroplethSelections, ScaleSelections, ColourScalesState
 } from "./plottingSelections";
 import {PayloadWithType} from "../../types";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
@@ -16,7 +16,8 @@ export interface PlottingSelectionsMutations {
     updateSAPChoroplethSelections: PlottingSelectionsMutation,
     updateOutputChoroplethSelections: PlottingSelectionsMutation,
     updateSAPColourScales: PlottingSelectionsMutation,
-    updateOutputColourScales: PlottingSelectionsMutation
+    updateOutputColourScales: PlottingSelectionsMutation,
+    updateOutputBubbleSizeScales: PlottingSelectionsMutation
 }
 
 export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectionsMutations = {
@@ -32,7 +33,7 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
     updateOutputChoroplethSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<ChoroplethSelections>>) {
         state.outputChoropleth = {...state.outputChoropleth, ...action.payload}
     },
-    updateSAPColourScales(state: PlottingSelectionsState, action: PayloadWithType<[DataType, ColourScaleSelections]>) {
+    updateSAPColourScales(state: PlottingSelectionsState, action: PayloadWithType<[DataType, ScaleSelections]>) {
         const value = action.payload[1];
         switch (action.payload[0]) {
             case DataType.Survey:
@@ -48,7 +49,10 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
 
         }
     },
-    updateOutputColourScales(state: PlottingSelectionsState, action: PayloadWithType<ColourScaleSelections>) {
+    updateOutputColourScales(state: PlottingSelectionsState, action: PayloadWithType<ScaleSelections>) {
         state.colourScales.output = action.payload;
+    },
+    updateOutputBubbleSizeScales(state: PlottingSelectionsState, action: PayloadWithType<ScaleSelections>) {
+        state.bubbleSizeScales.output = action.payload;
     }
 };

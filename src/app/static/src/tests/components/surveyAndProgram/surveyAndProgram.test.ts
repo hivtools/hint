@@ -18,7 +18,7 @@ import {actions} from "../../../app/store/surveyAndProgram/actions";
 import {mutations} from "../../../app/store/surveyAndProgram/mutations";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {mutations as selectionsMutations} from "../../../app/store/plottingSelections/mutations";
-import {ColourScaleSelections, ColourScaleType} from "../../../app/store/plottingSelections/plottingSelections";
+import {ScaleSelections, ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import {expectTranslated} from "../../testHelpers";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
 
@@ -70,11 +70,11 @@ describe("Survey and programme component", () => {
                         selectedSAPColourScales: () => {
                             return {
                                 prevalence: {
-                                    type: ColourScaleType.Custom,
+                                    type: ScaleType.Custom,
                                     customMin: 1,
                                     customMax: 2
                                 }
-                            } as ColourScaleSelections
+                            } as ScaleSelections
                         }
                     },
                     mutations: selectionsMutations
@@ -144,7 +144,7 @@ describe("Survey and programme component", () => {
         expect(choro.props().selections).toStrictEqual({selectedFilterOptions: "TEST SELECTIONS"});
         expect(choro.props().colourScales).toEqual({
             prevalence: {
-                type: ColourScaleType.Custom,
+                type: ScaleType.Custom,
                 customMin: 1,
                 customMax: 2
             }

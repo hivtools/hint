@@ -1,6 +1,12 @@
-# hint 1.0.1
-
+# hint 1.1.2
 * Fix bug to allow removal of files with errors
+
+# hint 1.1.1
+* Fixed bug where bubble plot failed to display bubble for single-value range.
+
+# hint 1.1.0
+
+* Bubble plot size can be scaled by filtered dataset
 
 # hint 1.0.0
 

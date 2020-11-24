@@ -124,7 +124,7 @@ export const testData = {
             area_id: "MWI_3_2", plhiv: 20, prevalence: 0, age: "0:15", sex: "female"
         },
         {
-            area_id: "MWI_4_2", plhiv: 20, prevalence: 0.1, age: "0:15", sex: "male"
+            area_id: "MWI_4_2", plhiv: 19, prevalence: 0.1, age: "0:15", sex: "male"
         },
         {
             area_id: "MWI_4_1", plhiv: 20, prevalence: 0.9, age: "0:15", sex: "male"

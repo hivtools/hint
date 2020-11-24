@@ -66,7 +66,13 @@
                             :colour-scale="colourIndicatorScale"
                             @update="updateColourScale"
                 ></map-legend>
-                <size-legend :indicatorRange="sizeRange" :max-radius="maxRadius" :min-radius="minRadius" :metadata="sizeIndicator"></size-legend>
+                <size-legend :indicatorRange="sizeRange"
+                             :max-radius="maxRadius"
+                             :min-radius="minRadius"
+                             :metadata="sizeIndicator"
+                             :size-scale="sizeIndicatorScale"
+                             @update="updateSizeScale"
+                ></size-legend>
             </l-map>
         </div>
     </div>
@@ -84,16 +90,16 @@
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {
         BubblePlotSelections,
-        ColourScaleSelections,
-        ColourScaleSettings,
-        ColourScaleType
+        ScaleSelections,
+        ScaleSettings,
+        ScaleType
     } from "../../../store/plottingSelections/plottingSelections";
     import {getFeatureIndicators} from "./utils";
     import {getIndicatorRange, toIndicatorNameLookup, formatOutput} from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
-    import {initialiseColourScaleFromMetadata} from "../choropleth/utils";
+    import {initialiseScaleFromMetadata} from "../choropleth/utils";
 
 
     interface Props {
@@ -104,7 +110,8 @@
         filters: Filter[],
         selections: BubblePlotSelections,
         areaFilterId: string,
-        colourScales: ColourScaleSelections,
+        colourScales: ScaleSelections,
+        sizeScales: ScaleSelections
     }
 
     interface Data {
@@ -128,7 +135,9 @@
         changeSelections: (newSelections: Partial<BubblePlotSelections>) => void,
         getFeatureFromAreaId: (id: string) => Feature,
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any,
-        updateColourScale: (colourScale: ColourScaleSettings) => void,
+        updateColourScale: (scale: ScaleSettings) => void,
+        updateSizeScale: (scale: ScaleSettings) => void,
+        getRange: (indicator: ChoroplethIndicatorMetadata, scale: ScaleSettings) => NumericRange
     }
 
     interface Computed {
@@ -151,7 +160,8 @@
         colorIndicator: ChoroplethIndicatorMetadata,
         sizeRange: NumericRange,
         colourRange: NumericRange,
-        colourIndicatorScale: ColourScaleSettings | null
+        colourIndicatorScale: ScaleSettings | null
+        sizeIndicatorScale: ScaleSettings | null
         selectedAreaIds: string[]
     }
 
@@ -180,6 +190,9 @@
         colourScales: {
             type: Object
         },
+        sizeScales: {
+            type: Object
+        }
     };
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -216,50 +229,12 @@
                 return this.currentFeatures.map(f => f.properties!["area_id"]);
             },
             sizeRange() {
-                if (!this.initialised) {
-                    return {max: 1, min: 0}
-                }
-                const sizeId = this.selections.sizeIndicatorId;
-                if (!this.fullIndicatorRanges.hasOwnProperty(sizeId)) {
-                    // cache the result in the fullIndicatorRanges object for future lookups
-                    /* eslint vue/no-side-effects-in-computed-properties: "off" */
-                    this.fullIndicatorRanges[sizeId] =
-                        getIndicatorRange(this.chartdata, this.sizeIndicator)
-                }
-                return this.fullIndicatorRanges[sizeId];
+                const sizeScale = this.sizeScales[this.selections.sizeIndicatorId];
+                return this.getRange(this.sizeIndicator, sizeScale);
             },
             colourRange() {
-                if (!this.initialised) {
-                    return {max: 1, min: 0}
-                }
-                const colorId = this.selections.colorIndicatorId;
-                const type = this.colourScales[colorId] && this.colourScales[colorId].type;
-                switch (type) {
-                    case  ColourScaleType.DynamicFull:
-                        if (!this.fullIndicatorRanges.hasOwnProperty(colorId)) {
-                            // cache the result in the fullIndicatorRanges object for future lookups
-                            /* eslint vue/no-side-effects-in-computed-properties: "off" */
-                            this.fullIndicatorRanges[colorId] =
-                                getIndicatorRange(this.chartdata, this.colorIndicator)
-                        }
-                        return this.fullIndicatorRanges[colorId];
-                    case ColourScaleType.DynamicFiltered:
-                        return getIndicatorRange(
-                            this.chartdata,
-                            this.colorIndicator,
-                            this.nonAreaFilters,
-                            this.selections.selectedFilterOptions,
-                            this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
-                        );
-                    case ColourScaleType.Custom:
-                        return {
-                            min: this.colourScales[colorId].customMin,
-                            max: this.colourScales[colorId].customMax
-                        };
-                    case ColourScaleType.Default:
-                    default:
-                        return {max: this.colorIndicator.max, min: this.colorIndicator.min}
-                }
+                const colourScale = this.colourScales[this.selections.colorIndicatorId];
+                return this.getRange(this.colorIndicator, colourScale);
             },
             selectedAreaIds() {
                 const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
@@ -349,13 +324,23 @@
             sizeIndicator(): ChoroplethIndicatorMetadata {
                 return this.indicators.find(i => i.indicator == this.selections.sizeIndicatorId)!;
             },
-            colourIndicatorScale(): ColourScaleSettings | null {
+            colourIndicatorScale(): ScaleSettings | null {
                 const current = this.colourScales[this.selections.colorIndicatorId];
                 if (current) {
                     return current
                 } else {
-                    const newScale = initialiseColourScaleFromMetadata(this.colorIndicator);
+                    const newScale = initialiseScaleFromMetadata(this.colorIndicator);
                     this.updateColourScale(newScale);
+                    return newScale;
+                }
+            },
+            sizeIndicatorScale(): ScaleSettings | null {
+                const current = this.sizeScales[this.selections.sizeIndicatorId];
+                if (current) {
+                    return current
+                } else {
+                    const newScale = initialiseScaleFromMetadata(this.colorIndicator);
+                    this.updateSizeScale(newScale);
                     return newScale;
                 }
             }
@@ -404,6 +389,39 @@
             getSelectedFilterValues(filterId: string) {
                 return (this.selections.selectedFilterOptions[filterId] || []).map(o => o.id);
             },
+            getRange(indicator: ChoroplethIndicatorMetadata, scale: ScaleSettings) {
+                if (!this.initialised) {
+                    return {max: 1, min: 0}
+                }
+                const indicatorId = indicator.indicator;
+                const type = scale && scale.type;
+                switch (type) {
+                    case  ScaleType.DynamicFull:
+                        if (!this.fullIndicatorRanges.hasOwnProperty(indicatorId)) {
+                            // cache the result in the fullIndicatorRanges object for future lookups
+                            /* eslint vue/no-side-effects-in-computed-properties: "off" */
+                            this.fullIndicatorRanges[indicatorId] =
+                                getIndicatorRange(this.chartdata, indicator)
+                        }
+                        return this.fullIndicatorRanges[indicatorId];
+                    case ScaleType.DynamicFiltered:
+                        return getIndicatorRange(
+                            this.chartdata,
+                            indicator,
+                            this.nonAreaFilters,
+                            this.selections.selectedFilterOptions,
+                            this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
+                        );
+                    case ScaleType.Custom:
+                        return {
+                            min: scale.customMin,
+                            max: scale.customMax
+                        };
+                    case ScaleType.Default:
+                    default:
+                        return {max: indicator.max, min: indicator.min}
+                }
+            },
             onDetailChange: function (newVal: number) {
                 this.changeSelections({detail: newVal});
             },
@@ -428,10 +446,15 @@
             normalizeIndicators(node: ChoroplethIndicatorMetadata) {
                 return {id: node.indicator, label: node.name};
             },
-            updateColourScale: function (colourScale: ColourScaleSettings) {
+            updateColourScale: function (scale: ScaleSettings) {
                 const newColourScales = {...this.colourScales};
-                newColourScales[this.selections.colorIndicatorId] = colourScale;
+                newColourScales[this.selections.colorIndicatorId] = scale;
                 this.$emit("update-colour-scales", newColourScales);
+            },
+            updateSizeScale: function (scale: ScaleSettings) {
+                const newColourScales = {...this.sizeScales};
+                newColourScales[this.selections.sizeIndicatorId] = scale;
+                this.$emit("update-size-scales", newColourScales);
             },
         },
         watch:

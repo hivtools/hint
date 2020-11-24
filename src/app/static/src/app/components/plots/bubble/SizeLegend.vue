@@ -1,14 +1,27 @@
 <template>
     <l-control position="bottomleft">
-        <div class="map-control p-1">
-            <svg :width="width" :height="height">
-                <circle v-for="(circle, index) in circles" :key="'circle-' + index" stroke="#aaa" stroke-width="1"
-                        fill-opacity="0"
-                        :r="circle.radius" :cx="midX" :cy="circle.y"></circle>
-                <text v-for="(circle, index) in circles" :key="'text-' + index" text-anchor="middle"
-                      :x="midX" :y="circle.textY">{{ circle.text }}
-                </text>
-            </svg>
+        <div class="legend-container">
+            <div class="legend-element map-control p-3">
+                <label class="text-center pt-1 pb-1 d-block">{{metadata.name}}</label>
+                <svg :width="width" :height="height" class="d-block">
+                    <circle v-for="(circle, index) in circles" :key="'circle-' + index" stroke="#aaa" stroke-width="1"
+                            fill-opacity="0"
+                            :r="circle.radius" :cx="midX" :cy="circle.y"></circle>
+                    <text v-for="(circle, index) in circles" :key="'text-' + index" text-anchor="middle"
+                          :x="midX" :y="circle.textY">{{ circle.text }}
+                    </text>
+                </svg>
+                <div class="adjust-scale mt-1">
+                    <a @click="toggleAdjust" href="" class="float-right">
+                        <span v-if="showAdjust" v-translate="'done'"></span>
+                        <span v-if="!showAdjust" v-translate="'adjustScale'"></span>
+                    </a>
+                </div>
+            </div>
+            <map-adjust-scale class="legend-element legend-adjust map-control" name="size" :step="scaleStep"
+                              :show="showAdjust" :scale="sizeScale" @update="update" :metadata="metadata"
+                              :hide-static-custom="true" :hide-static-default="true">
+            </map-adjust-scale>
         </div>
     </l-control>
 </template>
@@ -19,8 +32,10 @@
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
     import numeral from "numeral";
-    import {formatOutput, formatLegend} from "./../utils";
+    import {formatOutput, formatLegend, scaleStepFromMetadata} from "./../utils";
     import {ChoroplethIndicatorMetadata} from "../../../generated";
+    import {ScaleSettings} from "../../../store/plottingSelections/plottingSelections";
+    import MapAdjustScale from "../MapAdjustScale.vue";
 
     interface Circle {
         y: number,
@@ -30,7 +45,8 @@
     }
 
     interface Data {
-        steps: number[]
+        steps: number[],
+        showAdjust: boolean
     }
 
     interface Props {
@@ -38,19 +54,23 @@
         minRadius: number,
         maxRadius: number,
         metadata: ChoroplethIndicatorMetadata
+        sizeScale: ScaleSettings,
     }
 
     interface Computed {
         circles: Circle[],
         width: number,
         height: number,
-        midX: number
+        midX: number,
+        scaleStep: number,
     }
 
     interface Methods {
         circleFromRadius: (r: number, value: number, under: boolean) => Circle,
         valueScalePointFromRadius: (r: number) => number
-        valueFromValueScalePoint: (valueScalePoint: number) => number
+        valueFromValueScalePoint: (valueScalePoint: number) => number,
+        toggleAdjust: (e: Event) => void,
+        update: (scale: ScaleSettings) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -59,14 +79,17 @@
             "indicatorRange": Object,
             "minRadius": Number,
             "maxRadius": Number,
-            "metadata": Object
+            "metadata": Object,
+            "sizeScale": Object
         },
         components: {
-            LControl
+            LControl,
+            MapAdjustScale
         },
         data: function () {
             return {
-                steps: [0.1, 0.25, 0.5, 1]
+                steps: [0.1, 0.25, 0.5, 1],
+                showAdjust: false
             }
         },
         computed: {
@@ -80,21 +103,29 @@
                 return this.width / 2;
             },
             circles: function () {
-                //We treat the minimum circle differently, since the smallest radius is actually likely to cover quite
-                //a wide range of low outliers, so we show the value for the next pixel up and prefix with '<'
-                const nextMinRadius = this.minRadius + 1;
-                const valueScalePoint = this.valueScalePointFromRadius(nextMinRadius);
-                const nextValue = this.valueFromValueScalePoint(valueScalePoint);
-                const minCircle = this.circleFromRadius(this.minRadius, nextValue, true);
+                if (this.indicatorRange.min == this.indicatorRange.max) {
+                    // only one value in range - show max circle only
+                    return [this.circleFromRadius(this.maxRadius, this.indicatorRange.max, false)];
+                } else {
+                    //We treat the minimum circle differently, since the smallest radius is actually likely to cover quite
+                    //a wide range of low outliers, so we show the value for the next pixel up and prefix with '<'
+                    const nextMinRadius = this.minRadius + 1;
+                    const valueScalePoint = this.valueScalePointFromRadius(nextMinRadius);
+                    const nextValue = this.valueFromValueScalePoint(valueScalePoint);
+                    const minCircle = this.circleFromRadius(this.minRadius, nextValue, true);
 
-                const nonMinCircles = this.steps.map((s: number) => {
-                    const value = this.indicatorRange.min + (s * (this.indicatorRange.max - this.indicatorRange.min));
-                    const r = getRadius(value, this.indicatorRange.min, this.indicatorRange.max, this.minRadius, this.maxRadius);
-                    return this.circleFromRadius(r, value, false)
-                });
+                    const nonMinCircles = this.steps.map((s: number) => {
+                        const value = this.indicatorRange.min + (s * (this.indicatorRange.max - this.indicatorRange.min));
+                        const r = getRadius(value, this.indicatorRange.min, this.indicatorRange.max, this.minRadius, this.maxRadius);
+                        return this.circleFromRadius(r, value, false)
+                    });
 
-                return [minCircle, ...nonMinCircles];
-            }
+                    return [minCircle, ...nonMinCircles];
+                }
+            },
+            scaleStep: function () {
+                return this.metadata ? scaleStepFromMetadata(this.metadata) : 1;
+            },
         },
         methods: {
             circleFromRadius: function (r: number, value: number, under = false) {
@@ -116,6 +147,13 @@
             valueFromValueScalePoint: function (valueScalePoint: number) {
                 return (valueScalePoint * (this.indicatorRange.max - this.indicatorRange.min))
                     + this.indicatorRange.min;
+            },
+            toggleAdjust: function (e: Event) {
+                e.preventDefault();
+                this.showAdjust = !this.showAdjust;
+            },
+            update: function (scale: ScaleSettings) {
+                this.$emit("update", scale);
             }
         }
     });

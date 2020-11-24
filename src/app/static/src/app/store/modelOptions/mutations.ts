@@ -9,6 +9,8 @@ import {VersionInfo, Error} from "../../generated";
 export enum ModelOptionsMutation {
     UnValidate = "UnValidate",
     Validate = "Validate",
+    Validating = "Validating",
+    Validated = "Validated",
     Update = "Update",
     FetchingModelOptions = "FetchingModelOptions",
     ModelOptionsFetched = "ModelOptionsFetched",
@@ -26,6 +28,14 @@ export const mutations: MutationTree<ModelOptionsState> = {
 
     [ModelOptionsMutation.Validate](state: ModelOptionsState) {
         state.valid = true;
+    },
+
+    [ModelOptionsMutation.Validating](state: ModelOptionsState) {
+        state.validating = true;
+    },
+
+    [ModelOptionsMutation.Validated](state: ModelOptionsState) {
+        state.validating = false;
     },
 
     [ModelOptionsMutation.LoadUpdatedOptions](state: ModelOptionsState, payload: DynamicFormData) {
@@ -48,7 +58,7 @@ export const mutations: MutationTree<ModelOptionsState> = {
 
     [ModelOptionsMutation.ModelOptionsFetched](state: ModelOptionsState, action: PayloadWithType<DynamicFormMeta>) {
         const newForm = {...updateForm(state.optionsFormMeta, action.payload)};
-        state.valid = JSON.stringify(newForm) == JSON.stringify(state.optionsFormMeta);
+        state.valid = state.valid && JSON.stringify(newForm) == JSON.stringify(state.optionsFormMeta);
         state.optionsFormMeta = newForm;
         state.fetching = false;
     },
