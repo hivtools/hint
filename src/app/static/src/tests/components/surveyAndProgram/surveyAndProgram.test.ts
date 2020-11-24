@@ -301,6 +301,42 @@ describe("Survey and programme component", () => {
         );
     });
 
+    it("passes survey response existing file name to manage file", () => {
+        const store = createStore({survey: {filename: "existing file"} as any});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(0).props("existingFileName")).toBe("existing file");
+    });
+
+    it("passes survey errored file to manage file", () => {
+        const store = createStore({surveyErroredFile: "errored file"});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(0).props("existingFileName")).toBe("errored file");
+    });
+
+    it("passes program response existing file name to manage file", () => {
+        const store = createStore({program: {filename: "existing file"} as any});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(1).props("existingFileName")).toBe("existing file");
+    });
+
+    it("passes program errored file to manage file", () => {
+        const store = createStore({programErroredFile: "errored file"});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(1).props("existingFileName")).toBe("errored file");
+    });
+
+    it("passes anc response existing file name to manage file", () => {
+        const store = createStore({anc: {filename: "existing file"} as any});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(2).props("existingFileName")).toBe("existing file");
+    });
+
+    it("passes anc errored file to manage file", () => {
+        const store = createStore({ancErroredFile: "errored file"});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(2).props("existingFileName")).toBe("errored file");
+    });
+
     it("can return true when fromADR", async () => { 
         const store = createStore({
             survey: {
