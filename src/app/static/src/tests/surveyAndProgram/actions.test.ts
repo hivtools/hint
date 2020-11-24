@@ -16,6 +16,9 @@ import Mock = jest.Mock;
 
 const FormData = require("form-data");
 const rootState = mockRootState();
+const mockFormData = {
+    get: (key: string) => { return key == "file" ? {name: "file.txt"} : null; }
+};
 
 describe("Survey and programme actions", () => {
 
@@ -35,7 +38,7 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess({data: "SOME DATA"}));
 
         const commit = jest.fn();
-        await actions.uploadSurvey({commit, rootState} as any, new FormData());
+        await actions.uploadSurvey({commit, rootState} as any, mockFormData as any);
 
         checkSurveyImportUpload(commit);
     });
@@ -73,7 +76,7 @@ describe("Survey and programme actions", () => {
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
-        await actions.uploadSurvey({commit, rootState} as any, new FormData());
+        await actions.uploadSurvey({commit, rootState} as any, mockFormData as FormData);
 
         checkFailedSurveyImportUpload(commit);
     });
@@ -84,12 +87,13 @@ describe("Survey and programme actions", () => {
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
-        await actions.importSurvey({commit, rootState} as any, "some-url");
+        await actions.importSurvey({commit, rootState} as any, "some-url/file.txt");
 
         checkFailedSurveyImportUpload(commit);
     });
 
     const checkFailedSurveyImportUpload = (commit: Mock) => {
+        expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.SurveyUpdated,
             payload: null
@@ -99,8 +103,10 @@ describe("Survey and programme actions", () => {
             payload: mockError("error message")
         });
 
-        //Should not have set selectedDataType
-        expect(commit.mock.calls.length).toEqual(2);
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: SurveyAndProgramMutation.SurveyErroredFile,
+            payload: "file.txt"
+        });
     }
 
     it("sets data after programme file upload", async () => {
@@ -109,7 +115,7 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
-        await actions.uploadProgram({commit, rootState} as any, new FormData());
+        await actions.uploadProgram({commit, rootState} as any, mockFormData as any);
 
         checkProgrammeImportUpload(commit)
     });
@@ -147,7 +153,7 @@ describe("Survey and programme actions", () => {
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
-        await actions.uploadProgram({commit, rootState} as any, new FormData());
+        await actions.uploadProgram({commit, rootState} as any, mockFormData as FormData);
 
         checkFailedProgramImportUpload(commit);
     });
@@ -158,12 +164,13 @@ describe("Survey and programme actions", () => {
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
-        await actions.importProgram({commit, rootState} as any, "some-url");
+        await actions.importProgram({commit, rootState} as any, "some-url/file.txt");
 
         checkFailedProgramImportUpload(commit);
     });
 
     const checkFailedProgramImportUpload = (commit: Mock) => {
+        expect(commit.mock.calls.length).toEqual(3);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramUpdated,
@@ -175,8 +182,10 @@ describe("Survey and programme actions", () => {
             payload: mockError("error message")
         });
 
-        //Should not have set selectedDataType
-        expect(commit.mock.calls.length).toEqual(2);
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: SurveyAndProgramMutation.ProgramErroredFile,
+            payload: "file.txt"
+        });
     }
 
     it("sets data after anc file upload", async () => {
@@ -185,7 +194,7 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
-        await actions.uploadANC({commit, rootState} as any, new FormData());
+        await actions.uploadANC({commit, rootState} as any, mockFormData as any);
 
         checkANCImportUpload(commit);
     });
@@ -223,7 +232,7 @@ describe("Survey and programme actions", () => {
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
-        await actions.uploadANC({commit, rootState} as any, new FormData());
+        await actions.uploadANC({commit, rootState} as any, mockFormData as any);
 
         checkFailedANCImportUpload(commit);
     });
@@ -234,12 +243,14 @@ describe("Survey and programme actions", () => {
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
-        await actions.importANC({commit, rootState} as any, "some-url");
+        await actions.importANC({commit, rootState} as any, "some-url/file.txt");
 
         checkFailedANCImportUpload(commit);
     });
 
     const checkFailedANCImportUpload = (commit: Mock) => {
+        expect(commit.mock.calls.length).toEqual(3);
+
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCUpdated,
             payload: null
@@ -250,8 +261,10 @@ describe("Survey and programme actions", () => {
             payload: mockError("error message")
         });
 
-        //Should not have set selectedDataType
-        expect(commit.mock.calls.length).toEqual(2);
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: SurveyAndProgramMutation.ANCErroredFile,
+            payload: "file.txt"
+        });
     }
 
     it("gets data, commits it and marks state ready", async () => {
