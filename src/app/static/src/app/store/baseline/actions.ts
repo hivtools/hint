@@ -1,4 +1,4 @@
-import {ActionContext, ActionTree, Dispatch} from 'vuex';
+import {ActionContext, ActionTree, Dispatch, mapState} from 'vuex';
 import {BaselineState} from "./baseline";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
@@ -7,6 +7,7 @@ import {BaselineMutation} from "./mutations";
 import qs from "qs";
 import {findResource} from "../../utils";
 import {DatasetResourceSet} from "../../types";
+import {MetadataState} from "../metadata/metadata";
 
 export interface BaselineActions {
     refreshDatasetMetadata: (store: ActionContext<BaselineState, RootState>) => void
@@ -24,28 +25,28 @@ export interface BaselineActions {
     validate: (store: ActionContext<BaselineState, RootState>) => void
 }
 
-enum uploadFileType {
+enum uploadedFileType {
     POPULATION = "population",
-    SHAPE = "shape",
+    SHAPE = "shape"
 }
 
 const fileHasValidated = {
     pjnz: false,
     population: false,
-    shape: false,
+    shape: false
 }
 
 const uploadCallback = (dispatch: Dispatch, response: any) => {
     if (response) {
         switch (response.data.type) {
-            case uploadFileType.POPULATION: {
+            case uploadedFileType.POPULATION: {
                 fileHasValidated.population = true
                 if (fileHasValidated.pjnz && fileHasValidated.shape) {
                     dispatch('validate');
                 }
                 break;
             }
-            case uploadFileType.SHAPE: {
+            case uploadedFileType.SHAPE: {
                 fileHasValidated.shape = true
                 if (fileHasValidated.pjnz && fileHasValidated.population) {
                     dispatch('validate');
@@ -91,7 +92,7 @@ async function uploadOrImportPopulation(context: ActionContext<BaselineState, Ro
         .freezeResponse()
         .postAndReturn<PopulationResponse>(options.url, options.payload)
         .then((response) => {
-            uploadCallback(dispatch, response)
+            uploadCallback(dispatch, response);
         });
 }
 
