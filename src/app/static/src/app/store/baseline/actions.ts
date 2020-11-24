@@ -29,7 +29,7 @@ enum uploadFileType {
     SHAPE = "shape",
 }
 
-let syncValidation = {
+const fileHasValidated = {
     pjnz: false,
     population: false,
     shape: false,
@@ -39,15 +39,15 @@ const uploadCallback = (dispatch: Dispatch, response: any) => {
     if (response) {
         switch (response.data.type) {
             case uploadFileType.POPULATION: {
-                syncValidation.population = true
-                if (syncValidation.pjnz && syncValidation.shape) {
+                fileHasValidated.population = true
+                if (fileHasValidated.pjnz && fileHasValidated.shape) {
                     dispatch('validate');
                 }
                 break;
             }
             case uploadFileType.SHAPE: {
-                syncValidation.shape = true
-                if (syncValidation.pjnz && syncValidation.population) {
+                fileHasValidated.shape = true
+                if (fileHasValidated.pjnz && fileHasValidated.population) {
                     dispatch('validate');
                 }
                 break;
@@ -62,7 +62,6 @@ interface UploadImportOptions {
     payload: FormData | string
 }
 
-
 async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions) {
     const {commit, dispatch, state} = context;
     commit({type: BaselineMutation.PJNZUpdated, payload: null});
@@ -74,8 +73,8 @@ async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootStat
         .then((response) => {
             if (response) {
                 dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
-                syncValidation.pjnz = true
-                if (syncValidation.shape && syncValidation.population) {
+                fileHasValidated.pjnz = true
+                if (fileHasValidated.shape && fileHasValidated.population) {
                     dispatch('validate');
                 }
             }
@@ -168,7 +167,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
                 if (response) {
                     commit({type: BaselineMutation.PJNZUpdated, payload: null});
                     dispatch("surveyAndProgram/deleteAll", {}, {root: true});
-                    syncValidation.pjnz = false
+                    fileHasValidated.pjnz = false
                 }
             });
     },
@@ -181,7 +180,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
                 if (response) {
                     commit({type: BaselineMutation.ShapeUpdated, payload: null});
                     dispatch("surveyAndProgram/deleteAll", {}, {root: true});
-                    syncValidation.shape = false
+                    fileHasValidated.shape = false
                 }
             });
     },
@@ -194,7 +193,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
                 if (response) {
                     commit({type: BaselineMutation.PopulationUpdated, payload: null});
                     dispatch("surveyAndProgram/deleteAll", {}, {root: true});
-                    syncValidation.population = false
+                    fileHasValidated.population = false
                 }
             });
     },
