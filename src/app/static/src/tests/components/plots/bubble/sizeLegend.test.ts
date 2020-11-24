@@ -25,8 +25,9 @@ const propsData = {
     }
 };
 
-const getWrapper = () => {
-    return shallowMount(SizeLegend, {propsData});
+const getWrapper = (partialProps = {}) => {
+    const testProps = {...propsData, ...partialProps};
+    return shallowMount(SizeLegend, {propsData: testProps});
 };
 
 const expectCirclesEqual = (actual: any, expected: any) => {
@@ -90,6 +91,14 @@ describe("SizeLegend component", () => {
         circles.forEach((circle: any, index: number) => {
             expectCirclesEqual(circle, expected[index])
         });
+    });
+
+    it("computes circles for single value range", () => {
+        const wrapper = getWrapper({indicatorRange: {min: 1, max: 1}});
+        const vm = wrapper.vm as any;
+        const circles = vm.circles;
+        expect(circles.length).toBe(1);
+        expectCirclesEqual(circles[0], {y: 120, radius: 110, text: "1", textY: 10});
     });
 
     it("renders as expected", () => {

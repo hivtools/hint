@@ -103,20 +103,25 @@
                 return this.width / 2;
             },
             circles: function () {
-                //We treat the minimum circle differently, since the smallest radius is actually likely to cover quite
-                //a wide range of low outliers, so we show the value for the next pixel up and prefix with '<'
-                const nextMinRadius = this.minRadius + 1;
-                const valueScalePoint = this.valueScalePointFromRadius(nextMinRadius);
-                const nextValue = this.valueFromValueScalePoint(valueScalePoint);
-                const minCircle = this.circleFromRadius(this.minRadius, nextValue, true);
+                if (this.indicatorRange.min == this.indicatorRange.max) {
+                    // only one value in range - show max circle only
+                    return [this.circleFromRadius(this.maxRadius, this.indicatorRange.max, false)];
+                } else {
+                    //We treat the minimum circle differently, since the smallest radius is actually likely to cover quite
+                    //a wide range of low outliers, so we show the value for the next pixel up and prefix with '<'
+                    const nextMinRadius = this.minRadius + 1;
+                    const valueScalePoint = this.valueScalePointFromRadius(nextMinRadius);
+                    const nextValue = this.valueFromValueScalePoint(valueScalePoint);
+                    const minCircle = this.circleFromRadius(this.minRadius, nextValue, true);
 
-                const nonMinCircles = this.steps.map((s: number) => {
-                    const value = this.indicatorRange.min + (s * (this.indicatorRange.max - this.indicatorRange.min));
-                    const r = getRadius(value, this.indicatorRange.min, this.indicatorRange.max, this.minRadius, this.maxRadius);
-                    return this.circleFromRadius(r, value, false)
-                });
+                    const nonMinCircles = this.steps.map((s: number) => {
+                        const value = this.indicatorRange.min + (s * (this.indicatorRange.max - this.indicatorRange.min));
+                        const r = getRadius(value, this.indicatorRange.min, this.indicatorRange.max, this.minRadius, this.maxRadius);
+                        return this.circleFromRadius(r, value, false)
+                    });
 
-                return [minCircle, ...nonMinCircles];
+                    return [minCircle, ...nonMinCircles];
+                }
             },
             scaleStep: function () {
                 return this.metadata ? scaleStepFromMetadata(this.metadata) : 1;

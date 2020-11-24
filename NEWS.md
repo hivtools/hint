@@ -1,7 +1,10 @@
-
 # hint 1.1.2
 
 * Display text on map when no data in selections.
+
+# hint 1.1.2
+
+* Fixed bug where bubble plot failed to display bubble for single-value range.
 
 # hint 1.1.1
 * Fixed bug where bubble plot failed to display bubble for single-value range.

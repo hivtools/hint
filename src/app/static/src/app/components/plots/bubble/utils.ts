@@ -3,6 +3,11 @@ import {getColor, iterateDataValues} from "../utils";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
 
 export const getRadius = function (value: number, minValue: number, maxValue: number, minRadius: number, maxRadius: number) {
+    //if range is a single value, just return max radius as no interpolation possible
+    if (minValue == maxValue) {
+        return maxRadius;
+    }
+
     //where is value on a scale of 0-1 between minValue and maxValue
     const scalePoint = (value - minValue) / (maxValue - minValue);
 
