@@ -5,6 +5,7 @@ import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 import qs from 'qs';
+import {getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 
 export interface SurveyAndProgramActions {
     importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
@@ -31,7 +32,8 @@ interface UploadImportOptions {
     payload: FormData | string
 }
 
-async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions) {
+async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
+                                 filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
 
@@ -43,11 +45,14 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, R
         .then((response) => {
             if (response) {
                 commitSelectedDataTypeUpdated(commit, DataType.ANC);
+            } else {
+                commit({type: SurveyAndProgramMutation.ANCErroredFile, payload: filename});
             }
         });
 }
 
-async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions) {
+async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
+                                     filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
 
@@ -59,11 +64,14 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
         .then((response) => {
             if (response) {
                 commitSelectedDataTypeUpdated(commit, DataType.Program);
+            } else {
+                commit({type: SurveyAndProgramMutation.ProgramErroredFile, payload: filename});
             }
         });
 }
 
-async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions) {
+async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
+                                    filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
 
@@ -75,6 +83,8 @@ async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState
         .then((response) => {
             if (response) {
                 commitSelectedDataTypeUpdated(commit, DataType.Survey);
+            } else {
+                commit({type: SurveyAndProgramMutation.SurveyErroredFile, payload: filename});
             }
         });
 }
@@ -87,27 +97,33 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     },
 
     async importSurvey(context, url) {
-        await uploadOrImportSurvey(context, {url: "/adr/survey/", payload: qs.stringify({url})});
+        await uploadOrImportSurvey(context, {url: "/adr/survey/", payload: qs.stringify({url})},
+            getFilenameFromImportUrl(url));
     },
 
     async importProgram(context, url) {
-        await uploadOrImportProgram(context, {url: "/adr/programme/", payload: qs.stringify({url})})
+        await uploadOrImportProgram(context, {url: "/adr/programme/", payload: qs.stringify({url})},
+            getFilenameFromImportUrl(url));
     },
 
     async importANC(context, url) {
-        await uploadOrImportANC(context, {url: "/adr/anc/", payload: qs.stringify({url})})
+        await uploadOrImportANC(context, {url: "/adr/anc/", payload: qs.stringify({url})},
+            getFilenameFromImportUrl(url))
     },
 
     async uploadSurvey(context, formData) {
-        await uploadOrImportSurvey(context, {url: "/disease/survey/", payload: formData})
+        await uploadOrImportSurvey(context, {url: "/disease/survey/", payload: formData},
+            getFilenameFromUploadFormData(formData))
     },
 
     async uploadProgram(context, formData) {
-        await uploadOrImportProgram(context, {url: "/disease/programme/", payload: formData})
+        await uploadOrImportProgram(context, {url: "/disease/programme/", payload: formData},
+            getFilenameFromUploadFormData(formData));
     },
 
     async uploadANC(context, formData) {
-        await uploadOrImportANC(context, {url: "/disease/anc/", payload: formData})
+        await uploadOrImportANC(context, {url: "/disease/anc/", payload: formData},
+            getFilenameFromUploadFormData(formData))
     },
 
     async deleteSurvey(context) {

@@ -15,10 +15,13 @@ import {ReadyState} from "../../root";
 export enum BaselineMutation {
     PJNZUpdated = "PJNZUpdated",
     PJNZUploadError = "PJNZUploadError",
+    PJNZErroredFile = "PJNZErroredFile",
     ShapeUpdated = "ShapeUpdated",
     ShapeUploadError = "ShapeUploadError",
+    ShapeErroredFile = "ShapeErroredFile",
     PopulationUpdated = "PopulationUpdated",
     PopulationUploadError = "PopulationUploadError",
+    PopulationErroredFile = "PopulationErroredFile",
     Ready = "Ready",
     Validating = "Validating",
     Validated = "Validated",
@@ -89,6 +92,11 @@ export const mutations: MutationTree<BaselineState> = {
             state.pjnz = null;
         }
         state.pjnzError = null;
+        state.pjnzErroredFile = null;
+    },
+
+    [BaselineMutation.PJNZErroredFile](state: BaselineState, action: PayloadWithType<string>) {
+        state.pjnzErroredFile = action.payload;
     },
 
     [BaselineMutation.ShapeUpdated](state: BaselineState, action: PayloadWithType<ShapeResponse>) {
@@ -98,19 +106,29 @@ export const mutations: MutationTree<BaselineState> = {
             state.flattenedRegionFilters = Object.freeze(flattenOptions(state.regionFilters));
         }
         state.shapeError = null;
+        state.shapeErroredFile = null;
     },
 
     [BaselineMutation.ShapeUploadError](state: BaselineState, action: PayloadWithType<Error>) {
         state.shapeError = action.payload;
     },
 
+    [BaselineMutation.ShapeErroredFile](state: BaselineState, action: PayloadWithType<string>) {
+        state.shapeErroredFile = action.payload;
+    },
+
     [BaselineMutation.PopulationUpdated](state: BaselineState, action: PayloadWithType<PopulationResponse>) {
         state.population = action.payload;
         state.populationError = null;
+        state.populationErroredFile = null;
     },
 
     [BaselineMutation.PopulationUploadError](state: BaselineState, action: PayloadWithType<Error>) {
         state.populationError = action.payload;
+    },
+
+    [BaselineMutation.PopulationErroredFile](state: BaselineState, action: PayloadWithType<string>) {
+        state.populationErroredFile = action.payload;
     },
 
     [BaselineMutation.Validating](state: BaselineState) {
