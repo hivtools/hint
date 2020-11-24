@@ -149,6 +149,50 @@ describe("BubblePlot component", () => {
         expect(sizeLegend.props().sizeScale).toBe(propsData.sizeScales.plhiv);
     });
 
+    it("renders plot as expected with single bubble range value", () => {
+        const customProps = {
+          ...propsData,
+          selections: {
+              ...propsData.selections,
+              selectedFilterOptions: {
+                  age: [{id: "0:15", label: "0-15"}],
+                  sex: [{id: "female", label: "Female"}],
+                  area: [{id: "MWI_4_1", label: "4.1"}]
+              }
+          },
+          sizeScales: {
+            plhiv: {
+                type: ScaleType.DynamicFiltered,
+                customMin: 0,
+                customMax: 100
+            }
+          }
+        };
+        const wrapper = getWrapper(customProps);
+
+        expect((wrapper.vm as any).sizeRange).toStrictEqual({min: 10, max: 10});
+
+        const maxRadius = 70;
+
+        //expect single circle with max radius
+        const circles = wrapper.findAll(LCircleMarker);
+        expect(circles.length).toBe(1);
+        expect(circles.at(0).props().latLng).toEqual([-15.2047, 35.7083]);
+        expect(circles.at(0).props().radius).toEqual(maxRadius);
+        expect(circles.at(0).find(LTooltip).props().content).toEqual(`<div>
+                            <strong>North West</strong>
+                            <br/>Prevalence: 10.00%
+                            <br/>PLHIV: 100
+                        </div>`);
+        const meta = propsData.indicators[1];
+        const colourRange = {min: meta.min, max: meta.max};
+        let color = getColor(0.1, meta, colourRange);
+        expect(circles.at(0).props().color).toEqual(color);
+        expect(circles.at(0).props().fillColor).toEqual(color);
+
+    });
+
+
     it("computes sizeRange", async () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;

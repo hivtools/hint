@@ -1,7 +1,7 @@
-
-# hint 1.1.1
+# hint 1.1.2
 
 * Display text on map when no data in selections.
+
 
 # hint 1.1.0
 

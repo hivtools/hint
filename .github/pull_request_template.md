@@ -1,17 +1,13 @@
-# Pull Request Template
-
 ## Description
 
-Before you make a pull request, please ensure items on the checklist are checked
+Please describe your changes here
 
-## Type of changes
+## Type of version change
+_Delete as appropriate_
 
-- [ ] Major
-- [ ] Minor
-- [ ] Patches
+Major - Minor - Patches - None
 
 ## Checklist
 
-- [ ] I have incremented version number
-- [ ] The build passed successfully
-- [ ] The build failed because of ADR tests
+- [ ] I have incremented version number, or version needs no increment
+- [ ] The build passed successfully, or failed because of ADR tests
