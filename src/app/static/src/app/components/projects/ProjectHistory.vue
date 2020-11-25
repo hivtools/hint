@@ -6,8 +6,8 @@
             <div class="col-md-2 header-cell" v-translate="'projectName'"></div>
             <div class="col-md-1 header-cell">Versions</div>
             <div class="col-md-3 header-cell" v-translate="'lastUpdated'"></div>
-            <div class="col-md-1 header-cell" v-translate="'renameProjectHistoryHeader'"></div>
             <div class="col-md-1 header-cell" v-translate="'load'"></div>
+            <div class="col-md-1 header-cell" v-translate="'renameProjectHistoryHeader'"></div>
             <div class="col-md-1 header-cell" v-translate="'delete'"></div>
             <div class="col-md-1 header-cell" v-translate="'copyToNewProjectHistoryHeader'"></div>
             <div class="col-md-1 header-cell" v-translate="'share'"></div>
@@ -30,7 +30,10 @@
                     </button>
                 </div>
                 <div class="col-md-2 project-cell">
+                    <a href="#"
+                    @click="loadVersion($event, p.id, p.versions[0].id)">
                     {{ p.name }}
+                    </a>
                 </div>
                 <div class="col-md-1 project-cell">
                     <small class="text-muted">{{ versionCountLabel(p) }}</small>
@@ -39,30 +42,27 @@
                     {{ format(p.versions[0].updated) }}
                 </div>
                 <div class="col-md-1 project-cell"
-                     v-tooltip="tooltipContent('renameProject')"
-                     v-if="renameProjectIsEnabled">
+                v-tooltip ="tooltipContent('load')">
+                    <button class=" btn btn-sm btn-red-icons"
+                    @click="loadVersion($event, p.id, p.versions[0].id)">
+                    <refresh-cw-icon size="20"></refresh-cw-icon>
+                    </button>
+                </div>
+                 <div class="col-md-1 project-cell"
+                v-tooltip ="tooltipContent('renameProject')"
+                    v-if="renameProjectIsEnabled">
                     <button class="btn btn-sm btn-red-icons"
                             @click="renameProject($event, p.id)">
                         <edit-icon size="20"></edit-icon>
                     </button>
                 </div>
-
-                <div class="col-md-1 project-cell"
-                     v-tooltip="tooltipContent('load')">
-                    <button class=" btn btn-sm btn-red-icons"
-                            @click="loadVersion($event, p.id, p.versions[0].id)">
-                        <refresh-cw-icon size="20"></refresh-cw-icon>
-                    </button>
-                </div>
-
-                <div class="col-md-1 project-cell"
-                     v-tooltip="tooltipContent('delete')">
+                <div class="col-md-1 project-cell" 
+                v-tooltip ="tooltipContent('delete')">
                     <button class=" btn btn-sm btn-red-icons"
                             @click="deleteProject($event, p.id)">
                         <trash-2-icon size="20"></trash-2-icon>
                     </button>
                 </div>
-
                 <div class="col-md-1 project-cell" v-if="promoteProjectIsEnabled"
                      v-tooltip="tooltipContent('copyLatestToNewProject')">
                     <button class=" btn btn-sm btn-red-icons"
@@ -70,9 +70,8 @@
                                 $event,
                                 p.id,
                                 p.versions[0].id,
-                                p.versions[0].versionNumber
-                            )">
-                        <copy-icon size="20"></copy-icon>
+                                p.versions[0].versionNumber)">
+                            <copy-icon size="20"></copy-icon>
                     </button>
                 </div>
 
@@ -92,18 +91,18 @@
                     <div class="col-md-3 version-cell">
                         {{ format(v.updated) }}
                     </div>
-                    <div class="col-md-1 version-cell"
-                         v-if="renameProjectIsEnabled">
-                    </div>
-                    <div class="col-md-1 version-cell"
-                         v-tooltip="tooltipContent('load')">
+                    <div class="col-md-1 version-cell" 
+                    v-tooltip ="tooltipContent('load')">
                         <button class=" btn btn-sm btn-red-icons"
                                 @click="loadVersion($event, p.id, v.id)">
                             <refresh-cw-icon size="20"></refresh-cw-icon>
                         </button>
                     </div>
                     <div class="col-md-1 version-cell"
-                         v-tooltip="tooltipContent('delete')">
+                    v-if="renameProjectIsEnabled">
+                    </div>
+                    <div class="col-md-1 version-cell"
+                    v-tooltip ="tooltipContent('delete')">
                         <button class=" btn btn-sm btn-red-icons"
                                 @click="deleteVersion($event, p.id, v.id)">
                             <trash-2-icon size="20"></trash-2-icon>
