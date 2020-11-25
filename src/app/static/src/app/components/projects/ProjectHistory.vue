@@ -52,21 +52,21 @@
                 v-tooltip ="tooltipContent('renameProject')"
                     v-if="renameProjectIsEnabled">
                     <button class="btn btn-sm btn-red-icons"
-                    @click="renameProject($event, p.id)">
-                    <edit-icon size="20"></edit-icon>
+                            @click="renameProject($event, p.id)">
+                        <edit-icon size="20"></edit-icon>
                     </button>
                 </div>
                 <div class="col-md-1 project-cell" 
                 v-tooltip ="tooltipContent('delete')">
                     <button class=" btn btn-sm btn-red-icons"
-                    @click= "deleteProject($event, p.id)">
-                    <trash-2-icon size="20"></trash-2-icon>
+                            @click="deleteProject($event, p.id)">
+                        <trash-2-icon size="20"></trash-2-icon>
                     </button>
                 </div>
                 <div class="col-md-1 project-cell" v-if="promoteProjectIsEnabled"
-                v-tooltip ="tooltipContent('copyLatestToNewProject')">
+                     v-tooltip="tooltipContent('copyLatestToNewProject')">
                     <button class=" btn btn-sm btn-red-icons"
-                         @click="promoteVersion(
+                            @click="promoteVersion(
                                 $event,
                                 p.id,
                                 p.versions[0].id,
@@ -94,8 +94,8 @@
                     <div class="col-md-1 version-cell" 
                     v-tooltip ="tooltipContent('load')">
                         <button class=" btn btn-sm btn-red-icons"
-                        @click="loadVersion($event, p.id, v.id)">
-                        <refresh-cw-icon size="20"></refresh-cw-icon>
+                                @click="loadVersion($event, p.id, v.id)">
+                            <refresh-cw-icon size="20"></refresh-cw-icon>
                         </button>
                     </div>
                     <div class="col-md-1 version-cell"
@@ -104,21 +104,21 @@
                     <div class="col-md-1 version-cell"
                     v-tooltip ="tooltipContent('delete')">
                         <button class=" btn btn-sm btn-red-icons"
-                        @click="deleteVersion($event, p.id, v.id)">
-                        <trash-2-icon size="20"></trash-2-icon>
+                                @click="deleteVersion($event, p.id, v.id)">
+                            <trash-2-icon size="20"></trash-2-icon>
                         </button>
                     </div>
                     <div class="col-md-1 version-cell"
                          v-if="promoteProjectIsEnabled"
-                         v-tooltip ="tooltipContent('copyToNewProject')">
-                         <button class=" btn btn-sm btn-red-icons"
-                         @click="promoteVersion(
+                         v-tooltip="tooltipContent('copyToNewProject')">
+                        <button class=" btn btn-sm btn-red-icons"
+                                @click="promoteVersion(
                                     $event,
                                     p.id,
                                     v.id,
                                     v.versionNumber)">
                             <copy-icon size="20"></copy-icon>
-                    </button>
+                        </button>
                     </div>
                 </div>
             </b-collapse>
@@ -160,21 +160,21 @@
         </modal>
         <modal :open="projectToRename">
             <h4 v-translate="'renameProjectHeader'"></h4>
-            <input type="text" 
+            <input type="text"
                    class="form-control"
-                   v-translate:placeholder="'projectName'" 
+                   v-translate:placeholder="'projectName'"
                    v-model="renamedProjectName">
             <template v-slot:footer>
                 <button type="button"
-                    class="btn btn-red" 
-                    :disabled="disableRename"
-                    @click="confirmRename(renamedProjectName)"
-                    v-translate="'renameProject'">
+                        class="btn btn-red"
+                        :disabled="disableRename"
+                        @click="confirmRename(renamedProjectName)"
+                        v-translate="'renameProject'">
                 </button>
                 <button type="button"
-                    class="btn btn-white"
-                    @click="cancelRename"
-                    v-translate="'cancel'">
+                        class="btn btn-white"
+                        @click="cancelRename"
+                        v-translate="'cancel'">
                 </button>
             </template>
         </modal>
@@ -290,12 +290,12 @@
                 this.loadAction({projectId, versionId});
             },
             renameProject(event: Event, projectId: number) {
-               event.preventDefault();
-               this.projectToRename = projectId;
+                event.preventDefault();
+                this.projectToRename = projectId;
             },
             cancelRename() {
-               this.projectToRename = null;
-               this.renamedProjectName = '';
+                this.projectToRename = null;
+                this.renamedProjectName = '';
             },
             async confirmRename(name) {
                 if (this.projectToRename) {
@@ -382,7 +382,7 @@
                 "deleteVersion"
             ),
 
-             tooltipContent(tooltipValue: string) {
+            tooltipContent(tooltipValue: string) {
                 return i18next.t(tooltipValue, {
                     lng: this.currentLanguage,
                 });

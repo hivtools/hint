@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
-import {LGeoJson} from "vue2-leaflet";
+import {LControl, LGeoJson} from "vue2-leaflet";
 import {getFeatureIndicator} from "../../../../app/components/plots/choropleth/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
@@ -11,6 +11,8 @@ import {prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import Vue from "vue";
+import {expectTranslated} from "../../../testHelpers";
+import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -63,7 +65,7 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         expect(wrapper.findAll(Filters).length).toBe(1);
 
-        //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLA   Y IN FILTERS
+        //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLAY IN FILTERS
     });
 
     it("does not render filters if includeFilters is false", () => {
@@ -76,6 +78,30 @@ describe("Choropleth component", () => {
         const legend = wrapper.find(MapLegend);
         expect(legend.props().metadata).toBe(propsData.indicators[1]);
         expect(legend.props().colourScale).toBe(propsData.colourScales.prevalence)
+    });
+
+    it("computes emptyFeatures returns true when selections are empty", () => {
+        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
+        const vm = wrapper.vm as any;
+        expect(vm.emptyFeature).toBe(true);
+    });
+
+    it("computes emptyFeatures does not return true when selections are selected", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.emptyFeature).toBe(false);
+    });
+
+    it("render does not display translated no data message on map", () => {
+        const wrapper = getWrapper();
+        expect(wrapper.findAll(MapEmptyFeature).length).toBe(0)
+        expect(wrapper.find(MapEmptyFeature).exists()).toBe(false)
+    });
+
+    it("render can display translated no data message on map", () => {
+        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
+        expect(wrapper.findAll(MapEmptyFeature).length).toBe(1)
+        expect(wrapper.find(MapEmptyFeature).exists()).toBe(true)
     });
 
     it("computes featureIndicators", () => {

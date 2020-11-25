@@ -1,4 +1,11 @@
+# hint 1.1.3
+
+* Display text on map when no data in selections.
+
 # hint 1.1.2
+
+* Fixed bug where bubble plot failed to display bubble for single-value range.
+
 * Fix bug to allow removal of files with errors
 
 # hint 1.1.1
@@ -7,6 +14,7 @@
 # hint 1.1.0
 
 * Bubble plot size can be scaled by filtered dataset
+
 
 # hint 1.0.0
 
