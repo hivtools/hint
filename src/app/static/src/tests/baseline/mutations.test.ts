@@ -31,6 +31,7 @@ describe("Baseline mutations", () => {
         expect(testState.iso3).toBe("MWI");
         expect(testState.pjnz!!.filename).toBe("file.pjnz");
         expect(testState.pjnzError).toBe(null);
+        expect(testState.pjnzErroredFile).toBe(null);
     });
 
     it("state becomes complete once all files are Updated and validatedConsistent are true", () => {
@@ -78,15 +79,23 @@ describe("Baseline mutations", () => {
         expect(testState.pjnzError).toBe("Some error");
     });
 
+    it("sets error on PJNZErroredFile", () => {
+
+        const testState = mockBaselineState();
+        mutations[BaselineMutation.PJNZErroredFile](testState, {payload: "error.txt"});
+        expect(testState.pjnzErroredFile).toBe("error.txt");
+    });
+
     it("sets country and filename and clears error if present on PJNZUpdated", () => {
 
-        const testState = mockBaselineState({pjnzError: mockError("test")});
+        const testState = mockBaselineState({pjnzError: mockError("test"), pjnzErroredFile: "error.txt"});
         mutations[BaselineMutation.PJNZUpdated](testState, {
             payload: mockPJNZResponse({filename: "file.pjnz", data: {country: "Malawi", iso3: "MWI"}})
         });
         expect(testState.pjnz!!.filename).toBe("file.pjnz");
         expect(testState.country).toBe("Malawi");
         expect(testState.pjnzError).toBe(null);
+        expect(testState.pjnzErroredFile).toBe(null);
     });
 
     it("clears country and filename on PJNZUpdated if no data present", () => {
@@ -103,12 +112,13 @@ describe("Baseline mutations", () => {
     it("sets shape and clears error on ShapeUpdated", () => {
 
         const mockShape = mockShapeResponse();
-        const testState = mockBaselineState({shapeError: null});
+        const testState = mockBaselineState({shapeError: mockError("test error"), shapeErroredFile: "error.txt"});
         mutations[BaselineMutation.ShapeUpdated](testState, {
             payload: mockShape
         });
         expect(testState.shape).toBe(mockShape);
         expect(testState.shapeError).toBe(null);
+        expect(testState.shapeErroredFile).toBe(null);
     });
 
     it("sets region filters and flattened region filters on ShapeUpdated", () => {
@@ -145,21 +155,36 @@ describe("Baseline mutations", () => {
         expect(testState.shapeError).toBe("Some error");
     });
 
+    it("sets error on ShapeErroredFile", () => {
+
+        const testState = mockBaselineState();
+        mutations[BaselineMutation.ShapeErroredFile](testState, {payload: "error.txt"});
+        expect(testState.shapeErroredFile).toBe("error.txt");
+    });
+
     it("sets response and clears error on PopulationUpdated", () => {
 
         const mockPop = mockPopulationResponse();
-        const testState = mockBaselineState({populationError: mockError("test")});
+        const testState = mockBaselineState({populationError: mockError("test"), populationErroredFile: "error.txt"});
         mutations[BaselineMutation.PopulationUpdated](testState, {
             payload: mockPop
         });
         expect(testState.population).toBe(mockPop);
         expect(testState.populationError).toBe(null);
+        expect(testState.populationErroredFile).toBe(null);
     });
 
     it("sets error on PopulationUploadError", () => {
         const testState = mockBaselineState();
         mutations[BaselineMutation.PopulationUploadError](testState, {payload: "Some error"});
         expect(testState.populationError).toBe("Some error");
+    });
+
+    it("sets error on PopulationErroredFile", () => {
+
+        const testState = mockBaselineState();
+        mutations[BaselineMutation.PopulationErroredFile](testState, {payload: "error.txt"});
+        expect(testState.populationErroredFile).toBe("error.txt");
     });
 
     it("sets ready state", () => {

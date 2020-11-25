@@ -10,6 +10,7 @@ import Vuex from "vuex";
 import {emptyState} from "../../app/root";
 import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
+import {getFormData} from "./helpers";
 
 const fs = require("fs");
 const FormData = require("form-data");
@@ -20,9 +21,8 @@ describe("load actions", () => {
     beforeAll(async () => {
         await login();
         const commit = jest.fn();
-        const file = fs.createReadStream("../testdata/malawi.geojson");
-        const formData = new FormData();
-        formData.append('file', file);
+        const formData = getFormData("../testdata/malawi.geojson");
+
         await baselineActions.uploadShape({commit, dispatch: jest.fn(), rootState} as any, formData);
         shape = (commit.mock.calls[1][0]["payload"] as ShapeResponse);
     });

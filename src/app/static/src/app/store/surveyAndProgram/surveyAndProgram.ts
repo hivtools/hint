@@ -12,10 +12,13 @@ export interface SurveyAndProgramState extends ReadyState {
     selectedDataType: DataType | null
     survey: SurveyResponse | null
     surveyError: Error | null
+    surveyErroredFile: string | null
     program: ProgrammeResponse | null
     programError: Error | null
+    programErroredFile: string | null
     anc: AncResponse | null
     ancError: Error | null
+    ancErroredFile: string | null
 }
 
 export const initialSurveyAndProgramState = (): SurveyAndProgramState => {
@@ -23,10 +26,13 @@ export const initialSurveyAndProgramState = (): SurveyAndProgramState => {
         selectedDataType: null,
         survey: null,
         surveyError: null,
+        surveyErroredFile: null,
         program: null,
         programError: null,
+        programErroredFile: null,
         anc: null,
         ancError: null,
+        ancErroredFile: null,
         ready: false
     }
 };

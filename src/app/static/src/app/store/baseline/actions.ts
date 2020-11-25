@@ -5,7 +5,7 @@ import {api} from "../../apiService";
 import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
 import {BaselineMutation} from "./mutations";
 import qs from "qs";
-import {findResource} from "../../utils";
+import {findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import {DatasetResourceSet} from "../../types";
 
 export interface BaselineActions {
@@ -37,7 +37,7 @@ interface UploadImportOptions {
 }
 
 
-async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions) {
+async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions, filename: string) {
     const {commit, dispatch, state} = context;
     commit({type: BaselineMutation.PJNZUpdated, payload: null});
     await api<BaselineMutation, BaselineMutation>(context)
@@ -49,12 +49,14 @@ async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootStat
             if (response) {
                 dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
                 dispatch('validate');
+            } else {
+                commit({type: BaselineMutation.PJNZErroredFile, payload: filename});
             }
             dispatch("surveyAndProgram/deleteAll", {}, {root: true});
         });
 }
 
-async function uploadOrImportPopulation(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions) {
+async function uploadOrImportPopulation(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions, filename: string) {
     const {commit, dispatch} = context;
     commit({type: BaselineMutation.PopulationUpdated, payload: null});
     await api<BaselineMutation, BaselineMutation>(context)
@@ -64,10 +66,13 @@ async function uploadOrImportPopulation(context: ActionContext<BaselineState, Ro
         .postAndReturn<PopulationResponse>(options.url, options.payload)
         .then((response) => {
             uploadCallback(dispatch, response);
+            if (!response) {
+                commit({type: BaselineMutation.PopulationErroredFile, payload: filename});
+            }
         });
 }
 
-async function uploadOrImportShape(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions) {
+async function uploadOrImportShape(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions, filename: string) {
     const {commit, dispatch} = context;
     commit({type: BaselineMutation.ShapeUpdated, payload: null});
     await api<BaselineMutation, BaselineMutation>(context)
@@ -77,6 +82,9 @@ async function uploadOrImportShape(context: ActionContext<BaselineState, RootSta
         .postAndReturn<ShapeResponse>(options.url, options.payload)
         .then((response) => {
             uploadCallback(dispatch, response);
+            if (!response) {
+                commit({type: BaselineMutation.ShapeErroredFile, payload: filename});
+            }
         });
 }
 
@@ -108,27 +116,33 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async importPJNZ(context, url) {
-        await uploadOrImportPJNZ(context, {url: "/adr/pjnz/", payload: qs.stringify({url})});
+        await uploadOrImportPJNZ(context, {url: "/adr/pjnz/", payload: qs.stringify({url})},
+            getFilenameFromImportUrl(url));
     },
 
     async importPopulation(context, url) {
-        await uploadOrImportPopulation(context, {url: "/adr/population/", payload: qs.stringify({url})});
+        await uploadOrImportPopulation(context, {url: "/adr/population/", payload: qs.stringify({url})},
+            getFilenameFromImportUrl(url));
     },
 
     async importShape(context, url) {
-        await uploadOrImportShape(context, {url: "/adr/shape/", payload: qs.stringify({url})});
+        await uploadOrImportShape(context, {url: "/adr/shape/", payload: qs.stringify({url})},
+            getFilenameFromImportUrl(url));
     },
 
     async uploadPJNZ(context, formData) {
-        await uploadOrImportPJNZ(context, {url: "/baseline/pjnz/", payload: formData});
+        await uploadOrImportPJNZ(context, {url: "/baseline/pjnz/", payload: formData},
+            getFilenameFromUploadFormData(formData));
     },
 
     async uploadShape(context, formData) {
-        await uploadOrImportShape(context, {url: "/baseline/shape/", payload: formData});
+        await uploadOrImportShape(context, {url: "/baseline/shape/", payload: formData},
+            getFilenameFromUploadFormData(formData));
     },
 
     async uploadPopulation(context, formData) {
-        await uploadOrImportPopulation(context, {url: "/baseline/population/", payload: formData});
+        await uploadOrImportPopulation(context, {url: "/baseline/population/", payload: formData},
+            getFilenameFromUploadFormData(formData));
     },
 
     async deletePJNZ(context) {

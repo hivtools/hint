@@ -31,6 +31,10 @@ const rootState = mockRootState({
     adrSchemas
 });
 
+const mockFormData = {
+  get: (key: string) => { return key == "file" ? {name: "file.txt"} : null; }
+};
+
 describe("Baseline actions", () => {
 
     beforeEach(() => {
@@ -52,7 +56,7 @@ describe("Baseline actions", () => {
         const state = mockBaselineState({iso3: "MWI"});
         const dispatch = jest.fn();
 
-        await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, new FormData());
+        await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, mockFormData as any);
 
         checkPJNZImportUpload(commit, dispatch)
     });
@@ -72,6 +76,7 @@ describe("Baseline actions", () => {
     });
 
     const checkPJNZImportUpload = (commit: Mock, dispatch: Mock) => {
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: BaselineMutation.PJNZUpdated, payload: null});
 
         expectEqualsFrozen(commit.mock.calls[1][0], {
@@ -90,6 +95,7 @@ describe("Baseline actions", () => {
 
         expect(dispatch.mock.calls[2][0]).toBe("surveyAndProgram/deleteAll");
         expect(dispatch.mock.calls[2][2]).toStrictEqual({root: true});
+
     }
 
     it("upload PJNZ does not fetch plotting metadata or validate if error occurs", async () => {
@@ -97,9 +103,9 @@ describe("Baseline actions", () => {
             .reply(400, mockFailure("test error"));
 
         const commit = jest.fn();
-        const state = mockBaselineState({pjnzError: mockError("test error")});
+        const state = mockBaselineState();
         const dispatch = jest.fn();
-        await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, new FormData());
+        await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, mockFormData as any);
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
@@ -110,17 +116,25 @@ describe("Baseline actions", () => {
             .reply(400, mockFailure("test error"));
 
         const commit = jest.fn();
-        const state = mockBaselineState({pjnzError: mockError("test error")});
+        const state = mockBaselineState();
         const dispatch = jest.fn();
-        await actions.importPJNZ({commit, state, dispatch, rootState} as any, "some-url");
+        await actions.importPJNZ({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+
+        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
+        expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUploadError", payload: mockError("test error")});
+        expect(commit.mock.calls[2][0]).toStrictEqual({type: "PJNZErroredFile", payload: "some-file.txt"});
     });
 
     testUploadErrorCommitted("/baseline/pjnz/",
         BaselineMutation.PJNZUploadError,
         BaselineMutation.PJNZUpdated,
+        BaselineMutation.PJNZErroredFile,
+        "file.txt",
+        mockFormData,
         actions.uploadPJNZ);
 
     it("commits response and validates after shape file upload", async () => {
@@ -131,9 +145,27 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.uploadShape({commit, dispatch, rootState} as any, new FormData());
+        await actions.uploadShape({commit, dispatch, rootState} as any, mockFormData as any);
 
         checkShapeImportUpload(commit, dispatch, mockShape);
+    });
+
+    it("import Shape commits error if error occurs", async () => {
+        mockAxios.onPost(`/adr/shape/`)
+            .reply(400, mockFailure("test error"));
+
+        const commit = jest.fn();
+        const state = mockBaselineState();
+        const dispatch = jest.fn();
+        await actions.importShape({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+
+        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "ShapeUpdated", payload: null});
+        expect(commit.mock.calls[1][0]).toStrictEqual({type: "ShapeUploadError", payload: mockError("test error")});
+        expect(commit.mock.calls[2][0]).toStrictEqual({type: "ShapeErroredFile", payload: "some-file.txt"});
     });
 
     it("commits response and validates after shape file import", async () => {
@@ -149,7 +181,17 @@ describe("Baseline actions", () => {
         checkShapeImportUpload(commit, dispatch, mockShape);
     });
 
+    testUploadErrorCommitted(
+        "/baseline/shape/",
+        "ShapeUploadError",
+        "ShapeUpdated",
+        "ShapeErroredFile",
+        "file.txt",
+        mockFormData,
+        actions.uploadShape);
+
     const checkShapeImportUpload = (commit: Mock, dispatch: Mock, mockShape: any) => {
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: BaselineMutation.ShapeUpdated,
             payload: null
@@ -167,6 +209,7 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
     }
 
+
     it("commits response and validates after population file upload", async () => {
 
         const mockPop = mockPopulationResponse();
@@ -175,7 +218,7 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.uploadPopulation({commit, dispatch, rootState} as any, new FormData());
+        await actions.uploadPopulation({commit, dispatch, rootState} as any, mockFormData as any);
 
         checkPopulationImportUpload(commit, dispatch, mockPop);
     });
@@ -194,6 +237,7 @@ describe("Baseline actions", () => {
     });
 
     const checkPopulationImportUpload = (commit: Mock, dispatch: Mock, mockPop: any) => {
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: BaselineMutation.PopulationUpdated,
             payload: null
@@ -209,9 +253,36 @@ describe("Baseline actions", () => {
 
         expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
         expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
-    }
+    };
 
-    testUploadErrorCommitted("/baseline/shape/", "ShapeUploadError", "ShapeUpdated", actions.uploadShape);
+
+    it("import Population commits error if error occurs", async () => {
+        mockAxios.onPost(`/adr/population/`)
+            .reply(400, mockFailure("test error"));
+
+        const commit = jest.fn();
+        const state = mockBaselineState();
+        const dispatch = jest.fn();
+        await actions.importPopulation({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+
+        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "PopulationUpdated", payload: null});
+        expect(commit.mock.calls[1][0]).toStrictEqual({type: "PopulationUploadError", payload: mockError("test error")});
+        expect(commit.mock.calls[2][0]).toStrictEqual({type: "PopulationErroredFile", payload: "some-file.txt"});
+    });
+
+
+    testUploadErrorCommitted(
+        "/baseline/population/",
+        "PopulationUploadError",
+        "PopulationUpdated",
+        "PopulationErroredFile",
+        "file.txt",
+        mockFormData,
+        actions.uploadPopulation);
 
     it("gets baseline data, commits it and marks state as ready", async () => {
 

@@ -69,19 +69,19 @@
                     valid: !!state.country,
                     error: state.pjnzError,
                     fromADR: !!state.pjnz?.fromADR,
-                    existingFileName: state.pjnz && state.pjnz.filename
+                    existingFileName: (state.pjnz && state.pjnz.filename) || state.pjnzErroredFile
                 } as PartialFileUploadProps),
                 shape: state => ({
                     valid: state.shape != null,
                     error: state.shapeError,
                     fromADR: !!state.shape?.fromADR,
-                    existingFileName: state.shape && state.shape.filename
+                    existingFileName: (state.shape && state.shape.filename) || state.shapeErroredFile
                 } as PartialFileUploadProps),
                 population: state => ({
                     valid: state.population != null,
                     error: state.populationError,
                     fromADR: !!state.population?.fromADR,
-                    existingFileName: state.population && state.population.filename
+                    existingFileName: (state.population && state.population.filename) || state.populationErroredFile
                 } as PartialFileUploadProps),
                 hasBaselineError: state => !!state.baselineError,
                 baselineError: state => state.baselineError,

@@ -14,6 +14,9 @@ export function expectEqualsFrozen(args: PayloadWithType<any>, expected: Payload
 export function testUploadErrorCommitted(url: string,
                                          expectedErrorType: string,
                                          expectedSuccessType: string,
+                                         expectedErroredFileType: string,
+                                         expectedErroredFilename: string,
+                                         formData: any,
                                          action: (store: ActionContext<any, any>, formData: FormData) => void) {
 
     it(`commits error message when ${url} fails`, async () => {
@@ -25,7 +28,7 @@ export function testUploadErrorCommitted(url: string,
         const state = mockBaselineState();
         const dispatch = jest.fn();
         const rootState = mockRootState();
-        await action({commit, state, dispatch, rootState} as any, new FormData());
+        await action({commit, state, dispatch, rootState} as any, formData);
 
         // first call to clear the data
         expect(commit.mock.calls[0][0]).toStrictEqual({
@@ -37,6 +40,11 @@ export function testUploadErrorCommitted(url: string,
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: expectedErrorType,
             payload: mockError("Something went wrong")
+        });
+
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: expectedErroredFileType,
+            payload: expectedErroredFilename
         });
     });
 }

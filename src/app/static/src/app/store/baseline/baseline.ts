@@ -9,6 +9,7 @@ import {localStorageManager} from "../../localStorageManager";
 export interface BaselineState extends ReadyState {
     selectedDataset: Dataset | null
     pjnzError: Error | null
+    pjnzErroredFile: string | null
     country: string
     iso3: string
     pjnz: PjnzResponse | null
@@ -16,8 +17,10 @@ export interface BaselineState extends ReadyState {
     regionFilters: NestedFilterOption[]
     flattenedRegionFilters: Dict<NestedFilterOption>
     shapeError: Error | null
+    shapeErroredFile: string | null
     population: PopulationResponse | null,
     populationError: Error | null,
+    populationErroredFile: string | null,
     validating: boolean,
     validatedConsistent: boolean,
     baselineError: Error | null
@@ -29,13 +32,16 @@ export const initialBaselineState = (): BaselineState => {
         country: "",
         iso3: "",
         pjnzError: null,
+        pjnzErroredFile: null,
         pjnz: null,
         shape: null,
         regionFilters: [],
         flattenedRegionFilters: {},
         shapeError: null,
+        shapeErroredFile: null,
         population: null,
         populationError: null,
+        populationErroredFile: null,
         ready: false,
         validating: false,
         validatedConsistent: false,
