@@ -21,8 +21,8 @@ describe("MapEmptyFeature component", () => {
     it("render can display message in the middle of the map", () => {
         const wrapper = getWrapper();
         expect(wrapper.findAll(LControl).length).toBe(1)
-        expect(wrapper.find(LControl).classes("emptyFeature-center")).toBe(true)
-        expect(wrapper.find("div").classes("emptyFeature-size")).toBe(true)
+        expect(wrapper.find(LControl).classes("empty-feature-center")).toBe(true)
+        expect(wrapper.find("div").classes("empty-feature-size")).toBe(true)
     });
 
     it("render can display translated message on map", () => {
