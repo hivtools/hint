@@ -5,6 +5,7 @@ import {actions as surveyActions} from "../../app/store/surveyAndProgram/actions
 import {isDynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import { ModelOptionsMutation } from "../../app/store/modelOptions/mutations";
 import { Language } from "../../app/store/translations/locales";
+import {getFormData} from "./helpers";
 
 const fs = require("fs");
 const FormData = require("form-data");
@@ -16,15 +17,12 @@ describe("model options actions integration", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        let file = fs.createReadStream("../testdata/malawi.geojson");
-        let formData = new FormData();
-        formData.append('file', file);
+
+        let formData = getFormData("../testdata/malawi.geojson") ;
 
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
 
-        file = fs.createReadStream("../testdata/survey.csv");
-        formData = new FormData();
-        formData.append('file', file);
+        formData = getFormData("../testdata/survey.csv") ;
 
         await surveyActions.uploadSurvey({commit, dispatch, rootState} as any, formData);
     });

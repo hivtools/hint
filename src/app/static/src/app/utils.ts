@@ -224,3 +224,13 @@ function updateGroup(oldGroup: DynamicControlGroup, newGroup: DynamicControlGrou
     return newGroup
 }
 
+export function getFilenameFromImportUrl(url: string) {
+    const parts = url.split("/");
+    return parts[parts.length - 1];
+}
+
+export function getFilenameFromUploadFormData(formdata: FormData) {
+    const file = formdata.get("file");
+    return (file as File).name;
+}
+

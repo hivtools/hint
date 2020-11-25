@@ -134,7 +134,7 @@
                     valid: !!surveyAndProgram.anc,
                     fromADR: !!surveyAndProgram.anc?.fromADR,
                     error: surveyAndProgram.ancError,
-                    existingFileName: surveyAndProgram.anc && surveyAndProgram.anc.filename,
+                    existingFileName: (surveyAndProgram.anc && surveyAndProgram.anc.filename)|| surveyAndProgram.ancErroredFile,
                     tabClass: {
                         "disabled": !surveyAndProgram.anc,
                         "active": surveyAndProgram.selectedDataType == DataType.ANC
@@ -144,7 +144,7 @@
                     valid: surveyAndProgram.program != null,
                     fromADR: !!surveyAndProgram.program?.fromADR,
                     error: surveyAndProgram.programError,
-                    existingFileName: surveyAndProgram.program && surveyAndProgram.program.filename,
+                    existingFileName: (surveyAndProgram.program && surveyAndProgram.program.filename) || surveyAndProgram.programErroredFile,
                     tabClass: {
                         "disabled": !surveyAndProgram.program,
                         "active": surveyAndProgram.selectedDataType == DataType.Program
@@ -154,7 +154,7 @@
                     valid: surveyAndProgram.survey != null,
                     fromADR: !!surveyAndProgram.survey?.fromADR,
                     error: surveyAndProgram.surveyError,
-                    existingFileName: surveyAndProgram.survey && surveyAndProgram.survey.filename,
+                    existingFileName: (surveyAndProgram.survey && surveyAndProgram.survey.filename) || surveyAndProgram.surveyErroredFile,
                     tabClass: {
                         "disabled": !surveyAndProgram.survey,
                         "active": surveyAndProgram.selectedDataType == DataType.Survey

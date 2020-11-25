@@ -1,3 +1,6 @@
+# hint 1.1.2
+* Fix bug to allow removal of files with errors
+
 # hint 1.1.1
 * Fixed bug where bubble plot failed to display bubble for single-value range.
 

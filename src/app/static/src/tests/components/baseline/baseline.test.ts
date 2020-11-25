@@ -170,6 +170,42 @@ describe("Baseline upload component", () => {
         expect(wrapper.findAll(ManageFile).at(2).props().accept).toBe("csv,.csv");
     });
 
+    it("passes pjnz response existing file name to manage file", () => {
+        const store = createSut({pjnz: {filename: "existing file"} as any});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(0).props("existingFileName")).toBe("existing file");
+    });
+
+    it("passes pjnz errored file to manage file", () => {
+        const store = createSut({pjnzErroredFile: "errored file"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(0).props("existingFileName")).toBe("errored file");
+    });
+
+    it("passes shape response existing file name to manage file", () => {
+        const store = createSut({shape: {filename: "existing file"} as any});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(1).props("existingFileName")).toBe("existing file");
+    });
+
+    it("passes shape errored file to manage file", () => {
+        const store = createSut({shapeErroredFile: "errored file"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(1).props("existingFileName")).toBe("errored file");
+    });
+
+    it("passes population response existing file name to manage file", () => {
+        const store = createSut({population: {filename: "existing file"} as any});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(2).props("existingFileName")).toBe("existing file");
+    });
+
+    it("passes population errored file to manage file", () => {
+        const store = createSut({populationErroredFile: "errored file"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(2).props("existingFileName")).toBe("errored file");
+    });
+
     it("upload pjnz dispatches baseline/uploadPJNZ", (done) => {
         expectUploadToDispatchAction(0, () => actions.uploadPJNZ, done);
     });
