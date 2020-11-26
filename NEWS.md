@@ -1,3 +1,7 @@
+# hint 1.2.3
+
+* Support custom value ranges for bubble plot scales.
+
 # hint 1.1.3
 
 * Display text on map when no data in selections.
