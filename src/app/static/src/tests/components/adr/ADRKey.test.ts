@@ -48,12 +48,11 @@ describe("ADR Key", function () {
         expect(rendered.find("span").text()).toBe("none provided");
     });
 
-    it("shows edit/remove links if key exists", () => {
+    it("shows remove links if key exists", () => {
         const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
         const links = rendered.findAll("a")
-        expect(links.length).toBe(2);
-        expect(links.at(0).text()).toBe("edit");
-        expect(links.at(1).text()).toBe("remove");
+        expect(links.length).toBe(1);
+        expect(links.at(0).text()).toBe("remove");
     });
 
     it("shows add link if key does not exist", () => {
@@ -80,7 +79,7 @@ describe("ADR Key", function () {
     it("can edit key", async () => {
         const rendered = mount(ADRKey,
             {
-                store: createStore("123-abc"),
+                store: createStore(),
                 attachToDocument: true,
                 stubs: ["tree-select"]
             });
@@ -89,7 +88,6 @@ describe("ADR Key", function () {
         links.at(0).trigger("click");
 
         await Vue.nextTick();
-
         expect(rendered.find("button").text()).toBe("Save");
         expect(rendered.find("input").element).toBe(document.activeElement);
 
@@ -103,7 +101,7 @@ describe("ADR Key", function () {
     });
 
     it("cannot save empty key", async () => {
-        const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
+        const rendered = shallowMount(ADRKey, {store: createStore()});
         expect(rendered.findAll(".input-group").length).toBe(0);
         const links = rendered.findAll("a")
         links.at(0).trigger("click");
@@ -123,7 +121,7 @@ describe("ADR Key", function () {
     });
 
     it("can cancel editing", async () => {
-        const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
+        const rendered = shallowMount(ADRKey, {store: createStore()});
         expect(rendered.findAll(".input-group").length).toBe(0);
         const links = rendered.findAll("a")
         links.at(0).trigger("click");
@@ -144,7 +142,7 @@ describe("ADR Key", function () {
         const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
         expect(rendered.findAll(".input-group").length).toBe(0);
         const links = rendered.findAll("a")
-        links.at(1).trigger("click");
+        links.at(0).trigger("click");
 
         await Vue.nextTick();
 
