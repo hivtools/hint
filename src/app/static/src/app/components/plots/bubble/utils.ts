@@ -8,7 +8,9 @@ export const getRadius = function (value: number, minValue: number, maxValue: nu
         return maxRadius;
     }
 
+    //Clip value to range so do not exceed max or min bubble sizes
     value = Math.min(value, maxValue);
+    value = Math.max(value, minValue);
 
     //where is value on a scale of 0-1 between minValue and maxValue
     const scalePoint = (value - minValue) / (maxValue - minValue);
