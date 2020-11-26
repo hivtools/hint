@@ -1,2 +1,2 @@
 
-export const currentHintVersion = "1.1.4";
+export const currentHintVersion = "1.2.0";
