@@ -310,7 +310,6 @@ describe("Stepper component", () => {
         expect(steps.at(1).props().active).toBe(true);
     });
 
-
     it("cannot go back from the first step", () => {
         const wrapper = createSut({country: "", ready: true}, {ready: true}, {}, {ready: true});
         const backLink = wrapper.find("#back");

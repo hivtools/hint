@@ -123,6 +123,10 @@
                     .length >= num - 1
             },
             isComplete(num: number) {
+                if (this.isActive(7)) {
+                    this.complete[num] = true
+                    return !this.loading;
+                }
                 return !this.loading && this.complete[num];
             }
         },
