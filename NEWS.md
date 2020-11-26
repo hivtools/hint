@@ -1,4 +1,4 @@
-# hint 1.2.3
+# hint 1.2.0
 
 * Support custom value ranges for bubble plot scales.
 
