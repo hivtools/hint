@@ -8,6 +8,8 @@ export const getRadius = function (value: number, minValue: number, maxValue: nu
         return maxRadius;
     }
 
+    value = Math.min(value, maxValue);
+
     //where is value on a scale of 0-1 between minValue and maxValue
     const scalePoint = (value - minValue) / (maxValue - minValue);
 
