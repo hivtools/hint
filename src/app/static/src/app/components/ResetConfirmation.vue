@@ -16,12 +16,12 @@
 
             <template v-if="!waitingForVersion" v-slot:footer>
                 <button type="button"
-                        class="btn btn-white"
+                        class="btn btn-red"
                         @click="handleConfirm"
                         v-translate="isGuest? 'discardSteps' : 'saveVersionConfirm'">
                 </button>
                 <button type="button"
-                        class="btn btn-red"
+                        class="btn btn-white"
                         @click="cancelEditing"
                         v-translate="isGuest? 'cancelEdit': 'cancelEditLoggedIn'">
                 </button>

@@ -1,3 +1,6 @@
+# hint 1.3.1
+
+* Swap button colours on Save new version confirmation dialog
 
 # hint 1.3.0
 
