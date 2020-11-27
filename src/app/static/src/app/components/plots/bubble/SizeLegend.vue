@@ -102,7 +102,9 @@
                 return this.width / 2;
             },
             circles: function () {
-                if (this.indicatorRange.min == this.indicatorRange.max) {
+                if (isNaN(this.indicatorRange.min) || isNaN(this.indicatorRange.max)) {
+                    return [];
+                } else if (this.indicatorRange.min == this.indicatorRange.max) {
                     // only one value in range - show max circle only
                     return [this.circleFromRadius(this.maxRadius, this.indicatorRange.max, false)];
                 } else {
