@@ -11,7 +11,7 @@
                         <span class="pr-2">{{ keyText }}</span>
                         <span v-if="!key">
                            <a href="#"
-                              @click="edit"
+                              @click="add"
                               v-translate="'add'"></a>
                               <span>/</span>
                             <a :href="'https://adr.unaids.org/me/'"
@@ -20,10 +20,6 @@
                                v-tooltip="tooltipContent"></a>
                         </span>
                         <span v-if="key">
-                            <a href="#"
-                               @click="edit"
-                               v-translate="'edit'"> </a>
-                            <span>/</span>
                             <a href="#"
                                @click="remove"
                                v-translate="'remove'"></a>
@@ -77,7 +73,7 @@
     interface Methods {
         saveADRKey: (key: string | null) => void
         deleteADRKey: () => void
-        edit: (e: Event) => void
+        add: (e: Event) => void
         remove: (e: Event) => void
         save: (e: Event) => void
         cancel: (e: Event) => void
@@ -124,7 +120,7 @@
         },
         methods: {
             ...mapActionsByNames<keyof Methods>(null, ["saveADRKey", "deleteADRKey"]),
-            edit(e: Event) {
+            add(e: Event) {
                 e.preventDefault();
                 this.editing = true;
                 this.editableKey = this.key;

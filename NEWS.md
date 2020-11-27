@@ -1,3 +1,8 @@
+
+# hint 1.3.0
+
+* Don't show ADR key to user after it has been entered.
+
 # hint 1.2.1
 
 * Fetch all relevant datasets from ADR without paging
