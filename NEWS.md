@@ -1,3 +1,6 @@
+# hint 1.4.0
+
+* Include metadata default scale for bubble size
 
 # hint 1.3.0
 
