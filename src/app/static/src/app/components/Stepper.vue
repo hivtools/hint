@@ -147,7 +147,6 @@
         },
         watch: {
             complete: function (){
-                // if (this.isEnabled(5) && this.activeStep === 4){
                 if (this.activeStep === 4){
                     this.next()
                 }

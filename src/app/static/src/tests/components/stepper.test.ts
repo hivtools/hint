@@ -485,41 +485,12 @@ describe("Stepper component", () => {
         expect(steps.at(3).props().complete).toBe(true);
     });
 
-    // it("stepper moves to calibrate step when model run completed", () => {
-    //     const modelRunState = {
-    //         ready: true,
-    //         result: "TEST" as any,
-    //         status: {success: true} as ModelStatusResponse
-    //     };
-    //     const wrapper = createSut({ready: true},
-    //     {ready: true},
-    //     {},
-    //     modelRunState,
-    //     {activeStep: 4});
-    //     const steps = wrapper.findAll(Step);
-
-    //     steps.at(3).setProps({active: true})
-    //     steps.at(4).setProps({enabled: true})
-    //     steps.at(3).setProps({complete: true})
-
-    //     Vue.nextTick();
-    //     expect(steps.at(4).props()).toBe(true);
-    // });
-
     it("model run step becomes complete on success, result fetched, and automatically moves to calibrate step", async () => {
         const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true}, {activeStep: 4}, {});
         const steps = wrapper.findAll(Step);
-        // steps.at(0).setProps({complete: true});
-        // steps.at(1).setProps({complete: true});
-        // steps.at(2).setProps({complete: true});
         expect(steps.at(3).props().complete).toBe(false);
         expect(steps.at(3).props().active).toBe(true);
         expect(steps.at(4).props().active).toBe(false);
-
-        // steps.at(0).setProps({complete: true});
-        // steps.at(1).setProps({complete: true});
-        // steps.at(2).setProps({complete: true});
-        // steps.at(4).setProps({enabled: true});
 
         wrapper.vm.$store.commit("modelRun/RunStatusUpdated", {
             "type": "RunStatusUpdated",
@@ -534,32 +505,15 @@ describe("Stepper component", () => {
             }
         });
 
-        // steps.at(0).setProps({complete: true});
-        // steps.at(1).setProps({complete: true});
-        // steps.at(2).setProps({complete: true});
-
         wrapper.vm.$store.commit("modelRun/RunResultFetched", {
             "type": "RunResultFetched",
             "payload": "TEST"
         });
 
-        
-        // steps.at(0).setProps({complete: true});
-        // steps.at(1).setProps({complete: true});
-        // steps.at(2).setProps({complete: true});
-        // steps.at(4).setProps({enabled: true});
         await Vue.nextTick();
-
-        // const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(true);
         expect(steps.at(3).props().active).toBe(false);
-
-        // await Vue.nextTick();
-        // setTimeout(() => {
-            // expect(steps.at(3).props()).toBe(true);
-            expect(steps.at(4).props().active).toBe(true);
-        //     done();
-        // });
+        expect(steps.at(4).props().active).toBe(true);
     });
 
     it("validates state once ready", async () => {
