@@ -186,4 +186,11 @@ describe("Bubble plot utils", () => {
         expect(getRadius(5, 0, 10, 0, 10)).toBeCloseTo(expectedRadius, 5);
     });
 
+    it("can get radius where value is greater than max", () => {
+        expect(getRadius(20, 0, 10, 5, 50)).toBe(50);
+    });
+
+    it("can get radius where value is less than min", () => {
+        expect(getRadius(1, 2, 10, 5, 50)).toBe(5);
+    });
 });
