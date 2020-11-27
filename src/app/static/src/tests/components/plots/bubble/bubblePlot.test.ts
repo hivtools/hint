@@ -14,6 +14,7 @@ import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {expectFilter, plhiv, prev, testData} from "../testHelpers"
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
+import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -300,6 +301,41 @@ describe("BubblePlot component", () => {
 
     });
 
+    it("computes emptyFeatures returns true when selections are empty", () => {
+        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
+        const vm = wrapper.vm as any;
+        expect(vm.emptyFeature).toBe(true);
+    });
+
+    it("computes emptyFeatures does not return true when selections are selected", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.emptyFeature).toBe(false);
+    });
+
+    it("render does not display translated no data message on map", () => {
+        const wrapper = getWrapper();
+        expect(wrapper.findAll(MapEmptyFeature).length).toBe(0)
+        expect(wrapper.find(MapEmptyFeature).exists()).toBe(false)
+    });
+
+    it("render can display translated no data message on map", () => {
+        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
+        expect(wrapper.findAll(MapEmptyFeature).length).toBe(1)
+        expect(wrapper.find(MapEmptyFeature).exists()).toBe(true)
+    });
+
+    it("render does not display legends when selections have no data", () => {
+        const wrapper = getWrapper();
+        expect(wrapper.find(MapLegend).element.style.display).toBeFalsy()
+        expect(wrapper.find(SizeLegend).element.style.display).toBeFalsy()
+    });
+
+    it("render does display legends when selections have data", () => {
+        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
+        expect(wrapper.find(SizeLegend).element.style.display).toBeTruthy()
+        expect(wrapper.find(MapLegend).element.style.display).toBeTruthy()
+    });
 
     it("computes currentLevelFeatureIds", () => {
         const wrapper = getWrapper();
