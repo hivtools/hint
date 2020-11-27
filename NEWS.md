@@ -1,6 +1,10 @@
-# hint 1.1.4
+# hint 1.2.1
 
 * Fetch all relevant datasets from ADR without paging
+
+# hint 1.2.0
+
+* Support custom value ranges for bubble plot scales.
 
 # hint 1.1.3
 
