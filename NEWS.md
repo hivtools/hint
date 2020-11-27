@@ -1,3 +1,12 @@
+
+# hint 1.2.0
+
+* Make 'Download results' step red when advance to that step.
+
+# hint 1.2.0
+
+* Support custom value ranges for bubble plot scales.
+
 # hint 1.1.3
 
 * Display text on map when no data in selections.

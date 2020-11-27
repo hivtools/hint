@@ -171,24 +171,6 @@ describe("MapAdjustScale component", () => {
         expect(wrapper.find(".static-custom-values").exists()).toBe(true);
     });
 
-    it("renders as expected when hide static custom", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {...propsData, hideStaticCustom: true}});
-
-        expect(wrapper.find(".static-container").exists()).toBe(true);
-        expect(wrapper.find(".static-default").exists()).toBe(true);
-        expect(wrapper.find(".static-custom").exists()).toBe(false);
-        expect(wrapper.find(".static-custom-values").exists()).toBe(false);
-    });
-
-    it("renders as expected when hide static default and custom", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {...propsData, hideStaticDefault: true, hideStaticCustom: true}});
-
-        expect(wrapper.find(".static-container").exists()).toBe(false);
-        expect(wrapper.find(".static-default").exists()).toBe(false);
-        expect(wrapper.find(".static-custom").exists()).toBe(false);
-        expect(wrapper.find(".static-custom-values").exists()).toBe(false);
-    });
-
     it("emits update event when type changes", () => {
         const wrapper = mount(MapAdjustScale, {store, propsData});
 
