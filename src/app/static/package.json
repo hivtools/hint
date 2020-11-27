@@ -11,7 +11,7 @@
     "integration-test": "jest --testPathIgnorePatterns adr -c jest.integration.config.js",
     "adr-integration-test": "jest --testPathPattern adr -c jest.integration.adr.config.js",
     "integration-test-docker": "jest --testPathIgnorePatterns adr -c jest.integration.docker.config.js",
-    "adr-integration-test-docker": "jest --testPathPattern adr -c jest.integration.docker.config.js",
+    "adr-integration-test-docker": "jest --testPathPattern adr -c jest.integration.docker.adr.config.js",
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx,vue"
   },
   "author": "",
