@@ -1,4 +1,4 @@
-# hint 1.3.1
+# hint 1.3.0
 
 * Show spinner when fetching ADR datasets
 
