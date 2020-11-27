@@ -31,7 +31,7 @@
             <h4 v-if="!loading" v-translate="'browseADR'"></h4>
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
-                <tree-select
+                <tree-select v-if="!fetchingDatasets"
                     :multiple="false"
                     :searchable="true"
                     :options="datasetOptions"
@@ -45,6 +45,10 @@
                     >
                     </label>
                 </tree-select>
+                <div v-if="fetchingDatasets">
+                    <loading-spinner  size="xs"></loading-spinner>
+                    <span v-translate="'loadingDatasets'"></span>
+                </div>
             </div>
             <div class="text-center" v-if="loading">
                 <loading-spinner size="sm"></loading-spinner>
@@ -111,6 +115,7 @@
     interface Computed {
         schemas: ADRSchemas
         datasets: any[]
+        fetchingDatasets: boolean
         datasetOptions: any[]
         selectedDataset: Dataset | null
         newDataset: Dataset
@@ -165,6 +170,10 @@
             datasets: mapStateProp<RootState, any[]>(
                 null,
                 (state: RootState) => state.adrDatasets
+            ),
+            fetchingDatasets: mapStateProp<RootState, boolean>(
+                null,
+                (state: RootState) => state.adrFetchingDatasets
             ),
             datasetOptions() {
                 return this.datasets.map((d) => ({
