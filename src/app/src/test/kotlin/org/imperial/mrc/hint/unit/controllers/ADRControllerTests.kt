@@ -85,7 +85,7 @@ class ADRControllerTests : HintrControllerTests()
     @Test
     fun `gets datasets without inaccessible resources by default`()
     {
-        val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
+        val expectedUrl = "package_search?q=type:adr-schema&rows=1000&hide_inaccessible_resources=true"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
@@ -111,7 +111,7 @@ class ADRControllerTests : HintrControllerTests()
     @Test
     fun `gets datasets including inaccessible resources if flag is passed`()
     {
-        val expectedUrl = "package_search?q=type:adr-schema"
+        val expectedUrl = "package_search?q=type:adr-schema&rows=1000"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
@@ -137,7 +137,7 @@ class ADRControllerTests : HintrControllerTests()
     @Test
     fun `filters datasets to only those with resources`()
     {
-        val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
+        val expectedUrl = "package_search?q=type:adr-schema&rows=1000&hide_inaccessible_resources=true"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
@@ -165,7 +165,7 @@ class ADRControllerTests : HintrControllerTests()
     fun `passes error responses along`()
     {
         val badResponse = ResponseEntity<String>(HttpStatus.BAD_REQUEST)
-        val expectedUrl = "package_search?q=type:adr-schema&hide_inaccessible_resources=true"
+        val expectedUrl = "package_search?q=type:adr-schema&rows=1000&hide_inaccessible_resources=true"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn badResponse
         }
