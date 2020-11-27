@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/root/actions";
-import {mockAxios, mockRootState, mockStepperState, mockSuccess} from "../mocks";
+import {mockAxios, mockError, mockRootState, mockStepperState, mockSuccess} from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
@@ -254,10 +254,42 @@ describe("root actions", () => {
 
         await actions.getADRDatasets({commit, rootState} as any);
 
+        expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0])
+            .toStrictEqual({
+                type: RootMutation.SetADRFetchingDatasets,
+                payload: true
+            });
+        expect(commit.mock.calls[1][0])
             .toStrictEqual({
                 type: RootMutation.SetADRDatasets,
                 payload: [1]
+            });
+        expect(commit.mock.calls[2][0])
+            .toStrictEqual({
+                type: RootMutation.SetADRFetchingDatasets,
+                payload: false
+            });
+    });
+
+    it("resets ADR datasets fetching if error response", async () => {
+        mockAxios.onGet(`/adr/datasets/`)
+            .reply(500, mockError("error"));
+
+        const commit = jest.fn();
+
+        await actions.getADRDatasets({commit, rootState} as any);
+
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0])
+            .toStrictEqual({
+                type: RootMutation.SetADRFetchingDatasets,
+                payload: true
+            });
+        expect(commit.mock.calls[1][0])
+            .toStrictEqual({
+                type: RootMutation.SetADRFetchingDatasets,
+                payload: false
             });
     });
 
