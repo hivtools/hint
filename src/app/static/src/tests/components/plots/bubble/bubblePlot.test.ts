@@ -515,14 +515,34 @@ describe("BubblePlot component", () => {
         expect((wrapper.vm as any).colorIndicator).toBe(propsData.indicators[1]);
     });
 
-    it("computes colourIndicatorScale", () => {
+    it("computes existing colourIndicatorScale", () => {
         const wrapper = getWrapper();
         expect((wrapper.vm as any).colourIndicatorScale).toStrictEqual(propsData.colourScales.prevalence);
     });
 
-    it("computes sizeIndicatorScale", () => {
+    it("computes existing sizeIndicatorScale", () => {
         const wrapper = getWrapper();
         expect((wrapper.vm as any).sizeIndicatorScale).toStrictEqual(propsData.sizeScales.plhiv);
+    });
+
+    it("initialises colourIndicatorScale", () => {
+        const wrapper = getWrapper({colourScales: {}});
+        const expectedScale = {
+            customMin: 0,
+            customMax: 0.8,
+            type: ScaleType.DynamicFiltered
+        };
+        expect((wrapper.vm as any).colourIndicatorScale).toStrictEqual(expectedScale);
+    });
+
+    it("initialises sizeIndicatorScale", () => {
+        const wrapper = getWrapper({sizeScales: {}});
+        const expectedScale = {
+          customMin: 1,
+          customMax: 100,
+          type: ScaleType.DynamicFiltered
+        };
+        expect((wrapper.vm as any).sizeIndicatorScale).toStrictEqual(expectedScale);
     });
 
     it("updateBounds updates bounds of map from features geojson", () => {

@@ -349,7 +349,7 @@
                 if (current) {
                     return current
                 } else {
-                    const newScale = initialiseScaleFromMetadata(this.colorIndicator);
+                    const newScale = initialiseScaleFromMetadata(this.sizeIndicator);
                     this.updateSizeScale(newScale);
                     return newScale;
                 }
@@ -462,9 +462,9 @@
                 this.$emit("update-colour-scales", newColourScales);
             },
             updateSizeScale: function (scale: ScaleSettings) {
-                const newColourScales = {...this.sizeScales};
-                newColourScales[this.selections.sizeIndicatorId] = scale;
-                this.$emit("update-size-scales", newColourScales);
+                const newSizeScales = {...this.sizeScales};
+                newSizeScales[this.selections.sizeIndicatorId] = scale;
+                this.$emit("update-size-scales", newSizeScales);
             },
         },
         watch:
