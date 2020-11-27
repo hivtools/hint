@@ -45,7 +45,7 @@
                     >
                     </label>
                 </tree-select>
-                <div v-if="fetchingDatasets">
+                <div v-if="fetchingDatasets" class="pt-2" id="fetching-datasets">
                     <loading-spinner  size="xs"></loading-spinner>
                     <span v-translate="'loadingDatasets'"></span>
                 </div>

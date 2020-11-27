@@ -1,3 +1,7 @@
+# hint 1.3.1
+
+* Show spinner when fetching ADR datasets
+
 # hint 1.2.1
 
 * Fetch all relevant datasets from ADR without paging

@@ -414,6 +414,22 @@ describe("select dataset", () => {
         expect(select.props("options")).toStrictEqual(expectedOptions);
     });
 
+    it("does not render fetching dataset controls when not fetching", () => {
+        const rendered = shallowMount(SelectDataset, {store: getStore()});
+        expect(rendered.find("#fetching-datasets").exists()).toBe(false);
+    });
+
+    it("renders fetching dataset controls, and hides TreeSelect, when fetching", () => {
+        const store = getStore({}, {adrFetchingDatasets: true});
+        const rendered = shallowMount(SelectDataset, {store});
+        expect(rendered.find("#fetching-datasets").exists()).toBe(true);
+        expect(rendered.find(TreeSelect).exists()).toBe(false);
+
+        expect(rendered.find("#fetching-datasets").find(LoadingSpinner).attributes("size")).toBe("xs");
+        expectTranslated(rendered.find("#fetching-datasets span"),
+            "Loading datasets", "Chargement de vos ensembles de données", store);
+    });
+
     it("sets current dataset", async () => {
         let store = getStore({},
             {adrDatasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
