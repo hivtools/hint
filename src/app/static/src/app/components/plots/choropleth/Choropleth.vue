@@ -21,7 +21,7 @@
                              :level-labels="featureLevels"
                              @detail-changed="onDetailChange"
                              @indicator-changed="onIndicatorChange"></map-control>
-                <map-legend :metadata="colorIndicator"
+                <map-legend v-show="!emptyFeature" :metadata="colorIndicator"
                             :colour-scale="indicatorColourScale"
                             :colour-range="colourRange"
                             @update="updateColourScale"></map-legend>

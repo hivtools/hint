@@ -104,6 +104,16 @@ describe("Choropleth component", () => {
         expect(wrapper.find(MapEmptyFeature).exists()).toBe(true)
     });
 
+    it("render does not display legends when selections have no data", () => {
+        const wrapper = getWrapper();
+        expect(wrapper.find(MapLegend).element.style.display).toBeFalsy()
+    });
+
+    it("render does display legends when selections have data", () => {
+        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
+        expect(wrapper.find(MapLegend).element.style.display).toBeTruthy()
+    });
+
     it("computes featureIndicators", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;

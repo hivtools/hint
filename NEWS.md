@@ -1,6 +1,11 @@
-# hint 1.3.0
+
+# hint 1.4.0
 
 * Show spinner when fetching ADR datasets
+
+# hint 1.3.0
+
+* Don't show ADR key to user after it has been entered.
 
 # hint 1.2.1
 
