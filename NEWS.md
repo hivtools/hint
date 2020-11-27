@@ -1,4 +1,5 @@
-≈# hint 1.4.0
+
+# hint 1.4.0
 
 * Make 'Download results' step red when advance to that step.
 
