@@ -1,6 +1,10 @@
-# hint 1.2.0
+≈# hint 1.4.0
 
 * Make 'Download results' step red when advance to that step.
+
+# hint 1.3.0
+
+* Don't show ADR key to user after it has been entered.
 
 # hint 1.2.1
 
