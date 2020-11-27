@@ -76,7 +76,7 @@ describe("ADR Key", function () {
                 "This can be found on your ADR profile page");
     });
 
-    it("can edit key", async () => {
+    it("can add key", async () => {
         const rendered = mount(ADRKey,
             {
                 store: createStore(),
