@@ -30,6 +30,10 @@ class ADRController(private val encryption: Encryption,
         HintrController(fileManager, apiClient, session, versionRepository)
 {
 
+    companion object {
+        const val MAX_DATASETS = 1000
+    }
+
     @GetMapping("/key")
     fun getAPIKey(): ResponseEntity<String>
     {
@@ -67,7 +71,7 @@ class ADRController(private val encryption: Encryption,
     fun getDatasets(@RequestParam showInaccessible: Boolean = false): ResponseEntity<String>
     {
         val adr = adrClientBuilder.build()
-        var url = "package_search?q=type:${appProperties.adrDatasetSchema}"
+        var url = "package_search?q=type:${appProperties.adrDatasetSchema}&rows=$MAX_DATASETS"
         url = if (showInaccessible)
         {
             // this flag is used for testing but will never
