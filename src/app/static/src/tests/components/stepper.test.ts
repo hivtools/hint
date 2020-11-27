@@ -599,4 +599,24 @@ describe("Stepper component", () => {
             {activeStep: step});
     };
 
+    it("complete step only becomes active/complete once state becomes ready", async () => {
+
+        const wrapper = createSut(completedBaselineState,
+            {},
+            {plottingMetadata: mockPlottingMetadataResponse()},
+            {ready: true},
+            {activeStep: 7});
+
+        let steps = wrapper.findAll(Step);
+        expect(steps.filter(s => s.props().active).length).toBe(0);
+
+        await makeReady(wrapper);
+        steps = wrapper.findAll(Step);
+        expect(steps.at(6).props().active).toBe(true);
+        expect(steps.at(6).props().complete).toBe(true);
+
+        const continueLink = wrapper.find("#continue")
+        expect(continueLink.classes()).toContain("disabled");
+    });
+
 });

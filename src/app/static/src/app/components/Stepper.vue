@@ -27,7 +27,7 @@
                 <a href="#" id="continue"
                    v-on:click="next"
                    class="text-uppercase font-weight-bold"
-                   :class="{'disabled': !isComplete(activeStep)}"
+                   :class="{'disabled': activeContinue(activeStep)}"
                    v-translate="'continue'"></a>
             </div>
         </div>
@@ -128,6 +128,12 @@
                     return !this.loading;
                 }
                 return !this.loading && this.complete[num];
+            },
+            activeContinue(activeStep: number) {
+                if(activeStep === 7) {
+                    return true
+                }
+                return !this.isComplete(activeStep)
             }
         },
         created() {
