@@ -19,8 +19,7 @@
                 </div>
             </div>
             <map-adjust-scale class="legend-element legend-adjust map-control" name="size" :step="scaleStep"
-                              :show="showAdjust" :scale="sizeScale" @update="update" :metadata="metadata"
-                              :hide-static-default="true">
+                              :show="showAdjust" :scale="sizeScale" @update="update" :metadata="metadata">
             </map-adjust-scale>
         </div>
     </l-control>
