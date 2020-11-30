@@ -4,7 +4,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
         <div class="static-container">
             <div><span v-translate="'static'"></span></div>
             <div class="ml-2">
-                <div v-if="!hideStaticDefault" class="form-check static-default">
+                <div class="form-check static-default">
                     <label class="form-check-label">
                         <input id="type-input-default" class="form-check-input" type="radio" :name="scaleTypeGroup"
                                :value="ScaleType.Default"
@@ -84,8 +84,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
         show: boolean,
         scale: ScaleSettings,
         step: number,
-        metadata: any,
-        hideStaticDefault: boolean
+        metadata: any
     }
 
     interface Computed {
@@ -110,8 +109,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
             show: Boolean,
             scale: Object,
             step: Number,
-            metadata: Object,
-            hideStaticDefault: Boolean
+            metadata: Object
         },
         data(): any {
             return {
