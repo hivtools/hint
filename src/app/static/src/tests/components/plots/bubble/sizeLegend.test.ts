@@ -101,6 +101,18 @@ describe("SizeLegend component", () => {
         expectCirclesEqual(circles[0], {y: 120, radius: 110, text: "1", textY: 10});
     });
 
+    it("computes circles where range includes NaN", () => {
+        let wrapper = getWrapper({indicatorRange: {min: NaN, max: 1}});
+        let vm = wrapper.vm as any;
+        let circles = vm.circles;
+        expect(circles.length).toBe(0);
+
+        wrapper = getWrapper({indicatorRange: {min: 1, max: NaN}});
+        vm = wrapper.vm as any;
+        circles = vm.circles;
+        expect(circles.length).toBe(0);
+    });
+
     it("renders as expected", () => {
         const wrapper = getWrapper();
 

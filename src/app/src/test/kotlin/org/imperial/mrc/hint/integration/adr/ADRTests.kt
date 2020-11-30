@@ -197,7 +197,7 @@ class ADRTests : SecureIntegrationTests()
         return if (isAuthorized == IsAuthorized.TRUE)
         {
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
-            val resultWithResources = testRestTemplate.getForEntity<String>("/adr/datasets?showInaccessible=true")
+            val resultWithResources = testRestTemplate.getForEntity<String>("/adr/datasets?showInaccessible=false")
             val data = ObjectMapper().readTree(resultWithResources.body!!)["data"]
             val resource = data[0]["resources"].find { it["resource_type"].textValue() == type }
             resource!!["url"].textValue()
