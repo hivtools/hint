@@ -153,20 +153,11 @@ describe("MapAdjustScale component", () => {
         expect((wrapper.find("#custom-max-input").element as HTMLInputElement).disabled).toBe(true);
     });
 
-    it("renders as expected when hide props both false", () => {
+    it("renders static scale controls as expected", () => {
         const wrapper = mount(MapAdjustScale, {store, propsData});
 
         expect(wrapper.find(".static-container").exists()).toBe(true);
         expect(wrapper.find(".static-default").exists()).toBe(true);
-        expect(wrapper.find(".static-custom").exists()).toBe(true);
-        expect(wrapper.find(".static-custom-values").exists()).toBe(true);
-    });
-
-    it("renders as expected when hide static defaults", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {...propsData, hideStaticDefault: true}});
-
-        expect(wrapper.find(".static-container").exists()).toBe(true);
-        expect(wrapper.find(".static-default").exists()).toBe(false);
         expect(wrapper.find(".static-custom").exists()).toBe(true);
         expect(wrapper.find(".static-custom-values").exists()).toBe(true);
     });

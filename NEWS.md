@@ -1,7 +1,18 @@
+# hint 1.6.0
+
+* Show spinner when fetching ADR datasets
+
+# hint 1.5.1
+
+* Swap button colours on Save new version confirmation dialog
+
+# hint 1.5.0
+
+* Make 'Download results' step red when advance to that step.
 
 # hint 1.4.0
 
-* Show spinner when fetching ADR datasets
+* Include metadata default scale for bubble size
 
 # hint 1.3.0
 
