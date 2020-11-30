@@ -1,3 +1,7 @@
+# hint 1.5.0
+
+* Make 'Download results' step red when advance to that step.
+
 # hint 1.4.0
 
 * Include metadata default scale for bubble size
