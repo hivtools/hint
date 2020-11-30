@@ -31,11 +31,12 @@
             <h4 v-if="!loading" v-translate="'browseADR'"></h4>
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
-                <tree-select v-if="!fetchingDatasets"
+                <tree-select
                     :multiple="false"
                     :searchable="true"
                     :options="datasetOptions"
                     :placeholder="select"
+                    :disabled="fetchingDatasets"
                     v-model="newDatasetId"
                 >
                     <label
@@ -45,12 +46,12 @@
                     >
                     </label>
                 </tree-select>
-                <div v-if="fetchingDatasets" class="pt-2" id="fetching-datasets">
-                    <loading-spinner  size="xs"></loading-spinner>
+                <div :class="fetchingDatasets ? 'visible' : 'invisible'" style="margin-top:15px;" id="fetching-datasets">
+                    <loading-spinner size="xs"></loading-spinner>
                     <span v-translate="'loadingDatasets'"></span>
                 </div>
             </div>
-            <div class="text-center" v-if="loading">
+            <div class="text-center" v-if="loading" id="loading-dataset">
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <template v-slot:footer v-if="!loading">

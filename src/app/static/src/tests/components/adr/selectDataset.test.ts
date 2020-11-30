@@ -288,13 +288,13 @@ describe("select dataset", () => {
         await Vue.nextTick();
 
         expect(rendered.find(Modal).props("open")).toBe(true);
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.find("#loading-dataset").findAll(LoadingSpinner).length).toBe(1);
 
         await Vue.nextTick();
         await Vue.nextTick();
 
         expect(rendered.find(Modal).props("open")).toBe(false);
-        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
     });
 
     it("refreshes survey & program files if any baseline file is refreshed and pre-existing shape file present",
@@ -414,16 +414,17 @@ describe("select dataset", () => {
         expect(select.props("options")).toStrictEqual(expectedOptions);
     });
 
-    it("does not render fetching dataset controls when not fetching", () => {
+    it("hides fetching dataset controls, and enables TreeSelect, when not fetching", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
-        expect(rendered.find("#fetching-datasets").exists()).toBe(false);
+        expect(rendered.find("#fetching-datasets").classes()).toStrictEqual(["invisible"]);
+        expect(rendered.find(TreeSelect).attributes("disabled")).toBeUndefined();
     });
 
-    it("renders fetching dataset controls, and hides TreeSelect, when fetching", () => {
+    it("shows fetching dataset controls, and disables TreeSelect, when fetching", () => {
         const store = getStore({}, {adrFetchingDatasets: true});
         const rendered = shallowMount(SelectDataset, {store});
-        expect(rendered.find("#fetching-datasets").exists()).toBe(true);
-        expect(rendered.find(TreeSelect).exists()).toBe(false);
+        expect(rendered.find("#fetching-datasets").classes()).toStrictEqual(["visible"]);
+        expect(rendered.find(TreeSelect).attributes("disabled")).toBe("true");
 
         expect(rendered.find("#fetching-datasets").find(LoadingSpinner).attributes("size")).toBe("xs");
         expectTranslated(rendered.find("#fetching-datasets span"),
@@ -455,7 +456,7 @@ describe("select dataset", () => {
         // loading spinner should render and buttons hidden
         const buttons = rendered.find(Modal).findAll("button");
         expect(rendered.findAll(TreeSelect).length).toBe(0);
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.find("#loading-dataset").find(LoadingSpinner).exists()).toBe(true);
         expect(buttons.length).toBe(0);
         expectTranslated(rendered.find("p"),
             "Importing files - this may take several minutes. Please do not close your browser.",
@@ -466,7 +467,7 @@ describe("select dataset", () => {
         await Vue.nextTick();
         await Vue.nextTick();
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
@@ -496,7 +497,7 @@ describe("select dataset", () => {
         await Vue.nextTick(); // once for baseline actions to return
         await Vue.nextTick(); // once for survey actions to return
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
@@ -527,7 +528,7 @@ describe("select dataset", () => {
         // await just one tick for baseline actions to return, survey actions will not fire
         // because shape is not present
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
@@ -557,7 +558,7 @@ describe("select dataset", () => {
         await Vue.nextTick(); // once for baseline actions to return
         await Vue.nextTick(); // once for survey actions to return
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
@@ -587,7 +588,7 @@ describe("select dataset", () => {
         await Vue.nextTick(); // once for baseline actions to return
         await Vue.nextTick(); // once for survey actions to return
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
@@ -616,7 +617,7 @@ describe("select dataset", () => {
         // await just one tick for baseline actions to return, survey actions will not fire
         // because shape is not present
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
@@ -651,7 +652,7 @@ describe("select dataset", () => {
         await Vue.nextTick(); // once for baseline actions to return
         await Vue.nextTick(); // once for survey actions to return
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
