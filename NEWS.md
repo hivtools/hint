@@ -1,3 +1,7 @@
+# hint 1.5.1
+
+* Swap button colours on Save new version confirmation dialog
+
 # hint 1.5.0
 
 * Make 'Download results' step red when advance to that step.
