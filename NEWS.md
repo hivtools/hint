@@ -1,3 +1,7 @@
+# hint 1.6.0
+
+* Show spinner when fetching ADR datasets
+
 # hint 1.5.1
 
 * Swap button colours on Save new version confirmation dialog

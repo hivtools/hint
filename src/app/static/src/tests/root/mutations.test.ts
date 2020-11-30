@@ -73,6 +73,20 @@ describe("Root mutations", () => {
         //we skip stepper state this needs to be tested separately, activeStep may have been modified
     };
 
+    it("reset step copies ADR properties", () => {
+        const state = populatedState();
+        state.adrDatasets = ["TEST DATASETS"];
+        state.adrSchemas = ["TEST SCHEMAS"] as any;
+        state.adrFetchingDatasets = true;
+        state.adrKey = "TEST KEY";
+
+        mutations.Reset(state, {payload: 0});
+        expect(state.adrDatasets).toStrictEqual(["TEST DATASETS"]);
+        expect(state.adrSchemas).toStrictEqual(["TEST SCHEMAS"]);
+        expect(state.adrFetchingDatasets).toBe(true);
+        expect(state.adrKey).toBe("TEST KEY");
+    });
+
     it("can reset state where max valid step is 0", () => {
         const state = populatedState();
 
@@ -224,6 +238,7 @@ describe("Root mutations", () => {
         state.language = Language.fr;
         state.adrDatasets = ["TEST DATASETA"];
         state.adrSchemas = ["TEST SCHEMAS"] as any;
+        state.adrFetchingDatasets = true;
         state.adrKey = "TEST KEY";
 
         const mockRouterPush = jest.fn();
@@ -242,6 +257,7 @@ describe("Root mutations", () => {
         expect(state.adrDatasets).toStrictEqual(["TEST DATASETA"]);
         expect(state.adrSchemas).toStrictEqual(["TEST SCHEMAS"]);
         expect(state.adrKey).toBe("TEST KEY");
+        expect(state.adrFetchingDatasets).toBe(false);
 
         expect(state.baseline.ready).toBe(true);
         expect(state.surveyAndProgram.ready).toBe(true);
@@ -273,6 +289,12 @@ describe("Root mutations", () => {
         const state = mockRootState();
         mutations[RootMutation.SetADRDatasets](state, {payload: [1, 2, 3]});
         expect(state.adrDatasets).toEqual([1, 2, 3]);
+    });
+
+    it("can set ADR fetching datasets", () => {
+        const state = mockRootState({adrFetchingDatasets: false});
+        mutations[RootMutation.SetADRFetchingDatasets](state, {payload: true});
+        expect(state.adrFetchingDatasets).toBe(true);
     });
 
     it("can set ADR schemas", () => {
