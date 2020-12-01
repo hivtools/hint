@@ -85,10 +85,14 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async getADRDatasets(context) {
+        context.commit({type: RootMutation.SetADRFetchingDatasets, payload: true});
         await api<RootMutation, RootMutation>(context)
             .ignoreErrors()
             .withSuccess(RootMutation.SetADRDatasets)
             .get("/adr/datasets/")
+            .then(() => {
+                context.commit({type: RootMutation.SetADRFetchingDatasets, payload: false});
+            });
     },
 
     async getADRSchemas(context) {
