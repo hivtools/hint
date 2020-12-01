@@ -9,9 +9,9 @@
     "build": "gulp copy-templates && gulp styles && webpack",
     "test": "jest -c jest.config.js",
     "integration-test": "jest --testPathIgnorePatterns adr -c jest.integration.config.js",
-    "adr-integration-test": "jest --testPathPattern adr -c jest.integration.config.js",
+    "adr-integration-test": "jest --testPathPattern adr -c jest.integration.adr.config.js",
     "integration-test-docker": "jest --testPathIgnorePatterns adr -c jest.integration.docker.config.js",
-    "adr-integration-test-docker": "jest --testPathPattern adr -c jest.integration.docker.config.js",
+    "adr-integration-test-docker": "jest --testPathPattern adr -c jest.integration.docker.adr.config.js",
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx,vue"
   },
   "author": "",
@@ -81,7 +81,7 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
-    "@reside-ic/vue-dynamic-form": "^0.0.5",
+    "@reside-ic/vue-dynamic-form": "^0.4.0",
     "@types/chart.js": "^2.9.14",
     "@types/geojson": "^7946.0.7",
     "@types/leaflet": "^1.5.5",

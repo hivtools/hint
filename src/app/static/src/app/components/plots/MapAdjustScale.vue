@@ -1,10 +1,10 @@
 import {ScaleType} from "../../store/plottingSelections/plottingSelections";
 <template>
     <div v-if="show" class="pt-2 pl-3">
-        <div v-if="!(hideStaticCustom && hideStaticDefault)" class="static-container">
+        <div class="static-container">
             <div><span v-translate="'static'"></span></div>
             <div class="ml-2">
-                <div v-if="!hideStaticDefault" class="form-check static-default">
+                <div class="form-check static-default">
                     <label class="form-check-label">
                         <input id="type-input-default" class="form-check-input" type="radio" :name="scaleTypeGroup"
                                :value="ScaleType.Default"
@@ -12,7 +12,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
                         <span v-translate="'default'"></span>
                     </label>
                 </div>
-                <div v-if="!hideStaticCustom" class="form-check mt-1 static-custom">
+                <div class="form-check mt-1 static-custom">
                     <label class="form-check-label">
                         <input id="type-input-custom" class="form-check-input" type="radio" :name="scaleTypeGroup"
                                :value="ScaleType.Custom"
@@ -21,7 +21,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
                     </label>
                 </div>
 
-                <div v-if="!hideStaticCustom" class="mt-2 ml-2 static-custom-values">
+                <div class="mt-2 ml-2 static-custom-values">
                     <form novalidate>
                         <div class="row p-0 mb-2">
                             <label for="custom-min-input" class="col col-form-label col-2"><span v-translate="'min'"></span></label>
@@ -84,9 +84,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
         show: boolean,
         scale: ScaleSettings,
         step: number,
-        metadata: any,
-        hideStaticDefault: boolean,
-        hideStaticCustom: boolean
+        metadata: any
     }
 
     interface Computed {
@@ -111,9 +109,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
             show: Boolean,
             scale: Object,
             step: Number,
-            metadata: Object,
-            hideStaticDefault: Boolean,
-            hideStaticCustom: Boolean
+            metadata: Object
         },
         data(): any {
             return {

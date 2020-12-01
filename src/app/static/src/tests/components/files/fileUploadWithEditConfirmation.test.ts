@@ -75,7 +75,7 @@ describe("File upload component", () => {
         };
 
         (wrapper.vm as any).handleFileSelect();
-        uploadConfirmationModal(wrapper).find(".btn-white").trigger("click");
+        uploadConfirmationModal(wrapper).find(".btn-red").trigger("click");
 
         setTimeout(() => {
             expect(uploader.mock.calls.length).toBe(1);
@@ -95,7 +95,7 @@ describe("File upload component", () => {
         };
 
         (wrapper.vm as any).handleFileSelect();
-        uploadConfirmationModal(wrapper).find(".btn-red").trigger("click");
+        uploadConfirmationModal(wrapper).find(".btn-white").trigger("click");
 
         setTimeout(() => {
             expect(uploader.mock.calls.length).toBe(0);

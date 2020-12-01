@@ -85,7 +85,7 @@ describe("Model options component when edit confirmation is required", () => {
     it("closes modal and commits UnValidate mutation if user confirms action", async () => {
         const rendered = mount(ModelOptions, {store});
         rendered.find(DynamicForm).trigger("mousedown");
-        rendered.find(ResetConfirmation).find(".btn-white").trigger("click");
+        rendered.find(ResetConfirmation).find(".btn-red").trigger("click");
         await Vue.nextTick();
         expect(rendered.find(ResetConfirmation).props("open")).toBe(false);
         expect(mockMutations[ModelOptionsMutation.UnValidate].mock.calls.length).toBe(1);
@@ -94,7 +94,7 @@ describe("Model options component when edit confirmation is required", () => {
     it("closes modal and does not commit UnValidate mutation if user cancels action", async () => {
         const rendered = mount(ModelOptions, {store});
         rendered.find(DynamicForm).trigger("mousedown");
-        rendered.find(ResetConfirmation).find(".btn-red").trigger("click");
+        rendered.find(ResetConfirmation).find(".btn-white").trigger("click");
         await Vue.nextTick();
         expect(mockMutations[ModelOptionsMutation.UnValidate].mock.calls.length).toBe(0);
         expect(rendered.find(ResetConfirmation).props("open")).toBe(false);

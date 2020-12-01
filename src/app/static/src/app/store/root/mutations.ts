@@ -25,6 +25,7 @@ export enum RootMutation {
     SetProject = "SetProject",
     UpdateADRKey = "UpdateADRKey",
     SetADRDatasets = "SetADRDatasets",
+    SetADRFetchingDatasets = "SetADRFetchingDatasets",
     SetADRSchemas = "SetADRSchemas"
 }
 
@@ -41,6 +42,10 @@ export const mutations: MutationTree<RootState> = {
         state.adrDatasets = action.payload;
     },
 
+    [RootMutation.SetADRFetchingDatasets](state: RootState, action: PayloadWithType<boolean>) {
+        state.adrFetchingDatasets = action.payload;
+    },
+
     [RootMutation.SetADRSchemas](state: RootState, action: PayloadWithType<ADRSchemas>) {
         state.adrSchemas = action.payload;
     },
@@ -54,6 +59,7 @@ export const mutations: MutationTree<RootState> = {
         const resetState: RootState = {
             adrDatasets: state.adrDatasets,
             adrSchemas: state.adrSchemas,
+            adrFetchingDatasets: state.adrFetchingDatasets,
             version: state.version,
             hintrVersion: state.hintrVersion,
             language: state.language,

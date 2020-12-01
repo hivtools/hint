@@ -57,16 +57,19 @@
                         <l-tooltip :content="getTooltip(feature)"/>
                     </l-circle-marker>
                 </template>
+                <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <map-control :initialDetail=selections.detail
                              :show-indicators="false"
                              :level-labels="featureLevels"
                              @detail-changed="onDetailChange"></map-control>
-                <map-legend :metadata="colorIndicator"
+                <map-legend v-show="!emptyFeature"
+                            :metadata="colorIndicator"
                             :colour-range="colourRange"
                             :colour-scale="colourIndicatorScale"
                             @update="updateColourScale"
                 ></map-legend>
-                <size-legend :indicatorRange="sizeRange"
+                <size-legend v-show="!emptyFeature"
+                             :indicatorRange="sizeRange"
                              :max-radius="maxRadius"
                              :min-radius="minRadius"
                              :metadata="sizeIndicator"
@@ -100,6 +103,7 @@
     import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
     import {initialiseScaleFromMetadata} from "../choropleth/utils";
+    import MapEmptyFeature from "../MapEmptyFeature.vue";
 
 
     interface Props {
@@ -163,6 +167,7 @@
         colourIndicatorScale: ScaleSettings | null
         sizeIndicatorScale: ScaleSettings | null
         selectedAreaIds: string[]
+        emptyFeature: boolean
     }
 
     const props = {
@@ -206,7 +211,8 @@
             MapLegend,
             SizeLegend,
             FilterSelect,
-            Treeselect
+            Treeselect,
+            MapEmptyFeature
         },
         props: props,
         data(): Data {
@@ -227,6 +233,10 @@
             },
             currentLevelFeatureIds() {
                 return this.currentFeatures.map(f => f.properties!["area_id"]);
+            },
+            emptyFeature() {
+                const nonEmptyFeature = (this.currentFeatures.filter(filtered => !!this.featureIndicators[filtered.properties!.area_id]))
+                return nonEmptyFeature.length == 0
             },
             sizeRange() {
                 const sizeScale = this.sizeScales[this.selections.sizeIndicatorId];
@@ -339,7 +349,7 @@
                 if (current) {
                     return current
                 } else {
-                    const newScale = initialiseScaleFromMetadata(this.colorIndicator);
+                    const newScale = initialiseScaleFromMetadata(this.sizeIndicator);
                     this.updateSizeScale(newScale);
                     return newScale;
                 }
@@ -452,9 +462,9 @@
                 this.$emit("update-colour-scales", newColourScales);
             },
             updateSizeScale: function (scale: ScaleSettings) {
-                const newColourScales = {...this.sizeScales};
-                newColourScales[this.selections.sizeIndicatorId] = scale;
-                this.$emit("update-size-scales", newColourScales);
+                const newSizeScales = {...this.sizeScales};
+                newSizeScales[this.selections.sizeIndicatorId] = scale;
+                this.$emit("update-size-scales", newSizeScales);
             },
         },
         watch:
