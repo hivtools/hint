@@ -52,13 +52,8 @@
                 }
             }),
             hasErrors: function () {
-                if (this.errors.length > 0) {
-                    setTimeout(() => {
-                        this.$router.push("/login");
-                    }, 5000);
-                }
                 return this.errors.length > 0
-            },
+            }
         },
         methods: {
             dismissAll: mapMutationByName(namespace, ErrorsMutation.DismissAll)
