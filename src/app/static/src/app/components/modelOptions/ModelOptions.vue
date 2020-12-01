@@ -1,6 +1,6 @@
 <template>
     <div id="model-options">
-        <div v-if="loading" class="text-center">
+        <div v-if="handleLoading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingOptions'"></h2>
         </div>
@@ -12,6 +12,10 @@
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
 
+        <div v-if="hasOptionsError" id="option-error" class="error-message">
+            <span v-translate="'loadOptionsError'"></span>
+          {{optionsError.key}}.
+        </div>
         <div v-if="validating" id="validating" class="mt-3">
             <loading-spinner size="xs"></loading-spinner>
             <span v-translate="'validating'"></span>
@@ -44,6 +48,8 @@
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import ErrorAlert from "../ErrorAlert.vue";
+    import {ADRSchemas} from "../../types";
+    import {ModelRunState} from "../../store/modelRun/modelRun";
 
     interface Methods {
         fetchOptions: () => void
@@ -65,6 +71,8 @@
         currentLanguage: Language
         selectText: string
         requiredText: string
+        hasOptionsError: boolean
+        handleLoading: boolean
     }
 
     interface Data {
@@ -86,7 +94,9 @@
                 valid: state => state.valid,
                 validating: state => state.validating,
                 validateError: state => state.validateError,
-                hasValidateError: state => !!state.validateError
+                hasValidateError: state => !!state.validateError,
+                hasOptionsError: state => !!state.optionsError,
+                optionsError: state => state.optionsError
             }),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
@@ -105,6 +115,12 @@
                 set(value: DynamicFormMeta) {
                     this.update(value);
                 }
+            },
+            handleLoading() {
+                if (this.loading && this.hasOptionsError) {
+                    return !this.loading
+                }
+                return this.loading
             }
         },
         methods: {

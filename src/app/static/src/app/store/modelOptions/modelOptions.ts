@@ -14,6 +14,7 @@ export interface ModelOptionsState {
     fetching: boolean
     version: VersionInfo
     validateError: Error | null
+    optionsError: Error | null
 }
 
 export const initialModelOptionsState = (): ModelOptionsState => {
@@ -24,7 +25,8 @@ export const initialModelOptionsState = (): ModelOptionsState => {
         validating: false,
         fetching: false,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
-        validateError: null
+        validateError: null,
+        optionsError: null
     }
 };
 

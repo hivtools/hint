@@ -18,7 +18,7 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
         commit(ModelOptionsMutation.FetchingModelOptions);
         const response = await api<ModelOptionsMutation, ModelOptionsMutation>(context)
             .withSuccess(ModelOptionsMutation.ModelOptionsFetched)
-            .ignoreErrors()
+            .withError(ModelOptionsMutation.ModelOptionsError)
             .get<DynamicFormMeta>("/model/options/");
 
         if (response) {
