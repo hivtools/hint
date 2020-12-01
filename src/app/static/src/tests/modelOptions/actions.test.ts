@@ -1,6 +1,6 @@
 import {actions} from "../../app/store/modelOptions/actions";
-import { ModelOptionsMutation } from "../../app/store/modelOptions/mutations";
-import {mockAxios, mockModelOptionsState, mockRootState, mockSuccess} from "../mocks";
+import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
+import {mockAxios, mockModelOptionsState, mockRootState, mockSuccess, mockFailure, mockError} from "../mocks";
 
 const rootState = mockRootState();
 describe("model run options actions", () => {
@@ -29,6 +29,17 @@ describe("model run options actions", () => {
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "SetModelOptionsVersion",
             payload: "v1"
+        });
+    });
+
+    it("can commits model run options when model failed", async () => {
+        mockAxios.onGet("/model/options/").reply(400, mockFailure("Failure"));
+        const commit = jest.fn();
+        await actions.fetchModelRunOptions({commit, rootState} as any);
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "ModelOptionsError",
+            payload: mockError("Failure")
         });
     });
 

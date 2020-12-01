@@ -12,9 +12,12 @@
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
 
-        <div v-if="hasOptionsError" id="option-error" class="error-message">
-            <span v-translate="'loadOptionsError'"></span>
-          {{optionsError.key}}.
+        <div v-if="hasOptionsError" id="model-option">
+            <div v-if="!otherError" id="model-option-error">
+                <span v-translate="'loadOptionsError'"></span>
+                {{ optionsError.key }}
+            </div>
+            <error-alert v-else :error="optionsError"></error-alert>
         </div>
         <div v-if="validating" id="validating" class="mt-3">
             <loading-spinner size="xs"></loading-spinner>
@@ -72,7 +75,9 @@
         selectText: string
         requiredText: string
         hasOptionsError: boolean
-        handleLoading: boolean
+        handleLoading: boolean,
+        optionsError: any
+        otherError: boolean
     }
 
     interface Data {
@@ -121,6 +126,9 @@
                     return !this.loading
                 }
                 return this.loading
+            },
+            otherError() {
+                return this.optionsError.error === "OTHER_ERROR"
             }
         },
         methods: {

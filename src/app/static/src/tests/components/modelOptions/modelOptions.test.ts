@@ -27,7 +27,8 @@ describe("Model options component", () => {
         [ModelOptionsMutation.Validate]: jest.fn(),
         [ModelOptionsMutation.ModelOptionsFetched]: jest.fn(),
         [ModelOptionsMutation.FetchingModelOptions]: jest.fn(),
-        [ModelOptionsMutation.Validating]: jest.fn()
+        [ModelOptionsMutation.Validating]: jest.fn(),
+        [ModelOptionsMutation.ModelOptionsError]: jest.fn()
     };
 
     const mockGetters = {
@@ -106,12 +107,45 @@ describe("Model options component", () => {
         expect(rendered.findAll(Tick).length).toBe(0);
     });
 
-    it("does display error message when error occured", () => {
-        const error = mockError("validation error occured")
+    it("does display error message when error occurred", () => {
+        const error = mockError("validation error occurred")
         const store = createStore({validateError: error});
         const rendered = shallowMount(ModelOptions, {store});
         expect(rendered.findAll(ErrorAlert).length).toBe(1);
         expect(rendered.find(ErrorAlert).props().error).toBe(error);
+    })
+
+    it("does display error message when model option encounter OTHER_ERROR", () => {
+        const error = {
+            detail: "Other error encountered",
+            error: "OTHER_ERROR",
+            key: "key-001"
+        }
+        const store = createStore({optionsError: error});
+        const rendered = shallowMount(ModelOptions, {store});
+        expect(rendered.findAll(ErrorAlert).length).toBe(1);
+        expect(rendered.find(ErrorAlert).props().error).toBe(error);
+        expect(rendered.findAll("#model-option-error").length).toBe(0);
+    })
+
+    it("does display error message when model option encounter KNOWN_ERROR", () => {
+        const error = {
+            detail: "Known error encountered",
+            error: "ANY KNOWN ERROR",
+            key: "key-701"
+        }
+        const store = createStore({optionsError: error});
+        const rendered = shallowMount(ModelOptions, {store});
+        expect(rendered.findAll(ErrorAlert).length).toBe(0);
+        expect(rendered.findAll("#model-option-error").length).toBe(1);
+
+        expectTranslated(rendered.find("#model-option-error").find("span"),
+            "There was a problem loading your data. Please contact your workshop technical" +
+            " support and show them this code :",
+            "Un problème est survenu lors du chargement de vos données. Veuillez contacter " +
+            "le support technique de votre atelier et leur montrer ce code :", store);
+
+        expect(rendered.find("#model-option-error").text()).toContain("key-701")
     })
 
     it("triggers update mutation when dynamic form changes", async () => {
@@ -146,7 +180,7 @@ describe("Model options component", () => {
 
     it("dispatches fetch run option event when form submit event is fired", () => {
         const fetchMock = jest.fn();
-        const store = createStore({}, mockMutations, { 
+        const store = createStore({}, mockMutations, {
 
             ...mockActions,
             fetchModelRunOptions: fetchMock
@@ -155,13 +189,13 @@ describe("Model options component", () => {
         const rendered = shallowMount(ModelOptions, {
             store
         });
-        
+
         expect(fetchMock.mock.calls.length).toBe(1);
     });
 
-    it("dispatches validation event when form submit event is fired", async() => {
+    it("dispatches validation event when form submit event is fired", async () => {
         const validateMock = jest.fn();
-        const store = createStore({}, mockMutations, { 
+        const store = createStore({}, mockMutations, {
 
             ...mockActions,
             validateModelOptions: validateMock
