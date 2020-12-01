@@ -13,7 +13,7 @@
                       :select-text="selectText"></dynamic-form>
 
         <div v-if="hasOptionsError" id="model-option">
-            <div v-if="!otherError" id="model-option-error">
+            <div v-if="!otherError" class="error-message" id="model-option-error">
                 <span v-translate="'loadOptionsError'"></span>
                 {{ optionsError.key }}
             </div>
