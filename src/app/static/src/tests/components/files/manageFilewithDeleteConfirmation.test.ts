@@ -85,7 +85,7 @@ describe("File upload component", () => {
         const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
         removeLink.trigger("click");
-        deleteConfirmationModal(wrapper).find(".btn-white").trigger("click");
+        deleteConfirmationModal(wrapper).find(".btn-red").trigger("click");
         expect(removeHandler.mock.calls.length).toBe(1);
         expect(deleteConfirmationModal(wrapper).props("open")).toBe(false);
     });
@@ -99,7 +99,7 @@ describe("File upload component", () => {
         const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
         removeLink.trigger("click");
-        deleteConfirmationModal(wrapper).find(".btn-red").trigger("click");
+        deleteConfirmationModal(wrapper).find(".btn-white").trigger("click");
         expect(removeHandler.mock.calls.length).toBe(0);
         expect(deleteConfirmationModal(wrapper).props("open")).toBe(false);
     });

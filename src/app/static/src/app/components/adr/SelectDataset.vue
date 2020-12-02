@@ -36,6 +36,7 @@
                     :searchable="true"
                     :options="datasetOptions"
                     :placeholder="select"
+                    :disabled="fetchingDatasets"
                     v-model="newDatasetId"
                 >
                     <label
@@ -45,8 +46,12 @@
                     >
                     </label>
                 </tree-select>
+                <div :class="fetchingDatasets ? 'visible' : 'invisible'" style="margin-top:15px;" id="fetching-datasets">
+                    <loading-spinner size="xs"></loading-spinner>
+                    <span v-translate="'loadingDatasets'"></span>
+                </div>
             </div>
-            <div class="text-center" v-if="loading">
+            <div class="text-center" v-if="loading" id="loading-dataset">
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <template v-slot:footer v-if="!loading">
@@ -111,6 +116,7 @@
     interface Computed {
         schemas: ADRSchemas
         datasets: any[]
+        fetchingDatasets: boolean
         datasetOptions: any[]
         selectedDataset: Dataset | null
         newDataset: Dataset
@@ -165,6 +171,10 @@
             datasets: mapStateProp<RootState, any[]>(
                 null,
                 (state: RootState) => state.adrDatasets
+            ),
+            fetchingDatasets: mapStateProp<RootState, boolean>(
+                null,
+                (state: RootState) => state.adrFetchingDatasets
             ),
             datasetOptions() {
                 return this.datasets.map((d) => ({

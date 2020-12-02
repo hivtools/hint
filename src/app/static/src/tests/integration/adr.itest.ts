@@ -29,8 +29,14 @@ describe("ADR related actions", () => {
         const commit = jest.fn();
         await rootActions.getADRDatasets({commit, rootState} as any);
 
-        expect(commit.mock.calls[0][0]["type"]).toBe(RootMutation.SetADRDatasets);
-        expect(Array.isArray(commit.mock.calls[0][0]["payload"])).toBe(true);
+        expect(commit.mock.calls[0][0]["type"]).toBe(RootMutation.SetADRFetchingDatasets);
+        expect(commit.mock.calls[0][0]["payload"]).toBe(true);
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(RootMutation.SetADRDatasets);
+        expect(Array.isArray(commit.mock.calls[1][0]["payload"])).toBe(true);
+
+        expect(commit.mock.calls[2][0]["type"]).toBe(RootMutation.SetADRFetchingDatasets);
+        expect(commit.mock.calls[2][0]["payload"]).toBe(false);
     });
 
     it("can get dataset", async () => {
@@ -47,11 +53,15 @@ describe("ADR related actions", () => {
                 anc: "anc"
             }
         }
+
         await rootActions.getADRDatasets({commit, rootState} as any);
-        const datasetId = commit.mock.calls[0][0]["payload"][0].id;
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: RootMutation.SetADRFetchingDatasets, payload: true});
+        const datasetId = commit.mock.calls[1][0]["payload"][0].id;
         const state = {selectedDataset: {id: datasetId}};
+        expect(commit.mock.calls[2][0]).toStrictEqual({type: RootMutation.SetADRFetchingDatasets, payload: false});
+
         await baselineActions.refreshDatasetMetadata({commit, state, dispatch, rootState: rootStateWithSchemas} as any);
-        expect(commit.mock.calls[1][0]).toBe(BaselineMutation.UpdateDatasetResources);
+        expect(commit.mock.calls[3][0]).toBe(BaselineMutation.UpdateDatasetResources);
     });
 
     it("can import PJNZ file", async () => {
