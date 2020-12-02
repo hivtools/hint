@@ -134,8 +134,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
 
         if (!isHINTResponse(failure)) {
-            //this._commitError(APIService.createError("apiCouldNotParseError"));
-            window.location.href ="/login"
+            this._commitError(APIService.createError("apiCouldNotParseError"));
         } else if (this._onError) {
             this._onError(failure);
         } else {

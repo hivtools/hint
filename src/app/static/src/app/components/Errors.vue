@@ -10,6 +10,7 @@
                 </button>
             </div>
         </div>
+        {{ redirectPage }}
     </div>
 </template>
 
@@ -32,6 +33,7 @@
 
     interface ComputedState {
         errors: Error[]
+        redirectPage: void
     }
 
     interface Computed extends ComputedState {
@@ -54,6 +56,14 @@
             hasErrors: function () {
                 return this.errors.length > 0
             },
+            redirectPage: function () {
+                if (this.hasErrors) {
+                    const location = this.errors.filter(e => e.error === "unauthorized")
+                    if (location) {
+                        window.location.assign("/login")
+                    }
+                }
+            }
         },
         methods: {
             dismissAll: mapMutationByName(namespace, ErrorsMutation.DismissAll)

@@ -21,7 +21,26 @@ describe("Errors component", () => {
         })
     };
 
+    const realLocation = window.location
     const propsData = {title: "TestApp"};
+
+    beforeEach(()=>{
+        delete window.location;
+        window.location = { ...window.location, assign: jest.fn() };
+    })
+
+    afterEach(() =>{
+        window.location = realLocation
+    })
+
+    it("can redirect as expected", () => {
+        const store = createStore([
+            {error: "First error", detail: null},
+            {error: "Second error", detail: "Error detail"}
+        ]);
+        shallowMount(Errors, {propsData, store, localVue});
+        expect(window.location.assign).toHaveBeenCalledWith("/login")
+    });
 
     it("renders as expected", () => {
         const store = createStore([
