@@ -24,6 +24,7 @@ describe("Model run options mutations", () => {
         const state = mockModelOptionsState();
         mutations[ModelOptionsMutation.ModelOptionsError](state, {payload: error});
         expect(state.optionsError).toStrictEqual(error);
+        expect(state.fetching).toBe(false)
     });
 
     it("can valid option", () => {

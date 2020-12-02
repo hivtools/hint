@@ -115,37 +115,12 @@ describe("Model options component", () => {
         expect(rendered.find(ErrorAlert).props().error).toBe(error);
     })
 
-    it("does display error message when model option encounter OTHER_ERROR", () => {
-        const error = {
-            detail: "Other error encountered",
-            error: "OTHER_ERROR",
-            key: "key-001"
-        }
+    it("does display error message when model option encounter Errors", () => {
+        const error = mockError("Errors")
         const store = createStore({optionsError: error});
         const rendered = shallowMount(ModelOptions, {store});
         expect(rendered.findAll(ErrorAlert).length).toBe(1);
         expect(rendered.find(ErrorAlert).props().error).toBe(error);
-        expect(rendered.findAll("#model-option-error").length).toBe(0);
-    })
-
-    it("does display error message when model option encounter KNOWN_ERROR", () => {
-        const error = {
-            detail: "Known error encountered",
-            error: "ANY KNOWN ERROR",
-            key: "key-701"
-        }
-        const store = createStore({optionsError: error});
-        const rendered = shallowMount(ModelOptions, {store});
-        expect(rendered.findAll(ErrorAlert).length).toBe(0);
-        expect(rendered.findAll("#model-option-error").length).toBe(1);
-
-        expectTranslated(rendered.find("#model-option-error").find("span"),
-            "There was a problem loading your data. Please contact your workshop technical" +
-            " support and show them this code :",
-            "Un problème est survenu lors du chargement de vos données. Veuillez contacter " +
-            "le support technique de votre atelier et leur montrer ce code :", store);
-
-        expect(rendered.find("#model-option-error").text()).toContain("key-701")
     })
 
     it("triggers update mutation when dynamic form changes", async () => {

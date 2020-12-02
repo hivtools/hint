@@ -66,6 +66,7 @@ export const mutations: MutationTree<ModelOptionsState> = {
 
     [ModelOptionsMutation.ModelOptionsError](state: ModelOptionsState, action: PayloadWithType<Error>) {
         state.optionsError = action.payload;
+        state.fetching = false;
     },
 
     [ModelOptionsMutation.SetModelOptionsVersion](state: ModelOptionsState, action: PayloadWithType<VersionInfo>) {

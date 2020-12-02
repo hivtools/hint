@@ -1,6 +1,6 @@
 <template>
     <div id="model-options">
-        <div v-if="handleLoading" class="text-center">
+        <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingOptions'"></h2>
         </div>
@@ -11,14 +11,7 @@
                       @submit="validate"
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
-
-        <div v-if="hasOptionsError" id="model-option">
-            <div v-if="!otherError" class="error-message" id="model-option-error">
-                <span v-translate="'loadOptionsError'"></span>
-                {{ optionsError.key }}
-            </div>
-            <error-alert v-else :error="optionsError"></error-alert>
-        </div>
+        <error-alert v-if="hasOptionsError" :error="optionsError"></error-alert>
         <div v-if="validating" id="validating" class="mt-3">
             <loading-spinner size="xs"></loading-spinner>
             <span v-translate="'validating'"></span>
@@ -72,10 +65,6 @@
         currentLanguage: Language
         selectText: string
         requiredText: string
-        hasOptionsError: boolean
-        handleLoading: boolean,
-        optionsError: any
-        otherError: boolean
     }
 
     interface Data {
@@ -118,15 +107,6 @@
                 set(value: DynamicFormMeta) {
                     this.update(value);
                 }
-            },
-            handleLoading() {
-                if (this.loading && this.hasOptionsError) {
-                    return !this.loading
-                }
-                return this.loading
-            },
-            otherError() {
-                return this.optionsError.error === "OTHER_ERROR"
             }
         },
         methods: {
