@@ -124,7 +124,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
             window.location.assign("/login")
         }
 
-        let failure = e.response && e.response.data;
+        const failure = e.response && e.response.data;
         /*
         if (!failure && e.response && e.response.status == 401) {
             failure = {
