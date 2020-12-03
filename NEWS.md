@@ -1,3 +1,7 @@
+#hint 1.7.0
+
+* redirect stale session to login page with session error message
+
 # hint 1.6.0
 
 * Show spinner when fetching ADR datasets

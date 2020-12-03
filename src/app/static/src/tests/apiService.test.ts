@@ -132,10 +132,12 @@ describe("ApiService", () => {
 
         const realLocation = window.location
         delete window.location;
-        window.location = { ...window.location, assign: jest.fn() };
+        window.location = {...window.location, assign: jest.fn()};
 
         mockAxios.onGet("/baseline/")
             .reply(401, null);
+
+        expect(window.location.assign).not.toHaveBeenCalled()
 
         const commit = jest.fn();
         await api({commit, rootState} as any)
