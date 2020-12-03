@@ -13,16 +13,7 @@
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
-                <a href="https://forms.gle/QxCT1b4ScLqKPg6a7"
-                   target="_blank"
-                   class="pr-2 mr-2 border-right"
-                   v-translate="'reportBug'">
-                </a>
-                <a :href="'https://mrc-ide.github.io/naomi-troubleshooting/' + troubleFilename"
-                   target="_blank"
-                   class="pr-2 mr-2 border-right"
-                   v-translate="'troubleshooting'">
-                </a>
+                <online-support-menu :troubleFilename="troubleFilename" class="pr-2 mr-2 border-right"/>
                 <a :href="'public/resources/' + helpFilename"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
@@ -50,6 +41,7 @@
     import {ProjectsMutations} from "../../store/projects/mutations";
     import {PayloadWithType} from "../../types";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
+    import OnlineSupportMenu from "./OnlineSupportMenu.vue";
 
     interface Props {
         title: string,
@@ -88,7 +80,8 @@
         components: {
             FileMenu,
             LanguageMenu,
-            HintrVersionMenu
+            HintrVersionMenu,
+            OnlineSupportMenu
         }
     })
 </script>
