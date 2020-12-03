@@ -2,6 +2,8 @@ import {api} from "../app/apiService";
 import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
 import {shallowMount} from "@vue/test-utils";
+import i18next from "i18next";
+import {expectTranslated} from "./testHelpers";
 
 const rootState = mockRootState();
 
@@ -125,32 +127,8 @@ describe("ApiService", () => {
         expect(committedType).toBe("TEST_TYPE");
         expect(committedPayload).toStrictEqual({error: "OTHER_ERROR", detail: null});
     });
-/*
-    it("commits a default error message if an empty 401 response is received", async () => {
-        mockAxios.onGet("/baseline/")
-            .reply(401, null);
 
-        let committedType: any = false;
-        let committedPayload: any = false;
-
-        const commit = ({type, payload}: any) => {
-            committedType = type;
-            committedPayload = payload;
-        };
-
-        await api({commit, rootState} as any)
-            .withError("TEST_TYPE")
-            .get("/baseline/");
-
-        expect(committedType).toBe("TEST_TYPE");
-        expect(committedPayload).toStrictEqual({
-            error: "SESSION_TIMEOUT",
-            detail: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing."
-        });
-    });
-    */
-
-    it("commits da default error message if an empty 401 response is received", async () => {
+    it("commits default error message if an empty 401 response is received", async () => {
 
         const realLocation = window.location
         delete window.location;
@@ -163,7 +141,7 @@ describe("ApiService", () => {
         await api({commit, rootState} as any)
             .get("/baseline/");
 
-        expect(window.location.assign).toHaveBeenCalledWith("/login")
+        expect(window.location.assign).toHaveBeenCalled()
         window.location = realLocation
     });
 
