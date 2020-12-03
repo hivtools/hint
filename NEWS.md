@@ -2,6 +2,15 @@
 
 * redirect stale session to login page with session error message
 
+# hint 1.6.2
+
+* Auto advance to next step when run model completes
+
+# hint 1.6.1
+
+* Makes ADR import button red
+>>>>>>> 466dfd092523802d806e0bff9aec0c8d95ba62c4
+
 # hint 1.6.0
 
 * Show spinner when fetching ADR datasets
