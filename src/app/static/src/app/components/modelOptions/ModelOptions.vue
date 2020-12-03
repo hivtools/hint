@@ -4,7 +4,7 @@
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingOptions'"></h2>
         </div>
-        <dynamic-form v-if="!loading"
+        <dynamic-form v-if="!loading && !hasOptionsError"
                       v-model="modelOptions"
                       submit-text="Validate"
                       v-on:mousedown.native="confirmEditing"

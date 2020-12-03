@@ -1,3 +1,7 @@
+# hint 1.6.1
+
+* Fix bug from `/model/options` which results in hanging spinner
+
 # hint 1.6.0
 
 * Show spinner when fetching ADR datasets
