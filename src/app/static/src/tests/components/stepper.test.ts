@@ -35,7 +35,7 @@ import {actions as rootActions} from "../../app/store/root/actions"
 import {mutations as rootMutations} from "../../app/store/root/mutations"
 import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
 import {ModelStatusResponse} from "../../app/generated";
-import {modelOptionsGetters} from "../../app/store/modelOptions/modelOptions";
+import {modelOptionsGetters, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {ProjectsState} from "../../app/store/projects/projects";
@@ -56,7 +56,8 @@ describe("Stepper component", () => {
                        loadState?: Partial<LoadState>,
                        projectsState?: Partial<ProjectsState>,
                        mockRouterPush = jest.fn(),
-                       partialRootState: Partial<RootState> = {}) => {
+                       partialRootState: Partial<RootState> = {},
+                       modelOptionsState: Partial<ModelOptionsState> = {}) => {
 
         const store = new Vuex.Store({
             actions: rootActions,
@@ -84,7 +85,7 @@ describe("Stepper component", () => {
                 },
                 modelOptions: {
                     namespaced: true,
-                    state: mockModelOptionsState(),
+                    state: mockModelOptionsState(modelOptionsState),
                     getters: modelOptionsGetters
                 },
                 modelCalibrate: {
@@ -484,8 +485,34 @@ describe("Stepper component", () => {
         expect(steps.at(3).props().complete).toBe(true);
     });
 
-    it("model run step becomes complete on success and result fetched", async () => {
-        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
+    it("model run step becomes complete on success, result fetched, and automatically moves to calibrate step", async () => {
+        //store should consider first 3 steps to be complete initially
+        const wrapper = createSut(
+            {
+                ready: true,
+                validatedConsistent: true,
+                country: "TEST",
+                iso3: "TES",
+                shape: ["TEST SHAPE"] as any,
+                population: ["TEST POP"] as any
+            },
+            {
+                ready: true,
+                survey: ["TEST SURVEY"] as any
+            },
+            {plottingMetadata: ["TEST METADATA"] as any},
+            {ready: true},
+            {activeStep: 4},
+            {},
+            {},
+            jest.fn(),
+            {},
+            {valid: true},
+        );
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(3).props().complete).toBe(false);
+        expect(steps.at(3).props().active).toBe(true);
+        expect(steps.at(4).props().active).toBe(false);
 
         wrapper.vm.$store.commit("modelRun/RunStatusUpdated", {
             "type": "RunStatusUpdated",
@@ -506,9 +533,9 @@ describe("Stepper component", () => {
         });
 
         await Vue.nextTick();
-
-        const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(true);
+        expect(steps.at(3).props().active).toBe(false);
+        expect(steps.at(4).props().active).toBe(true);
     });
 
     it("validates state once ready", async () => {

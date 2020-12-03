@@ -58,7 +58,7 @@
                 <button
                     type="button"
                     :disabled="!newDatasetId"
-                    class="btn btn-white"
+                    class="btn btn-red"
                     v-translate="'import'"
                     @click="importDataset"
                 ></button>
