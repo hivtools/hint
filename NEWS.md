@@ -1,3 +1,7 @@
+# hint 1.6.2
+
+* Auto advance to next step when run model completes
+
 # hint 1.6.1
 
 * Makes ADR import button red
