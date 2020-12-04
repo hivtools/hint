@@ -33,6 +33,11 @@ export const initialModelOptionsState = (): ModelOptionsState => {
 export const modelOptionsGetters = {
     complete: (state: ModelOptionsState) => {
         return state.valid
+    },
+    hasChanges: (state: ModelOptionsState) => {
+        console.log('initialModelOptionsState()',initialModelOptionsState())
+        console.log('existingState!.modelOptions',existingState!.modelOptions)
+        return JSON.stringify(existingState!.modelOptions) !== JSON.stringify(initialModelOptionsState())
     }
 };
 

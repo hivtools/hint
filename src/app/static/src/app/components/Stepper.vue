@@ -82,6 +82,7 @@
 
     interface ComputedGetters {
         ready: boolean,
+        hasChanges: boolean,
         complete: boolean,
         loadingFromFile: boolean
         loading: boolean
@@ -102,7 +103,7 @@
                 currentProject: state => state.currentProject,
                 projectLoading: state => state.loading
             }),
-            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
+            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete", "hasChanges"]),
             loading: function () {
                 return this.loadingFromFile || !this.ready;
             },

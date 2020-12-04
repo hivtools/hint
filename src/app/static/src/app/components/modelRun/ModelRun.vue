@@ -1,7 +1,7 @@
 <template>
     <div>
         <button class="btn btn-red btn-lg"
-                v-on:click="run"
+                v-on:click="handleRun"
                 :disabled="running"
                 v-translate="'fitModel'">
         </button>
@@ -25,6 +25,9 @@
         <div class="mt-3">
             <error-alert v-for="(error, index) in errors" :key="index" :error="error"></error-alert>
         </div>
+        <reset-confirmation :continue-editing="confirmReRun"
+                            :cancel-editing="cancelEdit"
+                            :open="showReRunConfirmation"></reset-confirmation>
     </div>
 </template>
 
@@ -33,11 +36,12 @@
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
-    import {mapActionsByNames, mapGettersByNames, mapStateProps} from "../../utils";
+    import {mapActionsByNames, mapGettersByNames, mapStateProps, mapGetterByName} from "../../utils";
     import ErrorAlert from "../ErrorAlert.vue";
     import {ProgressPhase} from "../../generated";
     import ProgressBar from "../progress/ProgressBar.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
+    import ResetConfirmation from "../ResetConfirmation.vue";
 
     interface ComputedState {
         runId: string
@@ -50,10 +54,18 @@
         complete: boolean
     }
 
+     interface Data {
+        showReRunConfirmation: boolean
+    }
+
     interface Computed extends ComputedGetters, ComputedState {
+        editsRequireConfirmation: boolean
     }
 
     interface Methods {
+        handleRun: () => void;
+        confirmReRun: () => void;
+        cancelEdit: () => void;
         run: () => void;
         poll: (runId: string) => void;
         cancelRun: () => void;
@@ -62,9 +74,15 @@
 
     const namespace = 'modelRun';
 
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "ModelRun",
+        data(): Data {
+            return {
+                showReRunConfirmation: false
+            }
+        },
         computed: {
+            editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
                 runId: state => state.modelRunId,
                 pollId: state => state.statusPollId,
@@ -77,6 +95,18 @@
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
         },
         methods: {
+            handleRun(){
+                if (this.editsRequireConfirmation){
+                    this.showReRunConfirmation = true
+                } else this.run()
+            },
+            confirmReRun() {
+                this.run()
+                this.showReRunConfirmation = false;
+            },
+            cancelEdit() {
+                this.showReRunConfirmation = false
+            },
             ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll", "cancelRun"])
         },
         watch: {
@@ -92,6 +122,7 @@
             }
         },
         components: {
+            ResetConfirmation,
             Modal,
             Tick,
             ErrorAlert,

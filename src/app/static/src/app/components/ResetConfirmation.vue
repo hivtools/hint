@@ -5,9 +5,14 @@
             <h4 v-if="!isGuest" v-translate="'saveVersion'"></h4>
 
             <p v-translate="'discardWarning'"></p>
-            <ul>
+            <ul v-if="laterCompleteSteps.length > 0">
                 <li v-for="step in laterCompleteSteps" :key="step.number">
                     <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
+                </li>
+            </ul>
+            <ul v-if="laterCompleteSteps.length == 0">
+                <li>
+                    <span v-translate="'step'"></span> 4: <span v-translate="'fitModel'"></span>
                 </li>
             </ul>
 

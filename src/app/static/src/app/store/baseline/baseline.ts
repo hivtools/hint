@@ -53,7 +53,11 @@ export const baselineGetters = {
     complete: (state: BaselineState) => {
         return state.validatedConsistent &&
             !!state.country && !!state.iso3 && !!state.shape && !!state.population
-    }
+    },
+    // hasChanges: (state: BaselineState) => {
+    //     return state.validatedConsistent &&
+    //         !!state.country && !!state.iso3 && !!state.shape && !!state.population
+    // }
 };
 
 const getters = baselineGetters;
