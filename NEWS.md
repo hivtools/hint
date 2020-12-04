@@ -1,4 +1,8 @@
 
+# hint 1.7.0
+
+* Update link text & resources
+
 # hint 1.6.3
 
 * Fix bug from `/model/options` which results in hanging spinner
@@ -10,7 +14,6 @@
 # hint 1.6.1
 
 * Makes ADR import button red
-
 
 # hint 1.6.0
 
