@@ -91,10 +91,15 @@ describe("Online support menu", () => {
         const wrapper = shallowMount(OnlineSupportMenu, {
             store
         });
+        window.open = jest.fn();
 
+        const link = wrapper.findAll(".dropdown-item").at(1);
+        link.trigger("mousedown");
         if (!switches.modelBugReport) {
-            expect(wrapper.find("a[href='https://forms.gle/QxCT1b4ScLqKPg6a7")
-                .text()).toBe("Contact");
+            expect(window.open).toHaveBeenCalledTimes(1)
+            expect(window.open)
+                .toHaveBeenCalledWith(" https://forms.gle/QxCT1b4ScLqKPg6a7", "_blank")
+            expectTranslated(link, "Contact", "Contact", store as any);
         }
     });
 
