@@ -13,10 +13,18 @@ describe("Model run options mutations", () => {
     });
 
     it("can mutate validation error", () => {
-        const error = mockError("validation error occured");
+        const error = mockError("validation error occurred");
         const state = mockModelOptionsState();
         mutations[ModelOptionsMutation.HasValidationError](state, {payload: error});
         expect(state.validateError).toStrictEqual(error);
+    });
+
+    it("can mutate model options error", () => {
+        const error = mockError("options error occurred");
+        const state = mockModelOptionsState();
+        mutations[ModelOptionsMutation.ModelOptionsError](state, {payload: error});
+        expect(state.optionsError).toStrictEqual(error);
+        expect(state.fetching).toBe(false)
     });
 
     it("can valid option", () => {
@@ -40,7 +48,7 @@ describe("Model run options mutations", () => {
     });
 
     it("can assert validating model option complete", () => {
-        const state = mockModelOptionsState({validating:true});
+        const state = mockModelOptionsState({validating: true});
         mutations[ModelOptionsMutation.Validated](state);
         expect(state.validating).toBe(false);
     });
