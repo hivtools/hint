@@ -1,3 +1,7 @@
+# hint 1.7.2
+
+* fix bug cancel button on share project dialog is broken
+
 # hint 1.7.1
 
 * Update help document resource

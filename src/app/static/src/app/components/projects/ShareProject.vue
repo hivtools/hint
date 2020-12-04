@@ -157,7 +157,7 @@
                 }
             },
             cancelShareProject() {
-                this.emailsToShareWith = [];
+                this.emailsToShareWith = [{value: "", valid: null}];
                 this.open = false;
             }
         },
