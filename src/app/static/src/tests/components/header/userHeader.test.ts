@@ -98,13 +98,12 @@ describe("user header", () => {
         const wrapper = shallowMount(UserHeader, {localVue, store, stubs: ["router-link"]});
         const vm = (wrapper as any).vm;
         expect(vm.helpFilename).toStrictEqual("Naomi-basic-instructions.pdf");
-        expect(vm.troubleFilename).toStrictEqual("index-en.html");
 
         const frStore = createFrenchStore();
         const frWrapper = shallowMount(UserHeader, {localVue, store: frStore, stubs: ["router-link"]});
         const frVm = (frWrapper as any).vm;
         expect(frVm.helpFilename).toStrictEqual("Naomi-instructions-de-base.pdf");
-        expect(frVm.troubleFilename).toStrictEqual("index-fr.html");
+
     });
 
     it("contains Basic steps document links", () => {

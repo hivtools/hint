@@ -13,7 +13,7 @@
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
-                <online-support-menu :troubleFilename="troubleFilename" class="pr-2 mr-2 border-right"/>
+                <online-support-menu class="pr-2 mr-2 border-right"/>
                 <a :href="'public/resources/' + helpFilename"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
@@ -36,10 +36,8 @@
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
-    import {mapMutationByName, mapStateProp} from "../../utils";
+    import { mapStateProp} from "../../utils";
     import {RootState} from "../../root";
-    import {ProjectsMutations} from "../../store/projects/mutations";
-    import {PayloadWithType} from "../../types";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
     import OnlineSupportMenu from "./OnlineSupportMenu.vue";
 
@@ -49,8 +47,7 @@
     }
 
     interface Computed {
-        helpFilename: string,
-        troubleFilename: string
+        helpFilename: string
     }
 
     export default Vue.extend<unknown, unknown, Computed, Props>({
@@ -60,14 +57,6 @@
                     let filename = "Naomi-basic-instructions.pdf";
                     if (state.language == Language.fr) {
                         filename = "Naomi-instructions-de-base.pdf";
-                    }
-                    return filename;
-                }),
-            troubleFilename: mapStateProp<RootState, string>(null,
-                (state: RootState) => {
-                    let filename = "index-en.html";
-                    if (state.language == Language.fr) {
-                        filename = "index-fr.html";
                     }
                     return filename;
                 }),

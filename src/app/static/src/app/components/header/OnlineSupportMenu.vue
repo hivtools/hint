@@ -1,16 +1,21 @@
 <template>
-    <drop-down text="support" :right="true" style="flex: none">
-        <a class="dropdown-item"
-           :href="'https://mrc-ide.github.io/naomi-troubleshooting/' + troubleFilename"
-           target="_blank"> FAQ
-        </a>
-        <a class="dropdown-item"
-           :href="urls"
-           target="_blank"> Contact
-        </a>
-    </drop-down>
+    <div id="divclass">
+        <drop-down text="support" :right="true" style="flex: none">
+            <a class="dropdown-item"
+               href="#"
+               v-on:mousedown="() => faqLink"
+               target="_blank"
+               v-translate="'faq'">
+            </a>
+            <a class="dropdown-item"
+               href="#"
+               v-on:mousedown="() => contactLink"
+               target="_blank"
+               v-translate="'contact'">
+            </a>
+        </drop-down>
+    </div>
 </template>
-
 <script lang="ts">
     import Vue from "vue";
     import DropDown from "./DropDown.vue";
@@ -20,33 +25,48 @@
     import {Language} from "../../store/translations/locales";
     import {switches} from "../../featureSwitches";
 
-    interface Props {
-        troubleFilename: string
-    }
 
     interface Computed {
         support: string
-        urls: string
+        modelBugReport: string
         currentLanguage: Language
+        troubleFilename: string
+        faqLink: void
+        contactLink: void
     }
 
-    export default Vue.extend<unknown, unknown, Computed, Props>({
-        props: {
-            troubleFilename: String
-        },
+    export default Vue.extend<unknown, unknown, Computed, unknown>({
         computed: {
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
             support() {
                 return i18next.t("support", this.currentLanguage)
             },
-            urls() {
+            modelBugReport() {
                 if (switches.modelBugReport) {
                     return "https://forms.office.com/Pages/ResponsePage.aspx?" +
                         "id=B3WJK4zudUWDC0-CZ8PTB1APqcgcYz5DmSeKo5rlcfxUN0dWR1VMUEtHU0xDRU9HWFRNOFA5VVc3WCQlQCN0PWcu"
                 } else {
                     return "https://forms.gle/QxCT1b4ScLqKPg6a7"
                 }
+            },
+            troubleFilename: mapStateProp<RootState, string>(null,
+                (state: RootState) => {
+                    let filename = "index-en.html";
+                    if (state.language == Language.fr) {
+                        filename = "index-fr.html";
+                    }
+                    return filename;
+                }),
+            contactLink() {
+                window.location.assign(this.modelBugReport)
+            },
+            faqLink() {
+                let a = document.createElement('a')
+                a.target ='_blank'
+
+                const link = "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename
+                window.location.assign(link)
             }
         },
         components: {

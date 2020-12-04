@@ -1,3 +1,7 @@
+# hint 1.7.0
+
+* Update link text & resources
+
 # hint 1.6.0
 
 * Show spinner when fetching ADR datasets
