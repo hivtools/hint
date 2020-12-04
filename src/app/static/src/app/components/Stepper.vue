@@ -156,6 +156,11 @@
             VersionStatus
         },
         watch: {
+            complete: function (){
+                if (this.activeStep === 4 && this.isEnabled(5)){
+                    this.next()
+                }
+            },
             ready: function (newVal) {
                 if (newVal) {
                     this.validate()
