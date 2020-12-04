@@ -98,7 +98,7 @@ describe("Online support menu", () => {
         if (!switches.modelBugReport) {
             expect(window.open).toHaveBeenCalledTimes(1)
             expect(window.open)
-                .toHaveBeenCalledWith(" https://forms.gle/QxCT1b4ScLqKPg6a7", "_blank")
+                .toHaveBeenCalledWith("https://forms.gle/QxCT1b4ScLqKPg6a7", "_blank")
             expectTranslated(link, "Contact", "Contact", store as any);
         }
     });
