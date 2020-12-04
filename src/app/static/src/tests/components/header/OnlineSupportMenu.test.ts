@@ -9,7 +9,6 @@ import {switches} from "../../../app/featureSwitches";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated} from "../../testHelpers";
 
-const localVue = createLocalVue();
 describe("Online support menu", () => {
 
     const createStore = () => {
@@ -35,31 +34,40 @@ describe("Online support menu", () => {
         expectTranslated(link, "Online support", "Support en ligne", store as any);
     });
 
-    it("renders menu-items text and links work when lang is English", async () => {
+    it("renders FAQ menu-item text and links work when lang is English", async () => {
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
             store
         });
+        window.open = jest.fn();
 
-        const realLocation = window.location
-        delete window.location;
-        window.location = {...window.location, assign: jest.fn()};
+        const link = wrapper.findAll(".dropdown-item").at(0);
+        link.trigger("mousedown");
+        expect(window.open).toHaveBeenCalledTimes(1)
+        expect(window.open)
+            .toHaveBeenCalledWith("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html",
+                "_blank")
+        expectTranslated(link, "FAQ", "FAQ", store as any);
 
-        const links = wrapper.findAll(".dropdown-item");
-        links.at(0).trigger("mousedown");
-        expect(window.location.assign)
-            .toHaveBeenCalledWith("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html")
-        expectTranslated(links.at(0), "FAQ", "FAQ", store as any);
+    });
 
-        links.at(1).trigger("mousedown");
+    it("renders contact menu-item text and links work when lang is English", async () => {
+        const store = createStore();
+        const wrapper = shallowMount(OnlineSupportMenu, {
+            store
+        });
+        window.open = jest.fn();
+
+        const link = wrapper.findAll(".dropdown-item").at(1);
+        link.trigger("mousedown");
         if (switches.modelBugReport) {
-            expect(window.location.assign)
+            expect(window.open).toHaveBeenCalledTimes(1)
+            expect(window.open)
                 .toHaveBeenCalledWith("https://forms.office.com/Pages/ResponsePage.aspx?" +
-                    "id=B3WJK4zudUWDC0-CZ8PTB1APqcgcYz5DmSeKo5rlcfxUN0dWR1VMUEtHU0xDRU9HWFRNOFA5VVc3WCQlQCN0PWcu")
-            expectTranslated(links.at(1), "Contact", "Contact", store as any);
+                    "id=B3WJK4zudUWDC0-CZ8PTB1APqcgcYz5DmSeKo5rlcfxUN0dWR1VMUEtHU0xDRU9HWFRNOFA5VVc3WCQlQCN0PWcu",
+                    "_blank")
+            expectTranslated(link, "Contact", "Contact", store as any);
         }
-
-        window.location = realLocation
     });
 
     it("renders menu-items text and links work when lang is French", async () => {
@@ -68,18 +76,14 @@ describe("Online support menu", () => {
         const wrapper = shallowMount(OnlineSupportMenu, {
             store
         });
-
-        const realLocation = window.location
-        delete window.location;
-        window.location = {...window.location, assign: jest.fn()};
+        window.open = jest.fn();
 
         const link = wrapper.findAll(".dropdown-item").at(0);
         link.trigger("mousedown");
-        expect(window.location.assign)
-            .toHaveBeenCalledWith("https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html")
+        expect(window.open).toHaveBeenCalledTimes(1)
+        expect(window.open)
+            .toHaveBeenCalledWith("https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html", "_blank")
         expectTranslated(link, "FAQ", "FAQ", store as any);
-
-        window.location = realLocation
     });
 
     it("renders old modelBugReport path when switch is set off", async () => {

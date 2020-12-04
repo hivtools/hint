@@ -59,14 +59,11 @@
                     return filename;
                 }),
             contactLink() {
-                window.location.assign(this.modelBugReport)
+                window.open(this.modelBugReport, "_blank")
             },
             faqLink() {
-                let a = document.createElement('a')
-                a.target ='_blank'
-
                 const link = "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename
-                window.location.assign(link)
+                window.open(link,"_blank")
             }
         },
         components: {
