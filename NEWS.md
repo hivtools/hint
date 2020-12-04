@@ -1,6 +1,13 @@
+
 #hint 1.7.0
 
 * redirect stale session to login page with session error message
+
+
+# hint 1.6.3
+
+* Fix bug from `/model/options` which results in hanging spinner
+
 
 # hint 1.6.2
 
@@ -9,7 +16,6 @@
 # hint 1.6.1
 
 * Makes ADR import button red
->>>>>>> 466dfd092523802d806e0bff9aec0c8d95ba62c4
 
 # hint 1.6.0
 
