@@ -1,3 +1,6 @@
+# hint 1.7.1
+
+* Update help document resource
 
 # hint 1.7.0
 
