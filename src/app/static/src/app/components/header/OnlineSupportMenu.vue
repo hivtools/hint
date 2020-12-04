@@ -3,13 +3,13 @@
         <drop-down text="support" :right="true" style="flex: none">
             <a class="dropdown-item"
                href="#"
-               v-on:mousedown="() => faqLink"
+               v-on:mousedown.prevent="() => faqLink()"
                target="_blank"
                v-translate="'faq'">
             </a>
             <a class="dropdown-item"
                href="#"
-               v-on:mousedown="() => contactLink"
+               v-on:mousedown.prevent="() => contactLink()"
                target="_blank"
                v-translate="'contact'">
             </a>
@@ -31,8 +31,6 @@
         modelBugReport: string
         currentLanguage: Language
         troubleFilename: string
-        faqLink: void
-        contactLink: void
     }
 
     export default Vue.extend<unknown, unknown, Computed, unknown>({
@@ -57,7 +55,9 @@
                         filename = "index-fr.html";
                     }
                     return filename;
-                }),
+                })
+        },
+        methods: {
             contactLink() {
                 window.open(this.modelBugReport, "_blank")
             },
