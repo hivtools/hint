@@ -3,13 +3,13 @@
         <drop-down text="support" :right="true" style="flex: none">
             <a class="dropdown-item"
                href="#"
-               v-on:mousedown.prevent="() => faqLink()"
+               v-on:mousedown="faqLink"
                target="_blank"
                v-translate="'faq'">
             </a>
             <a class="dropdown-item"
                href="#"
-               v-on:mousedown.prevent="() => contactLink()"
+               v-on:mousedown="contactLink"
                target="_blank"
                v-translate="'contact'">
             </a>
