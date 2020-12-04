@@ -1,9 +1,6 @@
 import {api} from "../app/apiService";
 import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
-import {shallowMount} from "@vue/test-utils";
-import i18next from "i18next";
-import {expectTranslated} from "./testHelpers";
 
 const rootState = mockRootState();
 
@@ -128,7 +125,7 @@ describe("ApiService", () => {
         expect(committedPayload).toStrictEqual({error: "OTHER_ERROR", detail: null});
     });
 
-    it("commits default error message if an empty 401 response is received", async () => {
+    it("can redirect to login when 401 response is received", async () => {
 
         const realLocation = window.location
         delete window.location;
@@ -136,14 +133,15 @@ describe("ApiService", () => {
 
         mockAxios.onGet("/baseline/")
             .reply(401, null);
-
         expect(window.location.assign).not.toHaveBeenCalled()
 
         const commit = jest.fn();
         await api({commit, rootState} as any)
             .get("/baseline/");
 
-        expect(window.location.assign).toHaveBeenCalled()
+        expect(window.location.assign).toHaveBeenCalledWith("/login?error=SessionExpired" +
+            "&message=Your%20session%20has%20expired.%20Please%20log%20in%20again.")
+
         window.location = realLocation
     });
 
