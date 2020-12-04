@@ -27,7 +27,8 @@ describe("Model options component", () => {
         [ModelOptionsMutation.Validate]: jest.fn(),
         [ModelOptionsMutation.ModelOptionsFetched]: jest.fn(),
         [ModelOptionsMutation.FetchingModelOptions]: jest.fn(),
-        [ModelOptionsMutation.Validating]: jest.fn()
+        [ModelOptionsMutation.Validating]: jest.fn(),
+        [ModelOptionsMutation.ModelOptionsError]: jest.fn()
     };
 
     const mockGetters = {
@@ -106,9 +107,17 @@ describe("Model options component", () => {
         expect(rendered.findAll(Tick).length).toBe(0);
     });
 
-    it("does display error message when error occured", () => {
-        const error = mockError("validation error occured")
+    it("does display error message when error occurred", () => {
+        const error = mockError("validation error occurred")
         const store = createStore({validateError: error});
+        const rendered = shallowMount(ModelOptions, {store});
+        expect(rendered.findAll(ErrorAlert).length).toBe(1);
+        expect(rendered.find(ErrorAlert).props().error).toBe(error);
+    })
+
+    it("does display error message when model option encounter Errors", () => {
+        const error = mockError("Errors")
+        const store = createStore({optionsError: error});
         const rendered = shallowMount(ModelOptions, {store});
         expect(rendered.findAll(ErrorAlert).length).toBe(1);
         expect(rendered.find(ErrorAlert).props().error).toBe(error);
@@ -146,7 +155,7 @@ describe("Model options component", () => {
 
     it("dispatches fetch run option event when form submit event is fired", () => {
         const fetchMock = jest.fn();
-        const store = createStore({}, mockMutations, { 
+        const store = createStore({}, mockMutations, {
 
             ...mockActions,
             fetchModelRunOptions: fetchMock
@@ -155,13 +164,13 @@ describe("Model options component", () => {
         const rendered = shallowMount(ModelOptions, {
             store
         });
-        
+
         expect(fetchMock.mock.calls.length).toBe(1);
     });
 
-    it("dispatches validation event when form submit event is fired", async() => {
+    it("dispatches validation event when form submit event is fired", async () => {
         const validateMock = jest.fn();
-        const store = createStore({}, mockMutations, { 
+        const store = createStore({}, mockMutations, {
 
             ...mockActions,
             validateModelOptions: validateMock
