@@ -1,5 +1,5 @@
 import Vuex, {Store} from "vuex";
-import {createLocalVue, RouterLinkStub, shallowMount} from "@vue/test-utils";
+import {createLocalVue, shallowMount} from "@vue/test-utils";
 import UserHeader from "../../../app/components/header/UserHeader.vue";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
 import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
@@ -10,6 +10,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {getters} from "../../../app/store/root/getters";
 import {mockRootState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
+import OnlineSupportMenu from "../../../app/components/header/OnlineSupportMenu.vue";
 
 const localVue = createLocalVue();
 
@@ -85,43 +86,34 @@ describe("user header", () => {
         expect(wrapper.findAll(LanguageMenu).length).toBe(1);
     });
 
-    it("renders hintr version menu", () => {
+    it("renders hintr version and online support menu", () => {
         const store = createStore()
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.findAll(HintrVersionMenu).length).toBe(1);
+        expect(wrapper.findAll(OnlineSupportMenu).length).toBe(1);
     })
-
-    it("contains bug report link", () => {
-        const store = createStore()
-        const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
-        const bugLink = wrapper.find("a[href='https://forms.gle/QxCT1b4ScLqKPg6a7']");
-        expectTranslated(bugLink, "Report a bug", "Signaler un bogue", store);
-    });
 
     it("computes language", () => {
         const store = createStore()
         const wrapper = shallowMount(UserHeader, {localVue, store, stubs: ["router-link"]});
         const vm = (wrapper as any).vm;
         expect(vm.helpFilename).toStrictEqual("Naomi-basic-instructions.pdf");
-        expect(vm.troubleFilename).toStrictEqual("index-en.html");
 
         const frStore = createFrenchStore();
         const frWrapper = shallowMount(UserHeader, {localVue, store: frStore, stubs: ["router-link"]});
         const frVm = (frWrapper as any).vm;
         expect(frVm.helpFilename).toStrictEqual("Naomi-instructions-de-base.pdf");
-        expect(frVm.troubleFilename).toStrictEqual("index-fr.html");
+
     });
 
-    it("contains help document links", () => {
+    it("contains Basic steps document links", () => {
         const store = createStore();
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
-        expect(wrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Help");
-        expect(wrapper.find("a[href='https://mrc-ide.github.io/naomi-troubleshooting/index-en.html']").text()).toBe("Troubleshooting");
+        expect(wrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Basic steps");
 
         const frStore = createFrenchStore();
         const frWrapper = shallowMount(UserHeader, {store: frStore, stubs: ["router-link"]});
-        expect(frWrapper.find("a[href='public/resources/Naomi-instructions-de-base.pdf']").text()).toBe("Aide");
-        expect(frWrapper.find("a[href='https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html']").text()).toBe("Dépannage");
+        expect(frWrapper.find("a[href='public/resources/Naomi-instructions-de-base.pdf']").text()).toBe("Etapes de base");
     });
 
     it("renders Projects link as expected if user is not guest", () => {

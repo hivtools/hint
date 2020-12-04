@@ -13,16 +13,7 @@
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
-                <a href="https://forms.gle/QxCT1b4ScLqKPg6a7"
-                   target="_blank"
-                   class="pr-2 mr-2 border-right"
-                   v-translate="'reportBug'">
-                </a>
-                <a :href="'https://mrc-ide.github.io/naomi-troubleshooting/' + troubleFilename"
-                   target="_blank"
-                   class="pr-2 mr-2 border-right"
-                   v-translate="'troubleshooting'">
-                </a>
+                <online-support-menu class="pr-2 mr-2 border-right"/>
                 <a :href="'public/resources/' + helpFilename"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
@@ -45,11 +36,10 @@
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
-    import {mapMutationByName, mapStateProp} from "../../utils";
+    import { mapStateProp} from "../../utils";
     import {RootState} from "../../root";
-    import {ProjectsMutations} from "../../store/projects/mutations";
-    import {PayloadWithType} from "../../types";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
+    import OnlineSupportMenu from "./OnlineSupportMenu.vue";
 
     interface Props {
         title: string,
@@ -57,8 +47,7 @@
     }
 
     interface Computed {
-        helpFilename: string,
-        troubleFilename: string
+        helpFilename: string
     }
 
     export default Vue.extend<unknown, unknown, Computed, Props>({
@@ -71,14 +60,6 @@
                     }
                     return filename;
                 }),
-            troubleFilename: mapStateProp<RootState, string>(null,
-                (state: RootState) => {
-                    let filename = "index-en.html";
-                    if (state.language == Language.fr) {
-                        filename = "index-fr.html";
-                    }
-                    return filename;
-                }),
             ...mapGetters(["isGuest"])
         },
         props: {
@@ -88,7 +69,8 @@
         components: {
             FileMenu,
             LanguageMenu,
-            HintrVersionMenu
+            HintrVersionMenu,
+            OnlineSupportMenu
         }
     })
 </script>

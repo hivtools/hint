@@ -1,8 +1,11 @@
 
-#hint 1.7.0
+#hint 1.8.0
 
 * redirect stale session to login page with session error message
 
+# hint 1.7.0
+
+* Update link text & resources
 
 # hint 1.6.3
 
