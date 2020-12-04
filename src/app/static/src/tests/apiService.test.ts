@@ -1,6 +1,8 @@
 import {api} from "../app/apiService";
 import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
+import {Language} from "../app/store/translations/locales";
+import registerTranslations from "../app/store/translations/registerTranslations";
 
 const rootState = mockRootState();
 
@@ -126,7 +128,6 @@ describe("ApiService", () => {
     });
 
     it("can redirect to login when 401 response is received", async () => {
-
         const realLocation = window.location
         delete window.location;
         window.location = {...window.location, assign: jest.fn()};
