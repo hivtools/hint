@@ -8,6 +8,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {switches} from "../../../app/featureSwitches";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated} from "../../testHelpers";
+import DropDown from "../../../app/components/header/DropDown.vue";
 
 describe("Online support menu", () => {
 
@@ -24,6 +25,16 @@ describe("Online support menu", () => {
     const oldModelBugReportValue = switches.modelBugReport;
     afterEach(() => {
         switches.modelBugReport = oldModelBugReportValue;
+    });
+
+    it("renders drop down with delay property true", () => {
+        const store = createStore();
+        const wrapper = shallowMount(OnlineSupportMenu, {
+            store
+        });
+
+        const dropDown = wrapper.find(DropDown);
+        expect(dropDown.props("delay")).toBe(true);
     });
 
     it("renders drop down text correctly", () => {
