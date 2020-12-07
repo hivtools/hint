@@ -1,6 +1,11 @@
-# hint 1.7.3
+# hint 1.8.1
 
 * bug fix for not been able to recover model run when hintr is torn down
+
+# hint 1.8.0
+
+* redirect stale session to login page with session error message
+
 
 # hint 1.7.2
 
@@ -17,6 +22,7 @@
 # hint 1.6.3
 
 * Fix bug from `/model/options` which results in hanging spinner
+
 
 # hint 1.6.2
 
