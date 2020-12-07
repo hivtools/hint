@@ -1,10 +1,14 @@
-# hint 1.7.1
-
-* Update help document resource
-
 #hint 1.8.0
 
 * redirect stale session to login page with session error message
+
+# hint 1.7.2
+
+* Avoid opening links with javascript
+
+# hint 1.7.1
+
+* Update help document resource
 
 # hint 1.7.0
 

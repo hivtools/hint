@@ -26,10 +26,11 @@
     interface Props {
         text: string
         right: boolean
+        delay: boolean
     }
 
     export default Vue.extend<Data, Methods, unknown, keyof Props>({
-        props: ["text", "right"],
+        props: ["text", "right", "delay"],
         data(): Data {
             return {
                 show: false
@@ -39,8 +40,14 @@
             toggle() {
                 this.show = !this.show;
             },
-            close() {
-                this.show = false;
+            close: function() {
+                if (this.delay) {
+                    setTimeout(() => {
+                        this.show = false;
+                    }, 1000);
+                } else {
+                    this.show = false;
+                }
             }
         }
     })
