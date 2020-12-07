@@ -54,7 +54,7 @@ export const mutations: MutationTree<ModelRunState> = {
         if(state.errors.length <= minPollErrors) {
             state.errors.push(action.payload);
         }
-        if(state.errors.length >= minPollErrors) {
+        if(state.errors.length == minPollErrors+1) {
             state.errors.push({
                 error: "Polling continues...",
                 detail: null
