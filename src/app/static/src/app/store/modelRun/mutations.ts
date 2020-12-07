@@ -1,5 +1,5 @@
 import {MutationTree} from "vuex";
-import {initialModelRunState, maxPollErrors, ModelRunState} from "./modelRun";
+import {initialModelRunState, minPollErrors, maxPollErrors, ModelRunState} from "./modelRun";
 import {PayloadWithType} from "../../types";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse, Error} from "../../generated";
 
@@ -51,7 +51,15 @@ export const mutations: MutationTree<ModelRunState> = {
     },
 
     [ModelRunMutation.RunStatusError](state: ModelRunState, action: PayloadWithType<Error>) {
-        state.errors.push(action.payload);
+        if(state.errors.length <= minPollErrors) {
+            state.errors.push(action.payload);
+        }
+        else if(state.errors.length == minPollErrors) {
+            state.errors.push({
+                error: "Polling continues...",
+                detail: null
+            });
+        }
         if (state.errors.length >= maxPollErrors) {
             stopPolling(state);
             state.status = {} as ModelStatusResponse;
