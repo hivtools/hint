@@ -1,3 +1,7 @@
+# hint 1.7.2
+
+* Avoid opening links with javascript
+
 # hint 1.7.1
 
 * Update help document resource
