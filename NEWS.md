@@ -1,3 +1,7 @@
+# hint 1.7.3
+
+* bug fix for not been able to recover model run when hintr is torn down
+
 # hint 1.7.2
 
 * Avoid opening links with javascript
