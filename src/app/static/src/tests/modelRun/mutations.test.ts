@@ -94,9 +94,7 @@ describe("Model run mutations", () => {
             modelRunId: "123",
             pollingCounter: 9
         });
-
         mutations.RunStatusError(testState, {payload: "1"});
-
         expect(testState.errors).toStrictEqual([]);
         expect(testState.statusPollId).toEqual(999);
         expect(testState.status).toStrictEqual({done: false});
