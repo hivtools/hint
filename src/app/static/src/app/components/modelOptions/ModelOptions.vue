@@ -61,7 +61,6 @@
         valid: boolean
         errorMessage: string
         editsRequireConfirmation: boolean
-        // hasChanges: StepDescription[]
         laterCompleteSteps: StepDescription[]
         currentLanguage: Language
         selectText: string
@@ -100,7 +99,6 @@
                 return i18next.t("required", this.currentLanguage)
             },
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
-            // hasChanges: mapGetterByName("stepper", "hasChanges"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             modelOptions: {
                 get() {
@@ -113,12 +111,10 @@
         },
         methods: {
             confirmEditing(e: Event) {
-                console.log('edit attempted')
                 if (this.editsRequireConfirmation) {
                     e.preventDefault();
                     this.showConfirmation = true;
                 }
-                // this.hasChanges
             },
             cancelEditing() {
                 this.showConfirmation = false;

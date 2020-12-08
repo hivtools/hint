@@ -10,16 +10,6 @@
                     <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
                 </li>
             </ul>
-            <!-- <ul v-if="changesToLaterSteps[0].number !== 5">
-                <li v-for="step in changesToLaterSteps" :key="step.number">
-                    <span v-if="step.number !==5" v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
-                </li>
-            </ul>
-            <ul v-if="changesToLaterSteps[0].number === 5">
-                <li>
-                    <span v-translate="'step'"></span> 4: <span v-translate="'fitModel'"></span>
-                </li>
-            </ul> -->
 
             <p v-if="isGuest" v-translate="'savePrompt'"></p>
             <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
@@ -102,7 +92,6 @@
             changesToShow: function (){
                 if (this.changesToLaterSteps.length > 0){
                     if (this.changesToLaterSteps[0].number !== 5){
-                        // console.log('changes to show',this.changesToLaterSteps.filter(step => step.number < 5))
                         return this.changesToLaterSteps.filter(step => step.number < 5)
                     } else return [{number: 4, textKey: 'fitModel'}]
                 } else return this.changesToLaterSteps
@@ -126,9 +115,6 @@
         components: {
             Modal,
             LoadingSpinner
-        },
-        mounted(){
-            console.log('changes to show', this.changesToShow())
         }
     });
 

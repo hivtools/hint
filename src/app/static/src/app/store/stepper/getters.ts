@@ -28,16 +28,6 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
         }
     },
     hasChanges: (state: StepperState, getters: any, rootState: RootState, rootGetters: any) => {
-        console.log('hasChanges',
-            {
-            1: null,
-            2: rootGetters['surveyAndProgram/hasChanges'],
-            3: rootGetters['modelOptions/hasChanges'],
-            4: null,
-            5: rootGetters['modelRun/complete'],
-            6: false,
-            7: false
-        })
         return {
             1: null,
             2: rootGetters['surveyAndProgram/hasChanges'],
