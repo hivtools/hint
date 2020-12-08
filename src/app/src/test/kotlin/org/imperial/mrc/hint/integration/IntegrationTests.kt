@@ -281,8 +281,13 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
                 "spectrum_plhiv_calibration_level" to "national",
                 "spectrum_plhiv_calibration_strat" to "sex_age_coarse",
                 "spectrum_population_calibration" to "national",
+                "spectrum_aware_calibration_level" to "none",
+                "spectrum_aware_calibration_strat" to "age_coarse",
                 "survey_art_coverage" to { "MWI2016PHIA" },
                 "survey_prevalence" to { "MWI2016PHIA" },
-                "survey_recently_infected" to { "MWI2016PHIA" })
+                "survey_recently_infected" to { "MWI2016PHIA" },
+                "output_aware_plhiv" to "true",
+                "anc_clients_year2" to 2018,
+                "anc_clients_year2_num_months" to "9")
     }
 }
