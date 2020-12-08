@@ -37,7 +37,7 @@ export const modelOptionsGetters = {
     hasChanges: (state: ModelOptionsState) => {
         console.log('initialModelOptionsState()',initialModelOptionsState())
         console.log('existingState!.modelOptions',existingState!.modelOptions)
-        return JSON.stringify(existingState!.modelOptions) !== JSON.stringify(initialModelOptionsState())
+        return JSON.stringify(state.optionsFormMeta) !== JSON.stringify(initialModelOptionsState().optionsFormMeta)
     }
 };
 

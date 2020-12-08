@@ -5,16 +5,21 @@
             <h4 v-if="!isGuest" v-translate="'saveVersion'"></h4>
 
             <p v-translate="'discardWarning'"></p>
-            <ul v-if="laterCompleteSteps.length > 0">
-                <li v-for="step in laterCompleteSteps" :key="step.number">
+            <ul>
+            <li v-for="step in changesToShow()" :key="step.number">
                     <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
                 </li>
             </ul>
-            <ul v-if="laterCompleteSteps.length == 0">
+            <!-- <ul v-if="changesToLaterSteps[0].number !== 5">
+                <li v-for="step in changesToLaterSteps" :key="step.number">
+                    <span v-if="step.number !==5" v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
+                </li>
+            </ul>
+            <ul v-if="changesToLaterSteps[0].number === 5">
                 <li>
                     <span v-translate="'step'"></span> 4: <span v-translate="'fitModel'"></span>
                 </li>
-            </ul>
+            </ul> -->
 
             <p v-if="isGuest" v-translate="'savePrompt'"></p>
             <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
@@ -52,6 +57,7 @@
 
     interface Computed {
         laterCompleteSteps: StepDescription[],
+        changesToLaterSteps: StepDescription[],
         currentVersionId: string | null,
         errorsCount: number
     }
@@ -75,6 +81,7 @@
         },
         computed: {
             laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
+            changesToLaterSteps: mapGetterByName("stepper", "changesToLaterSteps"),
             currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
                 return state.currentVersion && state.currentVersion.id;
             }),
@@ -91,6 +98,14 @@
                     this.waitingForVersion = true;
                     this.newVersion();
                 }
+            },
+            changesToShow: function (){
+                if (this.changesToLaterSteps.length > 0){
+                    if (this.changesToLaterSteps[0].number !== 5){
+                        // console.log('changes to show',this.changesToLaterSteps.filter(step => step.number < 5))
+                        return this.changesToLaterSteps.filter(step => step.number < 5)
+                    } else return [{number: 4, textKey: 'fitModel'}]
+                } else return this.changesToLaterSteps
             },
             newVersion: mapActionByName("projects", "newVersion")
         },
@@ -111,6 +126,9 @@
         components: {
             Modal,
             LoadingSpinner
+        },
+        mounted(){
+            console.log('changes to show', this.changesToShow())
         }
     });
 

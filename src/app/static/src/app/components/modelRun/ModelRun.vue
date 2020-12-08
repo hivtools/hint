@@ -95,6 +95,8 @@
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
         },
         methods: {
+
+            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll", "cancelRun"]),
             handleRun(){
                 if (this.editsRequireConfirmation){
                     this.showReRunConfirmation = true
@@ -106,8 +108,7 @@
             },
             cancelEdit() {
                 this.showReRunConfirmation = false
-            },
-            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll", "cancelRun"])
+            }
         },
         watch: {
             runId: function (newVal) {

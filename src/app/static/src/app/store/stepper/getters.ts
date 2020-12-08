@@ -42,7 +42,7 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
             1: null,
             2: rootGetters['surveyAndProgram/hasChanges'],
             3: rootGetters['modelOptions/hasChanges'],
-            4: null,
+            4: rootGetters['modelRun/complete'],
             5: rootGetters['modelRun/complete'],
             6: false,
             7: false
