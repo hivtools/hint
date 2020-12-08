@@ -44,7 +44,7 @@
                 </button>
                 <button type="button"
                         class="btn btn-white"
-                        @click="cancelShareProject"
+                        @mousedown="cancelShareProject"
                         :disabled="cloningProject"
                         v-translate="'cancel'">
                 </button>
@@ -135,6 +135,7 @@
                     e.valid = null;
                     this.showValidationMessage = this.invalidEmails;
                 }
+
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
