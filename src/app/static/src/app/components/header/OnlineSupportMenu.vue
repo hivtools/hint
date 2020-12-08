@@ -1,15 +1,13 @@
 <template>
     <div id="divclass">
-        <drop-down text="support" :right="true" style="flex: none">
+        <drop-down text="support" :right="true" :delay="true" style="flex: none">
             <a class="dropdown-item"
-               href="#"
-               v-on:mousedown="faqLink"
+               :href="faqLocation"
                target="_blank"
                v-translate="'faq'">
             </a>
             <a class="dropdown-item"
-               href="#"
-               v-on:mousedown="contactLink"
+               :href="bugReportLocation"
                target="_blank"
                v-translate="'contact'">
             </a>
@@ -28,9 +26,10 @@
 
     interface Computed {
         support: string
-        modelBugReport: string
+        bugReportLocation: string
         currentLanguage: Language
         troubleFilename: string
+        faqLocation: string
     }
 
     export default Vue.extend<unknown, unknown, Computed, unknown>({
@@ -40,7 +39,7 @@
             support() {
                 return i18next.t("support", this.currentLanguage)
             },
-            modelBugReport() {
+            bugReportLocation() {
                 if (switches.modelBugReport) {
                     return "https://forms.office.com/Pages/ResponsePage.aspx?" +
                         "id=B3WJK4zudUWDC0-CZ8PTB1APqcgcYz5DmSeKo5rlcfxUN0dWR1VMUEtHU0xDRU9HWFRNOFA5VVc3WCQlQCN0PWcu"
@@ -55,15 +54,9 @@
                         filename = "index-fr.html";
                     }
                     return filename;
-                })
-        },
-        methods: {
-            contactLink() {
-                window.open(this.modelBugReport, "_blank")
-            },
-            faqLink() {
-                const link = "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename
-                window.open(link,"_blank")
+                }),
+            faqLocation() {
+                return  "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename;
             }
         },
         components: {
