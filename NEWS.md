@@ -1,6 +1,13 @@
+
 # hint 1.9.0
 
 * make projects endpoint redirect session to login for non-logged in user
+
+# hint 1.8.1
+
+* fix bug cancel button on share project dialog is broken
+
+* fix cancel button not getting triggered at first when text input has data
 
 # hint 1.8.0
 
