@@ -1,4 +1,8 @@
-#hint 1.8.0
+# hint 1.9.0
+
+* make projects endpoint redirect session to login for non-logged in user
+
+# hint 1.8.0
 
 * redirect stale session to login page with session error message
 
