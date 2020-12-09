@@ -120,19 +120,13 @@ export class APIService<S extends string, E extends string> implements API<S, E>
             return
         }
 
-        let failure = e.response && e.response.data;
-        if (!failure && e.response && e.response.status == 401) {
-            failure = {
-                status: "failure",
-                errors: [{
-                    error: "SESSION_TIMEOUT",
-                    detail: i18next.t("sessionExpired")
-                }
-                ],
-                data: {}
-            }
+        if (e.response && e.response.status == 401) {
+            const messenger = i18next.t("sessionExpiredLogin")
+            const message = encodeURIComponent(messenger)
+            window.location.assign("/login?error=SessionExpired&message=" + message)
         }
 
+        const failure = e.response && e.response.data;
         if (!isHINTResponse(failure)) {
             this._commitError(APIService.createError("apiCouldNotParseError"));
         } else if (this._onError) {

@@ -1,7 +1,38 @@
+# hint 1.8.2
+
+* Update help document
+
+# hint 1.8.1
+
+* bug fix for not been able to recover model run when hintr is torn down
+
+# hint 1.8.1
+
+* fix bug cancel button on share project dialog is broken
+
+* fix cancel button not getting triggered at first when text input has data
+
+# hint 1.8.0
+
+* redirect stale session to login page with session error message
+
+
+# hint 1.7.2
+
+* Avoid opening links with javascript
+
+# hint 1.7.1
+
+* Update help document resource
+
+# hint 1.7.0
+
+* Update link text & resources
 
 # hint 1.6.3
 
 * Fix bug from `/model/options` which results in hanging spinner
+
 
 # hint 1.6.2
 
@@ -10,7 +41,6 @@
 # hint 1.6.1
 
 * Makes ADR import button red
-
 
 # hint 1.6.0
 

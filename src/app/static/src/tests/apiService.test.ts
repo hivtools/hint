@@ -1,6 +1,8 @@
 import {api} from "../app/apiService";
 import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
+import {Language} from "../app/store/translations/locales";
+import registerTranslations from "../app/store/translations/registerTranslations";
 
 const rootState = mockRootState();
 
@@ -125,28 +127,23 @@ describe("ApiService", () => {
         expect(committedPayload).toStrictEqual({error: "OTHER_ERROR", detail: null});
     });
 
-    it("commits a default error message if an empty 401 response is received", async () => {
+    it("can redirect to login when 401 response is received", async () => {
+        const realLocation = window.location
+        delete window.location;
+        window.location = {...window.location, assign: jest.fn()};
 
         mockAxios.onGet("/baseline/")
             .reply(401, null);
+        expect(window.location.assign).not.toHaveBeenCalled()
 
-        let committedType: any = false;
-        let committedPayload: any = false;
-
-        const commit = ({type, payload}: any) => {
-            committedType = type;
-            committedPayload = payload;
-        };
-
+        const commit = jest.fn();
         await api({commit, rootState} as any)
-            .withError("TEST_TYPE")
             .get("/baseline/");
 
-        expect(committedType).toBe("TEST_TYPE");
-        expect(committedPayload).toStrictEqual({
-            error: "SESSION_TIMEOUT",
-            detail: "Your session has expired. Please refresh the page and log in again. You can save your work before refreshing."
-        });
+        expect(window.location.assign).toHaveBeenCalledWith("/login?error=SessionExpired" +
+            "&message=Your%20session%20has%20expired.%20Please%20log%20in%20again.")
+
+        window.location = realLocation
     });
 
     it("commits the success response with the specified type", async () => {

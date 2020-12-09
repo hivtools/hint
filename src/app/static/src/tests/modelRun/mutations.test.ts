@@ -66,23 +66,16 @@ describe("Model run mutations", () => {
         expect(testState.errors).toStrictEqual(["Test Error"]);
     });
 
-    it("run status error adds error and stops polling if max errors exceeded", () => {
-        const error1 = mockError("1");
-        const error2 = mockError("2");
-        const error3 = mockError("3");
-        const error4 = mockError("4");
+    it("run status error and stops polling if maxPollErrors exceeded", () => {
         const testState = mockModelRunState({
-            errors: [error1, error2, error3, error4],
+            errors : [],
             statusPollId: 999,
             status: {done: false} as ModelStatusResponse,
-            modelRunId: "123"
+            modelRunId: "123",
+            pollingCounter: 150
         });
-
-        const error5 = mockError("5");
-        mutations.RunStatusError(testState, {payload: error5});
-
+        mutations.RunStatusError(testState, {payload: "1"});
         expect(testState.errors).toStrictEqual([
-            error1, error2, error3, error4, error5,
             {
                 error: "Unable to retrieve model run status. Please retry the model run, or contact support if the error persists.",
                 detail: null
@@ -93,17 +86,16 @@ describe("Model run mutations", () => {
         expect(testState.modelRunId).toStrictEqual("");
     });
 
-    it("run status error ads errors and does not stop polling if max errors not exceeded", () => {
+    it("run status error and does not stop polling if maxPollErrors not exceeded", () => {
         const testState = mockModelRunState({
             errors: [],
             statusPollId: 999,
             status: {done: false} as ModelStatusResponse,
-            modelRunId: "123"
+            modelRunId: "123",
+            pollingCounter: 9
         });
-
         mutations.RunStatusError(testState, {payload: "1"});
-
-        expect(testState.errors).toStrictEqual(["1"]);
+        expect(testState.errors).toStrictEqual([]);
         expect(testState.statusPollId).toEqual(999);
         expect(testState.status).toStrictEqual({done: false});
         expect(testState.modelRunId).toStrictEqual("123");
