@@ -23,6 +23,15 @@ describe("stepper getters", () => {
             5: false,
             6: false,
             7: false
+        },
+        hasChanges: {
+            1: true,
+            2: true,
+            3: false,
+            4: false,
+            5: false,
+            6: false,
+            7: false
         }
     };
 
@@ -55,6 +64,12 @@ describe("stepper getters", () => {
 
     it("returns later complete steps", () => {
         const steps = getters.laterCompleteSteps(state, testGetters, null as any, null as any);
+        expect(steps.length).toBe(1);
+        expect(steps[0].number).toBe(2);
+    });
+
+    it("returns changes to later steps", () => {
+        const steps = getters.changesToLaterSteps(state, testGetters, null as any, null as any);
         expect(steps.length).toBe(1);
         expect(steps[0].number).toBe(2);
     });
