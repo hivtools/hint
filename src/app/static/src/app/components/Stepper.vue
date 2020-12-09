@@ -165,7 +165,6 @@
             ready: function (newVal) {
                 if (newVal) {
                     this.validate()
-                    console.log('stepper has changes', this.hasChanges)
                 }
             }
         }
