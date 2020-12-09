@@ -120,8 +120,8 @@ describe("user header", () => {
         const store = createStore();
         const wrapper = getWrapper("someone@email.com", store);
 
-        const link = wrapper.find("router-link-stub");
-        expect(link.attributes("to")).toBe("/projects");
+        const link = wrapper.find("a");
+        expect(link.attributes("href")).toBe("/projects");
         expectTranslated(link, "Projects", "Projets", store);
     });
 

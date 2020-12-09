@@ -4,6 +4,7 @@ import {DatasetResource, Dict, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
 import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import i18next from "i18next";
 
 export type ComputedWithType<T> = () => T;
 
@@ -232,5 +233,11 @@ export function getFilenameFromImportUrl(url: string) {
 export function getFilenameFromUploadFormData(formdata: FormData) {
     const file = formdata.get("file");
     return (file as File).name;
+}
+
+export function redirectSession() {
+    const messenger = i18next.t("sessionExpiredLogin")
+    const message = encodeURIComponent(messenger)
+    window.location.assign("/login?error=SessionExpired&message=" + message)
 }
 

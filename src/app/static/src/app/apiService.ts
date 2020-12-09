@@ -1,7 +1,7 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {ErrorsMutation} from "./store/errors/mutations";
 import {ActionContext, Commit} from "vuex";
-import {freezer, isHINTResponse} from "./utils";
+import {freezer, isHINTResponse, redirectSession} from "./utils";
 import {Error, Response} from "./generated";
 import {TranslatableState} from "./root";
 import i18next from "i18next";
@@ -121,9 +121,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
 
         if (e.response && e.response.status == 401) {
-            const messenger = i18next.t("sessionExpiredLogin")
-            const message = encodeURIComponent(messenger)
-            window.location.assign("/login?error=SessionExpired&message=" + message)
+            redirectSession()
         }
 
         const failure = e.response && e.response.data;

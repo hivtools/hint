@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-    import {mapActionByName, mapGetterByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStateProps, redirectSession} from "../../utils";
     import {ProjectsState} from "../../store/projects/projects";
     import {Error} from "../../generated";
     import ErrorAlert from "../ErrorAlert.vue";
@@ -89,9 +89,10 @@
             createProject: mapActionByName(namespace, "createProject"),
             getProjects: mapActionByName(namespace, "getProjects")
         },
+
         beforeMount() {
             if (this.isGuest) {
-                this.$router.push("/");
+                redirectSession()
             }
         },
         mounted() {
