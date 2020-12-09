@@ -29,7 +29,7 @@ const localVue = createLocalVue();
 
 describe("Model run component", () => {
 
-    const createStore = (state: Partial<ModelRunState> = {}, testActions: any = actions): Store<RootState> => {
+    const createStore = (state: Partial<ModelRunState> = {}, testActions: any = actions, sGetters = stepperGetters): Store<RootState> => {
         const store = new Vuex.Store({
             state: emptyState(),
             getters: rootGetters,
@@ -45,7 +45,7 @@ describe("Model run component", () => {
                     state: mockModelOptionsState()
                 },
                 stepper: {
-                    getters: stepperGetters,
+                    getters: sGetters,
                     namespaced: true,
                     state: {
                         steps: []
@@ -106,6 +106,25 @@ describe("Model run component", () => {
                 expect(wrapper.find(Modal).props().open).toBe(false);
                 done();
             }, 2500);
+        });
+    });
+
+    it("does not immediately run model if edits require confirmation", (done) => {
+
+        const store = createStore({}, {}, {...stepperGetters, editsRequireConfirmation: () => true});
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        const button = wrapper.find("button");
+        expect(button.text()).toBe("Fit model");
+        button.trigger("click");
+
+        setTimeout(() => {
+            expect(wrapper.vm.$data.showReRunConfirmation).toStrictEqual(true);
+            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
+            expect(store.state.modelRun.status).toStrictEqual({});
+            expect(store.state.modelRun.modelRunId).toBe("");
+            expect(store.state.modelRun.statusPollId).toBe(-1);
+            expect(wrapper.find(Modal).props().open).toBe(false);
+            done();
         });
     });
 

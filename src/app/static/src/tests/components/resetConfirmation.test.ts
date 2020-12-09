@@ -11,7 +11,7 @@ import {mutations as errorMutations} from "../../app/store/errors/mutations";
 import {getters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
 
-const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState> = {}) => {
+const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState> = {}, partialStepperGetters = {}) => {
     const store = new Vuex.Store({
         state: mockRootState(partialRootState),
         getters: getters,
@@ -24,7 +24,8 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
                         {number: 4, textKey: "fitModel"}],
                     changesToLaterSteps: () => [{number: 2, textKey: "uploadSurvey"},
                         {number: 3, textKey: "modelOptions"},
-                        {number: 4, textKey: "fitModel"}]
+                        {number: 4, textKey: "fitModel"}],
+                    ...partialStepperGetters
                 }
             },
             errors: {
@@ -107,6 +108,50 @@ describe("Reset confirmation modal", () => {
 
         expect(rendered.find(LoadingSpinner).exists()).toBe(false);
     });
+
+    it("renders as expected for someone rerunning the model", () => {
+        const stepperGetter = {
+            laterCompleteSteps: () => [
+                {number: 5, textKey: "calilbrateModel"}],
+            changesToLaterSteps: () => [
+                {number: 5, textKey: "calilbrateModel"}]}
+        const store = createStore(jest.fn(), {}, stepperGetter);
+        const rendered = mount(ResetConfirmation, {
+            propsData: {
+                continueEditing: jest.fn(),
+                cancelEditing: jest.fn()
+            },
+            store
+        });
+
+        expectRenderedModelRunSteps(rendered);
+    });
+
+    it("omits calibrate step from render", () => {
+        const stepperGetter = {
+            laterCompleteSteps: () => [
+                {number: 2, textKey: "uploadSurvey"},
+                {number: 3, textKey: "modelOptions"},
+                {number: 4, textKey: "fitModel"},
+                {number: 5, textKey: "calilbrateModel"}],
+            changesToLaterSteps: () => [
+                {number: 2, textKey: "uploadSurvey"},
+                {number: 3, textKey: "modelOptions"},
+                {number: 4, textKey: "fitModel"},
+                {number: 5, textKey: "calilbrateModel"}]}
+        const store = createStore(jest.fn(), {}, stepperGetter);
+        const rendered = mount(ResetConfirmation, {
+            propsData: {
+                continueEditing: jest.fn(),
+                cancelEditing: jest.fn()
+            },
+            store
+        });
+
+        expectRenderedSteps(rendered);
+    });
+
+
 
     it("cancel edit button invokes cancelEditing", () => {
         const mockCancelEdit = jest.fn();
@@ -263,6 +308,14 @@ describe("Reset confirmation modal", () => {
         expectTranslated(steps.at(1), "Step 3: Model options",
             "Étape 3: Options des modèles", store);
         expectTranslated(steps.at(2), "Step 4: Fit model",
+            "Étape 4: Ajuster le modèle", store);
+    };
+
+    const expectRenderedModelRunSteps = (rendered: Wrapper<any>) => {
+        const store = rendered.vm.$store;
+        const steps = rendered.findAll("li");
+        expect(steps.length).toBe(1);
+        expectTranslated(steps.at(0), "Step 4: Fit model",
             "Étape 4: Ajuster le modèle", store);
     };
 
