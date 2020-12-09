@@ -11,9 +11,10 @@ export interface ModelRunState extends ReadyState {
     status: ModelStatusResponse
     errors: Error[],
     result: ModelResultResponse | null
+    pollingCounter: number
 }
 
-export const maxPollErrors = 5;
+export const maxPollErrors = 150;
 
 export const initialModelRunState = (): ModelRunState => {
     return {
@@ -22,7 +23,8 @@ export const initialModelRunState = (): ModelRunState => {
         status: {} as ModelStatusResponse,
         statusPollId: -1,
         result: null,
-        ready: false
+        ready: false,
+        pollingCounter : 0
     }
 };
 

@@ -51,8 +51,8 @@ export const mutations: MutationTree<ModelRunState> = {
     },
 
     [ModelRunMutation.RunStatusError](state: ModelRunState, action: PayloadWithType<Error>) {
-        state.errors.push(action.payload);
-        if (state.errors.length >= maxPollErrors) {
+        state.pollingCounter += 1
+        if (state.pollingCounter >= maxPollErrors) {
             stopPolling(state);
             state.status = {} as ModelStatusResponse;
             state.modelRunId = "";
@@ -60,6 +60,7 @@ export const mutations: MutationTree<ModelRunState> = {
                 error: "Unable to retrieve model run status. Please retry the model run, or contact support if the error persists.",
                 detail: null
             });
+            state.pollingCounter = 0
         }
     },
 

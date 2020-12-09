@@ -4,6 +4,10 @@
 
 # hint 1.8.1
 
+* bug fix for not been able to recover model run when hintr is torn down
+
+# hint 1.8.1
+
 * fix bug cancel button on share project dialog is broken
 
 * fix cancel button not getting triggered at first when text input has data
@@ -11,6 +15,7 @@
 # hint 1.8.0
 
 * redirect stale session to login page with session error message
+
 
 # hint 1.7.2
 
