@@ -1,3 +1,10 @@
+# hint 1.8.2
+
+* Update help document
+
+# hint 1.8.1
+
+* bug fix for not been able to recover model run when hintr is torn down
 
 # hint 1.9.0
 
@@ -12,6 +19,7 @@
 # hint 1.8.0
 
 * redirect stale session to login page with session error message
+
 
 # hint 1.7.2
 
