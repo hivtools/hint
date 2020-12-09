@@ -62,8 +62,11 @@ describe("ShareProject", () => {
         link.trigger("click");
         expect(wrapper.find(Modal).props("open")).toBe(true);
         const input = wrapper.find(Modal).find("input");
-        wrapper.find(Modal).findAll("button").at(1).trigger("click");
+        wrapper.find(Modal).findAll("button").at(1).trigger("mousedown");
         expect(wrapper.find(Modal).props("open")).toBe(false);
+
+        const vm = wrapper.vm as any
+        expect(vm.emailsToShareWith).toMatchObject([{value: "", valid: null}])
     });
 
     it("if email is invalid, validation feedback is shown and button disabled", async () => {
