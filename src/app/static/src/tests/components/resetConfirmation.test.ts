@@ -21,6 +21,9 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
                 getters: {
                     laterCompleteSteps: () => [{number: 2, textKey: "uploadSurvey"},
                         {number: 3, textKey: "modelOptions"},
+                        {number: 4, textKey: "fitModel"}],
+                    changesToLaterSteps: () => [{number: 2, textKey: "uploadSurvey"},
+                        {number: 3, textKey: "modelOptions"},
                         {number: 4, textKey: "fitModel"}]
                 }
             },

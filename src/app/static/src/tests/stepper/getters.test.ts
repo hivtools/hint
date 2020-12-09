@@ -59,14 +59,14 @@ describe("stepper getters", () => {
         expect(steps[0].number).toBe(2);
     });
 
-    it("edits require confirmation if there are later complete steps", () => {
-        const localTestGetters = {...testGetters, laterCompleteSteps: [{}]};
+    it("edits require confirmation if there are later steps with changes", () => {
+        const localTestGetters = {...testGetters, changesToLaterSteps: [{}]};
         const result = getters.editsRequireConfirmation(state, localTestGetters, null as any, null as any);
         expect(result).toBe(true);
     });
 
-    it("edits do not require confirmation if there are no later complete steps", () => {
-        const localTestGetters = {...testGetters, laterCompleteSteps: []};
+    it("edits do not require confirmation if there are no later steps with changes", () => {
+        const localTestGetters = {...testGetters, changesToLaterSteps: []};
         const result = getters.editsRequireConfirmation(state, localTestGetters, null as any, null as any);
         expect(result).toBe(false);
     });
