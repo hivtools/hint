@@ -1,3 +1,7 @@
+# hint 1.9.0
+
+* make projects endpoint redirect session to login for non-logged in user
+
 # hint 1.8.2
 
 * Update help document
@@ -5,10 +9,6 @@
 # hint 1.8.1
 
 * bug fix for not been able to recover model run when hintr is torn down
-
-# hint 1.9.0
-
-* make projects endpoint redirect session to login for non-logged in user
 
 # hint 1.8.1
 
