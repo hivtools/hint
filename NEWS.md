@@ -1,3 +1,7 @@
+# hint 1.8.3
+
+* Trigger confirm save dialog if subsequent steps have any changes
+
 # hint 1.8.2
 
 * Update help document
