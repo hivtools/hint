@@ -89,12 +89,6 @@
             createProject: mapActionByName(namespace, "createProject"),
             getProjects: mapActionByName(namespace, "getProjects")
         },
-
-        beforeMount() {
-            if (this.isGuest) {
-                redirectSession()
-            }
-        },
         mounted() {
             this.getProjects();
         },

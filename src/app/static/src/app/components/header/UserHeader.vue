@@ -5,8 +5,9 @@
                 <div class="navbar-header">
                     {{ title }}
                 </div>
-                <a id="projects-link" v-if="!isGuest" href="/projects"  class="ml-2 pr-2 border-right"
-                   v-translate="'projects'" style="flex:none"></a>
+                <router-link id="projects-link" v-if="!isGuest" to="/projects" class="ml-2 pr-2 border-right"
+                             v-translate="'projects'"
+                             style="flex:none"></router-link>
                 <file-menu :title="title"></file-menu>
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-light">
                     <span v-translate="'loggedInAs'"></span> {{ user }}
