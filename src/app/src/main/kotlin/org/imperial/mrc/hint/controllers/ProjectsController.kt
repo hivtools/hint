@@ -101,12 +101,11 @@ class ProjectsController(private val session: Session,
     @ResponseBody
     fun getProjects(): ResponseEntity<String>
     {
-        val projects = projectRepository.getProjects(userId())
         if (session.userIsGuest())
         {
             return ResponseEntity(HttpStatus.UNAUTHORIZED)
         }
-        return SuccessResponse(projects).asResponseEntity()
+        return SuccessResponse(projectRepository.getProjects(userId())).asResponseEntity()
     }
 
     @DeleteMapping("/project/{projectId}/version/{versionId}")
