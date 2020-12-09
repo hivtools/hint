@@ -66,7 +66,7 @@ describe("Model run mutations", () => {
         expect(testState.errors).toStrictEqual(["Test Error"]);
     });
 
-    it("run status error adds error and stops polling if max errors exceeded", () => {
+    it("run status error and stops polling if maxPollErrors exceeded", () => {
         const testState = mockModelRunState({
             errors : [],
             statusPollId: 999,
@@ -86,7 +86,7 @@ describe("Model run mutations", () => {
         expect(testState.modelRunId).toStrictEqual("");
     });
 
-    it("run status error ads errors and does not stop polling if max errors not exceeded", () => {
+    it("run status error and does not stop polling if maxPollErrors not exceeded", () => {
         const testState = mockModelRunState({
             errors: [],
             statusPollId: 999,
