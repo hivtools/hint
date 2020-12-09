@@ -1,3 +1,7 @@
+# hint 1.9.0
+
+* fix ok button accessibility bug in share project
+
 # hint 1.8.2
 
 * Update help document
