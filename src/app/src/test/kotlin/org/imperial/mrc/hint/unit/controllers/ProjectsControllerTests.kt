@@ -155,9 +155,7 @@ class ProjectsControllerTests
         val sut = ProjectsController(guestSession, mock(), mock(), mock())
         val result = sut.getProjects()
 
-        val resultJson = parser.readTree(result.body)["data"]
-        val projects = resultJson as ArrayNode
-        assertThat(projects.count()).isEqualTo(0)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 
     @Test
