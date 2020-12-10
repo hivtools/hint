@@ -147,7 +147,7 @@ class ProjectsControllerTests
     }
 
     @Test
-    fun `gets empty projects list if user is guest`()
+    fun `returns 401 status if user is guest`()
     {
         val guestSession = mock<Session> {
             on { userIsGuest() } doReturn true
