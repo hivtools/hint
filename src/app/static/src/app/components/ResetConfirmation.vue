@@ -6,7 +6,7 @@
 
             <p v-translate="'discardWarning'"></p>
             <ul>
-            <li v-for="step in changesToShow()" :key="step.number">
+            <li v-for="step in changesToRelevantSteps" :key="step.number">
                     <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
                 </li>
             </ul>
@@ -46,8 +46,7 @@
     import {ErrorsState} from "../store/errors/errors";
 
     interface Computed {
-        laterCompleteSteps: StepDescription[],
-        changesToLaterSteps: StepDescription[],
+        changesToRelevantSteps: StepDescription[],
         currentVersionId: string | null,
         errorsCount: number
     }
@@ -70,8 +69,7 @@
             }
         },
         computed: {
-            laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
-            changesToLaterSteps: mapGetterByName("stepper", "changesToLaterSteps"),
+            changesToRelevantSteps: mapGetterByName("stepper", "changesToRelevantSteps"),
             currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
                 return state.currentVersion && state.currentVersion.id;
             }),
@@ -89,13 +87,13 @@
                     this.newVersion();
                 }
             },
-            changesToShow: function (){
-                if (this.changesToLaterSteps.length > 0){
-                    if (this.changesToLaterSteps[0].number !== 5){
-                        return this.changesToLaterSteps.filter(step => step.number < 5)
-                    } else return [{number: 4, textKey: 'fitModel'}]
-                } else return this.changesToLaterSteps
-            },
+            // changesToShow: function (){
+            //     if (this.changesToLaterSteps.length > 0){
+            //         if (this.changesToLaterSteps[0].number !== 5){
+            //             return this.changesToLaterSteps.filter(step => step.number < 5)
+            //         } else return [{number: 4, textKey: 'fitModel'}]
+            //     } else return this.changesToLaterSteps
+            // },
             newVersion: mapActionByName("projects", "newVersion")
         },
         watch: {

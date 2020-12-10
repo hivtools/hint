@@ -29,6 +29,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 
     [ModelCalibrateMutation.Update](state: ModelCalibrateState, payload: DynamicFormMeta) {
         state.complete = false;
+        state.changes = true;
         state.optionsFormMeta = payload;
     },
 

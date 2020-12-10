@@ -19,9 +19,6 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
             stepper: {
                 namespaced: true,
                 getters: {
-                    laterCompleteSteps: () => [{number: 2, textKey: "uploadSurvey"},
-                        {number: 3, textKey: "modelOptions"},
-                        {number: 4, textKey: "fitModel"}],
                     changesToLaterSteps: () => [{number: 2, textKey: "uploadSurvey"},
                         {number: 3, textKey: "modelOptions"},
                         {number: 4, textKey: "fitModel"}],
@@ -111,8 +108,6 @@ describe("Reset confirmation modal", () => {
 
     it("renders as expected for someone rerunning the model", () => {
         const stepperGetter = {
-            laterCompleteSteps: () => [
-                {number: 5, textKey: "calilbrateModel"}],
             changesToLaterSteps: () => [
                 {number: 5, textKey: "calilbrateModel"}]}
         const store = createStore(jest.fn(), {}, stepperGetter);
@@ -129,11 +124,6 @@ describe("Reset confirmation modal", () => {
 
     it("omits calibrate step from render", () => {
         const stepperGetter = {
-            laterCompleteSteps: () => [
-                {number: 2, textKey: "uploadSurvey"},
-                {number: 3, textKey: "modelOptions"},
-                {number: 4, textKey: "fitModel"},
-                {number: 5, textKey: "calilbrateModel"}],
             changesToLaterSteps: () => [
                 {number: 2, textKey: "uploadSurvey"},
                 {number: 3, textKey: "modelOptions"},

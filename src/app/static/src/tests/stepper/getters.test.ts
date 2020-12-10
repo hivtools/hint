@@ -62,12 +62,6 @@ describe("stepper getters", () => {
         expect(ready).toBe(false);
     });
 
-    it("returns later complete steps", () => {
-        const steps = getters.laterCompleteSteps(state, testGetters, null as any, null as any);
-        expect(steps.length).toBe(1);
-        expect(steps[0].number).toBe(2);
-    });
-
     it("returns changes to later steps", () => {
         const steps = getters.changesToLaterSteps(state, testGetters, null as any, null as any);
         expect(steps.length).toBe(1);

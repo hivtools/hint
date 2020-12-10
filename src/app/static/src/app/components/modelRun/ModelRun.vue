@@ -26,7 +26,7 @@
             <error-alert v-for="(error, index) in errors" :key="index" :error="error"></error-alert>
         </div>
         <reset-confirmation :continue-editing="confirmReRun"
-                            :cancel-editing="cancelEdit"
+                            :cancel-editing="cancelReRun"
                             :open="showReRunConfirmation"></reset-confirmation>
     </div>
 </template>
@@ -65,7 +65,7 @@
     interface Methods {
         handleRun: () => void;
         confirmReRun: () => void;
-        cancelEdit: () => void;
+        cancelReRun: () => void;
         run: () => void;
         poll: (runId: string) => void;
         cancelRun: () => void;
@@ -106,7 +106,7 @@
                 this.run()
                 this.showReRunConfirmation = false;
             },
-            cancelEdit() {
+            cancelReRun() {
                 this.showReRunConfirmation = false
             }
         },

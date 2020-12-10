@@ -59,7 +59,6 @@
         calibrating: boolean
         complete: boolean
         editsRequireConfirmation: boolean
-        laterCompleteSteps: StepDescription[]
         currentLanguage: Language
         selectText: string
         requiredText: string,
@@ -97,7 +96,6 @@
             submitText() {
                 return i18next.t("calibrate", {lng: this.currentLanguage})
             },
-            laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             complete: mapStateProp<ModelCalibrateState, boolean>(namespace, state => state.complete),
             calibrateOptions: {

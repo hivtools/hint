@@ -15,7 +15,6 @@ describe("File upload component", () => {
 
     const mockGetters = {
         editsRequireConfirmation: () => true,
-        laterCompleteSteps: () => [{number: 4, textKey: "fitModel"}],
         changesToLaterSteps: () => [{number: 4, textKey: "fitModel"}]
     };
 
