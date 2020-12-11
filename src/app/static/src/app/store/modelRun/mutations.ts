@@ -50,7 +50,7 @@ export const mutations: MutationTree<ModelRunState> = {
         state.errors.push(action.payload);
     },
 
-    [ModelRunMutation.RunStatusError](state: ModelRunState, action: PayloadWithType<Error>) {
+    [ModelRunMutation.RunStatusError](state: ModelRunState) {
         state.pollingCounter += 1
         if (state.pollingCounter >= maxPollErrors) {
             stopPolling(state);

@@ -1,4 +1,4 @@
-import {Module} from "vuex";
+import {Dictionary, Module} from "vuex";
 import {RootState} from "../../root";
 import {BarchartIndicator, DisplayFilter, Filter} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
@@ -10,6 +10,10 @@ const namespaced = true;
 
 export interface ModelOutputState {
     selectedTab: string
+    changes: boolean
+    selections: {
+        [key: string]: any
+    }
 }
 
 export const modelOutputGetters = {
@@ -66,7 +70,9 @@ const outputPlotFilters = (rootState: RootState) => {
 
 export const initialModelOutputState = (): ModelOutputState => {
     return {
-        selectedTab: ""
+        selectedTab: "",
+        changes: false,
+        selections: {}
     }
 };
 

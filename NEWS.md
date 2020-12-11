@@ -1,6 +1,14 @@
-# hint 1.8.3
+# hint 1.10.1
 
 * Trigger confirm save dialog if subsequent steps have any changes
+
+# hint 1.10.0
+
+* fix ok button accessibility bug in share project
+
+# hint 1.9.0
+
+* make projects endpoint redirect session to login for non-logged in user
 
 # hint 1.8.2
 

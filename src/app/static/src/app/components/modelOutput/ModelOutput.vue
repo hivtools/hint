@@ -24,8 +24,8 @@
                     :include-filters="true"
                     area-filter-id="area"
                     :colour-scales="colourScales"
-                    @update="updateOutputChoroplethSelections({payload: $event})"
-                    @update-colour-scales="updateOutputColourScales({payload: $event})"></choropleth>
+                    @update="updateOutputChoroplethSelections({payload: $event}); update($event);"
+                    @update-colour-scales="updateOutputColourScales({payload: $event}); update($event);"></choropleth>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <table-view class="col-md-9"
@@ -48,7 +48,7 @@
                     :indicators="barchartIndicators"
                     :selections="barchartSelections"
                     :formatFunction="formatBarchartValue"
-                    @update="updateBarchartSelections({payload: $event})"></bar-chart-with-filters>
+                    @update="updateBarchartSelections({payload: $event}); update($event);"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <table-view class="col-md-9"
@@ -71,9 +71,9 @@
                              area-filter-id="area"
                              :colour-scales="colourScales"
                              :size-scales="bubbleSizeScales"
-                             @update="updateBubblePlotSelections({payload: $event})"
-                             @update-colour-scales="updateOutputColourScales({payload: $event})"
-                             @update-size-scales="updateOutputBubbleSizeScales({payload: $event})"></bubble-plot>
+                             @update="updateBubblePlotSelections({payload: $event}); update($event);"
+                             @update-colour-scales="updateOutputColourScales({payload: $event}); update($event);"
+                             @update-size-scales="updateOutputBubbleSizeScales({payload: $event}); update($event);"></bubble-plot>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <table-view class="col-md-9"
@@ -129,6 +129,7 @@
 
     interface Methods {
         tabSelected: (tab: string) => void
+        update: () => void
         updateBarchartSelections: (data: BarchartSelections) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
         updateOutputColourScales: (colourScales: ScaleSelections) => void
@@ -232,6 +233,7 @@
                 ["updateBarchartSelections", "updateBubblePlotSelections", "updateOutputChoroplethSelections",
                     "updateOutputColourScales", "updateOutputBubbleSizeScales"]),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
+            update: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.Update),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             }

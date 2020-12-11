@@ -1,9 +1,9 @@
 <template>
     <div>
-        <button class="btn btn-sm btn-red-icons" 
-        v-tooltip= "tooltipShare"
-        @click="shareProject">
-        <share-2-icon size="20"></share-2-icon>
+        <button class="btn btn-sm btn-red-icons"
+                v-tooltip="tooltipShare"
+                @click="shareProject">
+            <share-2-icon size="20"></share-2-icon>
         </button>
         <modal :open="open">
             <h4 v-translate="'shareProject'"></h4>
@@ -17,6 +17,7 @@
                                class="form-control"
                                :class="{'is-invalid': email.valid === false}"
                                @blur="() => addEmail(email, index)"
+                               @mouseout="$event.target.blur()"
                                v-model="email.value"/>
                     </div>
                     <div class="col">
@@ -135,7 +136,6 @@
                     e.valid = null;
                     this.showValidationMessage = this.invalidEmails;
                 }
-
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
@@ -172,9 +172,8 @@
             invalidEmails() {
                 return this.emailsToShareWith.filter(e => e.value && !e.valid).length > 0
             },
-
-            tooltipShare () {
-                 return i18next.t("share", {
+            tooltipShare() {
+                return i18next.t("share", {
                     lng: this.currentLanguage,
                 });
             }
@@ -191,7 +190,7 @@
         watch: {
             cloningProject(newVal: boolean) {
                 if (!newVal && !this.cloneProjectError) {
-                    this.emailsToShareWith = [];
+                    this.emailsToShareWith = [{value: "", valid: null}];
                     this.open = false;
                 }
             }
