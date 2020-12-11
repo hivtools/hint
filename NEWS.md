@@ -1,3 +1,7 @@
+# hint 1.10.0
+
+* fix ok button accessibility bug in share project
+
 # hint 1.9.0
 
 * make projects endpoint redirect session to login for non-logged in user
