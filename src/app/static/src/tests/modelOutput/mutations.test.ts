@@ -1,8 +1,5 @@
 import {mutations, ModelOutputMutation} from "../../app/store/modelOutput/mutations";
 
-// const testState1 = {selectedTab: "", changes: false, selections: {key1: 'test'}};
-// const testState2 = {selectedTab: "map", changes: false, selections: {key1: 'test'}};
-
 describe("Model output mutations", () => {
     it("sets selected tab", () => {
         const testState = {selectedTab: "", changes: false, selections: {}};
