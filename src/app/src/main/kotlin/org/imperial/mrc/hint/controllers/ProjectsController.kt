@@ -6,6 +6,8 @@ import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Session
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -99,17 +101,11 @@ class ProjectsController(private val session: Session,
     @ResponseBody
     fun getProjects(): ResponseEntity<String>
     {
-        val projects =
-                if (session.userIsGuest())
-                {
-                    listOf<Project>()
-                }
-                else
-                {
-                    projectRepository.getProjects(userId())
-                }
-
-        return SuccessResponse(projects).asResponseEntity()
+        if (session.userIsGuest())
+        {
+            return ResponseEntity(HttpStatus.UNAUTHORIZED)
+        }
+        return SuccessResponse(projectRepository.getProjects(userId())).asResponseEntity()
     }
 
     @DeleteMapping("/project/{projectId}/version/{versionId}")

@@ -123,12 +123,4 @@ describe("Projects component", () => {
         expect(wrapper.find("#projects-content").exists()).toBe(false);
     });
 
-    it("pushes home route on mount if user is guest", async () => {
-        const mockRouterPush = jest.fn();
-        const wrapper = createSut({}, jest.fn(), mockRouterPush, true);
-        await Vue.nextTick();
-
-        expect(mockRouterPush.mock.calls.length).toBe(1);
-        expect(mockRouterPush.mock.calls[0][0]).toStrictEqual("/");
-    });
 });

@@ -233,4 +233,3 @@ export function getFilenameFromUploadFormData(formdata: FormData) {
     const file = formdata.get("file");
     return (file as File).name;
 }
-

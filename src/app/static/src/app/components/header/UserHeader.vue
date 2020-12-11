@@ -36,7 +36,7 @@
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
-    import { mapStateProp} from "../../utils";
+    import {mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
     import OnlineSupportMenu from "./OnlineSupportMenu.vue";
