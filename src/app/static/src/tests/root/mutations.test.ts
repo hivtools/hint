@@ -43,7 +43,7 @@ describe("Root mutations", () => {
             metadata: mockMetadataState({plottingMetadataError: mockError("Test Metadata Error")}),
             surveyAndProgram: mockSurveyAndProgramState({surveyError: mockError("Test Survey Error"), ready: true}),
             modelOptions: mockModelOptionsState({valid: true}),
-            modelOutput: mockModelOutputState({selectedTab: "Barchart"}),
+            modelOutput: mockModelOutputState({selectedTab: "Barchart", selections: {}, changes: false}),
             modelRun: mockModelRunState({modelRunId: "123", ready: true}),
             modelCalibrate: mockModelCalibrateState({complete: true}),
             plottingSelections: mockPlottingSelections({barchart: {indicatorId: "Test Indicator"} as BarchartSelections}),
