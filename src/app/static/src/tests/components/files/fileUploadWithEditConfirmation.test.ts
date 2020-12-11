@@ -11,7 +11,7 @@ describe("File upload component", () => {
 
     const mockGetters = {
         editsRequireConfirmation: () => true,
-        changesToLaterSteps: () => [{number: 4, textKey: "fitModel"}]
+        changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
     };
 
     const createStore = (partialRootState: Partial<RootState> = {}) => {

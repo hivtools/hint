@@ -87,13 +87,6 @@
                     this.newVersion();
                 }
             },
-            // changesToShow: function (){
-            //     if (this.changesToLaterSteps.length > 0){
-            //         if (this.changesToLaterSteps[0].number !== 5){
-            //             return this.changesToLaterSteps.filter(step => step.number < 5)
-            //         } else return [{number: 4, textKey: 'fitModel'}]
-            //     } else return this.changesToLaterSteps
-            // },
             newVersion: mapActionByName("projects", "newVersion")
         },
         watch: {

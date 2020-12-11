@@ -19,7 +19,7 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
             stepper: {
                 namespaced: true,
                 getters: {
-                    changesToLaterSteps: () => [{number: 2, textKey: "uploadSurvey"},
+                    changesToRelevantSteps: () => [{number: 2, textKey: "uploadSurvey"},
                         {number: 3, textKey: "modelOptions"},
                         {number: 4, textKey: "fitModel"}],
                     ...partialStepperGetters
@@ -108,8 +108,8 @@ describe("Reset confirmation modal", () => {
 
     it("renders as expected for someone rerunning the model", () => {
         const stepperGetter = {
-            changesToLaterSteps: () => [
-                {number: 5, textKey: "calilbrateModel"}]}
+            changesToRelevantSteps: () => [
+                {number: 4, textKey: "fitModel"}]}
         const store = createStore(jest.fn(), {}, stepperGetter);
         const rendered = mount(ResetConfirmation, {
             propsData: {
@@ -121,27 +121,6 @@ describe("Reset confirmation modal", () => {
 
         expectRenderedModelRunSteps(rendered);
     });
-
-    it("omits calibrate step from render", () => {
-        const stepperGetter = {
-            changesToLaterSteps: () => [
-                {number: 2, textKey: "uploadSurvey"},
-                {number: 3, textKey: "modelOptions"},
-                {number: 4, textKey: "fitModel"},
-                {number: 5, textKey: "calilbrateModel"}]}
-        const store = createStore(jest.fn(), {}, stepperGetter);
-        const rendered = mount(ResetConfirmation, {
-            propsData: {
-                continueEditing: jest.fn(),
-                cancelEditing: jest.fn()
-            },
-            store
-        });
-
-        expectRenderedSteps(rendered);
-    });
-
-
 
     it("cancel edit button invokes cancelEditing", () => {
         const mockCancelEdit = jest.fn();

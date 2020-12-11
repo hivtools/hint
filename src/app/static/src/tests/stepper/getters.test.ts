@@ -62,20 +62,51 @@ describe("stepper getters", () => {
         expect(ready).toBe(false);
     });
 
-    it("returns changes to later steps", () => {
-        const steps = getters.changesToLaterSteps(state, testGetters, null as any, null as any);
+    it("returns changes to relevant steps", () => {
+        const steps = getters.changesToRelevantSteps(state, testGetters, null as any, null as any);
         expect(steps.length).toBe(1);
         expect(steps[0].number).toBe(2);
     });
 
-    it("edits require confirmation if there are later steps with changes", () => {
-        const localTestGetters = {...testGetters, changesToLaterSteps: [{}]};
+    const stateMF = mockStepperState({
+        activeStep: 4
+    });
+
+    const testGettersMF = {
+        complete: {
+            1: true,
+            2: true,
+            3: true,
+            4: true,
+            5: false,
+            6: false,
+            7: false
+        },
+        hasChanges: {
+            1: true,
+            2: true,
+            3: true,
+            4: true,
+            5: false,
+            6: false,
+            7: false
+        }
+    };
+
+    it("returns changes to relevant steps after a model fit completed", () => {
+        const steps = getters.changesToRelevantSteps(stateMF, testGettersMF, null as any, null as any);
+        expect(steps.length).toBe(1);
+        expect(steps[0].number).toBe(4);
+    });
+
+    it("edits require confirmation if there are relevant steps with changes", () => {
+        const localTestGetters = {...testGetters, changesToRelevantSteps: [{}]};
         const result = getters.editsRequireConfirmation(state, localTestGetters, null as any, null as any);
         expect(result).toBe(true);
     });
 
-    it("edits do not require confirmation if there are no later steps with changes", () => {
-        const localTestGetters = {...testGetters, changesToLaterSteps: []};
+    it("edits do not require confirmation if there are no relevant steps with changes", () => {
+        const localTestGetters = {...testGetters, changesToRelevantSteps: []};
         const result = getters.editsRequireConfirmation(state, localTestGetters, null as any, null as any);
         expect(result).toBe(false);
     });

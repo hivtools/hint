@@ -37,7 +37,6 @@ export const modelOptionsGetters = {
         return state.valid
     },
     hasChanges: (state: ModelOptionsState) => {
-        // return JSON.stringify(state.optionsFormMeta) !== JSON.stringify(initialModelOptionsState().optionsFormMeta)
         return state.changes
     }
 };

@@ -17,10 +17,10 @@ it("loads initial state from local storage", () => {
     expect(state.options).toBe("TEST");
 });
 
-it("it has changes if state does not match initial state", () => {
+it("it has changes if state has changes flag", () => {
     const initialState = modelOptions.state as ModelOptionsState;
     expect(modelOptionsGetters.hasChanges(initialState)).toBe(false);
 
-    initialState.optionsFormMeta = {controlSections: [{label: 'test', controlGroups: []}]};
+    initialState.changes = true;
     expect(modelOptionsGetters.hasChanges(initialState)).toBe(true);
 });
