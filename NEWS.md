@@ -1,3 +1,7 @@
+# hint 1.9.0
+
+* make projects endpoint redirect session to login for non-logged in user
+
 # hint 1.8.2
 
 * Update help document

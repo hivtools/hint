@@ -89,11 +89,6 @@
             createProject: mapActionByName(namespace, "createProject"),
             getProjects: mapActionByName(namespace, "getProjects")
         },
-        beforeMount() {
-            if (this.isGuest) {
-                this.$router.push("/");
-            }
-        },
         mounted() {
             this.getProjects();
         },
