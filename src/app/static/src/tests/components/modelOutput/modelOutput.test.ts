@@ -47,6 +47,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 namespaced: true,
                 state: {
                     selectedTab: "",
+                    changes: false,
+                    selections: {},
                     ...modelOutputState,
                 },
                 getters: {
@@ -278,6 +280,9 @@ describe("ModelOutput component", () => {
         const newColourScales = {test: "NEW COLOUR SCALES"};
         choro.vm.$emit("update-colour-scales", newColourScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(newColourScales);
+        expect(store.state.modelOutput.changes).toBe(false);
+        choro.vm.$emit("update-colour-scales", {test: "NEWER COLOUR SCALES"});
+        expect(store.state.modelOutput.changes).toBe(true);
     });
 
     it("commits updated colour scale from bubble plot", () => {
@@ -288,6 +293,9 @@ describe("ModelOutput component", () => {
         const bubbleColourScales = {test: "NEW BUBBLE COLOUR SCALES"};
         bubble.vm.$emit("update-colour-scales", bubbleColourScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(bubbleColourScales);
+        expect(store.state.modelOutput.changes).toBe(false);
+        bubble.vm.$emit("update-colour-scales", {test: "NEWER BUBBLE COLOUR SCALES"});
+        expect(store.state.modelOutput.changes).toBe(true);
     });
 
     it("commits updated size scale from bubble plot", () => {
@@ -298,6 +306,9 @@ describe("ModelOutput component", () => {
         const bubbleSizeScales = {test: "NEW BUBBLE SIZE SCALES"};
         bubble.vm.$emit("update-colour-scales", bubbleSizeScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(bubbleSizeScales);
+        expect(store.state.modelOutput.changes).toBe(false);
+        bubble.vm.$emit("update-colour-scales", {test: "NEWER BUBBLE SIZE SCALES"});
+        expect(store.state.modelOutput.changes).toBe(true);
     });
 
     it("renders choropleth table", () => {

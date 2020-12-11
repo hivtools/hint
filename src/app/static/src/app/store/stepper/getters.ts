@@ -33,15 +33,16 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
             3: rootGetters['modelOptions/hasChanges'],
             4: rootGetters['modelRun/complete'],
             5: rootGetters['modelCalibrate/hasChanges'],
-            6: false,
+            6: rootGetters['modelOutput/hasChanges'],
             7: false
         }
     },
     changesToRelevantSteps: (state: StepperState, getters: any) => {
         const {activeStep} = state;
         // If the active step is fit model, we want a previous successful model run to trigger the save version dialog
+        // Fit model will not reset changes to the review output or calibrate model currently
         if (activeStep === 4){
-            return state.steps.filter((s: StepDescription) => s.number >= activeStep && getters.hasChanges[s.number]);
+            return state.steps.filter((s: StepDescription) => s.number !== 5 && s.number !== 6 && s.number >= activeStep && getters.hasChanges[s.number]);
         // Otherwise, we only want changes to subsequent steps to trigger the save version dialog
         } else return state.steps.filter((s: StepDescription) => s.number > activeStep && getters.hasChanges[s.number]);
     },

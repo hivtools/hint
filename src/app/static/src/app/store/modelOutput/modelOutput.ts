@@ -46,6 +46,9 @@ export const modelOutputGetters = {
     countryAreaFilterOption: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): FilterOption => {
         const outputFilters = outputPlotFilters(rootState) as Filter[];
         return outputFilters[0].options[0]
+    },
+    hasChanges: (state: ModelOutputState) => {
+        return state.changes
     }
 };
 
