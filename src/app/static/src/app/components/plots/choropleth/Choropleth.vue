@@ -13,6 +13,11 @@
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">
                     </l-geo-json>
                 </template>
+                <l-control position="bottomleft" >
+                    <button @click="updateBounds()">
+                        Reset view
+                    </button>
+                </l-control>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <map-control :initialDetail=selections.detail
                              :indicator=selections.indicatorId
@@ -138,6 +143,7 @@
         components: {
             LMap,
             LGeoJson,
+            LControl,
             MapControl,
             MapLegend,
             Filters,
