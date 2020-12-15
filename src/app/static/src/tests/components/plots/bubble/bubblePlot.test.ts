@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
-import {LCircleMarker, LGeoJson, LTooltip} from "vue2-leaflet";
+import {LCircleMarker, LGeoJson, LTooltip, LControl} from "vue2-leaflet";
 import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
 import {getColor} from "../../../../app/components/plots/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
@@ -15,6 +15,7 @@ import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {expectFilter, plhiv, prev, testData} from "../testHelpers"
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
+import {expectTranslated} from "../../../testHelpers";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -555,6 +556,22 @@ describe("BubblePlot component", () => {
         };
 
         vm.updateBounds();
+        expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
+            [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
+    });
+
+    it("clicking reset view button updates bounds of map from features geojson", () => {
+        const wrapper = getWrapper();
+        const mockMapFitBounds = jest.fn();
+
+        const vm = wrapper.vm as any;
+        vm.$refs.map = {
+            fitBounds: mockMapFitBounds
+        };
+        const button = wrapper.find(LControl).find('button')
+        expectTranslated(button, 'Reset view', 'Réinitialiser la vue', store);
+        button.trigger("click")
+        
         expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
     });

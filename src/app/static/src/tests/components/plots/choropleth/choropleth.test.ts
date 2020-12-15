@@ -379,6 +379,23 @@ describe("Choropleth component", () => {
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
     });
 
+    it("clicking reset view button updates bounds of map from features geojson", () => {
+        const wrapper = getWrapper();
+        const mockMapFitBounds = jest.fn();
+
+        const vm = wrapper.vm as any;
+        vm.$refs.map = {
+            fitBounds: mockMapFitBounds
+        };
+
+        const button = wrapper.find(LControl).find('button')
+        expectTranslated(button, 'Reset view', 'Réinitialiser la vue', store);
+        button.trigger("click")
+
+        expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
+            [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
+    });
+
     it("initialises from empty selections and emits updates", () => {
         const wrapper = getWrapper({
             selections: {

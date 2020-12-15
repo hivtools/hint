@@ -57,6 +57,9 @@
                         <l-tooltip :content="getTooltip(feature)"/>
                     </l-circle-marker>
                 </template>
+                <l-control position="bottomleft" >
+                    <button @click="updateBounds()" v-translate="'resetView'"></button>
+                </l-control>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <map-control :initialDetail=selections.detail
                              :show-indicators="false"
@@ -85,7 +88,7 @@
     import Vue from "vue";
     import Treeselect from '@riophae/vue-treeselect';
     import {Feature} from "geojson";
-    import {LCircleMarker, LGeoJson, LMap, LTooltip} from "vue2-leaflet";
+    import {LCircleMarker, LGeoJson, LMap, LTooltip, LControl} from "vue2-leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import FilterSelect from "../FilterSelect.vue";
@@ -207,6 +210,7 @@
             LGeoJson,
             LCircleMarker,
             LTooltip,
+            LControl,
             MapControl,
             MapLegend,
             SizeLegend,

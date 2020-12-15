@@ -14,9 +14,7 @@
                     </l-geo-json>
                 </template>
                 <l-control position="bottomleft" >
-                    <button @click="updateBounds()">
-                        Reset view
-                    </button>
+                    <button @click="updateBounds()" v-translate="'resetView'"></button>
                 </l-control>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <map-control :initialDetail=selections.detail
