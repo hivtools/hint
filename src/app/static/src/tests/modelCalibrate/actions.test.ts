@@ -27,7 +27,7 @@ describe("ModelCalibrate actions", () => {
     it("fetchModelCalibrateOptions fetches option and commits mutations", async () => {
         const commit = jest.fn();
         const state = mockModelCalibrateState();
-        mockAxios.onGet("/model/calibration-options/").reply(200, mockSuccess("TEST", "v1"));
+        mockAxios.onGet("/calibrate/options/").reply(200, mockSuccess("TEST", "v1"));
 
         await actions.fetchModelCalibrateOptions({commit, state, rootState} as any);
 
