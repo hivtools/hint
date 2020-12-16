@@ -145,11 +145,6 @@ describe("modelOutput module", () => {
         });
     });
 
-    it("gets hasChanges", async () => {
-        const result = modelOutputGetters.hasChanges(mockModelOutputState());
-        expect(result).toStrictEqual(false);
-    });
-
     const expectOutputPlotFilters = (filters: Filter[]) => {
         expect(filters.length).toEqual(3);
         expect(filters[0]).toStrictEqual({

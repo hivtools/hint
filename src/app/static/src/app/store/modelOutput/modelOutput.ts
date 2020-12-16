@@ -10,10 +10,6 @@ const namespaced = true;
 
 export interface ModelOutputState {
     selectedTab: string
-    changes: boolean
-    selections: {
-        [key: string]: any
-    }
 }
 
 export const modelOutputGetters = {
@@ -46,9 +42,6 @@ export const modelOutputGetters = {
     countryAreaFilterOption: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): FilterOption => {
         const outputFilters = outputPlotFilters(rootState) as Filter[];
         return outputFilters[0].options[0]
-    },
-    hasChanges: (state: ModelOutputState) => {
-        return state.changes
     }
 };
 
@@ -73,9 +66,7 @@ const outputPlotFilters = (rootState: RootState) => {
 
 export const initialModelOutputState = (): ModelOutputState => {
     return {
-        selectedTab: "",
-        changes: false,
-        selections: {}
+        selectedTab: ""
     }
 };
 

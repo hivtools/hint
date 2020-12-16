@@ -11,7 +11,6 @@ export interface ModelCalibrateState {
     options: DynamicFormData
     fetching: boolean
     calibrating: boolean
-    changes: boolean
     complete: boolean
     version: VersionInfo
     error: Error | null
@@ -23,18 +22,12 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         options: {},
         fetching: false,
         calibrating: false,
-        changes: false,
         complete: false,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         error: null
     }
 };
 
-export const modelCalibrateGetters = {
-    hasChanges: (state: ModelCalibrateState) => {
-        return state.changes
-    }
-};
 
 const namespaced = true;
 
@@ -44,6 +37,5 @@ export const modelCalibrate: Module<ModelCalibrateState, RootState> = {
     namespaced,
     state: {...initialModelCalibrateState(), ...existingState && existingState.modelCalibrate},
     mutations,
-    actions,
-    getters: modelCalibrateGetters
+    actions
 };
