@@ -97,6 +97,20 @@ class ModelRunControllerTests
     }
 
     @Test
+    fun `can get calibrate status`()
+    {
+        val mockFileManager = mock<FileManager>()
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { getCalibrateStatus("testId") } doReturn mockResponse
+        }
+
+        val sut = ModelRunController(mockFileManager, mockAPIClient)
+
+        val result = sut.calibrateStatus("testId")
+        assertThat(result).isSameAs(mockResponse)
+    }
+
+    @Test
     fun `can submit calibrate`()
     {
         val modelCalibrationOptions = ModelOptions(mapOf(), mapOf())

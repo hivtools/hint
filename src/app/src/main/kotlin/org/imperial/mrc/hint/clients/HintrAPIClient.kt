@@ -33,6 +33,7 @@ interface HintrAPIClient
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun getModelCalibrationOptions(): ResponseEntity<String>
     fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
+    fun getCalibrateStatus(id: String): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
     fun getVersion(): ResponseEntity<String>
     fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
@@ -129,6 +130,11 @@ class HintrFuelAPIClient(
     {
         val json = objectMapper.writeValueAsString(calibrationOptions)
         return postJson("calibrate/submit/${runId}", json)
+    }
+
+    override fun getCalibrateStatus(id: String): ResponseEntity<String>
+    {
+        return get("calibrate/status/${id}")
     }
 
     override fun getPlottingMetadata(iso3: String): ResponseEntity<String>
