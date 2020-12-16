@@ -42,6 +42,13 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.getResult(id)
     }
 
+    @PostMapping("/cancel/{id}")
+    @ResponseBody
+    fun cancel(@PathVariable("id") id: String): ResponseEntity<String>
+    {
+        return apiClient.cancelModelRun(id)
+    }
+
     @PostMapping("/calibrate/{id}")
     @ResponseBody
     fun calibrate(@PathVariable("id") id: String, @RequestBody calibrationOptions: ModelOptions)
@@ -73,17 +80,17 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.calibrateSubmit(runId, modelCalibrateOptions)
     }
 
-    @PostMapping("/calibrate/status/{id}/")
+    @GetMapping("/calibrate/status/{id}/")
     @ResponseBody
     fun calibrateStatus(@PathVariable("id") id: String): ResponseEntity<String>
     {
         return apiClient.getCalibrateStatus(id)
     }
 
-    @PostMapping("/cancel/{id}")
+    @GetMapping("/calibrate/result/{id}")
     @ResponseBody
-    fun cancel(@PathVariable("id") id: String): ResponseEntity<String>
+    fun calibrateResult(@PathVariable("id") id: String): ResponseEntity<String>
     {
-        return apiClient.cancelModelRun(id)
+        return apiClient.getCalibrateResult(id)
     }
 }
