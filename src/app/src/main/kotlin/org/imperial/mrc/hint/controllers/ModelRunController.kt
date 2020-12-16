@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.controllers
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.HintrAPIClient
-import org.imperial.mrc.hint.models.ModelRunOptions
+import org.imperial.mrc.hint.models.ModelOptions
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -14,7 +14,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
 
     @PostMapping("/run/")
     @ResponseBody
-    fun run(@RequestBody modelRunOptions: ModelRunOptions): ResponseEntity<String>
+    fun run(@RequestBody modelRunOptions: ModelOptions): ResponseEntity<String>
     {
         val allFiles = fileManager.getFiles()
         return apiClient.submit(allFiles, modelRunOptions)
@@ -22,7 +22,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
 
     @PostMapping("/validate/options/")
     @ResponseBody
-    fun validateModelOptions(@RequestBody modelRunOptions: ModelRunOptions): ResponseEntity<String>
+    fun validateModelOptions(@RequestBody modelRunOptions: ModelOptions): ResponseEntity<String>
     {
         val allFiles = fileManager.getFiles()
         return apiClient.validateModelOptions(allFiles, modelRunOptions)
@@ -44,7 +44,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
 
     @PostMapping("/calibrate/{id}")
     @ResponseBody
-    fun calibrate(@PathVariable("id") id: String, @RequestBody calibrationOptions: ModelRunOptions)
+    fun calibrate(@PathVariable("id") id: String, @RequestBody calibrationOptions: ModelOptions)
             : ResponseEntity<String>
     {
         return apiClient.calibrate(id, calibrationOptions)
@@ -63,6 +63,13 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
     fun calibrationOptions(): ResponseEntity<String>
     {
         return apiClient.getModelCalibrationOptions()
+    }
+
+    @PostMapping("/calibrate/submit/{id}/")
+    @ResponseBody
+    fun calibrateSubmit(@PathVariable("id") runId: String, @RequestBody modelCalibrateOptions: ModelOptions): ResponseEntity<String>
+    {
+        return apiClient.calibrateSubmit(runId, modelCalibrateOptions)
     }
 
     @PostMapping("/cancel/{id}")
