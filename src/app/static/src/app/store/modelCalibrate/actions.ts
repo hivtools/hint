@@ -57,7 +57,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 .withError(ModelCalibrateMutation.SetError)
                 .get<ModelStatusResponse>(`/model/calibrate/status/${calibrateId}`)
                 .then(() => {
-                    if (state.status.done) {
+                    if (state.status.done && state.status.success) {
                         dispatch("getResult");
                     }
                 });
