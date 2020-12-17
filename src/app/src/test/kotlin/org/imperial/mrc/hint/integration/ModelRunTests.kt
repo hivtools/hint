@@ -86,7 +86,7 @@ class ModelRunTests : SecureIntegrationTests()
         val responseEntity = testRestTemplate.postForEntity<String>("/model/calibrate/1234", entity)
         assertError(responseEntity,
                 HttpStatus.BAD_REQUEST,
-                "FAILED_TO_RETRIEVE_RESUL", "Failed to fetch result")
+                "FAILED_TO_RETRIEVE_RESULT", "Failed to fetch result")
     }
 
     @Test
