@@ -137,7 +137,7 @@ class HintrFuelAPIClient(
 
     override fun getModelCalibrationOptions(): ResponseEntity<String>
     {
-        return postEmpty("model/calibration-options")
+        return postEmpty("calibrate/options")
     }
 
     override fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
