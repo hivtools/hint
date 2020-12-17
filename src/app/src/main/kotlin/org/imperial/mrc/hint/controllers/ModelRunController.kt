@@ -72,7 +72,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.getModelCalibrationOptions()
     }
 
-    @PostMapping("/calibrate/submit/{id}/")
+    @PostMapping("/calibrate/submit/{id}")
     @ResponseBody
     fun calibrateSubmit(@PathVariable("id") runId: String, @RequestBody modelCalibrateOptions: ModelOptions):
             ResponseEntity<String>
@@ -80,7 +80,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.calibrateSubmit(runId, modelCalibrateOptions)
     }
 
-    @GetMapping("/calibrate/status/{id}/")
+    @GetMapping("/calibrate/status/{id}")
     @ResponseBody
     fun calibrateStatus(@PathVariable("id") id: String): ResponseEntity<String>
     {
