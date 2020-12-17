@@ -58,7 +58,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.getModelRunOptions(allFiles)
     }
 
-    @GetMapping("/calibration-options/")
+    @GetMapping("/calibrate/options/")
     @ResponseBody
     fun calibrationOptions(): ResponseEntity<String>
     {
