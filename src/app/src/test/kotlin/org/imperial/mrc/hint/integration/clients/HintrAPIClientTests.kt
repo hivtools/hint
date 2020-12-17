@@ -103,7 +103,7 @@ class HintrApiClientTests
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.calibrateSubmit("1234", ModelOptions(emptyMap(), versionInfo))
         assertThat(result.statusCodeValue).isEqualTo(400)
-        JSONValidator().validateError(result.body!!, "INVALID_INPUT")
+        JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESUL")
     }
 
     @Test
