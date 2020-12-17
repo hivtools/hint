@@ -96,6 +96,113 @@ export interface BarchartMetadata {
     };
   };
 }
+export interface CalibrateResultResponse {
+  data: {
+    area_id: string;
+    sex: string;
+    age_group: string;
+    calendar_quarter: string;
+    indicator: string;
+    mode: number | null;
+    mean: number | null;
+    lower: number | null;
+    upper: number | null;
+    [k: string]: any;
+  }[];
+  plottingMetadata: {
+    barchart: {
+      indicators: {
+        indicator: string;
+        value_column: string;
+        indicator_column: string;
+        indicator_value: string;
+        indicator_sort_order?: number;
+        name: string;
+        error_low_column: string;
+        error_high_column: string;
+        scale: number;
+        accuracy: number | null;
+        format: string;
+      }[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+        }[];
+        use_shape_regions?: boolean | null;
+      }[];
+      defaults?: {
+        indicator_id: string;
+        x_axis_id: string;
+        disaggregate_by_id: string;
+        selected_filter_options: {
+          [k: string]: any;
+        };
+      };
+    };
+    choropleth: {
+      indicators: {
+        indicator: string;
+        value_column: string;
+        error_low_column?: string;
+        error_high_column?: string;
+        indicator_column?: string;
+        indicator_value?: string;
+        indicator_sort_order?: number;
+        name: string;
+        min: number;
+        max: number;
+        colour: string;
+        invert_scale: boolean;
+        scale: number;
+        accuracy: number | null;
+        format: string;
+      }[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+        }[];
+        use_shape_regions?: boolean | null;
+      }[];
+    };
+  };
+  [k: string]: any;
+}
+export interface CalibrateStatusResponse {
+  id: string;
+  done: boolean | null;
+  status: string;
+  success: boolean | null;
+  queue: number;
+  progress: {
+    started: boolean;
+    complete: boolean;
+    value?: number;
+    name: string;
+    helpText?: string;
+  }[];
+}
+export interface CalibrateSubmitRequest {
+  options: {
+    [k: string]: any;
+  };
+  version: {
+    hintr: string;
+    naomi: string;
+    rrq: string;
+    [k: string]: any;
+  };
+}
+export interface CalibrateSubmitResponse {
+  id: string;
+}
 export interface ChoroplethIndicatorMetadata {
   indicator: string;
   value_column: string;
@@ -249,82 +356,8 @@ export type ModelResultData = {
   [k: string]: any;
 }[];
 export interface ModelResultResponse {
-  data: {
-    area_id: string;
-    sex: string;
-    age_group: string;
-    calendar_quarter: string;
-    indicator: string;
-    mode: number | null;
-    mean: number | null;
-    lower: number | null;
-    upper: number | null;
-    [k: string]: any;
-  }[];
-  plottingMetadata: {
-    barchart: {
-      indicators: {
-        indicator: string;
-        value_column: string;
-        indicator_column: string;
-        indicator_value: string;
-        indicator_sort_order?: number;
-        name: string;
-        error_low_column: string;
-        error_high_column: string;
-        scale: number;
-        accuracy: number | null;
-        format: string;
-      }[];
-      filters: {
-        id: string;
-        column_id: string;
-        label: string;
-        options: {
-          label: string;
-          id: string;
-        }[];
-        use_shape_regions?: boolean | null;
-      }[];
-      defaults?: {
-        indicator_id: string;
-        x_axis_id: string;
-        disaggregate_by_id: string;
-        selected_filter_options: {
-          [k: string]: any;
-        };
-      };
-    };
-    choropleth: {
-      indicators: {
-        indicator: string;
-        value_column: string;
-        error_low_column?: string;
-        error_high_column?: string;
-        indicator_column?: string;
-        indicator_value?: string;
-        indicator_sort_order?: number;
-        name: string;
-        min: number;
-        max: number;
-        colour: string;
-        invert_scale: boolean;
-        scale: number;
-        accuracy: number | null;
-        format: string;
-      }[];
-      filters: {
-        id: string;
-        column_id: string;
-        label: string;
-        options: {
-          label: string;
-          id: string;
-        }[];
-        use_shape_regions?: boolean | null;
-      }[];
-    };
-  };
+  id: string;
+  complete: true;
   [k: string]: any;
 }
 export interface ModelResultRow {
@@ -345,6 +378,8 @@ export interface ModelRunOptions {
 export interface ControlSection {
   label: string;
   description?: string;
+  collapsible?: boolean;
+  collapsed?: boolean;
   controlGroups: ControlGroup[];
 }
 export interface ControlGroup {
