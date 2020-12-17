@@ -15,6 +15,7 @@ export interface RootActions extends LanguageActions<RootState>{
     deleteADRKey: (store: ActionContext<RootState, RootState>) => void;
     getADRDatasets: (store: ActionContext<RootState, RootState>) => void;
     getADRSchemas: (store: ActionContext<RootState, RootState>) => void;
+    resetFromFit: (store: ActionContext<RootState, RootState>) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -55,6 +56,10 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
                 }
             });
         }
+    },
+    async resetFromFit(store) {
+        const {commit} = store;
+        commit({type: RootMutation.Reset, payload: 4});          
     },
 
     async changeLanguage(context, payload) {

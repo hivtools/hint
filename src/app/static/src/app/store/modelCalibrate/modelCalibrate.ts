@@ -28,7 +28,6 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
     }
 };
 
-
 const namespaced = true;
 
 const existingState = localStorageManager.getState();

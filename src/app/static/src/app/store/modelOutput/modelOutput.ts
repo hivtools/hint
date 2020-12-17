@@ -1,4 +1,4 @@
-import {Dictionary, Module} from "vuex";
+import {Module} from "vuex";
 import {RootState} from "../../root";
 import {BarchartIndicator, DisplayFilter, Filter} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
