@@ -57,8 +57,17 @@
                         <l-tooltip :content="getTooltip(feature)"/>
                     </l-circle-marker>
                 </template>
-                <l-control position="bottomleft" >
-                    <button @click="updateBounds()" v-translate="'resetView'"></button>
+                <l-control position="topleft">
+                    <div class="leaflet-control-zoom leaflet-bar">
+                        <a @click="updateBounds()" 
+                            class="leaflet-control-zoom-in" 
+                            href="#" :title="tooltipContent('resetView')" 
+                            role="button" 
+                            :aria-label="tooltipContent('resetView')">
+                            <refresh-cw-icon size="20"></refresh-cw-icon>
+                        </a>
+                    </div>
+                    
                 </l-control>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <map-control :initialDetail=selections.detail
@@ -103,10 +112,14 @@
     import {getFeatureIndicators} from "./utils";
     import {getIndicatorRange, toIndicatorNameLookup, formatOutput} from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
-    import {flattenOptions, flattenToIdSet} from "../../../utils";
+    import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
     import {initialiseScaleFromMetadata} from "../choropleth/utils";
     import MapEmptyFeature from "../MapEmptyFeature.vue";
+    import {RootState} from "../../../root";
+    import {RefreshCwIcon} from "vue-feather-icons";
+    import i18next from "i18next";
+    import {Language} from "../../../store/translations/locales";
 
 
     interface Props {
@@ -144,10 +157,12 @@
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any,
         updateColourScale: (scale: ScaleSettings) => void,
         updateSizeScale: (scale: ScaleSettings) => void,
-        getRange: (indicator: ChoroplethIndicatorMetadata, scale: ScaleSettings) => NumericRange
+        getRange: (indicator: ChoroplethIndicatorMetadata, scale: ScaleSettings) => NumericRange,
+        tooltipContent: (tooltipValue: string) => string
     }
 
     interface Computed {
+        currentLanguage: Language,
         initialised: boolean,
         currentLevelFeatureIds: string[],
         featureIndicators: BubbleIndicatorValuesDict,
@@ -206,6 +221,7 @@
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "BubblePlot",
         components: {
+            RefreshCwIcon,
             LMap,
             LGeoJson,
             LCircleMarker,
@@ -230,6 +246,10 @@
             }
         },
         computed: {
+            currentLanguage: mapStateProp<RootState, Language>(
+                null,
+                (state: RootState) => state.language
+            ),
             initialised() {
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
@@ -360,6 +380,11 @@
             }
         },
         methods: {
+            tooltipContent(tooltipValue: string) {
+                return i18next.t(tooltipValue, {
+                    lng: this.currentLanguage,
+                });
+            },
             updateBounds: function () {
                 if (this.initialised) {
                     const map = this.$refs.map as LMap;
