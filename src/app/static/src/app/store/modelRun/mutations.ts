@@ -13,7 +13,7 @@ export enum ModelRunMutation {
     RunStatusError = "RunStatusError",
     RunCancelled = "RunCancelled",
     Ready = "Ready",
-    ClearResult = "ClearModelRun"
+    ClearResult = "ClearResult"
 }
 
 export const ModelRunUpdates = [
