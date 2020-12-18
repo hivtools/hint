@@ -1,5 +1,6 @@
 import {createLocalVue, mount, shallowMount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
+import Vue from 'vue';
 import {
     mockAxios,
     mockError,
@@ -24,6 +25,7 @@ import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
+import {actions as rootActions} from "../../../app/store/root/actions";
 
 const localVue = createLocalVue();
 
@@ -341,6 +343,20 @@ describe("Model run component", () => {
             expect(store.state.modelRun.status).toStrictEqual({});
             done();
         });
+    });
+
+    it("confirmReRun clears and re-runs model and hides dialog", async () => {
+        const mockRun = jest.fn();
+        const store = createStore({result: ["TEST RESULT"] as any},  {run: mockRun});
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        wrapper.setData({showReRunConfirmation: true});
+
+        (wrapper.vm as any).confirmReRun();
+        await Vue.nextTick();
+
+        expect(store.state.modelRun.result).toBe(null);
+        expect(mockRun.mock.calls.length).toBe(1);
+        expect(wrapper.vm.$data.showReRunConfirmation).toBe(false);
     });
 
 });
