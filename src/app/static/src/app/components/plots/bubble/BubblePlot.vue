@@ -66,8 +66,7 @@
                             :aria-label="tooltipContent('resetView')">
                             <refresh-cw-icon size="20"></refresh-cw-icon>
                         </a>
-                    </div>
-                    
+                    </div>                    
                 </l-control>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <map-control :initialDetail=selections.detail

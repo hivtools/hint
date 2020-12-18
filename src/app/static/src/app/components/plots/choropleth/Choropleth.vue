@@ -13,8 +13,16 @@
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">
                     </l-geo-json>
                 </template>
-                <l-control position="bottomleft" >
-                    <button @click="updateBounds()" v-translate="'resetView'"></button>
+                <l-control position="topleft">
+                    <div class="leaflet-control-zoom leaflet-bar">
+                        <a @click="updateBounds()" 
+                            class="leaflet-control-zoom-in" 
+                            href="#" :title="tooltipContent('resetView')" 
+                            role="button" 
+                            :aria-label="tooltipContent('resetView')">
+                            <refresh-cw-icon size="20"></refresh-cw-icon>
+                        </a>
+                    </div>                    
                 </l-control>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <map-control :initialDetail=selections.detail
@@ -52,7 +60,11 @@
     import {getIndicatorRange, toIndicatorNameLookup, formatOutput} from "../utils";
     import {getFeatureIndicator, initialiseScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
-    import {flattenOptions, flattenToIdSet} from "../../../utils";
+    import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
+    import {RootState} from "../../../root";
+    import {RefreshCwIcon} from "vue-feather-icons";
+    import i18next from "i18next";
+    import {Language} from "../../../store/translations/locales";
 
     interface Props {
         features: Feature[],
@@ -82,10 +94,12 @@
         changeSelections: (newSelections: Partial<ChoroplethSelections>) => void,
         updateColourScale: (scale: ScaleSettings) => void,
         getFeatureFromAreaId: (id: string) => Feature,
-        normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any
+        normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any,
+        tooltipContent: (tooltipValue: string) => string
     }
 
     interface Computed {
+        currentLanguage: Language,
         initialised: boolean,
         colourRange: NumericRange,
         featureIndicators: IndicatorValuesDict,
@@ -139,6 +153,7 @@
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "Choropleth",
         components: {
+            RefreshCwIcon,
             LMap,
             LGeoJson,
             LControl,
@@ -157,6 +172,10 @@
             }
         },
         computed: {
+            currentLanguage: mapStateProp<RootState, Language>(
+                null,
+                (state: RootState) => state.language
+            ),
             initialised() {
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
@@ -309,6 +328,11 @@
             }
         },
         methods: {
+            tooltipContent(tooltipValue: string) {
+                return i18next.t(tooltipValue, {
+                    lng: this.currentLanguage,
+                });
+            },
             initialise: function () {
                 if (this.selections.detail < 0) {
                     this.onDetailChange(this.maxLevel);
