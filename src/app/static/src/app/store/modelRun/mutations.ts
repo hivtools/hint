@@ -41,7 +41,8 @@ export const mutations: MutationTree<ModelRunState> = {
 
     [ModelRunMutation.RunResultDeleted](state: ModelRunState) {
         // state.result = null;
-        state.status = {} as ModelStatusResponse;
+        state.status.success = null;
+        // state.status = {} as ModelStatusResponse;
         // state = initialModelRunState()
         // console.log('muattion', state.result, state.status)
         // state.modelRunId = "";

@@ -74,6 +74,7 @@
         cancelRun: () => void;
         runModelWithParams: () => void;
         runResultDeleted: () => void;
+        ready: () => void;
         resetFromFit: () => void;
         // reset: (maxValidStep: number) => void;
     }
@@ -104,6 +105,7 @@
             ...mapActions(["resetFromFit"]),
             ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll", "cancelRun"]),
             runResultDeleted: mapMutationByName(namespace, ModelRunMutation.RunResultDeleted),
+            ready: mapMutationByName(namespace, ModelRunMutation.Ready),
             // ...mapMutations(["Reset"]),
             // reset: mapMutationByName('root', RootMutation.Reset),
             handleRun(){
@@ -113,6 +115,7 @@
             },
             confirmReRun() {
                 // this.runResultDeleted()
+                // this.ready()
                 this.resetFromFit()
                 // this.validate()
                 this.run()

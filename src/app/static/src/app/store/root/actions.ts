@@ -59,7 +59,11 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
     async resetFromFit(store) {
         const {commit} = store;
-        commit({type: RootMutation.Reset, payload: 4});          
+        // commit({type: RootMutation.Reset, payload: 4});
+        // commit({type: RootMutation.SetProject, payload: true});
+        
+        commit({type: RootMutation.ResetModelCalibrate});
+        commit({type: RootMutation.ResetOutputs});             
     },
 
     async changeLanguage(context, payload) {
