@@ -38,6 +38,33 @@ describe("root actions", () => {
         expect(mockContext.dispatch).not.toHaveBeenCalled();
     });
 
+    it("resets state of model calibrate and outputs", async () => {
+        const mockContext = {
+            commit: jest.fn(),
+            dispatch: jest.fn(),
+            getters: {
+                "stepper/complete": {
+                    1: true,
+                    2: true,
+                    3: true,
+                    4: true,
+                    5: true,
+                    6: true
+                }
+            },
+            state: {
+                stepper: mockStepperState({
+                    activeStep: 4
+                })
+            }
+        };
+
+        await actions.resetFromFit(mockContext as any);
+        
+        expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "ResetModelCalibrate"});
+        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetOutputs"});
+    });
+
     it("resets state if not all steps are valid", async () => {
 
 
