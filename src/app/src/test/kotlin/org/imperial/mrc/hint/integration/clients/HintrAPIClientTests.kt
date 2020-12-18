@@ -6,17 +6,12 @@ import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.HintrFuelAPIClient
 import org.imperial.mrc.hint.helpers.JSONValidator
-import org.imperial.mrc.hint.models.ModelOptions
+import org.imperial.mrc.hint.models.ModelRunOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.junit.jupiter.api.Test
 
 class HintrApiClientTests
 {
-    val versionInfo = mapOf(
-            "hintr" to "1.0.0",
-            "naomi" to "1.0.0",
-            "rrq" to "1.0.0"
-    )
 
     @Test
     fun `can validate baseline individual`()
@@ -56,7 +51,7 @@ class HintrApiClientTests
     fun `can submit model run`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.submit(emptyMap(), ModelOptions(emptyMap(), emptyMap()))
+        val result = sut.submit(emptyMap(), ModelRunOptions(emptyMap(), emptyMap()))
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_INPUT")
     }
@@ -66,7 +61,7 @@ class HintrApiClientTests
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
 
-        val result = sut.validateModelOptions(emptyMap(), ModelOptions(emptyMap(), emptyMap()))
+        val result = sut.validateModelOptions(emptyMap(), ModelRunOptions(emptyMap(), emptyMap()))
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_INPUT")
     }
@@ -92,33 +87,12 @@ class HintrApiClientTests
     fun `can calibrate`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.calibrate("1234", ModelOptions(emptyMap(), versionInfo))
-        assertThat(result.statusCodeValue).isEqualTo(400)
-        JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
-    }
-
-    @Test
-    fun `can submit calibrate`()
-    {
-        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.calibrateSubmit("1234", ModelOptions(emptyMap(), versionInfo))
-        assertThat(result.statusCodeValue).isEqualTo(400)
-        JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
-    }
-
-    @Test
-    fun `can get calibrate status`()
-    {
-        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.getCalibrateStatus("1234")
-        JSONValidator().validateSuccess(result.body!!, "CalibrateStatusResponse")
-    }
-
-    @Test
-    fun `can get calibrate result`()
-    {
-        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.getCalibrateResult("1234")
+        val versionInfo = mapOf(
+                "hintr" to "1.0.0",
+                "naomi" to "1.0.0",
+                "rrq" to "1.0.0"
+        )
+        val result = sut.calibrate("1234", ModelRunOptions(emptyMap(), versionInfo))
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
     }

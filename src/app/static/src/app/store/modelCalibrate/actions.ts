@@ -21,7 +21,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withSuccess(ModelCalibrateMutation.ModelCalibrateOptionsFetched)
             .ignoreErrors()
-            .get<DynamicFormMeta>("/model/calibrate/options/");
+            .get<DynamicFormMeta>("/model/calibration-options/");
 
         if (response) {
             commit({type: ModelCalibrateMutation.SetModelCalibrateOptionsVersion, payload: response.version});

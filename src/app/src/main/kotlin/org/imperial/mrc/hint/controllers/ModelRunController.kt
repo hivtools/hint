@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.controllers
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.HintrAPIClient
-import org.imperial.mrc.hint.models.ModelOptions
+import org.imperial.mrc.hint.models.ModelRunOptions
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -14,7 +14,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
 
     @PostMapping("/run/")
     @ResponseBody
-    fun run(@RequestBody modelRunOptions: ModelOptions): ResponseEntity<String>
+    fun run(@RequestBody modelRunOptions: ModelRunOptions): ResponseEntity<String>
     {
         val allFiles = fileManager.getFiles()
         return apiClient.submit(allFiles, modelRunOptions)
@@ -22,7 +22,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
 
     @PostMapping("/validate/options/")
     @ResponseBody
-    fun validateModelOptions(@RequestBody modelRunOptions: ModelOptions): ResponseEntity<String>
+    fun validateModelOptions(@RequestBody modelRunOptions: ModelRunOptions): ResponseEntity<String>
     {
         val allFiles = fileManager.getFiles()
         return apiClient.validateModelOptions(allFiles, modelRunOptions)
@@ -42,16 +42,9 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.getResult(id)
     }
 
-    @PostMapping("/cancel/{id}")
-    @ResponseBody
-    fun cancel(@PathVariable("id") id: String): ResponseEntity<String>
-    {
-        return apiClient.cancelModelRun(id)
-    }
-
     @PostMapping("/calibrate/{id}")
     @ResponseBody
-    fun calibrate(@PathVariable("id") id: String, @RequestBody calibrationOptions: ModelOptions)
+    fun calibrate(@PathVariable("id") id: String, @RequestBody calibrationOptions: ModelRunOptions)
             : ResponseEntity<String>
     {
         return apiClient.calibrate(id, calibrationOptions)
@@ -65,32 +58,17 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.getModelRunOptions(allFiles)
     }
 
-    @GetMapping("/calibrate/options/")
+    @GetMapping("/calibration-options/")
     @ResponseBody
     fun calibrationOptions(): ResponseEntity<String>
     {
         return apiClient.getModelCalibrationOptions()
     }
 
-    @PostMapping("/calibrate/submit/{id}")
+    @PostMapping("/cancel/{id}")
     @ResponseBody
-    fun calibrateSubmit(@PathVariable("id") runId: String, @RequestBody modelCalibrateOptions: ModelOptions):
-            ResponseEntity<String>
+    fun cancel(@PathVariable("id") id: String): ResponseEntity<String>
     {
-        return apiClient.calibrateSubmit(runId, modelCalibrateOptions)
-    }
-
-    @GetMapping("/calibrate/status/{id}")
-    @ResponseBody
-    fun calibrateStatus(@PathVariable("id") id: String): ResponseEntity<String>
-    {
-        return apiClient.getCalibrateStatus(id)
-    }
-
-    @GetMapping("/calibrate/result/{id}")
-    @ResponseBody
-    fun calibrateResult(@PathVariable("id") id: String): ResponseEntity<String>
-    {
-        return apiClient.getCalibrateResult(id)
+        return apiClient.cancelModelRun(id)
     }
 }
