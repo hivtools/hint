@@ -12,8 +12,13 @@ export enum ModelRunMutation {
     RunResultError = "RunResultError",
     RunStatusError = "RunStatusError",
     RunCancelled = "RunCancelled",
-    Ready = "Ready"
+    Ready = "Ready",
+    ClearResult = "ClearModelRun"
 }
+
+export const ModelRunUpdates = [
+    ModelRunMutation.ClearResult
+];
 
 export const mutations: MutationTree<ModelRunState> = {
     [ModelRunMutation.ModelRunStarted](state: ModelRunState, action: PayloadWithType<ModelSubmitResponse>) {
@@ -68,6 +73,10 @@ export const mutations: MutationTree<ModelRunState> = {
         stopPolling(state);
         Object.assign(state, initialModelRunState());
         state.ready = true;
+    },
+
+    [ModelRunMutation.ClearResult](state: ModelRunState) {
+        state.result = null;
     }
 };
 
