@@ -33,18 +33,16 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActions, mapMutations} from "vuex";
+    import {mapActions} from "vuex";
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
-    import {mapActionsByNames, mapGettersByNames, mapStateProps, mapGetterByName, mapMutationByName} from "../../utils";
+    import {mapActionsByNames, mapGettersByNames, mapStateProps, mapGetterByName} from "../../utils";
     import ErrorAlert from "../ErrorAlert.vue";
     import {ProgressPhase} from "../../generated";
     import ProgressBar from "../progress/ProgressBar.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ResetConfirmation from "../ResetConfirmation.vue";
-    import {ModelRunMutation} from "../../store/modelRun/mutations";
-    import {RootMutation} from "../../store/root/mutations";
 
     interface ComputedState {
         runId: string
@@ -73,10 +71,7 @@
         poll: (runId: string) => void;
         cancelRun: () => void;
         runModelWithParams: () => void;
-        runResultDeleted: () => void;
-        ready: () => void;
         resetFromFit: () => void;
-        // reset: (maxValidStep: number) => void;
     }
 
     const namespace = 'modelRun';
@@ -104,23 +99,14 @@
         methods: {
             ...mapActions(["resetFromFit"]),
             ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll", "cancelRun"]),
-            runResultDeleted: mapMutationByName(namespace, ModelRunMutation.RunResultDeleted),
-            ready: mapMutationByName(namespace, ModelRunMutation.Ready),
-            // ...mapMutations(["Reset"]),
-            // reset: mapMutationByName('root', RootMutation.Reset),
             handleRun(){
                 if (this.editsRequireConfirmation){
                     this.showReRunConfirmation = true
                 } else this.run()
             },
             confirmReRun() {
-                // this.runResultDeleted()
-                // this.ready()
                 this.resetFromFit()
-                // this.validate()
                 this.run()
-                // this.resetFromFit()
-                
                 this.showReRunConfirmation = false;
             },
             cancelReRun() {

@@ -9,7 +9,6 @@ export enum ModelRunMutation {
     RunStatusUpdated = "RunStatusUpdated",
     PollingForStatusStarted = "PollingForStatusStarted",
     RunResultFetched = "RunResultFetched",
-    RunResultDeleted = "RunResultDeleted",
     RunResultError = "RunResultError",
     RunStatusError = "RunStatusError",
     RunCancelled = "RunCancelled",
@@ -37,19 +36,6 @@ export const mutations: MutationTree<ModelRunState> = {
 
     [ModelRunMutation.RunResultFetched](state: ModelRunState, action: PayloadWithType<ModelResultResponse>) {
         state.result = action.payload;
-    },
-
-    [ModelRunMutation.RunResultDeleted](state: ModelRunState) {
-        // state.result = null;
-        state.status.success = null;
-        // state.status = {} as ModelStatusResponse;
-        // state = initialModelRunState()
-        // console.log('muattion', state.result, state.status)
-        // state.modelRunId = "";
-        // state.errors =  [];
-        // state.statusPollId = -1;
-        // state.ready = false;
-        // state.pollingCounter = 0;
     },
 
     [ModelRunMutation.RunResultError](state: ModelRunState, action: PayloadWithType<Error>) {

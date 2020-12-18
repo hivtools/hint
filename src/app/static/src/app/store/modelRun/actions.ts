@@ -4,7 +4,6 @@ import {RootState} from "../../root";
 import {api, APIService} from "../../apiService";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {ModelRunMutation} from "./mutations";
-import {RootMutation} from "../root/mutations";
 
 export interface ModelRunActions {
     run: (store: ActionContext<ModelRunState, RootState>) => void
@@ -80,11 +79,6 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
         await makeCancelRunRequest(apiService, modelRunId)
     }
-
-    // reset (context) {
-    //     const {commit, state} = context;
-    //     commit({type: RootMutation.Reset, payload: 4});
-    // }
 };
 
 export async function makeCancelRunRequest(api: APIService<ModelRunMutation, ModelRunMutation>, modelRunId: string) {
