@@ -50,7 +50,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
                 .freezeResponse()
                 .get<ModelResultResponse>(`/model/result/${state.modelRunId}`)
                 .then(() => {
-                    if (state.result && state.result.plottingMetadata.barchart.defaults) {
+                    if (state.result && state.result.plottingMetadata && state.result.plottingMetadata.barchart.defaults) {
                         const defaults = state.result.plottingMetadata.barchart.defaults;
                         commit({
                                 type: "plottingSelections/updateBarchartSelections",
