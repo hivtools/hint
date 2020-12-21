@@ -19,7 +19,8 @@ export enum ModelCalibrateMutation {
     CalibrateStatusUpdated = "CalibrateStatusUpdated",
     Calibrated = "Calibrated",
     SetOptionsData = "SetOptionsData",
-    SetError = "SetError"
+    SetError = "SetError",
+    PollingForStatusStarted = "PollingForStatusStarted"
 }
 
 export const mutations: MutationTree<ModelCalibrateState> = {
@@ -71,7 +72,11 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         if (state.statusPollId > -1) {
             stopPolling(state);
         }
-    }
+    },
+
+    [ModelCalibrateMutation.PollingForStatusStarted](state: ModelCalibrateState, action: PayloadWithType<number>) {
+        state.statusPollId = action.payload;
+    },
 };
 
 const stopPolling = (state: ModelCalibrateState) => {

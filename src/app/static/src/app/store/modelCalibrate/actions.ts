@@ -12,7 +12,7 @@ import {ModelRunState} from "../modelRun/modelRun";
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
     submit: (store: ActionContext<ModelCalibrateState, RootState>, options: DynamicFormData) => void
-    poll: (store: ActionContext<ModelCalibrateState, RootState>, calibrateId: string) => void
+    poll: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getResult: (store: ActionContext<ModelCalibrateState, RootState>) => void
 }
 
@@ -67,7 +67,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getResult(context) {
-        const {commit, state, rootState} = context;
+        const {commit, state} = context;
         const calibrateId = state.calibrateId;
 
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
@@ -79,6 +79,21 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         if (response) {
             const data = freezer.deepFreeze(response.data);
             commit({type: `modelRun/${ModelRunMutation.RunResultFetched}`, payload: data}, {root: true});
+
+            if (data && data.plottingMetadata && data.plottingMetadata.barchart.defaults) {
+                const defaults = data.plottingMetadata.barchart.defaults;
+                commit({
+                        type: "plottingSelections/updateBarchartSelections",
+                        payload: {
+                            indicatorId: defaults.indicator_id,
+                            xAxisId: defaults.x_axis_id,
+                            disaggregateById: defaults.disaggregate_by_id,
+                            selectedFilterOptions: {...defaults.selected_filter_options}
+                        }
+                    },
+                    {root: true});
+            }
+
             commit(ModelCalibrateMutation.Calibrated);
         }
     }

@@ -48,22 +48,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
                 .withSuccess(ModelRunMutation.RunResultFetched)
                 .withError(ModelRunMutation.RunResultError)
                 .freezeResponse()
-                .get<ModelResultResponse>(`/model/result/${state.modelRunId}`)
-                .then(() => {
-                    if (state.result && state.result.plottingMetadata && state.result.plottingMetadata.barchart.defaults) {
-                        const defaults = state.result.plottingMetadata.barchart.defaults;
-                        commit({
-                                type: "plottingSelections/updateBarchartSelections",
-                                payload: {
-                                    indicatorId: defaults.indicator_id,
-                                    xAxisId: defaults.x_axis_id,
-                                    disaggregateById: defaults.disaggregate_by_id,
-                                    selectedFilterOptions: {...defaults.selected_filter_options}
-                                }
-                            },
-                            {root: true});
-                    }
-                });
+                .get<ModelResultResponse>(`/model/result/${state.modelRunId}`);
         }
         commit({type: "Ready", payload: true});
     },
