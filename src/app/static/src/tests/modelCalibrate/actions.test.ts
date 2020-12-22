@@ -48,7 +48,7 @@ describe("ModelCalibrate actions", () => {
             modelRun: mockModelRunState({modelRunId: "123A"})
         });
         const mockOptions = {"param_1": "value 1"};
-        const url = `/model/calibrate/submit/123A`;
+        const url = `model/calibrate/submit/123A`;
         mockAxios.onPost(url).reply(200, mockSuccess("TEST"));
         const freezeSpy = jest.spyOn(freezer, "deepFreeze");
         await actions.submit({commit, dispatch, state, rootState: root} as any, mockOptions);
