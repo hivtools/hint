@@ -20,7 +20,8 @@
         </button>
         <div v-if="calibrating" id="calibrating" class="mt-3">
             <loading-spinner size="xs"></loading-spinner>
-            <span v-translate="'calibrating'"></span>
+            <span v-if="!progressMessage" v-translate="'calibrating'"></span>
+            <span v-else>{{progressMessage}}</span>
         </div>
         <error-alert v-if="hasError" :error="error"></error-alert>
         <div v-if="complete" id="calibration-complete" class="mt-3">
@@ -65,7 +66,8 @@
         requiredText: string,
         submitText: string,
         hasError: boolean,
-        error: Error
+        error: Error,
+        progressMessage: string
     }
 
     interface Data {
@@ -85,7 +87,15 @@
             ...mapStateProps<ModelCalibrateState, keyof Computed>(namespace, {
                 loading: s => s.fetching,
                 calibrating: s => s.calibrating,
-                error: s => s.error
+                error: s => s.error,
+                progressMessage: s => {
+                    if (s.status && s.status.progress && s.status.progress.length > 0) {
+                        const p = s.status.progress[0]; //This may be either a string or ProgressPhase
+                        return (typeof p =="string") ? p : `${p.name}: ${p.helpText}`
+                    } else {
+                        return null;
+                    }
+                }
             }),
             currentLanguage: mapStateProp<RootState, Language>(null, (state: RootState) => state.language),
             selectText() {
