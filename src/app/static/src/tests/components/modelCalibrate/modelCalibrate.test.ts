@@ -122,6 +122,18 @@ describe("Model calibrate component", () => {
         expect(wrapper.find("button").classes()).not.toContain("btn-submit");
     });
 
+    it("renders string progress message", () => {
+        const store = getStore({calibrating: true, status: {progress: ["Test progress"]} as any});
+        const wrapper = getWrapper(store);
+        expect(wrapper.find("#calibrating").text()).toBe("Test progress");
+    });
+
+    it("renders ProgressPhase message", () => {
+        const store = getStore({calibrating: true, status: {progress: [{name: "Test name", helpText: "Test help"}]} as any});
+        const wrapper = getWrapper(store);
+        expect(wrapper.find("#calibrating").text()).toBe("Test name: Test help");
+    });
+
     it("setting options value commits update mutation", () => {
         const mockUpdate = jest.fn();
         const store = getStore({optionsFormMeta: mockOptionsFormMeta}, jest.fn(), jest.fn(), mockUpdate);
