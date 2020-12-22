@@ -35,12 +35,13 @@ describe("ModelCalibrate mutations", () => {
     });
 
     it("CalibrateStarted sets calibrateId, calibrating to true, error to null", () => {
-        const state = mockModelCalibrateState({error: mockError("TEST ERROR")});
+        const state = mockModelCalibrateState({error: mockError("TEST ERROR"), complete: true});
         const payload = {id: "123"} as any;
         mutations[ModelCalibrateMutation.CalibrateStarted](state, {payload});
         expect(state.calibrateId).toBe("123");
         expect(state.calibrating).toBe(true);
         expect(state.error).toBeNull();
+        expect(state.complete).toBe(false);
     });
 
     it("CalibrateStatusUpdate sets status, resets error", () => {

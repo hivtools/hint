@@ -42,6 +42,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     [ModelCalibrateMutation.CalibrateStarted](state: ModelCalibrateState, action: PayloadWithType<CalibrateSubmitResponse>) {
         state.calibrateId = action.payload.id;
         state.calibrating = true;
+        state.complete = false;
         state.error = null;
     },
 
