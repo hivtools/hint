@@ -2,13 +2,8 @@ import {actions, getCalibrateStatus} from "../../app/store/modelCalibrate/action
 import {isDynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {rootState} from "./integrationTest";
 import {Language} from "../../app/store/translations/locales";
-import {login} from "./integrationTest";
 
 describe("model calibrate actions integration", () => {
-
-    beforeAll(async () => {
-        await login();
-    });
 
     it("can get model calibrate options", async () => {
         const commit = jest.fn();
