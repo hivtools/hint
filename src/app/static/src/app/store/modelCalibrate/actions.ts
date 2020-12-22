@@ -24,7 +24,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withSuccess(ModelCalibrateMutation.ModelCalibrateOptionsFetched)
             .ignoreErrors()
-            .get<DynamicFormMeta>("/model/calibrate/options/");
+            .get<DynamicFormMeta>("model/calibrate/options/");
 
         if (response) {
             commit({type: ModelCalibrateMutation.SetModelCalibrateOptionsVersion, payload: response.version});
@@ -41,7 +41,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withSuccess(ModelCalibrateMutation.CalibrateStarted)
             .withError(ModelCalibrateMutation.SetError)
-            .postAndReturn<ModelSubmitResponse>(`/model/calibrate/submit/${modelRunId}`, {options, version});
+            .postAndReturn<ModelSubmitResponse>(`model/calibrate/submit/${modelRunId}`, {options, version});
 
         if (response) {
             await dispatch("poll");
@@ -49,18 +49,9 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async poll(context) {
-        const {commit, dispatch, state} = context;
-        const calibrateId = state.calibrateId;
+        const {commit} = context;
         const id = setInterval(() => {
-            api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
-                .withSuccess(ModelCalibrateMutation.CalibrateStatusUpdated)
-                .withError(ModelCalibrateMutation.SetError)
-                .get<ModelStatusResponse>(`/model/calibrate/status/${calibrateId}`)
-                .then(() => {
-                    if (state.status.done && state.status.success) {
-                        dispatch("getResult");
-                    }
-                });
+            getCalibrateStatus(context);
         }, 2000);
 
         commit({type: "PollingForStatusStarted", payload: id});
@@ -74,7 +65,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             .ignoreSuccess()
             .withError(ModelCalibrateMutation.SetError)
             .freezeResponse()
-            .get<ModelResultResponse>(`/model/calibrate/result/${calibrateId}`);
+            .get<ModelResultResponse>(`model/calibrate/result/${calibrateId}`);
 
         if (response) {
             const data = freezer.deepFreeze(response.data);
@@ -97,4 +88,18 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             commit(ModelCalibrateMutation.Calibrated);
         }
     }
+};
+
+export const getCalibrateStatus = async function(context: ActionContext<ModelCalibrateState, RootState>) {
+    const {dispatch, state} = context;
+    const calibrateId = state.calibrateId;
+    return api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+        .withSuccess(ModelCalibrateMutation.CalibrateStatusUpdated)
+        .withError(ModelCalibrateMutation.SetError)
+        .get<ModelStatusResponse>(`model/calibrate/status/${calibrateId}`)
+        .then(() => {
+            if (state.status && state.status.done && state.status.success) {
+                dispatch("getResult");
+            }
+        });
 };
