@@ -13,7 +13,8 @@
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">
                     </l-geo-json>
                 </template>
-                <l-control position="topleft">
+                <map-empty-feature v-if="emptyFeature"></map-empty-feature>
+                <l-control position="topleft" v-else>
                     <div class="leaflet-control-zoom leaflet-bar">
                         <a @click="updateBounds()" 
                             class="leaflet-control-zoom-in" 
@@ -24,7 +25,6 @@
                         </a>
                     </div>                    
                 </l-control>
-                <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <map-control :initialDetail=selections.detail
                              :indicator=selections.indicatorId
                              :show-indicators="true"

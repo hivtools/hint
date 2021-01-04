@@ -57,7 +57,8 @@
                         <l-tooltip :content="getTooltip(feature)"/>
                     </l-circle-marker>
                 </template>
-                <l-control position="topleft">
+                <map-empty-feature v-if="emptyFeature"></map-empty-feature>
+                <l-control position="topleft" v-else>
                     <div class="leaflet-control-zoom leaflet-bar">
                         <a @click="updateBounds()" 
                             class="leaflet-control-zoom-in" 
@@ -66,9 +67,8 @@
                             :aria-label="tooltipContent('resetView')">
                             <refresh-cw-icon size="20"></refresh-cw-icon>
                         </a>
-                    </div>                    
+                    </div>  
                 </l-control>
-                <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <map-control :initialDetail=selections.detail
                              :show-indicators="false"
                              :level-labels="featureLevels"
