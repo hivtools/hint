@@ -40,6 +40,7 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
 
     interface ComputedState {
+        complete: boolean
         runId: string
         pollId: number
         phases: ProgressPhase[]
@@ -47,7 +48,7 @@
 
     interface ComputedGetters {
         running: boolean
-        complete: boolean
+        // complete: boolean
     }
 
     interface Computed extends ComputedGetters, ComputedState {
@@ -66,6 +67,7 @@
         name: "ModelRun",
         computed: {
             ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
+                complete: state => state.complete,
                 runId: state => state.modelRunId,
                 pollId: state => state.statusPollId,
                 errors: state => state.errors,
@@ -74,7 +76,8 @@
                     return progress.map((item, index) => ({...item, name: `${index + 1}. ${item.name}`}))
                 }
             }),
-            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
+            // ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
+            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running"])
         },
         methods: {
             ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll", "cancelRun"])
