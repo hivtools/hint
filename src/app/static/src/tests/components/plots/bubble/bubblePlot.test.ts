@@ -15,11 +15,11 @@ import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {expectFilter, plhiv, prev, testData} from "../testHelpers"
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
-import {expectTranslated} from "../../../testHelpers";
+import {Language} from "../../../../app/store/translations/locales";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
-    state: emptyState()
+    state: {language: Language.en}
 });
 registerTranslations(store);
 
@@ -55,7 +55,7 @@ const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
 const getWrapper = (customPropsData: any = {}) => {
 
-    return shallowMount(BubblePlot, {propsData: {...propsData, ...customPropsData}, localVue});
+    return shallowMount(BubblePlot, {store, propsData: {...propsData, ...customPropsData}, localVue});
 };
 
 export const expectIndicatorSelect = (wrapper: Wrapper<Vue>, divId: string, value: string) => {
@@ -568,8 +568,12 @@ describe("BubblePlot component", () => {
         vm.$refs.map = {
             fitBounds: mockMapFitBounds
         };
-        const button = wrapper.find(LControl).find('button')
-        expectTranslated(button, 'Reset view', 'Réinitialiser la vue', store);
+        const button = wrapper.find(LControl).find('div').find('a')
+        expect(button.attributes("aria-label")).toBe("Reset view");
+        expect(button.attributes("title")).toBe("Reset view");
+        vm.$store.state.language = Language.fr
+        expect(button.attributes("aria-label")).toBe("Réinitialiser la vue");
+        expect(button.attributes("title")).toBe("Réinitialiser la vue");
         button.trigger("click")
         
         expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(

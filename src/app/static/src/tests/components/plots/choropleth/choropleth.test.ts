@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount} from "@vue/test-utils";
+import {createLocalVue, shallowMount, mount} from "@vue/test-utils";
 import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
 import {LControl, LGeoJson} from "vue2-leaflet";
 import {getFeatureIndicator} from "../../../../app/components/plots/choropleth/utils";
@@ -13,10 +13,11 @@ import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelect
 import Vue from "vue";
 import {expectTranslated} from "../../../testHelpers";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
+import {Language} from "../../../../app/store/translations/locales";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
-    state: emptyState()
+    state: {language: Language.en}
 });
 registerTranslations(store);
 
@@ -44,7 +45,7 @@ const propsData = {
 const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
 const getWrapper = (customPropsData: any = {}) => {
-    return shallowMount(Choropleth, {propsData: {...propsData, ...customPropsData}, localVue});
+    return shallowMount(Choropleth, {store, propsData: {...propsData, ...customPropsData}, localVue});
 };
 
 describe("Choropleth component", () => {
@@ -388,8 +389,12 @@ describe("Choropleth component", () => {
             fitBounds: mockMapFitBounds
         };
 
-        const button = wrapper.find(LControl).find('button')
-        expectTranslated(button, 'Reset view', 'Réinitialiser la vue', store);
+        const button = wrapper.find(LControl).find('div').find('a')
+        expect(button.attributes("aria-label")).toBe("Reset view");
+        expect(button.attributes("title")).toBe("Reset view");
+        vm.$store.state.language = Language.fr
+        expect(button.attributes("aria-label")).toBe("Réinitialiser la vue");
+        expect(button.attributes("title")).toBe("Réinitialiser la vue");
         button.trigger("click")
 
         expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
