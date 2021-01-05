@@ -1,3 +1,7 @@
+# hint 1.10.1
+
+* fix issues with plot legend wrapping
+
 # hint 1.10.0
 
 * fix ok button accessibility bug in share project
