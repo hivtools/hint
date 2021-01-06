@@ -1,9 +1,12 @@
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelCalibrateMutation, mutations} from "../../app/store/modelCalibrate/mutations";
-import {mockError, mockModelCalibrateState, mockModelOptionsState} from "../mocks";
+import {mockError, mockModelCalibrateState,} from "../mocks";
 import {VersionInfo} from "../../app/generated";
 
 describe("ModelCalibrate mutations", () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
     it("all mutation types are defined", () => {
         expectAllMutationsDefined(ModelCalibrateMutation, mutations);
@@ -31,11 +34,33 @@ describe("ModelCalibrate mutations", () => {
         expect(state.optionsFormMeta).toBe(payload);
     });
 
-    it("Calibrating sets calibrating to true, error to null", () => {
-        const state = mockModelCalibrateState({error: mockError("TEST ERROR")});
-        mutations[ModelCalibrateMutation.Calibrating](state);
+    it("CalibrateStarted sets calibrateId, calibrating to true, error to null", () => {
+        const state = mockModelCalibrateState({error: mockError("TEST ERROR"), complete: true});
+        const payload = {id: "123"} as any;
+        mutations[ModelCalibrateMutation.CalibrateStarted](state, {payload});
+        expect(state.calibrateId).toBe("123");
         expect(state.calibrating).toBe(true);
         expect(state.error).toBeNull();
+        expect(state.complete).toBe(false);
+    });
+
+    it("CalibrateStatusUpdate sets status, resets error", () => {
+        const state = mockModelCalibrateState({error: mockError("TEST ERROR")});
+        const payload = ["TEST PAYLOAD"] as any;
+        mutations[ModelCalibrateMutation.CalibrateStatusUpdated](state, {payload});
+        expect(state.status).toStrictEqual(payload);
+        expect(state.error).toBeNull();
+    });
+
+    it("CalibrateStatusUpdate stops polling if status is done", () => {
+        const state = mockModelCalibrateState({statusPollId: 99});
+        const payload = {done: true} as any;
+        const spy = jest.spyOn(window, "clearInterval");
+
+        mutations[ModelCalibrateMutation.CalibrateStatusUpdated](state, {payload});
+        expect(state.statusPollId).toBe(-1);
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith(99);
     });
 
     it("Calibrated sets complete to true", () => {
@@ -64,10 +89,27 @@ describe("ModelCalibrate mutations", () => {
         expect(state.calibrating).toBe(false);
     });
 
+    it("SetError stops polling", () => {
+        const state = mockModelCalibrateState({statusPollId: 99});
+        const error = mockError("TEST ERROR");
+        const spy = jest.spyOn(window, "clearInterval");
+
+        mutations[ModelCalibrateMutation.SetError](state, {payload: error});
+        expect(state.statusPollId).toBe(-1);
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith(99);
+    });
+
     it("sets options", () => {
         const state = mockModelCalibrateState();
         const options = { "testOption": "testValue" };
         mutations[ModelCalibrateMutation.SetOptionsData](state, {payload: options});
         expect(state.options).toBe(options);
+    });
+
+    it("PollingForStatusStarted sets statusPollId", () => {
+        const state = mockModelCalibrateState();
+        mutations[ModelCalibrateMutation.PollingForStatusStarted](state, {payload: 99});
+        expect(state.statusPollId).toBe(99);
     });
 });

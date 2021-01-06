@@ -3,17 +3,24 @@ import {ModelCalibrateState} from "./modelCalibrate";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {PayloadWithType} from "../../types";
 import {updateForm} from "../../utils";
-import {Error, VersionInfo} from "../../generated";
+import {
+    CalibrateStatusResponse,
+    CalibrateSubmitResponse,
+    Error,
+    VersionInfo
+} from "../../generated";
 
 export enum ModelCalibrateMutation {
     FetchingModelCalibrateOptions = "FetchingModelCalibrateOptions",
     ModelCalibrateOptionsFetched = "ModelCalibrateOptionsFetched",
     SetModelCalibrateOptionsVersion = "SetModelCalibrateOptionsVersion",
     Update = "Update",
-    Calibrating = "Calibrating",
+    CalibrateStarted = "CalibrateStarted",
+    CalibrateStatusUpdated = "CalibrateStatusUpdated",
     Calibrated = "Calibrated",
     SetOptionsData = "SetOptionsData",
-    SetError = "SetError"
+    SetError = "SetError",
+    PollingForStatusStarted = "PollingForStatusStarted"
 }
 
 export const mutations: MutationTree<ModelCalibrateState> = {
@@ -32,8 +39,18 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.optionsFormMeta = payload;
     },
 
-    [ModelCalibrateMutation.Calibrating](state: ModelCalibrateState) {
+    [ModelCalibrateMutation.CalibrateStarted](state: ModelCalibrateState, action: PayloadWithType<CalibrateSubmitResponse>) {
+        state.calibrateId = action.payload.id;
         state.calibrating = true;
+        state.complete = false;
+        state.error = null;
+    },
+
+    [ModelCalibrateMutation.CalibrateStatusUpdated](state: ModelCalibrateState, action: PayloadWithType<CalibrateStatusResponse>) {
+        if (action.payload.done) {
+            stopPolling(state);
+        }
+        state.status = action.payload;
         state.error = null;
     },
 
@@ -53,5 +70,17 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     [ModelCalibrateMutation.SetError](state: ModelCalibrateState, action: PayloadWithType<Error>) {
         state.error = action.payload;
         state.calibrating = false;
-    }
+        if (state.statusPollId > -1) {
+            stopPolling(state);
+        }
+    },
+
+    [ModelCalibrateMutation.PollingForStatusStarted](state: ModelCalibrateState, action: PayloadWithType<number>) {
+        state.statusPollId = action.payload;
+    },
+};
+
+const stopPolling = (state: ModelCalibrateState) => {
+    clearInterval(state.statusPollId);
+    state.statusPollId = -1;
 };

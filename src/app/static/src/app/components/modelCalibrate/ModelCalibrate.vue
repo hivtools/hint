@@ -7,7 +7,7 @@
         <dynamic-form ref="form"
                       v-if="!loading"
                       v-model="calibrateOptions"
-                      @submit="calibrate"
+                      @submit="submitCalibrate"
                       :required-text="requiredText"
                       :select-text="selectText"
                       :include-submit-button="false"></dynamic-form>
@@ -48,7 +48,7 @@
 
     interface Methods {
         fetchOptions: () => void
-        calibrate: (data: DynamicFormData) => void
+        submitCalibrate: (data: DynamicFormData) => void
         update: (data: DynamicFormMeta) => void
         submitForm: (e: Event) => void
     }
@@ -114,7 +114,7 @@
         },
         methods: {
             update: mapMutationByName(namespace, ModelCalibrateMutation.Update),
-            calibrate: mapActionByName(namespace,"calibrate"),
+            submitCalibrate: mapActionByName(namespace,"submit"),
             fetchOptions: mapActionByName(namespace, "fetchModelCalibrateOptions"),
             submitForm() {
                 (this.$refs.form as any).submit()
