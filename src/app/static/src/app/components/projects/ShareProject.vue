@@ -57,6 +57,7 @@
 <script lang="ts">
     import {Project} from "../../types";
     import Vue from "vue";
+    import {mapState} from "vuex";
     import Modal from "../Modal.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStatePropByName} from "../../utils";
@@ -66,6 +67,7 @@
     import {CloneProjectPayload} from "../../store/projects/actions";
     import {Share2Icon} from "vue-feather-icons";
     import {VTooltip} from 'v-tooltip';
+    import {RootState} from "../../root";
 
     interface EmailToShareWith {
         value: string
@@ -83,6 +85,7 @@
     }
 
     interface Computed {
+        // currentUser: string,
         currentLanguage: Language,
         instructions: string
         invalidEmails: boolean
@@ -101,6 +104,8 @@
         cloneProject: (payload: CloneProjectPayload) => void
     }
 
+    declare const currentUser: string; 
+
     export default Vue.extend<Data, Methods, Computed, Props>({
         props: {
             project: {
@@ -118,7 +123,7 @@
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
             addEmail(e: EmailToShareWith, index: number) {
-                if (e.value) {
+                if (e.value && e.value !== currentUser) {
                     if (index == this.emailsToShareWith.length - 1) {
                         // if blur event fires on the last input
                         // add another input below it
@@ -176,7 +181,13 @@
                 return i18next.t("share", {
                     lng: this.currentLanguage,
                 });
-            }
+            },
+            // ...mapState<RootState>({
+            //     currentUser: ({currentUser}) => {
+            //         return currentUser;
+            //     }
+            // })
+            // ...mapState(["currentUser"])
         },
         components: {
             Modal,
@@ -186,6 +197,9 @@
         },
         directives: {
             tooltip: VTooltip
+        },
+        mounted(){
+            console.log('this is the current user:', currentUser)
         },
         watch: {
             cloningProject(newVal: boolean) {
