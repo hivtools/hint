@@ -13,7 +13,7 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {ModelCalibrateMutation} from "../../../app/store/modelCalibrate/mutations";
 
 describe("Model calibrate component", () => {
-    const getStore = (state: Partial<ModelCalibrateState> = {}, fetchAction = jest.fn(), submitction = jest.fn(),
+    const getStore = (state: Partial<ModelCalibrateState> = {}, fetchAction = jest.fn(), submitAction = jest.fn(),
                       updateMutation = jest.fn()) => {
         const store = new Vuex.Store({
             state: mockRootState(),
@@ -23,7 +23,7 @@ describe("Model calibrate component", () => {
                     state: mockModelCalibrateState(state),
                     actions: {
                         fetchModelCalibrateOptions: fetchAction,
-                        submit: submitction
+                        submit: submitAction
                     },
                     mutations: {
                         [ModelCalibrateMutation.Update]: updateMutation
