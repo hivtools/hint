@@ -50,6 +50,7 @@ export const mutations: MutationTree<ModelOptionsState> = {
 
     [ModelOptionsMutation.Update](state: ModelOptionsState, payload: DynamicFormMeta) {
         state.valid = false;
+        state.changes = true;
         state.optionsFormMeta = payload;
     },
 
