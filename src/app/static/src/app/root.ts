@@ -32,6 +32,7 @@ import {ADRSchemas} from "./types";
 import {modelCalibrate, initialModelCalibrateState, ModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 import { initialHintrVersionState, hintrVersion, HintrVersionState } from "./store/hintrVersion/hintrVersion";
 import {currentHintVersion} from "./hintVersion";
+import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
 
 export interface TranslatableState {
     language: Language
@@ -100,6 +101,10 @@ const resetState = (store: Store<RootState>) => {
             }
 
             if (type[0] == "modelOptions" && ModelOptionsUpdates.includes(type[1] as ModelOptionsMutation)) {
+                store.commit(RootMutation.ResetOutputs);
+            }
+
+            if (type[0] == "modelRun" && ModelRunUpdates.includes(type[1] as ModelRunMutation)) {
                 store.commit(RootMutation.ResetOutputs);
             }
         }
