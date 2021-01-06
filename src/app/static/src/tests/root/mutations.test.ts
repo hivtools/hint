@@ -198,16 +198,6 @@ describe("Root mutations", () => {
         expect(state.modelOptions).toStrictEqual(initialModelOptionsState());
     });
 
-    it("can reset model calibrate state", () => {
-
-        const state = mockRootState({
-            modelCalibrate: mockModelCalibrateState({options: "TEST" as any})
-        });
-
-        mutations.ResetModelCalibrate(state);
-        expect(state.modelCalibrate).toStrictEqual(initialModelCalibrateState());
-    });
-
     it("can reset model outputs state", () => {
 
         const state = mockRootState({

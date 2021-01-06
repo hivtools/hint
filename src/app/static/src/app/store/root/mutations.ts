@@ -20,7 +20,6 @@ export enum RootMutation {
     Reset = "Reset",
     ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
-    ResetModelCalibrate = "ResetModelCalibrate",
     ResetOutputs = "ResetOutputs",
     SetADRKeyError = "ADRKeyError",
     SetProject = "SetProject",
@@ -144,10 +143,6 @@ export const mutations: MutationTree<RootState> = {
 
     [RootMutation.ResetOptions](state: RootState) {
         Object.assign(state.modelOptions, initialModelOptionsState());
-    },
-
-    [RootMutation.ResetModelCalibrate](state: RootState) {
-        Object.assign(state.modelCalibrate, initialModelCalibrateState());
     },
 
     [RootMutation.ResetOutputs](state: RootState) {
