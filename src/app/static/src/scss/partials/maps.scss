@@ -25,11 +25,15 @@
   color: $theme-red;
 }
 
+.legend {
+    height: 1.125rem;
+}
+
 .legend i {
-  width: 18px;
-  height: 18px;
+  width: 1.125rem;
+  height: 1.125rem;
   float: left;
-  margin-right: 8px;
+  margin-right: 0.5rem;
 }
 
 .adjust-scale {
@@ -41,15 +45,15 @@
 }
 
 .legend-adjust {
-  width: 190px;
+  width: 11.875rem;
 }
 
 .legend-adjust .static-container {
-  height: 140px;
+  height: 8.75rem;
 }
 
 .legend-adjust .dynamic-container {
-  height: 80px;
+  height: 5rem;
 }
 
 .legend-adjust input[type='number'] {

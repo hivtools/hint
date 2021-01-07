@@ -6,7 +6,7 @@
 
             <p v-translate="'discardWarning'"></p>
             <ul>
-                <li v-for="step in laterCompleteSteps" :key="step.number">
+            <li v-for="step in changesToRelevantSteps" :key="step.number">
                     <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
                 </li>
             </ul>
@@ -46,7 +46,7 @@
     import {ErrorsState} from "../store/errors/errors";
 
     interface Computed {
-        laterCompleteSteps: StepDescription[],
+        changesToRelevantSteps: StepDescription[],
         currentVersionId: string | null,
         errorsCount: number
     }
@@ -69,7 +69,7 @@
             }
         },
         computed: {
-            laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
+            changesToRelevantSteps: mapGetterByName("stepper", "changesToRelevantSteps"),
             currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
                 return state.currentVersion && state.currentVersion.id;
             }),

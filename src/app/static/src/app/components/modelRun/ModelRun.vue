@@ -1,7 +1,7 @@
 <template>
     <div>
         <button class="btn btn-red btn-lg"
-                v-on:click="run"
+                v-on:click="handleRun"
                 :disabled="running"
                 v-translate="'fitModel'">
         </button>
@@ -25,6 +25,9 @@
         <div class="mt-3">
             <error-alert v-for="(error, index) in errors" :key="index" :error="error"></error-alert>
         </div>
+        <reset-confirmation :continue-editing="confirmReRun"
+                            :cancel-editing="cancelReRun"
+                            :open="showReRunConfirmation"></reset-confirmation>
     </div>
 </template>
 
@@ -33,11 +36,19 @@
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
-    import {mapActionsByNames, mapGettersByNames, mapStateProps} from "../../utils";
+    import {
+        mapActionsByNames,
+        mapGettersByNames,
+        mapStateProps,
+        mapGetterByName,
+        mapMutationByName
+    } from "../../utils";
     import ErrorAlert from "../ErrorAlert.vue";
     import {ProgressPhase} from "../../generated";
     import ProgressBar from "../progress/ProgressBar.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
+    import ResetConfirmation from "../ResetConfirmation.vue";
+    import {ModelRunMutation} from "../../store/modelRun/mutations";
 
     interface ComputedState {
         runId: string
@@ -50,21 +61,36 @@
         complete: boolean
     }
 
+     interface Data {
+        showReRunConfirmation: boolean
+    }
+
     interface Computed extends ComputedGetters, ComputedState {
+        editsRequireConfirmation: boolean
     }
 
     interface Methods {
+        handleRun: () => void;
+        confirmReRun: () => void;
+        cancelReRun: () => void;
         run: () => void;
         poll: (runId: string) => void;
         cancelRun: () => void;
         runModelWithParams: () => void;
+        clearResult: () => void;
     }
 
     const namespace = 'modelRun';
 
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "ModelRun",
+        data(): Data {
+            return {
+                showReRunConfirmation: false
+            }
+        },
         computed: {
+            editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
                 runId: state => state.modelRunId,
                 pollId: state => state.statusPollId,
@@ -77,7 +103,21 @@
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll", "cancelRun"])
+            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll", "cancelRun"]),
+            clearResult: mapMutationByName(namespace, ModelRunMutation.ClearResult),
+            handleRun(){
+                if (this.editsRequireConfirmation){
+                    this.showReRunConfirmation = true
+                } else this.run()
+            },
+            confirmReRun() {
+                this.clearResult();
+                this.run();
+                this.showReRunConfirmation = false;
+            },
+            cancelReRun() {
+                this.showReRunConfirmation = false
+            }
         },
         watch: {
             runId: function (newVal) {
@@ -92,6 +132,7 @@
             }
         },
         components: {
+            ResetConfirmation,
             Modal,
             Tick,
             ErrorAlert,

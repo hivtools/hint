@@ -144,6 +144,18 @@ describe("survey and program getters", () => {
         }))).toBe(true);
     });
 
+    it("has changes if has changes to either survey or program or anc", () => {
+        expect(getters.hasChanges(mockSurveyAndProgramState({
+            survey: mockSurveyResponse()
+        }))).toBe(true);
+        expect(getters.hasChanges(mockSurveyAndProgramState({
+            program: mockProgramResponse()
+        }))).toBe(true);
+        expect(getters.hasChanges(mockSurveyAndProgramState({
+            anc: mockAncResponse()
+        }))).toBe(true);
+    });
+
     it("gets filters when selectedDataType is null", () => {
         const testState = getTestState({selectedDataType: null});
 
