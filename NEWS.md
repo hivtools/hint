@@ -1,4 +1,4 @@
-# hint 1.10.4
+# hint 1.11.0
 
 * Do model calibration asynchronously.
 
