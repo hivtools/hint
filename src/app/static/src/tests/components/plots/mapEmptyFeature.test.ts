@@ -29,8 +29,8 @@ describe("MapEmptyFeature component", () => {
         const wrapper = getWrapper();
         expect(wrapper.findAll(LControl).length).toBe(1)
         const noMapData = wrapper.find(LControl).find("span")
-        expectTranslated(noMapData, "No data to display on map for these selections",
-            "Aucune donnée à afficher sur la carte pour ces sélections", store as any)
+        expectTranslated(noMapData, "No data are available for the selected combination. Please review the combination of filter values selected.",
+            "Aucune donnée n'est disponible pour la combinaison sélectionnée. Veuillez examiner la combinaison de valeurs de filtre sélectionnée.", store as any)
     });
 
 });

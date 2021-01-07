@@ -1,3 +1,7 @@
+# hint 1.10.3
+
+* More useful "No data" message on map
+
 # hint 1.10.2
 
 * fix issues with plot legend wrapping
