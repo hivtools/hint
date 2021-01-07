@@ -22,8 +22,14 @@
                     </div>
                     <div class="col">
                         <div class="small text-danger"
-                             :class="{'d-none': email.valid !== false}"
+                             :class="{'d-none': email.valid !== false || email.sameAsUserEmail === true}"
                              v-translate="'emailNotRegistered'">
+                        </div>
+                        <div class="small text-danger"
+                             :class="{'d-none': email.sameAsUserEmail !== true}"
+                             >
+                             <!-- v-translate="'emailNotRegistered'"> -->
+                             You cannot share with yourself
                         </div>
                     </div>
                 </div>
@@ -72,6 +78,7 @@
     interface EmailToShareWith {
         value: string
         valid: boolean | null
+        sameAsUserEmail?: boolean | null
     }
 
     interface Data {
@@ -123,7 +130,10 @@
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
             addEmail(e: EmailToShareWith, index: number) {
-                if (e.value && e.value !== currentUser) {
+                // if (e.value === currentUser){
+                //     e.sameAsUserEmail = true
+                // } else e.sameAsUserEmail = false
+                if (e.value) {
                     if (index == this.emailsToShareWith.length - 1) {
                         // if blur event fires on the last input
                         // add another input below it
@@ -132,11 +142,18 @@
                             valid: null
                         });
                     }
+                    if (e.value !== currentUser){
                     this.userExists(e.value)
                         .then((result: boolean) => {
                             this.emailsToShareWith[index].valid = result;
+                            this.emailsToShareWith[index].sameAsUserEmail = false;
                             this.showValidationMessage = this.invalidEmails;
                         })
+                    } else {
+                        // this.emailsToShareWith[index].valid = false;
+                        this.emailsToShareWith[index].sameAsUserEmail = true;
+                        this.showValidationMessage = this.invalidEmails;
+                    }
                 } else {
                     e.valid = null;
                     this.showValidationMessage = this.invalidEmails;
@@ -175,7 +192,7 @@
                 return i18next.t('shareProjectInstructions', {project: this.project.name, lng: this.currentLanguage});
             },
             invalidEmails() {
-                return this.emailsToShareWith.filter(e => e.value && !e.valid).length > 0
+                return this.emailsToShareWith.filter(e => e.value && (!e.valid || e.sameAsUserEmail)).length > 0
             },
             tooltipShare() {
                 return i18next.t("share", {
