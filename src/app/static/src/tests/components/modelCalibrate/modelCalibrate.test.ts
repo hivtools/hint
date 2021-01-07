@@ -111,7 +111,7 @@ describe("Model calibrate component", () => {
         expect(wrapper.find(ErrorAlert).props("error")).toBe(error);
     });
 
-    it("renders as expected while calibrating", () => {
+    it("renders as expected while calibrating with no progress data", () => {
         const store = getStore({calibrating: true});
         const wrapper = getWrapper(store);
         expect(wrapper.find("#calibrating").find(LoadingSpinner).exists()).toBe(true);
