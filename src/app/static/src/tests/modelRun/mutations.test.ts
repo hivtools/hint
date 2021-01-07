@@ -117,4 +117,12 @@ describe("Model run mutations", () => {
         expect(testState.errors).toStrictEqual([]);
         expect(testState.result).toBeNull();
     });
+
+    it("clears result", () => {
+        const testState = mockModelRunState({
+            result: mockModelResultResponse()
+        });
+        mutations.ClearResult(testState);
+        expect(testState.result).toBeNull();
+    });
 });

@@ -11,13 +11,14 @@ import {prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import Vue from "vue";
-import {expectTranslated} from "../../../testHelpers";
+// import {expectTranslated} from "../../../testHelpers";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
+import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 import {Language} from "../../../../app/store/translations/locales";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
-    state: {language: Language.en}
+    state: {...emptyState(), language: Language.en}
 });
 registerTranslations(store);
 
@@ -380,7 +381,7 @@ describe("Choropleth component", () => {
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
     });
 
-    it("clicking reset view button updates bounds of map from features geojson", () => {
+    it("reset view component updates bounds of map from features geojson", () => {
         const wrapper = getWrapper();
         const mockMapFitBounds = jest.fn();
 
@@ -389,13 +390,15 @@ describe("Choropleth component", () => {
             fitBounds: mockMapFitBounds
         };
 
-        const button = wrapper.find(LControl).find('div').find('a')
-        expect(button.attributes("aria-label")).toBe("Reset view");
-        expect(button.attributes("title")).toBe("Reset view");
-        vm.$store.state.language = Language.fr
-        expect(button.attributes("aria-label")).toBe("Réinitialiser la vue");
-        expect(button.attributes("title")).toBe("Réinitialiser la vue");
-        button.trigger("click")
+        const resetButton = wrapper.find(ResetMap)
+        expect(resetButton.exists()).toBe(true)
+
+        resetButton.vm.$emit("reset-view");
+
+        // const button = wrapper.find(LControl).find('div').find('a')
+        // expectTranslated(button, 'Reset view', 'Réinitialiser la vue', store, "aria-label");
+        // expectTranslated(button, 'Reset view', 'Réinitialiser la vue', store, "title");
+        // button.trigger("click")
 
         expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);

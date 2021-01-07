@@ -23,7 +23,6 @@
         <error-alert v-if="hasValidateError" :error="validateError"></error-alert>
         <reset-confirmation :continue-editing="continueEditing"
                             :cancel-editing="cancelEditing"
-                            :steps="laterCompleteSteps"
                             :open="showConfirmation"></reset-confirmation>
     </div>
 
@@ -61,7 +60,6 @@
         valid: boolean
         errorMessage: string
         editsRequireConfirmation: boolean
-        laterCompleteSteps: StepDescription[]
         currentLanguage: Language
         selectText: string
         requiredText: string
@@ -98,7 +96,6 @@
             requiredText() {
                 return i18next.t("required", this.currentLanguage)
             },
-            laterCompleteSteps: mapGetterByName("stepper", "laterCompleteSteps"),
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             modelOptions: {
                 get() {

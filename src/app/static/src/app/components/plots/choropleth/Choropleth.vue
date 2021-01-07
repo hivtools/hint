@@ -14,7 +14,8 @@
                     </l-geo-json>
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
-                <l-control position="topleft" v-else>
+                <reset-map v-else @reset-view="updateBounds"></reset-map>
+                <!-- <l-control position="topleft" v-else>
                     <div class="leaflet-control-zoom leaflet-bar">
                         <a @click="updateBounds()" 
                             class="leaflet-control-zoom-in" 
@@ -24,7 +25,7 @@
                             <refresh-cw-icon size="20"></refresh-cw-icon>
                         </a>
                     </div>                    
-                </l-control>
+                </l-control> -->
                 <map-control :initialDetail=selections.detail
                              :indicator=selections.indicatorId
                              :show-indicators="true"
@@ -50,6 +51,7 @@
     import MapLegend from "../MapLegend.vue";
     import Filters from "../Filters.vue";
     import MapEmptyFeature from "../MapEmptyFeature.vue";
+    import ResetMap from "../ResetMap.vue";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {
         ChoroplethSelections,
@@ -60,11 +62,12 @@
     import {getIndicatorRange, toIndicatorNameLookup, formatOutput} from "../utils";
     import {getFeatureIndicator, initialiseScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
-    import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
-    import {RootState} from "../../../root";
-    import {RefreshCwIcon} from "vue-feather-icons";
-    import i18next from "i18next";
-    import {Language} from "../../../store/translations/locales";
+    import {flattenOptions, flattenToIdSet} from "../../../utils";
+    // import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
+    // import {RootState} from "../../../root";
+    // import {RefreshCwIcon} from "vue-feather-icons";
+    // import i18next from "i18next";
+    // import {Language} from "../../../store/translations/locales";
 
     interface Props {
         features: Feature[],
@@ -94,12 +97,12 @@
         changeSelections: (newSelections: Partial<ChoroplethSelections>) => void,
         updateColourScale: (scale: ScaleSettings) => void,
         getFeatureFromAreaId: (id: string) => Feature,
-        normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any,
-        tooltipContent: (tooltipValue: string) => string
+        normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any
+        // tooltipContent: (tooltipValue: string) => string
     }
 
     interface Computed {
-        currentLanguage: Language,
+        // currentLanguage: Language,
         initialised: boolean,
         colourRange: NumericRange,
         featureIndicators: IndicatorValuesDict,
@@ -153,14 +156,15 @@
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "Choropleth",
         components: {
-            RefreshCwIcon,
+            // RefreshCwIcon,
             LMap,
             LGeoJson,
-            LControl,
+            // LControl,
             MapControl,
             MapLegend,
             Filters,
-            MapEmptyFeature
+            MapEmptyFeature,
+            ResetMap
         },
         props: props,
         data(): Data {
@@ -172,10 +176,10 @@
             }
         },
         computed: {
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
+            // currentLanguage: mapStateProp<RootState, Language>(
+            //     null,
+            //     (state: RootState) => state.language
+            // ),
             initialised() {
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
@@ -328,11 +332,11 @@
             }
         },
         methods: {
-            tooltipContent(tooltipValue: string) {
-                return i18next.t(tooltipValue, {
-                    lng: this.currentLanguage,
-                });
-            },
+            // tooltipContent(tooltipValue: string) {
+            //     return i18next.t(tooltipValue, {
+            //         lng: this.currentLanguage,
+            //     });
+            // },
             initialise: function () {
                 if (this.selections.detail < 0) {
                     this.onDetailChange(this.maxLevel);

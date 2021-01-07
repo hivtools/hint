@@ -15,6 +15,7 @@ import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {expectFilter, plhiv, prev, testData} from "../testHelpers"
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
+import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 import {Language} from "../../../../app/store/translations/locales";
 
 const localVue = createLocalVue();
@@ -568,13 +569,18 @@ describe("BubblePlot component", () => {
         vm.$refs.map = {
             fitBounds: mockMapFitBounds
         };
-        const button = wrapper.find(LControl).find('div').find('a')
-        expect(button.attributes("aria-label")).toBe("Reset view");
-        expect(button.attributes("title")).toBe("Reset view");
-        vm.$store.state.language = Language.fr
-        expect(button.attributes("aria-label")).toBe("Réinitialiser la vue");
-        expect(button.attributes("title")).toBe("Réinitialiser la vue");
-        button.trigger("click")
+
+        const resetButton = wrapper.find(ResetMap)
+        expect(resetButton.exists()).toBe(true)
+
+        resetButton.vm.$emit("reset-view");
+        // const button = wrapper.find(LControl).find('div').find('a')
+        // expect(button.attributes("aria-label")).toBe("Reset view");
+        // expect(button.attributes("title")).toBe("Reset view");
+        // vm.$store.state.language = Language.fr
+        // expect(button.attributes("aria-label")).toBe("Réinitialiser la vue");
+        // expect(button.attributes("title")).toBe("Réinitialiser la vue");
+        // button.trigger("click")
         
         expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);

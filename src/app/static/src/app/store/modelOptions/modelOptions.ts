@@ -9,6 +9,7 @@ import {VersionInfo, Error} from "../../generated";
 export interface ModelOptionsState {
     optionsFormMeta: DynamicFormMeta
     options: DynamicFormData
+    changes: boolean
     valid: boolean
     validating: boolean
     fetching: boolean
@@ -21,6 +22,7 @@ export const initialModelOptionsState = (): ModelOptionsState => {
     return {
         optionsFormMeta: {controlSections: []},
         options: {},
+        changes: false,
         valid: false,
         validating: false,
         fetching: false,
@@ -33,6 +35,9 @@ export const initialModelOptionsState = (): ModelOptionsState => {
 export const modelOptionsGetters = {
     complete: (state: ModelOptionsState) => {
         return state.valid
+    },
+    hasChanges: (state: ModelOptionsState) => {
+        return state.changes
     }
 };
 

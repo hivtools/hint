@@ -13,7 +13,6 @@ describe("File upload component", () => {
 
     const mockGetters = {
         editsRequireConfirmation: () => false,
-        laterCompleteSteps: () => [{number: 4, text: "Run model"}]
     };
 
     const createStore = () => {
