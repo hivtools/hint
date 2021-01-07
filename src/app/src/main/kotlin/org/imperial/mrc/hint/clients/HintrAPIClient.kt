@@ -8,7 +8,7 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.asResponseEntity
 import org.imperial.mrc.hint.getStreamingResponseEntity
-import org.imperial.mrc.hint.models.ModelOptions
+import org.imperial.mrc.hint.models.ModelRunOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -23,22 +23,19 @@ interface HintrAPIClient
     fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType)
             : ResponseEntity<String>
 
-    fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
+    fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
-    fun calibrate(id: String, calibrationOptions: ModelOptions): ResponseEntity<String>
+    fun calibrate(id: String, calibrationOptions: ModelRunOptions): ResponseEntity<String>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
     fun downloadCoarseOutput(id: String): ResponseEntity<StreamingResponseBody>
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun getModelCalibrationOptions(): ResponseEntity<String>
-    fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
-    fun getCalibrateStatus(id: String): ResponseEntity<String>
-    fun getCalibrateResult(id: String): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
     fun getVersion(): ResponseEntity<String>
     fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
-    fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions):
+    fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions):
             ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
 }
@@ -88,7 +85,7 @@ class HintrFuelAPIClient(
         return postJson("validate/survey-and-programme", json)
     }
 
-    override fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions)
+    override fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions)
             : ResponseEntity<String>
     {
 
@@ -100,7 +97,7 @@ class HintrFuelAPIClient(
         return postJson("model/submit", json)
     }
 
-    override fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions)
+    override fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelRunOptions)
             : ResponseEntity<String>
     {
 
@@ -121,26 +118,10 @@ class HintrFuelAPIClient(
         return get("model/result/${id}")
     }
 
-    override fun calibrate(id: String, calibrationOptions: ModelOptions): ResponseEntity<String>
+    override fun calibrate(id: String, calibrationOptions: ModelRunOptions): ResponseEntity<String>
     {
         val json = objectMapper.writeValueAsString(calibrationOptions)
         return postJson("model/calibrate/${id}", json)
-    }
-
-    override fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
-    {
-        val json = objectMapper.writeValueAsString(calibrationOptions)
-        return postJson("calibrate/submit/${runId}", json)
-    }
-
-    override fun getCalibrateStatus(id: String): ResponseEntity<String>
-    {
-        return get("calibrate/status/${id}")
-    }
-
-    override fun getCalibrateResult(id: String): ResponseEntity<String>
-    {
-        return get("calibrate/result/${id}")
     }
 
     override fun getPlottingMetadata(iso3: String): ResponseEntity<String>
@@ -156,7 +137,7 @@ class HintrFuelAPIClient(
 
     override fun getModelCalibrationOptions(): ResponseEntity<String>
     {
-        return postEmpty("calibrate/options")
+        return postEmpty("model/calibration-options")
     }
 
     override fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>

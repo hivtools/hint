@@ -33,7 +33,7 @@ describe("Model options component", () => {
 
     const mockGetters = {
         editsRequireConfirmation: () => false,
-        laterCompleteSteps: () => [{number: 4, textKey: "fitModel"}]
+        changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
     };
 
     const createStore = (props: Partial<ModelOptionsState>,

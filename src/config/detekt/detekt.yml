@@ -15,7 +15,6 @@ complexity:
     ignoreDeprecated: true
     ignorePrivate: true
     ignoreOverridden: false
-    excludes: ['**/HintrAPIClient.kt']
 
 formatting:
   NoWildcardImports:
