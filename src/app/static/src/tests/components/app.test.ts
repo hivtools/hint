@@ -39,6 +39,7 @@ console.error = jest.fn();
 // as the app will call these actions on import
 import {app} from "../../app"
 import {RootMutation} from "../../app/store/root/mutations";
+import {ModelRunMutation} from "../../app/store/modelRun/mutations";
 
 describe("App", () => {
 
@@ -136,6 +137,15 @@ describe("App", () => {
         const store = getStore(true);
         const spy = jest.spyOn(store, "commit");
         store.commit(prefixNamespace("modelOptions", ModelOptionsMutation.UnValidate));
+
+        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetOutputs);
+        expect(spy).toBeCalledTimes(2);
+    });
+
+    it("resets outputs if modelRun ClearResult mutation is called and state is ready", () => {
+        const store = getStore(true);
+        const spy = jest.spyOn(store, "commit");
+        store.commit(prefixNamespace("modelRun", ModelRunMutation.ClearResult));
 
         expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetOutputs);
         expect(spy).toBeCalledTimes(2);

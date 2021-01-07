@@ -1,6 +1,14 @@
-# hint 1.10.1
+# hint 1.10.3
 
 * More useful "No data" message on map
+
+# hint 1.10.2
+
+* fix issues with plot legend wrapping
+
+# hint 1.10.1
+
+* Trigger confirm save dialog if subsequent steps have any changes
 
 # hint 1.10.0
 
