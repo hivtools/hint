@@ -27,7 +27,6 @@
 
     interface Methods {
         tooltipContent: (tooltipValue: string) => string
-        // handleClick: (tooltipValue: string) => string
     }
 
     export default Vue.extend<{}, Methods, Computed>({
@@ -47,9 +46,6 @@
                     lng: this.currentLanguage,
                 });
             }
-            // handleClick(e){
-            //     e.preventDefault
-            // }
         }
     });
 </script>
