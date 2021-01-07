@@ -111,7 +111,7 @@ describe("Model calibrate component", () => {
         expect(wrapper.find(ErrorAlert).props("error")).toBe(error);
     });
 
-    it("renders as expected while calibrating", () => {
+    it("renders as expected while calibrating with no progress data", () => {
         const store = getStore({calibrating: true});
         const wrapper = getWrapper(store);
         expect(wrapper.find("#calibrating").find(LoadingSpinner).exists()).toBe(true);
@@ -120,6 +120,18 @@ describe("Model calibrate component", () => {
         expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(true);
         expect(wrapper.find("button").classes()).toContain("btn-secondary");
         expect(wrapper.find("button").classes()).not.toContain("btn-submit");
+    });
+
+    it("renders string progress message", () => {
+        const store = getStore({calibrating: true, status: {progress: ["Test progress"]} as any});
+        const wrapper = getWrapper(store);
+        expect(wrapper.find("#calibrating").text()).toBe("Test progress");
+    });
+
+    it("renders ProgressPhase message", () => {
+        const store = getStore({calibrating: true, status: {progress: [{name: "Test name", helpText: "Test help"}]} as any});
+        const wrapper = getWrapper(store);
+        expect(wrapper.find("#calibrating").text()).toBe("Test name: Test help");
     });
 
     it("setting options value commits update mutation", () => {
