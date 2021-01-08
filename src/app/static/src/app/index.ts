@@ -30,7 +30,7 @@ export const app = new Vue({
     methods: {
         ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
         ...mapActions({loadSurveyAndProgram: 'surveyAndProgram/getSurveyAndProgramData'}),
-        ...mapActions({loadModelRun: 'modelRun/getResult'}),
+        ...mapActions({loadModelRun: 'modelCalibrate/getResult'}),
         ...mapActions({getADRSchemas: 'getADRSchemas'}),
         ...mapActions({getCurrentProject: 'projects/getCurrentProject'}),
     },
