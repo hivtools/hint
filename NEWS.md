@@ -1,3 +1,7 @@
+# hint 1.12.1
+
+* prevent users from sharing projects with self
+
 # hint 1.12.0
 
 * adds a map reset button
