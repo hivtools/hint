@@ -1,3 +1,7 @@
+# hint 1.12.0
+
+* adds a map reset button
+
 # hint 1.11.0
 
 * Do model calibration asynchronously.

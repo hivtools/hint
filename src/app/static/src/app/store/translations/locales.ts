@@ -132,6 +132,7 @@ export interface Translations {
     required: string,
     resetLinkRequested: string,
     resetTokenInvalid: string,
+    resetView: string,
     reviewOutput: string,
     save: string,
     savePrompt: string,
@@ -304,6 +305,7 @@ const en: Translations = {
     resetLinkRequested: "Thank you. If we have an account registered for this email address, you will receive a password reset link.",
     resetTokenInvalid: "This password reset link is not valid. It may have expired or already been used.\n" +
         "Please request another link <a href=\"/password/forgot-password\">here</a>.",
+    resetView: "Reset view",
     reviewOutput: "Review output",
     save: "Save",
     savePrompt: "You may want to save your work before continuing.",
@@ -482,6 +484,7 @@ const fr: Partial<Translations> = {
     required: "obligatoire",
     resetLinkRequested: "Merci. Si un compte est enregistré pour cette adresse e-mail, vous recevrez un lien de réinitialisation du mot de passe.",
     resetTokenInvalid: "Ce lien de réinitialisation du mot de passe n'est pas valide. Il peut avoir expiré ou avoir déjà été utilisé. Veuillez cliquer <a href=\"/password/forgot-password\">ici</a> pour demander un autre lien.",
+    resetView: "Réinitialiser la vue",
     reviewOutput: "Résultat de l'examen",
     save: "Sauvegarder",
     savePrompt: "Vous devriez peut-être sauvegarder votre travail avant de poursuivre.",

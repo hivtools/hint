@@ -14,6 +14,7 @@
                     </l-geo-json>
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
+                <reset-map v-else @reset-view="updateBounds"></reset-map>
                 <map-control :initialDetail=selections.detail
                              :indicator=selections.indicatorId
                              :show-indicators="true"
@@ -33,12 +34,13 @@
 <script lang="ts">
     import Vue from "vue";
     import {Feature} from "geojson";
-    import {LGeoJson, LMap, LControl} from "vue2-leaflet";
+    import {LGeoJson, LMap} from "vue2-leaflet";
     import {GeoJSON, Layer, GeoJSONOptions} from "leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import Filters from "../Filters.vue";
     import MapEmptyFeature from "../MapEmptyFeature.vue";
+    import ResetMap from "../ResetMap.vue";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {
         ChoroplethSelections,
@@ -141,7 +143,8 @@
             MapControl,
             MapLegend,
             Filters,
-            MapEmptyFeature
+            MapEmptyFeature,
+            ResetMap
         },
         props: props,
         data(): Data {
