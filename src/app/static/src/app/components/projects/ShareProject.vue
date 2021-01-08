@@ -25,10 +25,6 @@
                              :class="{'d-none': email.valid !== false}"
                              v-translate="email.sameAsUserEmail ? 'projectsNoSelfShare' : 'emailNotRegistered'">
                         </div>
-                        <!-- <div class="small text-danger"
-                             :class="{'d-none': email.sameAsUserEmail !== true}"
-                             v-translate="'projectsNoSelfShare'">
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -90,7 +86,6 @@
     }
 
     interface Computed {
-        // currentUser: string,
         currentLanguage: Language,
         instructions: string
         invalidEmails: boolean
@@ -128,9 +123,6 @@
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
             addEmail(e: EmailToShareWith, index: number) {
-                // if (e.value === currentUser){
-                //     e.sameAsUserEmail = true
-                // } else e.sameAsUserEmail = false
                 if (e.value) {
                     if (index == this.emailsToShareWith.length - 1) {
                         // if blur event fires on the last input
@@ -157,7 +149,6 @@
                     e.valid = null;
                     this.showValidationMessage = this.invalidEmails;
                 }
-                // console.log('mouse out fired', this.emailsToShareWith)
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
@@ -199,12 +190,6 @@
                     lng: this.currentLanguage,
                 });
             },
-            // ...mapState<RootState>({
-            //     currentUser: ({currentUser}) => {
-            //         return currentUser;
-            //     }
-            // })
-            // ...mapState(["currentUser"])
         },
         components: {
             Modal,
@@ -215,9 +200,6 @@
         directives: {
             tooltip: VTooltip
         },
-        // mounted(){
-        //     console.log('this is the current user:', currentUser)
-        // },
         watch: {
             cloningProject(newVal: boolean) {
                 if (!newVal && !this.cloneProjectError) {

@@ -9,8 +9,6 @@ import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
 import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
 
-// declare const currentUser: string; 
-
 export interface versionPayload {
     version: VersionIds,
     name: string
