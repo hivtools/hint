@@ -161,43 +161,6 @@ describe("Model run actions", () => {
         });
     });
 
-    it("getResult commits result when successfully fetched, and sets default plotting selections", async () => {
-        const testResult = {
-            data: "TEST DATA",
-            plottingMetadata: {
-                barchart: {
-                    defaults: {
-                        indicator_id: "test indicator",
-                        x_axis_id: "test_x",
-                        disaggregate_by_id: "test_dis",
-                        selected_filter_options: {"test_name": "test_value"}
-                    }
-                }
-            }
-        };
-        mockAxios.onGet(`/model/result/1234`)
-            .reply(200, mockSuccess(testResult));
-
-        const commit = jest.fn();
-        const state = mockModelRunState({
-            modelRunId: "1234",
-            status: {done: true} as ModelStatusResponse,
-            result: testResult as any
-        });
-
-        await actions.getResult({commit, state, rootState} as any);
-
-        expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "plottingSelections/updateBarchartSelections",
-            payload: {
-                indicatorId: "test indicator",
-                xAxisId: "test_x",
-                disaggregateById: "test_dis",
-                selectedFilterOptions: {"test_name": "test_value"}
-            }
-        });
-    });
-
     it("getResult commits error when unsuccessful fetch", async () => {
         mockAxios.onGet(`/model/result/1234`)
             .reply(500, mockFailure("Test Error"));

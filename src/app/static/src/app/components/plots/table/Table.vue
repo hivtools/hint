@@ -153,7 +153,8 @@
                 if (this.selections.detail === 0) {
                     return [areaArray[0]]
                 } else if (!this.selections.detail) {
-                    return this.selections.selectedFilterOptions.area.map(row => row.id)
+                    const selectedAreaOptions = this.selections.selectedFilterOptions.area || [];
+                    return selectedAreaOptions.map(row => row.id)
                 } else return areaArray.filter(val => parseInt(val[4]) === this.selections.detail);
             },
             selectedAreaFilterOptions() {
