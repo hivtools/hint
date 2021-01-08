@@ -58,6 +58,7 @@
                     </l-circle-marker>
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
+                <reset-map v-else @reset-view="updateBounds"></reset-map>
                 <map-control :initialDetail=selections.detail
                              :show-indicators="false"
                              :level-labels="featureLevels"
@@ -104,6 +105,7 @@
     import SizeLegend from "./SizeLegend.vue";
     import {initialiseScaleFromMetadata} from "../choropleth/utils";
     import MapEmptyFeature from "../MapEmptyFeature.vue";
+    import ResetMap from "../ResetMap.vue";
 
 
     interface Props {
@@ -212,7 +214,8 @@
             SizeLegend,
             FilterSelect,
             Treeselect,
-            MapEmptyFeature
+            MapEmptyFeature,
+            ResetMap
         },
         props: props,
         data(): Data {

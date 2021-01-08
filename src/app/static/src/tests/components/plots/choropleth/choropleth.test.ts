@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
-import {LControl, LGeoJson} from "vue2-leaflet";
+import {LGeoJson} from "vue2-leaflet";
 import {getFeatureIndicator} from "../../../../app/components/plots/choropleth/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
@@ -11,8 +11,8 @@ import {prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import Vue from "vue";
-import {expectTranslated} from "../../../testHelpers";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
+import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -375,6 +375,24 @@ describe("Choropleth component", () => {
         };
 
         vm.updateBounds();
+        expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
+            [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
+    });
+
+    it("reset view component updates bounds of map from features geojson", () => {
+        const wrapper = getWrapper();
+        const mockMapFitBounds = jest.fn();
+
+        const vm = wrapper.vm as any;
+        vm.$refs.map = {
+            fitBounds: mockMapFitBounds
+        };
+
+        const resetButton = wrapper.find(ResetMap)
+        expect(resetButton.exists()).toBe(true)
+
+        resetButton.vm.$emit("reset-view");
+
         expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
     });
