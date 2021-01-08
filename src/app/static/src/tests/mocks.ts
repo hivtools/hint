@@ -21,7 +21,7 @@ import {
     SurveyFilters,
     SurveyResponse,
     ValidateBaselineResponse,
-    Error
+    Error, CalibrateResultResponse
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -295,6 +295,14 @@ export const mockModelStatusResponse = (props: Partial<ModelStatusResponse> = {}
 
 export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}): ModelResultResponse => {
     return {
+        id: "123",
+        complete: true,
+        ...props
+    };
+};
+
+export const mockCalibrateResultResponse = (props: Partial<CalibrateResultResponse> = {}): CalibrateResultResponse => {
+    return {
         plottingMetadata: {
             barchart: {
                 indicators: [], filters: []
@@ -318,6 +326,8 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
         ...props
     }
 };
+
+
 
 export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResponse> = {}): PlottingMetadataResponse => {
     return {

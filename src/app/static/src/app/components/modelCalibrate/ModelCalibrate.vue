@@ -7,7 +7,7 @@
         <dynamic-form ref="form"
                       v-if="!loading"
                       v-model="calibrateOptions"
-                      @submit="calibrate"
+                      @submit="submitCalibrate"
                       :required-text="requiredText"
                       :select-text="selectText"
                       :include-submit-button="false"></dynamic-form>
@@ -20,7 +20,8 @@
         </button>
         <div v-if="calibrating" id="calibrating" class="mt-3">
             <loading-spinner size="xs"></loading-spinner>
-            <span v-translate="'calibrating'"></span>
+            <span v-if="!progressMessage" v-translate="'calibrating'"></span>
+            <span v-else>{{progressMessage}}</span>
         </div>
         <error-alert v-if="hasError" :error="error"></error-alert>
         <div v-if="complete" id="calibration-complete" class="mt-3">
@@ -48,7 +49,7 @@
 
     interface Methods {
         fetchOptions: () => void
-        calibrate: (data: DynamicFormData) => void
+        submitCalibrate: (data: DynamicFormData) => void
         update: (data: DynamicFormMeta) => void
         submitForm: (e: Event) => void
     }
@@ -63,7 +64,8 @@
         requiredText: string,
         submitText: string,
         hasError: boolean,
-        error: Error
+        error: Error,
+        progressMessage: string
     }
 
     interface Data {
@@ -83,7 +85,15 @@
             ...mapStateProps<ModelCalibrateState, keyof Computed>(namespace, {
                 loading: s => s.fetching,
                 calibrating: s => s.calibrating,
-                error: s => s.error
+                error: s => s.error,
+                progressMessage: s => {
+                    if (s.status && s.status.progress && s.status.progress.length > 0) {
+                        const p = s.status.progress[0]; //This may be either a string or ProgressPhase
+                        return (typeof p =="string") ? p : `${p.name}: ${p.helpText}`
+                    } else {
+                        return null;
+                    }
+                }
             }),
             currentLanguage: mapStateProp<RootState, Language>(null, (state: RootState) => state.language),
             selectText() {
@@ -110,7 +120,7 @@
         },
         methods: {
             update: mapMutationByName(namespace, ModelCalibrateMutation.Update),
-            calibrate: mapActionByName(namespace,"calibrate"),
+            submitCalibrate: mapActionByName(namespace,"submit"),
             fetchOptions: mapActionByName(namespace, "fetchModelCalibrateOptions"),
             submitForm() {
                 (this.$refs.form as any).submit()

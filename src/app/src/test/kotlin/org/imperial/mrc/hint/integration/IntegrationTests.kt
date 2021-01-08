@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.helpers.AuthInterceptor
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.helpers.getTestEntity
-import org.imperial.mrc.hint.models.ModelRunOptions
+import org.imperial.mrc.hint.models.ModelOptions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -53,7 +53,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
         val version = parser.treeToValue<Map<String, String>>(versionJson)
 
-        val modelRunOptions = ModelRunOptions(emptyMap(), version)
+        val modelRunOptions = ModelOptions(emptyMap(), version)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val jsonString = ObjectMapper().writeValueAsString(modelRunOptions)
@@ -63,7 +63,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     protected fun getValidationOptions(): HttpEntity<String>
     {
         uploadMinimalFiles()
-        val modelRunOptions = ModelRunOptions(getMockOptions(), emptyMap())
+        val modelRunOptions = ModelOptions(getMockOptions(), emptyMap())
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON

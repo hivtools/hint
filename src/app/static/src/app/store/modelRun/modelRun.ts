@@ -3,14 +3,14 @@ import {ReadyState, RootState} from "../../root";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
-import {ModelResultResponse, ModelStatusResponse, Error} from "../../generated";
+import {ModelResultResponse, ModelStatusResponse, Error, CalibrateResultResponse} from "../../generated";
 
 export interface ModelRunState extends ReadyState {
     modelRunId: string
     statusPollId: number,
     status: ModelStatusResponse
     errors: Error[],
-    result: ModelResultResponse | null
+    result: CalibrateResultResponse | ModelResultResponse | null
     pollingCounter: number
 }
 

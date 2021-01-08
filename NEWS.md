@@ -1,3 +1,7 @@
+# hint 1.11.0
+
+* Do model calibration asynchronously.
+
 # hint 1.10.3
 
 * More useful "No data" message on map
