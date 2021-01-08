@@ -15,8 +15,7 @@ import {expectTranslated} from "../../testHelpers";
 describe("Manage file component", () => {
 
     const mockGetters = {
-        editsRequireConfirmation: () => false,
-        laterCompleteSteps: () => [{number: 4, text: "Run model"}]
+        editsRequireConfirmation: () => false
     };
 
     const createStore = () => {

@@ -2,8 +2,7 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
-    mockBaselineState,
-    mockModelResultResponse,
+    mockBaselineState, mockCalibrateResultResponse,
     mockModelRunState, mockShapeResponse,
 } from "../../mocks";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
@@ -40,7 +39,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
             modelRun: {
                 namespaced: true,
                 state: mockModelRunState({
-                    result: mockModelResultResponse({data: ["TEST DATA"] as any})
+                    result: mockCalibrateResultResponse({data: ["TEST DATA"] as any})
                 })
             },
             modelOutput: {

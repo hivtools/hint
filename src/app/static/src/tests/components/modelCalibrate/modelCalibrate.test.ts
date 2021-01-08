@@ -13,7 +13,7 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {ModelCalibrateMutation} from "../../../app/store/modelCalibrate/mutations";
 
 describe("Model calibrate component", () => {
-    const getStore = (state: Partial<ModelCalibrateState> = {}, fetchAction = jest.fn(), calibrateAction = jest.fn(),
+    const getStore = (state: Partial<ModelCalibrateState> = {}, fetchAction = jest.fn(), submitAction = jest.fn(),
                       updateMutation = jest.fn()) => {
         const store = new Vuex.Store({
             state: mockRootState(),
@@ -23,7 +23,7 @@ describe("Model calibrate component", () => {
                     state: mockModelCalibrateState(state),
                     actions: {
                         fetchModelCalibrateOptions: fetchAction,
-                        calibrate: calibrateAction
+                        submit: submitAction
                     },
                     mutations: {
                         [ModelCalibrateMutation.Update]: updateMutation
@@ -111,7 +111,7 @@ describe("Model calibrate component", () => {
         expect(wrapper.find(ErrorAlert).props("error")).toBe(error);
     });
 
-    it("renders as expected while calibrating", () => {
+    it("renders as expected while calibrating with no progress data", () => {
         const store = getStore({calibrating: true});
         const wrapper = getWrapper(store);
         expect(wrapper.find("#calibrating").find(LoadingSpinner).exists()).toBe(true);
@@ -120,6 +120,18 @@ describe("Model calibrate component", () => {
         expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(true);
         expect(wrapper.find("button").classes()).toContain("btn-secondary");
         expect(wrapper.find("button").classes()).not.toContain("btn-submit");
+    });
+
+    it("renders string progress message", () => {
+        const store = getStore({calibrating: true, status: {progress: ["Test progress"]} as any});
+        const wrapper = getWrapper(store);
+        expect(wrapper.find("#calibrating").text()).toBe("Test progress");
+    });
+
+    it("renders ProgressPhase message", () => {
+        const store = getStore({calibrating: true, status: {progress: [{name: "Test name", helpText: "Test help"}]} as any});
+        const wrapper = getWrapper(store);
+        expect(wrapper.find("#calibrating").text()).toBe("Test name: Test help");
     });
 
     it("setting options value commits update mutation", () => {
@@ -133,12 +145,12 @@ describe("Model calibrate component", () => {
         expect(newFormData.controlSections[0].controlGroups[0].controls[0].value).toBe(6);
     });
 
-    it("clicking Calibrate button invokes calibrate action", () => {
-        const mockCalibrate = jest.fn();
-        const store = getStore({optionsFormMeta: mockOptionsFormMeta}, jest.fn(), mockCalibrate);
+    it("clicking Calibrate button invokes submit calibrate action", () => {
+        const mockSubmit = jest.fn();
+        const store = getStore({optionsFormMeta: mockOptionsFormMeta}, jest.fn(), mockSubmit);
         const wrapper = mount(ModelCalibrate, {store});
         wrapper.find("button").trigger("click");
-        expect(mockCalibrate.mock.calls.length).toBe(1);
+        expect(mockSubmit.mock.calls.length).toBe(1);
 
     });
 });

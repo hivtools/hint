@@ -1,5 +1,6 @@
 import {createLocalVue, mount, shallowMount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
+import Vue from 'vue';
 import {
     mockAxios,
     mockError,
@@ -12,6 +13,8 @@ import {
 import {actions} from "../../../app/store/modelRun/actions";
 import {mutations} from "../../../app/store/modelRun/mutations";
 import {modelRunGetters, ModelRunState} from "../../../app/store/modelRun/modelRun";
+import {getters as stepperGetters} from "../../../app/store/stepper/getters";
+import {getters as rootGetters} from "../../../app/store/root/getters";
 import {emptyState, RootState} from "../../../app/root";
 import ModelRun from "../../../app/components/modelRun/ModelRun.vue";
 import Modal from "../../../app/components/Modal.vue";
@@ -22,14 +25,16 @@ import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
+import {actions as rootActions} from "../../../app/store/root/actions";
 
 const localVue = createLocalVue();
 
 describe("Model run component", () => {
 
-    const createStore = (state: Partial<ModelRunState> = {}, testActions: any = actions): Store<RootState> => {
+    const createStore = (state: Partial<ModelRunState> = {}, testActions: any = actions, sGetters = stepperGetters): Store<RootState> => {
         const store = new Vuex.Store({
             state: emptyState(),
+            getters: rootGetters,
             modules: {
                 modelRun: {
                     namespaced: true,
@@ -40,6 +45,19 @@ describe("Model run component", () => {
                 },
                 modelOptions: {
                     state: mockModelOptionsState()
+                },
+                stepper: {
+                    getters: sGetters,
+                    namespaced: true,
+                    state: {
+                        steps: []
+                    }
+                },
+                projects: {
+                    namespaced: true
+                },
+                errors: {
+                    namespaced: true
                 }
             }
         });
@@ -90,6 +108,25 @@ describe("Model run component", () => {
                 expect(wrapper.find(Modal).props().open).toBe(false);
                 done();
             }, 2500);
+        });
+    });
+
+    it("does not immediately run model if edits require confirmation", (done) => {
+
+        const store = createStore({}, {}, {...stepperGetters, editsRequireConfirmation: () => true});
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        const button = wrapper.find("button");
+        expect(button.text()).toBe("Fit model");
+        button.trigger("click");
+
+        setTimeout(() => {
+            expect(wrapper.vm.$data.showReRunConfirmation).toStrictEqual(true);
+            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
+            expect(store.state.modelRun.status).toStrictEqual({});
+            expect(store.state.modelRun.modelRunId).toBe("");
+            expect(store.state.modelRun.statusPollId).toBe(-1);
+            expect(wrapper.find(Modal).props().open).toBe(false);
+            done();
         });
     });
 
@@ -306,6 +343,20 @@ describe("Model run component", () => {
             expect(store.state.modelRun.status).toStrictEqual({});
             done();
         });
+    });
+
+    it("confirmReRun clears and re-runs model and hides dialog", async () => {
+        const mockRun = jest.fn();
+        const store = createStore({result: ["TEST RESULT"] as any},  {run: mockRun});
+        const wrapper = shallowMount(ModelRun, {store, localVue});
+        wrapper.setData({showReRunConfirmation: true});
+
+        (wrapper.vm as any).confirmReRun();
+        await Vue.nextTick();
+
+        expect(store.state.modelRun.result).toBe(null);
+        expect(mockRun.mock.calls.length).toBe(1);
+        expect(wrapper.vm.$data.showReRunConfirmation).toBe(false);
     });
 
 });
