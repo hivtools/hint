@@ -29,7 +29,7 @@
         tooltipContent: (tooltipValue: string) => string
     }
 
-    export default Vue.extend<{}, Methods, Computed>({
+    export default Vue.extend<unknown, Methods, Computed>({
         components: {
             RefreshCwIcon,
             LControl
