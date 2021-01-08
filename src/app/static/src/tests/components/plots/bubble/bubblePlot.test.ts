@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
-import {LCircleMarker, LGeoJson, LTooltip, LControl} from "vue2-leaflet";
+import {LCircleMarker, LGeoJson, LTooltip} from "vue2-leaflet";
 import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
 import {getColor} from "../../../../app/components/plots/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
@@ -15,11 +15,11 @@ import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {expectFilter, plhiv, prev, testData} from "../testHelpers"
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
-import {Language} from "../../../../app/store/translations/locales";
+import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
-    state: {language: Language.en}
+    state: emptyState()
 });
 registerTranslations(store);
 
@@ -55,7 +55,7 @@ const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
 const getWrapper = (customPropsData: any = {}) => {
 
-    return shallowMount(BubblePlot, {store, propsData: {...propsData, ...customPropsData}, localVue});
+    return shallowMount(BubblePlot, {propsData: {...propsData, ...customPropsData}, localVue});
 };
 
 export const expectIndicatorSelect = (wrapper: Wrapper<Vue>, divId: string, value: string) => {
@@ -568,13 +568,11 @@ describe("BubblePlot component", () => {
         vm.$refs.map = {
             fitBounds: mockMapFitBounds
         };
-        const button = wrapper.find(LControl).find('div').find('a')
-        expect(button.attributes("aria-label")).toBe("Reset view");
-        expect(button.attributes("title")).toBe("Reset view");
-        vm.$store.state.language = Language.fr
-        expect(button.attributes("aria-label")).toBe("Réinitialiser la vue");
-        expect(button.attributes("title")).toBe("Réinitialiser la vue");
-        button.trigger("click")
+
+        const resetButton = wrapper.find(ResetMap)
+        expect(resetButton.exists()).toBe(true)
+
+        resetButton.vm.$emit("reset-view");
         
         expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);

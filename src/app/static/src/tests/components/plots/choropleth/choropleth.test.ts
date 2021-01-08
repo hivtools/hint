@@ -1,6 +1,6 @@
-import {createLocalVue, shallowMount, mount} from "@vue/test-utils";
+import {createLocalVue, shallowMount} from "@vue/test-utils";
 import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
-import {LControl, LGeoJson} from "vue2-leaflet";
+import {LGeoJson} from "vue2-leaflet";
 import {getFeatureIndicator} from "../../../../app/components/plots/choropleth/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
@@ -11,13 +11,12 @@ import {prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import Vue from "vue";
-import {expectTranslated} from "../../../testHelpers";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
-import {Language} from "../../../../app/store/translations/locales";
+import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
-    state: {language: Language.en}
+    state: emptyState()
 });
 registerTranslations(store);
 
@@ -45,7 +44,7 @@ const propsData = {
 const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
 const getWrapper = (customPropsData: any = {}) => {
-    return shallowMount(Choropleth, {store, propsData: {...propsData, ...customPropsData}, localVue});
+    return shallowMount(Choropleth, {propsData: {...propsData, ...customPropsData}, localVue});
 };
 
 describe("Choropleth component", () => {
@@ -380,7 +379,7 @@ describe("Choropleth component", () => {
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
     });
 
-    it("clicking reset view button updates bounds of map from features geojson", () => {
+    it("reset view component updates bounds of map from features geojson", () => {
         const wrapper = getWrapper();
         const mockMapFitBounds = jest.fn();
 
@@ -389,13 +388,10 @@ describe("Choropleth component", () => {
             fitBounds: mockMapFitBounds
         };
 
-        const button = wrapper.find(LControl).find('div').find('a')
-        expect(button.attributes("aria-label")).toBe("Reset view");
-        expect(button.attributes("title")).toBe("Reset view");
-        vm.$store.state.language = Language.fr
-        expect(button.attributes("aria-label")).toBe("Réinitialiser la vue");
-        expect(button.attributes("title")).toBe("Réinitialiser la vue");
-        button.trigger("click")
+        const resetButton = wrapper.find(ResetMap)
+        expect(resetButton.exists()).toBe(true)
+
+        resetButton.vm.$emit("reset-view");
 
         expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);

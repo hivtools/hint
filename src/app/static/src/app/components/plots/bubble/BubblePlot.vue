@@ -58,17 +58,7 @@
                     </l-circle-marker>
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
-                <l-control position="topleft" v-else>
-                    <div class="leaflet-control-zoom leaflet-bar">
-                        <a @click="updateBounds()" 
-                            class="leaflet-control-zoom-in" 
-                            href="#" :title="tooltipContent('resetView')" 
-                            role="button" 
-                            :aria-label="tooltipContent('resetView')">
-                            <refresh-cw-icon size="20"></refresh-cw-icon>
-                        </a>
-                    </div>  
-                </l-control>
+                <reset-map v-else @reset-view="updateBounds"></reset-map>
                 <map-control :initialDetail=selections.detail
                              :show-indicators="false"
                              :level-labels="featureLevels"
@@ -96,7 +86,7 @@
     import Vue from "vue";
     import Treeselect from '@riophae/vue-treeselect';
     import {Feature} from "geojson";
-    import {LCircleMarker, LGeoJson, LMap, LTooltip, LControl} from "vue2-leaflet";
+    import {LCircleMarker, LGeoJson, LMap, LTooltip} from "vue2-leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import FilterSelect from "../FilterSelect.vue";
@@ -111,14 +101,11 @@
     import {getFeatureIndicators} from "./utils";
     import {getIndicatorRange, toIndicatorNameLookup, formatOutput} from "../utils";
     import {BubbleIndicatorValuesDict, Dict, Filter, LevelLabel, NumericRange} from "../../../types";
-    import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
+    import {flattenOptions, flattenToIdSet} from "../../../utils";
     import SizeLegend from "./SizeLegend.vue";
     import {initialiseScaleFromMetadata} from "../choropleth/utils";
     import MapEmptyFeature from "../MapEmptyFeature.vue";
-    import {RootState} from "../../../root";
-    import {RefreshCwIcon} from "vue-feather-icons";
-    import i18next from "i18next";
-    import {Language} from "../../../store/translations/locales";
+    import ResetMap from "../ResetMap.vue";
 
 
     interface Props {
@@ -156,12 +143,10 @@
         normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any,
         updateColourScale: (scale: ScaleSettings) => void,
         updateSizeScale: (scale: ScaleSettings) => void,
-        getRange: (indicator: ChoroplethIndicatorMetadata, scale: ScaleSettings) => NumericRange,
-        tooltipContent: (tooltipValue: string) => string
+        getRange: (indicator: ChoroplethIndicatorMetadata, scale: ScaleSettings) => NumericRange
     }
 
     interface Computed {
-        currentLanguage: Language,
         initialised: boolean,
         currentLevelFeatureIds: string[],
         featureIndicators: BubbleIndicatorValuesDict,
@@ -220,18 +205,17 @@
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "BubblePlot",
         components: {
-            RefreshCwIcon,
             LMap,
             LGeoJson,
             LCircleMarker,
             LTooltip,
-            LControl,
             MapControl,
             MapLegend,
             SizeLegend,
             FilterSelect,
             Treeselect,
-            MapEmptyFeature
+            MapEmptyFeature,
+            ResetMap
         },
         props: props,
         data(): Data {
@@ -245,10 +229,6 @@
             }
         },
         computed: {
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
             initialised() {
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
@@ -379,11 +359,6 @@
             }
         },
         methods: {
-            tooltipContent(tooltipValue: string) {
-                return i18next.t(tooltipValue, {
-                    lng: this.currentLanguage,
-                });
-            },
             updateBounds: function () {
                 if (this.initialised) {
                     const map = this.$refs.map as LMap;
