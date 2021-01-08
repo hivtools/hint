@@ -22,15 +22,13 @@
                     </div>
                     <div class="col">
                         <div class="small text-danger"
-                             :class="{'d-none': email.valid !== false || email.sameAsUserEmail === true}"
-                             v-translate="'emailNotRegistered'">
+                             :class="{'d-none': email.valid !== false}"
+                             v-translate="email.sameAsUserEmail ? 'projectsNoSelfShare' : 'emailNotRegistered'">
                         </div>
-                        <div class="small text-danger"
+                        <!-- <div class="small text-danger"
                              :class="{'d-none': email.sameAsUserEmail !== true}"
-                             >
-                             <!-- v-translate="'emailNotRegistered'"> -->
-                             You cannot share with yourself
-                        </div>
+                             v-translate="'projectsNoSelfShare'">
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -78,7 +76,7 @@
     interface EmailToShareWith {
         value: string
         valid: boolean | null
-        sameAsUserEmail?: boolean | null
+        sameAsUserEmail: boolean | null
     }
 
     interface Data {
@@ -121,7 +119,7 @@
         },
         data() {
             return {
-                emailsToShareWith: [{value: "", valid: null}],
+                emailsToShareWith: [{value: "", valid: null, sameAsUserEmail: null}],
                 open: false,
                 showValidationMessage: false
             }
@@ -139,7 +137,8 @@
                         // add another input below it
                         this.emailsToShareWith.push({
                             value: "",
-                            valid: null
+                            valid: null,
+                            sameAsUserEmail: null
                         });
                     }
                     if (e.value !== currentUser){
@@ -150,7 +149,7 @@
                             this.showValidationMessage = this.invalidEmails;
                         })
                     } else {
-                        // this.emailsToShareWith[index].valid = false;
+                        this.emailsToShareWith[index].valid = false;
                         this.emailsToShareWith[index].sameAsUserEmail = true;
                         this.showValidationMessage = this.invalidEmails;
                     }
@@ -158,6 +157,7 @@
                     e.valid = null;
                     this.showValidationMessage = this.invalidEmails;
                 }
+                console.log('mouse out fired', this.emailsToShareWith)
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
@@ -180,7 +180,7 @@
                 }
             },
             cancelShareProject() {
-                this.emailsToShareWith = [{value: "", valid: null}];
+                this.emailsToShareWith = [{value: "", valid: null, sameAsUserEmail: null}];
                 this.open = false;
             }
         },
@@ -192,7 +192,7 @@
                 return i18next.t('shareProjectInstructions', {project: this.project.name, lng: this.currentLanguage});
             },
             invalidEmails() {
-                return this.emailsToShareWith.filter(e => e.value && (!e.valid || e.sameAsUserEmail)).length > 0
+                return this.emailsToShareWith.filter(e => e.value && !e.valid).length > 0
             },
             tooltipShare() {
                 return i18next.t("share", {
@@ -221,7 +221,7 @@
         watch: {
             cloningProject(newVal: boolean) {
                 if (!newVal && !this.cloneProjectError) {
-                    this.emailsToShareWith = [{value: "", valid: null}];
+                    this.emailsToShareWith = [{value: "", valid: null, sameAsUserEmail: null}];
                     this.open = false;
                 }
             }
