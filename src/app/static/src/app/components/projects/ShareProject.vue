@@ -157,7 +157,7 @@
                     e.valid = null;
                     this.showValidationMessage = this.invalidEmails;
                 }
-                console.log('mouse out fired', this.emailsToShareWith)
+                // console.log('mouse out fired', this.emailsToShareWith)
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
@@ -215,9 +215,9 @@
         directives: {
             tooltip: VTooltip
         },
-        mounted(){
-            console.log('this is the current user:', currentUser)
-        },
+        // mounted(){
+        //     console.log('this is the current user:', currentUser)
+        // },
         watch: {
             cloningProject(newVal: boolean) {
                 if (!newVal && !this.cloneProjectError) {
