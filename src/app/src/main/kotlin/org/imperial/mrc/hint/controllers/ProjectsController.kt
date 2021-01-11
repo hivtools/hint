@@ -6,7 +6,6 @@ import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Session
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -42,7 +41,7 @@ class ProjectsController(private val session: Session,
         val userIds = emails.map { userLogic.getUser(it)?.id ?: throw UserException("userDoesNotExist") }
         val currentProject = projectRepository.getProject(projectId, userId())
         userIds.forEach {
-            val newProjectId = projectRepository.saveNewProject(it, currentProject.name)
+            val newProjectId = projectRepository.saveClonedProject(it, currentProject.name, userId())
             currentProject.versions.forEach {
                 versionRepository.cloneVersion(it.id, session.generateVersionId(), newProjectId)
             }
