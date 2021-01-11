@@ -10,7 +10,6 @@ import {
 import {actions} from "../../app/store/modelCalibrate/actions";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {freezer} from "../../app/utils";
-import {ModelStatusResponse} from "../../app/generated";
 
 const rootState = mockRootState();
 describe("ModelCalibrate actions", () => {
@@ -173,12 +172,16 @@ describe("ModelCalibrate actions", () => {
 
         const commit = jest.fn();
         const state = mockModelCalibrateState({
-            calibrateId: "1234"
+            calibrateId: "1234",
+            status: {
+                success: true,
+                done: true
+            } as any
         });
 
         await actions.getResult({commit, state, rootState} as any);
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type:"modelRun/RunResultFetched",
             payload: testResult
@@ -193,6 +196,7 @@ describe("ModelCalibrate actions", () => {
             }
         });
         expect(commit.mock.calls[2][0]).toBe("Calibrated");
+        expect(commit.mock.calls[3][0]).toBe("Ready");
     });
 
     it("getResult commits error when unsuccessful fetch", async () => {
@@ -201,16 +205,62 @@ describe("ModelCalibrate actions", () => {
 
         const commit = jest.fn();
         const state = mockModelCalibrateState({
-            calibrateId: "1234"
+            calibrateId: "1234",
+            status: {
+                success: true,
+                done: true
+            } as any
         });
 
         await actions.getResult({commit, state, rootState} as any);
 
-        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "SetError",
             payload: mockError("Test Error")
         });
+        expect(commit.mock.calls[1][0]).toBe("Ready");
     });
 
+    it("getResult does not fetch when status is not done and success is not true", async () => {
+        mockAxios.onGet(`/model/calibrate/result/1234`)
+            .reply(200, mockSuccess("Test result"));
+
+        const commit = jest.fn();
+        const state = mockModelCalibrateState({
+            calibrateId: "1234",
+            status: {
+                success: false,
+                done: false
+            } as any
+        });
+
+        await actions.getResult({commit, state, rootState} as any);
+
+        expect(mockAxios.history.get.length).toBe(0);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]).toBe("Ready");
+    });
+
+    it("getResult does not fetch when status is done and success is not true", async () => {
+        mockAxios.onGet(`/model/calibrate/result/1234`)
+            .reply(200, mockSuccess("Test result"));
+
+        const commit = jest.fn();
+        const state = mockModelCalibrateState({
+            calibrateId: "1234",
+            status: {
+                success: false,
+                done: true
+            } as any
+        });
+
+        await actions.getResult({commit, state, rootState} as any);
+
+        expect(mockAxios.history.get.length).toBe(0);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]).toBe("Ready");
+    });
 });

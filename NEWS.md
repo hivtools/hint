@@ -1,3 +1,7 @@
+# hint 1.12.1
+
+* fix reload project post-calibrate
+
 # hint 1.12.0
 
 * adds a map reset button

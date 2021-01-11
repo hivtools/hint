@@ -45,7 +45,7 @@ describe("Root mutations", () => {
             modelOptions: mockModelOptionsState({valid: true}),
             modelOutput: mockModelOutputState({selectedTab: "Barchart"}),
             modelRun: mockModelRunState({modelRunId: "123", ready: true}),
-            modelCalibrate: mockModelCalibrateState({complete: true}),
+            modelCalibrate: mockModelCalibrateState({complete: true, ready: true}),
             plottingSelections: mockPlottingSelections({barchart: {indicatorId: "Test Indicator"} as BarchartSelections}),
             stepper: mockStepperState({activeStep: 7}),
             load: mockLoadState({loadError: mockError("Test Load Error")}),
@@ -65,6 +65,7 @@ describe("Root mutations", () => {
         expect(state.modelRun).toStrictEqual(modules.includes("modelRun") ? popState.modelRun : mockModelRunState({ready: true}));
 
         //These modules are always reset
+        expect(state.modelCalibrate).toStrictEqual({...initialModelCalibrateState(), ready: true});
         expect(state.modelOutput).toStrictEqual(initialModelOutputState());
         expect(state.plottingSelections).toStrictEqual(initialPlottingSelectionsState());
         expect(state.load).toStrictEqual(initialLoadState());
@@ -224,7 +225,7 @@ describe("Root mutations", () => {
         expect(state.plottingSelections.sapChoropleth.detail).toBe(2);
         expect(state.plottingSelections.colourScales.anc.testIndicator.type).toBe(ScaleType.Custom);
 
-        expect(state.modelCalibrate).toStrictEqual(initialModelCalibrateState())
+        expect(state.modelCalibrate).toStrictEqual({...initialModelCalibrateState(), ready: true})
     });
 
     it("can change language", () => {
@@ -262,6 +263,7 @@ describe("Root mutations", () => {
         expect(state.baseline.ready).toBe(true);
         expect(state.surveyAndProgram.ready).toBe(true);
         expect(state.modelRun.ready).toBe(true);
+        expect(state.modelCalibrate.ready).toBe(true);
 
         expect(mockRouterPush.mock.calls.length).toBe(1);
         expect(mockRouterPush.mock.calls[0][0]).toBe("/");
