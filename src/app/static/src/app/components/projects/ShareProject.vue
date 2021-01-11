@@ -23,7 +23,7 @@
                     <div class="col">
                         <div class="small text-danger"
                              :class="{'d-none': email.valid !== false}"
-                             v-translate="email.sameAsUserEmail ? 'projectsNoSelfShare' : 'emailNotRegistered'">
+                             v-translate="email.validationMessage">
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
     interface EmailToShareWith {
         value: string
         valid: boolean | null
-        sameAsUserEmail: boolean | null
+        validationMessage: string
     }
 
     interface Data {
@@ -114,7 +114,7 @@
         },
         data() {
             return {
-                emailsToShareWith: [{value: "", valid: null, sameAsUserEmail: null}],
+                emailsToShareWith: [{value: "", valid: null, validationMessage: "blank"}],
                 open: false,
                 showValidationMessage: false
             }
@@ -130,25 +130,33 @@
                         this.emailsToShareWith.push({
                             value: "",
                             valid: null,
-                            sameAsUserEmail: null
+                            validationMessage: "blank"
                         });
                     }
-                    if (e.value !== currentUser){
+                    const duplicateEmails = this.emailsToShareWith.filter(v => v.value === e.value).length > 1
+                    console.log('duplicateEmails', duplicateEmails)
+                    if (e.value !== currentUser && !duplicateEmails){
                     this.userExists(e.value)
                         .then((result: boolean) => {
                             this.emailsToShareWith[index].valid = result;
-                            this.emailsToShareWith[index].sameAsUserEmail = false;
-                            this.showValidationMessage = this.invalidEmails;
+                            this.emailsToShareWith[index].validationMessage = "emailNotRegistered";
+                            // this.showValidationMessage = this.invalidEmails;
                         })
-                    } else {
+                    } else if (e.value === currentUser) {
                         this.emailsToShareWith[index].valid = false;
-                        this.emailsToShareWith[index].sameAsUserEmail = true;
-                        this.showValidationMessage = this.invalidEmails;
+                        this.emailsToShareWith[index].validationMessage = "projectsNoSelfShare";
+                        // this.showValidationMessage = this.invalidEmails;
+                    } else {
+                        console.log('this code is reached')
+                        this.emailsToShareWith[index].valid = false;
+                        this.emailsToShareWith[index].validationMessage = "duplicateEmails";
+                        // this.showValidationMessage = this.invalidEmails;
                     }
                 } else {
                     e.valid = null;
-                    this.showValidationMessage = this.invalidEmails;
+                    // this.showValidationMessage = this.invalidEmails;
                 }
+                this.showValidationMessage = this.invalidEmails;
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
@@ -171,7 +179,7 @@
                 }
             },
             cancelShareProject() {
-                this.emailsToShareWith = [{value: "", valid: null, sameAsUserEmail: null}];
+                this.emailsToShareWith = [{value: "", valid: null, validationMessage: "blank"}];
                 this.open = false;
             }
         },
@@ -203,7 +211,7 @@
         watch: {
             cloningProject(newVal: boolean) {
                 if (!newVal && !this.cloneProjectError) {
-                    this.emailsToShareWith = [{value: "", valid: null, sameAsUserEmail: null}];
+                    this.emailsToShareWith = [{value: "", valid: null, validationMessage: "blank"}];
                     this.open = false;
                 }
             }
