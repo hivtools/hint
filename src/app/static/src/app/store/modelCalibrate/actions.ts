@@ -7,7 +7,6 @@ import {ModelCalibrateMutation} from "./mutations";
 import {ModelRunMutation} from "../modelRun/mutations";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {freezer} from "../../utils";
-import {ModelRunState} from "../modelRun/modelRun";
 
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
@@ -61,32 +60,35 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const {commit, state} = context;
         const calibrateId = state.calibrateId;
 
-        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
-            .ignoreSuccess()
-            .withError(ModelCalibrateMutation.SetError)
-            .freezeResponse()
-            .get<ModelResultResponse>(`model/calibrate/result/${calibrateId}`);
+        if (state.status.done && state.status.success) {
+            const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+                .ignoreSuccess()
+                .withError(ModelCalibrateMutation.SetError)
+                .freezeResponse()
+                .get<ModelResultResponse>(`model/calibrate/result/${calibrateId}`);
 
-        if (response) {
-            const data = freezer.deepFreeze(response.data);
-            commit({type: `modelRun/${ModelRunMutation.RunResultFetched}`, payload: data}, {root: true});
+            if (response) {
+                const data = freezer.deepFreeze(response.data);
+                commit({type: `modelRun/${ModelRunMutation.RunResultFetched}`, payload: data}, {root: true});
 
-            if (data && data.plottingMetadata && data.plottingMetadata.barchart.defaults) {
-                const defaults = data.plottingMetadata.barchart.defaults;
-                commit({
-                        type: "plottingSelections/updateBarchartSelections",
-                        payload: {
-                            indicatorId: defaults.indicator_id,
-                            xAxisId: defaults.x_axis_id,
-                            disaggregateById: defaults.disaggregate_by_id,
-                            selectedFilterOptions: {...defaults.selected_filter_options}
-                        }
-                    },
-                    {root: true});
+                if (data && data.plottingMetadata && data.plottingMetadata.barchart.defaults) {
+                    const defaults = data.plottingMetadata.barchart.defaults;
+                    commit({
+                            type: "plottingSelections/updateBarchartSelections",
+                            payload: {
+                                indicatorId: defaults.indicator_id,
+                                xAxisId: defaults.x_axis_id,
+                                disaggregateById: defaults.disaggregate_by_id,
+                                selectedFilterOptions: {...defaults.selected_filter_options}
+                            }
+                        },
+                        {root: true});
+                }
+
+                commit(ModelCalibrateMutation.Calibrated);
             }
-
-            commit(ModelCalibrateMutation.Calibrated);
         }
+        commit(ModelCalibrateMutation.Ready);
     }
 };
 

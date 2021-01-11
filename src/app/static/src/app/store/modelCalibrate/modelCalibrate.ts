@@ -1,12 +1,12 @@
 import {Module} from "vuex";
-import {RootState} from "../../root";
+import {ReadyState, RootState} from "../../root";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
 import {actions} from "./actions";
 import {VersionInfo, Error, CalibrateStatusResponse} from "../../generated";
 
-export interface ModelCalibrateState {
+export interface ModelCalibrateState extends ReadyState {
     optionsFormMeta: DynamicFormMeta
     options: DynamicFormData
     fetching: boolean
@@ -21,6 +21,7 @@ export interface ModelCalibrateState {
 
 export const initialModelCalibrateState = (): ModelCalibrateState => {
     return {
+        ready: false,
         optionsFormMeta: {controlSections: []},
         options: {},
         fetching: false,
@@ -40,7 +41,7 @@ const existingState = localStorageManager.getState();
 
 export const modelCalibrate: Module<ModelCalibrateState, RootState> = {
     namespaced,
-    state: {...initialModelCalibrateState(), ...existingState && existingState.modelCalibrate},
+    state: {...initialModelCalibrateState(), ...existingState && existingState.modelCalibrate, ready: false},
     mutations,
     actions
 };

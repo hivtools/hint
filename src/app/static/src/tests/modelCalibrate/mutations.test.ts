@@ -12,6 +12,13 @@ describe("ModelCalibrate mutations", () => {
         expectAllMutationsDefined(ModelCalibrateMutation, mutations);
     });
 
+    it("sets Ready", () => {
+        const state = mockModelCalibrateState();
+        expect(state.ready).toBe(false);
+        mutations[ModelCalibrateMutation.Ready](state);
+        expect(state.ready).toBe(true);
+    });
+
     it("FetchingModelCalibrateOptions sets fetching to true", () => {
         const state = mockModelCalibrateState();
         mutations[ModelCalibrateMutation.FetchingModelCalibrateOptions](state);
