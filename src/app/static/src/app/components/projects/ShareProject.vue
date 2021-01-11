@@ -16,7 +16,7 @@
                                @keyup.delete="removeEmail(email, index)"
                                class="form-control"
                                :class="{'is-invalid': email.valid === false}"
-                               @blur="() => addEmail(email, index)"
+                               @blur="() => addEmail()"
                                @mouseout="$event.target.blur()"
                                v-model="email.value"/>
                     </div>
@@ -95,7 +95,7 @@
     }
 
     interface Methods {
-        addEmail: (email: EmailToShareWith, index: number) => void
+        addEmail: () => void
         removeEmail: (email: EmailToShareWith, index: number) => void
         shareProject: (e: Event) => void
         confirmShareProject: () => void
@@ -122,40 +122,44 @@
         methods: {
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
-            addEmail(e: EmailToShareWith, index: number) {
-                if (e.value) {
-                    if (index == this.emailsToShareWith.length - 1) {
-                        // if blur event fires on the last input
-                        // add another input below it
-                        this.emailsToShareWith.push({
-                            value: "",
-                            valid: null,
-                            validationMessage: "blank"
-                        });
-                    }
-                    const duplicateEmails = this.emailsToShareWith.filter(v => v.value === e.value).length > 1
-                    console.log('duplicateEmails', duplicateEmails)
-                    if (e.value !== currentUser && !duplicateEmails){
-                    this.userExists(e.value)
-                        .then((result: boolean) => {
-                            this.emailsToShareWith[index].valid = result;
-                            this.emailsToShareWith[index].validationMessage = "emailNotRegistered";
+            addEmail() {
+                // Because the validation of duplicate emails is dependent on changes to other emails,
+                // validation must be run over the entire list every time a change is made to any
+                this.emailsToShareWith.map((email: EmailToShareWith, index: number) => {
+                    if (email.value) {
+                        if (index == this.emailsToShareWith.length - 1) {
+                            // if blur event fires on the last input
+                            // add another input below it
+                            this.emailsToShareWith.push({
+                                value: "",
+                                valid: null,
+                                validationMessage: "blank"
+                            });
+                        }
+                        const duplicateEmails = this.emailsToShareWith.filter(val => val.value === email.value).length > 1
+                        // console.log('duplicateEmails', duplicateEmails)
+                        if (email.value !== currentUser && !duplicateEmails){
+                        this.userExists(email.value)
+                            .then((result: boolean) => {
+                                this.emailsToShareWith[index].valid = result;
+                                this.emailsToShareWith[index].validationMessage = "emailNotRegistered";
+                                // this.showValidationMessage = this.invalidEmails;
+                            })
+                        } else if (email.value === currentUser) {
+                            this.emailsToShareWith[index].valid = false;
+                            this.emailsToShareWith[index].validationMessage = "projectsNoSelfShare";
                             // this.showValidationMessage = this.invalidEmails;
-                        })
-                    } else if (e.value === currentUser) {
-                        this.emailsToShareWith[index].valid = false;
-                        this.emailsToShareWith[index].validationMessage = "projectsNoSelfShare";
-                        // this.showValidationMessage = this.invalidEmails;
+                        } else {
+                            // console.log('this code is reached')
+                            this.emailsToShareWith[index].valid = false;
+                            this.emailsToShareWith[index].validationMessage = "duplicateEmails";
+                            // this.showValidationMessage = this.invalidEmails;
+                        }
                     } else {
-                        console.log('this code is reached')
-                        this.emailsToShareWith[index].valid = false;
-                        this.emailsToShareWith[index].validationMessage = "duplicateEmails";
+                        email.valid = null;
                         // this.showValidationMessage = this.invalidEmails;
                     }
-                } else {
-                    e.valid = null;
-                    // this.showValidationMessage = this.invalidEmails;
-                }
+                })
                 this.showValidationMessage = this.invalidEmails;
             },
             removeEmail(email: EmailToShareWith, index: number) {
