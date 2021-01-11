@@ -66,7 +66,6 @@
     import {CloneProjectPayload} from "../../store/projects/actions";
     import {Share2Icon} from "vue-feather-icons";
     import {VTooltip} from 'v-tooltip';
-    import {RootState} from "../../root";
 
     interface EmailToShareWith {
         value: string
@@ -195,7 +194,7 @@
                 return i18next.t("share", {
                     lng: this.currentLanguage,
                 });
-            },
+            }
         },
         components: {
             Modal,
