@@ -86,11 +86,9 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 }
 
                 commit(ModelCalibrateMutation.Calibrated);
-                commit(ModelCalibrateMutation.Ready);
             }
-        } else {
-            commit(ModelCalibrateMutation.Ready);
         }
+        commit(ModelCalibrateMutation.Ready);
     }
 };
 

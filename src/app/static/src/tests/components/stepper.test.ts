@@ -23,6 +23,7 @@ import {mutations as surveyAndProgramMutations} from '../../app/store/surveyAndP
 import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations';
 import {mutations as stepperMutations} from '../../app/store/stepper/mutations';
 import {mutations as loadMutations} from '../../app/store/load/mutations';
+import {mutations as modelCalibrateMutations} from '../../app/store/modelCalibrate/mutations';
 import {modelRunGetters, ModelRunState} from "../../app/store/modelRun/modelRun";
 import ADRIntegration from "../../app/components/adr/ADRIntegration.vue";
 import Stepper from "../../app/components/Stepper.vue";
@@ -39,6 +40,7 @@ import {modelOptionsGetters, ModelOptionsState} from "../../app/store/modelOptio
 import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {ProjectsState} from "../../app/store/projects/projects";
+import {ModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 import VersionStatus from "../../app/components/projects/VersionStatus.vue";
 import {RootState} from "../../app/root";
 import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
@@ -57,7 +59,8 @@ describe("Stepper component", () => {
                        projectsState?: Partial<ProjectsState>,
                        mockRouterPush = jest.fn(),
                        partialRootState: Partial<RootState> = {},
-                       modelOptionsState: Partial<ModelOptionsState> = {}) => {
+                       modelOptionsState: Partial<ModelOptionsState> = {},
+                       modelCalibrateState: Partial<ModelCalibrateState> = {}) => {
 
         const store = new Vuex.Store({
             actions: rootActions,
@@ -90,7 +93,8 @@ describe("Stepper component", () => {
                 },
                 modelCalibrate: {
                     namespaced: true,
-                    state: mockModelCalibrateState()
+                    state: mockModelCalibrateState(modelCalibrateState),
+                    mutations: modelCalibrateMutations
                 },
                 stepper: {
                     namespaced: true,
@@ -126,6 +130,27 @@ describe("Stepper component", () => {
         return shallowMount(Stepper, {store, localVue, mocks});
     };
 
+    const createReadySut = (baselineState?: Partial<BaselineState>,
+                       surveyAndProgramState?: Partial<SurveyAndProgramState>,
+                       metadataState?: Partial<MetadataState>,
+                       modelRunState?: Partial<ModelRunState>,
+                       stepperState?: Partial<StepperState>,
+                       loadState?: Partial<LoadState>,
+                       projectsState?: Partial<ProjectsState>,
+                       mockRouterPush = jest.fn(),
+                       partialRootState: Partial<RootState> = {},
+                       modelOptionsState: Partial<ModelOptionsState> = {},
+                       modelCalibrateState: Partial<ModelCalibrateState> = {}) => {
+        return createSut(
+            {...baselineState, ready: true},
+            {...surveyAndProgramState, ready: true},
+            metadataState,
+            {...modelRunState, ready: true},
+            stepperState, loadState, projectsState, mockRouterPush, partialRootState, modelOptionsState,
+            {...modelCalibrateState, ready: true}
+        );
+    };
+
     const completedBaselineState = {
         country: "testCountry",
         iso3: "TTT",
@@ -150,11 +175,11 @@ describe("Stepper component", () => {
 
     it("renders loading spinner while ready but loadingFromFile", () => {
 
-        const wrapper = createSut(
-            {ready: true},
-            {ready: true},
+        const wrapper = createReadySut(
             {},
-            {ready: true},
+            {},
+            {},
+            {},
             {},
             {loadingState: LoadingState.SettingFiles});
         const store = wrapper.vm.$store;
@@ -166,14 +191,14 @@ describe("Stepper component", () => {
     });
 
     it("does not render loading spinner once states are ready", () => {
-        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
+        const wrapper = createReadySut();
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAll(".content").length).toBe(1);
         expect(wrapper.findAll("#loading-message").length).toBe(0);
     });
 
     it("renders steps", () => {
-        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
+        const wrapper = createReadySut();
         const steps = wrapper.findAll(Step);
 
         expect(wrapper.findAll(Step).length).toBe(7);
@@ -221,7 +246,7 @@ describe("Stepper component", () => {
     });
 
     it("renders step connectors", () => {
-        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
+        const wrapper = createReadySut();
         const connectors = wrapper.findAll(".step-connector");
 
         expect(connectors.length).toBe(6);
@@ -230,15 +255,13 @@ describe("Stepper component", () => {
     });
 
     it("renders version status", () => {
-        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
+        const wrapper = createReadySut();
         expect(wrapper.find(VersionStatus).exists()).toBe(true);
     });
 
     it("step connector is enabled if next step is", () => {
-        const wrapper = createSut({ready: true},
-            {ready: true, survey: true, program: true, shape: true} as any,
-            {},
-            {ready: true});
+        const wrapper = createReadySut({},
+            {survey: true, program: true, shape: true} as any);
         const connectors = wrapper.findAll(".step-connector");
 
         expect(connectors.at(0).classes()).toContain("enabled");
@@ -246,17 +269,16 @@ describe("Stepper component", () => {
     });
 
     it("all steps except baseline are disabled initially", () => {
-        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true});
+        const wrapper = createReadySut();
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
         expect([1, 2, 3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
     });
 
     it("upload surveys step is enabled when baseline step is complete", () => {
-        const wrapper = createSut(completedBaselineState,
-            {ready: true},
-            {plottingMetadata: "TEST DATA" as any},
-            {ready: true});
+        const wrapper = createReadySut(completedBaselineState,
+            {},
+            {plottingMetadata: "TEST DATA" as any});
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
         expect(steps.at(1).props().enabled).toBe(true);
@@ -265,10 +287,9 @@ describe("Stepper component", () => {
     });
 
     it("upload surveys step is not enabled if metadata state is not complete", () => {
-        const wrapper = createSut(completedBaselineState,
-            {ready: true},
-            {plottingMetadata: null},
-            {ready: true});
+        const wrapper = createReadySut(completedBaselineState,
+            {},
+            {plottingMetadata: null});
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
         expect(steps.at(1).props().enabled).toBe(false);
@@ -277,10 +298,9 @@ describe("Stepper component", () => {
     });
 
     it("updates active step when jump event is emitted", () => {
-        const wrapper = createSut(completedBaselineState,
-            {ready: true},
-            {plottingMetadata: "TEST DATA" as any},
-            {ready: true});
+        const wrapper = createReadySut(completedBaselineState,
+            {},
+            {plottingMetadata: "TEST DATA" as any});
         const steps = wrapper.findAll(Step);
         steps.at(1).vm.$emit("jump", 2);
         expect(steps.at(0).props().complete).toBe(true);
@@ -288,7 +308,7 @@ describe("Stepper component", () => {
     });
 
     it("cannot continue when the active step is not complete", () => {
-        const wrapper = createSut({country: "", ready: true}, {ready: true}, {}, {ready: true});
+        const wrapper = createReadySut({country: ""});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).toContain("disabled");
 
@@ -299,10 +319,9 @@ describe("Stepper component", () => {
 
 
     it("can continue when the active step is complete", () => {
-        const wrapper = createSut(completedBaselineState,
-            {ready: true},
-            {plottingMetadata: "TEST DATA" as any},
-            {ready: true});
+        const wrapper = createReadySut(completedBaselineState,
+            {},
+            {plottingMetadata: "TEST DATA" as any});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).not.toContain("disabled");
 
@@ -312,22 +331,21 @@ describe("Stepper component", () => {
     });
 
     it("cannot go back from the first step", () => {
-        const wrapper = createSut({country: "", ready: true}, {ready: true}, {}, {ready: true});
+        const wrapper = createReadySut({country: ""});
         const backLink = wrapper.find("#back");
         expect(backLink.classes()).toContain("disabled");
     });
 
     it("can go back from later steps", () => {
-        const wrapper = createSut({
+        const wrapper = createReadySut({
                 country: "testCountry",
                 iso3: "TTT",
                 shape: mockShapeResponse(),
-                population: mockPopulationResponse(),
-                ready: true
+                population: mockPopulationResponse()
             },
-            {ready: true},
+            {},
             {plottingMetadata: "TEST DATA" as any},
-            {ready: true},
+            {},
             {activeStep: 2});
 
         const backLink = wrapper.find("#back");
@@ -346,10 +364,9 @@ describe("Stepper component", () => {
             shape: mockShapeResponse(),
             ready: true
         };
-        const wrapper = createSut(baselineState,
-            {ready: true},
-            {plottingMetadata: "TEST DATA" as any},
-            {ready: true});
+        const wrapper = createReadySut(baselineState,
+            {},
+            {plottingMetadata: "TEST DATA" as any});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).toContain("disabled");
 
@@ -436,6 +453,11 @@ describe("Stepper component", () => {
             "payload": true
         });
 
+        wrapper.vm.$store.commit("modelCalibrate/Ready", {
+            "type": "Ready",
+            "payload": true
+        });
+
         await Vue.nextTick();
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
     }
@@ -452,44 +474,42 @@ describe("Stepper component", () => {
     }
 
     it("model run step is not complete without success", () => {
-        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true, result: "TEST" as any});
+        const wrapper = createReadySut({}, {}, {}, {result: "TEST" as any});
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(false);
     });
 
     it("model run step is not complete without result", () => {
-        const wrapper = createSut({ready: true}, {ready: true}, {}, {ready: true, status: {success: true} as any});
+        const wrapper = createReadySut({}, {}, {}, {status: {success: true} as any});
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(false);
     });
 
     it("model run step is not complete with errors", () => {
         const modelRunState = {
-            ready: true, status: {success: true} as ModelStatusResponse,
+            status: {success: true} as ModelStatusResponse,
             result: "TEST" as any,
             errors: ["TEST" as any]
         };
-        const wrapper = createSut({ready: true}, {ready: true}, {}, modelRunState);
+        const wrapper = createReadySut({}, {}, {}, modelRunState);
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(false);
     });
 
     it("model run step is complete on success and result", () => {
         const modelRunState = {
-            ready: true,
             result: "TEST" as any,
             status: {success: true} as ModelStatusResponse
         };
-        const wrapper = createSut({ready: true}, {ready: true}, {}, modelRunState);
+        const wrapper = createReadySut({}, {}, {}, modelRunState);
         const steps = wrapper.findAll(Step);
         expect(steps.at(3).props().complete).toBe(true);
     });
 
     it("model run step becomes complete on success, result fetched, and automatically moves to calibrate step", async () => {
         //store should consider first 3 steps to be complete initially
-        const wrapper = createSut(
+        const wrapper = createReadySut(
             {
-                ready: true,
                 validatedConsistent: true,
                 country: "TEST",
                 iso3: "TES",
@@ -497,11 +517,10 @@ describe("Stepper component", () => {
                 population: ["TEST POP"] as any
             },
             {
-                ready: true,
                 survey: ["TEST SURVEY"] as any
             },
             {plottingMetadata: ["TEST METADATA"] as any},
-            {ready: true},
+            {},
             {activeStep: 4},
             {},
             {},
@@ -618,11 +637,11 @@ describe("Stepper component", () => {
     });
 
     const getStepperOnStep = (step: number) => {
-        return createSut(
-            {ready: true},
-            {ready: true},
+        return createReadySut(
             {},
-            {ready: true, result: "TEST" as any},
+            {},
+            {},
+            {result: "TEST" as any},
             {activeStep: step});
     };
 

@@ -63,6 +63,7 @@ describe("App", () => {
         localStoreOptions.modules!!.baseline.state.ready = ready;
         localStoreOptions.modules!!.surveyAndProgram.state.ready = ready;
         localStoreOptions.modules!!.modelRun.state.ready = ready;
+        localStoreOptions.modules!!.modelCalibrate.state.ready = ready;
         return new Vuex.Store<RootState>(localStoreOptions);
     };
 
