@@ -137,27 +137,21 @@
                             });
                         }
                         const duplicateEmails = this.emailsToShareWith.filter(val => val.value === email.value).length > 1
-                        // console.log('duplicateEmails', duplicateEmails)
                         if (email.value !== currentUser && !duplicateEmails){
                         this.userExists(email.value)
                             .then((result: boolean) => {
                                 this.emailsToShareWith[index].valid = result;
                                 this.emailsToShareWith[index].validationMessage = "emailNotRegistered";
-                                // this.showValidationMessage = this.invalidEmails;
                             })
                         } else if (email.value === currentUser) {
                             this.emailsToShareWith[index].valid = false;
                             this.emailsToShareWith[index].validationMessage = "projectsNoSelfShare";
-                            // this.showValidationMessage = this.invalidEmails;
                         } else {
-                            // console.log('this code is reached')
                             this.emailsToShareWith[index].valid = false;
                             this.emailsToShareWith[index].validationMessage = "duplicateEmails";
-                            // this.showValidationMessage = this.invalidEmails;
                         }
                     } else {
                         email.valid = null;
-                        // this.showValidationMessage = this.invalidEmails;
                     }
                 })
                 this.showValidationMessage = this.invalidEmails;
