@@ -174,8 +174,6 @@ describe("ShareProject", () => {
         expect(modal.find("input").classes()).not.toContain("is-invalid");
         expect(modal.find(".text-danger").classes()).toContain("d-none");
         expect(modal.find("button").attributes("disabled")).toBeUndefined();
-        // const vm = wrapper.vm as any
-        // expect(vm.showValidationMessage).toBe(false);
         expect(modal.find(".help-text").isVisible()).toBe(false);
     });
 

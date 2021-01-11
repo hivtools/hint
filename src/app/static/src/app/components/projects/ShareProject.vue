@@ -122,8 +122,6 @@
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
             addEmail() {
-                // Because the validation of duplicate emails is dependent on changes to other emails,
-                // validation must be run over the entire list every time a change is made to any
                 this.emailsToShareWith.map((email: EmailToShareWith, index: number) => {
                     if (email.value) {
                         if (index == this.emailsToShareWith.length - 1) {
@@ -157,9 +155,6 @@
                         this.showValidationMessage = this.invalidEmails;
                     }
                 })
-                // this.showValidationMessage = this.invalidEmails;
-                // console.log("emailsToShareWith", this.emailsToShareWith)
-                // console.log("invalidEmails", this.invalidEmails)
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
