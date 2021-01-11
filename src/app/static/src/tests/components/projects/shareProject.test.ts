@@ -124,6 +124,38 @@ describe("ShareProject", () => {
         expect(modal.find(".help-text").isVisible()).toBe(true);
     });
 
+    it("if a valid email is entered twice, is invalid, appropriate validation feedback is shown and button disabled", async () => {
+        const store = createStore(jest.fn().mockResolvedValue(true))
+        const wrapper = mount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store,
+        });
+
+        const link = wrapper.find("button");
+        link.trigger("click");
+        const input = wrapper.find(Modal).find("input");
+        input.setValue("goodemail");
+        input.trigger("blur");
+        await Vue.nextTick();
+
+        const input2 = wrapper.find(Modal).findAll("input").at(1);
+        input2.setValue("goodemail");
+        input2.trigger("blur");
+        await Vue.nextTick();
+
+        const modal = wrapper.find(Modal);
+        expect(modal.find("input").classes()).toContain("is-invalid");
+
+        const text = modal.find(".text-danger")
+        expect(text.classes()).not.toContain("d-none");
+        expectTranslated(text, "Please remove duplicate emails from the list",
+            "Veuillez supprimer les e-mails en double de la liste", store as any)
+        expect(modal.find("button").attributes("disabled")).toBe("disabled");
+        expect(modal.find(".help-text").isVisible()).toBe(true);
+    });
+
     it("if email is valid, validation feedback is not shown and button enabled", async () => {
         const wrapper = mount(ShareProject, {
             propsData: {
@@ -142,6 +174,8 @@ describe("ShareProject", () => {
         expect(modal.find("input").classes()).not.toContain("is-invalid");
         expect(modal.find(".text-danger").classes()).toContain("d-none");
         expect(modal.find("button").attributes("disabled")).toBeUndefined();
+        // const vm = wrapper.vm as any
+        // expect(vm.showValidationMessage).toBe(false);
         expect(modal.find(".help-text").isVisible()).toBe(false);
     });
 

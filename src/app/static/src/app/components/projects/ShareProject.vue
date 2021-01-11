@@ -57,7 +57,6 @@
 <script lang="ts">
     import {Project} from "../../types";
     import Vue from "vue";
-    import {mapState} from "vuex";
     import Modal from "../Modal.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStatePropByName} from "../../utils";
@@ -142,19 +141,25 @@
                             .then((result: boolean) => {
                                 this.emailsToShareWith[index].valid = result;
                                 this.emailsToShareWith[index].validationMessage = "emailNotRegistered";
+                                this.showValidationMessage = this.invalidEmails;
                             })
                         } else if (email.value === currentUser) {
                             this.emailsToShareWith[index].valid = false;
                             this.emailsToShareWith[index].validationMessage = "projectsNoSelfShare";
+                            this.showValidationMessage = this.invalidEmails;
                         } else {
                             this.emailsToShareWith[index].valid = false;
                             this.emailsToShareWith[index].validationMessage = "duplicateEmails";
+                            this.showValidationMessage = this.invalidEmails;
                         }
                     } else {
                         email.valid = null;
+                        this.showValidationMessage = this.invalidEmails;
                     }
                 })
-                this.showValidationMessage = this.invalidEmails;
+                // this.showValidationMessage = this.invalidEmails;
+                // console.log("emailsToShareWith", this.emailsToShareWith)
+                // console.log("invalidEmails", this.invalidEmails)
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
