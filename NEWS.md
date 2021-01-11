@@ -1,3 +1,7 @@
+# hint 1.12.1
+
+* Fix casing in French translation of "Spectrum file" 
+
 # hint 1.12.0
 
 * adds a map reset button
