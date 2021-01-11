@@ -1,6 +1,6 @@
 # hint 1.12.1
 
-* prevent users from sharing projects with self
+* prevent users from sharing projects with self or sharing with the same email twice
 
 # hint 1.12.0
 
