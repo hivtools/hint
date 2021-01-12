@@ -197,10 +197,11 @@ class ProjectsControllerTests
     {
         val mockVersionRepo = mock<VersionRepository>()
         val mockProjectRepo = mock<ProjectRepository> {
-            on { getProject(1, "testUser") } doReturn Project(1, "p1", listOf(Version("v1", "createdTime", "updatedTime", 1),
+            on { getProject(1, "testUser") } doReturn Project(1, "p1","",
+                    listOf(Version("v1", "createdTime", "updatedTime", 1),
                     Version("v2", "createdTime", "updatedTime", 1)))
-            on { saveNewProject("uid1", "p1") } doReturn 2
-            on { saveNewProject("uid2", "p1") } doReturn 3
+            on { saveClonedProject("uid1", "p1","testUser") } doReturn 2
+            on { saveClonedProject("uid2", "p1","testUser") } doReturn 3
         }
         val mockLogic = mock<UserLogic> {
             on { getUser("new.user@email.com") } doReturn CommonProfile().apply { id = "uid1" }

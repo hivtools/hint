@@ -78,7 +78,7 @@ export interface Project {
     id: number,
     name: string,
     versions: Version[],
-    sharedBy: string
+    sharedBy?: string
 }
 
 export interface CurrentProject {
