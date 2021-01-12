@@ -154,7 +154,7 @@ describe("Project history component", () => {
         expectTranslated(headers.at(6), "Delete", "Supprimer", store);
         expectTranslated(headers.at(7), "Copy to", "Copier", store);
         expectTranslated(headers.at(8), "Share", "Partager", store);
-        expectTranslated(headers.at(9), "SharedBy", "partagé par", store);
+        expectTranslated(headers.at(9), "Shared by", "partagé par", store);
         
         testRendersProject(wrapper, 1, "proj1", isoDates[1], 2);
         const proj1Versions = wrapper.find("#versions-1");
