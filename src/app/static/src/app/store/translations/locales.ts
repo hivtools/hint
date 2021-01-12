@@ -322,7 +322,7 @@ const en: Translations = {
     sex: "Sex",
     shape: "Area boundary file",
     share: "Share",
-    sharedBy: "Shared by",
+    sharedBy: "SharedBy",
     shareProject: "Share project",
     shareProjectInstructions: "<p>" +
         "This will create a copy of {{ project }} for the given users." +
