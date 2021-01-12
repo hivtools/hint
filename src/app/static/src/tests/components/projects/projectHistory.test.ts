@@ -144,7 +144,7 @@ describe("Project history component", () => {
         expect(wrapper.find("h5").text()).toBe("Project history");
 
         const headers = wrapper.find("#headers").findAll(".header-cell");
-        expect(headers.length).toBe(9);
+        expect(headers.length).toBe(10);
         expect(headers.at(0).text()).toBe("");
         expectTranslated(headers.at(1), "Project name", "Nom du projet", store);
         expectTranslated(headers.at(2), "Versions", "Versions", store);
@@ -154,6 +154,7 @@ describe("Project history component", () => {
         expectTranslated(headers.at(6), "Delete", "Supprimer", store);
         expectTranslated(headers.at(7), "Copy to", "Copier", store);
         expectTranslated(headers.at(8), "Share", "Partager", store);
+        expectTranslated(headers.at(9), "SharedBy", "partagé par", store);
         
         testRendersProject(wrapper, 1, "proj1", isoDates[1], 2);
         const proj1Versions = wrapper.find("#versions-1");

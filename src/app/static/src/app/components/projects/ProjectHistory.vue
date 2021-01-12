@@ -79,7 +79,7 @@
                 <div class="col-md-1 project-cell" v-if="shareProjectIsEnabled">
                     <share-project :project="p"></share-project>
                 </div>
-                <div class="col-md-1 project-cell" v-if="shareProjectIsEnabled">
+                <div class="col-md-1 project-cell">
                     {{p.sharedBy}}
                 </div>
             </div>
