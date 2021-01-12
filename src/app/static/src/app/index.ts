@@ -31,6 +31,7 @@ export const app = new Vue({
         ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
         ...mapActions({loadSurveyAndProgram: 'surveyAndProgram/getSurveyAndProgramData'}),
         ...mapActions({loadModelRun: 'modelRun/getResult'}),
+        ...mapActions({loadModelCalibrate: 'modelCalibrate/getResult'}),
         ...mapActions({getADRSchemas: 'getADRSchemas'}),
         ...mapActions({getCurrentProject: 'projects/getCurrentProject'}),
     },
@@ -38,6 +39,7 @@ export const app = new Vue({
         this.loadBaseline();
         this.loadSurveyAndProgram();
         this.loadModelRun();
+        this.loadModelCalibrate();
         this.getADRSchemas();
         this.getCurrentProject();
     }

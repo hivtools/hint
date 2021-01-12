@@ -466,7 +466,7 @@ const fr: Partial<Translations> = {
     passwordValidation: "Veuillez entrer votre mot de passe.",
     passwordWasReset: "Merci, votre mot de passe a été mis à jour. Cliquez ici pour vous connecter.",
     period: "Période",
-    PJNZ: "fichier Spectrum",
+    PJNZ: "Fichier Spectrum",
     population: "Population",
     projectsHeaderCreate: "Créer un nouveau projet",
     projectsHeaderReturn: "retour au projet actuel",

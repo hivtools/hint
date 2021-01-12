@@ -13,7 +13,8 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
         return !!rootState.adrSchemas &&
             rootState.baseline.ready &&
             rootState.surveyAndProgram.ready &&
-            rootState.modelRun.ready
+            rootState.modelRun.ready &&
+            rootState.modelCalibrate.ready
     },
     complete: (state: StepperState, getters: any, rootState: RootState, rootGetters: any) => {
         return {
