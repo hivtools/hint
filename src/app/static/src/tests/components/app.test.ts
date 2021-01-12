@@ -19,17 +19,22 @@ const modelRunActions = {
     getResult: jest.fn()
 };
 
+const modelCalibrateActions = {
+    getResult: jest.fn()
+};
+
 const actions = {
     getADRSchemas: jest.fn()
-}
+};
 
 const projectsActions = {
     getCurrentProject: jest.fn()
-}
+};
 
 storeOptions.modules!!.baseline!!.actions = baselineActions;
 storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
 storeOptions.modules!!.modelRun!!.actions = modelRunActions;
+storeOptions.modules!!.modelCalibrate!!.actions = modelCalibrateActions;
 storeOptions.modules!!.projects!!.actions = projectsActions;
 storeOptions.actions = actions
 
@@ -58,6 +63,7 @@ describe("App", () => {
         localStoreOptions.modules!!.baseline.state.ready = ready;
         localStoreOptions.modules!!.surveyAndProgram.state.ready = ready;
         localStoreOptions.modules!!.modelRun.state.ready = ready;
+        localStoreOptions.modules!!.modelCalibrate.state.ready = ready;
         return new Vuex.Store<RootState>(localStoreOptions);
     };
 
@@ -74,6 +80,7 @@ describe("App", () => {
             expect(baselineActions.getBaselineData).toHaveBeenCalled();
             expect(surveyAndProgramActions.getSurveyAndProgramData).toHaveBeenCalled();
             expect(modelRunActions.getResult).toHaveBeenCalled();
+            expect(modelCalibrateActions.getResult).toHaveBeenCalled();
             expect(actions.getADRSchemas).toHaveBeenCalled();
             expect(projectsActions.getCurrentProject).toHaveBeenCalled();
             done();

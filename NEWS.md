@@ -1,5 +1,14 @@
+
 # hint 1.13.0
 * Add indication that a project was shared by someone else
+
+# hint 1.12.2
+
+* Fix casing in French translation of "Spectrum file" 
+
+# hint 1.12.1
+
+* fix reload project post-calibrate
 
 # hint 1.12.0
 
