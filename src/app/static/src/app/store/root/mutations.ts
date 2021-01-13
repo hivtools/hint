@@ -89,6 +89,7 @@ export const mutations: MutationTree<RootState> = {
         state.surveyAndProgram.ready = true;
         state.baseline.ready = true;
         state.modelRun.ready = true;
+        state.modelCalibrate.ready = true;
     },
 
     [RootMutation.SetProject](state: RootState, action: PayloadWithType<Project>) {
@@ -111,6 +112,7 @@ export const mutations: MutationTree<RootState> = {
         state.surveyAndProgram.ready = true;
         state.baseline.ready = true;
         state.modelRun.ready = true;
+        state.modelCalibrate.ready = true;
 
         router.push("/");
     },
@@ -149,6 +151,7 @@ export const mutations: MutationTree<RootState> = {
         Object.assign(state.modelRun, initialModelRunState());
         state.modelRun.ready = true;
         Object.assign(state.modelCalibrate, initialModelCalibrateState());
+        state.modelCalibrate.ready = true;
         Object.assign(state.modelOutput, initialModelOutputState());
         const sapSelections = state.plottingSelections.sapChoropleth;
         const colourScales = state.plottingSelections.colourScales;

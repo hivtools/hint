@@ -83,7 +83,8 @@ const resetState = (store: Store<RootState>) => {
 
         if (state.baseline.ready
             && state.surveyAndProgram.ready
-            && state.modelRun.ready) {
+            && state.modelRun.ready
+            && state.modelCalibrate.ready) {
 
             const type = stripNamespace(mutation.type);
 

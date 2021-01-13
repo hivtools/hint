@@ -1,6 +1,14 @@
-# hint 1.12.1
+# hint 1.12.3
 
 * prevent users from sharing projects with self or sharing with the same email twice
+
+# hint 1.12.2
+
+* Fix casing in French translation of "Spectrum file" 
+
+# hint 1.12.1
+
+* fix reload project post-calibrate
 
 # hint 1.12.0
 
