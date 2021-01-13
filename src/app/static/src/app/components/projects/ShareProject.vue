@@ -22,7 +22,7 @@
                     </div>
                     <div class="col">
                         <div class="small text-danger"
-                             :class="{'d-none': email.valid !== false}"
+                             v-if="email.valid === false"
                              v-translate="email.validationMessage">
                         </div>
                     </div>
@@ -76,7 +76,6 @@
     interface Data {
         emailsToShareWith: EmailToShareWith[]
         open: boolean
-        showValidationMessage: boolean
     }
 
     interface Props {
@@ -90,6 +89,7 @@
         cloneProjectError: Error | null
         cloningProject: boolean
         tooltipShare: string
+        showValidationMessage: boolean
     }
 
     interface Methods {
@@ -112,9 +112,8 @@
         },
         data() {
             return {
-                emailsToShareWith: [{value: "", valid: null, validationMessage: "blank"}],
-                open: false,
-                showValidationMessage: false
+                emailsToShareWith: [{value: "", valid: null, validationMessage: ""}],
+                open: false
             }
         },
         methods: {
@@ -125,7 +124,7 @@
                     this.emailsToShareWith.push({
                         value: "",
                         valid: null,
-                        validationMessage: "blank"
+                        validationMessage: ""
                     });
                 }
                 this.emailsToShareWith.map(async (email: EmailToShareWith, index: number) => {
@@ -150,14 +149,12 @@
                         email.valid = null;
                     }
                 });
-                this.showValidationMessage = this.invalidEmails;  //Could this be a computed property?
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
                 // remove from UI
                 if (!email.value && index < this.emailsToShareWith.length - 1) {
                     this.emailsToShareWith.splice(index, 1);
-                    this.showValidationMessage = this.invalidEmails;
                 }
             },
             shareProject(e: Event) {
@@ -173,9 +170,8 @@
                 }
             },
             cancelShareProject() {
-                this.emailsToShareWith = [{value: "", valid: null, validationMessage: "blank"}];
+                this.emailsToShareWith = [{value: "", valid: null, validationMessage: ""}];
                 this.open = false;
-                this.showValidationMessage = false;
             }
         },
         computed: {
@@ -186,11 +182,16 @@
                 return i18next.t('shareProjectInstructions', {project: this.project.name, lng: this.currentLanguage});
             },
             invalidEmails() {
+                //Invalid state until all emails evaluated as valid = true (may not have blurred yet)...
                 return this.emailsToShareWith.filter(e => e.value && !e.valid).length > 0
+            },
+            showValidationMessage() {
+                //...however only show error message if any confirmed to be valid = false
+                return this.emailsToShareWith.filter(e => e.value && e.valid === false).length > 0
             },
             tooltipShare() {
                 return i18next.t("share", {
-                    lng: this.currentLanguage,
+                    lng: this.currentLanguage
                 });
             }
         },
@@ -206,7 +207,7 @@
         watch: {
             cloningProject(newVal: boolean) {
                 if (!newVal && !this.cloneProjectError) {
-                    this.emailsToShareWith = [{value: "", valid: null, validationMessage: "blank"}];
+                    this.emailsToShareWith = [{value: "", valid: null, validationMessage: ""}];
                     this.open = false;
                 }
             }
