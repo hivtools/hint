@@ -13,6 +13,9 @@ import {mutations, ProjectsMutations} from "../../../app/store/projects/mutation
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import { Language } from "../../../app/store/translations/locales";
 
+declare var currentUser: string;
+currentUser = "test.user@example.com"
+
 describe("ShareProject", () => {
 
     const createStore = (userExists = jest.fn(),
@@ -70,11 +73,12 @@ describe("ShareProject", () => {
     });
 
     it("if email is invalid, validation feedback is shown and button disabled", async () => {
+        const store = createStore(jest.fn().mockResolvedValue(false))
         const wrapper = mount(ShareProject, {
             propsData: {
                 project: {id: 1, name: "p1"}
             },
-            store: createStore(jest.fn().mockResolvedValue(false)),
+            store,
         });
 
         const link = wrapper.find("button");
@@ -83,11 +87,78 @@ describe("ShareProject", () => {
         input.setValue("bademail");
         input.trigger("blur");
         await Vue.nextTick();
+        await Vue.nextTick();
         const modal = wrapper.find(Modal);
         expect(modal.find("input").classes()).toContain("is-invalid");
-        expect(modal.find(".text-danger").classes()).not.toContain("d-none");
+
+        const text = modal.find(".text-danger")
+        expect(text.classes()).not.toContain("d-none");
+        expectTranslated(text, "This email address is not registered with Naomi",
+            "Cette adresse e-mail n'est pas enregistrée dans Naomi", store as any)
         expect(modal.find("button").attributes("disabled")).toBe("disabled");
         expect(modal.find(".help-text").isVisible()).toBe(true);
+    });
+
+    it("if email is same as user's email, is invalid, appropriate validation feedback is shown and button disabled", async () => {
+        const store = createStore(jest.fn().mockResolvedValue(false))
+        const wrapper = mount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store,
+        });
+
+        const link = wrapper.find("button");
+        link.trigger("click");
+        const input = wrapper.find(Modal).find("input");
+        input.setValue("test.user@example.com");
+        input.trigger("blur");
+        await Vue.nextTick();
+        const modal = wrapper.find(Modal);
+        expect(modal.find("input").classes()).toContain("is-invalid");
+
+        const text = modal.find(".text-danger")
+        expect(text.classes()).not.toContain("d-none");
+        expectTranslated(text, "Projects cannot be shared with the user's own account",
+            "Les projets ne peuvent pas être partagés avec le propre compte de l'utilisateur", store as any)
+        expect(modal.find("button").attributes("disabled")).toBe("disabled");
+        expect(modal.find(".help-text").isVisible()).toBe(true);
+    });
+
+    it("if a valid email is entered twice, is invalid, appropriate validation feedback is shown and button disabled", async () => {
+        const store = createStore(jest.fn().mockResolvedValue(true))
+        const wrapper = mount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store,
+        });
+
+        const link = wrapper.find("button");
+        link.trigger("click");
+        const modal = wrapper.find(Modal);
+        expect(modal.findAll("input").length).toBe(1);
+        const input = modal.find("input");
+        input.setValue("goodemail");
+        input.trigger("blur");
+        await Vue.nextTick();
+
+        expect(modal.findAll("input").length).toBe(2);
+        const input2 = wrapper.find(Modal).findAll("input").at(1);
+        input2.setValue("goodemail");
+        input2.trigger("blur");
+
+        setTimeout(() => {
+            expect(input.classes()).toContain("is-invalid");
+            expect(input2.classes()).toContain("is-invalid");
+
+            const text = modal.find(".text-danger");
+            expect(text.classes()).not.toContain("d-none");
+            expectTranslated(text, "Please remove duplicate emails from the list",
+                "Veuillez supprimer les e-mails en double de la liste", store as any)
+            expect(modal.find("button").attributes("disabled")).toBe("disabled");
+            expect(modal.find(".help-text").isVisible()).toBe(true);
+        });
     });
 
     it("if email is valid, validation feedback is not shown and button enabled", async () => {
@@ -103,12 +174,14 @@ describe("ShareProject", () => {
         const input = wrapper.find(Modal).find("input");
         input.setValue("goodemail");
         input.trigger("blur");
-        await Vue.nextTick();
-        const modal = wrapper.find(Modal);
-        expect(modal.find("input").classes()).not.toContain("is-invalid");
-        expect(modal.find(".text-danger").classes()).toContain("d-none");
-        expect(modal.find("button").attributes("disabled")).toBeUndefined();
-        expect(modal.find(".help-text").isVisible()).toBe(false);
+
+        setTimeout(() => {
+            const modal = wrapper.find(Modal);
+            expect(modal.find("input").classes()).not.toContain("is-invalid");
+            expect(modal.find(".text-danger").classes()).toContain("d-none");
+            expect(modal.find("button").attributes("disabled")).toBeUndefined();
+            expect(modal.find(".help-text").isVisible()).toBe(false);
+        });
     });
 
     it("user validation fires on blur if value is provided", async () => {
@@ -218,15 +291,17 @@ describe("ShareProject", () => {
             expect(inputs.length).toBe(1);
             inputs.at(0).setValue("testing");
             inputs.at(0).trigger("blur");
-            await Vue.nextTick();
-            expect(wrapper.find(Modal).findAll("input").length).toBe(2);
-            expect(wrapper.find(Modal).find(".help-text").isVisible()).toBe(true);
 
-            inputs.at(0).setValue("");
-            inputs.at(0).trigger("keyup.delete");
-            await Vue.nextTick();
-            expect(wrapper.find(Modal).findAll("input").length).toBe(1);
-            expect(wrapper.find(Modal).find(".help-text").isVisible()).toBe(false);
+            setTimeout(async () => {
+                expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+                expect(wrapper.find(Modal).find(".help-text").isVisible()).toBe(true);
+
+                inputs.at(0).setValue("");
+                inputs.at(0).trigger("keyup.delete");
+                await Vue.nextTick();
+                expect(wrapper.find(Modal).findAll("input").length).toBe(1);
+                expect(wrapper.find(Modal).find(".help-text").isVisible()).toBe(false);
+            });
         });
 
     it("if email characters are deleted nothing happens", async () => {
@@ -296,10 +371,10 @@ describe("ShareProject", () => {
         input.setValue("testing");
         input.trigger("blur");
 
-        await Vue.nextTick();
-
-        wrapper.find(Modal).find("button").trigger("click");
-        expect(cloneProject.mock.calls[0][1]).toEqual({projectId: 1, emails: ["testing"]});
+        setTimeout(() => {
+            wrapper.find(Modal).find("button").trigger("click");
+            expect(cloneProject.mock.calls[0][1]).toEqual({projectId: 1, emails: ["testing"]});
+        });
     });
 
     it("shows loading spinner when cloningProject is true", () => {
@@ -401,23 +476,6 @@ describe("ShareProject", () => {
             "avec lesquelles vous souhaitez partager ce projet. Appuyez sur Enter pour ajouter une autre adresse. Ces adresses e-mails doivent être déjà enregistrées dans Naomi."
 
         expectTranslated(wrapper.find(Modal).find("#instructions"), expectedEnglish, expectedFrench, store);
-    });
-
-    it("translates validation feedback", () => {
-        const store = createStore();
-        const wrapper = mount(ShareProject, {
-            propsData: {
-                project: {id: 1, name: "p1"}
-            },
-            store: store
-        });
-
-        const link = wrapper.find("button");
-        link.trigger("click");
-        const expectedEnglish = "This email address is not registered with Naomi";
-        const expectedFrench = "Cette adresse e-mail n'est pas enregistrée dans Naomi"
-
-        expectTranslated(wrapper.find(Modal).find(".text-danger"), expectedEnglish, expectedFrench, store);
     });
 
     it("translates button text", () => {
