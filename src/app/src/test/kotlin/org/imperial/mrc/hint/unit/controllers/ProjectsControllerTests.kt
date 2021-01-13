@@ -100,6 +100,7 @@ class ProjectsControllerTests
         assertThat(projects.count()).isEqualTo(1)
         assertThat(projects[0]["id"].asInt()).isEqualTo(99)
         assertThat(projects[0]["name"].asText()).isEqualTo("testProject")
+        assertThat(projects[0]["sharedBy"].asText()).isEqualTo("")
         val versions = projects[0]["versions"] as ArrayNode
         assertThat(versions.count()).isEqualTo(1)
         assertExpectedVersion(versions[0])
@@ -126,6 +127,7 @@ class ProjectsControllerTests
         val versionNode = resultJson["version"]
         assertThat(projectNode["id"].asInt()).isEqualTo(99)
         assertThat(projectNode["name"].asText()).isEqualTo("testProject")
+        assertThat(projectNode["sharedBy"].asText()).isEqualTo("")
         assertThat(versionNode["id"].asText()).isEqualTo("testVersion")
     }
 
@@ -197,11 +199,11 @@ class ProjectsControllerTests
     {
         val mockVersionRepo = mock<VersionRepository>()
         val mockProjectRepo = mock<ProjectRepository> {
-            on { getProject(1, "testUser") } doReturn Project(1, "p1","",
+            on { getProject(1, "testUser") } doReturn Project(1, "p1",
                     listOf(Version("v1", "createdTime", "updatedTime", 1),
                     Version("v2", "createdTime", "updatedTime", 1)))
-            on { saveClonedProject("uid1", "p1","testUser") } doReturn 2
-            on { saveClonedProject("uid2", "p1","testUser") } doReturn 3
+            on { saveNewProject("uid1", "p1","testUser") } doReturn 2
+            on { saveNewProject("uid2", "p1","testUser") } doReturn 3
         }
         val mockLogic = mock<UserLogic> {
             on { getUser("new.user@email.com") } doReturn CommonProfile().apply { id = "uid1" }

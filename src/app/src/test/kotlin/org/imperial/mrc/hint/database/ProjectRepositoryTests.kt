@@ -65,7 +65,7 @@ class ProjectRepositoryTests
     {
         val uid = setupUser()
 
-        val projectId = sut.saveClonedProject(uid, "testProjectRepo", uid)
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid)
         versionRepo.saveVersion("v1", projectId)
         val project = sut.getProject(projectId, uid)
         assertThat(project.name).isEqualTo("testProjectRepo")
@@ -159,7 +159,7 @@ class ProjectRepositoryTests
     {
         val uid = setupUser()
 
-        val projectId = sut.saveClonedProject(uid, "testProjectRepo", uid)
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid)
 
         val project = dsl.selectFrom(PROJECT)
                 .where(PROJECT.ID.eq(projectId))

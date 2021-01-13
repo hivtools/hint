@@ -41,7 +41,7 @@ class ProjectsController(private val session: Session,
         val userIds = emails.map { userLogic.getUser(it)?.id ?: throw UserException("userDoesNotExist") }
         val currentProject = projectRepository.getProject(projectId, userId())
         userIds.forEach {
-            val newProjectId = projectRepository.saveClonedProject(it, currentProject.name, userId())
+            val newProjectId = projectRepository.saveNewProject(it, currentProject.name, userId())
             currentProject.versions.forEach {
                 versionRepository.cloneVersion(it.id, session.generateVersionId(), newProjectId)
             }

@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.db
 
 import org.imperial.mrc.hint.db.Tables.PROJECT
 import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
+import org.imperial.mrc.hint.db.tables.records.ProjectRecord
 import org.imperial.mrc.hint.exceptions.ProjectException
 import org.imperial.mrc.hint.models.Project
 import org.imperial.mrc.hint.models.Version
@@ -11,8 +12,7 @@ import org.springframework.stereotype.Component
 
 interface ProjectRepository
 {
-    fun saveNewProject(userId: String, projectName: String): Int
-    fun saveClonedProject(userId: String, projectName: String, sharedBy: String): Int
+    fun saveNewProject(userId: String, projectName: String, sharedBy: String?= null): Int
     fun getProjects(userId: String): List<Project>
     fun deleteProject(projectId: Int, userId: String)
     fun getProject(projectId: Int, userId: String): Project
@@ -63,17 +63,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
         return getProject(projectId[PROJECT_VERSION.PROJECT_ID], userId)
     }
 
-    override fun saveNewProject(userId: String, projectName: String): Int
-    {
-        val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME)
-                .values(userId, projectName)
-                .returning(PROJECT.ID)
-                .fetchOne()
-
-        return result[PROJECT.ID]
-    }
-
-    override fun saveClonedProject(userId: String, projectName: String, sharedBy: String): Int
+    override fun saveNewProject(userId: String, projectName: String, sharedBy: String?): Int
     {
         val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY)
                 .values(userId, projectName, sharedBy)
@@ -138,11 +128,8 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
 
     private fun mapProject(versions: List<Record>): Project
     {
-        if(versions[0][PROJECT.SHARED_BY] != null ){
-            return Project(versions[0][PROJECT.ID], versions[0][PROJECT.NAME],
-                    versions[0][PROJECT.SHARED_BY], mapVersion(versions))
-        }
-        return Project(versions[0][PROJECT.ID], versions[0][PROJECT.NAME], mapVersion(versions))
+        return Project(versions[0][PROJECT.ID], versions[0][PROJECT.NAME],
+                     mapVersion(versions), versions[0][PROJECT.SHARED_BY])
     }
 
     private fun mapVersion(records: List<Record>): List<Version>
