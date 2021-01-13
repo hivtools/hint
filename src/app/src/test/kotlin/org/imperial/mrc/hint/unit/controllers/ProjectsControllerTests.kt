@@ -232,7 +232,7 @@ class ProjectsControllerTests
         assertThatThrownBy { sut.cloneProjectToUser(1, userList) }
                 .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("userDoesNotExist")
-        verify(mockRepo, Times(0)).saveNewProject(any(), any())
+        verify(mockRepo, Times(0)).saveNewProject(any(), any(),any())
 
     }
 
