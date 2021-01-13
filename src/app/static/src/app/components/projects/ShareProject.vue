@@ -175,6 +175,7 @@
             cancelShareProject() {
                 this.emailsToShareWith = [{value: "", valid: null, validationMessage: "blank"}];
                 this.open = false;
+                this.showValidationMessage = false;
             }
         },
         computed: {
