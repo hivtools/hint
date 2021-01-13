@@ -110,7 +110,7 @@ class ProjectsControllerTests
     fun `gets current Project`()
     {
         val mockVersion = Version("testVersion", "createdTime", "updatedTime", 1)
-        val mockProject = Project(99, "testProject", listOf(mockVersion))
+        val mockProject = Project(99, "testProject", listOf(mockVersion),"shared@example.com")
         val mockProjectRepo = mock<ProjectRepository> {
             on { getProjectFromVersionId("testVersion", "testUser") } doReturn mockProject
         }
@@ -127,7 +127,7 @@ class ProjectsControllerTests
         val versionNode = resultJson["version"]
         assertThat(projectNode["id"].asInt()).isEqualTo(99)
         assertThat(projectNode["name"].asText()).isEqualTo("testProject")
-        assertThat(projectNode["sharedBy"].asText()).isEqualTo("")
+        assertThat(projectNode["sharedBy"].asText()).isEqualTo("shared@example.com")
         assertThat(versionNode["id"].asText()).isEqualTo("testVersion")
     }
 
