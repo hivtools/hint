@@ -16,7 +16,7 @@
                                @keyup.delete="removeEmail(email, index)"
                                class="form-control"
                                :class="{'is-invalid': email.valid === false}"
-                               @blur="() => addEmail()"
+                               @blur="() => addEmail(email, index)"
                                @mouseout="$event.target.blur()"
                                v-model="email.value"/>
                     </div>
@@ -93,7 +93,7 @@
     }
 
     interface Methods {
-        addEmail: () => void
+        addEmail: (email: EmailToShareWith, index: number) => void
         removeEmail: (email: EmailToShareWith, index: number) => void
         shareProject: (e: Event) => void
         confirmShareProject: () => void
@@ -120,40 +120,37 @@
         methods: {
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
-            addEmail() {
-                this.emailsToShareWith.map((email: EmailToShareWith, index: number) => {
+            addEmail(e: EmailToShareWith, index: number) {
+                if (e.value && index == this.emailsToShareWith.length - 1) {
+                    this.emailsToShareWith.push({
+                        value: "",
+                        valid: null,
+                        validationMessage: "blank"
+                    });
+                }
+                this.emailsToShareWith.map(async (email: EmailToShareWith, index: number) => {
                     if (email.value) {
-                        if (index == this.emailsToShareWith.length - 1) {
-                            // if blur event fires on the last input
-                            // add another input below it
-                            this.emailsToShareWith.push({
-                                value: "",
-                                valid: null,
-                                validationMessage: "blank"
-                            });
-                        }
-                        const duplicateEmails = this.emailsToShareWith.filter(val => val.value === email.value).length > 1
-                        if (email.value !== currentUser && !duplicateEmails){
-                        this.userExists(email.value)
-                            .then((result: boolean) => {
-                                this.emailsToShareWith[index].valid = result;
-                                this.emailsToShareWith[index].validationMessage = "emailNotRegistered";
-                                this.showValidationMessage = this.invalidEmails;
-                            })
-                        } else if (email.value === currentUser) {
-                            this.emailsToShareWith[index].valid = false;
-                            this.emailsToShareWith[index].validationMessage = "projectsNoSelfShare";
-                            this.showValidationMessage = this.invalidEmails;
+                        let invalidMsg = null;
+
+                        if (email.value == currentUser) {
+                            invalidMsg = "projectsNoSelfShare";
+                        } else if (this.emailsToShareWith.filter(val => val.value === email.value).length > 1) {
+                            invalidMsg = "duplicateEmails";
                         } else {
-                            this.emailsToShareWith[index].valid = false;
-                            this.emailsToShareWith[index].validationMessage = "duplicateEmails";
-                            this.showValidationMessage = this.invalidEmails;
+                            const result = await this.userExists(email.value);
+                            if (!result) {
+                                invalidMsg = "emailNotRegistered"
+                            }
                         }
+
+                        this.emailsToShareWith[index].validationMessage = invalidMsg || "";
+                        this.emailsToShareWith[index].valid = invalidMsg === null;
+
                     } else {
                         email.valid = null;
-                        this.showValidationMessage = this.invalidEmails;
                     }
-                })
+                });
+                this.showValidationMessage = this.invalidEmails;  //Could this be a computed property?
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
