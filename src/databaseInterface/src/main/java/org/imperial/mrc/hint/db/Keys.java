@@ -70,6 +70,7 @@ public class Keys {
 
     public static final ForeignKey<AdrKeyRecord, UsersRecord> ADR_KEY__ADR_KEY_USER_ID_FKEY = ForeignKeys0.ADR_KEY__ADR_KEY_USER_ID_FKEY;
     public static final ForeignKey<ProjectRecord, UsersRecord> PROJECT__PROJECT_USER_ID_FKEY = ForeignKeys0.PROJECT__PROJECT_USER_ID_FKEY;
+    public static final ForeignKey<ProjectRecord, UsersRecord> PROJECT__PROJECT_SHARED_BY_FKEY = ForeignKeys0.PROJECT__PROJECT_SHARED_BY_FKEY;
     public static final ForeignKey<ProjectVersionRecord, ProjectRecord> PROJECT_VERSION__PROJECT_VERSION_PROJECT_ID_FKEY = ForeignKeys0.PROJECT_VERSION__PROJECT_VERSION_PROJECT_ID_FKEY;
     public static final ForeignKey<SessionFileRecord, UserSessionRecord> SESSION_FILE__SESSION_FILE_SESSION_FKEY = ForeignKeys0.SESSION_FILE__SESSION_FILE_SESSION_FKEY;
     public static final ForeignKey<SessionFileRecord, FileRecord> SESSION_FILE__SESSION_FILE_HASH_FKEY = ForeignKeys0.SESSION_FILE__SESSION_FILE_HASH_FKEY;
@@ -100,6 +101,7 @@ public class Keys {
     private static class ForeignKeys0 {
         public static final ForeignKey<AdrKeyRecord, UsersRecord> ADR_KEY__ADR_KEY_USER_ID_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.USERS_PKEY, AdrKey.ADR_KEY, "adr_key__adr_key_user_id_fkey", AdrKey.ADR_KEY.USER_ID);
         public static final ForeignKey<ProjectRecord, UsersRecord> PROJECT__PROJECT_USER_ID_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.USERS_PKEY, Project.PROJECT, "project__project_user_id_fkey", Project.PROJECT.USER_ID);
+        public static final ForeignKey<ProjectRecord, UsersRecord> PROJECT__PROJECT_SHARED_BY_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.USERS_PKEY, Project.PROJECT, "project__project_shared_by_fkey", Project.PROJECT.SHARED_BY);
         public static final ForeignKey<ProjectVersionRecord, ProjectRecord> PROJECT_VERSION__PROJECT_VERSION_PROJECT_ID_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.PROJECT_PKEY, ProjectVersion.PROJECT_VERSION, "project_version__project_version_project_id_fkey", ProjectVersion.PROJECT_VERSION.PROJECT_ID);
         public static final ForeignKey<SessionFileRecord, UserSessionRecord> SESSION_FILE__SESSION_FILE_SESSION_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.USER_SESSION_PKEY, SessionFile.SESSION_FILE, "session_file__session_file_session_fkey", SessionFile.SESSION_FILE.SESSION);
         public static final ForeignKey<SessionFileRecord, FileRecord> SESSION_FILE__SESSION_FILE_HASH_FKEY = Internal.createForeignKey(org.imperial.mrc.hint.db.Keys.FILE_PKEY, SessionFile.SESSION_FILE, "session_file__session_file_hash_fkey", SessionFile.SESSION_FILE.HASH);

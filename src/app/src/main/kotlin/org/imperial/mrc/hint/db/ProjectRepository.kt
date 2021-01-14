@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.db
 
 import org.imperial.mrc.hint.db.Tables.PROJECT
 import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
+import org.imperial.mrc.hint.db.tables.records.ProjectRecord
 import org.imperial.mrc.hint.exceptions.ProjectException
 import org.imperial.mrc.hint.models.Project
 import org.imperial.mrc.hint.models.Version
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component
 
 interface ProjectRepository
 {
-    fun saveNewProject(userId: String, projectName: String): Int
+    fun saveNewProject(userId: String, projectName: String, sharedBy: String?= null): Int
     fun getProjects(userId: String): List<Project>
     fun deleteProject(projectId: Int, userId: String)
     fun getProject(projectId: Int, userId: String): Project
@@ -29,6 +30,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
         val projectRecord = dsl.select(
                 PROJECT.ID,
                 PROJECT.NAME,
+                PROJECT.SHARED_BY,
                 PROJECT_VERSION.ID,
                 PROJECT_VERSION.CREATED,
                 PROJECT_VERSION.UPDATED,
@@ -61,10 +63,10 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
         return getProject(projectId[PROJECT_VERSION.PROJECT_ID], userId)
     }
 
-    override fun saveNewProject(userId: String, projectName: String): Int
+    override fun saveNewProject(userId: String, projectName: String, sharedBy: String?): Int
     {
-        val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME)
-                .values(userId, projectName)
+        val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY)
+                .values(userId, projectName, sharedBy)
                 .returning(PROJECT.ID)
                 .fetchOne()
 
@@ -77,6 +79,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 dsl.select(
                         PROJECT.ID,
                         PROJECT.NAME,
+                        PROJECT.SHARED_BY,
                         PROJECT_VERSION.ID,
                         PROJECT_VERSION.CREATED,
                         PROJECT_VERSION.UPDATED,
@@ -125,7 +128,8 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
 
     private fun mapProject(versions: List<Record>): Project
     {
-        return Project(versions[0][PROJECT.ID], versions[0][PROJECT.NAME], mapVersion(versions))
+        return Project(versions[0][PROJECT.ID], versions[0][PROJECT.NAME],
+                     mapVersion(versions), versions[0][PROJECT.SHARED_BY])
     }
 
     private fun mapVersion(records: List<Record>): List<Version>

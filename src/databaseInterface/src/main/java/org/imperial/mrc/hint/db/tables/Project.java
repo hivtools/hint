@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = 30005481;
+    private static final long serialVersionUID = 996241108;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -73,6 +73,11 @@ public class Project extends TableImpl<ProjectRecord> {
      * The column <code>public.project.note</code>.
      */
     public final TableField<ProjectRecord, String> NOTE = createField("note", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>public.project.shared_by</code>.
+     */
+    public final TableField<ProjectRecord, String> SHARED_BY = createField("shared_by", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * Create a <code>public.project</code> table reference
@@ -148,7 +153,7 @@ public class Project extends TableImpl<ProjectRecord> {
      */
     @Override
     public List<ForeignKey<ProjectRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ProjectRecord, ?>>asList(Keys.PROJECT__PROJECT_USER_ID_FKEY);
+        return Arrays.<ForeignKey<ProjectRecord, ?>>asList(Keys.PROJECT__PROJECT_USER_ID_FKEY, Keys.PROJECT__PROJECT_SHARED_BY_FKEY);
     }
 
     /**

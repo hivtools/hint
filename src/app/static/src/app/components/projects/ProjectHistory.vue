@@ -5,12 +5,13 @@
             <div class="col-md-1 header-cell"></div>
             <div class="col-md-2 header-cell" v-translate="'projectName'"></div>
             <div class="col-md-1 header-cell">Versions</div>
-            <div class="col-md-3 header-cell" v-translate="'lastUpdated'"></div>
+            <div class="col-md-2 header-cell" v-translate="'lastUpdated'"></div>
             <div class="col-md-1 header-cell" v-translate="'load'"></div>
             <div class="col-md-1 header-cell" v-translate="'renameProjectHistoryHeader'"></div>
             <div class="col-md-1 header-cell" v-translate="'delete'"></div>
             <div class="col-md-1 header-cell" v-translate="'copyToNewProjectHistoryHeader'"></div>
             <div class="col-md-1 header-cell" v-translate="'share'"></div>
+            <div class="col-md-1 header-cell" v-translate="'sharedBy'"></div>
         </div>
         <hr/>
         <div v-for="p in projects" :key="p.id">
@@ -32,13 +33,13 @@
                 <div class="col-md-2 project-cell">
                     <a href="#"
                     @click="loadVersion($event, p.id, p.versions[0].id)">
-                    {{ p.name }}
+                    {{ p.name}}
                     </a>
                 </div>
                 <div class="col-md-1 project-cell">
                     <small class="text-muted">{{ versionCountLabel(p) }}</small>
                 </div>
-                <div class="col-md-3 project-cell">
+                <div class="col-md-2 project-cell">
                     {{ format(p.versions[0].updated) }}
                 </div>
                 <div class="col-md-1 project-cell"
@@ -77,6 +78,9 @@
 
                 <div class="col-md-1 project-cell" v-if="shareProjectIsEnabled">
                     <share-project :project="p"></share-project>
+                </div>
+                <div class="col-md-1 project-cell">
+                    {{p.sharedBy}}
                 </div>
             </div>
             <b-collapse :id="`versions-${p.id}`">
@@ -195,6 +199,7 @@
     import ShareProject from "./ShareProject.vue";
     import {switches} from "../../featureSwitches";
     import {VTooltip} from 'v-tooltip';
+    import {projects} from "../../store/projects/projects";
 
     const namespace = "projects";
 
@@ -279,7 +284,7 @@
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
-            ),
+            )
         },
         methods: {
             format(date: string) {

@@ -1,6 +1,11 @@
+
+# hint 1.13.0
+* Add indication that a project was shared by someone else
+
 # hint 1.12.3
 
 * prevent users from sharing projects with self or sharing with the same email twice
+
 
 # hint 1.12.2
 

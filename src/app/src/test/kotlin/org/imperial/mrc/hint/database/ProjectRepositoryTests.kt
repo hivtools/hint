@@ -51,6 +51,25 @@ class ProjectRepositoryTests
         versionRepo.saveVersion("v1", projectId)
         val project = sut.getProject(projectId, uid)
         assertThat(project.name).isEqualTo("testProjectRepo")
+        assertThat(project.sharedBy).isEqualTo(null)
+        assertThat(project.id).isEqualTo(projectId)
+        assertThat(project.versions.count()).isEqualTo(1)
+        assertThat(project.versions[0].versionNumber).isEqualTo(1)
+        assertThat(project.versions[0].id).isEqualTo("v1")
+        assertThat(project.versions[0].created).isNotNull()
+        assertThat(project.versions[0].updated).isNotNull()
+    }
+
+    @Test
+    fun `can get project when cloned`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid)
+        versionRepo.saveVersion("v1", projectId)
+        val project = sut.getProject(projectId, uid)
+        assertThat(project.name).isEqualTo("testProjectRepo")
+        assertThat(project.sharedBy).isEqualTo(uid)
         assertThat(project.id).isEqualTo(projectId)
         assertThat(project.versions.count()).isEqualTo(1)
         assertThat(project.versions[0].versionNumber).isEqualTo(1)
@@ -90,6 +109,7 @@ class ProjectRepositoryTests
         versionRepo.saveVersion("v1", projectId)
         val project = sut.getProjectFromVersionId("v1", uid)
         assertThat(project.name).isEqualTo("testProjectRepo")
+        assertThat(project.sharedBy).isEqualTo(null)
         assertThat(project.id).isEqualTo(projectId)
         assertThat(project.versions.count()).isEqualTo(1)
         assertThat(project.versions[0].versionNumber).isEqualTo(1)
@@ -132,6 +152,22 @@ class ProjectRepositoryTests
 
         assertThat(project[PROJECT.USER_ID]).isEqualTo(uid)
         assertThat(project[PROJECT.NAME]).isEqualTo("testProjectRepo")
+    }
+
+    @Test
+    fun `can save cloned project`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid)
+
+        val project = dsl.selectFrom(PROJECT)
+                .where(PROJECT.ID.eq(projectId))
+                .fetchOne()
+
+        assertThat(project[PROJECT.USER_ID]).isEqualTo(uid)
+        assertThat(project[PROJECT.NAME]).isEqualTo("testProjectRepo")
+        assertThat(project[PROJECT.SHARED_BY]).isEqualTo(uid)
     }
 
     @Test
@@ -203,7 +239,7 @@ class ProjectRepositoryTests
         val ago_4h = now().minus(4, ChronoUnit.HOURS)
 
 
-        val v1Id = insertProject("v1", userId)
+        val v1Id = insertProject("v1", userId, "another.user@example.com")
         val v2Id = insertProject("v2", userId)
         val anotherProject = insertProject("v2", anotherUserId) //should not be returned
 
@@ -221,6 +257,7 @@ class ProjectRepositoryTests
         val p2 = projects[0]
         assertThat(p2.id).isEqualTo(v2Id)
         assertThat(p2.name).isEqualTo("v2")
+        assertThat(p2.sharedBy).isEqualTo(null)
         assertThat(p2.versions.count()).isEqualTo(1)
         assertThat(p2.versions[0].id).isEqualTo("v2s1")
         assertThat(p2.versions[0].created).isEqualTo(format(ago_3h))
@@ -230,6 +267,7 @@ class ProjectRepositoryTests
         val p1 = projects[1]
         assertThat(p1.id).isEqualTo(v1Id)
         assertThat(p1.name).isEqualTo("v1")
+        assertThat(p1.sharedBy).isEqualTo("another.user@example.com")
         assertThat(p1.versions.count()).isEqualTo(2)
         assertThat(p1.versions[0].id).isEqualTo("v1s2")
         assertThat(p1.versions[0].created).isEqualTo(format(ago_2h))
@@ -253,10 +291,10 @@ class ProjectRepositoryTests
         return formatter.format(LocalDateTime.ofInstant(time, ZoneId.systemDefault()))
     }
 
-    private fun insertProject(name: String, userId: String): Int
+    private fun insertProject(name: String, userId: String, sharedBy: String? = null): Int
     {
-        val saved = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME)
-                .values(userId, name)
+        val saved = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY)
+                .values(userId, name, sharedBy)
                 .returning(PROJECT.ID)
                 .fetchOne()
 

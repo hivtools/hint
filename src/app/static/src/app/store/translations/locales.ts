@@ -150,6 +150,7 @@ export interface Translations {
     sex: string,
     shape: string,
     share: string,
+    sharedBy: string,
     shareProject: string,
     shareProjectInstructions: string,
     sizeIndicator: string,
@@ -325,6 +326,7 @@ const en: Translations = {
     sex: "Sex",
     shape: "Area boundary file",
     share: "Share",
+    sharedBy: "Shared by",
     shareProject: "Share project",
     shareProjectInstructions: "<p>" +
         "This will create a copy of {{ project }} for the given users." +
@@ -506,6 +508,7 @@ const fr: Partial<Translations> = {
     sex: "Sexe",
     shape: "Fichier de formes",
     share: "Partager",
+    sharedBy: "Partagé par",
     shareProject: "Partager ce project",
     shareProjectInstructions: "<p>" +
         "Cela créera une copie de {{ project }} pour les utilisateurs désignés." +

@@ -53,7 +53,7 @@ describe("Project history component", () => {
 
     const testProjects = [
         {
-            id: 1, name: "proj1", versions: [
+            id: 1, name: "proj1", sharedBy : "shared@email.com", versions: [
                 {id: "s11", created: isoDates[0], updated: isoDates[1], versionNumber: 1},
                 {id: "s12", created: isoDates[1], updated: isoDates[2], versionNumber: 2}]
         },
@@ -144,7 +144,7 @@ describe("Project history component", () => {
         expect(wrapper.find("h5").text()).toBe("Project history");
 
         const headers = wrapper.find("#headers").findAll(".header-cell");
-        expect(headers.length).toBe(9);
+        expect(headers.length).toBe(10);
         expect(headers.at(0).text()).toBe("");
         expectTranslated(headers.at(1), "Project name", "Nom du projet", store);
         expectTranslated(headers.at(2), "Versions", "Versions", store);
@@ -154,8 +154,9 @@ describe("Project history component", () => {
         expectTranslated(headers.at(6), "Delete", "Supprimer", store);
         expectTranslated(headers.at(7), "Copy to", "Copier", store);
         expectTranslated(headers.at(8), "Share", "Partager", store);
+        expectTranslated(headers.at(9), "Shared by", "Partagé par", store);
         
-        testRendersProject(wrapper, 1, "proj1", isoDates[1], 2);
+        testRendersProject(wrapper, 1, "proj1",  isoDates[1], 2);
         const proj1Versions = wrapper.find("#versions-1");
         const proj1VersionRows = proj1Versions.findAll(".row");
         expect(proj1VersionRows.length).toBe(2);
@@ -509,5 +510,17 @@ describe("Project history component", () => {
             expect(mockRenameProject.mock.calls.length).toBe(0);
             expect(vm.projectToRename).toBe(null);
             expect(vm.renamedProjectName).toBe("renamedProject");
+    });
+
+    it('can render shared by email when project is shared', () => {
+        const wrapper = getWrapper();
+        const v = wrapper.find(`#p-1`).findAll(".project-cell");
+        expect(v.at(9).text()).toBe("shared@email.com")
+    });
+
+    it('does not render shared by email when project is not shared', () => {
+        const wrapper = getWrapper();
+        const v = wrapper.find(`#p-2`).findAll(".project-cell");
+        expect(v.at(9).text()).toBe("")
     });
 });
