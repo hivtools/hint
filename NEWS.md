@@ -1,3 +1,5 @@
+# hint 1.14.0
+* Hide project history column(shared by) when no data
 
 # hint 1.13.0
 * Add indication that a project was shared by someone else

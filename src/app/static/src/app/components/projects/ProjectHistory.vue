@@ -11,7 +11,8 @@
             <div class="col-md-1 header-cell" v-translate="'delete'"></div>
             <div class="col-md-1 header-cell" v-translate="'copyToNewProjectHistoryHeader'"></div>
             <div class="col-md-1 header-cell" v-translate="'share'"></div>
-            <div class="col-md-1 header-cell" v-translate="'sharedBy'"></div>
+            <div :class="hasSharedBy? '' : 'd-none'"
+                 class="col-md-1 header-cell" v-translate="'sharedBy'"></div>
         </div>
         <hr/>
         <div v-for="p in projects" :key="p.id">
@@ -79,7 +80,7 @@
                 <div class="col-md-1 project-cell" v-if="shareProjectIsEnabled">
                     <share-project :project="p"></share-project>
                 </div>
-                <div class="col-md-1 project-cell">
+                <div :class="p.sharedBy? '' : 'd-none'" class="col-md-1 project-cell">
                     {{p.sharedBy}}
                 </div>
             </div>
@@ -221,6 +222,7 @@
         disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
+        hasSharedBy: boolean;
     }
 
     interface Methods {
@@ -284,7 +286,11 @@
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
-            )
+            ),
+            hasSharedBy: function () {
+                const proj = this.projects.filter(project => project.sharedBy != null)
+                return !!proj.length
+            }
         },
         methods: {
             format(date: string) {

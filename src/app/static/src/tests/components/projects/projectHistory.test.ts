@@ -198,7 +198,6 @@ describe("Project history component", () => {
             });
         });
     });
-
     it("does not render if no previous projects", () => {
         const wrapper = getWrapper([]);
         expect(wrapper.findAll("div").length).toBe(0);
@@ -516,11 +515,47 @@ describe("Project history component", () => {
         const wrapper = getWrapper();
         const v = wrapper.find(`#p-1`).findAll(".project-cell");
         expect(v.at(9).text()).toBe("shared@email.com")
+        expect(v.at(9).classes("d-none")).toBe(false)
     });
 
     it('does not render shared by email when project is not shared', () => {
         const wrapper = getWrapper();
         const v = wrapper.find(`#p-2`).findAll(".project-cell");
         expect(v.at(9).text()).toBe("")
+        expect(v.at(9).classes("d-none")).toBe(true)
+    });
+
+    it("does not render sharedBy header when project sharedBy is empty", () => {
+        const testSharedProjects = [
+            {
+                id: 1, name: "proj1",  versions: [
+                    {id: "s11", created: isoDates[0], updated: isoDates[1], versionNumber: 1},
+                    {id: "s12", created: isoDates[1], updated: isoDates[2], versionNumber: 2}]
+            },
+            {
+                id: 2, name: "proj2", versions: [
+                    {id: "s21", created: isoDates[2], updated: isoDates[3], versionNumber: 1}]
+            }
+        ];
+        const wrapper = getWrapper(testSharedProjects);
+        const headers = wrapper.find("#headers").findAll(".header-cell");
+        expect(headers.at(9).classes("d-none")).toBe(true)
+    });
+
+    it("renders sharedBy header when project has sharedBy", () => {
+        const testSharedProjects = [
+            {
+                id: 1, name: "proj1", sharedBy: "shared@email.com", versions: [
+                    {id: "s11", created: isoDates[0], updated: isoDates[1], versionNumber: 1},
+                    {id: "s12", created: isoDates[1], updated: isoDates[2], versionNumber: 2}]
+            },
+            {
+                id: 2, name: "proj2", versions: [
+                    {id: "s21", created: isoDates[2], updated: isoDates[3], versionNumber: 1}]
+            }
+        ];
+        const wrapper = getWrapper(testSharedProjects);
+        const headers = wrapper.find("#headers").findAll(".header-cell");
+        expect(headers.at(9).classes("d-none")).toBe(false)
     });
 });
