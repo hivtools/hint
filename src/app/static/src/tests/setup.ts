@@ -10,7 +10,6 @@ document.body.appendChild(app);
 
 // implement innerText as its not implemented in jest/jsdom
 // https://github.com/jsdom/jsdom/issues/1245
-declare const global: any
 Object.defineProperty((global as any).Element.prototype, 'innerText', {
     get() {
         return this.textContent
