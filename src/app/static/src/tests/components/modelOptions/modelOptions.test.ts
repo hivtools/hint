@@ -69,6 +69,9 @@ describe("Model options component", () => {
         const store = createStore({optionsFormMeta: {controlSections: []}});
         const rendered = shallowMount(ModelOptions, {store});
         expect(rendered.findAll(DynamicForm).length).toBe(1);
+        const form = rendered.find(DynamicForm);
+        expect(form.props("requiredText")).toBe("required");
+        expect(form.props("selectText")).toBe("Select...");
         expect(rendered.findAll(LoadingSpinner).length).toBe(0);
         expect(rendered.find("#validating").exists()).toBe(false);
     });
