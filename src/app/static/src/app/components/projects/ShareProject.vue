@@ -22,8 +22,8 @@
                     </div>
                     <div class="col">
                         <div class="small text-danger"
-                             :class="{'d-none': email.valid !== false}"
-                             v-translate="'emailNotRegistered'">
+                             v-if="email.valid === false"
+                             v-translate="email.validationMessage">
                         </div>
                     </div>
                 </div>
@@ -70,12 +70,12 @@
     interface EmailToShareWith {
         value: string
         valid: boolean | null
+        validationMessage: string
     }
 
     interface Data {
         emailsToShareWith: EmailToShareWith[]
         open: boolean
-        showValidationMessage: boolean
     }
 
     interface Props {
@@ -89,6 +89,7 @@
         cloneProjectError: Error | null
         cloningProject: boolean
         tooltipShare: string
+        showValidationMessage: boolean
     }
 
     interface Methods {
@@ -101,6 +102,8 @@
         cloneProject: (payload: CloneProjectPayload) => void
     }
 
+    declare const currentUser: string; 
+
     export default Vue.extend<Data, Methods, Computed, Props>({
         props: {
             project: {
@@ -109,40 +112,49 @@
         },
         data() {
             return {
-                emailsToShareWith: [{value: "", valid: null}],
-                open: false,
-                showValidationMessage: false
+                emailsToShareWith: [{value: "", valid: null, validationMessage: ""}],
+                open: false
             }
         },
         methods: {
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
             addEmail(e: EmailToShareWith, index: number) {
-                if (e.value) {
-                    if (index == this.emailsToShareWith.length - 1) {
-                        // if blur event fires on the last input
-                        // add another input below it
-                        this.emailsToShareWith.push({
-                            value: "",
-                            valid: null
-                        });
-                    }
-                    this.userExists(e.value)
-                        .then((result: boolean) => {
-                            this.emailsToShareWith[index].valid = result;
-                            this.showValidationMessage = this.invalidEmails;
-                        })
-                } else {
-                    e.valid = null;
-                    this.showValidationMessage = this.invalidEmails;
+                if (e.value && index == this.emailsToShareWith.length - 1) {
+                    this.emailsToShareWith.push({
+                        value: "",
+                        valid: null,
+                        validationMessage: ""
+                    });
                 }
+                this.emailsToShareWith.map(async (email: EmailToShareWith, index: number) => {
+                    if (email.value) {
+                        let invalidMsg = null;
+
+                        if (email.value == currentUser) {
+                            invalidMsg = "projectsNoSelfShare";
+                        } else if (this.emailsToShareWith.filter(val => val.value === email.value).length > 1) {
+                            invalidMsg = "duplicateEmails";
+                        } else {
+                            const result = await this.userExists(email.value);
+                            if (!result) {
+                                invalidMsg = "emailNotRegistered"
+                            }
+                        }
+
+                        this.emailsToShareWith[index].validationMessage = invalidMsg || "";
+                        this.emailsToShareWith[index].valid = invalidMsg === null;
+
+                    } else {
+                        email.valid = null;
+                    }
+                });
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
                 // remove from UI
                 if (!email.value && index < this.emailsToShareWith.length - 1) {
                     this.emailsToShareWith.splice(index, 1);
-                    this.showValidationMessage = this.invalidEmails;
                 }
             },
             shareProject(e: Event) {
@@ -158,7 +170,7 @@
                 }
             },
             cancelShareProject() {
-                this.emailsToShareWith = [{value: "", valid: null}];
+                this.emailsToShareWith = [{value: "", valid: null, validationMessage: ""}];
                 this.open = false;
             }
         },
@@ -170,11 +182,16 @@
                 return i18next.t('shareProjectInstructions', {project: this.project.name, lng: this.currentLanguage});
             },
             invalidEmails() {
+                //Invalid state until all emails evaluated as valid = true (may not have blurred yet)...
                 return this.emailsToShareWith.filter(e => e.value && !e.valid).length > 0
+            },
+            showValidationMessage() {
+                //...however only show error message if any confirmed to be valid = false
+                return this.emailsToShareWith.filter(e => e.value && e.valid === false).length > 0
             },
             tooltipShare() {
                 return i18next.t("share", {
-                    lng: this.currentLanguage,
+                    lng: this.currentLanguage
                 });
             }
         },
@@ -190,7 +207,7 @@
         watch: {
             cloningProject(newVal: boolean) {
                 if (!newVal && !this.cloneProjectError) {
-                    this.emailsToShareWith = [{value: "", valid: null}];
+                    this.emailsToShareWith = [{value: "", valid: null, validationMessage: ""}];
                     this.open = false;
                 }
             }
