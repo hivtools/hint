@@ -645,7 +645,7 @@ describe("Stepper component", () => {
             {activeStep: step});
     };
 
-    it("complete step only becomes active/complete once state becomes ready", async () => {
+    it.skip("complete step only becomes active/complete once state becomes ready", async () => {
 
         const wrapper = createSut(completedBaselineState,
             {},
