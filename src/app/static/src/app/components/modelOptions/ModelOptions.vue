@@ -7,7 +7,7 @@
         <dynamic-form v-if="!loading && !hasOptionsError"
                       v-model="modelOptions"
                       submit-text="Validate"
-                      v-on:mousedown.native="confirmEditing"
+                      @confirmEditing="confirmEditing"
                       @submit="validate"
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
