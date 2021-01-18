@@ -1,4 +1,4 @@
-# hint 1.13.1
+# hint 1.13.2
 
 * Update translations using reviewed strings from UNAIDS
 
