@@ -15,6 +15,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {getters} from "../../../app/store/root/getters";
 import {expectTranslated} from "../../testHelpers";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import {Language} from "../../../app/store/translations/locales";
 
 describe("Model options component", () => {
 
@@ -38,7 +39,8 @@ describe("Model options component", () => {
 
     const createStore = (props: Partial<ModelOptionsState>,
                          mutations: MutationTree<ModelOptionsState> = mockMutations,
-                         actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) => {
+                         actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions,
+                         rootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
             modules: {
                 modelOptions: {
@@ -59,7 +61,7 @@ describe("Model options component", () => {
                 }
             },
             getters: getters,
-            state: mockRootState({currentUser: 'guest'})
+            state: mockRootState({currentUser: 'guest', ...rootState})
         });
         registerTranslations(store);
         return store;
@@ -69,8 +71,18 @@ describe("Model options component", () => {
         const store = createStore({optionsFormMeta: {controlSections: []}});
         const rendered = shallowMount(ModelOptions, {store});
         expect(rendered.findAll(DynamicForm).length).toBe(1);
+        const form = rendered.find(DynamicForm);
+        expect(form.props("requiredText")).toBe("required");
+        expect(form.props("selectText")).toBe("Select...");
         expect(rendered.findAll(LoadingSpinner).length).toBe(0);
         expect(rendered.find("#validating").exists()).toBe(false);
+    });
+
+    it("translates required text and select text", () => {
+        const store = createStore({}, mockMutations, mockActions, {language: Language.fr});
+        const wrapper = shallowMount(ModelOptions, {store});
+        expect(wrapper.find(DynamicForm).props("requiredText")).toBe("obligatoire");
+        expect(wrapper.find(DynamicForm).props("selectText")).toBe("Sélectionner...");
     });
 
     it("displays loading spinner while fetching is true", () => {
