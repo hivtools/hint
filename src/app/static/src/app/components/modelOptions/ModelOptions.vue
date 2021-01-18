@@ -91,10 +91,10 @@
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
             selectText() {
-                return i18next.t("select", this.currentLanguage)
+                return i18next.t("select", {lng: this.currentLanguage})
             },
             requiredText() {
-                return i18next.t("required", this.currentLanguage)
+                return i18next.t("required", {lng: this.currentLanguage})
             },
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             modelOptions: {
