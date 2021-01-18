@@ -93,7 +93,7 @@
                     <div class="col-md-1 version-cell">
                         {{ versionLabel(v) }}
                     </div>
-                    <div class="col-md-3 version-cell">
+                    <div class="col-md-2 version-cell">
                         {{ format(v.updated) }}
                     </div>
                     <div class="col-md-1 version-cell" 
