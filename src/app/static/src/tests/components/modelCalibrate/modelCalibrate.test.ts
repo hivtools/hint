@@ -15,9 +15,9 @@ import { Language } from "../../../app/store/translations/locales";
 
 describe("Model calibrate component", () => {
     const getStore = (state: Partial<ModelCalibrateState> = {}, fetchAction = jest.fn(), submitAction = jest.fn(),
-                      updateMutation = jest.fn()) => {
+                      updateMutation = jest.fn(), rootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
-            state: mockRootState(),
+            state: mockRootState(rootState),
             modules: {
                 modelCalibrate: {
                     namespaced: true,
@@ -95,6 +95,18 @@ describe("Model calibrate component", () => {
         expect(wrapper.find("button").classes()).not.toContain("btn-secondary");
         expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(false);
         expect(wrapper.find("#calibration-complete").exists()).toBe(false);
+    });
+
+    it("translates required text", () => {
+        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
+        const wrapper = shallowMount(ModelCalibrate, {store});
+        expect(wrapper.find(DynamicForm).props("requiredText")).toBe("obligatoire");
+    });
+
+    it("translates select text", () => {
+        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
+        const wrapper = shallowMount(ModelCalibrate, {store});
+        expect(wrapper.find(DynamicForm).props("selectText")).toBe("Sélectionner...");
     });
 
     it("renders calibration complete message", () => {
