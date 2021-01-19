@@ -1,7 +1,17 @@
+
 # hint 1.14.0
 * Add custom event to trigger confirmation modal in modelOption 
 
+# hint 1.13.2
+
+* Update translations using reviewed strings from UNAIDS
+
+# hint 1.13.1
+
+* Translate 'Select...' in form drop downs and 'required' warning
+
 # hint 1.13.0
+
 * Add indication that a project was shared by someone else
 
 # hint 1.12.3

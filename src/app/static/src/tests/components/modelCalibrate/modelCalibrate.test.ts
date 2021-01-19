@@ -11,12 +11,13 @@ import {expectTranslated} from "../../testHelpers";
 import Tick from "../../../app/components/Tick.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {ModelCalibrateMutation} from "../../../app/store/modelCalibrate/mutations";
+import { Language } from "../../../app/store/translations/locales";
 
 describe("Model calibrate component", () => {
     const getStore = (state: Partial<ModelCalibrateState> = {}, fetchAction = jest.fn(), submitAction = jest.fn(),
-                      updateMutation = jest.fn()) => {
+                      updateMutation = jest.fn(), rootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
-            state: mockRootState(),
+            state: mockRootState(rootState),
             modules: {
                 modelCalibrate: {
                     namespaced: true,
@@ -83,8 +84,8 @@ describe("Model calibrate component", () => {
         expect(wrapper.find(LoadingSpinner).exists()).toBe(false);
         expect(wrapper.find("#loading-message").exists()).toBe(false);
         const form = wrapper.find(DynamicForm);
-        expect(form.attributes("required-text")).toBe("required");
-        expect(form.attributes("select-text")).toBe("Select...");
+        expect(form.props("requiredText")).toBe("required");
+        expect(form.props("selectText")).toBe("Select...");
         expect(form.props("includeSubmitButton")).toBe(false);
         expect(form.find("h3").text()).toBe("Test Section");
         expect(form.find(".text-muted").text()).toBe("Just a test section");
@@ -94,6 +95,18 @@ describe("Model calibrate component", () => {
         expect(wrapper.find("button").classes()).not.toContain("btn-secondary");
         expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(false);
         expect(wrapper.find("#calibration-complete").exists()).toBe(false);
+    });
+
+    it("translates required text", () => {
+        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
+        const wrapper = shallowMount(ModelCalibrate, {store});
+        expect(wrapper.find(DynamicForm).props("requiredText")).toBe("obligatoire");
+    });
+
+    it("translates select text", () => {
+        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
+        const wrapper = shallowMount(ModelCalibrate, {store});
+        expect(wrapper.find(DynamicForm).props("selectText")).toBe("Sélectionner...");
     });
 
     it("renders calibration complete message", () => {
