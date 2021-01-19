@@ -445,7 +445,7 @@ describe("select dataset", () => {
         expect(rendered.findAll(TreeSelect).length).toBe(1);
         expect(rendered.find(Modal).findAll("button").length).toBe(2);
         expect(rendered.findAll("p").length).toBe(0);
-        expectTranslated(rendered.find("h4"), "Browse ADR", "Chercher ADR", store);
+        expectTranslated(rendered.find("h4"), "Browse ADR", "Parcourir ADR", store);
 
         rendered.setData({newDatasetId: "id2"});
         rendered.find(Modal).find("button").trigger("click");

@@ -509,7 +509,7 @@ describe("ShareProject", () => {
         const helpText = wrapper.find(Modal).find(".help-text");
 
         expectTranslated(helpText, "Please correct or remove invalid email addresses",
-            "Veuillez entrer les adresses e-mails valide", store);
+            "Veuillez corriger ou supprimer les adresses e-mails non-valides", store);
     });
 
     it("can render tooltips without an error", () => {
