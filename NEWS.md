@@ -1,3 +1,5 @@
+# hint 1.15.0
+* add custom event to open confirmation modal
 
 # hint 1.14.0
 * Add custom event to trigger confirmation modal in modelOption 
