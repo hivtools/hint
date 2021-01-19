@@ -149,7 +149,7 @@ describe("Project history component", () => {
         expectTranslated(headers.at(2), "Versions", "Versions", store);
         expectTranslated(headers.at(3), "Last updated", "Dernière mise à jour", store);
         expectTranslated(headers.at(4), "Load", "Charger", store);
-        expectTranslated(headers.at(5), "Rename", "Renommer", store);
+        expectTranslated(headers.at(5), "Rename", "Renommer le projet", store);
         expectTranslated(headers.at(6), "Delete", "Supprimer", store);
         expectTranslated(headers.at(7), "Copy to", "Copier", store);
         expectTranslated(headers.at(8), "Share", "Partager", store);
