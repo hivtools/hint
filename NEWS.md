@@ -1,3 +1,5 @@
+# hint 1.14.0
+* Add custom event to trigger confirmation modal in modelOption 
 
 # hint 1.13.0
 * Add indication that a project was shared by someone else
