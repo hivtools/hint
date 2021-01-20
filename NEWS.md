@@ -1,3 +1,6 @@
+# hint 1.16.0
+* validate Survey & Program file on change Baseline file
+
 # hint 1.15.0
 * add custom event to open confirmation modal
 

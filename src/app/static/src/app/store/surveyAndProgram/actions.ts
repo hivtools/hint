@@ -183,5 +183,29 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             ]);
 
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
+    },
+
+    async validateSurveyAndProgramData(context) {
+        const {commit} = context;
+        await Promise.all(
+            [
+                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+                    .withError(SurveyAndProgramMutation.SurveyError)
+                    .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
+                    .freezeResponse()
+                    .get<SurveyResponse>("/disease/survey/"),
+                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+                    .withError(SurveyAndProgramMutation.ProgramError)
+                    .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
+                    .freezeResponse()
+                    .get<ProgrammeResponse>("/disease/programme/"),
+                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+                    .withError(SurveyAndProgramMutation.ANCError)
+                    .withSuccess(SurveyAndProgramMutation.ANCUpdated)
+                    .freezeResponse()
+                    .get<AncResponse>("/disease/anc/")
+            ]);
+
+        commit({type: SurveyAndProgramMutation.Ready, payload: true});
     }
 };
