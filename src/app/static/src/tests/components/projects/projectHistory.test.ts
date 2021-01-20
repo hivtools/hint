@@ -113,7 +113,6 @@ describe("Project history component", () => {
         expect(svg.at(0).classes()).toContain("feather-chevron-right");
         expect(svg.at(1).classes()).toContain("when-open");
         expect(svg.at(1).classes()).toContain("feather-chevron-down");
-        expect(v.at(1).text()).toBe(name);
         expect(v.at(1).find("a").text()).toContain(name);
         expect(v.at(2).text()).toBe(versionsCount === 1 ? "1 version" : `${versionsCount} versions`);
         expect(v.at(3).text()).toBe(formatDateTime(updatedIsoDate));
@@ -144,17 +143,16 @@ describe("Project history component", () => {
         expect(wrapper.find("h5").text()).toBe("Project history");
 
         const headers = wrapper.find("#headers").findAll(".header-cell");
-        expect(headers.length).toBe(10);
+        expect(headers.length).toBe(9);
         expect(headers.at(0).text()).toBe("");
         expectTranslated(headers.at(1), "Project name", "Nom du projet", store);
         expectTranslated(headers.at(2), "Versions", "Versions", store);
         expectTranslated(headers.at(3), "Last updated", "Dernière mise à jour", store);
         expectTranslated(headers.at(4), "Load", "Charger", store);
-        expectTranslated(headers.at(5), "Rename", "Renommer", store);
+        expectTranslated(headers.at(5), "Rename", "Renommer le projet", store);
         expectTranslated(headers.at(6), "Delete", "Supprimer", store);
         expectTranslated(headers.at(7), "Copy to", "Copier", store);
         expectTranslated(headers.at(8), "Share", "Partager", store);
-        expectTranslated(headers.at(9), "Shared by", "Partagé par", store);
         
         testRendersProject(wrapper, 1, "proj1",  isoDates[1], 2);
         const proj1Versions = wrapper.find("#versions-1");
@@ -198,7 +196,6 @@ describe("Project history component", () => {
             });
         });
     });
-
     it("does not render if no previous projects", () => {
         const wrapper = getWrapper([]);
         expect(wrapper.findAll("div").length).toBe(0);
@@ -515,12 +512,22 @@ describe("Project history component", () => {
     it('can render shared by email when project is shared', () => {
         const wrapper = getWrapper();
         const v = wrapper.find(`#p-1`).findAll(".project-cell");
-        expect(v.at(9).text()).toBe("shared@email.com")
+
+        expect(v.at(1).findAll("small").length).toBe(1)
+
+        const sharedBy = v.at(1).find("small")
+        expect(sharedBy.text()).toBe("Shared by: shared@email.com")
+
+        wrapper.vm.$store.state.language = Language.fr;
+        expect(sharedBy.text()).toBe("Partagé par: shared@email.com")
+
     });
 
     it('does not render shared by email when project is not shared', () => {
         const wrapper = getWrapper();
         const v = wrapper.find(`#p-2`).findAll(".project-cell");
-        expect(v.at(9).text()).toBe("")
+
+        expect(v.at(1).findAll("small").length).toBe(0)
     });
+
 });

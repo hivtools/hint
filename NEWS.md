@@ -1,5 +1,20 @@
+# hint 1.15.0
+* add custom event to open confirmation modal
+
+# hint 1.14.0
+* Show indication that a project was shared by someone else underneath project name column
+
+# hint 1.13.2
+
+* Update translations using reviewed strings from UNAIDS
+
+# hint 1.13.1
+
+* Translate 'Select...' in form drop downs and 'required' warning
+
 
 # hint 1.13.0
+
 * Add indication that a project was shared by someone else
 
 # hint 1.12.3

@@ -7,7 +7,7 @@
         <dynamic-form v-if="!loading && !hasOptionsError"
                       v-model="modelOptions"
                       submit-text="Validate"
-                      v-on:mousedown.native="confirmEditing"
+                      @confirm="confirmEditing"
                       @submit="validate"
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
@@ -91,10 +91,10 @@
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
             selectText() {
-                return i18next.t("select", this.currentLanguage)
+                return i18next.t("select", {lng: this.currentLanguage})
             },
             requiredText() {
-                return i18next.t("required", this.currentLanguage)
+                return i18next.t("required", {lng: this.currentLanguage})
             },
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             modelOptions: {
