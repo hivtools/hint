@@ -1,6 +1,6 @@
 
 # hint 1.14.0
-* Show indication that a project is shared by someone else underneath project name column
+* Show indication that a project was shared by someone else underneath project name column
 
 # hint 1.13.2
 
