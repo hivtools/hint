@@ -53,7 +53,6 @@ async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootStat
                 commit({type: BaselineMutation.PJNZErroredFile, payload: filename});
             }
             dispatch('surveyAndProgram/getSurveyAndProgramData', {}, {root: true});
-            //dispatch("surveyAndProgram/deleteAll", {}, {root: true});
         });
 }
 
