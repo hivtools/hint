@@ -1,3 +1,7 @@
+
+# hint 1.14.0
+* Show indication that a project was shared by someone else underneath project name column
+
 # hint 1.13.2
 
 * Update translations using reviewed strings from UNAIDS
@@ -5,6 +9,7 @@
 # hint 1.13.1
 
 * Translate 'Select...' in form drop downs and 'required' warning
+
 
 # hint 1.13.0
 
