@@ -78,7 +78,8 @@ describe("Model options component when edit confirmation is required", () => {
 
     it("opens modal when mousedown event fires", () => {
         const rendered = mount(ModelOptions, {store});
-        rendered.find(DynamicForm).trigger("mousedown");
+        const event = { preventDefault: () => {} };
+        rendered.find(DynamicForm).vm.$emit("confirm", event)
         expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
     });
 
