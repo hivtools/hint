@@ -28,7 +28,7 @@ const uploadCallback = (dispatch: Dispatch, response: any) => {
     if (response) {
         dispatch('validate');
     }
-    dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+    dispatch("surveyAndProgram/getSurveyAndProgramData", {}, {root: true});
 }
 
 interface UploadImportOptions {
@@ -52,7 +52,8 @@ async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootStat
             } else {
                 commit({type: BaselineMutation.PJNZErroredFile, payload: filename});
             }
-            dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+            dispatch('surveyAndProgram/getSurveyAndProgramData', {}, {root: true});
+            //dispatch("surveyAndProgram/deleteAll", {}, {root: true});
         });
 }
 
