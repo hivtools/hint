@@ -293,6 +293,7 @@
                         const area_id = feature.properties && feature.properties["area_id"];
                         const area_name = feature.properties && feature.properties["area_name"];
 
+                        console.log(featureIndicators[area_id])
                         const values = featureIndicators[area_id];
                         const value = values && values!.value;
                         const lower_value = values && values!.lower_value;
