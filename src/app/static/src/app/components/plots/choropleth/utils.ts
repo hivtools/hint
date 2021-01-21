@@ -12,10 +12,12 @@ export const getFeatureIndicator = function (data: any[],
 
     const result = {} as IndicatorValuesDict;
     iterateDataValues(data, [indicatorMeta], selectedAreaIds, filters, selectedFilterValues,
-        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
+        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number, values: any) => {
             result[areaId] = {
                 value: value,
-                color: getColor(value, indicatorMeta, colourRange)
+                color: getColor(value, indicatorMeta, colourRange),
+                lower_value: values['lower']? values['lower']: 0,
+                upper_value: values['upper']? values['upper']: 0
             }
         });
 

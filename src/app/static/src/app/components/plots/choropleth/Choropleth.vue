@@ -295,9 +295,17 @@
 
                         const values = featureIndicators[area_id];
                         const value = values && values!.value;
-
+                        const lower_value = values && values!.lower_value;
+                        const upper_value = values && values!.upper_value;
                         const stringVal = (value || value === 0) ? value.toString() : "";
-                        if (stringVal) {
+                        if (stringVal && lower_value > 0) {
+                            layer.bindTooltip(`<div>
+                                <strong>${area_name}</strong>
+                                <br/>${formatOutput(stringVal, format, scale, accuracy)}
+                                <br/>(${formatOutput(lower_value, format, scale, accuracy)+" - "+
+                            formatOutput(upper_value, format, scale, accuracy)})
+                            </div>`);
+                        }else {
                             layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${formatOutput(stringVal, format, scale, accuracy)}
