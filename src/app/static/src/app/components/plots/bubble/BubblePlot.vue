@@ -387,12 +387,24 @@
                 const colorIndicator = this.selections.colorIndicatorId;
                 const sizeIndicator = this.selections.sizeIndicatorId;
                 const colorValue = values && values!.value;
-                const sizeValue = values && values!.sizeValue;
+                const {sizeValue, lower_value, upper_value, sizeLower, sizeUpper} = values!;
 
                 const colorIndicatorName = this.indicatorNameLookup[colorIndicator];
                 const sizeIndicatorName = this.indicatorNameLookup[sizeIndicator];
                 const { format, scale, accuracy } = this.colorIndicator!;
                 const { format: formatS, scale: scaleS, accuracy: accuracyS } = this.sizeIndicator!;
+                if(lower_value && sizeLower) {
+                    return `<div>
+                                <strong>${area_name}</strong>
+                                <br/>${colorIndicatorName}: ${formatOutput(colorValue, format, scale, accuracy)}
+                                <br/>(${formatOutput(lower_value, format, scale, accuracy)+" - "+
+                    formatOutput(upper_value, format, scale, accuracy)})
+                                 <br/>
+                                 <br/>${sizeIndicatorName}: ${formatOutput(sizeValue, formatS, scaleS, accuracyS)}
+                                 <br/>(${formatOutput(sizeLower, formatS, scaleS, accuracyS)+" - "+
+                    formatOutput(sizeUpper, formatS, scaleS, accuracyS)})
+                            </div>`;
+                }
                 return `<div>
                                 <strong>${area_name}</strong>
                                 <br/>${colorIndicatorName}: ${formatOutput(colorValue, format, scale, accuracy)}

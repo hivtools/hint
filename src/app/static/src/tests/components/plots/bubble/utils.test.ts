@@ -41,20 +41,28 @@ describe("Bubble plot utils", () => {
             sizeValue: 12,
             value: 0.5,
             color: getColor(0.5, prev, colourRange),
-            radius: getRadius(12, 1, 100, minRadius, maxRadius)
+            radius: getRadius(12, 1, 100, minRadius, maxRadius),
+            lower_value: 0,
+            upper_value: 0,
+            sizeLower: 0,
+            sizeUpper: 0
         },
         MWI_1_2: {
             sizeValue: 14,
             radius: getRadius(14, 1, 100, minRadius, maxRadius),
             value: 0.6,
-            color: getColor(0.6, prev, colourRange)
+            color: getColor(0.6, prev, colourRange),
+            lower_value: 0,
+            upper_value: 0,
+            sizeLower: 0,
+            sizeUpper: 0
         }
     };
 
     it("can get feature indicators from wide format data", () => {
         const data = [
-            {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 12},
-            {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14},
+            {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 12, lower: 0, upper: 0},
+            {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14, lower: 0, upper: 0},
             {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 16} //should not be included, not in selectedFeatures
         ];
 
@@ -81,10 +89,10 @@ describe("Bubble plot utils", () => {
         };
 
         const data = [
-            {area_id: "MWI_1_1", indicator: "plhiv", value: 12},
-            {area_id: "MWI_1_1", indicator: "prev", value: 0.5},
-            {area_id: "MWI_1_2", indicator: "plhiv", value: 14},
-            {area_id: "MWI_1_2", indicator: "prev", value: 0.6},
+            {area_id: "MWI_1_1", indicator: "plhiv", value: 12, lower: 0, upper: 0},
+            {area_id: "MWI_1_1", indicator: "prev", value: 0.5, lower: 0, upper: 0},
+            {area_id: "MWI_1_2", indicator: "plhiv", value: 14, lower: 0, upper: 0},
+            {area_id: "MWI_1_2", indicator: "prev", value: 0.6, lower: 0, upper: 0},
             {area_id: "MWI_1_3", indicator: "plhiv", value: 14} //should not be included, not in selectedFeatures
         ];
 
@@ -116,11 +124,11 @@ describe("Bubble plot utils", () => {
         };
 
         const data = [
-            {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 12, sex: "female", age: "0:15"},
-            {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14, sex: "female", age: "15:30"},
-            {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 16, sex: "female", age: "0:15"}, //not included: not in selectedFeatures
-            {area_id: "MWI_1_1", prevalence: 0.1, plhiv: 18, sex: "male", age: "0:15"}, //not included: no sex filter match
-            {area_id: "MWI_1_1", prevalence: 0.2, plhiv: 20, sex: "female", age: "30:45"}, //not included: no age filter match
+            {area_id: "MWI_1_1", prevalence: 0.5, plhiv: 12, sex: "female", age: "0:15", lower: 0, upper: 0},
+            {area_id: "MWI_1_2", prevalence: 0.6, plhiv: 14, sex: "female", age: "15:30", lower: 0, upper: 0},
+            {area_id: "MWI_1_3", prevalence: 0.7, plhiv: 16, sex: "female", age: "0:15", lower: 0, upper: 0}, //not included: not in selectedFeatures
+            {area_id: "MWI_1_1", prevalence: 0.1, plhiv: 18, sex: "male", age: "0:15", lower: 0, upper: 0}, //not included: no sex filter match
+            {area_id: "MWI_1_1", prevalence: 0.2, plhiv: 20, sex: "female", age: "30:45", lower: 0, upper: 0}, //not included: no age filter match
         ];
 
         const result = getFeatureIndicators(data, selectedFeatureIds, plhiv, prev, sizeRange, colourRange, filters,
@@ -131,8 +139,8 @@ describe("Bubble plot utils", () => {
 
     it("can get feature indicators from partial rows", () => {
         const partialData = [
-            {area_id: "MWI_1_1", prevalence: 0.5},
-            {area_id: "MWI_1_2", plhiv: 14},
+            {area_id: "MWI_1_1", prevalence: 0.5, lower: 0.01, upper: 0.10},
+            {area_id: "MWI_1_2", plhiv: 14, lower: 0.10, upper: 0.19},
         ];
         const result = getFeatureIndicators(partialData, selectedFeatureIds, plhiv, prev, sizeRange, colourRange,
             [], {},
@@ -141,12 +149,16 @@ describe("Bubble plot utils", () => {
         expect(result).toStrictEqual({
             MWI_1_1: {
                 value: 0.5,
-                color: getColor(0.5, prev, colourRange)
+                color: getColor(0.5, prev, colourRange),
+                lower_value: 0.01,
+                upper_value: 0.10
 
             },
             MWI_1_2: {
                 radius: getRadius(14, 1, 100, minRadius, maxRadius),
-                sizeValue: 14
+                sizeValue: 14,
+                sizeLower: 0.10,
+                sizeUpper: 0.19
             }
         });
     });

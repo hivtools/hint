@@ -31,17 +31,21 @@ export const getFeatureIndicators = function (data: any[],
 
     const result = {} as BubbleIndicatorValuesDict;
     iterateDataValues(data, [sizeIndicator, colorIndicator], selectedAreaIds, filters, selectedFilterValues,
-        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
+        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number, values: any) => {
             if (!result[areaId]) {
                 result[areaId] = {} as BubbleIndicatorValues
             }
             if (indicatorMeta.indicator == colorIndicator.indicator) {
-                result[areaId].value = value;
+                result[areaId].value = value
                 result[areaId].color = getColor(value, indicatorMeta, colourRange)
+                result[areaId].lower_value = (values['lower'] || values['lower'] === 0) ? values['lower'] : ""
+                result[areaId].upper_value = values['upper']
             }
             if (indicatorMeta.indicator == sizeIndicator.indicator) {
                 result[areaId].sizeValue = value;
                 result[areaId].radius = getRadius(value, sizeRange.min, sizeRange.max, minRadius, maxRadius)
+                result[areaId].sizeLower = (values['lower'] || values['lower'] === 0) ? values['lower'] : ""
+                result[areaId].sizeUpper = values['upper']
             }
         });
 

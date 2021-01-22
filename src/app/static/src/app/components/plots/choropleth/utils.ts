@@ -16,8 +16,8 @@ export const getFeatureIndicator = function (data: any[],
             result[areaId] = {
                 value: value,
                 color: getColor(value, indicatorMeta, colourRange),
-                lower_value: values['lower']? values['lower']: 0,
-                upper_value: values['upper']? values['upper']: 0
+                lower_value: values['lower'],
+                upper_value: values['upper']
             }
         });
 
