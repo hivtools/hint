@@ -6,6 +6,7 @@ import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 import qs from 'qs';
 import {getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {RootMutation} from "../root/mutations";
 
 export interface SurveyAndProgramActions {
     importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
