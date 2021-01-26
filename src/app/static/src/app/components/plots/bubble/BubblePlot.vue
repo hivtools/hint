@@ -393,16 +393,18 @@
                 const sizeIndicatorName = this.indicatorNameLookup[sizeIndicator];
                 const { format, scale, accuracy } = this.colorIndicator!;
                 const { format: formatS, scale: scaleS, accuracy: accuracyS } = this.sizeIndicator!;
+                const stringUpper_value = (upper_value || upper_value === 0) ? upper_value.toString() : "";
+                const stringSizeUpper = (sizeUpper || sizeUpper === 0) ? sizeUpper.toString() : "";
                 if(lower_value && sizeLower) {
                     return `<div>
                                 <strong>${area_name}</strong>
                                 <br/>${colorIndicatorName}: ${formatOutput(colorValue, format, scale, accuracy)}
                                 <br/>(${formatOutput(lower_value, format, scale, accuracy)+" - "+
-                    formatOutput(upper_value, format, scale, accuracy)})
+                    formatOutput(stringUpper_value, format, scale, accuracy)})
                                 <br/>
                                 <br/>${sizeIndicatorName}: ${formatOutput(sizeValue, formatS, scaleS, accuracyS)}
                                 <br/>(${formatOutput(sizeLower, formatS, scaleS, accuracyS)+" - "+
-                    formatOutput(sizeUpper, formatS, scaleS, accuracyS)})
+                    formatOutput(stringSizeUpper, formatS, scaleS, accuracyS)})
                             </div>`;
                 }
                 return `<div>
