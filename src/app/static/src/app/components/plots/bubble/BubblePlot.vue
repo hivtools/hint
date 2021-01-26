@@ -399,9 +399,9 @@
                                 <br/>${colorIndicatorName}: ${formatOutput(colorValue, format, scale, accuracy)}
                                 <br/>(${formatOutput(lower_value, format, scale, accuracy)+" - "+
                     formatOutput(upper_value, format, scale, accuracy)})
-                                 <br/>
-                                 <br/>${sizeIndicatorName}: ${formatOutput(sizeValue, formatS, scaleS, accuracyS)}
-                                 <br/>(${formatOutput(sizeLower, formatS, scaleS, accuracyS)+" - "+
+                                <br/>
+                                <br/>${sizeIndicatorName}: ${formatOutput(sizeValue, formatS, scaleS, accuracyS)}
+                                <br/>(${formatOutput(sizeLower, formatS, scaleS, accuracyS)+" - "+
                     formatOutput(sizeUpper, formatS, scaleS, accuracyS)})
                             </div>`;
                 }

@@ -733,4 +733,48 @@ describe("BubblePlot component", () => {
         expect(wrapper.emitted("update-size-scales").length).toBe(1);
         expect(wrapper.emitted("update-size-scales")[0][0]).toStrictEqual({plhiv: newSizeScale});
     });
+
+
+    it("renders toolTip as expected on each feature prevalence and plhiv", () => {
+        const customProps = {
+            ...testData,
+            selections: {
+                colorIndicatorId: "prevalence",
+                sizeIndicatorId: "plhiv",
+                detail: 3,
+                selectedFilterOptions: {
+                    age: [{id: "0:15", label: "0-15"}],
+                    sex: [{id: "female", label: "Female"}],
+                    area: []
+                }
+            },
+            colourScales: {
+                prevalence: {
+                    type: ScaleType.Default,
+                    customMin: 0,
+                    customMax: 1
+                }
+            },
+            sizeScales: {
+                plhiv: {
+                    type: ScaleType.Custom,
+                    customMin: 0,
+                    customMax: 100
+                }
+            }
+        };
+        const wrapper = getWrapper(customProps);
+
+        const circles = wrapper.findAll(LCircleMarker);
+        expect(circles.length).toBe(1);
+        expect(circles.at(0).find(LTooltip).props().content).toEqual(`<div>
+                            <strong>North</strong>
+                            <br/>Prevalence: 1.00%
+                            <br/>(1.00% - 10.00%)
+                            <br/>
+                            <br/>PLHIV: 10
+                            <br/>(0 - 1)
+                        </div>`);
+
+    });
 });
