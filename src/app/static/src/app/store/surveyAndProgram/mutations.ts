@@ -37,7 +37,6 @@ export const mutations: MutationTree<SurveyAndProgramState> = {
 
     [SurveyAndProgramMutation.SurveyError](state: SurveyAndProgramState, action: PayloadWithType<Error>) {
         state.surveyError = action.payload;
-        state.selectedDataType = null;
     },
 
     [SurveyAndProgramMutation.SurveyErroredFile](state: SurveyAndProgramState, action: PayloadWithType<string>) {
@@ -52,7 +51,6 @@ export const mutations: MutationTree<SurveyAndProgramState> = {
 
     [SurveyAndProgramMutation.ProgramError](state: SurveyAndProgramState, action: PayloadWithType<Error>) {
         state.programError = action.payload;
-        state.selectedDataType = null;
     },
 
     [SurveyAndProgramMutation.ProgramErroredFile](state: SurveyAndProgramState, action: PayloadWithType<string>) {
@@ -67,7 +65,6 @@ export const mutations: MutationTree<SurveyAndProgramState> = {
 
     [SurveyAndProgramMutation.ANCError](state: SurveyAndProgramState, action: PayloadWithType<Error>) {
         state.ancError = action.payload;
-        state.selectedDataType = null;
     },
 
     [SurveyAndProgramMutation.ANCErroredFile](state: SurveyAndProgramState, action: PayloadWithType<string>) {

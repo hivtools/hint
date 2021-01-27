@@ -1,12 +1,11 @@
 import {ActionContext, ActionTree, Commit} from 'vuex';
 import {RootState} from "../../root";
-import {DataType, SurveyAndProgramState} from "./surveyAndProgram";
+import {DataType, initialSurveyAndProgramState, SurveyAndProgramState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 import qs from 'qs';
 import {getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
-import {RootMutation} from "../root/mutations";
 
 export interface SurveyAndProgramActions {
     importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
@@ -188,23 +187,39 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
 
     async validateSurveyAndProgramData(context) {
         const {commit} = context;
+        commit({type: SurveyAndProgramMutation.SelectedDataTypeUpdated, payload: null});
         await Promise.all(
             [
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .withError(SurveyAndProgramMutation.SurveyError)
                     .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
                     .freezeResponse()
-                    .get<SurveyResponse>("/disease/survey/"),
+                    .get<SurveyResponse>("/disease/survey/")
+                    .then((response) => {
+                    if (response) {
+                        commitSelectedDataTypeUpdated(commit, DataType.Survey);
+                    }
+                }),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .withError(SurveyAndProgramMutation.ProgramError)
                     .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
                     .freezeResponse()
-                    .get<ProgrammeResponse>("/disease/programme/"),
+                    .get<ProgrammeResponse>("/disease/programme/")
+                    .then((response) => {
+                        if (response) {
+                            commitSelectedDataTypeUpdated(commit, DataType.Program);
+                        }
+                    }),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .withError(SurveyAndProgramMutation.ANCError)
                     .withSuccess(SurveyAndProgramMutation.ANCUpdated)
                     .freezeResponse()
                     .get<AncResponse>("/disease/anc/")
+                    .then((response) => {
+                        if (response) {
+                            commitSelectedDataTypeUpdated(commit, DataType.ANC);
+                        }
+                    })
             ]);
 
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
