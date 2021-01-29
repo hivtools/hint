@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
-import {mockModelRunState} from "../../mocks";
+import {mockModelCalibrateState} from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
@@ -14,9 +14,9 @@ describe("Download Results component", () => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
-                modelRun: {
+                modelCalibrate: {
                     namespaced: true,
-                    state: mockModelRunState({modelRunId: "testId"})
+                    state: mockModelCalibrateState({calibrateId: "testId"})
                 }
             }
         });

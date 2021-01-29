@@ -23,11 +23,11 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapStateProps} from "../../utils";
-    import {ModelRunState} from "../../store/modelRun/modelRun";
+    import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
     import {DownloadIcon} from "vue-feather-icons";
 
     interface Computed {
-        modelRunId: string,
+        modelCalibrateId: string,
         spectrumUrl: string,
         coarseOutputUrl: string,
         summaryReportUrl: string
@@ -36,17 +36,17 @@
     export default Vue.extend<unknown, unknown, Computed>({
         name: "downloadResults",
         computed: {
-            ...mapStateProps<ModelRunState, keyof Computed>("modelRun", {
-                modelRunId: state => state.modelRunId
+            ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
+                modelCalibrateId: state => state.calibrateId
             }),
             spectrumUrl: function () {
-                return `/download/spectrum/${this.modelRunId}`
+                return `/download/spectrum/${this.modelCalibrateId}`
             },
             coarseOutputUrl: function () {
-                return `/download/coarse-output/${this.modelRunId}`
+                return `/download/coarse-output/${this.modelCalibrateId}`
             },
             summaryReportUrl: function () {
-                return `/download/summary/${this.modelRunId}`
+                return `/download/summary/${this.modelCalibrateId}`
             }
         },
         components: {
