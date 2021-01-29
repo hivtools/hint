@@ -1,3 +1,6 @@
+# hint 1.15.1
+* fix download of wrong results set
+
 # hint 1.15.0
 * add custom event to open confirmation modal
 
