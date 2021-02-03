@@ -1,14 +1,21 @@
+# hint 1.15.3
+
+* Bug fix: Calibration error not returned to user
+
 # hint 1.15.2
 
 * Update help document to new provided by UNAIDS on 02/02/2021
 
 # hint 1.15.1
+
 * fix download of wrong results set
 
 # hint 1.15.0
+
 * add custom event to open confirmation modal
 
 # hint 1.14.0
+
 * Show indication that a project was shared by someone else underneath project name column
 
 # hint 1.13.2
@@ -18,7 +25,6 @@
 # hint 1.13.1
 
 * Translate 'Select...' in form drop downs and 'required' warning
-
 
 # hint 1.13.0
 
