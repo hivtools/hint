@@ -34,7 +34,6 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const {commit, dispatch, state, rootState} = context;
         const modelRunId = rootState.modelRun.modelRunId;
         const version = state.version;
-        console.log('submit action called')
 
         commit(ModelCalibrateMutation.SetOptionsData, options);
 
@@ -62,7 +61,6 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const calibrateId = state.calibrateId;
 
         if (state.status.done) {
-            console.log('getResult: status done/success is called')
             const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
                 .ignoreSuccess()
                 .withError(ModelCalibrateMutation.SetError)
