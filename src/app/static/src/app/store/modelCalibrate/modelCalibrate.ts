@@ -4,7 +4,7 @@ import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
 import {actions} from "./actions";
-import {VersionInfo, Error, CalibrateStatusResponse, CalibrateResultResponse} from "../../generated";
+import {VersionInfo, Error, CalibrateStatusResponse} from "../../generated";
 
 export interface ModelCalibrateState extends ReadyState {
     optionsFormMeta: DynamicFormMeta
@@ -13,7 +13,6 @@ export interface ModelCalibrateState extends ReadyState {
     calibrateId: string
     statusPollId: number
     status: CalibrateStatusResponse
-    // result: CalibrateResultResponse
     calibrating: boolean
     complete: boolean
     version: VersionInfo
@@ -29,7 +28,6 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         calibrateId: "",
         statusPollId: -1,
         status: {} as CalibrateStatusResponse,
-        // result: null,
         calibrating: false,
         complete: false,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},

@@ -61,7 +61,6 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const {commit, state} = context;
         const calibrateId = state.calibrateId;
 
-        // if (state.status.done && state.status.success) {
         if (state.status.done) {
             console.log('getResult: status done/success is called')
             const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
@@ -103,7 +102,6 @@ export const getCalibrateStatus = async function(context: ActionContext<ModelCal
         .withError(ModelCalibrateMutation.SetError)
         .get<ModelStatusResponse>(`model/calibrate/status/${calibrateId}`)
         .then(() => {
-            // if (state.status && state.status.done && state.status.success) {
             if (state.status && state.status.done) {
                 dispatch("getResult");
             }
