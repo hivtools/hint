@@ -1,3 +1,7 @@
+# hint 1.15.2
+
+* Update help document to new provided by UNAIDS on 02/02/2021
+
 # hint 1.15.1
 * fix download of wrong results set
 
