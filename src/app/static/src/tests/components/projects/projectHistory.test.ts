@@ -302,6 +302,20 @@ describe("Project history component", () => {
         }
     };
 
+    it("shows modal when rename project link is clicked kand removes it when cancel is clicked", async () => {
+        if (switches.renameProject) {
+            const wrapper = getWrapper(testProjects);
+            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
+            renameLink.trigger("click");
+            await Vue.nextTick();
+
+            const modal = wrapper.findAll(".modal").at(2);
+            const proj1 = modal.find("input")
+            const projectName1 = proj1.element as HTMLInputElement
+            expect(projectName1.value).toBe("proj1")
+        }
+    });
+
     it("shows modal when rename project link is clicked and removes it when cancel is clicked", async () => {
         if (switches.renameProject) {
             const wrapper = getWrapper();

@@ -293,6 +293,11 @@
             },
             renameProject(event: Event, projectId: number) {
                 event.preventDefault();
+                this.projects.map(project => {
+                    if (project.id === projectId) {
+                        this.renamedProjectName = project.name
+                    }
+                })
                 this.projectToRename = projectId;
             },
             cancelRename() {
