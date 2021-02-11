@@ -330,6 +330,11 @@
                 versionNumber: number
             ) {
                 event.preventDefault();
+                this.projects.map(project => {
+                    if (project.id === projectId) {
+                        this.newProjectName = project.name
+                    }
+                })
                 this.versionToPromote = {projectId, versionId};
                 this.selectedVersionNumber = `v${versionNumber}`;
             },

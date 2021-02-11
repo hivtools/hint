@@ -302,7 +302,7 @@ describe("Project history component", () => {
         }
     };
 
-    it("shows modal when rename project link is clicked kand removes it when cancel is clicked", async () => {
+    it("does show project name as default value when a user clicks rename link", async () => {
         if (switches.renameProject) {
             const wrapper = getWrapper(testProjects);
             const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
@@ -313,6 +313,29 @@ describe("Project history component", () => {
             const proj1 = modal.find("input")
             const projectName1 = proj1.element as HTMLInputElement
             expect(projectName1.value).toBe("proj1")
+        }
+    });
+
+    it("does show project name as default value when a user clicks copy project", async () => {
+        if (switches.promoteProject && !switches.renameProject) {
+            const wrapper = getWrapper();
+            const copyLink = wrapper.find("#p-1").findAll(".project-cell");
+
+
+            copyLink.at(6).find("button").trigger("click")
+            await Vue.nextTick();
+            const modal = wrapper.findAll(".modal").at(1);
+            const proj1 = modal.find("input")
+            const projectName1 = proj1.element as HTMLInputElement
+            expect(projectName1.value).toBe("proj1")
+
+
+            copyLink.at(5).find("button").trigger("click")
+            await Vue.nextTick();
+            const modalVersion = wrapper.findAll(".modal").at(1);
+            const projVersion = modalVersion.find("input")
+            const projectNameVersion = projVersion.element as HTMLInputElement
+            expect(projectNameVersion.value).toBe("proj1")
         }
     });
 
