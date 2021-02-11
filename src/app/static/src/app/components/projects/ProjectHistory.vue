@@ -293,7 +293,7 @@
             },
             renameProject(event: Event, projectId: number) {
                 event.preventDefault();
-                this.projects.map(project => {
+                this.projects.filter(project => {
                     if (project.id === projectId) {
                         this.renamedProjectName = project.name
                     }
@@ -330,7 +330,7 @@
                 versionNumber: number
             ) {
                 event.preventDefault();
-                this.projects.map(project => {
+                this.projects.filter(project => {
                     if (project.id === projectId) {
                         this.newProjectName = project.name
                     }
