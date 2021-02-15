@@ -146,6 +146,7 @@
             <input type="text"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
+                   @keyup.enter="confirmPromotion(newProjectName)"
                    v-model="newProjectName"/>
             <template v-slot:footer>
                 <button type="button"
@@ -164,6 +165,7 @@
             <input type="text"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
+                   @keyup.enter="confirmRename(renamedProjectName)"
                    v-model="renamedProjectName">
             <template v-slot:footer>
                 <button type="button"
