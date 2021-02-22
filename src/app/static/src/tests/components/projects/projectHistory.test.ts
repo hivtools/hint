@@ -464,7 +464,7 @@ describe("Project history component", () => {
     });
 
     it("can use carriage return to invokes promoteVersion action when confirm copy", async () => {
-        if (switches.promoteProject && !switches.renameProject) {
+        if (!switches.renameProject) {
             const wrapper = getWrapper(testProjects);
             const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("button");
             copyLink.trigger("click");
@@ -475,7 +475,7 @@ describe("Project history component", () => {
             const copyBtn = modal.find(".modal-footer").findAll("button").at(0);
             input.setValue("newProject");
             expect(copyBtn.attributes("disabled")).toBe(undefined);
-            await copyBtn.trigger("keyup.enter");
+            await input.trigger("keyup.enter");
 
             expect(mockPromoteVersion.mock.calls.length).toBe(1);
             expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
@@ -561,7 +561,6 @@ describe("Project history component", () => {
     });
 
     it("can use carriage return to invoke renameProject action", async () => {
-        if (switches.renameProject) {
             const wrapper = getWrapper(testProjects);
             const vm = wrapper.vm as any
             const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
@@ -583,8 +582,6 @@ describe("Project history component", () => {
                 });
             expect(vm.projectToRename).toBe(null);
             expect(vm.renamedProjectName).toBe("");
-
-        }
     });
 
     it("cannot invoke confirmRename if no project is selected", async () => {
