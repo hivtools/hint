@@ -464,29 +464,27 @@ describe("Project history component", () => {
     });
 
     it("can use carriage return to invokes promoteVersion action when confirm copy", async () => {
-        if (!switches.renameProject) {
-            const wrapper = getWrapper(testProjects);
-            const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(5).find("button");
-            copyLink.trigger("click");
-            await Vue.nextTick();
+        const wrapper = getWrapper(testProjects);
+        const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(6).find("button");
+        copyLink.trigger("click");
+        await Vue.nextTick();
 
-            const modal = wrapper.findAll(".modal").at(1);
-            const input = modal.find("input");
-            const copyBtn = modal.find(".modal-footer").findAll("button").at(0);
-            input.setValue("newProject");
-            expect(copyBtn.attributes("disabled")).toBe(undefined);
-            await input.trigger("keyup.enter");
+        const modal = wrapper.findAll(".modal").at(1);
+        const input = modal.find("input");
+        const copyBtn = modal.find(".modal-footer").findAll("button").at(0);
+        input.setValue("newProject");
+        expect(copyBtn.attributes("disabled")).toBe(undefined);
+        await input.trigger("keyup.enter")
 
-            expect(mockPromoteVersion.mock.calls.length).toBe(1);
-            expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
-                {
-                    "name": "newProject",
-                    "version": {
-                        "projectId": 1,
-                        "versionId": "s11",
-                    }
-                });
-        }
+        expect(mockPromoteVersion.mock.calls.length).toBe(1);
+        expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
+            {
+                "name": "newProject",
+                "version": {
+                    "projectId": 1,
+                    "versionId": "s11",
+                }
+            });
     });
 
     it("cannot invoke promoteVersion action when input value is empty", async () => {
