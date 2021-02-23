@@ -393,17 +393,21 @@
                 const sizeIndicatorName = this.indicatorNameLookup[sizeIndicator];
                 const { format, scale, accuracy } = this.colorIndicator!;
                 const { format: formatS, scale: scaleS, accuracy: accuracyS } = this.sizeIndicator!;
-                const stringUpper_value = (upper_value || upper_value === 0) ? upper_value.toString() : "";
-                const stringSizeUpper = (sizeUpper || sizeUpper === 0) ? sizeUpper.toString() : "";
-                if(lower_value && sizeLower) {
+
+                const stringLower_value = lower_value ? lower_value.toString() : "";
+                const stringUpper_value = upper_value ? upper_value.toString() : "";
+                const stringSizeUpper = sizeUpper ? sizeUpper.toString() : "";
+                const stringSizeLower = sizeLower ? sizeLower.toString() : "";
+
+                if (stringLower_value && stringSizeLower) {
                     return `<div>
                                 <strong>${area_name}</strong>
                                 <br/>${colorIndicatorName}: ${formatOutput(colorValue, format, scale, accuracy)}
-                                <br/>(${formatOutput(lower_value, format, scale, accuracy)+" - "+
+                                <br/>(${formatOutput(stringLower_value, format, scale, accuracy) + " - " +
                     formatOutput(stringUpper_value, format, scale, accuracy)})
                                 <br/>
                                 <br/>${sizeIndicatorName}: ${formatOutput(sizeValue, formatS, scaleS, accuracyS)}
-                                <br/>(${formatOutput(sizeLower, formatS, scaleS, accuracyS)+" - "+
+                                <br/>(${formatOutput(stringSizeLower, formatS, scaleS, accuracyS) + " - " +
                     formatOutput(stringSizeUpper, formatS, scaleS, accuracyS)})
                             </div>`;
                 }
