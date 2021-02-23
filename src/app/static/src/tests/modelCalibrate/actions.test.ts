@@ -131,13 +131,13 @@ describe("ModelCalibrate actions", () => {
         }, 2100);
     });
 
-    it("poll dispatches getResult when status done and status success", async (done) => {
+    it("poll dispatches getResult when status done", async (done) => {
         mockAxios.onGet(`/model/calibrate/status/1234`)
             .reply(200, mockSuccess("TEST DATA"));
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        const state = mockModelCalibrateState({calibrateId: "1234", status: {done: true, success: true} as any});
+        const state = mockModelCalibrateState({calibrateId: "1234", status: {done: true, success: false} as any});
 
         actions.poll({commit, dispatch, state, rootState} as any);
 
@@ -222,7 +222,7 @@ describe("ModelCalibrate actions", () => {
         expect(commit.mock.calls[1][0]).toBe("Ready");
     });
 
-    it("getResult does not fetch when status is not done and success is not true", async () => {
+    it("getResult does not fetch when status is not done", async () => {
         mockAxios.onGet(`/model/calibrate/result/1234`)
             .reply(200, mockSuccess("Test result"));
 
@@ -232,27 +232,6 @@ describe("ModelCalibrate actions", () => {
             status: {
                 success: false,
                 done: false
-            } as any
-        });
-
-        await actions.getResult({commit, state, rootState} as any);
-
-        expect(mockAxios.history.get.length).toBe(0);
-
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]).toBe("Ready");
-    });
-
-    it("getResult does not fetch when status is done and success is not true", async () => {
-        mockAxios.onGet(`/model/calibrate/result/1234`)
-            .reply(200, mockSuccess("Test result"));
-
-        const commit = jest.fn();
-        const state = mockModelCalibrateState({
-            calibrateId: "1234",
-            status: {
-                success: false,
-                done: true
             } as any
         });
 
