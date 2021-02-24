@@ -39,7 +39,7 @@ class UserLogicTests
     @Test
     fun `can add guest user`()
     {
-        // sut.addUser("guest", "guest")
+        sut.addUser("guest", "guest")
 
         assertThat(sut.getUser("guest")).isNotNull
     }
