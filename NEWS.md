@@ -1,3 +1,7 @@
+# hint 1.15.4
+
+* Bug fix: Emails should be case insensitive when sharing a project
+
 # hint 1.15.3
 
 * Bug fix: Calibration error not returned to user
