@@ -99,7 +99,7 @@ describe("ShareProject", () => {
         expect(modal.find(".help-text").isVisible()).toBe(true);
     });
 
-    it("if email is same as user's email, it is invalid an appropriate validation feedback is shown and button disabled", async () => {
+    it("if email is same as user's email, it is invalid, appropriate validation feedback is shown, and button is disabled", async () => {
         const store = createStore(jest.fn().mockResolvedValue(false))
         const wrapper = mount(ShareProject, {
             propsData: {
@@ -125,7 +125,7 @@ describe("ShareProject", () => {
         expect(modal.find(".help-text").isVisible()).toBe(true);
     });
 
-    it("if email is same as user's email but cased differently, it is invalid and appropriate validation feedback is shown and button disabled", async () => {
+    it("if email is same as user's email but cased differently, it is invalid, appropriate validation feedback is shown, and button is disabled", async () => {
         const store = createStore(jest.fn().mockResolvedValue(false))
         const wrapper = mount(ShareProject, {
             propsData: {
@@ -151,7 +151,7 @@ describe("ShareProject", () => {
         expect(modal.find(".help-text").isVisible()).toBe(true);
     });
 
-    it("if a valid email is entered twice, it is invalid and appropriate validation feedback is shown and button disabled", async () => {
+    it("if a valid email is entered twice, it is invalid, appropriate validation feedback is shown, and button is disabled", async () => {
         const store = createStore(jest.fn().mockResolvedValue(true))
         const wrapper = mount(ShareProject, {
             propsData: {
@@ -187,7 +187,7 @@ describe("ShareProject", () => {
         });
     });
 
-    it("if a valid email is entered twice but cased differently, it is invalid and appropriate validation feedback is shown and button disabled", async () => {
+    it("if a valid email is entered twice but cased differently, it is invalid, appropriate validation feedback is shown, and button is disabled", async () => {
         const store = createStore(jest.fn().mockResolvedValue(true))
         const wrapper = mount(ShareProject, {
             propsData: {
