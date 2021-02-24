@@ -79,6 +79,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
 
         val username = userRepository.getAllUserNames()
                 .find { caseInsensitiveEmail.matches(it) }
+                // .find { caseInsensitiveDomainRegex.matches(it) }
                 ?: return null
 
         return profileService.findById(username)
