@@ -29,42 +29,41 @@
                         ></chevron-down-icon>
                     </button>
                 </div>
-                <div class="col-md-3 project-cell">
+                <div class="col-md-3 project-cell name-cell">
                     <a href="#"
                     @click="loadVersion($event, p.id, p.versions[0].id)">
                     {{ p.name }}
                     </a>
                     <small v-if="p.sharedBy" class="text-muted d-flex" >{{getTranslatedValue("sharedBy")}}: {{p.sharedBy}}</small>
                 </div>
-                <div class="col-md-1 project-cell">
+                <div class="col-md-1 project-cell version-count-cell">
                     <small class="text-muted">{{ versionCountLabel(p) }}</small>
                 </div>
-                <div class="col-md-2 project-cell">
+                <div class="col-md-2 project-cell updated-cell">
                     {{ format(p.versions[0].updated) }}
                 </div>
-                <div class="col-md-1 project-cell"
+                <div class="col-md-1 project-cell load-cell"
                 v-tooltip ="getTranslatedValue('load')">
                     <button class=" btn btn-sm btn-red-icons"
                     @click="loadVersion($event, p.id, p.versions[0].id)">
                     <refresh-cw-icon size="20"></refresh-cw-icon>
                     </button>
                 </div>
-                 <div class="col-md-1 project-cell"
-                v-tooltip ="getTranslatedValue('renameProject')"
-                    v-if="renameProjectIsEnabled">
+                 <div class="col-md-1 project-cell rename-cell"
+                v-tooltip ="getTranslatedValue('renameProject')">
                     <button class="btn btn-sm btn-red-icons"
                             @click="renameProject($event, p.id)">
                         <edit-icon size="20"></edit-icon>
                     </button>
                 </div>
-                <div class="col-md-1 project-cell" 
+                <div class="col-md-1 project-cell delete-cell"
                 v-tooltip ="getTranslatedValue('delete')">
                     <button class=" btn btn-sm btn-red-icons"
                             @click="deleteProject($event, p.id)">
                         <trash-2-icon size="20"></trash-2-icon>
                     </button>
                 </div>
-                <div class="col-md-1 project-cell" v-if="promoteProjectIsEnabled"
+                <div class="col-md-1 project-cell copy-cell"
                      v-tooltip="getTranslatedValue('copyLatestToNewProject')">
                     <button class=" btn btn-sm btn-red-icons"
                             @click="promoteVersion(
@@ -76,7 +75,7 @@
                     </button>
                 </div>
 
-                <div class="col-md-1 project-cell" v-if="shareProjectIsEnabled">
+                <div class="col-md-1 project-cell share-cell">
                     <share-project :project="p"></share-project>
                 </div>
             </div>
@@ -86,31 +85,29 @@
                      :key="v.id"
                      class="row font-italic bg-light py-2">
                     <div class="col-md-4 version-cell"></div>
-                    <div class="col-md-1 version-cell">
+                    <div class="col-md-1 version-cell version-label-cell">
                         {{ versionLabel(v) }}
                     </div>
-                    <div class="col-md-2 version-cell">
+                    <div class="col-md-2 version-cell version-updated-cell">
                         {{ format(v.updated) }}
                     </div>
-                    <div class="col-md-1 version-cell" 
+                    <div class="col-md-1 version-cell load-cell"
                     v-tooltip ="getTranslatedValue('load')">
                         <button class=" btn btn-sm btn-red-icons"
                                 @click="loadVersion($event, p.id, v.id)">
                             <refresh-cw-icon size="20"></refresh-cw-icon>
                         </button>
                     </div>
-                    <div class="col-md-1 version-cell"
-                    v-if="renameProjectIsEnabled">
+                    <div class="col-md-1 version-cell">
                     </div>
-                    <div class="col-md-1 version-cell"
+                    <div class="col-md-1 version-cell delete-cell"
                     v-tooltip ="getTranslatedValue('delete')">
                         <button class=" btn btn-sm btn-red-icons"
                                 @click="deleteVersion($event, p.id, v.id)">
                             <trash-2-icon size="20"></trash-2-icon>
                         </button>
                     </div>
-                    <div class="col-md-1 version-cell"
-                         v-if="promoteProjectIsEnabled"
+                    <div class="col-md-1 version-cell copy-cell"
                          v-tooltip="getTranslatedValue('copyToNewProject')">
                         <button class=" btn btn-sm btn-red-icons"
                                 @click="promoteVersion(
@@ -194,7 +191,6 @@
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
-    import {switches} from "../../featureSwitches";
     import {VTooltip} from 'v-tooltip';
     import {projects} from "../../store/projects/projects";
 
@@ -208,9 +204,6 @@
         versionToPromote: VersionIds | null;
         newProjectName: string;
         selectedVersionNumber: string;
-        shareProjectIsEnabled: boolean;
-        promoteProjectIsEnabled: boolean;
-        renameProjectIsEnabled: boolean;
     }
 
     interface Computed {
@@ -258,9 +251,6 @@
                 versionToPromote: null,
                 newProjectName: "",
                 selectedVersionNumber: "",
-                shareProjectIsEnabled: switches.shareProject,
-                promoteProjectIsEnabled: switches.promoteProject,
-                renameProjectIsEnabled: switches.renameProject,
                 projectToRename: null,
                 renamedProjectName: ''
             };
