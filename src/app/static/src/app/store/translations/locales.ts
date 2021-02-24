@@ -1,4 +1,6 @@
 export interface Translations {
+    accessibility: string,
+    accessibilityContent: string,
     add: string,
     adjustScale: string,
     adrKey: string,
@@ -173,6 +175,53 @@ export interface Translations {
 }
 
 const en: Translations = {
+    accessibility: "Accessibility",
+    accessibilityContent: "<h1>Accessibility on NAOMI</h1>\n" +
+        "                <p>This statement applies to content published on <a href=\"https://naomi.unaids.org/\">naomi.unaids.org</a></p>\n" +
+        "                <p>We want as many people as possible to be able to use this website. For example, that means you should\n" +
+        "                    be able to:</p>\n" +
+        "                <ul>\n" +
+        "                    <li>Resize your window with content being reformatted appropriately</li>\n" +
+        "                    <li>Adjust your text size without the site becoming less usable</li>\n" +
+        "                    <li>Read text easily due to sufficient contrast between foreground and background elements</li>\n" +
+        "                </ul>\n" +
+        "                <p><a href=\"https://mcmw.abilitynet.org.uk/\">AbilityNet</a> has advice on making your device easier to\n" +
+        "                    use if you have a disability.</p>\n" +
+        "                <h2>How accessible the website is</h2>\n" +
+        "                <p>Parts of this website may not be fully accessible. For example:</p>\n" +
+        "                <ul>\n" +
+        "                    <li>It may not be entirely navigable by keyboard</li>\n" +
+        "                    <li>Some charts and tables may not be correctly interpreted by screen readers</li>\n" +
+        "                    <li>Some form elements may lack descriptive names or labels</li>\n" +
+        "                </ul>\n" +
+        "                <h2>What we do about known issues</h2>\n" +
+        "                <p>We work to achieve and maintain <a href=\"https://www.w3.org/TR/WCAG21/\">WCAG 2.1 AA standards</a>,\n" +
+        "                    but it is not always possible for all our\n" +
+        "                    content to be accessible. Where content is not accessible, we will state a reason, warn users and\n" +
+        "                    offer alternatives.</p>\n" +
+        "                <h2>Technical information about this website’s accessibility</h2>\n" +
+        "                <p>We are committed to making its website accessible in accordance with the Public\n" +
+        "                    Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.</p>\n" +
+        "                <p>This website is partially compliant with the <a href=\"https://www.w3.org/TR/WCAG21/\">Web Content\n" +
+        "                    Accessibility Guidelines version 2.1</a> AA standard, due to the known issues listed above.</p>\n" +
+        "                <h2>Reporting accessibility issues</h2>\n" +
+        "                <p>If you need information on this website in a different format like accessible PDF, large print, easy\n" +
+        "                    read, audio recording or braille or if you find any accessibility issues not listed on this page\n" +
+        "                    then please contact <a href=\"mailto:reside@imperial.ac.uk\">reside@imperial.ac.uk</a>.\n" +
+        "                </p>\n" +
+        "                <p>We’ll consider your request and get back to you in 7 days.</p>\n" +
+        "                <h2>Enforcement procedure</h2>\n" +
+        "                <p>The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies\n" +
+        "                    (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility\n" +
+        "                    regulations’). If you’re not happy with how we respond to your complaint, <a\n" +
+        "                        href=\"https://www.equalityadvisoryservice.com/\">contact the Equality Advisory and Support\n" +
+        "                        Service (EASS)</a>.</p>\n" +
+        "                <h2>How we test this website</h2>\n" +
+        "                <p>This website was last tested for accessibility compliance on 24 February 2021, and these tests have\n" +
+        "                    been carried out internally using the <a href=\"https://accessibilityinsights.io/en/\">Accessibility\n" +
+        "                        Insights</a> tools.</p>\n" +
+        "                <h2>Last updated</h2>\n" +
+        "                <p>This statement was prepared on 24 February 2021. It was last updated on 24 February 2021.</p>",
     add: "add",
     adjustScale: "Adjust scale",
     adrKey: "ADR access key",
@@ -356,6 +405,52 @@ const en: Translations = {
 };
 
 const fr: Partial<Translations> = {
+    accessibility: "Accessibilité",
+    accessibilityContent: "<h1>Accessibilité sur NAOMI</h1>\n" +
+        "                <p>Cette déclaration s'applique au contenu publié sur <a href=\"https://naomi.unaids.org/\"> naomi.unaids.org </a></p>\n" +
+        "                <p>Nous voulons que le plus grand nombre de personnes possible puisse utiliser ce site Web. Par exemple, cela signifie que vous devriez \ n "+
+        "                    être capable de:</p>\n" +
+        "                <ul>\n" +
+        "                    <li>Redimensionner votre fenêtre avec le contenu reformaté de manière appropriée</li>\n" +
+        "                    <li>Ajustez la taille de votre texte sans que le site ne devienne moins utilisable</li>\n" +
+        "                    <li>Lisez facilement le texte grâce au contraste suffisant entre les éléments de premier plan et d'arrière-plan</li>\n" +
+        "                </ul>\n" +
+        "                <p><a href=\"https://mcmw.abilitynet.org.uk/\">AbilityNet</a> a des conseils pour rendre votre appareil plus facile à utiliser si vous avez un handicap.</p>\n" +
+        "                <h2>Dans quelle mesure le site Web est-il accessible</h2>\n" +
+        "                <p>Certaines parties de ce site Web peuvent ne pas être entièrement accessibles. Par exemple:</p>\n" +
+        "                <ul>\n" +
+        "                    <li>Il peut ne pas être entièrement navigable au clavier</li>\n" +
+        "                    <li>Certains graphiques et tableaux peuvent ne pas être correctement interprétés par les lecteurs d'écran</li>\n" +
+        "                    <li>Certains éléments de formulaire peuvent manquer de noms ou d'étiquettes descriptives</li>\n" +
+        "                </ul>\n" +
+        "                <h2>Ce que nous faisons face aux problèmes connus</h2>\n" +
+        "                <p>Nous travaillons pour atteindre et maintenir les <a href=\"https://www.w3.org/TR/WCAG21/\"> normes WCAG 2.1 AA </a>,\n" +
+        "                    mais ce n'est pas toujours possible pour tous nos\n" +
+        "                    contenu pour être accessible. Lorsque le contenu n'est pas accessible, nous indiquerons une raison, avertirons les utilisateurs et\n" +
+        "                    proposer des alternatives.</p>\n" +
+        "                <h2>Informations techniques sur l'accessibilité de ce site Web</h2>\n" +
+        "                <p>Nous nous engageons à rendre son site Web accessible conformément aux\n" +
+        "                    Organismes sectoriels (sites Web et applications mobiles) (n ° 2) Règlement sur l'accessibilité 2018.</p>\n" +
+        "                <p>Ce site Web est partiellement conforme au <a href=\"https://www.w3.org/TR/WCAG21/\"> contenu Web\n" +
+        "                    Directives d'accessibilité version 2.1</a> Norme AA, en raison des problèmes connus énumérés ci-dessus.</p>\n" +
+        "                <h2>Signaler des problèmes d'accessibilité</h2>\n" +
+        "                <p>Si vous avez besoin d'informations sur ce site Web dans un format différent, tel que PDF accessible, gros caractères, facile\n" +
+        "                    lecture, enregistrement audio ou braille ou si vous trouvez des problèmes d'accessibilité non répertoriés sur cette page\n" +
+        "                    veuillez contacter <a href=\"mailto:reside@imperial.ac.uk\"> reside@imperial.ac.uk </a>.\n" +
+        "                </p>\n" +
+        "                <p>Nous examinerons votre demande et vous répondrons dans les 7 jours.</p>\n" +
+        "                <h2>Procédure d'exécution</h2>\n" +
+        "                <p>La Commission pour l'égalité et les droits de l'homme (EHRC) est chargée de faire respecter les organes du secteur public\n" +
+        "                    (Sites Web et applications mobiles) (n ° 2) Règlement sur l'accessibilité 2018 (le\n" +
+        "                    règlements'). Si vous n'êtes pas satisfait de la manière dont nous répondons à votre réclamation, <a\n" +
+        "                        href = \"https://www.equalityadvisoryservice.com/\"> contacter le service de conseil et d'assistance pour l'égalité\n" +
+        "                        Service (EASS)</a>.</p>\n" +
+        "                <h2>Comment nous testons ce site Web</h2>\n" +
+        "                <p>La conformité de ce site Web a été testée pour la dernière fois le 24 février 2021, et ces tests ont\n" +
+        "                    été réalisée en interne à l'aide du <a href=\"https://accessibilityinsights.io/en/\">Accessibilité\n" +
+        "                        Connaissances</a> outils.</p>\n" +
+        "                <h2>Dernière mise à jour</h2>\n" +
+        "                <p>Cette déclaration a été préparée le 24 février 2021. Elle a été mise à jour pour la dernière fois le 24 février 2021.</p>",
     add: "ajouter",
     adjustScale: "Ajuster l'échelle",
     adrKey: "Clé d'accès ADR",

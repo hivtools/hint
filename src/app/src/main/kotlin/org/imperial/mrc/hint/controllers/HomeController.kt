@@ -24,7 +24,7 @@ class HomeController(
 {
     private val objectMapper = ObjectMapper()
 
-    @GetMapping(value = ["/", "/projects"])
+    @GetMapping(value = ["/", "/projects", "accessibility"])
     fun index(model: Model): String
     {
         val userProfile = session.getUserProfile()
