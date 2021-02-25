@@ -1,3 +1,7 @@
+# hint 1.16.0
+
+* Add accessibility statement
+
 # hint 1.15.3
 
 * Bug fix: Calibration error not returned to user
