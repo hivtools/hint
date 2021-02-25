@@ -1,6 +1,6 @@
 import {ActionContext, ActionTree, Commit} from 'vuex';
 import {RootState} from "../../root";
-import {DataType, initialSurveyAndProgramState, SurveyAndProgramState} from "./surveyAndProgram";
+import {DataType, SurveyAndProgramState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
@@ -20,6 +20,7 @@ export interface SurveyAndProgramActions {
     deleteANC: (store: ActionContext<SurveyAndProgramState, RootState>) => void
     deleteAll: (store: ActionContext<SurveyAndProgramState, RootState>) => void
     selectDataType: (store: ActionContext<SurveyAndProgramState, RootState>, payload: DataType) => void
+    validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, RootState>) => void;
 }
 
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
@@ -186,8 +187,10 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     },
 
     async validateSurveyAndProgramData(context) {
-        const {commit} = context;
-        commit({type: SurveyAndProgramMutation.SelectedDataTypeUpdated, payload: null});
+        const {commit, rootState} = context;
+        const selectedDatType: DataType[] = []
+        const initialSelectedDataType = rootState.surveyAndProgram.selectedDataType!
+
         await Promise.all(
             [
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
@@ -196,10 +199,10 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                     .freezeResponse()
                     .get<SurveyResponse>("/disease/survey/")
                     .then((response) => {
-                    if (response) {
-                        commitSelectedDataTypeUpdated(commit, DataType.Survey);
-                    }
-                }),
+                        if (response) {
+                            selectedDatType.push(DataType.Survey)
+                        }
+                    }),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .withError(SurveyAndProgramMutation.ProgramError)
                     .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
@@ -207,7 +210,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                     .get<ProgrammeResponse>("/disease/programme/")
                     .then((response) => {
                         if (response) {
-                            commitSelectedDataTypeUpdated(commit, DataType.Program);
+                            selectedDatType.push(DataType.Program)
                         }
                     }),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
@@ -217,10 +220,13 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                     .get<AncResponse>("/disease/anc/")
                     .then((response) => {
                         if (response) {
-                            commitSelectedDataTypeUpdated(commit, DataType.ANC);
+                            selectedDatType.push(DataType.ANC)
                         }
                     })
             ]);
+        const survey = selectedDatType.some(data => data === initialSelectedDataType)
+        survey ? commitSelectedDataTypeUpdated(commit, initialSelectedDataType)
+            : commitSelectedDataTypeUpdated(commit, selectedDatType.length ? selectedDatType[0] : DataType.Survey)
 
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
     }
