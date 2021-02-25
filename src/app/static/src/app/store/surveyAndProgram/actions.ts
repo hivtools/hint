@@ -226,7 +226,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             ]);
         const survey = selectedDatType.some(data => data === initialSelectedDataType)
         survey ? commitSelectedDataTypeUpdated(commit, initialSelectedDataType)
-            : commitSelectedDataTypeUpdated(commit, selectedDatType.length ? selectedDatType[0] : DataType.Survey)
+            : commitSelectedDataTypeUpdated(commit, DataType.Survey)
 
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
     }
