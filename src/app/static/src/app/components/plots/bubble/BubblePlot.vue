@@ -394,12 +394,12 @@
                 const { format, scale, accuracy } = this.colorIndicator!;
                 const { format: formatS, scale: scaleS, accuracy: accuracyS } = this.sizeIndicator!;
 
-                const stringLower_value = lower_value ? lower_value.toString() : "";
-                const stringUpper_value = upper_value ? upper_value.toString() : "";
-                const stringSizeUpper = sizeUpper ? sizeUpper.toString() : "";
-                const stringSizeLower = sizeLower ? sizeLower.toString() : "";
+                const stringLower_value = (lower_value || lower_value === 0) ? lower_value.toString() : "";
+                const stringUpper_value = (upper_value || upper_value === 0) ? upper_value.toString() : "";
+                const stringSizeUpper = (sizeUpper || sizeUpper === 0) ? sizeUpper.toString() : "";
+                const stringSizeLower = (sizeLower || sizeLower === 0) ? sizeLower.toString() : "";
 
-                if (stringLower_value && stringSizeLower) {
+                if ((stringLower_value && stringUpper_value) && (stringSizeLower && stringSizeUpper)) {
                     return `<div>
                                 <strong>${area_name}</strong>
                                 <br/>${colorIndicatorName}: ${formatOutput(colorValue, format, scale, accuracy)}

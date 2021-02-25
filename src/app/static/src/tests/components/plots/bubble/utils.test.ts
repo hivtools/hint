@@ -1,5 +1,6 @@
 import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
 import {getColor} from "../../../../app/components/plots/utils";
+import {BubbleIndicatorValues} from "../../../../app/types";
 
 describe("Bubble plot utils", () => {
 
@@ -60,7 +61,6 @@ describe("Bubble plot utils", () => {
 
         const result = getFeatureIndicators(data, selectedFeatureIds, plhiv, prev, sizeRange, colourRange,
             [], {}, minRadius, maxRadius);
-
         expect(result).toStrictEqual(expectedFeatureIndicators);
     });
 
@@ -216,6 +216,31 @@ describe("Bubble plot utils", () => {
                 sizeValue: 14,
                 sizeLower: 0.10,
                 sizeUpper: 0.19
+            }
+        });
+    });
+
+    it("it compute prevalence and plhiv uncertainty where ranges are zeros", () => {
+        const partialData = [
+            {area_id: "MWI_1_1", prevalence: 0.5, lower: 0, upper: 0},
+            {area_id: "MWI_1_2", plhiv: 14, lower: 0, upper: 0},
+        ];
+        const result = getFeatureIndicators(partialData, selectedFeatureIds, plhiv, prev, sizeRange, colourRange,
+            [], {},
+            minRadius, maxRadius);
+
+        expect(result).toStrictEqual({
+            MWI_1_1: {
+                value: 0.5,
+                color: getColor(0.5, prev, colourRange),
+                lower_value: 0,
+                upper_value: 0
+            },
+            MWI_1_2: {
+                radius: getRadius(14, 1, 100, minRadius, maxRadius),
+                sizeValue: 14,
+                sizeLower: 0,
+                sizeUpper: 0
             }
         });
     });

@@ -1,5 +1,5 @@
 
-# hint 1.16.0
+# hint 1.17.0
 * add uncertainty ranges to choropleth tooltips
 
 # hint 1.15.3

@@ -38,20 +38,20 @@ export const getFeatureIndicators = function (data: any[],
             if (indicatorMeta.indicator == colorIndicator.indicator) {
                 result[areaId].value = value
                 result[areaId].color = getColor(value, indicatorMeta, colourRange)
-                if(values['lower'])
+                if(values['lower'] != null)
                     result[areaId].lower_value = values['lower']
 
-                if(values['upper'])
+                if(values['upper'] != null)
                     result[areaId].upper_value = values['upper']
 
             }
             if (indicatorMeta.indicator == sizeIndicator.indicator) {
                 result[areaId].sizeValue = value;
                 result[areaId].radius = getRadius(value, sizeRange.min, sizeRange.max, minRadius, maxRadius)
-                if(values['lower'])
+                if(values['lower'] != null)
                     result[areaId].sizeLower = values['lower']
 
-                if(values['upper'])
+                if(values['upper'] != null)
                     result[areaId].sizeUpper = values['upper']
             }
         });
