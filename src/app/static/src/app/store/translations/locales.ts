@@ -408,7 +408,7 @@ const fr: Partial<Translations> = {
     accessibility: "Accessibilité",
     accessibilityContent: "<h1>Accessibilité sur NAOMI</h1>\n" +
         "                <p>Cette déclaration s'applique au contenu publié sur <a href=\"https://naomi.unaids.org/\"> naomi.unaids.org </a></p>\n" +
-        "                <p>Nous voulons que le plus grand nombre de personnes possible puisse utiliser ce site Web. Par exemple, cela signifie que vous devriez \ n "+
+        "                <p>Nous voulons que le plus grand nombre de personnes possible puisse utiliser ce site Web. Par exemple, cela signifie que vous devriez \n "+
         "                    être capable de:</p>\n" +
         "                <ul>\n" +
         "                    <li>Redimensionner votre fenêtre avec le contenu reformaté de manière appropriée</li>\n" +
