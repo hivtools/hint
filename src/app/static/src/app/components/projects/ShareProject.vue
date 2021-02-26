@@ -9,7 +9,7 @@
             <h4 v-translate="'shareProject'"></h4>
             <div v-if="!cloningProject">
                 <div v-html="instructions" id="instructions"></div>
-                <div class="row mb-2" v-for="(email, index) in emailsToShareWith" :key="index">
+                <div class="row mb-2" v-for="(email, index) in emailsToShareWith" :key="index" id="shareInputs">
                     <div class="col">
                         <input autocomplete="no"
                                @keyup.enter="enterEmails(email, index)"
@@ -66,6 +66,7 @@
     import {CloneProjectPayload} from "../../store/projects/actions";
     import {Share2Icon} from "vue-feather-icons";
     import {VTooltip} from 'v-tooltip';
+import { InputType } from "../../generated";
 
     interface EmailToShareWith {
         value: string
@@ -97,6 +98,7 @@
     interface Methods {
         addEmail: (email: EmailToShareWith, index: number) => void
         enterEmails: (email?: EmailToShareWith, index?: number) => void
+        cycleInputs: (email: EmailToShareWith, index: number) => void
         removeEmail: (email: EmailToShareWith, index: number) => void
         shareProject: (e: Event) => void
         confirmShareProject: () => void
@@ -128,7 +130,12 @@
                 // this.addEmail(email, index)
                 console.log('enter emails fired')
                 let self = this
-                setTimeout(function(){ self.validating = false; }, 500)
+                setTimeout(function(){ 
+                    self.validating = false;
+                    if (email && (index || index === 0)){
+                        self.cycleInputs(email, index)                    
+                    }
+                })
                 // const timer: ReturnType<typeof setTimeout> = setTimeout(function(){ this.validating = false; }, 500);
                 if (email && (index || index === 0)){
                     this.validating = true;
@@ -150,13 +157,13 @@
                     // this.validating = true;
                     if (email.value) {
                         let invalidMsg = null;
-
-                        if (email.value == currentUser) {
+                        const emailValue = email.value.toLowerCase()
+                        if (emailValue == currentUser.toLowerCase()) {
                             invalidMsg = "projectsNoSelfShare";
-                        } else if (this.emailsToShareWith.filter(val => val.value === email.value).length > 1) {
+                        } else if (this.emailsToShareWith.filter(val => val.value.toLowerCase() === emailValue).length > 1) {
                             invalidMsg = "duplicateEmails";
                         } else {
-                            const result = await this.userExists(email.value);
+                            const result = await this.userExists(emailValue);
                             if (!result) {
                                 invalidMsg = "emailNotRegistered"
                             }
@@ -180,6 +187,21 @@
                     // }
                     // console.log('addemail finished')
                 });
+            },
+            cycleInputs(email, index){
+                    const lastInputIndex = this.emailsToShareWith.length - 1
+                    const lastInput = this.$el.querySelectorAll("#shareInputs > div > input")[lastInputIndex]! as HTMLElement
+                    const currentInput = this.$el.querySelectorAll("#shareInputs > div > input")[index]! as HTMLElement
+                if (index === lastInputIndex && !email.value){
+                    // console.log('this is the dom', this.$el.querySelector("#shareInputs"))
+                    // console.log('this is the input', this.$el.querySelectorAll(lastInput, lastInputIndex)
+                    // const lastInput = this.$el.querySelectorAll(`#shareInputs > div > input`)[lastInputIndex]! as HTMLElement
+                    lastInput.blur()
+                } else {
+                    currentInput.blur()
+                    lastInput.focus()
+                }
+
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input
