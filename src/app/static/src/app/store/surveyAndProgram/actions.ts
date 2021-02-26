@@ -188,7 +188,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
 
     async validateSurveyAndProgramData(context) {
         const {commit, rootState} = context;
-        const selectedDatType: DataType[] = []
+        const successfulDataTypes: DataType[] = []
         const initialSelectedDataType = rootState.surveyAndProgram.selectedDataType!
 
         await Promise.all(
@@ -200,7 +200,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                     .get<SurveyResponse>("/disease/survey/")
                     .then((response) => {
                         if (response) {
-                            selectedDatType.push(DataType.Survey)
+                            successfulDataTypes.push(DataType.Survey)
                         }
                     }),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
@@ -210,7 +210,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                     .get<ProgrammeResponse>("/disease/programme/")
                     .then((response) => {
                         if (response) {
-                            selectedDatType.push(DataType.Program)
+                            successfulDataTypes.push(DataType.Program)
                         }
                     }),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
@@ -220,14 +220,16 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                     .get<AncResponse>("/disease/anc/")
                     .then((response) => {
                         if (response) {
-                            selectedDatType.push(DataType.ANC)
+                            successfulDataTypes.push(DataType.ANC)
                         }
                     })
             ]);
-        const survey = selectedDatType.some(data => data === initialSelectedDataType)
-        survey ? commitSelectedDataTypeUpdated(commit, initialSelectedDataType)
-            : commitSelectedDataTypeUpdated(commit, DataType.Survey)
+        const selectedTypeSucceeded = successfulDataTypes.some(data => data === initialSelectedDataType)
+        if (!selectedTypeSucceeded) {
+            const newSelectedDataType = successfulDataTypes.length? successfulDataTypes[0] : null
 
+            commitSelectedDataTypeUpdated(commit, newSelectedDataType!)
+        }
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
     }
 };
