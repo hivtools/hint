@@ -14,6 +14,8 @@ interface AppProperties
     val adrPopSchema: String
     val adrShapeSchema: String
     val adrSurveySchema: String
+    val adrOutputZipSchema: String
+    val adrOutputSummarySchema: String
     val adrDatasetSchema: String
     val adrUrl: String
     val apiUrl: String
@@ -45,6 +47,8 @@ class ConfiguredAppProperties(private val props: HintProperties = properties) : 
     override val adrPopSchema = propString("adr_pop_schema")
     override val adrShapeSchema = propString("adr_shape_schema")
     override val adrSurveySchema = propString("adr_survey_schema")
+    override val adrOutputZipSchema = propString("adr_output_zip_schema")
+    override val adrOutputSummarySchema = propString("adr_output_summary_schema")
     override val adrDatasetSchema = propString("adr_schema")
     override val adrUrl = propString("adr_url")
     override val apiUrl = propString("hintr_url")
