@@ -1,4 +1,8 @@
-#hint 1.16.0
+# hint 1.16.1
+
+* Bug fix: Emails should be case insensitive when sharing a project
+
+# hint 1.16.0
 
 * show project name as default input value when a user clicks rename and copy project link
 
