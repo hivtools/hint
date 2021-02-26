@@ -20,12 +20,12 @@ describe(`accessibility`, () =>{
         return store;
     };
 
-    it(`renders accessibility h1 and h2 tags as expected`, () => {
+    it(`renders accessibility tags as expected`, () => {
         const store = createStore();
         const rendered = shallowMount(Accessibility, {store});
 
         expect(rendered.find("#accessibility-content")
-            .find("h1").text()).toBe("Accessibility on NAOMI")
+            .find("h1").text()).toBe("Accessibility on Naomi")
 
         const h2 = rendered.find("#accessibility-content").findAll("h2")
         expect(h2.at(0).text()).toBe("How accessible the website is")
@@ -36,9 +36,10 @@ describe(`accessibility`, () =>{
         expect(h2.at(5).text()).toBe("How we test this website")
         expect(h2.at(6).text()).toBe("Last updated")
 
-        const paragraph = rendered.find("#accessibility-content").findAll("p")
-        expect(paragraph.at(11).text()).toBe("This statement was prepared on 24 February 2021." +
-            " It was last updated on 24 February 2021.")
+        const paragraphs = rendered.find("#accessibility-content").findAll("p")
+        expect(paragraphs.length).toBe(12)
+        expect(paragraphs.at(11).text()).toBe("This statement was prepared on 24 February 2021." +
+            " It was last updated on 26 February 2021.")
     })
 
     it(`renders accessibility h1 and h2 tags as expected`, () => {
@@ -47,7 +48,7 @@ describe(`accessibility`, () =>{
         rendered.vm.$store.state.language = Language.fr
 
         expect(rendered.find("#accessibility-content")
-            .find("h1").text()).toBe("Accessibilité sur NAOMI")
+            .find("h1").text()).toBe("Accessibilité sur Naomi")
 
         const h2 = rendered.find("#accessibility-content").findAll("h2")
         expect(h2.at(0).text()).toBe("Dans quelle mesure le site Web est-il accessible")
@@ -60,6 +61,58 @@ describe(`accessibility`, () =>{
 
         const paragraph = rendered.find("#accessibility-content").findAll("p")
         expect(paragraph.at(11).text()).toBe("Cette déclaration a été préparée " +
-            "le 24 février 2021. Elle a été mise à jour pour la dernière fois le 24 février 2021.")
+            "le 24 février 2021. Elle a été mise à jour pour la dernière fois le 26 février 2021.")
+    })
+
+    it(`renders accessibility purpose list tags as expected in French`, () => {
+        const store = createStore();
+        const rendered = shallowMount(Accessibility, {store});
+        rendered.vm.$store.state.language = Language.fr
+
+        const li = rendered.find("#accessibility-content").find("#purpose").findAll("ul li")
+        expect(li.length).toBe(3)
+        expect(li.at(0).text()).toBe("Redimensionner votre fenêtre avec le contenu reformaté de manière appropriée")
+        expect(li.at(1).text()).toBe("Ajustez la taille de votre texte sans que le site ne devienne moins utilisable")
+        expect(li.at(2).text()).toBe("Lisez facilement le texte grâce au contraste suffisant entre les éléments de premier plan et d'arrière-plan")
+    })
+
+    it(`renders accessibility example list tags as expected in French`, () => {
+        const store = createStore();
+        const rendered = shallowMount(Accessibility, {store});
+        rendered.vm.$store.state.language = Language.fr
+
+        const li = rendered.find("#accessibility-content").find("#example").findAll("ul li")
+        expect(li.length).toBe(6)
+        expect(li.at(0).text()).toBe("Il peut ne pas être entièrement navigable au clavier")
+        expect(li.at(1).text()).toBe("Certains graphiques et tableaux peuvent ne pas être correctement interprétés par les lecteurs d'écran")
+        expect(li.at(2).text()).toBe("Certains éléments de formulaire peuvent manquer de noms ou d'étiquettes descriptives")
+        expect(li.at(3).text()).toBe("Certains phrases peuvent ne pas avoir été correctement traduites")
+        expect(li.at(4).text()).toBe("Certains éléments de formulaire peuvent manquer de contrastes de couleurs suffisants")
+        expect(li.at(5).text()).toBe("Certains pages peuvent ne pas avoir la possibilité de sauter la navigation et d'accéder au contenu")
+    })
+
+    it(`renders accessibility purpose list tags as expected in English`, () => {
+        const store = createStore();
+        const rendered = shallowMount(Accessibility, {store});
+
+        const li = rendered.find("#accessibility-content").find("#purpose").findAll("ul li")
+        expect(li.length).toBe(3)
+        expect(li.at(0).text()).toBe("Resize your window with content being reformatted appropriately")
+        expect(li.at(1).text()).toBe("Adjust your text size without the site becoming less usable")
+        expect(li.at(2).text()).toBe("Read text easily due to sufficient contrast between foreground and background elements")
+    })
+
+    it(`renders accessibility example list tags as expected in English`, () => {
+        const store = createStore();
+        const rendered = shallowMount(Accessibility, {store});
+
+        const li = rendered.find("#accessibility-content").find("#example").findAll("ul li")
+        expect(li.length).toBe(6)
+        expect(li.at(0).text()).toBe("It may not be entirely navigable by keyboard")
+        expect(li.at(1).text()).toBe("Some charts and tables may not be correctly interpreted by screen readers")
+        expect(li.at(2).text()).toBe("Some form elements may lack descriptive names or labels")
+        expect(li.at(3).text()).toBe("Some sentences may not have been correctly translated")
+        expect(li.at(4).text()).toBe("Some form elements may lack sufficient color contrasts")
+        expect(li.at(5).text()).toBe("Some pages may not have the option to skip navigation and jump to the content")
     })
 })

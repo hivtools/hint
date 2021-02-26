@@ -14,7 +14,7 @@
             <router-link id="accessibility-link"
                          to="/accessibility"
                          class="dropdown-item"
-                         v-translate="'accessibility'">
+                         v-translate="'axe'">
             </router-link>
         </drop-down>
     </div>
