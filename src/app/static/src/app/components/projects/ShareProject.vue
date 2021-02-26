@@ -130,13 +130,13 @@
                 this.emailsToShareWith.map(async (email: EmailToShareWith, index: number) => {
                     if (email.value) {
                         let invalidMsg = null;
-
-                        if (email.value == currentUser) {
+                        const emailValue = email.value.toLowerCase()
+                        if (emailValue == currentUser.toLowerCase()) {
                             invalidMsg = "projectsNoSelfShare";
-                        } else if (this.emailsToShareWith.filter(val => val.value === email.value).length > 1) {
+                        } else if (this.emailsToShareWith.filter(val => val.value.toLowerCase() === emailValue).length > 1) {
                             invalidMsg = "duplicateEmails";
                         } else {
-                            const result = await this.userExists(email.value);
+                            const result = await this.userExists(emailValue);
                             if (!result) {
                                 invalidMsg = "emailNotRegistered"
                             }
