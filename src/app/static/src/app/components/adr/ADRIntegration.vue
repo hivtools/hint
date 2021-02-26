@@ -10,6 +10,7 @@
     import {RootState} from "../../root";
     import adrKey from "./ADRKey.vue";
     import SelectDataset from "./SelectDataset.vue";
+    import {ADRState} from "../../store/adr/adr";
 
     interface Methods {
         getDatasets: () => void
@@ -29,12 +30,12 @@
             loggedIn() {
                 return !this.isGuest
             },
-            key: mapStateProp<RootState, string | null>(null,
-                (state: RootState) => state.adrKey)
+            key: mapStateProp<ADRState, string | null>("adr",
+                (state: ADRState) => state.key)
         },
         methods: {
-            getDatasets: mapActionByName(null, 'getADRDatasets'),
-            fetchADRKey: mapActionByName(null, "fetchADRKey")
+            getDatasets: mapActionByName("adr", 'getDatasets'),
+            fetchADRKey: mapActionByName("adr", "fetchKey")
         },
         created() {
             if (this.loggedIn) {

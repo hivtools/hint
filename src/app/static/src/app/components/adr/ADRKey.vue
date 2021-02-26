@@ -64,6 +64,7 @@
     import i18next from "i18next";
     import ErrorAlert from "../ErrorAlert.vue";
     import {VTooltip} from 'v-tooltip'
+    import {ADRState} from "../../store/adr/adr";
 
     interface Data {
         editableKey: string | null
@@ -71,8 +72,8 @@
     }
 
     interface Methods {
-        saveADRKey: (key: string | null) => void
-        deleteADRKey: () => void
+        saveKey: (key: string | null) => void
+        deleteKey: () => void
         add: (e: Event) => void
         remove: (e: Event) => void
         save: (e: Event) => void
@@ -95,12 +96,12 @@
             }
         },
         computed: {
-            key: mapStateProp<RootState, string | null>(null,
-                (state: RootState) => state.adrKey),
+            key: mapStateProp<ADRState, string | null>("adr",
+                (state: ADRState) => state.key),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
-            error: mapStateProp<RootState, Error | null>(null,
-                (state: RootState) => state.adrKeyError),
+            error: mapStateProp<ADRState, Error | null>("adr",
+                (state: ADRState) => state.keyError),
             keyText() {
                 if (this.key) {
                     let str = ""
@@ -119,7 +120,7 @@
             }
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(null, ["saveADRKey", "deleteADRKey"]),
+            ...mapActionsByNames<keyof Methods>("adr", ["saveKey", "deleteKey"]),
             add(e: Event) {
                 e.preventDefault();
                 this.editing = true;
@@ -129,12 +130,12 @@
                 })
             },
             remove(e: Event) {
-                this.deleteADRKey();
+                this.deleteKey();
                 e.preventDefault();
             },
             save(e: Event) {
                 e.preventDefault();
-                this.saveADRKey(this.editableKey);
+                this.saveKey(this.editableKey);
                 this.editing = false;
             },
             cancel(e: Event) {
