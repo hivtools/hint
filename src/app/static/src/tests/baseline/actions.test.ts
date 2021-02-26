@@ -1,4 +1,5 @@
 import {
+    mockADRState,
     mockAxios,
     mockBaselineState,
     mockDataset,
@@ -26,9 +27,10 @@ const adrSchemas: ADRSchemas = {
     survey: "survey",
     programme: "program",
     anc: "anc"
-}
+};
+
 const rootState = mockRootState({
-    adrSchemas
+    adr: mockADRState({schemas: adrSchemas})
 });
 
 const mockFormData = {

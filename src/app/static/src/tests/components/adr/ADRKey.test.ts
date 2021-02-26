@@ -4,12 +4,13 @@ import {mount, shallowMount} from "@vue/test-utils";
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import Vuex, {ActionTree} from "vuex";
 import {Error} from "../../../app/generated";
-import {mockError, mockRootState} from "../../mocks";
-import {mutations} from "../../../app/store/root/mutations";
+import {mockADRState, mockError, mockRootState} from "../../mocks";
+import {mutations} from "../../../app/store/adr/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {RootActions} from "../../../app/store/root/actions";
 import {RootState} from "../../../app/root";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import {ADRActions} from "../../../app/store/adr/actions";
+import {ADRState} from "../../../app/store/adr/adr";
 
 describe("ADR Key", function () {
 
@@ -18,16 +19,22 @@ describe("ADR Key", function () {
 
     const createStore = (key: string = "", error: Error | null = null) => {
         const store = new Vuex.Store({
-            state: mockRootState({adrKey: key, adrKeyError: error, adrSchemas: {baseUrl: "www.adr.com"} as any}),
-            mutations: mutations,
-            actions: {
-                saveADRKey: saveStub,
-                deleteADRKey: deleteStub
-            } as Partial<RootActions> & ActionTree<RootState, RootState>
+            state: mockRootState(),
+            modules: {
+                adr: {
+                    namespaced: true,
+                    state: mockADRState({key: key, keyError: error, schemas: {baseUrl: "www.adr.com"} as any}),
+                    mutations,
+                    actions: {
+                        saveKey: saveStub,
+                        deleteKey: deleteStub
+                    } as Partial<ADRActions> & ActionTree<ADRState, RootState>
+                }
+            }
         });
         registerTranslations(store);
         return store;
-    }
+    };
 
     beforeEach(() => {
         jest.resetAllMocks();
