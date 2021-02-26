@@ -1,6 +1,10 @@
-# hint 1.16.0
+# hint 1.17.0
 
 * Add accessibility statement
+
+#hint 1.16.0
+
+* show project name as default input value when a user clicks rename and copy project link
 
 # hint 1.15.3
 
