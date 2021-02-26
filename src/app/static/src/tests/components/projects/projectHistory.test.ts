@@ -310,9 +310,17 @@ describe("Project history component", () => {
 
     it("does show project name as default value when a user clicks copy project", async () => {
             const wrapper = getWrapper();
-            const copyLink = wrapper.find("#p-1").find(".project-cell.copy-cell");
+            const copyLink = wrapper.find("#p-1").findAll(".project-cell");
 
-            copyLink.find("button").trigger("click")
+            copyLink.at(7).find("button").trigger("click")
+            await Vue.nextTick();
+            const modal = wrapper.findAll(".modal").at(1);
+            const proj1 = modal.find("input")
+            const projectName1 = proj1.element as HTMLInputElement
+            expect(projectName1.value).toBe("proj1")
+
+
+            copyLink.at(5).find("button").trigger("click")
             await Vue.nextTick();
             const modalVersion = wrapper.findAll(".modal").at(1);
             const projVersion = modalVersion.find("input")

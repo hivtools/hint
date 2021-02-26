@@ -80,6 +80,15 @@ class UserLogicTests
     }
 
     @Test
+    fun `can remove user with differently cased prefix`()
+    {
+        sut.addUser("test@test.com", "testpassword")
+
+        sut.removeUser("TEST@test.com")
+        assertThat(sut.getUser("test@test.com")).isNull()
+    }
+
+    @Test
     fun `cannot add same user twice`()
     {
         sut.addUser(TEST_EMAIL, "testpassword")
@@ -96,6 +105,17 @@ class UserLogicTests
         sut.addUser("test@test.com", "testpassword")
 
         TranslationAssert.assertThatThrownBy { sut.addUser("test@TEST.com", "testpassword") }
+                .isInstanceOf(UserException::class.java)
+                .hasTranslatedMessage("User already exists.")
+
+    }
+
+    @Test
+    fun `cannot add same user twice with differently cased prefix`()
+    {
+        sut.addUser("test@test.com", "testpassword")
+
+        TranslationAssert.assertThatThrownBy { sut.addUser("TEST@test.com", "testpassword") }
                 .isInstanceOf(UserException::class.java)
                 .hasTranslatedMessage("User already exists.")
 
@@ -121,6 +141,13 @@ class UserLogicTests
     {
         sut.addUser("test@test.com", "testpassword")
         assertThat(sut.getUser("test@TEST.com")!!.username).isEqualTo(TEST_EMAIL)
+    }
+
+    @Test
+    fun `can get user with differently cased prefix`()
+    {
+        sut.addUser("test@test.com", "testpassword")
+        assertThat(sut.getUser("TEST@test.com")!!.username).isEqualTo(TEST_EMAIL)
     }
 
     @Test
