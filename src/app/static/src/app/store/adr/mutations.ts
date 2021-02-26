@@ -8,7 +8,7 @@ export enum ADRMutation {
     SetKeyError = "KeyError",
     SetDatasets = "SetDatasets",
     SetFetchingDatasets = "SetFetchingDatasets",
-    SetSchemas = "SetADRSchemas"
+    SetSchemas = "SetSchemas"
 }
 
 export const mutations: MutationTree<ADRState> = {
