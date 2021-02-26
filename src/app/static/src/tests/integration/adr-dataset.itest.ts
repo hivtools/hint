@@ -43,19 +43,24 @@ describe("ADR dataset-related actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const rootStateWithSchemas = {
-            ...rootState, adrSchemas: {
-                baseUrl: "adr.com",
-                pjnz: "pjnz",
-                population: "pop",
-                shape: "shape",
-                survey: "survey",
-                programme: "program",
-                anc: "anc"
+            ...rootState,
+            adr: {
+                schemas: {
+                    baseUrl: "adr.com",
+                    pjnz: "pjnz",
+                    population: "pop",
+                    shape: "shape",
+                    survey: "survey",
+                    programme: "program",
+                    anc: "anc"
+                }
             }
         };
 
         await adrActions.getDatasets({commit, rootState} as any);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: ADRMutation.SetFetchingDatasets, payload: true});
+
+        expect(commit.mock.calls[1][0].type).toStrictEqual(ADRMutation.SetDatasets);
         const datasetId = commit.mock.calls[1][0]["payload"][0].id;
         const state = {selectedDataset: {id: datasetId}};
         expect(commit.mock.calls[2][0]).toStrictEqual({type: ADRMutation.SetFetchingDatasets, payload: false});
