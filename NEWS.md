@@ -1,6 +1,11 @@
 
-# hint 1.16.0
+# hint 1.18.0
+
 * validate Survey & Program file on change Baseline file
+
+#hint 1.16.0
+
+* show project name as default input value when a user clicks rename and copy project link
 
 # hint 1.15.3
 
