@@ -2,6 +2,8 @@ import {Module} from "vuex";
 import {RootState} from "../../root";
 import {Error} from "../../generated";
 import {ADRSchemas} from "../../types";
+import {actions} from "./actions";
+import {mutations} from "./mutations";
 
 export interface ADRState {
     datasets: any[],
@@ -26,6 +28,6 @@ const namespaced = true;
 export const adr: Module<ADRState, RootState> = {
     namespaced,
     state: {...initialADRState()},
-   // actions, //TODO: ADd these!
-    //mutations
+    actions,
+    mutations
 };

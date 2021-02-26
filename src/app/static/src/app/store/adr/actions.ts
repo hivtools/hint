@@ -6,11 +6,11 @@ import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
 
 export interface ADRActions {
-    fetchKey: (store: ActionContext<RootState, RootState>) => void;
-    saveKey: (store: ActionContext<RootState, RootState>, key: string) => void;
-    deleteKey: (store: ActionContext<RootState, RootState>) => void;
-    getDatasets: (store: ActionContext<RootState, RootState>) => void;
-    getSchemas: (store: ActionContext<RootState, RootState>) => void;
+    fetchKey: (store: ActionContext<ADRState, RootState>) => void;
+    saveKey: (store: ActionContext<ADRState, RootState>, key: string) => void;
+    deleteKey: (store: ActionContext<ADRState, RootState>) => void;
+    getDatasets: (store: ActionContext<ADRState, RootState>) => void;
+    getSchemas: (store: ActionContext<ADRState, RootState>) => void;
 }
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {

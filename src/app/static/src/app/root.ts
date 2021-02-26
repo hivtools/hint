@@ -32,6 +32,7 @@ import {modelCalibrate, initialModelCalibrateState, ModelCalibrateState} from ".
 import { initialHintrVersionState, hintrVersion, HintrVersionState } from "./store/hintrVersion/hintrVersion";
 import {currentHintVersion} from "./hintVersion";
 import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
+import {adr, ADRState, initialADRState} from "./store/adr/adr";
 
 export interface TranslatableState {
     language: Language
@@ -39,6 +40,7 @@ export interface TranslatableState {
 
 export interface RootState extends TranslatableState {
     version: string,
+    adr: ADRState,
     hintrVersion: HintrVersionState,
     baseline: BaselineState,
     metadata: MetadataState,

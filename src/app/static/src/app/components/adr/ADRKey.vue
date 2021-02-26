@@ -88,6 +88,8 @@
         tooltipContent: string
     }
 
+    const namespace = "adr";
+
     export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
@@ -96,11 +98,11 @@
             }
         },
         computed: {
-            key: mapStateProp<ADRState, string | null>("adr",
+            key: mapStateProp<ADRState, string | null>(namespace,
                 (state: ADRState) => state.key),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
-            error: mapStateProp<ADRState, Error | null>("adr",
+            error: mapStateProp<ADRState, Error | null>(namespace,
                 (state: ADRState) => state.keyError),
             keyText() {
                 if (this.key) {
@@ -120,7 +122,7 @@
             }
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>("adr", ["saveKey", "deleteKey"]),
+            ...mapActionsByNames<keyof Methods>(namespace, ["saveKey", "deleteKey"]),
             add(e: Event) {
                 e.preventDefault();
                 this.editing = true;
