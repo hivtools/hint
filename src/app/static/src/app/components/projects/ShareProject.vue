@@ -12,7 +12,7 @@
                 <div class="row mb-2" v-for="(email, index) in emailsToShareWith" :key="index">
                     <div class="col">
                         <input autocomplete="no"
-                               @keyup.enter="$event.target.blur()"
+                               @keyup.enter="enterEmails(email, index)"
                                @keyup.delete="removeEmail(email, index)"
                                class="form-control"
                                :class="{'is-invalid': email.valid === false}"
@@ -75,6 +75,7 @@
 
     interface Data {
         emailsToShareWith: EmailToShareWith[]
+        validating: boolean
         open: boolean
     }
 
@@ -85,6 +86,7 @@
     interface Computed {
         currentLanguage: Language,
         instructions: string
+        emailsEntered: boolean
         invalidEmails: boolean
         cloneProjectError: Error | null
         cloningProject: boolean
@@ -94,6 +96,7 @@
 
     interface Methods {
         addEmail: (email: EmailToShareWith, index: number) => void
+        enterEmails: (email?: EmailToShareWith, index?: number) => void
         removeEmail: (email: EmailToShareWith, index: number) => void
         shareProject: (e: Event) => void
         confirmShareProject: () => void
@@ -113,13 +116,29 @@
         data() {
             return {
                 emailsToShareWith: [{value: "", valid: null, validationMessage: ""}],
+                validating: false,
                 open: false
             }
         },
         methods: {
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
+            enterEmails(email?: EmailToShareWith, index?: number){
+                // this.validating = true
+                // this.addEmail(email, index)
+                console.log('enter emails fired')
+                let self = this
+                setTimeout(function(){ self.validating = false; }, 500)
+                // const timer: ReturnType<typeof setTimeout> = setTimeout(function(){ this.validating = false; }, 500);
+                if (email && (index || index === 0)){
+                    this.validating = true;
+                    this.addEmail(email, index)
+                } else if (!this.invalidEmails && !this.cloningProject && this.emailsEntered && !this.validating){
+                    this.confirmShareProject();
+                }
+            },
             addEmail(e: EmailToShareWith, index: number) {
+                console.log('addemail event fired')
                 if (e.value && index == this.emailsToShareWith.length - 1) {
                     this.emailsToShareWith.push({
                         value: "",
@@ -128,6 +147,7 @@
                     });
                 }
                 this.emailsToShareWith.map(async (email: EmailToShareWith, index: number) => {
+                    // this.validating = true;
                     if (email.value) {
                         let invalidMsg = null;
 
@@ -144,10 +164,21 @@
 
                         this.emailsToShareWith[index].validationMessage = invalidMsg || "";
                         this.emailsToShareWith[index].valid = invalidMsg === null;
+                        // if (index === this.emailsToShareWith.length - 1){
+                        //     // if (!this.invalidEmails && !this.cloningProject){
+                        //     //     this.confirmShareProject();
+                        //     // }
+                        //     this.validating = false
+                        // }
 
                     } else {
                         email.valid = null;
+                        // this.validating = false;
                     }
+                    // if (index === this.emailsToShareWith.length - 1){
+                    //     this.validating = false;
+                    // }
+                    // console.log('addemail finished')
                 });
             },
             removeEmail(email: EmailToShareWith, index: number) {
@@ -162,6 +193,7 @@
                 this.open = true;
             },
             confirmShareProject() {
+                console.log('confirmshareproject event fired')
                 const emails = this.emailsToShareWith
                     .filter(e => e.value)
                     .map(e => e.value);
@@ -178,6 +210,9 @@
             cloningProject: mapStatePropByName<boolean>("projects", "cloningProject"),
             cloneProjectError: mapStatePropByName<Error | null>("projects", "cloneProjectError"),
             currentLanguage: mapStatePropByName<Language>(null, "language"),
+            emailsEntered(){
+                return this.emailsToShareWith.filter(e => e.value).length > 0
+            },
             instructions() {
                 return i18next.t('shareProjectInstructions', {project: this.project.name, lng: this.currentLanguage});
             },
@@ -203,6 +238,17 @@
         },
         directives: {
             tooltip: VTooltip
+        },
+        mounted() {
+            let self = this; 
+
+            window.addEventListener('keyup', function(e) {
+                // console.log('window event fired')
+                if (e.key === 'Enter') {
+                    // console.log('enter key fired')
+                self.enterEmails();
+                }
+            });
         },
         watch: {
             cloningProject(newVal: boolean) {
