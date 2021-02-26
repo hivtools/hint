@@ -296,6 +296,43 @@ describe("Project history component", () => {
         expect(mockLoad.mock.calls[0][1]).toStrictEqual({projectId: 1, versionId: "s11"});
     };
 
+    it("does show project name as default value when a user clicks rename link", async () => {
+        if (switches.renameProject) {
+            const wrapper = getWrapper(testProjects);
+            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
+            renameLink.trigger("click");
+            await Vue.nextTick();
+
+            const modal = wrapper.findAll(".modal").at(2);
+            const proj1 = modal.find("input")
+            const projectName1 = proj1.element as HTMLInputElement
+            expect(projectName1.value).toBe("proj1")
+        }
+    });
+
+    it("does show project name as default value when a user clicks copy project", async () => {
+        if (switches.promoteProject && !switches.renameProject) {
+            const wrapper = getWrapper();
+            const copyLink = wrapper.find("#p-1").findAll(".project-cell");
+
+
+            copyLink.at(6).find("button").trigger("click")
+            await Vue.nextTick();
+            const modal = wrapper.findAll(".modal").at(1);
+            const proj1 = modal.find("input")
+            const projectName1 = proj1.element as HTMLInputElement
+            expect(projectName1.value).toBe("proj1")
+
+
+            copyLink.at(5).find("button").trigger("click")
+            await Vue.nextTick();
+            const modalVersion = wrapper.findAll(".modal").at(1);
+            const projVersion = modalVersion.find("input")
+            const projectNameVersion = projVersion.element as HTMLInputElement
+            expect(projectNameVersion.value).toBe("proj1")
+        }
+    });
+
     it("shows modal when rename project link is clicked and removes it when cancel is clicked", async () => {
         const wrapper = getWrapper();
         const store = wrapper.vm.$store;
@@ -413,6 +450,30 @@ describe("Project history component", () => {
             });
     });
 
+    it("can use carriage return to invokes promoteVersion action when confirm copy", async () => {
+        const wrapper = getWrapper(testProjects);
+        const copyLink = wrapper.find("#v-s11").findAll(".version-cell").at(6).find("button");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(1);
+        const input = modal.find("input");
+        const copyBtn = modal.find(".modal-footer").findAll("button").at(0);
+        input.setValue("newProject");
+        expect(copyBtn.attributes("disabled")).toBe(undefined);
+        await input.trigger("keyup.enter")
+
+        expect(mockPromoteVersion.mock.calls.length).toBe(1);
+        expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
+            {
+                "name": "newProject",
+                "version": {
+                    "projectId": 1,
+                    "versionId": "s11",
+                }
+            });
+    });
+
     it("cannot invoke promoteVersion action when input value is empty", async () => {
         const wrapper = getWrapper(testProjects);
         const copyLink = wrapper.find("#v-s11").find(".version-cell.copy-cell").find("button");
@@ -475,6 +536,30 @@ describe("Project history component", () => {
         await Vue.nextTick();
 
         expect(mockRenameProject.mock.calls.length).toBe(0);
+    });
+
+    it("can use carriage return to invoke renameProject action", async () => {
+            const wrapper = getWrapper(testProjects);
+            const vm = wrapper.vm as any
+            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
+            renameLink.trigger("click");
+            await Vue.nextTick();
+
+            const modal = wrapper.findAll(".modal").at(2);
+            const input = modal.find("input");
+            const renameBtn = modal.find(".modal-footer").findAll("button").at(0);
+            input.setValue("renamedProject");
+            expect(renameBtn.attributes("disabled")).toBe(undefined);
+            await input.trigger("keyup.enter")
+
+            expect(mockRenameProject.mock.calls.length).toBe(1);
+            expect(mockRenameProject.mock.calls[0][1]).toStrictEqual(
+                {
+                    "name": "renamedProject",
+                    "projectId": 1
+                });
+            expect(vm.projectToRename).toBe(null);
+            expect(vm.renamedProjectName).toBe("");
     });
 
     it("cannot invoke confirmRename if no project is selected", async () => {
