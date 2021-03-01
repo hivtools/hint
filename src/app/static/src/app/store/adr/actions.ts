@@ -11,6 +11,7 @@ export interface ADRActions {
     deleteKey: (store: ActionContext<ADRState, RootState>) => void;
     getDatasets: (store: ActionContext<ADRState, RootState>) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
+    getUploadFiles: (store: ActionContext<ADRState, RootState>) => void;
 }
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
@@ -53,6 +54,11 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .ignoreErrors()
             .withSuccess(ADRMutation.SetSchemas)
             .get("/adr/schemas/")
+    },
+
+    async getUploadFiles(context) {
+        //1. Get single dataset from backend
+        //2. foreach (outputZip, outputSummary) construct the upload file objects
     }
 };
 
