@@ -266,9 +266,9 @@ import { InputType } from "../../generated";
 
             window.addEventListener('keyup', function(e) {
                 // console.log('window event fired')
-                if (e.key === 'Enter') {
-                    // console.log('enter key fired')
-                self.enterEmails();
+                if (e.key === 'Enter' && self.open) {
+                    console.log('enter key fired from share project')
+                    self.enterEmails();
                 }
             });
         },

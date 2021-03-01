@@ -103,6 +103,17 @@
                 }
             }
         },
+        mounted() {
+            let self = this; 
+
+            window.addEventListener('keyup', function(e) {
+                // console.log('window event fired')
+                if (e.key === 'Enter' && self.open) {
+                    console.log('enter key fired from reset confirmation')
+                    self.handleConfirm();
+                }
+            });
+        },
         components: {
             Modal,
             LoadingSpinner

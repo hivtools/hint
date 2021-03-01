@@ -19,6 +19,13 @@
                 form.classList.add('was-validated');
             }
         }
+
+        window.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                console.log('enter key fired from log in')
+                document.querySelector("#loginBtn").click();
+            }
+        });
     </script>
 </head>
 <body>
@@ -37,7 +44,7 @@
                     <div id="pw-feedback" class="invalid-feedback">Please enter your password.</div>
                 </div>
                 <div class="text-center">
-                    <input class="btn btn-red" type="submit" value="Log In">
+                    <input class="btn btn-red" type="submit" value="Log In" id="loginBtn">
                 </div>
             </form>
             <#if error != "">
