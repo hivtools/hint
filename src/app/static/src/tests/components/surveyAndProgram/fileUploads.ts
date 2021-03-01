@@ -29,7 +29,8 @@ export function testUploadComponent(name: string, position: number) {
             deleteANC: jest.fn(),
             deleteAll: jest.fn(),
             getSurveyAndProgramData: jest.fn(),
-            selectDataType: jest.fn()
+            selectDataType: jest.fn(),
+            validateSurveyAndProgramData: jest.fn()
         };
 
         switch (name) {
