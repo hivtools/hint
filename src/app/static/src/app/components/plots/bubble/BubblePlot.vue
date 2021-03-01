@@ -387,12 +387,30 @@
                 const colorIndicator = this.selections.colorIndicatorId;
                 const sizeIndicator = this.selections.sizeIndicatorId;
                 const colorValue = values && values!.value;
-                const sizeValue = values && values!.sizeValue;
+                const {sizeValue, lower_value, upper_value, sizeLower, sizeUpper} = values!;
 
                 const colorIndicatorName = this.indicatorNameLookup[colorIndicator];
                 const sizeIndicatorName = this.indicatorNameLookup[sizeIndicator];
                 const { format, scale, accuracy } = this.colorIndicator!;
                 const { format: formatS, scale: scaleS, accuracy: accuracyS } = this.sizeIndicator!;
+
+                const stringLower_value = (lower_value || lower_value === 0) ? lower_value.toString() : "";
+                const stringUpper_value = (upper_value || upper_value === 0) ? upper_value.toString() : "";
+                const stringSizeUpper = (sizeUpper || sizeUpper === 0) ? sizeUpper.toString() : "";
+                const stringSizeLower = (sizeLower || sizeLower === 0) ? sizeLower.toString() : "";
+
+                if ((stringLower_value && stringUpper_value) && (stringSizeLower && stringSizeUpper)) {
+                    return `<div>
+                                <strong>${area_name}</strong>
+                                <br/>${colorIndicatorName}: ${formatOutput(colorValue, format, scale, accuracy)}
+                                <br/>(${formatOutput(stringLower_value, format, scale, accuracy) + " - " +
+                    formatOutput(stringUpper_value, format, scale, accuracy)})
+                                <br/>
+                                <br/>${sizeIndicatorName}: ${formatOutput(sizeValue, formatS, scaleS, accuracyS)}
+                                <br/>(${formatOutput(stringSizeLower, formatS, scaleS, accuracyS) + " - " +
+                    formatOutput(stringSizeUpper, formatS, scaleS, accuracyS)})
+                            </div>`;
+                }
                 return `<div>
                                 <strong>${area_name}</strong>
                                 <br/>${colorIndicatorName}: ${formatOutput(colorValue, format, scale, accuracy)}

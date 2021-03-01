@@ -136,7 +136,7 @@
                     error: surveyAndProgram.ancError,
                     existingFileName: (surveyAndProgram.anc && surveyAndProgram.anc.filename)|| surveyAndProgram.ancErroredFile,
                     tabClass: {
-                        "disabled": !surveyAndProgram.anc,
+                        "disabled": !!surveyAndProgram.ancError || !surveyAndProgram.anc,
                         "active": surveyAndProgram.selectedDataType == DataType.ANC
                     }
                 } as PartialFileUploadProps),
@@ -146,7 +146,7 @@
                     error: surveyAndProgram.programError,
                     existingFileName: (surveyAndProgram.program && surveyAndProgram.program.filename) || surveyAndProgram.programErroredFile,
                     tabClass: {
-                        "disabled": !surveyAndProgram.program,
+                        "disabled": !!surveyAndProgram.programError || !surveyAndProgram.program,
                         "active": surveyAndProgram.selectedDataType == DataType.Program
                     }
                 } as PartialFileUploadProps),
@@ -156,7 +156,7 @@
                     error: surveyAndProgram.surveyError,
                     existingFileName: (surveyAndProgram.survey && surveyAndProgram.survey.filename) || surveyAndProgram.surveyErroredFile,
                     tabClass: {
-                        "disabled": !surveyAndProgram.survey,
+                        "disabled": !!surveyAndProgram.surveyError || !surveyAndProgram.survey,
                         "active": surveyAndProgram.selectedDataType == DataType.Survey
                     }
                 } as PartialFileUploadProps),

@@ -143,6 +143,7 @@
             <input type="text"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
+                   @keyup.enter="confirmPromotion(newProjectName)"
                    v-model="newProjectName"/>
             <template v-slot:footer>
                 <button type="button"
@@ -161,6 +162,7 @@
             <input type="text"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
+                   @keyup.enter="confirmRename(renamedProjectName)"
                    v-model="renamedProjectName">
             <template v-slot:footer>
                 <button type="button"
@@ -283,6 +285,11 @@
             },
             renameProject(event: Event, projectId: number) {
                 event.preventDefault();
+                this.projects.filter(project => {
+                    if (project.id === projectId) {
+                        this.renamedProjectName = project.name
+                    }
+                })
                 this.projectToRename = projectId;
             },
             cancelRename() {
@@ -315,6 +322,11 @@
                 versionNumber: number
             ) {
                 event.preventDefault();
+                this.projects.filter(project => {
+                    if (project.id === projectId) {
+                        this.newProjectName = project.name
+                    }
+                })
                 this.versionToPromote = {projectId, versionId};
                 this.selectedVersionNumber = `v${versionNumber}`;
             },

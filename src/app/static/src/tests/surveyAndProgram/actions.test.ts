@@ -293,6 +293,88 @@ describe("Survey and programme actions", () => {
 
     });
 
+    it("it validates, commits and marks state ready", async () => {
+
+        mockAxios.onGet(`/disease/survey/`)
+            .reply(200, mockSuccess(mockSurveyResponse()));
+
+        mockAxios.onGet(`/disease/programme/`)
+            .reply(200, mockSuccess(mockProgramResponse()));
+
+        mockAxios.onGet(`/disease/anc/`)
+            .reply(200, mockSuccess(mockAncResponse()));
+
+        const commit = jest.fn();
+        await actions.validateSurveyAndProgramData({commit, rootState} as any);
+
+        const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+        expect(calls).toContain(SurveyAndProgramMutation.SurveyUpdated);
+        expect(calls).toContain(SurveyAndProgramMutation.ProgramUpdated);
+        expect(calls).toContain(SurveyAndProgramMutation.ANCUpdated);
+        expect(calls).toContain(SurveyAndProgramMutation.Ready);
+        expect(commit.mock.calls[3][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
+
+        const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(5);
+        //ready payload is true, which is frozen by definition
+
+    });
+
+    it("it runs validation, fails one and commits correctly", async () => {
+
+        mockAxios.onGet(`/disease/survey/`)
+            .reply(500, mockFailure("Error message"));
+
+        mockAxios.onGet(`/disease/programme/`)
+            .reply(200, mockSuccess(mockProgramResponse()));
+
+        mockAxios.onGet(`/disease/anc/`)
+            .reply(200, mockSuccess(mockAncResponse()));
+
+        const commit = jest.fn();
+        await actions.validateSurveyAndProgramData({commit, rootState} as any);
+
+        const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+        expect(calls).toContain(SurveyAndProgramMutation.SurveyError);
+        expect(calls).toContain(SurveyAndProgramMutation.ProgramUpdated);
+        expect(calls).toContain(SurveyAndProgramMutation.ANCUpdated);
+        expect(calls).toContain(SurveyAndProgramMutation.Ready);
+        expect(commit.mock.calls[3][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
+
+        const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(4);
+        //ready payload is true, which is frozen by definition
+
+    });
+
+    it("it runs validation, fails all and commits correctly", async () => {
+
+        mockAxios.onGet(`/disease/survey/`)
+            .reply(500, mockFailure("Failed"));
+
+        mockAxios.onGet(`/disease/programme/`)
+            .reply(500, mockFailure("Failed"));
+
+        mockAxios.onGet(`/disease/anc/`)
+            .reply(500, mockFailure("Failed"));
+
+        const commit = jest.fn();
+        await actions.validateSurveyAndProgramData({commit, rootState} as any);
+
+        const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+        expect(calls).toContain(SurveyAndProgramMutation.SurveyError);
+        expect(calls).toContain(SurveyAndProgramMutation.ProgramError);
+        expect(calls).toContain(SurveyAndProgramMutation.ANCError);
+        expect(calls).toContain(SurveyAndProgramMutation.Ready);
+        expect(commit.mock.calls[3][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: null});
+
+        const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(2);
+        //ready payload is true, which is frozen by definition
+
+    });
+
+
     it("fails silently and marks state ready if getting data fails", async () => {
 
         mockAxios.onGet(`/disease/survey/`)
