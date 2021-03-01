@@ -1,6 +1,5 @@
 import {MutationTree} from "vuex";
 import {emptyState, RootState} from "../../root";
-import {Error, HintrVersionResponse} from "../../generated";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
@@ -10,7 +9,7 @@ import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
 import {DataType, initialSurveyAndProgramState} from "../surveyAndProgram/surveyAndProgram";
-import {ADRSchemas, PayloadWithType, Project} from "../../types";
+import {PayloadWithType, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
 import {router} from '../../router';
@@ -21,35 +20,10 @@ export enum RootMutation {
     ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
-    SetADRKeyError = "ADRKeyError",
-    SetProject = "SetProject",
-    UpdateADRKey = "UpdateADRKey",
-    SetADRDatasets = "SetADRDatasets",
-    SetADRFetchingDatasets = "SetADRFetchingDatasets",
-    SetADRSchemas = "SetADRSchemas"
+    SetProject = "SetProject"
 }
 
 export const mutations: MutationTree<RootState> = {
-    [RootMutation.UpdateADRKey](state: RootState, action: PayloadWithType<string | null>) {
-        state.adrKey = action.payload;
-    },
-
-    [RootMutation.SetADRKeyError](state: RootState, action: PayloadWithType<Error | null>) {
-        state.adrKeyError = action.payload;
-    },
-
-    [RootMutation.SetADRDatasets](state: RootState, action: PayloadWithType<any[]>) {
-        state.adrDatasets = action.payload;
-    },
-
-    [RootMutation.SetADRFetchingDatasets](state: RootState, action: PayloadWithType<boolean>) {
-        state.adrFetchingDatasets = action.payload;
-    },
-
-    [RootMutation.SetADRSchemas](state: RootState, action: PayloadWithType<ADRSchemas>) {
-        state.adrSchemas = action.payload;
-    },
-
     [RootMutation.Reset](state: RootState, action: PayloadWithType<number>) {
 
         const maxValidStep = action.payload;
@@ -57,14 +31,10 @@ export const mutations: MutationTree<RootState> = {
         //We treat the final group of steps 5-7 together - all rely on modelCalibrate and its result. If we're calling Reset
         //at all we assume that these steps will be invalidated but earlier steps may be retainable
         const resetState: RootState = {
-            adrDatasets: state.adrDatasets,
-            adrSchemas: state.adrSchemas,
-            adrFetchingDatasets: state.adrFetchingDatasets,
             version: state.version,
             hintrVersion: state.hintrVersion,
             language: state.language,
-            adrKey: state.adrKey,
-            adrKeyError: state.adrKeyError,
+            adr: state.adr,
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
             surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramState() : state.surveyAndProgram,
@@ -97,9 +67,7 @@ export const mutations: MutationTree<RootState> = {
             ...emptyState(),
             language: state.language,
             hintrVersion: state.hintrVersion,
-            adrDatasets: state.adrDatasets,
-            adrSchemas: state.adrSchemas,
-            adrKey: state.adrKey,
+            adr: state.adr,
             projects: {
                 ...initialProjectsState(),
                 currentProject: action.payload,

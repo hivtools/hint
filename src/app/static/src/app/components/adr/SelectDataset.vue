@@ -91,6 +91,7 @@
     } from "../../types";
     import {InfoIcon} from "vue-feather-icons";
     import {VTooltip} from "v-tooltip";
+    import {ADRState} from "../../store/adr/adr";
 
     interface Methods {
         setDataset: (dataset: Dataset) => void;
@@ -144,6 +145,8 @@
         anc: "ANC",
     };
 
+    const namespace = "adr";
+
     export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
@@ -160,21 +163,21 @@
                 "baseline",
                 (state: BaselineState) => !!state.shape
             ),
-            schemas: mapStateProp<RootState, ADRSchemas>(
-                null,
-                (state: RootState) => state.adrSchemas!
+            schemas: mapStateProp<ADRState, ADRSchemas>(
+                namespace,
+                (state: ADRState) => state.schemas!
             ),
             selectedDataset: mapStateProp<BaselineState, Dataset | null>(
                 "baseline",
                 (state: BaselineState) => state.selectedDataset
             ),
-            datasets: mapStateProp<RootState, any[]>(
-                null,
-                (state: RootState) => state.adrDatasets
+            datasets: mapStateProp<ADRState, any[]>(
+                namespace,
+                (state: ADRState) => state.datasets
             ),
-            fetchingDatasets: mapStateProp<RootState, boolean>(
-                null,
-                (state: RootState) => state.adrFetchingDatasets
+            fetchingDatasets: mapStateProp<ADRState, boolean>(
+                namespace,
+                (state: ADRState) => state.fetchingDatasets
             ),
             datasetOptions() {
                 return this.datasets.map((d) => ({

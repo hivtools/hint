@@ -1,4 +1,4 @@
 var config = require('./jest.integration.config');
 
-config.testTimeout = 20000;
+config.testTimeout = 120000;
 module.exports = config;

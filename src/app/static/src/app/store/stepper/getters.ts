@@ -10,7 +10,7 @@ interface StepperGetters {
 
 export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
     ready: (state: StepperState, getters: any, rootState: RootState) => {
-        return !!rootState.adrSchemas &&
+        return !!rootState.adr.schemas &&
             rootState.baseline.ready &&
             rootState.surveyAndProgram.ready &&
             rootState.modelRun.ready &&
