@@ -1,8 +1,12 @@
 
-
-# hint 1.17.0
+# hint 1.19.0
 
 * validate Survey & Program file on change Baseline file
+
+# hint 1.18.0
+
+* add uncertainty ranges to choropleth tooltips
+
 
 # hint 1.16.1
 

@@ -125,7 +125,9 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
         expect(wrapper.findAll('td').at(2).text()).toBe('Female');
         expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('1.00%');
+        const div = wrapper.findAll('td').at(3).findAll("div")
+        expect(div.at(1).text()).toBe('1.00%');
+        expect(div.at(2).text()).toBe('(1.00% – 10.00%)');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
     it('renders correct markup when no data are available for selected filters', () => {
