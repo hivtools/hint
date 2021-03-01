@@ -66,7 +66,6 @@
     import {CloneProjectPayload} from "../../store/projects/actions";
     import {Share2Icon} from "vue-feather-icons";
     import {VTooltip} from 'v-tooltip';
-import { InputType } from "../../generated";
 
     interface EmailToShareWith {
         value: string
@@ -126,26 +125,21 @@ import { InputType } from "../../generated";
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
             enterEmails(email?: EmailToShareWith, index?: number){
-                // this.validating = true
-                // this.addEmail(email, index)
-                console.log('enter emails fired')
-                let self = this
-                setTimeout(function(){ 
-                    self.validating = false;
-                    if (email && (index || index === 0)){
-                        self.cycleInputs(email, index)                    
-                    }
-                })
-                // const timer: ReturnType<typeof setTimeout> = setTimeout(function(){ this.validating = false; }, 500);
-                if (email && (index || index === 0)){
+                if (email && (index || index === 0)){ // asks if any input is selected
                     this.validating = true;
                     this.addEmail(email, index)
+                    let self = this
+                    // putting validating behind setTimeout forces async actions to be finished before
+                    // cycle inputs or confirmshare projects can be ran
+                    setTimeout(function(){ 
+                        self.validating = false;
+                        self.cycleInputs(email, index)                    
+                    })
                 } else if (!this.invalidEmails && !this.cloningProject && this.emailsEntered && !this.validating){
                     this.confirmShareProject();
                 }
             },
             addEmail(e: EmailToShareWith, index: number) {
-                console.log('addemail event fired')
                 if (e.value && index == this.emailsToShareWith.length - 1) {
                     this.emailsToShareWith.push({
                         value: "",
@@ -154,7 +148,6 @@ import { InputType } from "../../generated";
                     });
                 }
                 this.emailsToShareWith.map(async (email: EmailToShareWith, index: number) => {
-                    // this.validating = true;
                     if (email.value) {
                         let invalidMsg = null;
                         const emailValue = email.value.toLowerCase()
@@ -171,32 +164,29 @@ import { InputType } from "../../generated";
 
                         this.emailsToShareWith[index].validationMessage = invalidMsg || "";
                         this.emailsToShareWith[index].valid = invalidMsg === null;
-                        // if (index === this.emailsToShareWith.length - 1){
-                        //     // if (!this.invalidEmails && !this.cloningProject){
-                        //     //     this.confirmShareProject();
-                        //     // }
-                        //     this.validating = false
-                        // }
 
                     } else {
                         email.valid = null;
-                        // this.validating = false;
                     }
-                    // if (index === this.emailsToShareWith.length - 1){
-                    //     this.validating = false;
-                    // }
-                    // console.log('addemail finished')
                 });
             },
             cycleInputs(email, index){
                     const lastInputIndex = this.emailsToShareWith.length - 1
                     const lastInput = this.$el.querySelectorAll("#shareInputs > div > input")[lastInputIndex]! as HTMLElement
                     const currentInput = this.$el.querySelectorAll("#shareInputs > div > input")[index]! as HTMLElement
+                // if (index === lastInputIndex && !email.value){
+                //     lastInput.blur()
+                // } else {
+                //     currentInput.blur()
+                //     lastInput.focus()
+                // }
+
                 if (index === lastInputIndex && !email.value){
-                    // console.log('this is the dom', this.$el.querySelector("#shareInputs"))
-                    // console.log('this is the input', this.$el.querySelectorAll(lastInput, lastInputIndex)
-                    // const lastInput = this.$el.querySelectorAll(`#shareInputs > div > input`)[lastInputIndex]! as HTMLElement
-                    lastInput.blur()
+                    if (!this.invalidEmails && !this.cloningProject && this.emailsEntered){
+                    this.confirmShareProject();
+                    } else {
+                      lastInput.blur()
+                    }
                 } else {
                     currentInput.blur()
                     lastInput.focus()
@@ -215,7 +205,6 @@ import { InputType } from "../../generated";
                 this.open = true;
             },
             confirmShareProject() {
-                console.log('confirmshareproject event fired')
                 const emails = this.emailsToShareWith
                     .filter(e => e.value)
                     .map(e => e.value);
@@ -263,11 +252,8 @@ import { InputType } from "../../generated";
         },
         mounted() {
             let self = this; 
-
             window.addEventListener('keyup', function(e) {
-                // console.log('window event fired')
                 if (e.key === 'Enter' && self.open) {
-                    console.log('enter key fired from share project')
                     self.enterEmails();
                 }
             });

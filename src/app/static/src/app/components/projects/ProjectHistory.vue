@@ -394,11 +394,8 @@
         },
         mounted() {
             let self = this; 
-
             window.addEventListener('keyup', function(e) {
-                // console.log('window event fired')
                 if (e.key === 'Enter' && self.projects.length > 0) {
-                    console.log('enter key fired from project history')
                     if (self.renamedProjectName && !self.disableRename && self.projectToRename)
                     {
                         self.confirmRename(self.renamedProjectName)
