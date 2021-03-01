@@ -1,4 +1,4 @@
 var config = require('./jest.integration.docker.config');
 
-config.testTimeout = 120000;
+config.testTimeout = 90000;
 module.exports = config;
