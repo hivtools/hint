@@ -1,3 +1,6 @@
+# hint 1.20.0
+
+* Add output adr schemas
 
 # hint 1.19.0
 
