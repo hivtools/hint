@@ -64,6 +64,7 @@
     import i18next from "i18next";
     import ErrorAlert from "../ErrorAlert.vue";
     import {VTooltip} from 'v-tooltip'
+    import {ADRState} from "../../store/adr/adr";
 
     interface Data {
         editableKey: string | null
@@ -71,8 +72,8 @@
     }
 
     interface Methods {
-        saveADRKey: (key: string | null) => void
-        deleteADRKey: () => void
+        saveKey: (key: string | null) => void
+        deleteKey: () => void
         add: (e: Event) => void
         remove: (e: Event) => void
         save: (e: Event) => void
@@ -87,6 +88,8 @@
         tooltipContent: string
     }
 
+    const namespace = "adr";
+
     export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
@@ -95,12 +98,12 @@
             }
         },
         computed: {
-            key: mapStateProp<RootState, string | null>(null,
-                (state: RootState) => state.adrKey),
+            key: mapStateProp<ADRState, string | null>(namespace,
+                (state: ADRState) => state.key),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
-            error: mapStateProp<RootState, Error | null>(null,
-                (state: RootState) => state.adrKeyError),
+            error: mapStateProp<ADRState, Error | null>(namespace,
+                (state: ADRState) => state.keyError),
             keyText() {
                 if (this.key) {
                     let str = ""
@@ -119,7 +122,7 @@
             }
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(null, ["saveADRKey", "deleteADRKey"]),
+            ...mapActionsByNames<keyof Methods>(namespace, ["saveKey", "deleteKey"]),
             add(e: Event) {
                 e.preventDefault();
                 this.editing = true;
@@ -129,12 +132,12 @@
                 })
             },
             remove(e: Event) {
-                this.deleteADRKey();
+                this.deleteKey();
                 e.preventDefault();
             },
             save(e: Event) {
                 e.preventDefault();
-                this.saveADRKey(this.editableKey);
+                this.saveKey(this.editableKey);
                 this.editing = false;
             },
             cancel(e: Event) {

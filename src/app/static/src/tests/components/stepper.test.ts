@@ -13,7 +13,7 @@ import {
     mockShapeResponse, mockStepperState,
     mockSurveyAndProgramState,
     mockValidateBaselineResponse,
-    mockProjectsState, mockModelCalibrateState
+    mockProjectsState, mockModelCalibrateState, mockADRState
 
 } from "../mocks";
 import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
@@ -65,9 +65,13 @@ describe("Stepper component", () => {
         const store = new Vuex.Store({
             actions: rootActions,
             mutations: rootMutations,
-            state: mockRootState({...partialRootState, adrSchemas: {baseUrl: "whatever"} as any}),
+            state: mockRootState({...partialRootState}),
             getters: rootGetters,
             modules: {
+                adr: {
+                    namespaced: true,
+                    state: mockADRState({schemas: {baseUrl: "whatever"} as any})
+                },
                 baseline: {
                     namespaced: true,
                     state: mockBaselineState(baselineState),

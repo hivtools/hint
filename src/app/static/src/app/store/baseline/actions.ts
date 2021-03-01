@@ -93,7 +93,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async refreshDatasetMetadata(context) {
         const {commit, state, rootState} = context
         if (state.selectedDataset) {
-            const schemas = rootState.adrSchemas!
+            const schemas = rootState.adr.schemas!
             await api(context)
                 .ignoreErrors()
                 .ignoreSuccess()

@@ -28,11 +28,11 @@ import {
 } from "./store/plottingSelections/plottingSelections";
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 import {Language} from "./store/translations/locales";
-import {ADRSchemas} from "./types";
 import {modelCalibrate, initialModelCalibrateState, ModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 import { initialHintrVersionState, hintrVersion, HintrVersionState } from "./store/hintrVersion/hintrVersion";
 import {currentHintVersion} from "./hintVersion";
 import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
+import {adr, ADRState, initialADRState} from "./store/adr/adr";
 
 export interface TranslatableState {
     language: Language
@@ -40,12 +40,8 @@ export interface TranslatableState {
 
 export interface RootState extends TranslatableState {
     version: string,
+    adr: ADRState,
     hintrVersion: HintrVersionState,
-    adrDatasets: any[],
-    adrFetchingDatasets: boolean,
-    adrKey: string | null,
-    adrKeyError: Error | null,
-    adrSchemas: ADRSchemas | null,
     baseline: BaselineState,
     metadata: MetadataState,
     surveyAndProgram: SurveyAndProgramState,
@@ -116,14 +112,10 @@ declare const currentUser: string;
 
 export const emptyState = (): RootState => {
     return {
-        adrKey: null,
-        adrKeyError: null,
-        adrDatasets: [],
-        adrSchemas: null,
-        adrFetchingDatasets: false,
         language: Language.en,
         version: currentHintVersion,
         hintrVersion: initialHintrVersionState(),
+        adr: initialADRState(),
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
         surveyAndProgram: initialSurveyAndProgramState(),
@@ -143,6 +135,7 @@ export const emptyState = (): RootState => {
 export const storeOptions: StoreOptions<RootState> = {
     state: emptyState(),
     modules: {
+        adr,
         baseline,
         metadata,
         surveyAndProgram,

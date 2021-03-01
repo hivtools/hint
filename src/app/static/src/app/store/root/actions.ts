@@ -5,16 +5,9 @@ import {RootMutation} from "./mutations";
 import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
-import {api} from "../../apiService";
-import qs from "qs";
 
 export interface RootActions extends LanguageActions<RootState>{
     validate: (store: ActionContext<RootState, RootState>) => void;
-    fetchADRKey: (store: ActionContext<RootState, RootState>) => void;
-    saveADRKey: (store: ActionContext<RootState, RootState>, key: string) => void;
-    deleteADRKey: (store: ActionContext<RootState, RootState>) => void;
-    getADRDatasets: (store: ActionContext<RootState, RootState>) => void;
-    getADRSchemas: (store: ActionContext<RootState, RootState>) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -60,46 +53,4 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     async changeLanguage(context, payload) {
         await changeLanguage<RootState>(context, payload)
     },
-
-    async fetchADRKey(context) {
-        await api<RootMutation, RootMutation>(context)
-            .ignoreErrors()
-            .withSuccess(RootMutation.UpdateADRKey)
-            .get("/adr/key/");
-    },
-
-    async saveADRKey(context, key) {
-        context.commit({type: RootMutation.SetADRKeyError, payload: null});
-        await api<RootMutation, RootMutation>(context)
-            .withError(RootMutation.SetADRKeyError)
-            .withSuccess(RootMutation.UpdateADRKey)
-            .postAndReturn("/adr/key/", qs.stringify({key}));
-    },
-
-    async deleteADRKey(context) {
-        context.commit({type: RootMutation.SetADRKeyError, payload: null});
-        await api<RootMutation, RootMutation>(context)
-            .withError(RootMutation.SetADRKeyError)
-            .withSuccess(RootMutation.UpdateADRKey)
-            .delete("/adr/key/")
-    },
-
-    async getADRDatasets(context) {
-        context.commit({type: RootMutation.SetADRFetchingDatasets, payload: true});
-        await api<RootMutation, RootMutation>(context)
-            .ignoreErrors()
-            .withSuccess(RootMutation.SetADRDatasets)
-            .get("/adr/datasets/")
-            .then(() => {
-                context.commit({type: RootMutation.SetADRFetchingDatasets, payload: false});
-            });
-    },
-
-    async getADRSchemas(context) {
-        await api<RootMutation, RootMutation>(context)
-            .ignoreErrors()
-            .withSuccess(RootMutation.SetADRSchemas)
-            .get("/adr/schemas/")
-    }
-
 };

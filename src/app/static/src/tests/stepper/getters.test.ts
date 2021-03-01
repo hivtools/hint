@@ -1,4 +1,5 @@
 import {
+    mockADRState,
     mockBaselineState, mockModelCalibrateState,
     mockModelRunState,
     mockRootState,
@@ -6,7 +7,6 @@ import {
     mockSurveyAndProgramState
 } from "../mocks";
 import {getters} from "../../app/store/stepper/getters";
-import mock = jest.mock;
 
 describe("stepper getters", () => {
 
@@ -37,7 +37,7 @@ describe("stepper getters", () => {
 
     it("is ready iff baseline, surveyAndProgram, modelRun, modelCalibrate are ready and adrSchemas present", () => {
         const rootState = mockRootState({
-            adrSchemas: {baseUrl: "something"} as any,
+            adr: mockADRState({schemas: {baseUrl: "something"} as any}),
             baseline: mockBaselineState({ready: true}),
             surveyAndProgram: mockSurveyAndProgramState({ready: true}),
             modelRun: mockModelRunState({ready: true}),
@@ -62,7 +62,7 @@ describe("stepper getters", () => {
         ready = getters.ready(state, testGetters, modelCalibrateNotReady, null as any);
         expect(ready).toBe(false);
 
-        const schemasNotReady = {...rootState, adrSchemas: null};
+        const schemasNotReady = {...rootState, adr: mockADRState({schemas: null})};
         ready = getters.ready(state, testGetters, schemasNotReady, null as any);
         expect(ready).toBe(false);
     });
