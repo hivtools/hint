@@ -539,6 +539,7 @@ describe("Choropleth component", () => {
         expect(mockLayer.bindTooltip.mock.calls[0][0]).toEqual(`<div>
                             <strong>Area 1</strong>
                             <br/>1.00%
+                            <br/>(1.00% - 10.00%)
                         </div>`);
 
         const mockZeroValueFeature = {

@@ -13,12 +13,16 @@ export interface PartialFileUploadProps {
 
 export interface IndicatorValues {
     value: number,
-    color: string
+    color: string,
+    lower_value?: number
+    upper_value?: number
 }
 
 export interface BubbleIndicatorValues extends IndicatorValues {
     radius: number;
     sizeValue: number;
+    sizeLower?: number;
+    sizeUpper?: number;
 }
 
 export interface LevelLabel {

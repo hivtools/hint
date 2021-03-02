@@ -95,7 +95,7 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls[1].length).toBe(1);
         expect(dispatch.mock.calls[1][0]).toBe("validate");
 
-        expect(dispatch.mock.calls[2][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[2][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
         expect(dispatch.mock.calls[2][2]).toStrictEqual({root: true});
 
     }
@@ -110,7 +110,7 @@ describe("Baseline actions", () => {
         await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, mockFormData as any);
 
         expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
     });
 
     it("import PJNZ does not fetch plotting metadata or validate if error occurs", async () => {
@@ -123,7 +123,7 @@ describe("Baseline actions", () => {
         await actions.importPJNZ({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
         expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
@@ -162,7 +162,7 @@ describe("Baseline actions", () => {
         await actions.importShape({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
         expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "ShapeUpdated", payload: null});
@@ -207,7 +207,7 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls.length).toBe(2);
         expect(dispatch.mock.calls[0][0]).toBe("validate");
 
-        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
         expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
     }
 
@@ -253,7 +253,7 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls.length).toBe(2);
         expect(dispatch.mock.calls[0][0]).toBe("validate");
 
-        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
         expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
     };
 
@@ -268,7 +268,7 @@ describe("Baseline actions", () => {
         await actions.importPopulation({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
         expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PopulationUpdated", payload: null});

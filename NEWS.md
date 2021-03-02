@@ -1,3 +1,16 @@
+# hint 1.20.0
+
+* add upload button and dialog box for result outputs to ADR
+
+# hint 1.19.0
+
+* validate Survey & Program file on change Baseline file
+
+# hint 1.18.0
+
+* add uncertainty ranges to choropleth tooltips
+
+
 # hint 1.16.1
 
 * Bug fix: Emails should be case insensitive when sharing a project

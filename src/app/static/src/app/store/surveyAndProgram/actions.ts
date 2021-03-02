@@ -20,6 +20,7 @@ export interface SurveyAndProgramActions {
     deleteANC: (store: ActionContext<SurveyAndProgramState, RootState>) => void
     deleteAll: (store: ActionContext<SurveyAndProgramState, RootState>) => void
     selectDataType: (store: ActionContext<SurveyAndProgramState, RootState>, payload: DataType) => void
+    validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, RootState>) => void;
 }
 
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
@@ -182,6 +183,53 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                     .get<AncResponse>("/disease/anc/")
             ]);
 
+        commit({type: SurveyAndProgramMutation.Ready, payload: true});
+    },
+
+    async validateSurveyAndProgramData(context) {
+        const {commit, rootState} = context;
+        const successfulDataTypes: DataType[] = []
+        const initialSelectedDataType = rootState.surveyAndProgram.selectedDataType!
+
+        await Promise.all(
+            [
+                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+                    .withError(SurveyAndProgramMutation.SurveyError)
+                    .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
+                    .freezeResponse()
+                    .get<SurveyResponse>("/disease/survey/")
+                    .then((response) => {
+                        if (response) {
+                            successfulDataTypes.push(DataType.Survey)
+                        }
+                    }),
+                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+                    .withError(SurveyAndProgramMutation.ProgramError)
+                    .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
+                    .freezeResponse()
+                    .get<ProgrammeResponse>("/disease/programme/")
+                    .then((response) => {
+                        if (response) {
+                            successfulDataTypes.push(DataType.Program)
+                        }
+                    }),
+                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+                    .withError(SurveyAndProgramMutation.ANCError)
+                    .withSuccess(SurveyAndProgramMutation.ANCUpdated)
+                    .freezeResponse()
+                    .get<AncResponse>("/disease/anc/")
+                    .then((response) => {
+                        if (response) {
+                            successfulDataTypes.push(DataType.ANC)
+                        }
+                    })
+            ]);
+        const selectedTypeSucceeded = successfulDataTypes.some(data => data === initialSelectedDataType)
+        if (!selectedTypeSucceeded) {
+            const newSelectedDataType = successfulDataTypes.length? successfulDataTypes[0] : null
+
+            commitSelectedDataTypeUpdated(commit, newSelectedDataType!)
+        }
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
     }
 };
