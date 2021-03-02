@@ -15,8 +15,13 @@
             <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
 
             <template v-if="!waitingForVersion" v-slot:footer>
+                <!-- <form
+                        @submit="handleConfirm"
+                        @keyup.enter="handleConfirm"
+                        tabindex="0"> -->
                 <button type="button"
                         class="btn btn-red"
+                        ref="confirmBtn"
                         @click="handleConfirm"
                         v-translate="isGuest? 'discardSteps' : 'saveVersionConfirm'">
                 </button>
@@ -25,6 +30,7 @@
                         @click="cancelEditing"
                         v-translate="isGuest? 'cancelEdit': 'cancelEditLoggedIn'">
                 </button>
+                <!-- </form> -->
             </template>
 
             <div v-if="waitingForVersion" class="text-center">
@@ -79,6 +85,29 @@
             })
         },
         methods: {
+            // focusBtn: function (){
+            //     const confirmBtn = this.$refs.confirmBtn as HTMLElement
+            //     console.log('confirmBtn', confirmBtn)
+            //     confirmBtn.focus();
+            // },
+            toggleFocus: function (element: HTMLElement, toggle: boolean) {
+                if (element){
+                    this.$nextTick(() => {
+                            toggle ? element.focus() : element.blur();
+                    })
+                    // if (toggle){
+                    //     this.$nextTick(() => {
+                    //         console.log('element focused', element)
+                    //         element.focus();
+                    //     })
+                    // } else if (!toggle) {
+                    //     this.$nextTick(() => {
+                    //         console.log('element blurred', element)
+                    //         element.blur();
+                    //     })
+                    // }
+                }
+            },
             handleConfirm: function () {
                 if (this.isGuest) {
                     this.continueEditing();
@@ -101,15 +130,49 @@
                     this.waitingForVersion = false;
                     this.cancelEditing();
                 }
+            },
+            open: function(){
+                    const confirmBtn = this.$refs.confirmBtn as HTMLElement
+                    this.toggleFocus(confirmBtn, this.open)
+                // if (this.open){
+                //     this.$nextTick(() => {
+                //         console.log('confirmBtn', confirmBtn)
+                //         confirmBtn.focus();
+                //     })
+                // } else confirmBtn.blur()
+                // const confirmBtn = this.$refs.confirmBtn as HTMLElement
+                // console.log('confirmBtn', confirmBtn)
+                // confirmBtn.focus();
+                // console.log('confirmBtn', confirmBtn)
+
+                // let self = this; 
+                // confirmBtn.addEventListener('keyup', function(e) {
+                //     if (e.key === 'Enter' && self.open) {
+                //         console.log('enter was clicked on confirm button')
+                //         self.handleConfirm();
+                //     }
+                // });
             }
         },
         mounted() {
-            let self = this; 
-            window.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter' && self.open) {
-                    self.handleConfirm();
-                }
-            });
+            // this.focusBtn()
+            // let self = this; 
+            // window.addEventListener('keyup', function(e) {
+            //     if (e.key === 'Enter' && self.open) {
+            //         self.handleConfirm();
+            //     }
+            // });
+
+            // const confirmBtn = this.$refs.confirmBtn as HTMLElement
+            // confirmBtn.focus();
+            // console.log('confirmBtn', confirmBtn)
+            // let self = this; 
+            // window.addEventListener('keyup', function(e) {
+            //     if (e.key === 'Enter' && self.open) {
+            //         console.log('enter was clicked on confirm button')
+            //         confirmBtn.click()
+            //     }
+            // });
         },
         components: {
             Modal,

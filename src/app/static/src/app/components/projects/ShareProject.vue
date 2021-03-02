@@ -174,16 +174,10 @@
                     const lastInputIndex = this.emailsToShareWith.length - 1
                     const lastInput = this.$el.querySelectorAll("#shareInputs > div > input")[lastInputIndex]! as HTMLElement
                     const currentInput = this.$el.querySelectorAll("#shareInputs > div > input")[index]! as HTMLElement
-                // if (index === lastInputIndex && !email.value){
-                //     lastInput.blur()
-                // } else {
-                //     currentInput.blur()
-                //     lastInput.focus()
-                // }
 
                 if (index === lastInputIndex && !email.value){
                     if (!this.invalidEmails && !this.cloningProject && this.emailsEntered){
-                    this.confirmShareProject();
+                        this.confirmShareProject();
                     } else {
                       lastInput.blur()
                     }
