@@ -4,6 +4,9 @@ import {api} from "../../apiService";
 import qs from "qs";
 import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
+import {findResource} from "../../utils";
+import {BaselineMutation} from "../baseline/mutations";
+import {DatasetResourceSet} from "../../types";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -57,8 +60,35 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getUploadFiles(context) {
-        //1. Get single dataset from backend
-        //2. foreach (outputZip, outputSummary) construct the upload file objects
+        const {state, rootState, commit} = context;
+        const selectedDataset = rootState.baseline.selectedDataset;
+
+        if (selectedDataset) {
+            await api(context)
+                .ignoreErrors()
+                .ignoreSuccess()
+                .get(`/adr/datasets/${selectedDataset.id}`)
+                .then((response) => {
+                    if (response) {
+                        const metadata = response.data;
+                        const schemas = rootState.adr.schemas!;
+
+
+
+                        //Build a map, use lambda
+
+                        ["outputZip", "outputSummary"].map(schema => {
+                            const existingResource = findResource(metadata, schemas[schema])
+                            return {
+                                resourceType: schemas[schema]
+                            };
+                        });
+
+                        commit(BaselineMutation.UpdateDatasetResources,
+                            {pjnz, pop, shape, survey, program, anc} as DatasetResourceSet)
+                    }
+                });
+        }
     }
 };
 
