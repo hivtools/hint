@@ -1,6 +1,12 @@
+
+
 # hint 1.20.0
 
-* add upload button and dialog box for result outputs to ADR
+* add upload button and dialog box for result outputs to ADR# hint 1.20.1
+
+# hint 1.19.1
+
+* Add output adr schemas
 
 # hint 1.19.0
 

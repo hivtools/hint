@@ -131,6 +131,8 @@ export interface ADRSchemas {
     population: string
     shape: string
     survey: string
+    outputZip: string
+    outputSummary: string
 }
 export type ADRUploadMetadataDict = Dict<ADRUploadMetadata>;
 

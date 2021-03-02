@@ -26,7 +26,9 @@ const adrSchemas: ADRSchemas = {
     shape: "shape",
     survey: "survey",
     programme: "program",
-    anc: "anc"
+    anc: "anc",
+    outputZip: "zip",
+    outputSummary: "summary"
 };
 
 const rootState = mockRootState({
