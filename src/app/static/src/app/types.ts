@@ -135,3 +135,13 @@ export interface ADRSchemas {
     outputZip: string
     outputSummary: string
 }
+
+export interface UploadFile {
+    index: number,
+    displayName: string,
+    resourceType: string,
+    resourceFilename: string,
+    resourceId: string | null,
+    lastModified: string | null,
+    url: string | null
+}

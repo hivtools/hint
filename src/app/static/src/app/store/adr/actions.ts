@@ -4,9 +4,7 @@ import {api} from "../../apiService";
 import qs from "qs";
 import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
-import {findResource} from "../../utils";
-import {BaselineMutation} from "../baseline/mutations";
-import {DatasetResourceSet} from "../../types";
+import {constructUploadFile, findResource} from "../../utils";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -62,42 +60,35 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     async getUploadFiles(context) {
         const {state, rootState, commit} = context;
         const selectedDataset = rootState.baseline.selectedDataset;
+        const project = rootState.projects.currentProject;
 
-        if (selectedDataset) {
+        if (selectedDataset && project) {
             await api(context)
-                .ignoreErrors()
+                .withError(ADRMutation.SetADRError)
                 .ignoreSuccess()
                 .get(`/adr/datasets/${selectedDataset.id}`)
                 .then((response) => {
                     if (response) {
                         const metadata = response.data;
-                        const schemas = rootState.adr.schemas!;
+                        const schemas = state.schemas!;
 
-                        const project = rootState.projects.currentProject;
-                        if (!project) {
-                            throw "No current project";
-                        }
-
-                        const constructResource = (index: number, resourceType: string, resourceFilename: string, displayName: string) => {
-                            const resource = findResource(metadata, resourceType);
-                            const resourceId = resource ? resource.id : null;
-                            const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
-                            const url = resource ? resource.url : null
-
-                            return {
-                                index,
-                                displayName,
-                                resourceType,
-                                resourceFilename,
-                                resourceId,
-                                lastModified,
-                                url
-                            }
+                        const uploadFiles = {
+                            outputZip: constructUploadFile(
+                                metadata,
+                                0,
+                                schemas.outputZip,
+                                `${project.name}_naomi_outputs.zip`,
+                                "uploadFileOutputZip"),
+                            outputSummary: constructUploadFile(
+                                metadata,
+                                1,
+                                schemas.outputSummary,
+                                `${project.name}_naomi_summary.html`,
+                                "uploadFileOutputSummary")
                         };
 
-
+                        commit({type: ADRMutation.SetUploadFiles, payload: uploadFiles});
                     }
-
                 });
         }
     }

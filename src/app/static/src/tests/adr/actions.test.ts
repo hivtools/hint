@@ -1,10 +1,28 @@
-import {mockADRState, mockAxios, mockError, mockRootState, mockSuccess} from "../mocks";
+import {
+    mockADRState,
+    mockAxios,
+    mockBaselineState,
+    mockError, mockFailure,
+    mockProjectsState,
+    mockRootState,
+    mockSuccess
+} from "../mocks";
 import {actions} from "../../app/store/adr/actions";
 import {ADRMutation} from "../../app/store/adr/mutations";
 
 describe("ADR actions", () => {
     const state = mockADRState();
     const rootState = mockRootState();
+
+    beforeEach(() => {
+        // stop apiService logging to console
+        console.log = jest.fn();
+        mockAxios.reset();
+    });
+
+    afterEach(() => {
+        (console.log as jest.Mock).mockClear();
+    });
 
     it("fetches key", async () => {
         mockAxios.onGet(`/adr/key/`)
@@ -123,4 +141,93 @@ describe("ADR actions", () => {
             });
     });
 
+    it("getUploadFiles does nothing if no selected dataset", async () => {
+        const commit = jest.fn();
+        const root = mockRootState({
+            baseline: mockBaselineState(),
+            projects: mockProjectsState({currentProject: {id: 1} as any})
+        });
+
+        await actions.getUploadFiles({commit, state, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(0);
+        expect(mockAxios.history.get.length).toBe(0);
+    });
+
+    it("getUploadFiles does nothing if no current project", async () => {
+        const commit = jest.fn();
+        const root = mockRootState({
+            baseline: mockBaselineState({selectedDataset: {id: 1} as any}),
+            projects: mockProjectsState()
+        });
+
+        await actions.getUploadFiles({commit, state, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(0);
+        expect(mockAxios.history.get.length).toBe(0);
+    });
+
+    it("getUploadFiles commits error on error response", async () => {
+        const commit = jest.fn();
+
+        mockAxios.onGet(`/adr/datasets/test-dataset`)
+            .reply(500, mockFailure("test error"));
+
+        const root = mockRootState({
+            baseline: mockBaselineState({selectedDataset: {id: "test-dataset"} as any}),
+            projects: mockProjectsState({currentProject: {name: "project1"} as any})
+        });
+
+        await actions.getUploadFiles({commit, state, rootState: root} as any);
+
+        expect(commit.mock.calls[0][0].type).toBe("ADRError");
+        expect(commit.mock.calls[0][0].payload).toStrictEqual(mockError("test error"));
+    });
+
+    it("getUploadFiles gets dataset details and constructs upload files", async () => {
+        const commit = jest.fn();
+        const datasetWithResources = {
+            resources: [
+                {
+                    resource_type: "output-summary",
+                    id: "123",
+                    last_modified: "2021-03-01",
+                    metadata_modified: "2021-03-02",
+                    url: "http://test"
+                }
+            ]
+        };
+        mockAxios.onGet(`/adr/datasets/test-dataset`)
+            .reply(200, mockSuccess(datasetWithResources));
+
+        const adrState = mockADRState({schemas: {outputZip: "output-zip", outputSummary: "output-summary"} as any});
+        const root = mockRootState({
+            baseline: mockBaselineState({selectedDataset: {id: "test-dataset"} as any}),
+            projects: mockProjectsState({currentProject: {name: "project1"} as any})
+        });
+
+        await actions.getUploadFiles({commit, state: adrState, rootState: root} as any);
+
+        expect(commit.mock.calls[0][0].type).toBe("SetUploadFiles");
+        expect(commit.mock.calls[0][0].payload).toStrictEqual({
+            outputZip: {
+                index: 0,
+                displayName: "uploadFileOutputZip",
+                resourceType: "output-zip",
+                resourceFilename: "project1_naomi_outputs.zip",
+                resourceId: null,
+                lastModified: null,
+                url: null
+            },
+            outputSummary: {
+                index: 1,
+                displayName: "uploadFileOutputSummary",
+                resourceType: "output-summary",
+                resourceFilename: "project1_naomi_summary.html",
+                resourceId: "123",
+                lastModified: "2021-03-02",
+                url: "http://test"
+            }
+        });
+    });
 });
