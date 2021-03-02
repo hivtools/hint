@@ -1,10 +1,7 @@
 package org.imperial.mrc.hint.unit.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileManager
@@ -16,12 +13,14 @@ import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.models.ErrorResponse
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
 class ADRControllerTests : HintrControllerTests()
 {
@@ -303,6 +302,90 @@ class ADRControllerTests : HintrControllerTests()
         assertSavesAndValidatesUrl(FileType.Survey) { sut ->
             (sut as ADRController).importSurvey(fakeUrl)
         }
+    }
+
+    @Test
+    fun `pushes output zip to ADR`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val mockClient: ADRClient = mock {
+            on { postFile(eq("resource_create"), eq(listOf("name" to "output1.zip", "description" to "Naomi model output", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "package_id" to "dataset1")), any()) } doReturn ResponseEntity.ok().body("whatever")
+        }
+        val mockBuilder: ADRClientBuilder = mock {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", null)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
+    fun `pushes output summary to ADR`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSummary("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val mockClient: ADRClient = mock {
+            on { postFile(eq("resource_create"), eq(listOf("name" to "output1.html", "description" to "Naomi summary report", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "package_id" to "dataset1")), any()) } doReturn ResponseEntity.ok().body("whatever")
+        }
+        val mockBuilder: ADRClientBuilder = mock {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-summary", "model1", "output1.html", null)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
+    fun `pushes updated file to ADR`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val mockClient: ADRClient = mock {
+            on { postFile(eq("resource_patch"), eq(listOf("name" to "output1.zip", "description" to "Naomi model output", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "id" to "resource1")), any()) } doReturn ResponseEntity.ok().body("whatever")
+        }
+        val mockBuilder: ADRClientBuilder = mock {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
+    fun `pushes file to ADR fails if resourceType invalid`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-unknown", "model1", "output1.zip", "resource1")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(objectMapper.readTree(result.body)["errors"][0]["detail"].textValue()).isEqualTo("Invalid resourceType")
+    }
+
+    @Test
+    fun `pushes file to ADR fails if retrieval from ADR fails`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val mockClient: ADRClient = mock {
+            on { postFile(any(), any(), any()) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
+        }
+        val mockBuilder: ADRClientBuilder = mock {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
+        assertThat(result.body!!).isEqualTo("Bad Gateway")
     }
 
     private fun makeFakeSuccessResponse(): ResponseEntity<String>

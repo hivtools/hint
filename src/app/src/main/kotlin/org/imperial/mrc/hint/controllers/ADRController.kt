@@ -8,13 +8,20 @@ import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.md5sum
+import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.nio.file.Files
 
 @RestController
 @RequestMapping("/adr")
@@ -30,7 +37,8 @@ class ADRController(private val encryption: Encryption,
         HintrController(fileManager, apiClient, session, versionRepository)
 {
 
-    companion object {
+    companion object
+    {
         const val MAX_DATASETS = 1000
     }
 
@@ -150,5 +158,51 @@ class ADRController(private val encryption: Encryption,
     fun importANC(@RequestParam url: String): ResponseEntity<String>
     {
         return saveAndValidate(url, FileType.ANC)
+    }
+
+    @PostMapping("/datasets/{id}/resource/{resourceType}/{modelCalibrateId}")
+    @Suppress("ReturnCount")
+    fun pushFileToADR(@PathVariable id: String,
+                      @PathVariable resourceType: String,
+                      @PathVariable modelCalibrateId: String,
+                      @RequestParam resourceFileName: String,
+                      @RequestParam resourceId: String?): ResponseEntity<String>
+    {
+        // 1. Download relevant artefact from hintr
+        @Suppress("UNCHECKED_CAST")
+        val artefact = when (resourceType)
+        {
+            appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId), "Naomi model output")
+            appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId),
+                    "Naomi summary report")
+            else -> return ErrorDetail(HttpStatus.BAD_REQUEST,
+                    "Invalid resourceType").toResponseEntity() as ResponseEntity<String>
+        }
+
+        // 2. Return error if artefact can't be retrieved
+        if (!artefact.first.statusCode.is2xxSuccessful)
+        {
+            val baos = ByteArrayOutputStream()
+            artefact.first.body?.writeTo(baos)
+            return ResponseEntity.status(artefact.first.statusCode).contentType(MediaType.APPLICATION_JSON).body(
+                    baos.toString())
+        }
+
+        // 3. Stream artefact to file
+        val file = File(Files.createTempDirectory("adr").toFile(), resourceFileName).apply { deleteOnExit() }
+        FileOutputStream(file).use { fis ->
+            artefact.first.body!!.writeTo(fis)
+        }
+
+        // 4. Checksum file and upload with metadata to ADR
+        val filePart = Pair("upload", file)
+        val commonParameters =
+                listOf("name" to resourceFileName, "description" to artefact.second, "hash" to file.md5sum())
+        val adr = adrClientBuilder.build()
+        return when (resourceId)
+        {
+            null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
+            else -> adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
+        }
     }
 }

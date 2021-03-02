@@ -18,10 +18,10 @@ import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
-import java.io.ByteArrayInputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
+import java.security.DigestInputStream
+import java.security.MessageDigest
+import javax.xml.bind.DatatypeConverter
 
 fun httpStatusFromCode(code: Int): HttpStatus
 {
@@ -131,3 +131,13 @@ fun Request.getStreamingResponseEntity(headRequest: (url: String, parameters: Pa
     return ResponseEntity(responseBody, headers, httpStatus)
 }
 
+fun File.md5sum(): String
+{
+    val md = MessageDigest.getInstance("MD5")
+    FileInputStream(this).use { fis ->
+        DigestInputStream(fis, md).use { dis ->
+            dis.readBytes()
+        }
+    }
+    return DatatypeConverter.printHexBinary(md.digest())
+}
