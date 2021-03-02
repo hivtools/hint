@@ -1,51 +1,43 @@
 <template>
     <div>
         <modal :open="open">
-            <h4 v-translate="'uploadToAdr'"></h4>
+            <h4 v-translate="'outputFileToAdr'"></h4>
             <div class="container">
                 <div class="mt-4">
-                    <span v-translate="'uploadDataset'"></span>
-                    <span>Antarctica (Naomi test data)</span></div>
-                <div class="mt-3" v-translate="'uploadInstruction'"></div>
+                    <span v-translate="'outputFileDataset'"></span>
+                    <span>{{ dataset }}</span></div>
+                <div class="mt-3" v-translate="'outputFileInstruction'"></div>
+                <div class="mt-3" v-for="(output, index) in outputFileMetadata" :key="index">
+                    <div class="mt-3 form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               :value="output.displayName"
+                               v-model="pushFilesToAdr"
+                               :id="`outputFile-${index}`" checked>
+
+                        <label class="form-check-label"
+                               :for="`outputFile-${index}`"
+                               v-translate="getTranslatedLabel(output.displayName)"></label>
+
+                        <small v-if="output.resourceId" class="text-danger row">
+                        <span class="col-auto">
+                        <span v-translate="'outputFileOverwrite'"></span>
+                        {{ output.lastModified }}
+                        </span>
+                        </small>
+                    </div>
+                </div>
                 <div class="mt-3">
-                    <input class="form-check-input" type="checkbox"
-                           v-model="uploadModelToAdr" id="model-upload-adr">
-                    <label class="form-check-label" for="model-upload-adr"
-                           v-translate="'uploadModelToAdr'"> </label>
-                    <small class="text-danger d-flex"> danger</small>
-                </div>
-                <div class="mt-2">
-                    <input class="form-check-input" type="checkbox"
-                           v-model="uploadSummaryToAdr" id="summary-upload-adr">
-                    <label class="form-check-label" for="summary-upload-adr"
-                           v-translate="'uploadSummaryToAdr'"></label>
-                    <small class="text-danger d-flex"> danger</small>
-                </div>
-                <div class="mt-2">
-                    <input class="form-check-input" type="checkbox"
-                           v-model="uploadPopulationToAdr" id="population-upload-adr">
-                    <label class="form-check-label" for="population-upload-adr"
-                           v-translate="'uploadPopulationToAdr'"></label>
-                    <small class="text-danger d-flex">This file already exists on ADR and will
-                        be overwritten. File was updated 24/02/21 17:22 by Jeff</small>
-                </div>
-                <div class="mt-2">
-                    <input class="form-check-input" type="checkbox"
-                           v-model="uploadArtToAdr" id="art-upload-adr">
-                    <label class="form-check-label" for="art-upload-adr"
-                           v-translate="'uploadArtToAdr'"></label>
-                    <small class="text-danger d-flex"> danger</small>
-                </div>
-                <div class="mt-2">
-                    <label for="desc-upload-adr" v-translate="'uploadDescToAdr'"></label>
-                    <textarea v-model="uploadDescToAdr" class="form-control" rows="4" id="desc-upload-adr"></textarea>
+                    <label for="description-id" v-translate="'outputFileDesc'"></label>
+                    <textarea v-model="pushDescToAdr"
+                              class="form-control" rows="3"
+                              id="description-id"></textarea>
                 </div>
             </div>
             <template v-slot:footer>
                 <button
                     type="button"
                     class="btn btn-red"
-                    @click.prevent="handleUploads"
                     v-translate="'ok'"></button>
                 <button
                     type="button"
@@ -60,26 +52,48 @@
 <script lang="ts">
     import Vue from "vue";
     import Modal from "../Modal.vue";
-
-    interface Computed {
-        uploadSelected: void
-    }
+    import {ADRUploadMetadataDict} from "../../types";
+    import {BaselineState} from "../../store/baseline/baseline";
+    import {mapStateProps} from "../../utils";
 
     interface Methods {
         handleCancel: () => void
-        handleUploads: () => void
+        getTranslatedLabel: (name: string) => string
+    }
+
+    interface Computed {
+        dataset: string
+    }
+
+    const fakeMetadata = {
+        outputZip:
+            {
+                displayName: "Model outputs",
+                resourceType: "inputs-unaids-naomi-output-zip",
+                resourceFilename: "naomi-model-outputs-project1.zip",
+                resourceId: null,
+                lastModified: null,
+                resourceUrl: null
+            },
+        outputSummary:
+            {
+                displayName: "Summary",
+                resourceType: "string",
+                resourceFilename: "string",
+                resourceId: "value",
+                lastModified: new Date().toTimeString(),
+                resourceUrl: null
+            }
     }
 
     interface Data {
-        uploadArtToAdr: string,
-        uploadDescToAdr: string,
-        uploadModelToAdr: string,
-        uploadSummaryToAdr: string,
-        uploadPopulationToAdr: string
+        pushFilesToAdr: []
+        pushDescToAdr: string
+        outputFileMetadata: ADRUploadMetadataDict
     }
 
     interface Props {
-        open: boolean,
+        open: boolean
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -90,26 +104,25 @@
                 required: true
             }
         },
-        data() {
+        data(): Data {
             return {
-                uploadArtToAdr: "checked",
-                uploadDescToAdr: "",
-                uploadModelToAdr: "checked",
-                uploadSummaryToAdr: "checked",
-                uploadPopulationToAdr: "checked"
-            }
-        },
-        computed: {
-            uploadSelected: function () {
+                pushFilesToAdr: [],
+                pushDescToAdr: "",
+                outputFileMetadata: fakeMetadata
             }
         },
         methods: {
             handleCancel() {
-               this.$emit("close")
+                this.$emit("close")
             },
-            handleUploads() {
-                this.$emit("submit")
+            getTranslatedLabel(name: string) {
+                return `outputFile${name.trim().replace(/\s/g, "")}`
             }
+        },
+        computed: {
+            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
+                dataset: state => state.selectedDataset?.title
+            })
         },
         components: {
             Modal

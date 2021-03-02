@@ -19,7 +19,7 @@
                 </a>
             </div>
             <div v-if="hasUploadPermit" class="col-sm">
-                <h4 v-translate="'uploadToAdr'"></h4>
+                <h4 v-translate="'outputFileToAdr'"></h4>
                 <a @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href=#>
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
@@ -28,8 +28,7 @@
         </div>
         <upload-modal v-if="hasUploadPermit"
                       :open="modelOpen"
-                      @close="modelOpen = false"
-                      @submit="submitUploads"></upload-modal>
+                      @close="modelOpen = false"></upload-modal>
     </div>
 </template>
 
@@ -49,8 +48,7 @@
     }
 
     interface Methods {
-        handleUploadModal: () => void,
-        submitUploads: () => void
+        handleUploadModal: () => void
     }
 
     interface Data {
@@ -86,9 +84,6 @@
         methods: {
             handleUploadModal() {
                 this.modelOpen = true
-            },
-            submitUploads() {
-                this.modelOpen = false
             }
         },
         components: {

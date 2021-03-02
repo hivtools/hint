@@ -128,3 +128,13 @@ export interface ADRSchemas {
     shape: string
     survey: string
 }
+export type ADRUploadMetadataDict = Dict<ADRUploadMetadata>;
+
+export interface ADRUploadMetadata {
+    displayName: string
+    resourceType: string
+    resourceFilename: string
+    resourceId: string | null
+    lastModified: string | null
+    resourceUrl: string | null
+}
