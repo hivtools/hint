@@ -1,19 +1,19 @@
 <template>
-    <div>
+    <div id="dialog">
         <modal :open="open">
             <h4 v-translate="'outputFileToAdr'"></h4>
             <div class="container">
-                <div class="mt-4">
+                <div id="dataset-id" class="mt-4">
                     <span v-translate="'outputFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
-                <div class="mt-3" v-translate="'outputFileInstruction'"></div>
-                <div class="mt-3" v-for="(output, index) in outputFileMetadata" :key="index">
+                <div id="instructions" class="mt-3" v-translate="'outputFileInstruction'"></div>
+                <div id="output-file-id" class="mt-3" v-for="(output, index) in outputFileMetadata" :key="index">
                     <div class="mt-3 form-check">
                         <input class="form-check-input"
                                type="checkbox"
                                :value="output.displayName"
                                v-model="pushFilesToAdr"
-                               :id="`outputFile-${index}`" checked>
+                               :id="`outputFile-${index}`">
 
                         <label class="form-check-label"
                                :for="`outputFile-${index}`"
@@ -21,8 +21,7 @@
 
                         <small v-if="output.resourceId" class="text-danger row">
                         <span class="col-auto">
-                        <span v-translate="'outputFileOverwrite'"></span>
-                        {{ output.lastModified }}
+                        <span v-translate="'outputFileOverwrite'"></span>{{ output.lastModified }}
                         </span>
                         </small>
                     </div>
@@ -81,7 +80,7 @@
                 resourceType: "string",
                 resourceFilename: "string",
                 resourceId: "value",
-                lastModified: new Date().toTimeString(),
+                lastModified: "24/02/21 17:22",
                 resourceUrl: null
             }
     }
@@ -100,8 +99,7 @@
         name: "UploadModal",
         props: {
             open: {
-                type: Boolean,
-                required: true
+                type: Boolean
             }
         },
         data(): Data {
@@ -116,6 +114,7 @@
                 this.$emit("close")
             },
             getTranslatedLabel(name: string) {
+                console.log(this.pushFilesToAdr.length)
                 return `outputFile${name.trim().replace(/\s/g, "")}`
             }
         },

@@ -491,7 +491,7 @@ const fr: Partial<Translations> = {
     outputFileDataset: "Base de données:",
     outputFileDesc: "Description (elle sera ajoutée aux métadonnées du fichier):",
     outputFileInstruction: "Veuillez sélectionner les fichiers nouveaux ou modifiés qui doivent être téléchargés",
-    outputFileModeloutputs: "sorties du modèle",
+    outputFileModeloutputs: "Sorties du modèle",
     outputFilePopulation: "Population",
     outputFileOverwrite: "Ce fichier existe déjà sur ADR et sera écrasé. Le fichier a été mis à jour ",
     outputFileSummary: "Rapport sommaire",

@@ -18,7 +18,7 @@
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
                 </a>
             </div>
-            <div v-if="hasUploadPermit" class="col-sm">
+            <div id="upload" v-if="hasUploadPermit" class="col-sm">
                 <h4 v-translate="'outputFileToAdr'"></h4>
                 <a @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href=#>
                     <span v-translate="'upload'"></span>
@@ -26,9 +26,7 @@
                 </a>
             </div>
         </div>
-        <upload-modal v-if="hasUploadPermit"
-                      :open="modelOpen"
-                      @close="modelOpen = false"></upload-modal>
+        <upload-modal :open="modelOpen" @close="modelOpen = false"></upload-modal>
     </div>
 </template>
 
