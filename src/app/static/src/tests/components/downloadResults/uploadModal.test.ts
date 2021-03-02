@@ -5,7 +5,6 @@ import {emptyState} from "../../../app/root";
 import {mockBaselineState, mockDatasetResource} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
-import Vue from "vue"
 
 describe(`uploadModal `, () => {
 

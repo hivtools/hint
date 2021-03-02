@@ -6,8 +6,6 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {emptyState} from "../../../app/root";
 import {expectTranslated} from "../../testHelpers";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
-import Vue from "vue"
-import Modal from "../../../app/components/Modal.vue";
 
 const localVue = createLocalVue();
 
