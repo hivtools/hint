@@ -73,20 +73,31 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                         const metadata = response.data;
                         const schemas = rootState.adr.schemas!;
 
+                        const project = rootState.projects.currentProject;
+                        if (!project) {
+                            throw "No current project";
+                        }
 
+                        const constructResource = (index: number, resourceType: string, resourceFilename: string, displayName: string) => {
+                            const resource = findResource(metadata, resourceType);
+                            const resourceId = resource ? resource.id : null;
+                            const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
+                            const url = resource ? resource.url : null
 
-                        //Build a map, use lambda
-
-                        ["outputZip", "outputSummary"].map(schema => {
-                            const existingResource = findResource(metadata, schemas[schema])
                             return {
-                                resourceType: schemas[schema]
-                            };
-                        });
+                                index,
+                                displayName,
+                                resourceType,
+                                resourceFilename,
+                                resourceId,
+                                lastModified,
+                                url
+                            }
+                        };
 
-                        commit(BaselineMutation.UpdateDatasetResources,
-                            {pjnz, pop, shape, survey, program, anc} as DatasetResourceSet)
+
                     }
+
                 });
         }
     }

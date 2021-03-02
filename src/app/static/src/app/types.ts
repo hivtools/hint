@@ -101,6 +101,7 @@ export interface VersionIds {
 }
 
 export interface DatasetResource {
+    id: string,
     lastModified: string,
     metadataModified: string,
     url: string
