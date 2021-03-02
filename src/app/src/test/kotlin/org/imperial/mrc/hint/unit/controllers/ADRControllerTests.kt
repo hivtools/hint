@@ -40,6 +40,8 @@ class ADRControllerTests : HintrControllerTests()
         on { adrPopSchema } doReturn "adr-pop"
         on { adrShapeSchema } doReturn "adr-shape"
         on { adrSurveySchema } doReturn "adr-survey"
+        on { adrOutputZipSchema } doReturn "adr-output-zip"
+        on { adrOutputSummarySchema } doReturn "adr-output-summary"
     }
 
     private val mockFileManager = mock<FileManager>()
@@ -233,6 +235,8 @@ class ADRControllerTests : HintrControllerTests()
         assertThat(data["anc"].textValue()).isEqualTo("adr-anc")
         assertThat(data["shape"].textValue()).isEqualTo("adr-shape")
         assertThat(data["survey"].textValue()).isEqualTo("adr-survey")
+        assertThat(data["outputZip"].textValue()).isEqualTo("adr-output-zip")
+        assertThat(data["outputSummary"].textValue()).isEqualTo("adr-output-summary")
         assertThat(data["baseUrl"].textValue()).isEqualTo("adr-url")
     }
 

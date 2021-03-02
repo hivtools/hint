@@ -111,7 +111,9 @@ class ADRController(private val encryption: Encryption,
                         "pjnz" to appProperties.adrPJNZSchema,
                         "population" to appProperties.adrPopSchema,
                         "shape" to appProperties.adrShapeSchema,
-                        "survey" to appProperties.adrSurveySchema)).asResponseEntity()
+                        "survey" to appProperties.adrSurveySchema,
+                        "outputZip" to appProperties.adrOutputZipSchema,
+                        "outputSummary" to appProperties.adrOutputSummarySchema)).asResponseEntity()
     }
 
     @PostMapping("/pjnz")
