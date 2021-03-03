@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.clients.ADRFuelClient
 import org.junit.jupiter.api.Test
+import java.io.File
 
 class ADRClientTests
 {
@@ -40,6 +41,19 @@ class ADRClientTests
     {
         val sut = ADRFuelClient(ConfiguredAppProperties(), "fakekey")
         val response = sut.get("garbage")
+        assertThat(response.statusCodeValue).isEqualTo(500)
+        val errors = ObjectMapper().readValue<JsonNode>(response.body!!)["errors"]
+        assertThat(errors.isArray).isTrue()
+        assertThat(errors.count()).isEqualTo(1)
+        assertThat(errors[0]["error"].textValue()).isEqualTo("OTHER_ERROR")
+        assertThat(errors[0]["detail"].textValue()).isEqualTo("Could not parse response.")
+    }
+
+    @Test
+    fun `returns an error when uploading a file to a non-existent endpoint`()
+    {
+        val sut = ADRFuelClient(ConfiguredAppProperties(), "fakekey")
+        val response = sut.postFile("garbage", listOf(), Pair("garbage", File("/dev/null")))
         assertThat(response.statusCodeValue).isEqualTo(500)
         val errors = ObjectMapper().readValue<JsonNode>(response.body!!)["errors"]
         assertThat(errors.isArray).isTrue()
