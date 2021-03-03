@@ -177,7 +177,7 @@ class ADRTests : SecureIntegrationTests()
             val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputZipSchema}/$modelCalibrationId?resourceFileName=output.zip"
             val createResult = testRestTemplate.postForEntity<String>(url)
             assertSuccess(createResult)
-            val resourceId = ObjectMapper().readTree(createResult.body!!)["data"]["id"]
+            val resourceId = ObjectMapper().readTree(createResult.body!!)["data"]["id"].textValue()
             val updateResult = testRestTemplate.postForEntity<String>("$url&resourceId=$resourceId")
             assertSuccess(updateResult)
         }
