@@ -206,7 +206,7 @@ describe("utils", () => {
             resourceFilename: "test.txt",
             resourceId: "123",
             lastModified: "2021-03-01",
-            url: "http://test"
+            resourceUrl: "http://test"
         });
     });
 
@@ -220,7 +220,7 @@ describe("utils", () => {
             resourceFilename: "test.txt",
             resourceId: null,
             lastModified: null,
-            url: null
+            resourceUrl: null
         });
     });
 });

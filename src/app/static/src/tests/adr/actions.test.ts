@@ -217,7 +217,7 @@ describe("ADR actions", () => {
                 resourceFilename: "project1_naomi_outputs.zip",
                 resourceId: null,
                 lastModified: null,
-                url: null
+                resourceUrl: null
             },
             outputSummary: {
                 index: 1,
@@ -226,7 +226,7 @@ describe("ADR actions", () => {
                 resourceFilename: "project1_naomi_summary.html",
                 resourceId: "123",
                 lastModified: "2021-03-02",
-                url: "http://test"
+                resourceUrl: "http://test"
             }
         });
     });

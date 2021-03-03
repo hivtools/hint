@@ -178,7 +178,7 @@ export const constructUploadFile = (datasetWithResources: any, index: number, re
     const resource = findResource(datasetWithResources, resourceType);
     const resourceId = resource ? resource.id : null;
     const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
-    const url = resource ? resource.url : null;
+    const resourceUrl = resource ? resource.url : null;
 
     return {
         index,
@@ -186,8 +186,8 @@ export const constructUploadFile = (datasetWithResources: any, index: number, re
         resourceType,
         resourceFilename,
         resourceId,
-        lastModified,
-        url
+        resourceUrl,
+        lastModified
     }
 };
 

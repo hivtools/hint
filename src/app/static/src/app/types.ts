@@ -142,6 +142,6 @@ export interface UploadFile {
     resourceType: string,
     resourceFilename: string,
     resourceId: string | null,
-    lastModified: string | null,
-    url: string | null
+    resourceUrl: string | null,
+    lastModified: string | null
 }
