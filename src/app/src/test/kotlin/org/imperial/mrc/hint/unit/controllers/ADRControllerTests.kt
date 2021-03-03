@@ -318,7 +318,7 @@ class ADRControllerTests : HintrControllerTests()
         }
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
         val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", null)
-        verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.extension == "zip" })
+        verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.name == "output1.zip" })
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
     }
@@ -337,6 +337,7 @@ class ADRControllerTests : HintrControllerTests()
         }
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
         val result = sut.pushFileToADR("dataset1", "adr-output-summary", "model1", "output1.html", null)
+        verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.name == "output1.html" })
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
     }
