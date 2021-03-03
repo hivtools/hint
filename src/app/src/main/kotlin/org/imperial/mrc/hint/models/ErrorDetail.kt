@@ -15,8 +15,8 @@ class ErrorDetail(private val httpStatus: HttpStatus,
         const val defaultError = "OTHER_ERROR"
     }
 
-    fun toResponseEntity() = ResponseEntity
+    fun <T> toResponseEntity() = ResponseEntity
             .status(this.httpStatus)
             .contentType(MediaType.APPLICATION_JSON)
-            .body(ErrorResponse(listOf(this)).toJsonString() as Any)
+            .body(ErrorResponse(listOf(this)).toJsonString() as T)
 }

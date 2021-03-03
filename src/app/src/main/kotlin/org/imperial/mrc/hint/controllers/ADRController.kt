@@ -169,14 +169,12 @@ class ADRController(private val encryption: Encryption,
                       @RequestParam resourceId: String?): ResponseEntity<String>
     {
         // 1. Download relevant artefact from hintr
-        @Suppress("UNCHECKED_CAST")
         val artefact = when (resourceType)
         {
             appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId), "Naomi model outputs")
             appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId),
                     "Naomi summary report")
-            else -> return ErrorDetail(HttpStatus.BAD_REQUEST,
-                    "Invalid resourceType").toResponseEntity() as ResponseEntity<String>
+            else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
         }
 
         // 2. Return error if artefact can't be retrieved
@@ -184,8 +182,7 @@ class ADRController(private val encryption: Encryption,
         {
             val baos = ByteArrayOutputStream()
             artefact.first.body?.writeTo(baos)
-            return ResponseEntity.status(artefact.first.statusCode).contentType(MediaType.APPLICATION_JSON).body(
-                    baos.toString())
+            return ErrorDetail(artefact.first.statusCode, baos.toString()).toResponseEntity()
         }
 
         // 3. Stream artefact to file

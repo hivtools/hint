@@ -53,7 +53,7 @@ fun Response.asResponseEntity(): ResponseEntity<String>
     if (this.statusCode == -1)
     {
         return ErrorDetail(httpStatus, "No response returned. The request may have timed out.")
-                .toResponseEntity() as ResponseEntity<String>
+                .toResponseEntity<String>()
     }
 
     return try
@@ -83,7 +83,7 @@ fun Response.asResponseEntity(): ResponseEntity<String>
     {
         logger.error(e.message)
         ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Could not parse response.")
-                .toResponseEntity() as ResponseEntity<String>
+                .toResponseEntity<String>()
     }
 }
 
@@ -105,7 +105,7 @@ fun formatADRResponse(json: JsonNode): ResponseEntity<String>
         ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                 json["error"]["message"].asText(),
                 "ADR_ERROR")
-                .toResponseEntity() as ResponseEntity<String>
+                .toResponseEntity<String>()
     }
 
 }

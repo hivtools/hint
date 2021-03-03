@@ -371,6 +371,19 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
+    fun `pushes file to ADR fails if retrieval from hintr fails`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StreamingResponseBody { it.write("Internal Server Error".toByteArray()) })
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StreamingResponseBody { it.write("Internal Server Error".toByteArray()) })
+        }
+        val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(result.body!!).contains("Internal Server Error")
+    }
+
+    @Test
     fun `pushes file to ADR fails if retrieval from ADR fails`()
     {
         val mockAPIClient: HintrAPIClient = mock {
