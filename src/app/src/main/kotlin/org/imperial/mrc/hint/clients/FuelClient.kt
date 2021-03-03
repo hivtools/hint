@@ -1,7 +1,6 @@
 package org.imperial.mrc.hint.clients
 
 import com.github.kittinunf.fuel.core.FileDataPart
-import com.github.kittinunf.fuel.core.InlineDataPart
 import com.github.kittinunf.fuel.core.Parameters
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.httpGet
