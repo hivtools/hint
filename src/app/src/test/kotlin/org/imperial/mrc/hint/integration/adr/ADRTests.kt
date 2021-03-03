@@ -169,7 +169,7 @@ class ADRTests : SecureIntegrationTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `can push new file to ADR`(isAuthorized: IsAuthorized)
+    fun `can push file to ADR`(isAuthorized: IsAuthorized)
     {
         if (isAuthorized == IsAuthorized.TRUE) {
             val modelCalibrationId = waitForModelRunResult()

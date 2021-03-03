@@ -318,6 +318,7 @@ class ADRControllerTests : HintrControllerTests()
         }
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
         val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", null)
+        verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.extension == "zip" })
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
     }
