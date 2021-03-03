@@ -39,6 +39,7 @@
                 <error-alert v-if="cloneProjectError" :error="cloneProjectError"></error-alert>
                 <button type="button"
                         class="btn btn-red"
+                        ref="okBtn"
                         @click="confirmShareProject"
                         :disabled="invalidEmails || cloningProject"
                         v-translate="'ok'">
@@ -75,7 +76,6 @@
 
     interface Data {
         emailsToShareWith: EmailToShareWith[]
-        validating: boolean
         open: boolean
     }
 
@@ -96,7 +96,7 @@
 
     interface Methods {
         addEmail: (email: EmailToShareWith, index: number) => void
-        enterEmails: (email?: EmailToShareWith, index?: number) => void
+        enterEmails: (email: EmailToShareWith, index: number) => void
         cycleInputs: (email: EmailToShareWith, index: number) => void
         removeEmail: (email: EmailToShareWith, index: number) => void
         shareProject: (e: Event) => void
@@ -117,27 +117,18 @@
         data() {
             return {
                 emailsToShareWith: [{value: "", valid: null, validationMessage: ""}],
-                validating: false,
                 open: false
             }
         },
         methods: {
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
-            enterEmails(email?: EmailToShareWith, index?: number){
-                if (email && (index || index === 0)){ // asks if any input is selected
-                    this.validating = true;
-                    this.addEmail(email, index)
-                    let self = this
-                    // putting validating behind setTimeout forces async actions to be finished before
-                    // cycle inputs or confirmshare projects can be ran
-                    setTimeout(function(){ 
-                        self.validating = false;
-                        self.cycleInputs(email, index)                    
-                    })
-                } else if (!this.invalidEmails && !this.cloningProject && this.emailsEntered && !this.validating){
-                    this.confirmShareProject();
-                }
+            enterEmails(email: EmailToShareWith, index: number){
+                this.addEmail(email, index)
+                let self = this
+                this.$nextTick(() => {
+                    self.cycleInputs(email, index)                    
+                })
             },
             addEmail(e: EmailToShareWith, index: number) {
                 if (e.value && index == this.emailsToShareWith.length - 1) {
@@ -174,13 +165,11 @@
                     const lastInputIndex = this.emailsToShareWith.length - 1
                     const lastInput = this.$el.querySelectorAll("#shareInputs > div > input")[lastInputIndex]! as HTMLElement
                     const currentInput = this.$el.querySelectorAll("#shareInputs > div > input")[index]! as HTMLElement
+                    const okBtn = this.$refs.okBtn as HTMLElement
 
                 if (index === lastInputIndex && !email.value){
-                    if (!this.invalidEmails && !this.cloningProject && this.emailsEntered){
-                        this.confirmShareProject();
-                    } else {
-                      lastInput.blur()
-                    }
+                    currentInput.blur()
+                    okBtn.focus()
                 } else {
                     currentInput.blur()
                     lastInput.focus()
@@ -243,14 +232,6 @@
         },
         directives: {
             tooltip: VTooltip
-        },
-        mounted() {
-            let self = this; 
-            window.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter' && self.open) {
-                    self.enterEmails();
-                }
-            });
         },
         watch: {
             cloningProject(newVal: boolean) {
