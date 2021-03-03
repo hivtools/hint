@@ -392,23 +392,23 @@
                 });
             }
         },
-        mounted() {
-            let self = this; 
-            window.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter' && self.projects.length > 0) {
-                    if (self.renamedProjectName && !self.disableRename && self.projectToRename)
-                    {
-                        self.confirmRename(self.renamedProjectName)
-                    }
-                    if (self.newProjectName && !self.disableCreate && self.versionToPromote){
-                        self.confirmPromotion(self.newProjectName)
-                    }
-                    if (self.projectToDelete || self.versionToDelete){
-                        self.confirmDelete()
-                    }
-                }
-            });
-        },
+        // mounted() {
+        //     let self = this; 
+        //     window.addEventListener('keyup', function(e) {
+        //         if (e.key === 'Enter' && self.projects.length > 0) {
+        //             if (self.renamedProjectName && !self.disableRename && self.projectToRename)
+        //             {
+        //                 self.confirmRename(self.renamedProjectName)
+        //             }
+        //             if (self.newProjectName && !self.disableCreate && self.versionToPromote){
+        //                 self.confirmPromotion(self.newProjectName)
+        //             }
+        //             if (self.projectToDelete || self.versionToDelete){
+        //                 self.confirmDelete()
+        //             }
+        //         }
+        //     });
+        // },
         components: {
             BCollapse,
             ChevronDownIcon,
