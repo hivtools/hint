@@ -2,7 +2,8 @@ import {
     mockADRState,
     mockAxios,
     mockBaselineState,
-    mockError, mockFailure,
+    mockError,
+    mockFailure,
     mockProjectsState,
     mockRootState,
     mockSuccess
