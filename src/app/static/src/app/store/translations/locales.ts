@@ -532,6 +532,8 @@ const fr: Partial<Translations> = {
     uniqueProjectName: "Veuillez choisire un nom unique",
     updatePassword: "Mettre à jour le mot de passe",
     uploadBaseline: "Télécharger les données de base",
+    uploadFileOutputSummary: "Rapport sommaire",
+    uploadFileOutputZip: "Résultats du modèle",
     uploadSurvey: "Télécharger les données d'enquête et de programme",
     username: "Nom d’utilisateur",
     usernameValidation: "Veuillez entrer votre nom d’utilisateur",
