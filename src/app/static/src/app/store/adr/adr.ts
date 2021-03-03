@@ -1,7 +1,7 @@
 import {Module} from "vuex";
 import {RootState} from "../../root";
 import {Error} from "../../generated";
-import {ADRSchemas} from "../../types";
+import {ADRSchemas, Dict, UploadFile} from "../../types";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 
@@ -10,7 +10,9 @@ export interface ADRState {
     fetchingDatasets: boolean,
     key: string | null,
     keyError: Error | null,
+    adrError: Error | null,
     schemas: ADRSchemas | null,
+    uploadFiles: Dict<UploadFile> | null
 }
 
 export const initialADRState = (): ADRState => {
@@ -18,8 +20,10 @@ export const initialADRState = (): ADRState => {
         datasets: [],
         key: null,
         keyError: null,
+        adrError: null,
         schemas: null,
         fetchingDatasets: false,
+        uploadFiles: null
     }
 };
 

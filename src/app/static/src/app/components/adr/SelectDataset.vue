@@ -77,7 +77,7 @@
     import {Language} from "../../store/translations/locales";
     import Vue from "vue";
     import TreeSelect from "@riophae/vue-treeselect";
-    import {mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
+    import {findResource, mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
     import {BaselineMutation} from "../../store/baseline/mutations";
@@ -103,10 +103,6 @@
         importSurvey: (url: string) => Promise<void>;
         importProgram: (url: string) => Promise<void>;
         importANC: (url: string) => Promise<void>;
-        findResource: (
-            datasetWithResources: any,
-            resourceType: string
-        ) => DatasetResource | null;
         refresh: () => void;
         refreshDatasetMetadata: () => void;
         markResourcesUpdated: () => void;
@@ -197,12 +193,12 @@
                     title: fullMetaData.title,
                     url: `${this.schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`,
                     resources: {
-                        pjnz: this.findResource(fullMetaData, this.schemas.pjnz),
-                        shape: this.findResource(fullMetaData, this.schemas.shape),
-                        pop: this.findResource(fullMetaData, this.schemas.population),
-                        survey: this.findResource(fullMetaData, this.schemas.survey),
-                        program: this.findResource(fullMetaData, this.schemas.programme),
-                        anc: this.findResource(fullMetaData, this.schemas.anc)
+                        pjnz: findResource(fullMetaData, this.schemas.pjnz),
+                        shape: findResource(fullMetaData, this.schemas.shape),
+                        pop: findResource(fullMetaData, this.schemas.population),
+                        survey: findResource(fullMetaData, this.schemas.survey),
+                        program: findResource(fullMetaData, this.schemas.programme),
+                        anc: findResource(fullMetaData, this.schemas.anc)
                     }
                 }
             },
@@ -251,15 +247,6 @@
             importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
-            findResource(datasetWithResources: any, resourceType: string) {
-                const metadata = datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
-                return metadata ? {
-                    url: metadata.url,
-                    lastModified: metadata.last_modified,
-                    metadataModified: metadata.metadata_modified,
-                    outOfDate: false
-                } : null
-            },
             async importDataset() {
                 if (this.newDatasetId) {
                     this.loading = true;

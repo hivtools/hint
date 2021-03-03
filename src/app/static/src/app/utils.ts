@@ -166,11 +166,30 @@ export const formatDateTime = (isoUTCString: string) => {
 export const findResource = (datasetWithResources: any, resourceType: string): DatasetResource | null => {
     const metadata = datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
     return metadata ? {
+        id: metadata.id,
         url: metadata.url,
         lastModified: metadata.last_modified,
         metadataModified: metadata.metadata_modified,
         outOfDate: false} : null
-}
+};
+
+export const constructUploadFile = (datasetWithResources: any, index: number, resourceType: string,
+                             resourceFilename: string, displayName: string) => {
+    const resource = findResource(datasetWithResources, resourceType);
+    const resourceId = resource ? resource.id : null;
+    const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
+    const resourceUrl = resource ? resource.url : null;
+
+    return {
+        index,
+        displayName,
+        resourceType,
+        resourceFilename,
+        resourceId,
+        resourceUrl,
+        lastModified
+    }
+};
 
 const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
 
