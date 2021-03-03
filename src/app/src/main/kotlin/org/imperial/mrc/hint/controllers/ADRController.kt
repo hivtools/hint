@@ -186,7 +186,8 @@ class ADRController(private val encryption: Encryption,
         }
 
         // 3. Stream artefact to file
-        val file = File(Files.createTempDirectory("adr").toFile(), resourceFileName).apply { deleteOnExit() }
+        val tmpDir = Files.createTempDirectory("adr").toFile()
+        val file = File(tmpDir, resourceFileName)
         FileOutputStream(file).use { fis ->
             artefact.first.body!!.writeTo(fis)
         }
@@ -196,10 +197,16 @@ class ADRController(private val encryption: Encryption,
         val commonParameters =
                 listOf("name" to resourceFileName, "description" to artefact.second, "hash" to file.md5sum())
         val adr = adrClientBuilder.build()
-        return when (resourceId)
+        return try
         {
-            null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
-            else -> adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
+            when (resourceId)
+            {
+                null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
+                else -> adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
+            }
+        }
+        finally {
+            tmpDir.deleteRecursively()
         }
     }
 }
