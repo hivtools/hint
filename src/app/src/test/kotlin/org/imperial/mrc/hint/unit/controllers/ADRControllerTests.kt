@@ -311,7 +311,7 @@ class ADRControllerTests : HintrControllerTests()
             on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
         val mockClient: ADRClient = mock {
-            on { postFile(eq("resource_create"), eq(listOf("name" to "output1.zip", "description" to "Naomi model output", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "package_id" to "dataset1")), any()) } doReturn ResponseEntity.ok().body("whatever")
+            on { postFile(eq("resource_create"), eq(listOf("name" to "output1.zip", "description" to "Naomi model outputs", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "package_id" to "dataset1")), any()) } doReturn ResponseEntity.ok().body("whatever")
         }
         val mockBuilder: ADRClientBuilder = mock {
             on { build() } doReturn mockClient
@@ -347,7 +347,7 @@ class ADRControllerTests : HintrControllerTests()
             on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
         val mockClient: ADRClient = mock {
-            on { postFile(eq("resource_patch"), eq(listOf("name" to "output1.zip", "description" to "Naomi model output", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "id" to "resource1")), any()) } doReturn ResponseEntity.ok().body("whatever")
+            on { postFile(eq("resource_patch"), eq(listOf("name" to "output1.zip", "description" to "Naomi model outputs", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "id" to "resource1")), any()) } doReturn ResponseEntity.ok().body("whatever")
         }
         val mockBuilder: ADRClientBuilder = mock {
             on { build() } doReturn mockClient

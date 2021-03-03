@@ -172,7 +172,7 @@ class ADRController(private val encryption: Encryption,
         @Suppress("UNCHECKED_CAST")
         val artefact = when (resourceType)
         {
-            appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId), "Naomi model output")
+            appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId), "Naomi model outputs")
             appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId),
                     "Naomi summary report")
             else -> return ErrorDetail(HttpStatus.BAD_REQUEST,
