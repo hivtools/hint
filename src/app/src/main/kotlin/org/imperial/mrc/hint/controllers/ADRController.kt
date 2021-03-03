@@ -15,7 +15,6 @@ import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.io.ByteArrayOutputStream
@@ -171,7 +170,8 @@ class ADRController(private val encryption: Encryption,
         // 1. Download relevant artefact from hintr
         val artefact = when (resourceType)
         {
-            appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId), "Naomi model outputs")
+            appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId),
+                    "Naomi model outputs")
             appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId),
                     "Naomi summary report")
             else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
