@@ -1,14 +1,16 @@
 import {MutationTree} from "vuex";
 import {ADRState} from "./adr";
-import {ADRSchemas, PayloadWithType} from "../../types";
+import {ADRSchemas, Dict, PayloadWithType, UploadFile} from "../../types";
 import {Error} from "../../generated";
 
 export enum ADRMutation {
     UpdateKey = "UpdateKey",
     SetKeyError = "KeyError",
+    SetADRError = "ADRError",
     SetDatasets = "SetDatasets",
     SetFetchingDatasets = "SetFetchingDatasets",
-    SetSchemas = "SetSchemas"
+    SetSchemas = "SetSchemas",
+    SetUploadFiles = "SetUploadFiles"
 }
 
 export const mutations: MutationTree<ADRState> = {
@@ -18,6 +20,10 @@ export const mutations: MutationTree<ADRState> = {
 
     [ADRMutation.SetKeyError](state: ADRState, action: PayloadWithType<Error | null>) {
         state.keyError = action.payload;
+    },
+
+    [ADRMutation.SetADRError](state: ADRState, action: PayloadWithType<Error | null>) {
+        state.adrError = action.payload;
     },
 
     [ADRMutation.SetDatasets](state: ADRState, action: PayloadWithType<any[]>) {
@@ -30,5 +36,9 @@ export const mutations: MutationTree<ADRState> = {
 
     [ADRMutation.SetSchemas](state: ADRState, action: PayloadWithType<ADRSchemas>) {
         state.schemas = action.payload;
+    },
+
+    [ADRMutation.SetUploadFiles](state: ADRState, action: PayloadWithType<Dict<UploadFile>>) {
+        state.uploadFiles = action.payload;
     }
 };

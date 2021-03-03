@@ -6,7 +6,7 @@ import {
     flattenToIdSet,
     formatDateTime,
     validateEmail,
-    versionLabel, rootOptionChildren
+    versionLabel, rootOptionChildren, constructUploadFile
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 
@@ -179,4 +179,48 @@ describe("utils", () => {
         expect(versionLabel(version)).toBe("v9");
     });
 
+    it("can construct upload file where resource exists", () => {
+        const datasetWithResources = {
+            resources: [
+                {
+                    resource_type: "other-type",
+                    id: "456",
+                    last_modified: "2021-02-01",
+                    metadata_modified: "2021-01-28",
+                    url: "http://other"
+                },
+                {
+                    resource_type: "test-type",
+                    id: "123",
+                    last_modified: "2021-03-01",
+                    metadata_modified: "2021-02-28",
+                    url: "http://test"
+                }
+            ]
+        };
+        const result = constructUploadFile(datasetWithResources, 0,"test-type", "test.txt", "displayTest");
+        expect(result).toStrictEqual({
+            index: 0,
+            displayName: "displayTest",
+            resourceType: "test-type",
+            resourceFilename: "test.txt",
+            resourceId: "123",
+            lastModified: "2021-03-01",
+            resourceUrl: "http://test"
+        });
+    });
+
+    it("can construct upload file where resource does not exist", () => {
+        const datasetWithResources = {resources: []};
+        const result = constructUploadFile(datasetWithResources, 0, "test-type", "test.txt", "displayTest");
+        expect(result).toStrictEqual({
+            index: 0,
+            displayName: "displayTest",
+            resourceType: "test-type",
+            resourceFilename: "test.txt",
+            resourceId: null,
+            lastModified: null,
+            resourceUrl: null
+        });
+    });
 });

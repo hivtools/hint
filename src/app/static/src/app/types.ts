@@ -101,6 +101,7 @@ export interface VersionIds {
 }
 
 export interface DatasetResource {
+    id: string,
     lastModified: string,
     metadataModified: string,
     url: string
@@ -133,4 +134,14 @@ export interface ADRSchemas {
     survey: string
     outputZip: string
     outputSummary: string
+}
+
+export interface UploadFile {
+    index: number,
+    displayName: string,
+    resourceType: string,
+    resourceFilename: string,
+    resourceId: string | null,
+    resourceUrl: string | null,
+    lastModified: string | null
 }
