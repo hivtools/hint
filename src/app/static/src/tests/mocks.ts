@@ -374,6 +374,7 @@ export const mockDataset = (props: Partial<Dataset> = {}): Dataset => {
 
 export const mockDatasetResource = (props: Partial<DatasetResource> = {}): DatasetResource => {
     return {
+        id: "123",
         url: "www.something.com",
         lastModified: "2020-11-05T00:00:00",
         metadataModified: "2020-11-04T00:00:00",
