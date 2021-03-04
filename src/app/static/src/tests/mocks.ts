@@ -40,12 +40,20 @@ import {Dataset, DatasetResource} from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
 import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
 import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
+import {ADRState, initialADRState} from "../app/store/adr/adr";
 
 export const mockAxios = new MockAdapter(axios);
 
 export const mockPasswordState = (props?: Partial<PasswordState>): PasswordState => {
     return {
         ...initialPasswordState,
+        ...props
+    }
+};
+
+export const mockADRState =  (props?: Partial<ADRState>): ADRState => {
+    return {
+        ...initialADRState(),
         ...props
     }
 };
@@ -366,6 +374,7 @@ export const mockDataset = (props: Partial<Dataset> = {}): Dataset => {
 
 export const mockDatasetResource = (props: Partial<DatasetResource> = {}): DatasetResource => {
     return {
+        id: "123",
         url: "www.something.com",
         lastModified: "2020-11-05T00:00:00",
         metadataModified: "2020-11-04T00:00:00",

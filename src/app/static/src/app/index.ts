@@ -32,7 +32,7 @@ export const app = new Vue({
         ...mapActions({loadSurveyAndProgram: 'surveyAndProgram/getSurveyAndProgramData'}),
         ...mapActions({loadModelRun: 'modelRun/getResult'}),
         ...mapActions({loadModelCalibrate: 'modelCalibrate/getResult'}),
-        ...mapActions({getADRSchemas: 'getADRSchemas'}),
+        ...mapActions({getADRSchemas: 'adr/getSchemas'}),
         ...mapActions({getCurrentProject: 'projects/getCurrentProject'}),
     },
     beforeMount: function () {

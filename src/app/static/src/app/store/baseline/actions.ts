@@ -28,7 +28,7 @@ const uploadCallback = (dispatch: Dispatch, response: any) => {
     if (response) {
         dispatch('validate');
     }
-    dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+    dispatch("surveyAndProgram/validateSurveyAndProgramData", {}, {root: true});
 }
 
 interface UploadImportOptions {
@@ -52,7 +52,7 @@ async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootStat
             } else {
                 commit({type: BaselineMutation.PJNZErroredFile, payload: filename});
             }
-            dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+            dispatch('surveyAndProgram/validateSurveyAndProgramData', {}, {root: true});
         });
 }
 
@@ -93,7 +93,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async refreshDatasetMetadata(context) {
         const {commit, state, rootState} = context
         if (state.selectedDataset) {
-            const schemas = rootState.adrSchemas!
+            const schemas = rootState.adr.schemas!
             await api(context)
                 .ignoreErrors()
                 .ignoreSuccess()

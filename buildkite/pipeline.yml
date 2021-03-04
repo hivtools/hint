@@ -19,5 +19,5 @@ steps:
   - label: ":mag: Test front-end"
     command: buildkite/test-front-end.sh
 
-  - label: ":mag: Test front-end ADR integration"
+  - label: ":mag: Test front-end ADR Dataset integration"
     command: buildkite/test-adr-front-end-integration.sh

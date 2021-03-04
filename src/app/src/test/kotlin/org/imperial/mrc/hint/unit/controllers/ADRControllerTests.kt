@@ -1,10 +1,7 @@
 package org.imperial.mrc.hint.unit.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileManager
@@ -16,12 +13,14 @@ import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.models.ErrorResponse
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
 class ADRControllerTests : HintrControllerTests()
 {
@@ -40,6 +39,8 @@ class ADRControllerTests : HintrControllerTests()
         on { adrPopSchema } doReturn "adr-pop"
         on { adrShapeSchema } doReturn "adr-shape"
         on { adrSurveySchema } doReturn "adr-survey"
+        on { adrOutputZipSchema } doReturn "adr-output-zip"
+        on { adrOutputSummarySchema } doReturn "adr-output-summary"
     }
 
     private val mockFileManager = mock<FileManager>()
@@ -233,6 +234,8 @@ class ADRControllerTests : HintrControllerTests()
         assertThat(data["anc"].textValue()).isEqualTo("adr-anc")
         assertThat(data["shape"].textValue()).isEqualTo("adr-shape")
         assertThat(data["survey"].textValue()).isEqualTo("adr-survey")
+        assertThat(data["outputZip"].textValue()).isEqualTo("adr-output-zip")
+        assertThat(data["outputSummary"].textValue()).isEqualTo("adr-output-summary")
         assertThat(data["baseUrl"].textValue()).isEqualTo("adr-url")
     }
 
@@ -299,6 +302,105 @@ class ADRControllerTests : HintrControllerTests()
         assertSavesAndValidatesUrl(FileType.Survey) { sut ->
             (sut as ADRController).importSurvey(fakeUrl)
         }
+    }
+
+    @Test
+    fun `pushes output zip to ADR`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val mockClient: ADRClient = mock {
+            on { postFile(eq("resource_create"), eq(listOf("name" to "output1.zip", "description" to "Naomi model outputs", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "package_id" to "dataset1")), any()) } doReturn ResponseEntity.ok().body("whatever")
+        }
+        val mockBuilder: ADRClientBuilder = mock {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", null)
+        verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.name == "output1.zip" })
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
+    fun `pushes output summary to ADR`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSummary("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val mockClient: ADRClient = mock {
+            on { postFile(eq("resource_create"), eq(listOf("name" to "output1.html", "description" to "Naomi summary report", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "package_id" to "dataset1")), any()) } doReturn ResponseEntity.ok().body("whatever")
+        }
+        val mockBuilder: ADRClientBuilder = mock {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-summary", "model1", "output1.html", null)
+        verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.name == "output1.html" })
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
+    fun `pushes updated file to ADR`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val mockClient: ADRClient = mock {
+            on { postFile(eq("resource_patch"), eq(listOf("name" to "output1.zip", "description" to "Naomi model outputs", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "id" to "resource1")), any()) } doReturn ResponseEntity.ok().body("whatever")
+        }
+        val mockBuilder: ADRClientBuilder = mock {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
+    fun `pushes file to ADR fails if resourceType invalid`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-unknown", "model1", "output1.zip", "resource1")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(objectMapper.readTree(result.body)["errors"][0]["detail"].textValue()).isEqualTo("Invalid resourceType")
+    }
+
+    @Test
+    fun `pushes file to ADR fails if retrieval from hintr fails`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StreamingResponseBody { it.write("Internal Server Error".toByteArray()) })
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StreamingResponseBody { it.write("Internal Server Error".toByteArray()) })
+        }
+        val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(result.body!!).contains("Internal Server Error")
+    }
+
+    @Test
+    fun `pushes file to ADR fails if retrieval from ADR fails`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val mockClient: ADRClient = mock {
+            on { postFile(any(), any(), any()) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
+        }
+        val mockBuilder: ADRClientBuilder = mock {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
+        assertThat(result.body!!).isEqualTo("Bad Gateway")
     }
 
     private fun makeFakeSuccessResponse(): ResponseEntity<String>

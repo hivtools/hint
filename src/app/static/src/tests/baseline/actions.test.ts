@@ -1,4 +1,5 @@
 import {
+    mockADRState,
     mockAxios,
     mockBaselineState,
     mockDataset,
@@ -25,10 +26,13 @@ const adrSchemas: ADRSchemas = {
     shape: "shape",
     survey: "survey",
     programme: "program",
-    anc: "anc"
-}
+    anc: "anc",
+    outputZip: "zip",
+    outputSummary: "summary"
+};
+
 const rootState = mockRootState({
-    adrSchemas
+    adr: mockADRState({schemas: adrSchemas})
 });
 
 const mockFormData = {
@@ -93,7 +97,7 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls[1].length).toBe(1);
         expect(dispatch.mock.calls[1][0]).toBe("validate");
 
-        expect(dispatch.mock.calls[2][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[2][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
         expect(dispatch.mock.calls[2][2]).toStrictEqual({root: true});
 
     }
@@ -108,7 +112,7 @@ describe("Baseline actions", () => {
         await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, mockFormData as any);
 
         expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
     });
 
     it("import PJNZ does not fetch plotting metadata or validate if error occurs", async () => {
@@ -121,7 +125,7 @@ describe("Baseline actions", () => {
         await actions.importPJNZ({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
         expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
@@ -160,7 +164,7 @@ describe("Baseline actions", () => {
         await actions.importShape({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
         expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "ShapeUpdated", payload: null});
@@ -205,7 +209,7 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls.length).toBe(2);
         expect(dispatch.mock.calls[0][0]).toBe("validate");
 
-        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
         expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
     }
 
@@ -251,7 +255,7 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls.length).toBe(2);
         expect(dispatch.mock.calls[0][0]).toBe("validate");
 
-        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
         expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
     };
 
@@ -266,7 +270,7 @@ describe("Baseline actions", () => {
         await actions.importPopulation({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
         expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PopulationUpdated", payload: null});
@@ -430,13 +434,13 @@ describe("Baseline actions", () => {
         mockAxios.onGet("/adr/datasets/1234")
             .reply(200, mockSuccess({
                 resources: [
-                    {url: "something.com", last_modified: "2020-11-01", metadata_modified: "2020-11-02", resource_type: "pop"},
-                    {url: "something.com", last_modified: "2020-11-03", metadata_modified: "2020-11-04", resource_type: "pjnz"},
-                    {url: "something.com", last_modified: "2020-11-05", metadata_modified: "2020-11-06", resource_type: "shape"},
-                    {url: "something.com", last_modified: "2020-11-07", metadata_modified: "2020-11-08", resource_type: "survey"},
-                    {url: "something.com", last_modified: "2020-11-09", metadata_modified: "2020-11-10", resource_type: "program"},
-                    {url: "something.com", last_modified: "2020-11-11", metadata_modified: "2020-11-12", resource_type: "anc"},
-                    {url: "something.com", last_modified: "2020-10-01", metadata_modified: "2020-10-02", resource_type: "random"},
+                    {id: "1", url: "something.com", last_modified: "2020-11-01", metadata_modified: "2020-11-02", resource_type: "pop"},
+                    {id: "2", url: "something.com", last_modified: "2020-11-03", metadata_modified: "2020-11-04", resource_type: "pjnz"},
+                    {id: "3", url: "something.com", last_modified: "2020-11-05", metadata_modified: "2020-11-06", resource_type: "shape"},
+                    {id: "4", url: "something.com", last_modified: "2020-11-07", metadata_modified: "2020-11-08", resource_type: "survey"},
+                    {id: "5", url: "something.com", last_modified: "2020-11-09", metadata_modified: "2020-11-10", resource_type: "program"},
+                    {id: "6", url: "something.com", last_modified: "2020-11-11", metadata_modified: "2020-11-12", resource_type: "anc"},
+                    {id: "7", url: "something.com", last_modified: "2020-10-01", metadata_modified: "2020-10-02", resource_type: "random"},
 
                 ]
             }))
@@ -450,12 +454,12 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[0][0]).toBe(BaselineMutation.UpdateDatasetResources);
         expect(commit.mock.calls[0][1]).toEqual({
-            pjnz: mockDatasetResource({url: "something.com", lastModified: "2020-11-03", metadataModified: "2020-11-04",}),
-            shape: mockDatasetResource({url: "something.com", lastModified: "2020-11-05", metadataModified: "2020-11-06"}),
-            pop: mockDatasetResource({url: "something.com", lastModified: "2020-11-01", metadataModified: "2020-11-02"}),
-            survey: mockDatasetResource({url: "something.com", lastModified: "2020-11-07", metadataModified: "2020-11-08"}),
-            program: mockDatasetResource({url: "something.com", lastModified: "2020-11-09", metadataModified: "2020-11-10"}),
-            anc: mockDatasetResource({url: "something.com", lastModified: "2020-11-11", metadataModified: "2020-11-12",})
+            pjnz: mockDatasetResource({id: "2", url: "something.com", lastModified: "2020-11-03", metadataModified: "2020-11-04",}),
+            shape: mockDatasetResource({id: "3", url: "something.com", lastModified: "2020-11-05", metadataModified: "2020-11-06"}),
+            pop: mockDatasetResource({id: "1", url: "something.com", lastModified: "2020-11-01", metadataModified: "2020-11-02"}),
+            survey: mockDatasetResource({id: "4", url: "something.com", lastModified: "2020-11-07", metadataModified: "2020-11-08"}),
+            program: mockDatasetResource({id: "5", url: "something.com", lastModified: "2020-11-09", metadataModified: "2020-11-10"}),
+            anc: mockDatasetResource({id: "6", url: "something.com", lastModified: "2020-11-11", metadataModified: "2020-11-12",})
         });
     });
 

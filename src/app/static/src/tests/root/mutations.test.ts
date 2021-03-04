@@ -17,7 +17,7 @@ import {
     mockRootState,
     mockStepperState,
     mockSurveyAndProgramState,
-    mockSurveyResponse
+    mockSurveyResponse, mockADRState
 } from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../app/root";
@@ -39,6 +39,12 @@ describe("Root mutations", () => {
 
     const populatedState = function () {
         return mockRootState({
+            adr: mockADRState({
+                datasets: ["TEST DATASETS"],
+                schemas: ["TEST SCHEMAS"] as any,
+                fetchingDatasets: true,
+                key: "TEST KEY"
+            }),
             baseline: mockBaselineState({country: "Test Country", ready: true}),
             metadata: mockMetadataState({plottingMetadataError: mockError("Test Metadata Error")}),
             surveyAndProgram: mockSurveyAndProgramState({surveyError: mockError("Test Survey Error"), ready: true}),
@@ -71,22 +77,16 @@ describe("Root mutations", () => {
         expect(state.load).toStrictEqual(initialLoadState());
         expect(state.errors).toStrictEqual(initialErrorsState());
 
+        //ADR State is always copied
+        expect(state.adr).toStrictEqual(mockADRState({
+            datasets: ["TEST DATASETS"],
+            schemas: ["TEST SCHEMAS"] as any,
+            fetchingDatasets: true,
+            key: "TEST KEY"
+        }));
+
         //we skip stepper state this needs to be tested separately, activeStep may have been modified
     };
-
-    it("reset step copies ADR properties", () => {
-        const state = populatedState();
-        state.adrDatasets = ["TEST DATASETS"];
-        state.adrSchemas = ["TEST SCHEMAS"] as any;
-        state.adrFetchingDatasets = true;
-        state.adrKey = "TEST KEY";
-
-        mutations.Reset(state, {payload: 0});
-        expect(state.adrDatasets).toStrictEqual(["TEST DATASETS"]);
-        expect(state.adrSchemas).toStrictEqual(["TEST SCHEMAS"]);
-        expect(state.adrFetchingDatasets).toBe(true);
-        expect(state.adrKey).toBe("TEST KEY");
-    });
 
     it("can reset state where max valid step is 0", () => {
         const state = populatedState();
@@ -237,10 +237,6 @@ describe("Root mutations", () => {
     it("can reset for new version", () => {
         const state = populatedState();
         state.language = Language.fr;
-        state.adrDatasets = ["TEST DATASETA"];
-        state.adrSchemas = ["TEST SCHEMAS"] as any;
-        state.adrFetchingDatasets = true;
-        state.adrKey = "TEST KEY";
 
         const mockRouterPush = jest.fn();
         router.push = mockRouterPush;
@@ -255,10 +251,6 @@ describe("Root mutations", () => {
         expect(state.projects.currentVersion).toBe(version.versions[0]);
 
         expect(state.language).toBe(Language.fr);
-        expect(state.adrDatasets).toStrictEqual(["TEST DATASETA"]);
-        expect(state.adrSchemas).toStrictEqual(["TEST SCHEMAS"]);
-        expect(state.adrKey).toBe("TEST KEY");
-        expect(state.adrFetchingDatasets).toBe(false);
 
         expect(state.baseline.ready).toBe(true);
         expect(state.surveyAndProgram.ready).toBe(true);
@@ -267,41 +259,5 @@ describe("Root mutations", () => {
 
         expect(mockRouterPush.mock.calls.length).toBe(1);
         expect(mockRouterPush.mock.calls[0][0]).toBe("/");
-    });
-
-    it("can update ADR key", () => {
-        const state = mockRootState();
-        mutations[RootMutation.UpdateADRKey](state, {payload: "new-key"});
-        expect(state.adrKey).toBe("new-key");
-
-        mutations[RootMutation.UpdateADRKey](state, {payload: null});
-        expect(state.adrKey).toBe(null);
-    });
-
-    it("can set ADR key error", () => {
-        const state = mockRootState();
-        mutations[RootMutation.SetADRKeyError](state, {payload: mockError("whatevs")});
-        expect(state.adrKeyError!!.detail).toBe("whatevs");
-
-        mutations[RootMutation.SetADRKeyError](state, {payload: null});
-        expect(state.adrKeyError).toBe(null);
-    });
-
-    it("can set ADR datasets", () => {
-        const state = mockRootState();
-        mutations[RootMutation.SetADRDatasets](state, {payload: [1, 2, 3]});
-        expect(state.adrDatasets).toEqual([1, 2, 3]);
-    });
-
-    it("can set ADR fetching datasets", () => {
-        const state = mockRootState({adrFetchingDatasets: false});
-        mutations[RootMutation.SetADRFetchingDatasets](state, {payload: true});
-        expect(state.adrFetchingDatasets).toBe(true);
-    });
-
-    it("can set ADR schemas", () => {
-        const state = mockRootState();
-        mutations[RootMutation.SetADRSchemas](state, {payload: {baseUrl: "adr.com"}});
-        expect(state.adrSchemas).toEqual({baseUrl: "adr.com"});
     });
 });
