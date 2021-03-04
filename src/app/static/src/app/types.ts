@@ -145,3 +145,5 @@ export interface UploadFile {
     resourceUrl: string | null,
     lastModified: string | null
 }
+
+export type UploadFileDict = Dict<UploadFile>;
