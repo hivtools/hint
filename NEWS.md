@@ -1,3 +1,7 @@
+# hint 1.22.0
+
+* Creates consistency on how the enter button works
+
 # hint 1.21.0
 
 * Backend support for ADR uploads
