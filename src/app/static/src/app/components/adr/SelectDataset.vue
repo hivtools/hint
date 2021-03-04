@@ -77,7 +77,7 @@
     import {Language} from "../../store/translations/locales";
     import Vue from "vue";
     import TreeSelect from "@riophae/vue-treeselect";
-    import {findResource, mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
+    import {datasetFromMetadata, findResource, mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
     import {BaselineMutation} from "../../store/baseline/mutations";
@@ -116,7 +116,6 @@
         fetchingDatasets: boolean
         datasetOptions: any[]
         selectedDataset: Dataset | null
-        newDataset: Dataset
         selectText: string,
         outOfDateMessage: string,
         outOfDateResources: { [k in keyof DatasetResourceSet]?: true }
@@ -186,25 +185,6 @@
                         </div>`,
                 }));
             },
-            newDataset() {
-                const fullMetaData = this.datasets.find(d => d.id == this.newDatasetId);
-                return fullMetaData && {
-                    id: fullMetaData.id,
-                    title: fullMetaData.title,
-                    url: `${this.schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`,
-                    resources: {
-                        pjnz: findResource(fullMetaData, this.schemas.pjnz),
-                        shape: findResource(fullMetaData, this.schemas.shape),
-                        pop: findResource(fullMetaData, this.schemas.population),
-                        survey: findResource(fullMetaData, this.schemas.survey),
-                        program: findResource(fullMetaData, this.schemas.programme),
-                        anc: findResource(fullMetaData, this.schemas.anc)
-                    },
-                    organization: {
-                        id: fullMetaData.organization.id
-                    }
-                }
-            },
             selectText() {
                 if (this.selectedDataset) {
                     return i18next.t('editBtn', {lng: this.currentLanguage})
@@ -253,9 +233,10 @@
             async importDataset() {
                 if (this.newDatasetId) {
                     this.loading = true;
-                    this.setDataset(this.newDataset);
+                    const newDataset = datasetFromMetadata(this.newDatasetId, this.datasets, this.schemas);
+                    this.setDataset(newDataset);
 
-                    const {pjnz, pop, shape, survey, program, anc} = this.newDataset.resources
+                    const {pjnz, pop, shape, survey, program, anc} = newDataset.resources
 
                     await Promise.all([
                         pjnz && this.importPJNZ(pjnz.url),

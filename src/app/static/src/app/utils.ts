@@ -1,9 +1,9 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
-import {DatasetResource, Dict, Version} from "./types";
+import {ADRSchemas, DatasetResource, Dict, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
-import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";;
 
 export type ComputedWithType<T> = () => T;
 
@@ -171,6 +171,26 @@ export const findResource = (datasetWithResources: any, resourceType: string): D
         lastModified: metadata.last_modified,
         metadataModified: metadata.metadata_modified,
         outOfDate: false} : null
+};
+
+export const datasetFromMetadata = (id: string, datasets: any[], schemas: ADRSchemas) => {
+    const fullMetaData = datasets.find(d => d.id == id);
+    return fullMetaData && {
+        id: fullMetaData.id,
+        title: fullMetaData.title,
+        url: `${schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`,
+        resources: {
+            pjnz: findResource(fullMetaData, schemas.pjnz),
+            shape: findResource(fullMetaData, schemas.shape),
+            pop: findResource(fullMetaData, schemas.population),
+            survey: findResource(fullMetaData, schemas.survey),
+            program: findResource(fullMetaData, schemas.programme),
+            anc: findResource(fullMetaData, schemas.anc)
+        },
+        organization: {
+            id: fullMetaData.organization.id
+        }
+    }
 };
 
 export const constructUploadFile = (datasetWithResources: any, index: number, resourceType: string,

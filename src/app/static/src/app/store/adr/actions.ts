@@ -4,7 +4,7 @@ import {api} from "../../apiService";
 import qs from "qs";
 import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
-import {constructUploadFile, findResource} from "../../utils";
+import {constructUploadFile, datasetFromMetadata, findResource} from "../../utils";
 import {Organization} from "../../types";
 
 export interface ADRActions {
@@ -70,6 +70,12 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                 .get("/adr/orgs?permission=update_dataset")
                 .then((response) => {
                     if (response) {
+                        //For backward compatibility, we may have to regenerate the dataset metadata to provide the
+                        //organisation id
+                        if (!selectedDataset.organization) {
+                            const regenDataset = datasetFromMetadata(selectedDataset.id, state.datasets, state.schemas!);
+                            //TODO: set in the state
+                        }
 
                         //NB if this project was created before this feature was added, the selected dataset
                         //will not have organisation recorded  - need to re-fetch. (HOW?)
