@@ -628,4 +628,89 @@ describe("ShareProject", () => {
         expect(mockTooltip.mock.calls[0][1].value).toBe("Partager");
     });
 
+    it("if email entered is valid, cycles to empty input then ok button on enter presses", async (done) => {
+        const cloneProject = jest.fn();
+        const wrapper = mount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store: createStore(jest.fn().mockResolvedValue(true), cloneProject),
+        });
+
+        const link = wrapper.find("button");
+        link.trigger("click");
+        const input = wrapper.find(Modal).find("input");
+        input.trigger("focus")
+        input.setValue("goodemail");
+        input.trigger("keyup.enter");
+
+        setTimeout(() => {
+            const modal = wrapper.find(Modal);
+            // expect(modal.find("input").classes()).toBe("is-invalid");
+            // expect(modal.find("input").classes()).not.toContain("is-invalid");
+            // expect(modal.find(".text-danger").classes()).toContain("d-none");
+            expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+
+            // const input2 = wrapper.find(Modal).findAll("input").at(1);
+            // expect(input2).toBe(document.activeElement);
+            // input2.trigger("keyup.enter");
+            done()
+            // expect(input).toEqual("this should fail");
+
+            // setTimeout(() => {
+            //     const okBtn = modal.find("button")
+            //     expect(okBtn).toBe(document.activeElement);
+            //     expect(okBtn.attributes("disabled")).toBeUndefined();
+            //     expect(modal.find(".help-text").isVisible()).toBe(false);
+            //     okBtn.trigger("keyup.enter");
+
+            //     setTimeout(() => {
+            //         expect(cloneProject.mock.calls[0][1]).toEqual({projectId: 1, emails: ["testing"]});
+            //         // expect(okBtn).toEqual("this should fail");
+            //         done();
+            //     });
+            // });
+        });
+    });
+
+    // it("if email entered is invalid, cycles to empty input but not ok button on enter presses", async () => {
+    //     const cloneProject = jest.fn();
+    //     const wrapper = mount(ShareProject, {
+    //         propsData: {
+    //             project: {id: 1, name: "p1"}
+    //         },
+    //         store: createStore(jest.fn().mockResolvedValue(true), cloneProject),
+    //     });
+
+    //     const link = wrapper.find("button");
+    //     link.trigger("click");
+    //     const input = wrapper.find(Modal).find("input");
+    //     input.trigger("focus")
+    //     input.setValue("bademail");
+    //     input.trigger("keyup.enter");
+
+    //     setTimeout(() => {
+    //         const modal = wrapper.find(Modal);
+    //         expect(modal.find("input").classes()).not.toContain("is-invalid");
+    //         expect(modal.find(".text-danger").classes()).not.toContain("d-none");
+    //         expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+
+    //         const input2 = wrapper.find(Modal).findAll("input").at(1);
+    //         expect(input2).toBe(document.activeElement);
+    //         input2.trigger("keyup.enter");
+
+    //         setTimeout(() => {
+    //             const okBtn = modal.find("button")
+    //             expect(okBtn).toBe(document.activeElement);
+    //             expect(okBtn.attributes("disabled")).toBeUndefined();
+    //             expect(modal.find(".help-text").isVisible()).toBe(false);
+    //             okBtn.trigger("keyup.enter");
+
+    //             setTimeout(() => {
+    //             expect(cloneProject.mock.calls[0][1]).toEqual({projectId: 1, emails: ["testing"]});
+    //             });
+    //         });
+    //     });
+    // });
+
 });

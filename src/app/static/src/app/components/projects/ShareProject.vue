@@ -174,7 +174,6 @@
                     currentInput.blur()
                     lastInput.focus()
                 }
-
             },
             removeEmail(email: EmailToShareWith, index: number) {
                 // if email has been deleted and this is not the last input

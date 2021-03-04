@@ -22,7 +22,6 @@
 
         window.addEventListener('keyup', function(e) {
             if (e.key === 'Enter') {
-                console.log('enter key fired from log in')
                 document.querySelector("#loginBtn").click();
             }
         });
