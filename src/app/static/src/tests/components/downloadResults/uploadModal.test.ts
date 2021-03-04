@@ -2,7 +2,7 @@ import {shallowMount} from "@vue/test-utils";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
-import {mockBaselineState, mockDatasetResource} from "../../mocks";
+import {mockADRState, mockBaselineState, mockDatasetResource} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
 
@@ -11,7 +11,8 @@ describe(`uploadModal `, () => {
     const fakeMetadata = {
         outputZip:
             {
-                displayName: "Model outputs",
+                index: 0,
+                displayName: "uploadFileOutputZip",
                 resourceType: "inputs-unaids-naomi-output-zip",
                 resourceFilename: "naomi-model-outputs-project1.zip",
                 resourceId: null,
@@ -20,7 +21,8 @@ describe(`uploadModal `, () => {
             },
         outputSummary:
             {
-                displayName: "Summary",
+                index: 1,
+                displayName: "uploadFileOutputSummary",
                 resourceType: "string",
                 resourceFilename: "string",
                 resourceId: "value",
@@ -37,7 +39,7 @@ describe(`uploadModal `, () => {
         shape: null,
         survey: null,
     }
-    const createStore = () => {
+    const createStore = (getUploadFilesStub: any) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -48,6 +50,13 @@ describe(`uploadModal `, () => {
                             selectedDataset:
                                 {id: "1", url: "example.com", title: "test title", resources: mockResources}
                         })
+                },
+                adr: {
+                    namespaced: true,
+                    state: mockADRState(),
+                    actions: {
+                        getUploadFiles: getUploadFilesStub
+                    }
                 }
             }
         });
@@ -55,11 +64,10 @@ describe(`uploadModal `, () => {
         return store;
     };
 
-    const getWrapper = (data = fakeMetadata) => {
+    const getWrapper = (getUploadFilesStub = jest.fn()) => {
         return shallowMount(UploadModal,
             {
-                store: createStore(),
-                propsData: {outputFileMetadata: data}
+                store: createStore(getUploadFilesStub)
             })
     }
 
@@ -71,7 +79,6 @@ describe(`uploadModal `, () => {
         expect(dialog.exists()).toBe(true)
         const text = dialog.find("h4")
         expectTranslated(text, "Upload to ADR", "Télécharger vers ADR", store)
-
     })
 
     it(`renders dataset name as expected`, () => {
@@ -95,7 +102,7 @@ describe(`uploadModal `, () => {
     })
 
     it(`renders Output files, inputs, overwritten text and labels as expected`, () => {
-        const wrapper = getWrapper()
+        const wrapper = getWrapper(jest.fn(({state}) => state.uploadFiles = fakeMetadata))
         const store = wrapper.vm.$store
 
         const overwriteText = wrapper.findAll("small")
@@ -109,12 +116,12 @@ describe(`uploadModal `, () => {
         const label = wrapper.findAll("label.form-check-label")
         expect(label.length).toBe(2)
 
-        expectTranslated(label.at(0), "Model outputs", "Sorties du modèle", store)
+        expectTranslated(label.at(0), "Model outputs", "Résultats du modèle", store)
         expectTranslated(label.at(1), "Summary report", "Rapport sommaire", store)
     })
 
     it(`can check and get values from check boxes`, async () => {
-        const wrapper = getWrapper()
+        const wrapper = getWrapper(jest.fn(({state}) => state.uploadFiles = fakeMetadata))
         const store = wrapper.vm.$store
 
         const inputs = wrapper.findAll("input.form-check-input")
@@ -123,7 +130,7 @@ describe(`uploadModal `, () => {
         inputs.at(1).setChecked(true)
 
         expect(wrapper.find("#dialog").exists()).toBe(true)
-        expect(wrapper.vm.$data.pushFilesToAdr).toMatchObject(["Model outputs", "Summary"])
+        expect(wrapper.vm.$data.pushFilesToAdr).toMatchObject(["outputZip", "outputSummary"])
     })
 
     it(`can set and get description value as expected`, async () => {

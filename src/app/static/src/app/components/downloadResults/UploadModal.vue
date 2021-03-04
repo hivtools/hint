@@ -11,13 +11,13 @@
                     <div class="mt-3 form-check">
                         <input class="form-check-input"
                                type="checkbox"
-                               :value="output.displayName"
+                               :value="index"
                                v-model="pushFilesToAdr"
                                :id="`outputFile-${index}`">
 
                         <label class="form-check-label"
                                :for="`outputFile-${index}`"
-                               v-translate="getTranslatedLabel(output.displayName)"></label>
+                               v-translate="output.displayName"></label>
 
                         <small v-if="output.resourceId" class="text-danger row">
                         <span class="col-auto">
@@ -51,44 +51,24 @@
 <script lang="ts">
     import Vue from "vue";
     import Modal from "../Modal.vue";
-    import {ADRUploadMetadataDict} from "../../types";
+    import {UploadFileDict} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProps} from "../../utils";
+    import {ADRState} from "../../store/adr/adr";
 
     interface Methods {
         handleCancel: () => void
-        getTranslatedLabel: (name: string) => string
+        getUploadFiles: () => void
     }
 
     interface Computed {
         dataset: string
-    }
-
-    const fakeMetadata = {
-        outputZip:
-            {
-                displayName: "Model outputs",
-                resourceType: "inputs-unaids-naomi-output-zip",
-                resourceFilename: "naomi-model-outputs-project1.zip",
-                resourceId: null,
-                lastModified: null,
-                resourceUrl: null
-            },
-        outputSummary:
-            {
-                displayName: "Summary",
-                resourceType: "string",
-                resourceFilename: "string",
-                resourceId: "value",
-                lastModified: "24/02/21 17:22",
-                resourceUrl: null
-            }
+        outputFileMetadata: UploadFileDict
     }
 
     interface Data {
-        pushFilesToAdr: []
+        pushFilesToAdr: string[]
         pushDescToAdr: string
-        outputFileMetadata: ADRUploadMetadataDict
     }
 
     interface Props {
@@ -105,26 +85,33 @@
         data(): Data {
             return {
                 pushFilesToAdr: [],
-                pushDescToAdr: "",
-                outputFileMetadata: fakeMetadata
+                pushDescToAdr: ""
             }
+        },
+        mounted() {
+            this.getUploadFiles();
         },
         methods: {
             handleCancel() {
                 this.$emit("close")
             },
-            getTranslatedLabel(name: string) {
-                console.log(this.pushFilesToAdr.length)
-                return `outputFile${name.trim().replace(/\s/g, "")}`
-            }
+            getUploadFiles: mapActionByName("adr", "getUploadFiles")
         },
         computed: {
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                 dataset: state => state.selectedDataset?.title
+            }),
+            ...mapStateProps<ADRState, keyof Computed>("adr", {
+                outputFileMetadata: state => state.uploadFiles
             })
         },
         components: {
             Modal
+        },
+        watch: {
+            outputFileMetadata(val) {
+                this.pushFilesToAdr = Object.keys(val);
+            }
         }
     });
 </script>
