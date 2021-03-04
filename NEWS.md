@@ -1,3 +1,7 @@
+# hint 1.21.0
+
+* Backend support for ADR uploads
+
 # hint 1.20.0
 
 * Add output adr schemas

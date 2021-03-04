@@ -20,23 +20,6 @@ class DownloadTests : SecureIntegrationTests()
         testRestTemplate.getForEntity<String>("/")
     }
 
-
-    private fun waitForModelRunResult(): String
-    {
-
-        val entity = getModelRunEntity()
-        val runResult = testRestTemplate.postForEntity<String>("/model/run/", entity)
-        val id = ObjectMapper().readValue<JsonNode>(runResult.body!!)["data"]["id"].textValue()
-
-        do
-        {
-            Thread.sleep(500)
-            val statusResponse = testRestTemplate.getForEntity<String>("/model/status/$id")
-        } while (statusResponse.body != null && statusResponse.body!!.contains("\"status\":\"RUNNING\""))
-
-        return id
-    }
-
     @Test
     fun `can download Spectrum results`()
     {
