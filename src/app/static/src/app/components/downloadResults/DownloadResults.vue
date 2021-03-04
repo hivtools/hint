@@ -22,7 +22,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProps} from "../../utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
     import {DownloadIcon} from "vue-feather-icons";
 
@@ -33,7 +33,11 @@
         summaryReportUrl: string
     }
 
-    export default Vue.extend<unknown, unknown, Computed>({
+    interface Methods {
+        getUserCanUpload: () => void;
+    }
+
+    export default Vue.extend<unknown, Methods, Computed>({
         name: "downloadResults",
         computed: {
             ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
@@ -48,6 +52,12 @@
             summaryReportUrl: function () {
                 return `/download/summary/${this.modelCalibrateId}`
             }
+        },
+        methods: {
+          getUserCanUpload: mapActionByName("adr", "getUserCanUpload")
+        },
+        mounted() {
+            this.getUserCanUpload();
         },
         components: {
             DownloadIcon

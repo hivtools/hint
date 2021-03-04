@@ -5,6 +5,7 @@ import qs from "qs";
 import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
 import {constructUploadFile, findResource} from "../../utils";
+import {Organization} from "../../types";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -12,6 +13,7 @@ export interface ADRActions {
     deleteKey: (store: ActionContext<ADRState, RootState>) => void;
     getDatasets: (store: ActionContext<ADRState, RootState>) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
+    getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
     getUploadFiles: (store: ActionContext<ADRState, RootState>) => void;
 }
 
@@ -55,6 +57,33 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .ignoreErrors()
             .withSuccess(ADRMutation.SetSchemas)
             .get("/adr/schemas/")
+    },
+
+    async getUserCanUpload(context) {
+        const {state, rootState, commit} = context;
+        const selectedDataset = rootState.baseline.selectedDataset;
+
+        if (selectedDataset) {
+            await api(context)
+                .withError(ADRMutation.SetADRError)
+                .ignoreSuccess()
+                .get("/adr/orgs?permission=update_dataset")
+                .then((response) => {
+                    if (response) {
+
+                        //NB if this project was created before this feature was added, the selected dataset
+                        //will not have organisation recorded  - need to re-fetch. (HOW?)
+                        //NB The same things goes for 'id' on the dataset introduced for construct upload files - but
+                        //this action comes first...
+
+                        const updateableOrgs = response.data as Organization[];
+                        const selectedDatasetOrgId = selectedDataset.organization.id;
+;                       const canUpload = updateableOrgs.some(org => org.id === selectedDatasetOrgId);
+                        commit({type: ADRMutation.SetUserCanUpload, payload: canUpload});
+                    }
+                })
+        }
+
     },
 
     async getUploadFiles(context) {

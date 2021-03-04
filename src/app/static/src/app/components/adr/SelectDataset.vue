@@ -199,6 +199,9 @@
                         survey: findResource(fullMetaData, this.schemas.survey),
                         program: findResource(fullMetaData, this.schemas.programme),
                         anc: findResource(fullMetaData, this.schemas.anc)
+                    },
+                    organization: {
+                        id: fullMetaData.organization.id
                     }
                 }
             },
