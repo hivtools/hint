@@ -7,5 +7,5 @@ ENV CODECOV_TOKEN=$CODECOV_TOKEN
 CMD npm run lint --prefix=app/static -- --quiet && \
     npm test --prefix=app/static && \
     npm run integration-test-docker --prefix=app/static && \
-    codecov -f app/static/coverage/*.json && \
-    codecov -f app/static/coverage/integration/*.json
+    codecov -p .. -f app/static/coverage/*.json && \
+    codecov -p .. -f app/static/coverage/integration/*.json
