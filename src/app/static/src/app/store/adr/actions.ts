@@ -6,6 +6,7 @@ import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
 import {constructUploadFile, datasetFromMetadata, findResource} from "../../utils";
 import {Organization} from "../../types";
+import {BaselineMutation} from "../baseline/mutations";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -68,28 +69,45 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                 .withError(ADRMutation.SetADRError)
                 .ignoreSuccess()
                 .get("/adr/orgs?permission=update_dataset")
-                .then((response) => {
+                .then(async (response) => {
                     if (response) {
                         //For backward compatibility, we may have to regenerate the dataset metadata to provide the
-                        //organisation id
+                        //organisation id for projects which are reloaded
+                        let selectedDatasetOrgId: string;
                         if (!selectedDataset.organization) {
-                            const regenDataset = datasetFromMetadata(selectedDataset.id, state.datasets, state.schemas!);
-                            //TODO: set in the state
+                            console.log("regenning dataset");
+                            console.log("dataset count: " + state.datasets.length.toString());
+
+                            //We may also have to fetch the selected dataset metadata too, if not loaded during this session
+                            let datasets = state.datasets;
+                            if (!datasets.length) {
+                                console.log("refetching dataset");
+                                await api(context)
+                                    .ignoreErrors()
+                                    .ignoreSuccess()
+                                    .get(`/adr/datasets/${selectedDataset.id}`)
+                                    .then((response) => {
+                                        if (response) {
+                                            datasets = [response.data];
+                                        }
+                                    });
+                            }
+
+                            const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
+                            console.log("regenned dataset: " + JSON.stringify(regenDataset));
+                            commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
+                            selectedDatasetOrgId = regenDataset.organization.id;
+                        } else {
+                            selectedDatasetOrgId = selectedDataset.organization.id;
                         }
 
-                        //NB if this project was created before this feature was added, the selected dataset
-                        //will not have organisation recorded  - need to re-fetch. (HOW?)
-                        //NB The same things goes for 'id' on the dataset introduced for construct upload files - but
-                        //this action comes first...
-
                         const updateableOrgs = response.data as Organization[];
-                        const selectedDatasetOrgId = selectedDataset.organization.id;
 ;                       const canUpload = updateableOrgs.some(org => org.id === selectedDatasetOrgId);
                         commit({type: ADRMutation.SetUserCanUpload, payload: canUpload});
+                        console.log("setting userCanUpload " + JSON.stringify(canUpload));
                     }
                 })
         }
-
     },
 
     async getUploadFiles(context) {

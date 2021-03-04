@@ -73,6 +73,7 @@ export const mutations: MutationTree<BaselineState> = {
     },
 
     [BaselineMutation.SetDataset](state: BaselineState, payload: Dataset) {
+        console.log("Setting dataset: " + JSON.stringify(payload))
         state.selectedDataset = payload;
     },
 
