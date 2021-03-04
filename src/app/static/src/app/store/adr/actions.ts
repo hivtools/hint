@@ -65,38 +65,37 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         const selectedDataset = rootState.baseline.selectedDataset;
 
         if (selectedDataset) {
+            //For backward compatibility, we may have to regenerate the dataset metadata to provide the
+            //organisation id for projects which are reloaded
+            let selectedDatasetOrgId: string;
+            if (!selectedDataset.organization) {
+                //We may also have to fetch the selected dataset metadata too, if not loaded during this session
+                let datasets = state.datasets;
+                if (!datasets.length) {
+                    await api(context)
+                        .ignoreErrors()
+                        .ignoreSuccess()
+                        .get(`/adr/datasets/${selectedDataset.id}`)
+                        .then((response) => {
+                            if (response) {
+                                datasets = [response.data];
+                            }
+                        });
+                }
+
+                const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
+                commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
+                selectedDatasetOrgId = regenDataset.organization.id;
+            } else {
+                selectedDatasetOrgId = selectedDataset.organization.id;
+            }
+
             await api(context)
                 .withError(ADRMutation.SetADRError)
                 .ignoreSuccess()
                 .get("/adr/orgs?permission=update_dataset")
                 .then(async (response) => {
                     if (response) {
-                        //For backward compatibility, we may have to regenerate the dataset metadata to provide the
-                        //organisation id for projects which are reloaded
-                        let selectedDatasetOrgId: string;
-                        if (!selectedDataset.organization) {
-                            //We may also have to fetch the selected dataset metadata too, if not loaded during this session
-                            let datasets = state.datasets;
-                            if (!datasets.length) {
-                                console.log("refetching dataset");
-                                await api(context)
-                                    .ignoreErrors()
-                                    .ignoreSuccess()
-                                    .get(`/adr/datasets/${selectedDataset.id}`)
-                                    .then((response) => {
-                                        if (response) {
-                                            datasets = [response.data];
-                                        }
-                                    });
-                            }
-
-                            const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
-                            commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
-                            selectedDatasetOrgId = regenDataset.organization.id;
-                        } else {
-                            selectedDatasetOrgId = selectedDataset.organization.id;
-                        }
-
                         const updateableOrgs = response.data as Organization[];
 ;                       const canUpload = updateableOrgs.some(org => org.id === selectedDatasetOrgId);
                         commit({type: ADRMutation.SetUserCanUpload, payload: canUpload});

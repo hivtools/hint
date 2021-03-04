@@ -79,7 +79,7 @@ describe("select dataset", () => {
         {
             id: "id1",
             title: "Some data",
-            organization: {title: "org"},
+            organization: {title: "org", id: "org-id"},
             name: "some-data",
             type: "naomi-data",
             resources: []
@@ -87,7 +87,7 @@ describe("select dataset", () => {
         {
             id: "id2",
             title: "Some data 2",
-            organization: {title: "org"},
+            organization: {title: "org", id: "org-id"},
             name: "some-data",
             type: "naomi-data",
             resources: []
@@ -98,6 +98,7 @@ describe("select dataset", () => {
         id: "id1",
         title: "Some data",
         url: "www.adr.com/naomi-data/some-data",
+        organization: {id: "org-id"},
         resources: {
             pjnz: null,
             program: null,
@@ -116,6 +117,7 @@ describe("select dataset", () => {
         id: "id2",
         title: "Some data 2",
         url: "www.adr.com/naomi-data/some-data",
+        organization: {id: "org-id"},
         resources: {
             pjnz: null,
             program: null,
