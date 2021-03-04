@@ -171,42 +171,38 @@ describe("Reset confirmation modal", () => {
         expect(mockNewVersion.mock.calls.length).toBe(1);
     });
 
-    // it("pressing enter sets waitingForVersion to true and invokes newVersion action for logged in user", async () => {
+    it("pressing enter sets waitingForVersion to true and invokes newVersion action for logged in user", async (done) => {
 
-    //     const mockContinueEdit = jest.fn();
-    //     const mockNewVersion = jest.fn();
-    //     const rendered = mount(ResetConfirmation, {
-    //         propsData: {
-    //             open: false,
-    //             continueEditing: mockContinueEdit,
-    //             cancelEditing: jest.fn()
-    //         },
-    //         store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
-    //     });
-    //     // rendered.vm.$props.open = true
-    //     // wrapper.vm.$options.watch.bar.call(wrapper.vm)
-    //     // const open = rendered.vm.$options.watch.open as WatchOptions
-    //     // open.call(rendered.vm, true);
-    //     rendered.setProps({
-    //         open: true,
-    //         continueEditing: mockContinueEdit,
-    //         cancelEditing: jest.fn()
-    //     })
+        const mockContinueEdit = jest.fn();
+        const mockNewVersion = jest.fn();
+        const rendered = mount(ResetConfirmation, {
+            attachToDocument: true,
+            propsData: {
+                open: false,
+                continueEditing: mockContinueEdit,
+                cancelEditing: jest.fn()
+            },
+            store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
+        });
+        rendered.setProps({
+            open: true,
+            continueEditing: mockContinueEdit,
+            cancelEditing: jest.fn()
+        })
+        setTimeout(() => {
+            const okBtn = rendered.findAll("button").at(0)
+            expect(okBtn.element).toBe(document.activeElement);
 
-    //     await Vue.nextTick();
-    //     await Vue.nextTick();
-    //     await Vue.nextTick();
-
-    //     rendered.findAll("button").at(0).trigger("keyup.enter");
-
-    //     // await Vue.nextTick();
-    //     // await Vue.nextTick();
-    //     // await Vue.nextTick();
-
-    //     expect(mockContinueEdit.mock.calls.length).toBe(0);
-    //     expect((rendered.vm as any).waitingForVersion).toBe(true);
-    //     expect(mockNewVersion.mock.calls.length).toBe(1);
-    // });
+            // okBtn.trigger("keyup.enter");
+            okBtn.trigger("click"); // pressing enter on an active element seems to produce the same behaviour as clicking it
+            setTimeout(() => {
+                expect(mockContinueEdit.mock.calls.length).toBe(0);
+                expect((rendered.vm as any).waitingForVersion).toBe(true);
+                expect(mockNewVersion.mock.calls.length).toBe(1);
+                done();
+            })
+        })
+    });
 
     it("when currentVersion changes, sets waitingForVersion to false and invokes continue editing, if waitingForVersion is true", async () => {
         const mockContinueEditing = jest.fn();

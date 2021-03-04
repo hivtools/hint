@@ -86,7 +86,6 @@
     interface Computed {
         currentLanguage: Language,
         instructions: string
-        emailsEntered: boolean
         invalidEmails: boolean
         cloneProjectError: Error | null
         cloningProject: boolean
@@ -203,9 +202,6 @@
             cloningProject: mapStatePropByName<boolean>("projects", "cloningProject"),
             cloneProjectError: mapStatePropByName<Error | null>("projects", "cloneProjectError"),
             currentLanguage: mapStatePropByName<Language>(null, "language"),
-            emailsEntered(){
-                return this.emailsToShareWith.filter(e => e.value).length > 0
-            },
             instructions() {
                 return i18next.t('shareProjectInstructions', {project: this.project.name, lng: this.currentLanguage});
             },
