@@ -75,9 +75,6 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                         //organisation id for projects which are reloaded
                         let selectedDatasetOrgId: string;
                         if (!selectedDataset.organization) {
-                            console.log("regenning dataset");
-                            console.log("dataset count: " + state.datasets.length.toString());
-
                             //We may also have to fetch the selected dataset metadata too, if not loaded during this session
                             let datasets = state.datasets;
                             if (!datasets.length) {
@@ -94,7 +91,6 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                             }
 
                             const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
-                            console.log("regenned dataset: " + JSON.stringify(regenDataset));
                             commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
                             selectedDatasetOrgId = regenDataset.organization.id;
                         } else {
@@ -104,7 +100,6 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                         const updateableOrgs = response.data as Organization[];
 ;                       const canUpload = updateableOrgs.some(org => org.id === selectedDatasetOrgId);
                         commit({type: ADRMutation.SetUserCanUpload, payload: canUpload});
-                        console.log("setting userCanUpload " + JSON.stringify(canUpload));
                     }
                 })
         }
