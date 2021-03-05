@@ -1,3 +1,7 @@
+# hint 1.22.0
+
+* Make login email case insensitive
+
 # hint 1.21.0
 
 * Backend support for ADR uploads
