@@ -3,7 +3,7 @@ import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState,
 import {ADRSchemas, DatasetResource, Dict, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
-import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";;
+import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 
 export type ComputedWithType<T> = () => T;
 

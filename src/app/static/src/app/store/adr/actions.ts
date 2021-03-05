@@ -97,7 +97,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                 .then(async (response) => {
                     if (response) {
                         const updateableOrgs = response.data as Organization[];
-;                       const canUpload = updateableOrgs.some(org => org.id === selectedDatasetOrgId);
+                        const canUpload = updateableOrgs.some(org => org.id === selectedDatasetOrgId);
                         commit({type: ADRMutation.SetUserCanUpload, payload: canUpload});
                     }
                 })
