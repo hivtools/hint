@@ -124,9 +124,8 @@
             userExists: mapActionByName("projects", "userExists"),
             enterEmails(email: EmailToShareWith, index: number){
                 this.addEmail(email, index)
-                let self = this
-                this.$nextTick(() => {
-                    self.cycleInputs(email, index)                    
+                this.$nextTick(() => {   
+                    this.cycleInputs(email, index)               
                 })
             },
             addEmail(e: EmailToShareWith, index: number) {
@@ -229,6 +228,17 @@
             tooltip: VTooltip
         },
         watch: {
+            open: function(){
+                const firstInput = this.$el.querySelectorAll("#shareInputs > div > input")[0]! as HTMLElement
+                const self = this
+                if (firstInput){
+                    this.$nextTick(() => {
+                        if (self.open){
+                            firstInput.focus();
+                        }
+                    })
+                }
+            },
             cloningProject(newVal: boolean) {
                 if (!newVal && !this.cloneProjectError) {
                     this.emailsToShareWith = [{value: "", valid: null, validationMessage: ""}];

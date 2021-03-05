@@ -175,6 +175,7 @@ describe("ShareProject", () => {
         input2.trigger("blur");
 
         setTimeout(() => {
+            // mount will need to have its setup adjusted for the first input to show as invalid here
             // expect(input.classes()).toContain("is-invalid");
             expect(input2.classes()).toContain("is-invalid");
 
@@ -211,6 +212,7 @@ describe("ShareProject", () => {
         input2.trigger("blur");
 
         setTimeout(() => {
+            // mount will need to have its setup adjusted for the first input to show as invalid here
             // expect(input.classes()).toContain("is-invalid");
             expect(input2.classes()).toContain("is-invalid");
 
@@ -640,33 +642,34 @@ describe("ShareProject", () => {
 
         const link = wrapper.find("button");
         link.trigger("click");
-        const input = wrapper.find(Modal).find("input");
-        input.trigger("focus")
-        input.setValue("goodemail");
-        input.trigger("keyup.enter");
-
         setTimeout(() => {
-            const modal = wrapper.find(Modal);
-            expect(modal.find("input").classes()).not.toContain("is-invalid");
-            expect(modal.find(".text-danger").exists()).toBe(false);
-            expect(wrapper.find(Modal).findAll("input").length).toBe(2);
-
-            const input2 = wrapper.find(Modal).findAll("input").at(1);
-            expect(input2.element).toBe(document.activeElement);
-            input2.trigger("keyup.enter");
+            const input = wrapper.find(Modal).find("input");
+            expect(input.element).toBe(document.activeElement);
+            input.setValue("goodemail");
+            input.trigger("keyup.enter");
 
             setTimeout(() => {
-                const okBtn = modal.find("button")
-                expect(okBtn.element).toBe(document.activeElement);
-                expect(okBtn.attributes("disabled")).toBeUndefined();
-                expect(modal.find(".help-text").isVisible()).toBe(false);
-                // okBtn.trigger("keyup.enter");
-                okBtn.trigger("click");
+                const modal = wrapper.find(Modal);
+                expect(modal.find("input").classes()).not.toContain("is-invalid");
+                expect(modal.find(".text-danger").exists()).toBe(false);
+                expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+
+                const input2 = wrapper.find(Modal).findAll("input").at(1);
+                expect(input2.element).toBe(document.activeElement);
+                input2.trigger("keyup.enter");
 
                 setTimeout(() => {
-                    expect(cloneProject.mock.calls[0][1]).toEqual({projectId: 1, emails: ["goodemail"]});
-                    wrapper.destroy()
-                    done();
+                    const okBtn = modal.find("button")
+                    expect(okBtn.element).toBe(document.activeElement);
+                    expect(okBtn.attributes("disabled")).toBeUndefined();
+                    expect(modal.find(".help-text").isVisible()).toBe(false);
+                    okBtn.trigger("click");
+
+                    setTimeout(() => {
+                        expect(cloneProject.mock.calls[0][1]).toEqual({projectId: 1, emails: ["goodemail"]});
+                        wrapper.destroy()
+                        done();
+                    });
                 });
             });
         });
@@ -704,7 +707,6 @@ describe("ShareProject", () => {
                 expect(okBtn.element).not.toBe(document.activeElement);
                 expect(okBtn.attributes("disabled")).toBeTruthy();
                 expect(modal.find(".help-text").isVisible()).toBe(true);
-                // okBtn.trigger("keyup.enter");
                 okBtn.trigger("click");
 
                 setTimeout(() => {

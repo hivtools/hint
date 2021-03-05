@@ -128,6 +128,7 @@
                 <button
                     type="button"
                     class="btn btn-red"
+                    ref="okDeleteBtn"
                     @click="confirmDelete"
                     v-translate="'ok'"></button>
                 <button
@@ -222,6 +223,7 @@
         versionCountLabel: (project: Project) => string;
         deleteProject: (event: Event, projectId: number) => void;
         deleteVersion: (event: Event, projectId: number, versionId: string) => void;
+        toggleButtonFocus: (id: null | number | VersionIds) => void;
         promoteVersion: (
             event: Event,
             projectId: number,
@@ -276,6 +278,16 @@
             )
         },
         methods: {
+            toggleButtonFocus(id: null | number | VersionIds){
+                const okDeleteBtn = this.$refs.okDeleteBtn as HTMLElement
+                if (okDeleteBtn){
+                    this.$nextTick(() => {
+                        if (id){
+                            okDeleteBtn.focus();
+                        } else okDeleteBtn.blur();
+                    })
+                }
+            },
             format(date: string) {
                 return formatDateTime(date);
             },
@@ -392,23 +404,14 @@
                 });
             }
         },
-        // mounted() {
-        //     let self = this; 
-        //     window.addEventListener('keyup', function(e) {
-        //         if (e.key === 'Enter' && self.projects.length > 0) {
-        //             if (self.renamedProjectName && !self.disableRename && self.projectToRename)
-        //             {
-        //                 self.confirmRename(self.renamedProjectName)
-        //             }
-        //             if (self.newProjectName && !self.disableCreate && self.versionToPromote){
-        //                 self.confirmPromotion(self.newProjectName)
-        //             }
-        //             if (self.projectToDelete || self.versionToDelete){
-        //                 self.confirmDelete()
-        //             }
-        //         }
-        //     });
-        // },
+        watch: {
+            projectToDelete: function (){
+                this.toggleButtonFocus(this.projectToDelete)
+            },
+            versionToDelete: function (){
+                this.toggleButtonFocus(this.versionToDelete)
+            }
+        },
         components: {
             BCollapse,
             ChevronDownIcon,

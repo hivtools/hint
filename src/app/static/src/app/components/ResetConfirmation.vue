@@ -80,13 +80,6 @@
             })
         },
         methods: {
-            toggleFocus: function (element: HTMLElement, toggle: boolean) {
-                if (element){
-                    this.$nextTick(() => {
-                        toggle ? element.focus() : element.blur();
-                    })
-                }
-            },
             handleConfirm: function () {
                 if (this.isGuest) {
                     this.continueEditing();
@@ -112,7 +105,14 @@
             },
             open: function(){
                 const confirmBtn = this.$refs.confirmBtn as HTMLElement
-                this.toggleFocus(confirmBtn, this.open)
+                const self = this
+                if (confirmBtn){
+                    this.$nextTick(() => {
+                        if (self.open){
+                            confirmBtn.focus();
+                        } else confirmBtn.blur();
+                    })
+                }
             }
         },
         components: {
