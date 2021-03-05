@@ -5,6 +5,7 @@ import {emptyState} from "../../../app/root";
 import {mockADRState, mockBaselineState, mockDatasetResource} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
+import Vue from "vue";
 
 describe(`uploadModal `, () => {
 
@@ -39,7 +40,7 @@ describe(`uploadModal `, () => {
         shape: null,
         survey: null,
     }
-    const createStore = (getUploadFilesStub: any) => {
+    const createStore = () => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -55,7 +56,7 @@ describe(`uploadModal `, () => {
                     namespaced: true,
                     state: mockADRState(),
                     actions: {
-                        getUploadFiles: getUploadFilesStub
+                        getUploadFiles: ({state}) => state.uploadFiles = fakeMetadata
                     }
                 }
             }
@@ -64,16 +65,18 @@ describe(`uploadModal `, () => {
         return store;
     };
 
-    const getWrapper = (getUploadFilesStub = jest.fn()) => {
+    const getWrapper = () => {
         return shallowMount(UploadModal,
             {
-                store: createStore(getUploadFilesStub)
+                store: createStore()
             })
     }
 
-    it(`renders modal as expected`, () => {
+    it(`renders modal as expected`, async () => {
         const wrapper = getWrapper()
         const store = wrapper.vm.$store
+
+        await Vue.nextTick()
 
         const dialog = wrapper.find("#dialog")
         expect(dialog.exists()).toBe(true)
@@ -102,7 +105,7 @@ describe(`uploadModal `, () => {
     })
 
     it(`renders Output files, inputs, overwritten text and labels as expected`, () => {
-        const wrapper = getWrapper(jest.fn(({state}) => state.uploadFiles = fakeMetadata))
+        const wrapper = getWrapper()
         const store = wrapper.vm.$store
 
         const overwriteText = wrapper.findAll("small")
@@ -112,6 +115,8 @@ describe(`uploadModal `, () => {
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
+        expect((inputs.at(0).element as HTMLInputElement).checked).toBe(true)
+        expect((inputs.at(1).element as HTMLInputElement).checked).toBe(true)
 
         const label = wrapper.findAll("label.form-check-label")
         expect(label.length).toBe(2)
@@ -120,20 +125,17 @@ describe(`uploadModal `, () => {
         expectTranslated(label.at(1), "Summary report", "Rapport sommaire", store)
     })
 
-    it(`can check and get values from check boxes`, async () => {
-        const wrapper = getWrapper(jest.fn(({state}) => state.uploadFiles = fakeMetadata))
-        const store = wrapper.vm.$store
+    it(`can check and get values from check boxes`, () => {
+        const wrapper = getWrapper()
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
-        inputs.at(0).setChecked(true)
-        inputs.at(1).setChecked(true)
+        inputs.at(0).setChecked(false)
 
-        expect(wrapper.find("#dialog").exists()).toBe(true)
-        expect(wrapper.vm.$data.pushFilesToAdr).toMatchObject(["outputZip", "outputSummary"])
+        expect(wrapper.vm.$data.pushFilesToAdr).toMatchObject(["outputSummary"])
     })
 
-    it(`can set and get description value as expected`, async () => {
+    it(`can set and get description value as expected`, () => {
         const wrapper = getWrapper()
         const newDesc = "new description"
 
