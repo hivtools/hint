@@ -15,13 +15,11 @@ import {mockADRState} from "../mocks";
 describe("ADR dataset-related actions", () => {
     const schemas = {
         baseUrl: "adr.com",
-            pjnz: "pjnz",
-            population: "pop",
-            shape: "shape",
-            survey: "survey",
-            programme: "program",
-            anc: "anc"
-    } as any;
+        pjnz: "pjnz",
+        population: "pop",
+        shape: "shape",
+        survey: "survey",
+    };
 
     beforeAll(async () => {
         await login();
@@ -92,7 +90,7 @@ describe("ADR dataset-related actions", () => {
                 }
             }
         };
-        const adr = mockADRState({ schemas, datasets }); //include datasets in adr state
+        const adr = { schemas, datasets }; //include datasets in adr state
         await adrActions.getUserCanUpload({commit, rootState: root, state: adr} as any);
         expect(commit.mock.calls[0][0].type).toBe(ADRMutation.SetUserCanUpload);
         expect(commit.mock.calls[0][0].payload).toBe(true);
@@ -120,10 +118,11 @@ describe("ADR dataset-related actions", () => {
                 }
             }
         };
-        const adr = mockADRState({ schemas }); //do not include datasets in adr state, the action will fetch them
+        const adr = { schemas, datasets: [] }; //do not include datasets in adr state, the action will fetch them
         await adrActions.getUserCanUpload({commit, rootState: root, state: adr} as any);
-        expect(commit.mock.calls[0][0].type).toBe(ADRMutation.SetUserCanUpload);
-        expect(commit.mock.calls[0][0].payload).toBe(true);
+        expect(commit.mock.calls[0][0]).toBe(`baseline/${BaselineMutation.SetDataset}`);
+        expect(commit.mock.calls[1][0].type).toBe(ADRMutation.SetUserCanUpload);
+        expect(commit.mock.calls[1][0].payload).toBe(true);
     });
 
     it("can import PJNZ file", async () => {
