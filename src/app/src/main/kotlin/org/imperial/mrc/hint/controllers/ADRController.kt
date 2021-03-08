@@ -124,7 +124,7 @@ class ADRController(private val encryption: Encryption,
     }
 
     @GetMapping("/orgs")
-    fun getOrgsWithPermsission(@RequestParam permission: String): ResponseEntity<String>
+    fun getOrgsWithPermission(@RequestParam permission: String): ResponseEntity<String>
     {
         val adr = adrClientBuilder.build()
         return adr.get("organization_list_for_user?permission=${permission}")
