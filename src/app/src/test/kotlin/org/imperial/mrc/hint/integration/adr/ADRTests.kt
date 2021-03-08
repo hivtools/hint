@@ -65,6 +65,23 @@ class ADRTests : SecureIntegrationTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can get orgs with permission`(isAuthorized: IsAuthorized)
+    {
+        testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
+        val result = testRestTemplate.getForEntity<String>("/adr/orgs?permission=update_dataset")
+
+        assertSecureWithSuccess(isAuthorized, result, null)
+
+        if (isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(data.count()).isEqualTo(1)
+            assertThat(data[0]["name"].textValue()).isEqualTo("naomi-development-team")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can save pjnz from ADR`(isAuthorized: IsAuthorized)
     {
         val pjnz = extractUrl(isAuthorized, "inputs-unaids-spectrum-file")

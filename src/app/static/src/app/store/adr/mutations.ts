@@ -10,7 +10,8 @@ export enum ADRMutation {
     SetDatasets = "SetDatasets",
     SetFetchingDatasets = "SetFetchingDatasets",
     SetSchemas = "SetSchemas",
-    SetUploadFiles = "SetUploadFiles"
+    SetUploadFiles = "SetUploadFiles",
+    SetUserCanUpload = "SetUserCanUpload"
 }
 
 export const mutations: MutationTree<ADRState> = {
@@ -40,5 +41,9 @@ export const mutations: MutationTree<ADRState> = {
 
     [ADRMutation.SetUploadFiles](state: ADRState, action: PayloadWithType<Dict<UploadFile>>) {
         state.uploadFiles = action.payload;
-    }
+    },
+
+    [ADRMutation.SetUserCanUpload](state: ADRState, action: PayloadWithType<boolean>) {
+        state.userCanUpload = action.payload;
+    },
 };

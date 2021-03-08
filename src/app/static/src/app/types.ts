@@ -122,6 +122,11 @@ export interface Dataset {
     title: string
     url: string,
     resources: DatasetResourceSet
+    organization: Organization
+}
+
+export interface Organization {
+    id: string
 }
 
 export interface ADRSchemas {

@@ -1,3 +1,7 @@
+# hint 1.22.0
+
+* Check if user has ADR upload permission
+
 # hint 1.21.0
 
 * Backend support for ADR uploads
