@@ -85,7 +85,7 @@ fun Response.asResponseEntity(): ResponseEntity<String>
         if (this.body().asString(null).contains("504 Gateway Time-out"))
         {
             //Special case of ADR Gateway Timeouts returning HTML responses which cannot be parsed as JSON
-            val message = "ADR Request timed out"
+            val message = "ADR request timed out"
             logger.error(message)
             ErrorDetail(HttpStatus.GATEWAY_TIMEOUT, message)
                     .toResponseEntity<String>()
