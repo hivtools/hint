@@ -41,8 +41,9 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
 
     async getDatasets(context) {
         context.commit({type: ADRMutation.SetFetchingDatasets, payload: true});
+        context.commit({type: ADRMutation.SetADRError, payload: null});
         await api<ADRMutation, ADRMutation>(context)
-            .ignoreErrors()
+            .withError(ADRMutation.SetADRError)
             .withSuccess(ADRMutation.SetDatasets)
             .get("/adr/datasets/")
             .then(() => {
@@ -63,6 +64,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         const project = rootState.projects.currentProject;
 
         if (selectedDataset && project) {
+            context.commit({type: ADRMutation.SetADRError, payload: null});
             await api(context)
                 .withError(ADRMutation.SetADRError)
                 .ignoreSuccess()
