@@ -88,7 +88,7 @@ describe("ADR actions", () => {
 
         await actions.getDatasets({commit, state, rootState} as any);
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0])
             .toStrictEqual({
                 type: ADRMutation.SetFetchingDatasets,
@@ -96,31 +96,46 @@ describe("ADR actions", () => {
             });
         expect(commit.mock.calls[1][0])
             .toStrictEqual({
+                type: ADRMutation.SetADRError,
+                payload: null
+            });
+        expect(commit.mock.calls[2][0])
+            .toStrictEqual({
                 type: ADRMutation.SetDatasets,
                 payload: [1]
             });
-        expect(commit.mock.calls[2][0])
+        expect(commit.mock.calls[3][0])
             .toStrictEqual({
                 type: ADRMutation.SetFetchingDatasets,
                 payload: false
             });
     });
 
-    it("resets datasets fetching if error response", async () => {
+    it("resets datasets and commits error fetching if error response", async () => {
         mockAxios.onGet(`/adr/datasets/`)
-            .reply(500, mockError("error"));
+            .reply(500, mockFailure("error"));
 
         const commit = jest.fn();
 
         await actions.getDatasets({commit, state, rootState} as any);
 
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0])
             .toStrictEqual({
                 type: ADRMutation.SetFetchingDatasets,
                 payload: true
             });
         expect(commit.mock.calls[1][0])
+            .toStrictEqual({
+                type: ADRMutation.SetADRError,
+                payload: null
+            });
+        expect(commit.mock.calls[2][0])
+            .toStrictEqual({
+                type: ADRMutation.SetADRError,
+                payload: mockError("error")
+            });
+        expect(commit.mock.calls[3][0])
             .toStrictEqual({
                 type: ADRMutation.SetFetchingDatasets,
                 payload: false
@@ -182,7 +197,10 @@ describe("ADR actions", () => {
         await actions.getUploadFiles({commit, state, rootState: root} as any);
 
         expect(commit.mock.calls[0][0].type).toBe("ADRError");
-        expect(commit.mock.calls[0][0].payload).toStrictEqual(mockError("test error"));
+        expect(commit.mock.calls[0][0].payload).toBeNull();
+
+        expect(commit.mock.calls[1][0].type).toBe("ADRError");
+        expect(commit.mock.calls[1][0].payload).toStrictEqual(mockError("test error"));
     });
 
     it("getUploadFiles gets dataset details and constructs upload files", async () => {
@@ -209,8 +227,11 @@ describe("ADR actions", () => {
 
         await actions.getUploadFiles({commit, state: adrState, rootState: root} as any);
 
-        expect(commit.mock.calls[0][0].type).toBe("SetUploadFiles");
-        expect(commit.mock.calls[0][0].payload).toStrictEqual({
+        expect(commit.mock.calls[0][0].type).toBe("ADRError");
+        expect(commit.mock.calls[0][0].payload).toBeNull();
+
+        expect(commit.mock.calls[1][0].type).toBe("SetUploadFiles");
+        expect(commit.mock.calls[1][0].payload).toStrictEqual({
             outputZip: {
                 index: 0,
                 displayName: "uploadFileOutputZip",

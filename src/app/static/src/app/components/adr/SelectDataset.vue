@@ -50,9 +50,9 @@
                     <loading-spinner size="xs"></loading-spinner>
                     <span v-translate="'loadingDatasets'"></span>
                 </div>
-                <div v-if="adrError">
-                    <div v-translate="errorFetchingDatasetsFromADR"></div>
-                    <button @click="getDatasets" class="btn btn-red" v-translate="tryAgain"></button>
+                <div v-if="adrError" id="fetch-error">
+                    <div v-translate="'errorFetchingDatasetsFromADR'"></div>
+                    <button @click="getDatasets" class="btn btn-red float-right" v-translate="'tryAgain'"></button>
                 </div>
             </div>
             <div class="text-center" v-if="loading" id="loading-dataset">
