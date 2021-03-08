@@ -1,6 +1,10 @@
-# hint 1.22.0
+# hint 1.23.0
 
 * Make login email case insensitive
+
+# hint 1.22.0
+
+* Check if user has ADR upload permission
 
 # hint 1.21.0
 
