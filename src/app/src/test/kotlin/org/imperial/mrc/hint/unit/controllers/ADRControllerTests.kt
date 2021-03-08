@@ -425,7 +425,7 @@ class ADRControllerTests : HintrControllerTests()
                 mock(),
                 mockSession,
                 mock())
-        val result = sut.getOrgsWithPermsission("test_perm")
+        val result = sut.getOrgsWithPermission("test_perm")
         assertThat(result.body!!).isEqualTo("whatever")
     }
 
