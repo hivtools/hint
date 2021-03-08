@@ -60,6 +60,7 @@ fun Response.asResponseEntity(): ResponseEntity<String>
     {
         val body = this.body().asString("application/json")
         val json = ObjectMapper().readTree(body)
+
         if (!json.has("status") && !json.has("success"))
         {
             logger.error(json)
@@ -81,9 +82,20 @@ fun Response.asResponseEntity(): ResponseEntity<String>
     }
     catch (e: IOException)
     {
-        logger.error(e.message)
-        ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Could not parse response.")
-                .toResponseEntity<String>()
+        if (this.body().asString(null).contains("504 Gateway Time-out"))
+        {
+            //Special case of ADR Gateway Timeouts returning HTML responses which cannot be parsed as JSON
+            val message = "ADR Request timed out"
+            logger.error(message)
+            ErrorDetail(HttpStatus.GATEWAY_TIMEOUT, message)
+                    .toResponseEntity<String>()
+        }
+        else
+        {
+            logger.error(e.message)
+            ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Could not parse response.")
+                    .toResponseEntity<String>()
+        }
     }
 }
 
@@ -94,6 +106,7 @@ fun formatADRResponse(json: JsonNode): ResponseEntity<String>
     logger.info("Parsing ADR response")
     return if (json["success"].asBoolean())
     {
+        logger.info("ADR request successful")
         SuccessResponse(json["result"])
                 .asResponseEntity()
     }
