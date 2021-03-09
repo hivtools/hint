@@ -40,11 +40,14 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe(ADRMutation.SetFetchingDatasets);
         expect(commit.mock.calls[0][0]["payload"]).toBe(true);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(ADRMutation.SetDatasets);
-        expect(Array.isArray(commit.mock.calls[1][0]["payload"])).toBe(true);
+        expect(commit.mock.calls[1][0]["type"]).toBe(ADRMutation.SetADRError);
+        expect(commit.mock.calls[1][0]["payload"]).toBe(null);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe(ADRMutation.SetFetchingDatasets);
-        expect(commit.mock.calls[2][0]["payload"]).toBe(false);
+        expect(commit.mock.calls[2][0]["type"]).toBe(ADRMutation.SetDatasets);
+        expect(Array.isArray(commit.mock.calls[2][0]["payload"])).toBe(true);
+
+        expect(commit.mock.calls[3][0]["type"]).toBe(ADRMutation.SetFetchingDatasets);
+        expect(commit.mock.calls[3][0]["payload"]).toBe(false);
     });
 
     it("can get dataset", async () => {
@@ -58,13 +61,16 @@ describe("ADR dataset-related actions", () => {
         await adrActions.getDatasets({commit, rootState} as any);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: ADRMutation.SetFetchingDatasets, payload: true});
 
-        expect(commit.mock.calls[1][0].type).toStrictEqual(ADRMutation.SetDatasets);
-        const datasetId = commit.mock.calls[1][0]["payload"][0].id;
+        expect(commit.mock.calls[1][0]["type"]).toBe(ADRMutation.SetADRError);
+        expect(commit.mock.calls[1][0]["payload"]).toBe(null);
+
+        expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
+        const datasetId = commit.mock.calls[2][0]["payload"][0].id;
         const state = {selectedDataset: {id: datasetId}};
-        expect(commit.mock.calls[2][0]).toStrictEqual({type: ADRMutation.SetFetchingDatasets, payload: false});
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: ADRMutation.SetFetchingDatasets, payload: false});
 
         await baselineActions.refreshDatasetMetadata({commit, state, dispatch, rootState: rootStateWithSchemas} as any);
-        expect(commit.mock.calls[3][0]).toBe(BaselineMutation.UpdateDatasetResources);
+        expect(commit.mock.calls[4][0]).toBe(BaselineMutation.UpdateDatasetResources);
     });
 
     it("can get userCanUpload when selected dataset organisation is set", async () => {
@@ -74,8 +80,8 @@ describe("ADR dataset-related actions", () => {
         await adrActions.getDatasets({commit, rootState} as any);
 
         // 2. select a naomi dev dataset
-        expect(commit.mock.calls[1][0].type).toStrictEqual(ADRMutation.SetDatasets);
-        const datasets = commit.mock.calls[1][0]["payload"];
+        expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
+        const datasets = commit.mock.calls[2][0]["payload"];
         const dataset = datasets[1];
         expect(dataset.organization.name).toBe("naomi-development-team");
 
@@ -103,8 +109,8 @@ describe("ADR dataset-related actions", () => {
         await adrActions.getDatasets({commit, rootState} as any);
 
         // 2. select a naomi dev dataset
-        expect(commit.mock.calls[1][0].type).toStrictEqual(ADRMutation.SetDatasets);
-        const datasets = commit.mock.calls[1][0]["payload"];
+        expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
+        const datasets = commit.mock.calls[2][0]["payload"];
         const dataset = datasets[1];
         expect(dataset.organization.name).toBe("naomi-development-team");
 
