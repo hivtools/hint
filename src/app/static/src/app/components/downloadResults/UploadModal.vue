@@ -7,7 +7,7 @@
                     <span v-translate="'outputFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
                 <div id="instructions" class="mt-3" v-translate="'outputFileInstruction'"></div>
-                <div id="output-file-id" class="mt-3" v-for="(output, index) in outputFileMetadata" :key="index">
+                <div id="output-file-id" class="mt-3" v-for="(output, index) in uploadFile" :key="index">
                     <div class="mt-3 form-check">
                         <input class="form-check-input"
                                type="checkbox"
@@ -51,7 +51,7 @@
 <script lang="ts">
     import Vue from "vue";
     import Modal from "../Modal.vue";
-    import {ADRUploadMetadataDict} from "../../types";
+    import {Dict, UploadFile} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
     import {mapStateProps} from "../../utils";
 
@@ -88,7 +88,7 @@
     interface Data {
         pushFilesToAdr: []
         pushDescToAdr: string
-        outputFileMetadata: ADRUploadMetadataDict
+        uploadFile: Dict<UploadFile>
     }
 
     interface Props {
@@ -106,7 +106,7 @@
             return {
                 pushFilesToAdr: [],
                 pushDescToAdr: "",
-                outputFileMetadata: fakeMetadata
+                uploadFile: fakeMetadata
             }
         },
         methods: {
