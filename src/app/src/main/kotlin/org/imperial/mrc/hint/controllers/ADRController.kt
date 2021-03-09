@@ -123,6 +123,13 @@ class ADRController(private val encryption: Encryption,
                         "outputSummary" to appProperties.adrOutputSummarySchema)).asResponseEntity()
     }
 
+    @GetMapping("/orgs")
+    fun getOrgsWithPermission(@RequestParam permission: String): ResponseEntity<String>
+    {
+        val adr = adrClientBuilder.build()
+        return adr.get("organization_list_for_user?permission=${permission}")
+    }
+
     @PostMapping("/pjnz")
     fun importPJNZ(@RequestParam url: String): ResponseEntity<String>
     {

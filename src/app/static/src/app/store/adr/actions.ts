@@ -4,7 +4,9 @@ import {api} from "../../apiService";
 import qs from "qs";
 import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
-import {constructUploadFile, findResource} from "../../utils";
+import {constructUploadFile, datasetFromMetadata, findResource} from "../../utils";
+import {Organization} from "../../types";
+import {BaselineMutation} from "../baseline/mutations";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -12,6 +14,7 @@ export interface ADRActions {
     deleteKey: (store: ActionContext<ADRState, RootState>) => void;
     getDatasets: (store: ActionContext<ADRState, RootState>) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
+    getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
     getUploadFiles: (store: ActionContext<ADRState, RootState>) => void;
 }
 
@@ -56,6 +59,50 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .ignoreErrors()
             .withSuccess(ADRMutation.SetSchemas)
             .get("/adr/schemas/")
+    },
+
+    async getUserCanUpload(context) {
+        const {state, rootState, commit} = context;
+        const selectedDataset = rootState.baseline.selectedDataset;
+
+        if (selectedDataset) {
+            //For backward compatibility, we may have to regenerate the dataset metadata to provide the
+            //organisation id for projects which are reloaded
+            let selectedDatasetOrgId: string;
+            if (!selectedDataset.organization) {
+                //We may also have to fetch the selected dataset metadata too, if not loaded during this session
+                let datasets = state.datasets;
+                if (!datasets.length) {
+                    await api(context)
+                        .ignoreErrors()
+                        .ignoreSuccess()
+                        .get(`/adr/datasets/${selectedDataset.id}`)
+                        .then((response) => {
+                            if (response) {
+                                datasets = [response.data];
+                            }
+                        });
+                }
+
+                const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
+                commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
+                selectedDatasetOrgId = regenDataset.organization.id;
+            } else {
+                selectedDatasetOrgId = selectedDataset.organization.id;
+            }
+
+            await api(context)
+                .withError(ADRMutation.SetADRError)
+                .ignoreSuccess()
+                .get("/adr/orgs?permission=update_dataset")
+                .then(async (response) => {
+                    if (response) {
+                        const updateableOrgs = response.data as Organization[];
+                        const canUpload = updateableOrgs.some(org => org.id === selectedDatasetOrgId);
+                        commit({type: ADRMutation.SetUserCanUpload, payload: canUpload});
+                    }
+                })
+        }
     },
 
     async getUploadFiles(context) {
