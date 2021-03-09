@@ -8,6 +8,8 @@ import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.md5sum
+import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
@@ -15,6 +17,10 @@ import org.imperial.mrc.hint.security.Session
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.nio.file.Files
 
 @RestController
 @RequestMapping("/adr")
@@ -30,7 +36,8 @@ class ADRController(private val encryption: Encryption,
         HintrController(fileManager, apiClient, session, versionRepository)
 {
 
-    companion object {
+    companion object
+    {
         const val MAX_DATASETS = 1000
     }
 
@@ -111,7 +118,16 @@ class ADRController(private val encryption: Encryption,
                         "pjnz" to appProperties.adrPJNZSchema,
                         "population" to appProperties.adrPopSchema,
                         "shape" to appProperties.adrShapeSchema,
-                        "survey" to appProperties.adrSurveySchema)).asResponseEntity()
+                        "survey" to appProperties.adrSurveySchema,
+                        "outputZip" to appProperties.adrOutputZipSchema,
+                        "outputSummary" to appProperties.adrOutputSummarySchema)).asResponseEntity()
+    }
+
+    @GetMapping("/orgs")
+    fun getOrgsWithPermission(@RequestParam permission: String): ResponseEntity<String>
+    {
+        val adr = adrClientBuilder.build()
+        return adr.get("organization_list_for_user?permission=${permission}")
     }
 
     @PostMapping("/pjnz")
@@ -148,5 +164,56 @@ class ADRController(private val encryption: Encryption,
     fun importANC(@RequestParam url: String): ResponseEntity<String>
     {
         return saveAndValidate(url, FileType.ANC)
+    }
+
+    @PostMapping("/datasets/{id}/resource/{resourceType}/{modelCalibrateId}")
+    @Suppress("ReturnCount")
+    fun pushFileToADR(@PathVariable id: String,
+                      @PathVariable resourceType: String,
+                      @PathVariable modelCalibrateId: String,
+                      @RequestParam resourceFileName: String,
+                      @RequestParam resourceId: String?): ResponseEntity<String>
+    {
+        // 1. Download relevant artefact from hintr
+        val artefact = when (resourceType)
+        {
+            appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId),
+                    "Naomi model outputs")
+            appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId),
+                    "Naomi summary report")
+            else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
+        }
+
+        // 2. Return error if artefact can't be retrieved
+        if (!artefact.first.statusCode.is2xxSuccessful)
+        {
+            val baos = ByteArrayOutputStream()
+            artefact.first.body?.writeTo(baos)
+            return ErrorDetail(artefact.first.statusCode, baos.toString()).toResponseEntity()
+        }
+
+        // 3. Stream artefact to file
+        val tmpDir = Files.createTempDirectory("adr").toFile()
+        val file = File(tmpDir, resourceFileName)
+        FileOutputStream(file).use { fis ->
+            artefact.first.body!!.writeTo(fis)
+        }
+
+        // 4. Checksum file and upload with metadata to ADR
+        val filePart = Pair("upload", file)
+        val commonParameters =
+                listOf("name" to resourceFileName, "description" to artefact.second, "hash" to file.md5sum())
+        val adr = adrClientBuilder.build()
+        return try
+        {
+            when (resourceId)
+            {
+                null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
+                else -> adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
+            }
+        }
+        finally {
+            tmpDir.deleteRecursively()
+        }
     }
 }

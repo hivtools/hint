@@ -8,6 +8,7 @@ import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import java.io.BufferedInputStream
+import java.io.File
 import java.net.URL
 import java.net.URLConnection
 
@@ -31,6 +32,7 @@ interface ADRClient
 {
     fun getInputStream(url: String): BufferedInputStream
     fun get(url: String): ResponseEntity<String>
+    fun postFile(url: String, parameters: List<Pair<String, Any?>>, file: Pair<String, File>): ResponseEntity<String>
 }
 
 class ADRFuelClient(appProperties: AppProperties,

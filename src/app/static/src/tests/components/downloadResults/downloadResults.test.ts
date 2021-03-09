@@ -11,13 +11,19 @@ const localVue = createLocalVue();
 
 describe("Download Results component", () => {
 
-    const createStore = () => {
+    const createStore = (getUserCanUpload = jest.fn()) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
                 modelCalibrate: {
                     namespaced: true,
                     state: mockModelCalibrateState({calibrateId: "testId"})
+                },
+                adr: {
+                    namespaced: true,
+                    actions: {
+                        getUserCanUpload
+                    }
                 }
             }
         });
@@ -71,4 +77,11 @@ describe("Download Results component", () => {
         await upload.trigger("click")
         expect(wrapper.vm.$data.modelOpen).toBe(true)
     })
+
+    it("invokes getUserCanUpload on mounted", async () => {
+        const mockGetUserCanUpload = jest.fn();
+        const store = createStore(mockGetUserCanUpload);
+        shallowMount(DownloadResults, {store});
+        expect(mockGetUserCanUpload.mock.calls.length).toBe(1);
+    });
 });

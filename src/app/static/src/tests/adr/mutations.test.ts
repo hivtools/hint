@@ -20,6 +20,15 @@ describe("ADR mutations", () => {
         expect(state.keyError).toBe(null);
     });
 
+    it("can set adr error", () => {
+        const state = mockADRState();
+        mutations[ADRMutation.SetADRError](state, {payload: mockError("whatevs")});
+        expect(state.adrError!!.detail).toBe("whatevs");
+
+        mutations[ADRMutation.SetADRError](state, {payload: null});
+        expect(state.adrError).toBe(null);
+    });
+
     it("can set datasets", () => {
         const state = mockADRState();
         mutations[ADRMutation.SetDatasets](state, {payload: [1, 2, 3]});
@@ -36,5 +45,22 @@ describe("ADR mutations", () => {
         const state = mockADRState();
         mutations[ADRMutation.SetSchemas](state, {payload: {baseUrl: "adr.com"}});
         expect(state.schemas).toEqual({baseUrl: "adr.com"});
+    });
+
+    it("can set upload files", () => {
+        const state = mockADRState();
+        const payload = {
+            outputZip: {
+                index: 1,
+                displayName: "test",
+                resourceType: "testType",
+                resourceFilename: "testFile",
+                resourceId: "123",
+                lastModified: "2021-03-02",
+                url: "https://test"
+            }
+        };
+        mutations[ADRMutation.SetUploadFiles](state, {payload});
+        expect(state.uploadFiles).toBe(payload);
     });
 });

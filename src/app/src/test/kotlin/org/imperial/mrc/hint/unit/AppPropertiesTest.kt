@@ -142,4 +142,20 @@ class AppPropertiesTests
         val sut = ConfiguredAppProperties(props)
         assertThat(sut.supportEmail).isEqualTo("test@email.com")
     }
+
+    @Test
+    fun `can read adr output zip schema`()
+    {
+        val props = readPropsFromTempFile("adr_output_zip_schema=test-zip-schema")
+        val sut = ConfiguredAppProperties(props)
+        assertThat(sut.adrOutputZipSchema).isEqualTo("test-zip-schema")
+    }
+
+    @Test
+    fun `can read adr output summary schema`()
+    {
+        val props = readPropsFromTempFile("adr_output_summary_schema=test-summary-schema")
+        val sut = ConfiguredAppProperties(props)
+        assertThat(sut.adrOutputSummarySchema).isEqualTo("test-summary-schema")
+    }
 }

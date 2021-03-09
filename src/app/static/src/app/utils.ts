@@ -1,6 +1,6 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
-import {DatasetResource, Dict, Version} from "./types";
+import {ADRSchemas, DatasetResource, Dict, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
 import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
@@ -166,11 +166,50 @@ export const formatDateTime = (isoUTCString: string) => {
 export const findResource = (datasetWithResources: any, resourceType: string): DatasetResource | null => {
     const metadata = datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
     return metadata ? {
+        id: metadata.id,
         url: metadata.url,
         lastModified: metadata.last_modified,
         metadataModified: metadata.metadata_modified,
         outOfDate: false} : null
-}
+};
+
+export const datasetFromMetadata = (id: string, datasets: any[], schemas: ADRSchemas) => {
+    const fullMetaData = datasets.find(d => d.id == id);
+    return fullMetaData && {
+        id: fullMetaData.id,
+        title: fullMetaData.title,
+        url: `${schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`,
+        resources: {
+            pjnz: findResource(fullMetaData, schemas.pjnz),
+            shape: findResource(fullMetaData, schemas.shape),
+            pop: findResource(fullMetaData, schemas.population),
+            survey: findResource(fullMetaData, schemas.survey),
+            program: findResource(fullMetaData, schemas.programme),
+            anc: findResource(fullMetaData, schemas.anc)
+        },
+        organization: {
+            id: fullMetaData.organization.id
+        }
+    }
+};
+
+export const constructUploadFile = (datasetWithResources: any, index: number, resourceType: string,
+                             resourceFilename: string, displayName: string) => {
+    const resource = findResource(datasetWithResources, resourceType);
+    const resourceId = resource ? resource.id : null;
+    const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
+    const resourceUrl = resource ? resource.url : null;
+
+    return {
+        index,
+        displayName,
+        resourceType,
+        resourceFilename,
+        resourceId,
+        resourceUrl,
+        lastModified
+    }
+};
 
 const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
 

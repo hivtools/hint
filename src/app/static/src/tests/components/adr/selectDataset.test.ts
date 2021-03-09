@@ -26,40 +26,48 @@ describe("select dataset", () => {
         pjnz: "pjnz",
         population: "pop",
         shape: "shape",
-        survey: "survey"
+        survey: "survey",
+        outputZip: "zip",
+        outputSummary: "summary"
     }
 
     const pjnz = {
+        id: "1",
         resource_type: schemas.pjnz,
         url: "pjnz.pjnz",
         last_modified: "2020-11-01",
         metadata_modified: "2020-11-02"
     }
     const shape = {
+        id: "2",
         resource_type: schemas.shape,
         url: "shape.geojson",
         last_modified: "2020-11-03",
         metadata_modified: "2020-11-04"
     }
     const pop = {
+        id: "3",
         resource_type: schemas.population,
         url: "pop.csv",
         last_modified: "2020-11-05",
         metadata_modified: "2020-11-06"
     }
     const survey = {
+        id: "4",
         resource_type: schemas.survey,
         url: "survey.csv",
         last_modified: "2020-11-07",
         metadata_modified: "2020-11-08"
     }
     const program = {
+        id: "5",
         resource_type: schemas.programme,
         url: "program.csv",
         last_modified: "2020-11-07",
         metadata_modified: "2020-11-08"
     }
     const anc = {
+        id: "6",
         resource_type: schemas.anc,
         url: "anc.csv",
         last_modified: "2020-11-09",
@@ -71,7 +79,7 @@ describe("select dataset", () => {
         {
             id: "id1",
             title: "Some data",
-            organization: {title: "org"},
+            organization: {title: "org", id: "org-id"},
             name: "some-data",
             type: "naomi-data",
             resources: []
@@ -79,7 +87,7 @@ describe("select dataset", () => {
         {
             id: "id2",
             title: "Some data 2",
-            organization: {title: "org"},
+            organization: {title: "org", id: "org-id"},
             name: "some-data",
             type: "naomi-data",
             resources: []
@@ -90,6 +98,7 @@ describe("select dataset", () => {
         id: "id1",
         title: "Some data",
         url: "www.adr.com/naomi-data/some-data",
+        organization: {id: "org-id"},
         resources: {
             pjnz: null,
             program: null,
@@ -108,12 +117,14 @@ describe("select dataset", () => {
         id: "id2",
         title: "Some data 2",
         url: "www.adr.com/naomi-data/some-data",
+        organization: {id: "org-id"},
         resources: {
             pjnz: null,
             program: null,
             pop: null,
             survey: null,
             shape: mockDatasetResource({
+                id: "2",
                 url: "shape.geojson",
                 lastModified: "2020-11-03",
                 metadataModified: "2020-11-04"

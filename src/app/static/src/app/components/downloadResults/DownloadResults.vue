@@ -20,7 +20,7 @@
             </div>
             <div id="upload" v-if="hasUploadPermit" class="col-sm">
                 <h4 v-translate="'outputFileToAdr'"></h4>
-                <a @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href=#>
+                <a @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href="#">
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
                 </a>
@@ -32,7 +32,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProps} from "../../utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
@@ -47,6 +47,7 @@
 
     interface Methods {
         handleUploadModal: () => void
+        getUserCanUpload: () => void;
     }
 
     interface Data {
@@ -83,6 +84,12 @@
             handleUploadModal() {
                 this.modelOpen = true
             }
+        },
+        methods: {
+          getUserCanUpload: mapActionByName("adr", "getUserCanUpload")
+        },
+        mounted() {
+            this.getUserCanUpload();
         },
         components: {
             DownloadIcon,
