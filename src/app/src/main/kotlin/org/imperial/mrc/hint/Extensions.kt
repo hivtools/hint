@@ -8,6 +8,7 @@ import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.requests.DownloadRequest
 import org.apache.commons.logging.LogFactory
+import org.apache.commons.logging.Log
 import org.imperial.mrc.hint.exceptions.HintExceptionHandler
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.SuccessResponse
@@ -46,10 +47,9 @@ fun headersToMultiMap(headers: Headers): MultiValueMap<String, String>
 }
 
 @Suppress("UNCHECKED_CAST")
-fun Response.asResponseEntity(): ResponseEntity<String>
+fun Response.asResponseEntity(logger: Log = LogFactory.getLog(HintExceptionHandler::class.java)): ResponseEntity<String>
 {
     val httpStatus = httpStatusFromCode(this.statusCode)
-    val logger = LogFactory.getLog(HintExceptionHandler::class.java)
     if (this.statusCode == -1)
     {
         return ErrorDetail(httpStatus, "No response returned. The request may have timed out.")
@@ -76,7 +76,7 @@ fun Response.asResponseEntity(): ResponseEntity<String>
         else
         {
             // this is an ADR response, so convert to our response schema
-            formatADRResponse(json)
+            formatADRResponse(json, logger)
         }
 
     }
@@ -100,10 +100,9 @@ fun Response.asResponseEntity(): ResponseEntity<String>
 }
 
 @Suppress("UNCHECKED_CAST")
-fun formatADRResponse(json: JsonNode): ResponseEntity<String>
+fun formatADRResponse(json: JsonNode, logger: Log): ResponseEntity<String>
 {
-    val logger = LogFactory.getLog(HintExceptionHandler::class.java)
-    logger.info("Parsing ADR response")
+   logger.info("Parsing ADR response")
     return if (json["success"].asBoolean())
     {
         logger.info("ADR request successful")

@@ -8,6 +8,8 @@ import com.github.kittinunf.fuel.core.Response
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
+import org.apache.commons.logging.Log
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.imperial.mrc.hint.asResponseEntity
 import org.imperial.mrc.hint.getStreamingResponseEntity
@@ -96,11 +98,27 @@ class ExtensionTests {
                 </body>
                 </html>
                 """)
+
+        val mockLog = mock<Log>()
+
         val res = Response(URL("http://whatever"), 200, body = mockBody)
-        assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.GATEWAY_TIMEOUT)
+        assertThat(res.asResponseEntity(mockLog).statusCode).isEqualTo(HttpStatus.GATEWAY_TIMEOUT)
         val body = ObjectMapper().readTree(res.asResponseEntity().body)
         val errorDetail = body["errors"].first()["detail"].textValue()
         assertThat(errorDetail).isEqualTo("ADR request timed out")
+
+        verify(mockLog).error("ADR request timed out")
+    }
+
+    @Test
+    fun `success message is logged for ADR response`()
+    {
+        val mockBody = getMockBody("""{"success": "true"}""")
+        val mockLog = mock<Log>()
+        val res = Response(URL("http://whatever"), 200, body = mockBody)
+        assertThat(res.asResponseEntity(mockLog).statusCode).isEqualTo(HttpStatus.OK)
+
+        verify(mockLog).info("ADR request successful")
     }
 
     @Test
