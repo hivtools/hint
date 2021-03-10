@@ -1,4 +1,3 @@
-
 # hint 1.23.0
 
 * add upload button and dialog box for result outputs to ADR
@@ -12,6 +11,10 @@
 * Backend support for ADR uploads
 
 # hint 1.20.0
+
+* add upload button and dialog box for result outputs to ADR
+
+# hint 1.19.1
 
 * Add output adr schemas
 
