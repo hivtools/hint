@@ -78,6 +78,11 @@ describe("Download Results component", () => {
         const upload = wrapper.find("#upload").find("a")
         await upload.trigger("click")
         expect(wrapper.vm.$data.uploadModalOpen).toBe(true)
+
+        const modal = wrapper.find(UploadModal)
+        await modal.vm.$emit("close")
+        expect(modal.emitted().close.length).toBe(1)
+        expect(wrapper.vm.$data.uploadModalOpen).toBe(false)
     })
 
     it("invokes getUserCanUpload on mounted", async () => {
