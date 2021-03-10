@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount, mount} from '@vue/test-utils';
 import Vuex from 'vuex';
-import {mockModelCalibrateState} from "../../mocks";
+import {mockADRState, mockModelCalibrateState} from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
@@ -11,18 +11,20 @@ const localVue = createLocalVue();
 
 describe("Download Results component", () => {
 
-    const createStore = (getUserCanUpload = jest.fn()) => {
+    const createStore = (hasUploadPermission= true, getUserCanUpload = jest.fn()) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
                 modelCalibrate: {
                     namespaced: true,
-                    state: mockModelCalibrateState({calibrateId: "testId"})
+                    state: mockModelCalibrateState({calibrateId: "testId"}),
                 },
                 adr: {
                     namespaced: true,
+                    state: mockADRState({userCanUpload: hasUploadPermission}),
                     actions: {
-                        getUserCanUpload
+                        getUserCanUpload,
+                        getUploadFiles: jest.fn()
                     }
                 }
             }
@@ -65,23 +67,30 @@ describe("Download Results component", () => {
                 stubs: ["upload-modal"],
                 data() {
                     return {
-                        modalOpen: false
+                        uploadModalOpen: false
                     }
                 }
             });
 
         expect(wrapper.find(UploadModal).exists()).toBe(true)
-        expect(wrapper.vm.$data.modelOpen).toBe(false)
+        expect(wrapper.vm.$data.uploadModalOpen).toBe(false)
 
         const upload = wrapper.find("#upload").find("a")
         await upload.trigger("click")
-        expect(wrapper.vm.$data.modelOpen).toBe(true)
+        expect(wrapper.vm.$data.uploadModalOpen).toBe(true)
     })
 
     it("invokes getUserCanUpload on mounted", async () => {
         const mockGetUserCanUpload = jest.fn();
-        const store = createStore(mockGetUserCanUpload);
+        const store = createStore(true, mockGetUserCanUpload);
         shallowMount(DownloadResults, {store});
         expect(mockGetUserCanUpload.mock.calls.length).toBe(1);
+    });
+
+    it("does not display upload button when a user does not have permission", async () => {
+        const store = createStore(false);
+        const wrapper = shallowMount(DownloadResults, {store});
+        const headers = wrapper.findAll("h4");
+        expect(headers.length).toBe(3)
     });
 });

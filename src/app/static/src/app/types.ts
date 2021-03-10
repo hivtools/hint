@@ -150,12 +150,3 @@ export interface UploadFile {
     resourceUrl: string | null,
     lastModified: string | null
 }
-
-export interface UploadFile {
-    displayName: string
-    resourceType: string
-    resourceFilename: string
-    resourceId: string | null
-    lastModified: string | null
-    resourceUrl: string | null
-}

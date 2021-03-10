@@ -18,53 +18,58 @@
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
                 </a>
             </div>
-            <div id="upload" v-if="hasUploadPermit" class="col-sm">
-                <h4 v-translate="'outputFileToAdr'"></h4>
+            <div id="upload" v-if="hasUploadPermission" class="col-sm">
+                <h4 v-translate="'uploadFileToAdr'"></h4>
                 <a @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href="#">
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
                 </a>
             </div>
         </div>
-        <upload-modal :open="modelOpen" @close="modelOpen = false"></upload-modal>
+        <upload-modal id="modal" :open="uploadModalOpen" @close="uploadModalOpen = false"></upload-modal>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
+    import {ADRState} from "../../store/adr/adr";
 
     interface Computed {
         modelCalibrateId: string,
         spectrumUrl: string,
         coarseOutputUrl: string,
         summaryReportUrl: string,
-        hasUploadPermit: boolean
+        hasUploadPermission: boolean
     }
 
     interface Methods {
         handleUploadModal: () => void
-        getUserCanUpload: () => void;
+        getUserCanUpload: () => void
+        getUploadFiles: () => void
     }
 
     interface Data {
-        modelOpen: boolean
+        uploadModalOpen: boolean
     }
 
     export default Vue.extend<Data, Methods, Computed>({
         name: "downloadResults",
         data() {
             return {
-                modelOpen: false
+                uploadModalOpen: false
             }
         },
         computed: {
             ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
                 modelCalibrateId: state => state.calibrateId
             }),
+            hasUploadPermission: mapStateProp<ADRState, boolean>("adr",
+                (state: ADRState) => state.userCanUpload
+            ),
             spectrumUrl: function () {
                 return `/download/spectrum/${this.modelCalibrateId}`
             },
@@ -73,23 +78,18 @@
             },
             summaryReportUrl: function () {
                 return `/download/summary/${this.modelCalibrateId}`
-            },
-            hasUploadPermit: function () {
-                // this will be implemented as soon as we can get user's permission from ADR
-                return true
             }
-
         },
         methods: {
             handleUploadModal() {
-                this.modelOpen = true
-            }
-        },
-        methods: {
-          getUserCanUpload: mapActionByName("adr", "getUserCanUpload")
+                this.uploadModalOpen = true
+            },
+            getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
+            getUploadFiles: mapActionByName("adr", "getUploadFiles")
         },
         mounted() {
             this.getUserCanUpload();
+            this.getUploadFiles()
         },
         components: {
             DownloadIcon,

@@ -1,34 +1,34 @@
 <template>
     <div id="dialog">
         <modal :open="open">
-            <h4 v-translate="'outputFileToAdr'"></h4>
+            <h4 v-translate="'uploadFileToAdr'"></h4>
             <div class="container">
                 <div id="dataset-id" class="mt-4">
-                    <span v-translate="'outputFileDataset'"></span>
+                    <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
-                <div id="instructions" class="mt-3" v-translate="'outputFileInstruction'"></div>
-                <div id="output-file-id" class="mt-3" v-for="(output, index) in uploadFile" :key="index">
+                <div id="instructions" class="mt-3" v-translate="'uploadFileInstruction'"></div>
+                <div id="output-file-id" class="mt-3" v-for="uploadFile in uploadFiles" :key="uploadFile.index">
                     <div class="mt-3 form-check">
                         <input class="form-check-input"
                                type="checkbox"
-                               :value="output.displayName"
-                               v-model="pushFilesToAdr"
-                               :id="`outputFile-${index}`">
+                               :value="uploadFile.index"
+                               v-model="uploadFilesToAdr"
+                               :id="`id-${uploadFile.index}`">
 
                         <label class="form-check-label"
-                               :for="`outputFile-${index}`"
-                               v-translate="getTranslatedLabel(output.displayName)"></label>
+                               :for="`id-${uploadFile.index}`"
+                               v-translate="uploadFile.displayName"></label>
 
-                        <small v-if="output.resourceId" class="text-danger row">
+                        <small v-if="uploadFile.resourceId" class="text-danger row">
                         <span class="col-auto">
-                        <span v-translate="'outputFileOverwrite'"></span>{{ output.lastModified }}
+                        <span v-translate="'uploadFileOverwrite'"></span>{{ lastModified(uploadFile.lastModified) }}
                         </span>
                         </small>
                     </div>
                 </div>
                 <div class="mt-3">
-                    <label for="description-id" v-translate="'outputFileDesc'"></label>
-                    <textarea v-model="pushDescToAdr"
+                    <label for="description-id" v-translate="'uploadFileDesc'"></label>
+                    <textarea v-model="uploadDescToAdr"
                               class="form-control" rows="3"
                               id="description-id"></textarea>
                 </div>
@@ -53,42 +53,22 @@
     import Modal from "../Modal.vue";
     import {Dict, UploadFile} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {mapStateProps} from "../../utils";
+    import {formatDateTime, mapStateProp, mapStateProps} from "../../utils";
+    import {ADRState} from "../../store/adr/adr";
 
     interface Methods {
         handleCancel: () => void
-        getTranslatedLabel: (name: string) => string
+        lastModified: (date: string) => string | null
     }
 
     interface Computed {
         dataset: string
-    }
-
-    const fakeMetadata = {
-        outputZip:
-            {
-                displayName: "Model outputs",
-                resourceType: "inputs-unaids-naomi-output-zip",
-                resourceFilename: "naomi-model-outputs-project1.zip",
-                resourceId: null,
-                lastModified: null,
-                resourceUrl: null
-            },
-        outputSummary:
-            {
-                displayName: "Summary",
-                resourceType: "string",
-                resourceFilename: "string",
-                resourceId: "value",
-                lastModified: "24/02/21 17:22",
-                resourceUrl: null
-            }
+        uploadFiles: Dict<UploadFile>
     }
 
     interface Data {
-        pushFilesToAdr: []
-        pushDescToAdr: string
-        uploadFile: Dict<UploadFile>
+        uploadFilesToAdr: []
+        uploadDescToAdr: string
     }
 
     interface Props {
@@ -104,24 +84,25 @@
         },
         data(): Data {
             return {
-                pushFilesToAdr: [],
-                pushDescToAdr: "",
-                uploadFile: fakeMetadata
+                uploadFilesToAdr: [],
+                uploadDescToAdr: ""
             }
         },
         methods: {
             handleCancel() {
                 this.$emit("close")
             },
-            getTranslatedLabel(name: string) {
-                console.log(this.pushFilesToAdr.length)
-                return `outputFile${name.trim().replace(/\s/g, "")}`
+            lastModified: function (date: string) {
+                return formatDateTime(date)
             }
         },
         computed: {
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                 dataset: state => state.selectedDataset?.title
-            })
+            }),
+            uploadFiles: mapStateProp<ADRState, Dict<UploadFile>>("adr",
+                (state: ADRState) => state.uploadFiles!
+            )
         },
         components: {
             Modal

@@ -2,7 +2,7 @@ import {shallowMount} from "@vue/test-utils";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
-import {mockBaselineState, mockDatasetResource} from "../../mocks";
+import {mockADRState, mockBaselineState, mockDatasetResource} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
 
@@ -11,21 +11,23 @@ describe(`uploadModal `, () => {
     const fakeMetadata = {
         outputZip:
             {
-                displayName: "Model outputs",
+                index: 1,
+                displayName: "uploadFileOutputZip",
                 resourceType: "inputs-unaids-naomi-output-zip",
                 resourceFilename: "naomi-model-outputs-project1.zip",
                 resourceId: null,
-                lastModified: null,
-                resourceUrl: null
+                resourceUrl: null,
+                lastModified: null
             },
         outputSummary:
             {
-                displayName: "Summary",
+                index: 2,
+                displayName: "uploadFileOutputSummary",
                 resourceType: "string",
                 resourceFilename: "string",
                 resourceId: "value",
-                lastModified: "24/02/21 17:22",
-                resourceUrl: null
+                resourceUrl: null,
+                lastModified: "2021-01-25T06:34:12.375649"
             }
     }
 
@@ -37,6 +39,9 @@ describe(`uploadModal `, () => {
         shape: null,
         survey: null,
     }
+    const mockOrganization = {
+        id: "123abc"
+    }
     const createStore = () => {
         const store = new Vuex.Store({
             state: emptyState(),
@@ -46,8 +51,21 @@ describe(`uploadModal `, () => {
                     state: mockBaselineState(
                         {
                             selectedDataset:
-                                {id: "1", url: "example.com", title: "test title", resources: mockResources}
+                                {
+                                    id: "1",
+                                    url: "example.com",
+                                    title: "test title",
+                                    resources: mockResources,
+                                    organization: mockOrganization
+                                }
                         })
+                },
+                adr: {
+                    namespaced: true,
+                    state: mockADRState({uploadFiles: fakeMetadata}),
+                    actions: {
+                        uploadFiles: jest.fn()
+                    }
                 }
             }
         });
@@ -71,7 +89,6 @@ describe(`uploadModal `, () => {
         expect(dialog.exists()).toBe(true)
         const text = dialog.find("h4")
         expectTranslated(text, "Upload to ADR", "Télécharger vers ADR", store)
-
     })
 
     it(`renders dataset name as expected`, () => {
@@ -101,7 +118,7 @@ describe(`uploadModal `, () => {
         const overwriteText = wrapper.findAll("small")
         expect(overwriteText.length).toBe(1)
         expect(overwriteText.at(0).text()).toBe("This file already exists on ADR " +
-            "and will be overwritten. File was updated 24/02/21 17:22")
+            "and will be overwritten. File was updated 25/01/2021 06:34:12")
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
@@ -109,7 +126,7 @@ describe(`uploadModal `, () => {
         const label = wrapper.findAll("label.form-check-label")
         expect(label.length).toBe(2)
 
-        expectTranslated(label.at(0), "Model outputs", "Sorties du modèle", store)
+        expectTranslated(label.at(0), "Model outputs", "Résultats du modèle", store)
         expectTranslated(label.at(1), "Summary report", "Rapport sommaire", store)
     })
 
@@ -123,7 +140,7 @@ describe(`uploadModal `, () => {
         inputs.at(1).setChecked(true)
 
         expect(wrapper.find("#dialog").exists()).toBe(true)
-        expect(wrapper.vm.$data.pushFilesToAdr).toMatchObject(["Model outputs", "Summary"])
+        expect(wrapper.vm.$data.uploadFilesToAdr).toMatchObject([1, 2])
     })
 
     it(`can set and get description value as expected`, async () => {
@@ -132,7 +149,7 @@ describe(`uploadModal `, () => {
 
         const desc = wrapper.find("#description-id")
         desc.setValue(newDesc)
-        expect(wrapper.vm.$data.pushDescToAdr).toBe(newDesc)
+        expect(wrapper.vm.$data.uploadDescToAdr).toBe(newDesc)
 
         const textarea = desc.element as HTMLTextAreaElement
         expect(textarea.value).toBe(newDesc)
