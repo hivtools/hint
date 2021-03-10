@@ -4,18 +4,27 @@ import {mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import Modal from "../../../app/components/Modal.vue";
 import TreeSelect from '@riophae/vue-treeselect'
-import {mockBaselineState, mockDataset, mockDatasetResource, mockRootState, mockShapeResponse} from "../../mocks";
+import {
+    mockBaselineState,
+    mockDataset,
+    mockDatasetResource,
+    mockError,
+    mockRootState,
+    mockShapeResponse
+} from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {BaselineMutation} from "../../../app/store/baseline/mutations";
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {ADRSchemas} from "../../../app/types";
-import {RootState} from "../../../app/root";
 import {InfoIcon} from "vue-feather-icons";
 import Mock = jest.Mock;
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
+import {ADRState} from "../../../app/store/adr/adr";
+import {DomUtil} from "leaflet";
+import get = DomUtil.get;
 
 describe("select dataset", () => {
 
@@ -26,40 +35,48 @@ describe("select dataset", () => {
         pjnz: "pjnz",
         population: "pop",
         shape: "shape",
-        survey: "survey"
+        survey: "survey",
+        outputZip: "zip",
+        outputSummary: "summary"
     }
 
     const pjnz = {
+        id: "1",
         resource_type: schemas.pjnz,
         url: "pjnz.pjnz",
         last_modified: "2020-11-01",
         metadata_modified: "2020-11-02"
     }
     const shape = {
+        id: "2",
         resource_type: schemas.shape,
         url: "shape.geojson",
         last_modified: "2020-11-03",
         metadata_modified: "2020-11-04"
     }
     const pop = {
+        id: "3",
         resource_type: schemas.population,
         url: "pop.csv",
         last_modified: "2020-11-05",
         metadata_modified: "2020-11-06"
     }
     const survey = {
+        id: "4",
         resource_type: schemas.survey,
         url: "survey.csv",
         last_modified: "2020-11-07",
         metadata_modified: "2020-11-08"
     }
     const program = {
+        id: "5",
         resource_type: schemas.programme,
         url: "program.csv",
         last_modified: "2020-11-07",
         metadata_modified: "2020-11-08"
     }
     const anc = {
+        id: "6",
         resource_type: schemas.anc,
         url: "anc.csv",
         last_modified: "2020-11-09",
@@ -71,7 +88,7 @@ describe("select dataset", () => {
         {
             id: "id1",
             title: "Some data",
-            organization: {title: "org"},
+            organization: {title: "org", id: "org-id"},
             name: "some-data",
             type: "naomi-data",
             resources: []
@@ -79,7 +96,7 @@ describe("select dataset", () => {
         {
             id: "id2",
             title: "Some data 2",
-            organization: {title: "org"},
+            organization: {title: "org", id: "org-id"},
             name: "some-data",
             type: "naomi-data",
             resources: []
@@ -90,6 +107,7 @@ describe("select dataset", () => {
         id: "id1",
         title: "Some data",
         url: "www.adr.com/naomi-data/some-data",
+        organization: {id: "org-id"},
         resources: {
             pjnz: null,
             program: null,
@@ -108,12 +126,14 @@ describe("select dataset", () => {
         id: "id2",
         title: "Some data 2",
         url: "www.adr.com/naomi-data/some-data",
+        organization: {id: "org-id"},
         resources: {
             pjnz: null,
             program: null,
             pop: null,
             survey: null,
             shape: mockDatasetResource({
+                id: "2",
                 url: "shape.geojson",
                 lastModified: "2020-11-03",
                 metadataModified: "2020-11-04"
@@ -124,6 +144,7 @@ describe("select dataset", () => {
 
     const setDatasetMock = jest.fn();
     const markResourcesUpdatedMock = jest.fn();
+    const getDatasetsMock = jest.fn();
 
     const baselineActions: Partial<BaselineActions> & ActionTree<any, any> = {
         importShape: jest.fn(),
@@ -138,14 +159,21 @@ describe("select dataset", () => {
         importANC: jest.fn()
     }
 
-    const getStore = (baselineProps: Partial<BaselineState> = {}, rootProps: Partial<RootState> = {}) => {
+    const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}) => {
         const store = new Vuex.Store({
-            state: mockRootState({
-                adrSchemas: schemas,
-                adrDatasets: fakeRawDatasets,
-                ...rootProps
-            }),
+            state: mockRootState(),
             modules: {
+                adr: {
+                    namespaced: true,
+                    state: {
+                        schemas: schemas,
+                        datasets: fakeRawDatasets,
+                        ...adrProps
+                    },
+                    actions: {
+                        getDatasets: getDatasetsMock
+                    }
+                },
                 baseline: {
                     namespaced: true,
                     state: mockBaselineState(baselineProps),
@@ -289,6 +317,7 @@ describe("select dataset", () => {
 
         expect(rendered.find(Modal).props("open")).toBe(true);
         expect(rendered.find("#loading-dataset").findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.find("#fetch-error").exists()).toBe(false);
 
         await Vue.nextTick();
         await Vue.nextTick();
@@ -296,6 +325,35 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).props("open")).toBe(false);
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
     });
+
+    it("renders message and button on error fetching datasets", async () => {
+        const store = getStore({}, {adrError: mockError("test error")});
+        const rendered = shallowMount(SelectDataset, {store});
+        rendered.findAll("button").at(0).trigger("click");
+
+        await Vue.nextTick();
+
+        const modal = rendered.find(Modal);
+        expect(modal.props("open")).toBe(true);
+        expectTranslated(modal.find("#fetch-error div"),
+            "There was an error fetching datasets from ADR",
+            "Une erreur s'est produite lors de la récupération des ensembles de données à partir d'ADR", store);
+        expectTranslated(modal.find("#fetch-error button"), "Try again", "Réessayer", store);
+    });
+
+    it("Try again button invokes getDatasets action", async () => {
+        const store = getStore({}, {adrError: mockError("test error")});
+        const rendered = shallowMount(SelectDataset, {store});
+        rendered.findAll("button").at(0).trigger("click");
+
+        await Vue.nextTick();
+        expect(getDatasetsMock.mock.calls.length).toBe(0);
+        rendered.find("#fetch-error button").trigger("click");
+
+        await Vue.nextTick();
+        expect(getDatasetsMock.mock.calls.length).toBe(1);
+    });
+
 
     it("refreshes survey & program files if any baseline file is refreshed and pre-existing shape file present",
         async () => {
@@ -421,7 +479,7 @@ describe("select dataset", () => {
     });
 
     it("shows fetching dataset controls, and disables TreeSelect, when fetching", () => {
-        const store = getStore({}, {adrFetchingDatasets: true});
+        const store = getStore({}, {fetchingDatasets: true});
         const rendered = shallowMount(SelectDataset, {store});
         expect(rendered.find("#fetching-datasets").classes()).toStrictEqual(["visible"]);
         expect(rendered.find(TreeSelect).attributes("disabled")).toBe("true");
@@ -433,7 +491,7 @@ describe("select dataset", () => {
 
     it("sets current dataset", async () => {
         let store = getStore({},
-            {adrDatasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
         )
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
@@ -473,8 +531,8 @@ describe("select dataset", () => {
 
     it("imports baseline files if they exist", async () => {
         const store = getStore({}, {
-            adrDatasets: [{...fakeRawDatasets[0], resources: [pjnz, pop, shape]}]
-        })
+            datasets: [{...fakeRawDatasets[0], resources: [pjnz, pop, shape]}]
+        });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -503,8 +561,8 @@ describe("select dataset", () => {
 
     it("does not import baseline file if it doesn't exist", async () => {
         const store = getStore({}, {
-            adrDatasets: [{...fakeRawDatasets[0], resources: [pjnz]}]
-        })
+            datasets: [{...fakeRawDatasets[0], resources: [pjnz]}]
+        });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -534,8 +592,8 @@ describe("select dataset", () => {
 
     it("imports survey and program files if they exist and shape file exists", async () => {
         const store = getStore({}, {
-            adrDatasets: [{...fakeRawDatasets[0], resources: [shape, survey, program, anc]}]
-        })
+            datasets: [{...fakeRawDatasets[0], resources: [shape, survey, program, anc]}]
+        });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -564,8 +622,8 @@ describe("select dataset", () => {
 
     it("does not import survey and program file if it doesn't exist", async () => {
         const store = getStore({}, {
-            adrDatasets: [{...fakeRawDatasets[0], resources: [shape, survey]}]
-        })
+            datasets: [{...fakeRawDatasets[0], resources: [shape, survey]}]
+        });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -594,8 +652,8 @@ describe("select dataset", () => {
 
     it("does not import any survey and program files if shape file doesn't exist", async () => {
         const store = getStore({}, {
-            adrDatasets: [{...fakeRawDatasets[0], resources: [survey, program, anc]}]
-        })
+            datasets: [{...fakeRawDatasets[0], resources: [survey, program, anc]}]
+        });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -627,7 +685,7 @@ describe("select dataset", () => {
                 shape: mockShapeResponse()
             },
             {
-                adrDatasets: [{...fakeRawDatasets[0], resources: [survey, program, anc]}]
+                datasets: [{...fakeRawDatasets[0], resources: [survey, program, anc]}]
             });
 
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
@@ -666,8 +724,8 @@ describe("select dataset", () => {
 
     it("renders can not save when button is disabled", async () => {
         const store = getStore({}, {
-            adrDatasets: [{...fakeRawDatasets[0], resources: [shape, survey]}]
-        })
+            datasets: [{...fakeRawDatasets[0], resources: [shape, survey]}]
+        });
 
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");

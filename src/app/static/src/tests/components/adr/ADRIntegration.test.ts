@@ -1,29 +1,38 @@
 import {Error} from "../../../app/generated";
 import Vuex, {ActionTree} from "vuex";
-import {mockRootState} from "../../mocks";
-import {RootActions} from "../../../app/store/root/actions";
+import {mockADRState, mockRootState} from "../../mocks";
+import {ADRActions} from "../../../app/store/adr/actions";
 import {RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {shallowMount} from "@vue/test-utils";
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import ADRIntegration from "../../../app/components/adr/ADRIntegration.vue";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
-import {mutations, RootMutation} from "../../../app/store/root/mutations";
+import {mutations, ADRMutation} from "../../../app/store/adr/mutations";
 import {getters} from "../../../app/store/root/getters";
+import {ADRState} from "../../../app/store/adr/adr";
+import {prefixNamespace} from "../../../app/utils";
 
 describe("adr integration", () => {
 
     const fetchKeyStub = jest.fn();
     const getDataStub = jest.fn();
 
-    const createStore = (key: string = "", error: Error | null = null, partialRootState: Partial<RootState> = {}) => {
+    const createStore = (key: string = "", error: Error | null = null,
+                         partialRootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
-            state: mockRootState({...partialRootState, adrKey: key, adrKeyError: error}),
-            actions: {
-                getADRDatasets: getDataStub,
-                fetchADRKey: fetchKeyStub
-            } as Partial<RootActions> & ActionTree<RootState, RootState>,
-            mutations,
+            state: mockRootState({...partialRootState}),
+            modules: {
+                adr: {
+                    namespaced: true,
+                    state: mockADRState({key, keyError: error}),
+                    actions: {
+                        getDatasets: getDataStub,
+                        fetchKey: fetchKeyStub
+                    } as Partial<ADRActions> & ActionTree<ADRState, RootState>,
+                    mutations
+                }
+            },
             getters: getters
         });
         registerTranslations(store);
@@ -35,7 +44,7 @@ describe("adr integration", () => {
     });
 
     it("does not render if not logged in", () => {
-        const store = createStore('', null, {currentUser: 'guest'})
+        const store = createStore('', null, {currentUser: 'guest'});
         const rendered = shallowMount(ADRIntegration, {store});
         expect(rendered.findAll("div").length).toBe(0);
     });
@@ -69,8 +78,8 @@ describe("adr integration", () => {
     it("fetches datasets when key changes", () => {
         const store = createStore();
         shallowMount(ADRIntegration, {store});
-        store.commit({type: RootMutation.UpdateADRKey, payload: "123"})
+        store.commit(prefixNamespace("adr", ADRMutation.UpdateKey),"123");
         expect(getDataStub.mock.calls.length).toBe(1);
     });
 
-})
+});

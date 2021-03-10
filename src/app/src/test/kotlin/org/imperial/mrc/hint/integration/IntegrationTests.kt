@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.integration
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.helpers.AuthInterceptor
@@ -87,6 +88,21 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
 
         testRestTemplate.postForEntity<String>("/disease/survey/",
                 getTestEntity("survey.csv"))
+    }
+
+    protected fun waitForModelRunResult(): String
+    {
+        val entity = getModelRunEntity()
+        val runResult = testRestTemplate.postForEntity<String>("/model/run/", entity)
+        val id = ObjectMapper().readValue<JsonNode>(runResult.body!!)["data"]["id"].textValue()
+
+        do
+        {
+            Thread.sleep(500)
+            val statusResponse = testRestTemplate.getForEntity<String>("/model/status/$id")
+        } while (statusResponse.body != null && statusResponse.body!!.contains("\"status\":\"RUNNING\""))
+
+        return id
     }
 
     fun assertSecureWithHttpStatus(isAuthorized: IsAuthorized,

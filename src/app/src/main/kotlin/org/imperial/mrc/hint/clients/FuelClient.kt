@@ -1,10 +1,14 @@
 package org.imperial.mrc.hint.clients
 
+import com.github.kittinunf.fuel.core.FileDataPart
+import com.github.kittinunf.fuel.core.Parameters
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.fuel.httpUpload
 import org.imperial.mrc.hint.asResponseEntity
 import org.springframework.http.ResponseEntity
+import java.io.File
 
 abstract class FuelClient(protected val baseUrl: String)
 {
@@ -52,5 +56,16 @@ abstract class FuelClient(protected val baseUrl: String)
     {
         return this.timeout(TIMEOUT)
                 .timeoutRead(TIMEOUT)
+    }
+
+    fun postFile(url: String, parameters: Parameters, file: Pair<String, File>): ResponseEntity<String>
+    {
+        return "$baseUrl/$url".httpUpload(parameters)
+                .add(FileDataPart(file.second, file.first))
+                .addTimeouts()
+                .header(standardHeaders())
+                .response()
+                .second
+                .asResponseEntity()
     }
 }

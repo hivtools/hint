@@ -112,7 +112,7 @@ export const testData = {
     ],
     chartdata: [
         {
-            area_id: "MWI_3_1", plhiv: 1, prevalence: 0.01, age: "0:15", sex: "female"
+            area_id: "MWI_3_1", plhiv: 1, prevalence: 0.01, age: "0:15", sex: "female", lower: 0.01, upper: 0.10
         },
         {
             area_id: "MWI_4_1", plhiv: 10, prevalence: 0.1, age: "0:15", sex: "female"

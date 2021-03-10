@@ -8,6 +8,7 @@ import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.requests.DownloadRequest
 import org.apache.commons.logging.LogFactory
+import org.apache.commons.logging.Log
 import org.imperial.mrc.hint.exceptions.HintExceptionHandler
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.SuccessResponse
@@ -18,10 +19,10 @@ import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
-import java.io.ByteArrayInputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
+import java.security.DigestInputStream
+import java.security.MessageDigest
+import javax.xml.bind.DatatypeConverter
 
 fun httpStatusFromCode(code: Int): HttpStatus
 {
@@ -46,20 +47,20 @@ fun headersToMultiMap(headers: Headers): MultiValueMap<String, String>
 }
 
 @Suppress("UNCHECKED_CAST")
-fun Response.asResponseEntity(): ResponseEntity<String>
+fun Response.asResponseEntity(logger: Log = LogFactory.getLog(HintExceptionHandler::class.java)): ResponseEntity<String>
 {
     val httpStatus = httpStatusFromCode(this.statusCode)
-    val logger = LogFactory.getLog(HintExceptionHandler::class.java)
     if (this.statusCode == -1)
     {
         return ErrorDetail(httpStatus, "No response returned. The request may have timed out.")
-                .toResponseEntity() as ResponseEntity<String>
+                .toResponseEntity<String>()
     }
 
     return try
     {
         val body = this.body().asString("application/json")
         val json = ObjectMapper().readTree(body)
+
         if (!json.has("status") && !json.has("success"))
         {
             logger.error(json)
@@ -75,25 +76,36 @@ fun Response.asResponseEntity(): ResponseEntity<String>
         else
         {
             // this is an ADR response, so convert to our response schema
-            formatADRResponse(json)
+            formatADRResponse(json, logger)
         }
 
     }
     catch (e: IOException)
     {
-        logger.error(e.message)
-        ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Could not parse response.")
-                .toResponseEntity() as ResponseEntity<String>
+        if (this.body().asString(null).contains("504 Gateway Time-out"))
+        {
+            //Special case of ADR Gateway Timeouts returning HTML responses which cannot be parsed as JSON
+            val message = "ADR request timed out"
+            logger.error(message)
+            ErrorDetail(HttpStatus.GATEWAY_TIMEOUT, message)
+                    .toResponseEntity<String>()
+        }
+        else
+        {
+            logger.error(e.message)
+            ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Could not parse response.")
+                    .toResponseEntity<String>()
+        }
     }
 }
 
 @Suppress("UNCHECKED_CAST")
-fun formatADRResponse(json: JsonNode): ResponseEntity<String>
+fun formatADRResponse(json: JsonNode, logger: Log): ResponseEntity<String>
 {
-    val logger = LogFactory.getLog(HintExceptionHandler::class.java)
-    logger.info("Parsing ADR response")
+   logger.info("Parsing ADR response")
     return if (json["success"].asBoolean())
     {
+        logger.info("ADR request successful")
         SuccessResponse(json["result"])
                 .asResponseEntity()
     }
@@ -105,7 +117,7 @@ fun formatADRResponse(json: JsonNode): ResponseEntity<String>
         ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                 json["error"]["message"].asText(),
                 "ADR_ERROR")
-                .toResponseEntity() as ResponseEntity<String>
+                .toResponseEntity<String>()
     }
 
 }
@@ -131,3 +143,13 @@ fun Request.getStreamingResponseEntity(headRequest: (url: String, parameters: Pa
     return ResponseEntity(responseBody, headers, httpStatus)
 }
 
+fun File.md5sum(): String
+{
+    val md = MessageDigest.getInstance("MD5")
+    FileInputStream(this).use { fis ->
+        DigestInputStream(fis, md).use { dis ->
+            dis.readBytes()
+        }
+    }
+    return DatatypeConverter.printHexBinary(md.digest())
+}

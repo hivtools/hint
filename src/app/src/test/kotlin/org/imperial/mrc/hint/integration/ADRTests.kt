@@ -75,11 +75,8 @@ class ADRTests : SecureIntegrationTests()
         assertSuccess(result, null)
         var data = ObjectMapper().readTree(result.body!!)["data"]
         assertThat(data["pjnz"].textValue()).isEqualTo("inputs-unaids-spectrum-file")
-
-        result = testRestTemplate.getForEntity<String>("/adr/schemas/")
-        assertSuccess(result, null)
-        data = ObjectMapper().readTree(result.body!!)["data"]
-        assertThat(data["pjnz"].textValue()).isEqualTo("inputs-unaids-spectrum-file")
+        assertThat(data["outputZip"].textValue()).isEqualTo("inputs-unaids-naomi-output-zip")
+        assertThat(data["outputSummary"].textValue()).isEqualTo("inputs-unaids-naomi-report")
     }
 
     private fun getPostEntityWithKey(): HttpEntity<LinkedMultiValueMap<String, String>>

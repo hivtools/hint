@@ -1,8 +1,36 @@
-# hint 1.17.0
+# hint 1.24.0
 
 * Add accessibility statement
 
-#hint 1.16.0
+# hint 1.23.0
+
+* Improved handling of ADR timeouts
+
+# hint 1.22.0
+
+* Check if user has ADR upload permission
+
+# hint 1.21.0
+
+* Backend support for ADR uploads
+
+# hint 1.20.0
+
+* Add output adr schemas
+
+# hint 1.19.0
+
+* validate Survey & Program file on change Baseline file
+
+# hint 1.18.0
+
+* add uncertainty ranges to choropleth tooltips
+
+# hint 1.16.1
+
+* Bug fix: Emails should be case insensitive when sharing a project
+
+# hint 1.16.0
 
 * show project name as default input value when a user clicks rename and copy project link
 

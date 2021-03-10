@@ -23,8 +23,8 @@ const modelCalibrateActions = {
     getResult: jest.fn()
 };
 
-const actions = {
-    getADRSchemas: jest.fn()
+const adrActions = {
+    getSchemas: jest.fn()
 };
 
 const projectsActions = {
@@ -36,7 +36,7 @@ storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
 storeOptions.modules!!.modelRun!!.actions = modelRunActions;
 storeOptions.modules!!.modelCalibrate!!.actions = modelCalibrateActions;
 storeOptions.modules!!.projects!!.actions = projectsActions;
-storeOptions.actions = actions
+storeOptions.modules!!.adr!!.actions = adrActions;
 
 console.error = jest.fn();
 
@@ -81,7 +81,7 @@ describe("App", () => {
             expect(surveyAndProgramActions.getSurveyAndProgramData).toHaveBeenCalled();
             expect(modelRunActions.getResult).toHaveBeenCalled();
             expect(modelCalibrateActions.getResult).toHaveBeenCalled();
-            expect(actions.getADRSchemas).toHaveBeenCalled();
+            expect(adrActions.getSchemas).toHaveBeenCalled();
             expect(projectsActions.getCurrentProject).toHaveBeenCalled();
             done();
         });

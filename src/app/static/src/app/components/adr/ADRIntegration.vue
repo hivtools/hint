@@ -7,9 +7,9 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapActionByName, mapStateProp, mapGetterByName} from "../../utils";
-    import {RootState} from "../../root";
     import adrKey from "./ADRKey.vue";
     import SelectDataset from "./SelectDataset.vue";
+    import {ADRState} from "../../store/adr/adr";
 
     interface Methods {
         getDatasets: () => void
@@ -22,6 +22,8 @@
         key: string | null
     }
 
+    const namespace = "adr";
+
     export default Vue.extend<unknown, Methods, Computed, unknown>({
         components: {adrKey, SelectDataset},
         computed: {
@@ -29,12 +31,12 @@
             loggedIn() {
                 return !this.isGuest
             },
-            key: mapStateProp<RootState, string | null>(null,
-                (state: RootState) => state.adrKey)
+            key: mapStateProp<ADRState, string | null>(namespace,
+                (state: ADRState) => state.key)
         },
         methods: {
-            getDatasets: mapActionByName(null, 'getADRDatasets'),
-            fetchADRKey: mapActionByName(null, "fetchADRKey")
+            getDatasets: mapActionByName(namespace, 'getDatasets'),
+            fetchADRKey: mapActionByName(namespace, "fetchKey")
         },
         created() {
             if (this.loggedIn) {
