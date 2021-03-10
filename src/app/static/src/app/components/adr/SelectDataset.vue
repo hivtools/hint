@@ -50,6 +50,10 @@
                     <loading-spinner size="xs"></loading-spinner>
                     <span v-translate="'loadingDatasets'"></span>
                 </div>
+                <div v-if="adrError" id="fetch-error">
+                    <div v-translate="'errorFetchingDatasetsFromADR'"></div>
+                    <button @click="getDatasets" class="btn btn-red float-right" v-translate="'tryAgain'"></button>
+                </div>
             </div>
             <div class="text-center" v-if="loading" id="loading-dataset">
                 <loading-spinner size="sm"></loading-spinner>
@@ -92,8 +96,10 @@
     import {InfoIcon} from "vue-feather-icons";
     import {VTooltip} from "v-tooltip";
     import {ADRState} from "../../store/adr/adr";
+    import {Error} from "../../generated";
 
     interface Methods {
+        getDatasets: () => void;
         setDataset: (dataset: Dataset) => void;
         importDataset: () => void;
         toggleModal: () => void;
@@ -114,6 +120,7 @@
         schemas: ADRSchemas
         datasets: any[]
         fetchingDatasets: boolean
+        adrError: Error | null,
         datasetOptions: any[]
         selectedDataset: Dataset | null
         selectText: string,
@@ -174,6 +181,10 @@
                 namespace,
                 (state: ADRState) => state.fetchingDatasets
             ),
+            adrError: mapStateProp<ADRState, Error | null>(
+                namespace,
+                (state: ADRState) => state.adrError
+            ),
             datasetOptions() {
                 return this.datasets.map((d) => ({
                     id: d.id,
@@ -221,6 +232,7 @@
                 (state: RootState) => state.language)
         },
         methods: {
+            getDatasets: mapActionByName("adr", "getDatasets"),
             setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
             refreshDatasetMetadata: mapActionByName("baseline", "refreshDatasetMetadata"),
             markResourcesUpdated: mapMutationByName("baseline", BaselineMutation.MarkDatasetResourcesUpdated),

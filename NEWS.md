@@ -1,6 +1,10 @@
-# hint 1.23.0
+# hint 1.24.0
 
 * add upload button and dialog box for result outputs to ADR
+
+# hint 1.23.0
+
+* Improved handling of ADR timeouts
 
 # hint 1.22.0
 
