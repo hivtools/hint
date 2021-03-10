@@ -1,3 +1,7 @@
+# hint 1.23.0
+
+* Improved handling of ADR timeouts
+
 # hint 1.22.0
 
 * Check if user has ADR upload permission

@@ -4,7 +4,14 @@ import {mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import Modal from "../../../app/components/Modal.vue";
 import TreeSelect from '@riophae/vue-treeselect'
-import {mockBaselineState, mockDataset, mockDatasetResource, mockRootState, mockShapeResponse} from "../../mocks";
+import {
+    mockBaselineState,
+    mockDataset,
+    mockDatasetResource,
+    mockError,
+    mockRootState,
+    mockShapeResponse
+} from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {BaselineMutation} from "../../../app/store/baseline/mutations";
@@ -16,6 +23,8 @@ import Mock = jest.Mock;
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
 import {ADRState} from "../../../app/store/adr/adr";
+import {DomUtil} from "leaflet";
+import get = DomUtil.get;
 
 describe("select dataset", () => {
 
@@ -135,6 +144,7 @@ describe("select dataset", () => {
 
     const setDatasetMock = jest.fn();
     const markResourcesUpdatedMock = jest.fn();
+    const getDatasetsMock = jest.fn();
 
     const baselineActions: Partial<BaselineActions> & ActionTree<any, any> = {
         importShape: jest.fn(),
@@ -159,6 +169,9 @@ describe("select dataset", () => {
                         schemas: schemas,
                         datasets: fakeRawDatasets,
                         ...adrProps
+                    },
+                    actions: {
+                        getDatasets: getDatasetsMock
                     }
                 },
                 baseline: {
@@ -304,6 +317,7 @@ describe("select dataset", () => {
 
         expect(rendered.find(Modal).props("open")).toBe(true);
         expect(rendered.find("#loading-dataset").findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.find("#fetch-error").exists()).toBe(false);
 
         await Vue.nextTick();
         await Vue.nextTick();
@@ -311,6 +325,35 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).props("open")).toBe(false);
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
     });
+
+    it("renders message and button on error fetching datasets", async () => {
+        const store = getStore({}, {adrError: mockError("test error")});
+        const rendered = shallowMount(SelectDataset, {store});
+        rendered.findAll("button").at(0).trigger("click");
+
+        await Vue.nextTick();
+
+        const modal = rendered.find(Modal);
+        expect(modal.props("open")).toBe(true);
+        expectTranslated(modal.find("#fetch-error div"),
+            "There was an error fetching datasets from ADR",
+            "Une erreur s'est produite lors de la récupération des ensembles de données à partir d'ADR", store);
+        expectTranslated(modal.find("#fetch-error button"), "Try again", "Réessayer", store);
+    });
+
+    it("Try again button invokes getDatasets action", async () => {
+        const store = getStore({}, {adrError: mockError("test error")});
+        const rendered = shallowMount(SelectDataset, {store});
+        rendered.findAll("button").at(0).trigger("click");
+
+        await Vue.nextTick();
+        expect(getDatasetsMock.mock.calls.length).toBe(0);
+        rendered.find("#fetch-error button").trigger("click");
+
+        await Vue.nextTick();
+        expect(getDatasetsMock.mock.calls.length).toBe(1);
+    });
+
 
     it("refreshes survey & program files if any baseline file is refreshed and pre-existing shape file present",
         async () => {
