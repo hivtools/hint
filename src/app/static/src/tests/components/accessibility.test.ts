@@ -20,14 +20,20 @@ describe(`accessibility`, () =>{
         return store;
     };
 
-    it(`renders accessibility tags as expected`, () => {
-        const store = createStore();
-        const rendered = shallowMount(Accessibility, {store});
+    const getWrapper = () => {
+        return shallowMount(Accessibility,
+            {
+                store: createStore()
+            })
+    }
 
+    it(`renders accessibility tags as expected`, () => {
+        const rendered = getWrapper()
         expect(rendered.find("#accessibility-content")
             .find("h1").text()).toBe("Accessibility on Naomi")
 
         const h2 = rendered.find("#accessibility-content").findAll("h2")
+
         expect(h2.at(0).text()).toBe("How accessible the website is")
         expect(h2.at(1).text()).toBe("What we do about known issues")
         expect(h2.at(2).text()).toBe("Technical information about this website’s accessibility")
@@ -43,8 +49,7 @@ describe(`accessibility`, () =>{
     })
 
     it(`renders accessibility h1 and h2 tags as expected`, () => {
-        const store = createStore();
-        const rendered = shallowMount(Accessibility, {store});
+        const rendered = getWrapper()
         rendered.vm.$store.state.language = Language.fr
 
         expect(rendered.find("#accessibility-content")
@@ -65,8 +70,7 @@ describe(`accessibility`, () =>{
     })
 
     it(`renders accessibility purpose list tags as expected in French`, () => {
-        const store = createStore();
-        const rendered = shallowMount(Accessibility, {store});
+        const rendered = getWrapper()
         rendered.vm.$store.state.language = Language.fr
 
         const li = rendered.find("#accessibility-content").find("#purpose").findAll("ul li")
@@ -77,8 +81,7 @@ describe(`accessibility`, () =>{
     })
 
     it(`renders accessibility example list tags as expected in French`, () => {
-        const store = createStore();
-        const rendered = shallowMount(Accessibility, {store});
+        const rendered = getWrapper()
         rendered.vm.$store.state.language = Language.fr
 
         const li = rendered.find("#accessibility-content").find("#example").findAll("ul li")
@@ -92,8 +95,7 @@ describe(`accessibility`, () =>{
     })
 
     it(`renders accessibility purpose list tags as expected in English`, () => {
-        const store = createStore();
-        const rendered = shallowMount(Accessibility, {store});
+        const rendered = getWrapper()
 
         const li = rendered.find("#accessibility-content").find("#purpose").findAll("ul li")
         expect(li.length).toBe(3)
@@ -103,8 +105,7 @@ describe(`accessibility`, () =>{
     })
 
     it(`renders accessibility example list tags as expected in English`, () => {
-        const store = createStore();
-        const rendered = shallowMount(Accessibility, {store});
+        const rendered = getWrapper()
 
         const li = rendered.find("#accessibility-content").find("#example").findAll("ul li")
         expect(li.length).toBe(6)

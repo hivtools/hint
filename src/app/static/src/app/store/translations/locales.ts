@@ -230,7 +230,7 @@ const en: Translations = {
         "                    but it is not always possible for all our content to be accessible. Where content is not accessible,\n" +
         "                    we will state a reason, warn users and offer alternatives.",
     axeTechnicalHeading: "Technical information about this website’s accessibility",
-    axeTechnicalParagraph1: "We are committed to making its website accessible in accordance with the Public Sector\n" +
+    axeTechnicalParagraph1: "We are committed to making this website accessible in accordance with the Public Sector\n" +
         "                    Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
     axeTechnicalParagraph2: "his website is partially compliant with the <a href=\"https://www.w3.org/TR/WCAG21/\">\n" +
         "                    Web Content Accessibility Guidelines version 2.1</a> AA standard, due to the known issues listed\n" +
@@ -454,15 +454,15 @@ const fr: Partial<Translations> = {
         "                    <li>Certains éléments de formulaire peuvent manquer de contrastes de couleurs suffisants</li>" +
         "                    <li>Certains pages peuvent ne pas avoir la possibilité de sauter la navigation et d'accéder au contenu</li>",
     axeWhatHeading: "Ce que nous faisons face aux problèmes connus",
-    axeWhatContent: "Nous travaillons pour atteindre et maintenir les <a href=\"https://www.w3.org/TR/WCAG21/\"> normes WCAG 2.1 AA </a>,\n" +
+    axeWhatContent: "Nous travaillons pour atteindre et maintenir les <a href=\"https://www.w3.org/TR/WCAG21/\"> WCAG 2.1 AA standards </a>,\n" +
         "                    mais ce n'est pas toujours possible pour tous nos\n" +
         "                    contenu pour être accessible. Lorsque le contenu n'est pas accessible, nous indiquerons une raison, avertirons les utilisateurs et\n" +
         "                    proposer des alternatives.",
     axeTechnicalHeading: "Informations techniques sur l'accessibilité de ce site Web",
     axeTechnicalParagraph1: "Nous nous engageons à rendre son site Web accessible conformément aux\n" +
         "                    Organismes sectoriels (sites Web et applications mobiles) (No. 2) Règlement sur l'accessibilité 2018.",
-    axeTechnicalParagraph2: "Ce site Web est partiellement conforme au <a href=\"https://www.w3.org/TR/WCAG21/\"> contenu Web\n" +
-        "                    Directives d'accessibilité version 2.1</a> Norme AA, en raison des problèmes connus énumérés ci-dessus.",
+    axeTechnicalParagraph2: "Ce site Web est partiellement conforme au <a href=\"https://www.w3.org/Translations/WCAG20-fr/\"> Web Content Accessibility Guidelines version 2.0\n" +
+        "                    </a> Norme AA, en raison des problèmes connus énumérés ci-dessus.",
     axeReportingHeading: "Signaler des problèmes d'accessibilité",
     axeReportingParagraph1: "Si vous avez besoin d'informations sur ce site Web dans un format différent, tel que PDF accessible, gros caractères, facile\n" +
         "                    lecture, enregistrement audio ou braille ou si vous trouvez des problèmes d'accessibilité non répertoriés sur cette page\n" +
@@ -470,14 +470,13 @@ const fr: Partial<Translations> = {
     axeReportingParagraph2: "Nous examinerons votre demande et vous répondrons dans les 7 jours.",
     axeEnforcementHeading: "Procédure d'exécution",
     axeEnforcementParagraph: "La Commission pour l'égalité et les droits de l'homme (EHRC) est chargée de faire respecter les organes du secteur public\n" +
-        "                    (Sites Web et applications mobiles) (n ° 2) Règlement sur l'accessibilité 2018 (le\n" +
+        "                    (Sites Web et applications mobiles) (No. 2) Règlement sur l'accessibilité 2018 (le\n" +
         "                    règlements'). Si vous n'êtes pas satisfait de la manière dont nous répondons à votre réclamation, <a\n" +
-        "                        href = \"https://www.equalityadvisoryservice.com/\"> contacter le service de conseil et d'assistance pour l'égalité\n" +
+        "                        href = \"https://www.equalityadvisoryservice.com/\">contacter le Equality Advisory and Support\n" +
         "                        Service (EASS)</a>.",
     axeTestHeading: "Comment nous testons ce site Web",
     axeTestParagraph: "La conformité de ce site Web a été testée pour la dernière fois le 24 février 2021, et ces tests ont\n" +
-        "                    été réalisée en interne à l'aide du <a href=\"https://accessibilityinsights.io/en/\">Accessibilité\n" +
-        "                        Connaissances</a> outils.",
+        "                    été réalisée en interne à l'aide du <a href=\"https://accessibilityinsights.io/en/\">Accessibility Insights</a> outils.",
     axeUpdateHeading: "Dernière mise à jour",
     axeUpdateParagraph: "Cette déclaration a été préparée le 24 février 2021. Elle a été mise à jour pour la dernière fois le 26 février 2021.",
     back: "retour",
