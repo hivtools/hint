@@ -7,16 +7,16 @@
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
                 <div id="instructions" class="mt-3" v-translate="'uploadFileInstruction'"></div>
-                <div id="output-file-id" class="mt-3" v-for="uploadFile in uploadFiles" :key="uploadFile.index">
+                <div id="output-file-id" class="mt-3" v-for="(uploadFile, key, index) in uploadFiles" :key="uploadFile.index">
                     <div class="mt-3 form-check">
                         <input class="form-check-input"
                                type="checkbox"
-                               :value="uploadFile.index"
+                               :value="key"
                                v-model="uploadFilesToAdr"
-                               :id="`id-${uploadFile.index}`">
+                               :id="`id-${index}`">
 
                         <label class="form-check-label"
-                               :for="`id-${uploadFile.index}`"
+                               :for="`id-${index}`"
                                v-translate="uploadFile.displayName"></label>
 
                         <small v-if="uploadFile.resourceId" class="text-danger row">
@@ -59,6 +59,7 @@
     interface Methods {
         handleCancel: () => void
         lastModified: (date: string) => string | null
+        setDefaultCheckedItems: () => void
     }
 
     interface Computed {
@@ -67,7 +68,7 @@
     }
 
     interface Data {
-        uploadFilesToAdr: []
+        uploadFilesToAdr: string[]
         uploadDescToAdr: string
     }
 
@@ -94,6 +95,14 @@
             },
             lastModified: function (date: string) {
                 return formatDateTime(date)
+            },
+            setDefaultCheckedItems: function () {
+                const uploadFilesKeys = ["outputZip", "outputSummary"]
+                uploadFilesKeys.forEach(key => {
+                    if (this.uploadFiles.hasOwnProperty(key)) {
+                        this.uploadFilesToAdr.push(key)
+                    }
+                })
             }
         },
         computed: {
@@ -106,6 +115,11 @@
         },
         components: {
             Modal
+        },
+        watch: {
+            uploadFiles() {
+                this.setDefaultCheckedItems()
+            }
         }
     });
 </script>

@@ -1,22 +1,18 @@
-# hint 1.24.0
-
-* add upload button and dialog box for result outputs to ADR
-
 # hint 1.23.0
 
-* Improved handling of ADR timeouts
+* add upload button and dialog box for result outputs to ADR
 
 # hint 1.22.0
 
-* Check if user has ADR upload permission
+* Improved handling of ADR timeouts
 
 # hint 1.21.0
 
-* Backend support for ADR uploads
+* Check if user has ADR upload permission
 
 # hint 1.20.0
 
-* add upload button and dialog box for result outputs to ADR
+* Backend support for ADR uploads
 
 # hint 1.19.1
 
@@ -29,7 +25,6 @@
 # hint 1.18.0
 
 * add uncertainty ranges to choropleth tooltips
-
 
 # hint 1.16.1
 

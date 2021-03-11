@@ -42,7 +42,7 @@ describe(`uploadModal `, () => {
     const mockOrganization = {
         id: "123abc"
     }
-    const createStore = () => {
+    const createStore = (data = fakeMetadata) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -62,10 +62,7 @@ describe(`uploadModal `, () => {
                 },
                 adr: {
                     namespaced: true,
-                    state: mockADRState({uploadFiles: fakeMetadata}),
-                    actions: {
-                        uploadFiles: jest.fn()
-                    }
+                    state: mockADRState({uploadFiles: data})
                 }
             }
         });
@@ -73,11 +70,10 @@ describe(`uploadModal `, () => {
         return store;
     };
 
-    const getWrapper = (data = fakeMetadata) => {
+    const getWrapper = () => {
         return shallowMount(UploadModal,
             {
-                store: createStore(),
-                propsData: {outputFileMetadata: data}
+                store: createStore()
             })
     }
 
@@ -130,17 +126,28 @@ describe(`uploadModal `, () => {
         expectTranslated(label.at(1), "Summary report", "Rapport sommaire", store)
     })
 
+    it(`checkboxes are set by default`, async () => {
+        const wrapper = shallowMount(UploadModal, {store: createStore()})
+        await wrapper.setData({uploadFilesToAdr: ["outputZip", "outputSummary"]})
+        const inputs = wrapper.findAll("input.form-check-input")
+        expect(inputs.length).toBe(2)
+
+        const input1 =  inputs.at(0).element as HTMLInputElement
+        expect(input1.checked).toBe(true)
+
+        const input2 =  inputs.at(1).element as HTMLInputElement
+        expect(input2.checked).toBe(true)
+    })
+
     it(`can check and get values from check boxes`, async () => {
         const wrapper = getWrapper()
-        const store = wrapper.vm.$store
-
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
         inputs.at(0).setChecked(true)
         inputs.at(1).setChecked(true)
 
         expect(wrapper.find("#dialog").exists()).toBe(true)
-        expect(wrapper.vm.$data.uploadFilesToAdr).toMatchObject([1, 2])
+        expect(wrapper.vm.$data.uploadFilesToAdr).toMatchObject(["outputZip", "outputSummary"])
     })
 
     it(`can set and get description value as expected`, async () => {
