@@ -5,6 +5,7 @@ import {emptyState} from "../../../app/root";
 import {mockADRState, mockBaselineState, mockDatasetResource} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
+import Vue from 'vue';
 
 describe(`uploadModal `, () => {
 
@@ -62,10 +63,7 @@ describe(`uploadModal `, () => {
                 },
                 adr: {
                     namespaced: true,
-                    state: mockADRState({uploadFiles: data}),
-                    actions: {
-                        getUploadFiles: jest.fn()
-                    }
+                    state: mockADRState({uploadFiles: data})
                 }
             }
         });
@@ -177,7 +175,7 @@ describe(`uploadModal `, () => {
         expect(wrapper.emitted("close").length).toBe(1)
     })
 
-    it(`can cal uploadFiles as expected`, async () => {
+    it(`can cal uploadFiles as expected`, async (done) => {
         const mockUploadFiles = jest.fn()
         mount(UploadModal,
             {
