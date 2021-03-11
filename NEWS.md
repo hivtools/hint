@@ -1,3 +1,7 @@
+# hint 1.24.0
+
+* Make login email case insensitive
+
 # hint 1.23.0
 
 * add upload button and dialog box for result outputs to ADR

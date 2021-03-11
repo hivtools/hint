@@ -9,10 +9,10 @@ declare let appUrl: string; // configured by jest
 
 export const rootState = {language: Language.en};
 
-export const login = async () => {
+export const login = async (username = "test.user@example.com", password = "password") => {
     const formData = new FormData();
-    formData.append('username', "test.user@example.com");
-    formData.append('password', "password");
+    formData.append('username', username);
+    formData.append('password', password);
 
     const res = await axios.post(appUrl + "callback/",
         formData,
