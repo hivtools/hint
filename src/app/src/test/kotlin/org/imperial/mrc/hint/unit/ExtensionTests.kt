@@ -8,6 +8,8 @@ import com.github.kittinunf.fuel.core.Response
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
+import org.apache.commons.logging.Log
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.imperial.mrc.hint.asResponseEntity
 import org.imperial.mrc.hint.getStreamingResponseEntity
@@ -17,6 +19,14 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.net.URL
 
 class ExtensionTests {
+
+    private fun getMockBody(bodyString: String): Body
+    {
+        return mock<Body> {
+            on { it.asString(any()) } doReturn bodyString
+            on { it.asString(null) } doReturn bodyString
+        }
+    }
 
     @Test
     fun `response status code gets translated to HttpStatus`() {
@@ -57,10 +67,9 @@ class ExtensionTests {
     }
 
     @Test
-    fun `error is returned when response is not valid json`() {
-        val mockBody = mock<Body> {
-            on { it.asString(any()) } doReturn "Bad response"
-        }
+    fun `error is returned when response is not valid json`()
+    {
+        val mockBody = getMockBody("Bad response")
         val res = Response(URL("http://whatever"), 500, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         val body = ObjectMapper().readTree(res.asResponseEntity().body)
@@ -69,15 +78,47 @@ class ExtensionTests {
     }
 
     @Test
-    fun `error is returned when response json does not conform to schema`() {
-        val mockBody = mock<Body> {
-            on { it.asString(any()) } doReturn "{\"wrong\": \"schema\"}"
-        }
+    fun `error is returned when response json does not conform to schema`()
+    {
+        val mockBody = getMockBody("{\"wrong\": \"schema\"}")
         val res = Response(URL("http://whatever"), 200, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         val body = ObjectMapper().readTree(res.asResponseEntity().body)
         val errorDetail = body["errors"].first()["detail"].textValue()
         assertThat(errorDetail).isEqualTo("Could not parse response.")
+    }
+
+    @Test
+    fun `expected error is returned on HTML Gateway Time-out response`()
+    {
+        val mockBody = getMockBody("""<html
+                <head><title>504 Gateway Time-out</title></head>
+                <body>
+                <center><h1>504 Gateway Time-out</h1></center>
+                </body>
+                </html>
+                """)
+
+        val mockLog = mock<Log>()
+
+        val res = Response(URL("http://whatever"), 200, body = mockBody)
+        assertThat(res.asResponseEntity(mockLog).statusCode).isEqualTo(HttpStatus.GATEWAY_TIMEOUT)
+        val body = ObjectMapper().readTree(res.asResponseEntity().body)
+        val errorDetail = body["errors"].first()["detail"].textValue()
+        assertThat(errorDetail).isEqualTo("ADR request timed out")
+
+        verify(mockLog).error("ADR request timed out")
+    }
+
+    @Test
+    fun `success message is logged for ADR response`()
+    {
+        val mockBody = getMockBody("""{"success": "true"}""")
+        val mockLog = mock<Log>()
+        val res = Response(URL("http://whatever"), 200, body = mockBody)
+        assertThat(res.asResponseEntity(mockLog).statusCode).isEqualTo(HttpStatus.OK)
+
+        verify(mockLog).info("ADR request successful")
     }
 
     @Test
