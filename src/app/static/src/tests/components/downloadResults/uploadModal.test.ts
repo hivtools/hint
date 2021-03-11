@@ -1,4 +1,4 @@
-import {shallowMount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
@@ -62,7 +62,10 @@ describe(`uploadModal `, () => {
                 },
                 adr: {
                     namespaced: true,
-                    state: mockADRState({uploadFiles: data})
+                    state: mockADRState({uploadFiles: data}),
+                    actions: {
+                        getUploadFiles: jest.fn()
+                    }
                 }
             }
         });
@@ -160,5 +163,29 @@ describe(`uploadModal `, () => {
 
         const textarea = desc.element as HTMLTextAreaElement
         expect(textarea.value).toBe(newDesc)
+    })
+
+    it(`can trigger close modal as expected`, async () => {
+        const wrapper = mount(UploadModal, {store: createStore()})
+
+        await wrapper.setProps({open: true})
+        const modal = wrapper.find(".modal");
+        expect(modal.classes()).toContain("show");
+
+        const buttons = modal.find(".modal-footer").findAll("button");
+        await buttons.at(1).trigger("click")
+        expect(wrapper.emitted("close").length).toBe(1)
+    })
+
+    it(`can cal uploadFiles as expected`, async () => {
+        const mockUploadFiles = jest.fn()
+        mount(UploadModal,
+            {
+                store: createStore(),
+                computed: {
+                    uploadFiles: mockUploadFiles
+                }
+            })
+        expect(mockUploadFiles).toHaveBeenCalledTimes(1)
     })
 })
