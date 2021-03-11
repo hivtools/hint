@@ -106,7 +106,6 @@ describe(`accessibility`, () =>{
 
     it(`renders accessibility example list tags as expected in English`, () => {
         const rendered = getWrapper()
-
         const li = rendered.find("#accessibility-content").find("#example").findAll("ul li")
         expect(li.length).toBe(6)
         expect(li.at(0).text()).toBe("It may not be entirely navigable by keyboard")

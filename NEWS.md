@@ -1,6 +1,10 @@
-# hint 1.24.0
+# hint 1.25.0
 
 * Add accessibility statement
+
+# hint 1.24.0
+
+* Make login email case insensitive
 
 # hint 1.23.0
 
@@ -25,14 +29,6 @@
 # hint 1.18.0
 
 * add uncertainty ranges to choropleth tooltips
-
-# hint 1.16.1
-
-* Bug fix: Emails should be case insensitive when sharing a project
-
-# hint 1.17.0
-
-* Add accessibility statement
 
 # hint 1.16.1
 
