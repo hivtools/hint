@@ -175,7 +175,7 @@ describe(`uploadModal `, () => {
         expect(wrapper.emitted("close").length).toBe(1)
     })
 
-    it(`can cal uploadFiles as expected`, async (done) => {
+    it(`can cal uploadFiles as expected`, async () => {
         const mockUploadFiles = jest.fn()
         mount(UploadModal,
             {
