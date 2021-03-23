@@ -121,7 +121,7 @@ describe("Download Results component", () => {
         expect(headers.length).toBe(3)
     });
 
-    it("does display an success message when files are uploaded", async () => {
+    it("does display success message when files are uploaded successfully", async () => {
         const mockPartialADRState = {
             userCanUpload: true,
             uploadSucceeded: true,

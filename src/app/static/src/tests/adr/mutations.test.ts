@@ -63,4 +63,28 @@ describe("ADR mutations", () => {
         mutations[ADRMutation.SetUploadFiles](state, {payload});
         expect(state.uploadFiles).toBe(payload);
     });
+
+    it("can set uploadStatus", () => {
+        const state = mockADRState();
+        mutations[ADRMutation.setUploadStatus](state, {payload: "upload completed"});
+        expect(state.uploadStatus).toBe("upload completed");
+
+        mutations[ADRMutation.setUploadStatus](state, {payload: null});
+        expect(state.uploadStatus).toBe(null);
+    });
+
+    it("can set upload Error", () => {
+        const state = mockADRState();
+        mutations[ADRMutation.setUploadError](state, {payload: mockError("Error Message")});
+        expect(state.uploadError!!.detail).toBe("Error Message");
+
+        mutations[ADRMutation.setUploadError](state, {payload: null});
+        expect(state.uploadError).toBe(null);
+    });
+
+    it("can set upload succeeded", () => {
+        const state = mockADRState();
+        mutations[ADRMutation.setUploadSucceeded](state, {payload: true});
+        expect(state.uploadSucceeded).toBe(true);
+    });
 });
