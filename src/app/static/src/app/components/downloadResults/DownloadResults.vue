@@ -1,5 +1,10 @@
 <template>
     <div class="container">
+        <b-alert v-if="uploadSucceeded" variant="success"
+                 dismissible fade :show="showAlert"
+                 @dismissed="showAlert=false"> {{uploadStatus}}
+        </b-alert>
+        <error-alert v-if="uploadError" :error="uploadError"></error-alert>
         <div class="row">
             <div class="col-sm">
                 <h4 v-translate="'exportOutputs'"></h4>
@@ -26,7 +31,7 @@
                 </a>
             </div>
         </div>
-        <upload-modal id="modal" :open="uploadModalOpen" @close="uploadModalOpen = false"></upload-modal>
+        <upload-modal id="modal" :open="uploadModalOpen" @close="closeUploadModal"></upload-modal>
     </div>
 </template>
 
@@ -37,6 +42,8 @@
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
+    import {BAlert} from "bootstrap-vue";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     interface Computed {
         modelCalibrateId: string,
@@ -44,32 +51,41 @@
         coarseOutputUrl: string,
         summaryReportUrl: string,
         hasUploadPermission: boolean
+        uploadSucceeded: boolean
+        uploadStatus: string
+        uploadError: Error
     }
 
     interface Methods {
         handleUploadModal: () => void
         getUserCanUpload: () => void
         getUploadFiles: () => void
+        closeUploadModal: () => void
     }
 
     interface Data {
-        uploadModalOpen: boolean
+        uploadModalOpen: boolean,
+        showAlert: boolean
     }
 
     export default Vue.extend<Data, Methods, Computed>({
         name: "downloadResults",
         data() {
             return {
-                uploadModalOpen: false
+                uploadModalOpen: false,
+                showAlert: false
             }
         },
         computed: {
             ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
                 modelCalibrateId: state => state.calibrateId
             }),
-            hasUploadPermission: mapStateProp<ADRState, boolean>("adr",
-                (state: ADRState) => state.userCanUpload
-            ),
+            ...mapStateProps<ADRState, keyof Computed>("adr", {
+                uploadSucceeded: state => state.uploadSucceeded,
+                uploadStatus: state => state.uploadStatus,
+                uploadError: state => state.uploadError,
+                hasUploadPermission: state => state.userCanUpload
+            }),
             spectrumUrl: function () {
                 return `/download/spectrum/${this.modelCalibrateId}`
             },
@@ -85,7 +101,11 @@
                 this.uploadModalOpen = true
             },
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
-            getUploadFiles: mapActionByName("adr", "getUploadFiles")
+            getUploadFiles: mapActionByName("adr", "getUploadFiles"),
+            closeUploadModal() {
+                this.uploadModalOpen = false
+                this.showAlert = true
+            }
         },
         mounted() {
             this.getUserCanUpload();
@@ -94,8 +114,9 @@
         components: {
             DownloadIcon,
             UploadIcon,
-            UploadModal
+            UploadModal,
+            BAlert,
+            ErrorAlert
         }
     });
 </script>
-
