@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/password/actions";
-import {rootState} from "./integrationTest";
+import {login, rootState} from "./integrationTest";
 
 describe("Password actions", () => {
 
@@ -26,6 +26,11 @@ describe("Password actions", () => {
                 detail: "Password must be at least 6 characters long."
             }
         });
+    });
+
+    it("can login with upper-case username", async () => {
+        // this throws an exception if login fails
+        await login("Test.USER@Example.com", "password");
     });
 
 });

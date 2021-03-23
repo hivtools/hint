@@ -403,6 +403,32 @@ class ADRControllerTests : HintrControllerTests()
         assertThat(result.body!!).isEqualTo("Bad Gateway")
     }
 
+    @Test
+    fun `gets orgs with permission`()
+    {
+        val expectedUrl = "organization_list_for_user?permission=test_perm"
+        val mockClient = mock<ADRClient> {
+            on { get(expectedUrl) } doReturn ResponseEntity
+                    .ok()
+                    .body("whatever")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.getOrgsWithPermission("test_perm")
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
     private fun makeFakeSuccessResponse(): ResponseEntity<String>
     {
         val resultWithResources = mapOf("resources" to listOf(1, 2))

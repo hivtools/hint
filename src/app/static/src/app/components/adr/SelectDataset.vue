@@ -50,6 +50,10 @@
                     <loading-spinner size="xs"></loading-spinner>
                     <span v-translate="'loadingDatasets'"></span>
                 </div>
+                <div v-if="adrError" id="fetch-error">
+                    <div v-translate="'errorFetchingDatasetsFromADR'"></div>
+                    <button @click="getDatasets" class="btn btn-red float-right" v-translate="'tryAgain'"></button>
+                </div>
             </div>
             <div class="text-center" v-if="loading" id="loading-dataset">
                 <loading-spinner size="sm"></loading-spinner>
@@ -77,7 +81,7 @@
     import {Language} from "../../store/translations/locales";
     import Vue from "vue";
     import TreeSelect from "@riophae/vue-treeselect";
-    import {findResource, mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
+    import {datasetFromMetadata, findResource, mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
     import {BaselineMutation} from "../../store/baseline/mutations";
@@ -92,8 +96,10 @@
     import {InfoIcon} from "vue-feather-icons";
     import {VTooltip} from "v-tooltip";
     import {ADRState} from "../../store/adr/adr";
+    import {Error} from "../../generated";
 
     interface Methods {
+        getDatasets: () => void;
         setDataset: (dataset: Dataset) => void;
         importDataset: () => void;
         toggleModal: () => void;
@@ -114,9 +120,9 @@
         schemas: ADRSchemas
         datasets: any[]
         fetchingDatasets: boolean
+        adrError: Error | null,
         datasetOptions: any[]
         selectedDataset: Dataset | null
-        newDataset: Dataset
         selectText: string,
         outOfDateMessage: string,
         outOfDateResources: { [k in keyof DatasetResourceSet]?: true }
@@ -175,6 +181,10 @@
                 namespace,
                 (state: ADRState) => state.fetchingDatasets
             ),
+            adrError: mapStateProp<ADRState, Error | null>(
+                namespace,
+                (state: ADRState) => state.adrError
+            ),
             datasetOptions() {
                 return this.datasets.map((d) => ({
                     id: d.id,
@@ -185,22 +195,6 @@
                             <span class="font-weight-bold">${d.organization.title}</span>
                         </div>`,
                 }));
-            },
-            newDataset() {
-                const fullMetaData = this.datasets.find(d => d.id == this.newDatasetId);
-                return fullMetaData && {
-                    id: fullMetaData.id,
-                    title: fullMetaData.title,
-                    url: `${this.schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`,
-                    resources: {
-                        pjnz: findResource(fullMetaData, this.schemas.pjnz),
-                        shape: findResource(fullMetaData, this.schemas.shape),
-                        pop: findResource(fullMetaData, this.schemas.population),
-                        survey: findResource(fullMetaData, this.schemas.survey),
-                        program: findResource(fullMetaData, this.schemas.programme),
-                        anc: findResource(fullMetaData, this.schemas.anc)
-                    }
-                }
             },
             selectText() {
                 if (this.selectedDataset) {
@@ -238,6 +232,7 @@
                 (state: RootState) => state.language)
         },
         methods: {
+            getDatasets: mapActionByName("adr", "getDatasets"),
             setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
             refreshDatasetMetadata: mapActionByName("baseline", "refreshDatasetMetadata"),
             markResourcesUpdated: mapMutationByName("baseline", BaselineMutation.MarkDatasetResourcesUpdated),
@@ -250,9 +245,10 @@
             async importDataset() {
                 if (this.newDatasetId) {
                     this.loading = true;
-                    this.setDataset(this.newDataset);
+                    const newDataset = datasetFromMetadata(this.newDatasetId, this.datasets, this.schemas);
+                    this.setDataset(newDataset);
 
-                    const {pjnz, pop, shape, survey, program, anc} = this.newDataset.resources
+                    const {pjnz, pop, shape, survey, program, anc} = newDataset.resources
 
                     await Promise.all([
                         pjnz && this.importPJNZ(pjnz.url),
