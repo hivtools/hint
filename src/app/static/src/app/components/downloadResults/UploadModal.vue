@@ -37,6 +37,7 @@
                 <button
                     type="button"
                     class="btn btn-red"
+                    @click="confirmUpload"
                     v-translate="'ok'"></button>
                 <button
                     type="button"
@@ -53,10 +54,13 @@
     import Modal from "../Modal.vue";
     import {Dict, UploadFile} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {formatDateTime, mapStateProp, mapStateProps} from "../../utils";
+    import {formatDateTime, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRState} from "../../store/adr/adr";
+    import {uploadFilesPayload} from "../../store/adr/actions";
 
     interface Methods {
+        uploadFilestoADRAction: (uploadFilesPayload: uploadFilesPayload) => void;
+        confirmUpload: () => void;
         handleCancel: () => void
         lastModified: (date: string) => string | null
         setDefaultCheckedItems: () => void
@@ -90,6 +94,20 @@
             }
         },
         methods: {
+            uploadFilestoADRAction: mapActionByName<uploadFilesPayload>(
+                'adr',
+                'uploadFilestoADR'
+            ),
+            async confirmUpload() {
+                const filesToBeUploaded: UploadFile[] = []
+                this.uploadFilesToAdr.map(value => filesToBeUploaded.push(this.uploadFiles[value]))
+                const uploadFilesPayload: uploadFilesPayload = {
+                    filesToBeUploaded
+                };
+                console.log('uploadFilesPayload', uploadFilesPayload)
+                this.uploadFilestoADRAction(uploadFilesPayload);
+                this.uploadFilesToAdr = [];
+            },
             handleCancel() {
                 this.$emit("close")
             },
@@ -116,9 +134,14 @@
         components: {
             Modal
         },
+        // mounted(){
+
+        //         console.log('upload files:', this.uploadFiles, this.uploadFilesToAdr)
+        // },
         watch: {
             uploadFiles() {
                 this.setDefaultCheckedItems()
+                // console.log('upload files:', this.uploadFiles, this.uploadFilesToAdr)
             }
         }
     });

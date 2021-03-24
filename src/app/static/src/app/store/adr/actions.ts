@@ -5,8 +5,13 @@ import qs from "qs";
 import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
 import {constructUploadFile, datasetFromMetadata, findResource} from "../../utils";
-import {Organization} from "../../types";
+import {Organization, Dict, UploadFile} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
+
+export interface uploadFilesPayload {
+    // filesToBeUploaded: Dict<UploadFile>[]
+    filesToBeUploaded: UploadFile[]
+}
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -140,6 +145,26 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                     }
                 });
         }
+    },
+
+    async uploadFilestoADR(context, uploadFilesPayload) {
+        const {state, rootState, commit} = context;
+        const selectedDatasetId = rootState.baseline.selectedDataset?.id;
+        const {filesToBeUploaded} = uploadFilesPayload;
+        const modelCalibrateId = rootState.modelCalibrate.calibrateId;
+        let abort = false;
+        let i;
+        for (i = 0; i < filesToBeUploaded.length; i++) {
+            if (!abort){
+                const { resourceType, resourceFilename, resourceId } = filesToBeUploaded[i]
+                await api<ADRMutation, ADRMutation>(context)
+                    .withError(ADRMutation.SetADRError, abort = true)
+                    .ignoreSuccess()
+                    .postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`, 
+                    qs.stringify({resourceFileName: resourceFilename, resourceId}));
+            }
+        }
+        
     }
 };
 
