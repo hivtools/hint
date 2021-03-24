@@ -54,12 +54,14 @@
     import Modal from "../Modal.vue";
     import {Dict, UploadFile} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {formatDateTime, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {formatDateTime, mapActionByName, mapStateProp, mapStateProps, mapMutationByName} from "../../utils";
     import {ADRState} from "../../store/adr/adr";
     import {uploadFilesPayload} from "../../store/adr/actions";
+    import {ADRMutation} from "../../store/adr/mutations";
 
     interface Methods {
         uploadFilestoADRAction: (uploadFilesPayload: uploadFilesPayload) => void;
+        ADRUploadStarted: () => void;
         confirmUpload: () => void;
         handleCancel: () => void
         lastModified: (date: string) => string | null
@@ -94,6 +96,7 @@
             }
         },
         methods: {
+            ADRUploadStarted: mapMutationByName('adr', ADRMutation.ADRUploadStarted),
             uploadFilestoADRAction: mapActionByName<uploadFilesPayload>(
                 'adr',
                 'uploadFilestoADR'
@@ -105,8 +108,10 @@
                     filesToBeUploaded
                 };
                 console.log('uploadFilesPayload', uploadFilesPayload)
+                this.ADRUploadStarted();
                 this.uploadFilestoADRAction(uploadFilesPayload);
-                this.uploadFilesToAdr = [];
+                // this.uploadFilesToAdr = [];
+                this.$emit("close")
             },
             handleCancel() {
                 this.$emit("close")
@@ -127,6 +132,9 @@
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                 dataset: state => state.selectedDataset?.title
             }),
+            // ...mapStateProps<ADRState, keyof Computed>("adr", {
+            //     uploadError: state => state.uploadError
+            // }),
             uploadFiles: mapStateProp<ADRState, Dict<UploadFile>>("adr",
                 (state: ADRState) => state.uploadFiles!
             )

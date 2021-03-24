@@ -24,6 +24,7 @@
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
                 </a>
+                <div>{{ uploadStatusMessage }}</div>
             </div>
         </div>
         <upload-modal id="modal" :open="uploadModalOpen" @close="uploadModalOpen = false"></upload-modal>
@@ -43,7 +44,16 @@
         spectrumUrl: string,
         coarseOutputUrl: string,
         summaryReportUrl: string,
+        uploadStatusMessage: string,
+        uploading: boolean,
+        uploadComplete: boolean,
+        uploadError: null | UploadError,
         hasUploadPermission: boolean
+    }
+
+    interface UploadError {
+        detail: string,
+        error: string
     }
 
     interface Methods {
@@ -67,6 +77,20 @@
             ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
                 modelCalibrateId: state => state.calibrateId
             }),
+            ...mapStateProps<ADRState, keyof Computed>("adr", {
+                uploading: state => state.uploading,
+                uploadComplete: state => state.uploadComplete,
+                uploadError: state => state.uploadError
+            }),
+            uploadStatusMessage: function(){
+                if (this.uploadError){
+                    return this.uploadError.detail
+                } else if (this.uploadComplete){
+                    return 'The upload has completed successfully'
+                } else if (this.uploading){
+                    return 'Uploading'
+                } else return ''
+            },
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr",
                 (state: ADRState) => state.userCanUpload
             ),

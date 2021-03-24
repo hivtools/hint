@@ -157,11 +157,20 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         for (i = 0; i < filesToBeUploaded.length; i++) {
             if (!abort){
                 const { resourceType, resourceFilename, resourceId } = filesToBeUploaded[i]
+                // console.log(i, selectedDatasetId, modelCalibrateId, resourceType, resourceFilename, resourceId)
+                console.log(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`, resourceFilename, resourceId)
                 await api<ADRMutation, ADRMutation>(context)
-                    .withError(ADRMutation.SetADRError, abort = true)
-                    .ignoreSuccess()
-                    .postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`, 
-                    qs.stringify({resourceFileName: resourceFilename, resourceId}));
+                    .withError(ADRMutation.SetADRUploadError)
+                    // .ignoreSuccess()
+                    .withSuccess(ADRMutation.ADRUploadCompleted)
+                    // .postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`, 
+                    // qs.stringify({resourceFileName: resourceFilename, resourceId}));
+                    .postAndReturn(`/adr/datasets/hint_test/resource/${resourceType}/${modelCalibrateId}`, 
+                    qs.stringify({resourceFileName: resourceFilename}))
+                    .then(() => {
+                        context.commit({type: ADRMutation.ADRUploadCompleted, payload: false});
+                    });
+
             }
         }
         
