@@ -327,7 +327,7 @@ class ADRControllerTests : HintrControllerTests()
         val mockAPIClient: HintrAPIClient = mock {
             on { downloadSummary("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
-        val mockClient: ADRClient = mock(verboseLogging = true) {
+        val mockClient: ADRClient = mock {
             on { postFile(eq("resource_create"), eq(listOf("name" to "output1.html", "description" to "Naomi summary report", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "resource_type" to "adr-output-summary", "package_id" to "dataset1")), any()) } doReturn ResponseEntity.ok().body("whatever")
         }
         val mockBuilder: ADRClientBuilder = mock {
