@@ -82,8 +82,8 @@ describe("ADR dataset-related actions", () => {
         // 2. select a naomi dev dataset
         expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
         const datasets = commit.mock.calls[2][0]["payload"];
-        const dataset = datasets[0];
-        expect(dataset.organization.name).toBe("naomi-development-team");
+        const dataset = datasets.find((dataset: any) => dataset.organization.name === "naomi-development-team");
+        expect(dataset).not.toBeNull()
 
         // 3. check can upload
         commit.mockClear();
@@ -111,8 +111,8 @@ describe("ADR dataset-related actions", () => {
         // 2. select a naomi dev dataset
         expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
         const datasets = commit.mock.calls[2][0]["payload"];
-        const dataset = datasets[0];
-        expect(dataset.organization.name).toBe("naomi-development-team");
+        const dataset = datasets.find((dataset: any) => dataset.organization.name === "naomi-development-team");
+        expect(dataset).not.toBeNull()
 
         // 3. check can upload
         commit.mockClear();
