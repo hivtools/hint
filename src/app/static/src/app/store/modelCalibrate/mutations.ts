@@ -1,7 +1,7 @@
 import {MutationTree} from 'vuex';
 import {ModelCalibrateState} from "./modelCalibrate";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
-import {PayloadWithType} from "../../types";
+import {PayloadWithType, UploadMetadata} from "../../types";
 import {updateForm} from "../../utils";
 import {
     CalibrateStatusResponse,
@@ -22,7 +22,8 @@ export enum ModelCalibrateMutation {
     SetOptionsData = "SetOptionsData",
     SetError = "SetError",
     PollingForStatusStarted = "PollingForStatusStarted",
-    Ready = "Ready"
+    Ready = "Ready",
+    UploadMetadata = "UploadMetadata"
 }
 
 export const mutations: MutationTree<ModelCalibrateState> = {
@@ -84,6 +85,10 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 
     [ModelCalibrateMutation.PollingForStatusStarted](state: ModelCalibrateState, action: PayloadWithType<number>) {
         state.statusPollId = action.payload;
+    },
+
+    [ModelCalibrateMutation.UploadMetadata](state: ModelCalibrateState, action: PayloadWithType<UploadMetadata>) {
+        state.uploadMetadata = action.payload;
     },
 };
 

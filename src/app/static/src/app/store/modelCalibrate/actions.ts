@@ -84,8 +84,8 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                         },
                         {root: true});
                 }
-
                 commit(ModelCalibrateMutation.Calibrated);
+                commit({type: ModelCalibrateMutation.UploadMetadata, payload: data.uploadMetadata});
             }
         }
         commit(ModelCalibrateMutation.Ready);

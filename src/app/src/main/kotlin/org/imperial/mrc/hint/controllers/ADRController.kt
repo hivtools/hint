@@ -172,15 +172,14 @@ class ADRController(private val encryption: Encryption,
                       @PathVariable resourceType: String,
                       @PathVariable modelCalibrateId: String,
                       @RequestParam resourceFileName: String,
-                      @RequestParam resourceId: String?): ResponseEntity<String>
+                      @RequestParam resourceId: String?,
+                      @RequestParam description: String): ResponseEntity<String>
     {
         // 1. Download relevant artefact from hintr
         val artefact = when (resourceType)
         {
-            appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId),
-                    "Naomi model outputs")
-            appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId),
-                    "Naomi summary report")
+            appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId), description)
+            appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId), description)
             else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
         }
 

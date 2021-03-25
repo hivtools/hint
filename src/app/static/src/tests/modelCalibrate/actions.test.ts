@@ -165,6 +165,10 @@ describe("ModelCalibrate actions", () => {
                         selected_filter_options: {"test_name": "test_value"}
                     }
                 }
+            },
+            uploadMetadata: {
+                outputZip: {description: "spectrum output info"},
+                outputSummary: {description: "summary output info"}
             }
         };
         mockAxios.onGet(`/model/calibrate/result/1234`)
@@ -181,7 +185,7 @@ describe("ModelCalibrate actions", () => {
 
         await actions.getResult({commit, state, rootState} as any);
 
-        expect(commit.mock.calls.length).toBe(4);
+        expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type:"modelRun/RunResultFetched",
             payload: testResult
@@ -196,7 +200,14 @@ describe("ModelCalibrate actions", () => {
             }
         });
         expect(commit.mock.calls[2][0]).toBe("Calibrated");
-        expect(commit.mock.calls[3][0]).toBe("Ready");
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "UploadMetadata",
+            payload: {
+                "outputSummary": {"description": "summary output info"},
+                "outputZip": {"description": "spectrum output info"}
+            }
+        });
+        expect(commit.mock.calls[4][0]).toBe("Ready");
     });
 
     it("getResult commits error when unsuccessful fetch", async () => {

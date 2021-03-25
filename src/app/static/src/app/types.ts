@@ -150,3 +150,12 @@ export interface UploadFile {
     resourceUrl: string | null,
     lastModified: string | null
 }
+
+export interface UploadMetadata {
+    outputZip: UploadMetadataElements
+    outputSummary: UploadMetadataElements
+}
+
+interface UploadMetadataElements {
+    description: string
+}

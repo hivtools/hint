@@ -7,6 +7,7 @@ import {ADRMutation} from "./mutations";
 import {constructUploadFile, datasetFromMetadata, findResource} from "../../utils";
 import {Organization} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
+import {rootState} from "../../../tests/integration/integrationTest";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -140,6 +141,13 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                     }
                 });
         }
+    },
+
+    async uploadFilesToADR(context, uploadFilesPayload) {
+        const {state, rootState, commit} = context;
+        const uploadMetadata = rootState.modelCalibrate.uploadMetadata
+
+        // Nick to complete the uploadFilesToADR with "?description=uploadMetadata" as query param
     }
 };
 
