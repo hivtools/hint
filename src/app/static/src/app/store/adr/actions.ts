@@ -147,7 +147,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         const {state, rootState, commit} = context;
         const uploadMetadata = rootState.modelCalibrate.uploadMetadata
       
-        // Nick to complete the uploadFilesToADR with "?description=uploadMetadata.{fileName}.description" as query param
+        // Waiting for Nick's ticket to complete the uploadFilesToADR with "?description=uploadMetadata.{fileName}.description" as query param
         //uploadMetadata.outputZip.description
     }
 };
