@@ -20,11 +20,24 @@
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
-                <a @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href="#">
+                <!-- <a @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href="#" :disabled="uploading">
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
-                </a>
-                <div>{{ uploadStatusMessage }}</div>
+                </a> -->
+                <button @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href="#" :disabled="uploading">
+                    <span v-translate="'upload'"></span>
+                    <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
+                </button>
+                <!-- <div>{{ uploadStatusMessage }}</div> -->
+                <div v-if="uploadStatusMessage" class="d-flex align-items-end">
+                    <loading-spinner v-if="uploading" size="xs"></loading-spinner>
+                    <div class="d-flex align-items-center" :class="{'ml-1': uploading, 'mr-1': uploadComplete}" style="height: 40px;">
+                        <span :class="{'text-danger': uploadError, 'font-weight-bold': uploadComplete}">{{ uploadStatusMessage }}</span>
+                    </div>
+                    <div class="d-flex align-items-center" style="height: 40px;">
+                        <tick color="#e31837" v-if="uploadComplete" width="20px"></tick>
+                    </div>
+                </div>
             </div>
         </div>
         <upload-modal id="modal" :open="uploadModalOpen" @close="uploadModalOpen = false"></upload-modal>
@@ -38,6 +51,8 @@
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
+    import LoadingSpinner from "../LoadingSpinner.vue";
+    import Tick from "../Tick.vue";
 
     interface Computed {
         modelCalibrateId: string,
@@ -84,11 +99,13 @@
             }),
             uploadStatusMessage: function(){
                 if (this.uploadError){
-                    return this.uploadError.detail
+                    if ("detail" in this.uploadError){
+                        return this.uploadError.detail
+                    } else return this.uploadError
                 } else if (this.uploadComplete){
-                    return 'The upload has completed successfully'
+                    return 'Upload complete'
                 } else if (this.uploading){
-                    return 'Uploading'
+                    return 'Uploading (this may take a while)'
                 } else return ''
             },
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr",
@@ -118,6 +135,8 @@
         components: {
             DownloadIcon,
             UploadIcon,
+            LoadingSpinner,
+            Tick,
             UploadModal
         }
     });

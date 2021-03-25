@@ -152,25 +152,47 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         const selectedDatasetId = rootState.baseline.selectedDataset?.id;
         const {filesToBeUploaded} = uploadFilesPayload;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
-        let abort = false;
-        let i;
+        // let abort = state.abortUpload;
+        let i: number;
         for (i = 0; i < filesToBeUploaded.length; i++) {
-            if (!abort){
+            if (!state.abortUpload){
                 const { resourceType, resourceFilename, resourceId } = filesToBeUploaded[i]
                 // console.log(i, selectedDatasetId, modelCalibrateId, resourceType, resourceFilename, resourceId)
                 console.log(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`, resourceFilename, resourceId)
-                await api<ADRMutation, ADRMutation>(context)
+                if (i === filesToBeUploaded.length - 1){
+                    await api<ADRMutation, ADRMutation>(context)
+                    // await api<any, any>(context)
+                    // .withError(() => {
+                    //     abort = true
+                    //     ADRMutation.SetADRUploadError
+                    // })
                     .withError(ADRMutation.SetADRUploadError)
                     // .ignoreSuccess()
+                    // .withSuccess(() => {
+                    //     if (i === filesToBeUploaded.length - 1){
+                    //         ADRMutation.ADRUploadCompleted
+                    //     }
+                    // })
                     .withSuccess(ADRMutation.ADRUploadCompleted)
                     // .postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`, 
                     // qs.stringify({resourceFileName: resourceFilename, resourceId}));
                     .postAndReturn(`/adr/datasets/hint_test/resource/${resourceType}/${modelCalibrateId}`, 
                     qs.stringify({resourceFileName: resourceFilename}))
-                    .then(() => {
-                        context.commit({type: ADRMutation.ADRUploadCompleted, payload: false});
-                    });
-
+                    // .then(() => {
+                    //     context.commit({type: ADRMutation.ADRUploadCompleted, payload: false});
+                    // });
+                    // .then(response => {
+                    //       console.log('this is the repsonse:', response);
+                    // }, response2 => {
+                    //       console.log('this is the repsonse2:', response2);
+                    // })
+                } else {
+                    await api<ADRMutation, ADRMutation>(context)
+                    .withError(ADRMutation.SetADRUploadError)
+                    .ignoreSuccess()
+                    .postAndReturn(`/adr/datasets/hint_test/resource/${resourceType}/${modelCalibrateId}`, 
+                    qs.stringify({resourceFileName: resourceFilename}))
+                }
             }
         }
         

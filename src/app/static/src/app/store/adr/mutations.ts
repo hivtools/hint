@@ -47,6 +47,7 @@ export const mutations: MutationTree<ADRState> = {
     },
 
     [ADRMutation.ADRUploadStarted](state: ADRState, action: PayloadWithType<boolean>) {
+        state.abortUpload = false;
         state.uploading = true;
         state.uploadComplete = false;
         state.uploadError = null;
@@ -59,6 +60,8 @@ export const mutations: MutationTree<ADRState> = {
 
     [ADRMutation.SetADRUploadError](state: ADRState, action: PayloadWithType<Error | null>) {
         state.uploadError = action.payload;
+        state.uploading = false;
+        state.abortUpload = true;
     },
 
     [ADRMutation.SetUserCanUpload](state: ADRState, action: PayloadWithType<boolean>) {
