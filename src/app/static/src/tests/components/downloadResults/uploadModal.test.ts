@@ -151,7 +151,7 @@ describe(`uploadModal `, () => {
         expect(wrapper.vm.$data.uploadFilesToAdr).toMatchObject(["outputZip", "outputSummary"])
     })
 
-    it(`can set and get description value as expected`, async () => {
+    it.skip(`can set and get description value as expected`, async () => {
         const wrapper = getWrapper()
         const newDesc = "new description"
 

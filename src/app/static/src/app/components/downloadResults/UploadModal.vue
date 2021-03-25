@@ -26,12 +26,6 @@
                         </small>
                     </div>
                 </div>
-                <div class="mt-3">
-                    <label for="description-id" v-translate="'uploadFileDesc'"></label>
-                    <textarea v-model="uploadDescToAdr"
-                              class="form-control" rows="3"
-                              id="description-id"></textarea>
-                </div>
             </div>
             <template v-slot:footer>
                 <button
