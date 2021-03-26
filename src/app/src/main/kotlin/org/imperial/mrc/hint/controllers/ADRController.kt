@@ -167,13 +167,13 @@ class ADRController(private val encryption: Encryption,
     }
 
     @PostMapping("/datasets/{id}/resource/{resourceType}/{modelCalibrateId}")
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "LongParameterList")
     fun pushFileToADR(@PathVariable id: String,
                       @PathVariable resourceType: String,
                       @PathVariable modelCalibrateId: String,
                       @RequestParam resourceFileName: String,
                       @RequestParam resourceId: String?,
-                      @RequestParam description: String): ResponseEntity<String>
+                      @RequestParam description: String) : ResponseEntity<String>
     {
         // 1. Download relevant artefact from hintr
         val artefact = when (resourceType)
