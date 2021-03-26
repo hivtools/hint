@@ -3,10 +3,9 @@ import {RootState} from "../../root";
 import {api} from "../../apiService";
 import qs from "qs";
 import {ADRState, adr} from "./adr";
-// import adr from "./adr";
 import {ADRMutation} from "./mutations";
-import {constructUploadFile, datasetFromMetadata, findResource} from "../../utils";
-import {Organization, Dict, UploadFile} from "../../types";
+import {constructUploadFile, datasetFromMetadata} from "../../utils";
+import {Organization, UploadFile} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 
 export interface uploadFilesPayload {
@@ -153,53 +152,26 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         const selectedDatasetId = rootState.baseline.selectedDataset?.id;
         const {filesToBeUploaded} = uploadFilesPayload;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
-        // let abort = state.abortUpload;
+        
         let i: number;
         for (i = 0; i < filesToBeUploaded.length; i++) {
-            if (!(adr.state as ADRState).abortUpload){
+
+            if (!(adr.state as ADRState).abortUpload){ // aborts subsequent file uploads if a prior fails
                 const { resourceType, resourceFilename, resourceId } = filesToBeUploaded[i]
-                // console.log(i, selectedDatasetId, modelCalibrateId, resourceType, resourceFilename, resourceId)
-                console.log(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`, resourceFilename, resourceId)
-                if (i === filesToBeUploaded.length - 1){
+                console.log(i, selectedDatasetId, modelCalibrateId, resourceType, resourceFilename, resourceId)
+                
+                if (i === filesToBeUploaded.length - 1){ // only a successful upload of the last file sets the completed state
                     await api<ADRMutation, ADRMutation>(context)
-                    // await api<any, any>(context)
-                    // .withError(() => {
-                    //     abort = true
-                    //     ADRMutation.SetADRUploadError
-                    // })
-                    .withError(ADRMutation.SetADRUploadError)
-                    // .ignoreSuccess()
-                    // .withSuccess(() => {
-                    //     if (i === filesToBeUploaded.length - 1){
-                    //         ADRMutation.ADRUploadCompleted
-                    //     }
-                    // })
-                    .withSuccess(ADRMutation.ADRUploadCompleted)
-                    // .postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`, 
-                    // qs.stringify({resourceFileName: resourceFilename, resourceId}));
-                    .postAndReturn(`/adr/datasets/hint_test/resource/${resourceType}/${modelCalibrateId}`, 
-                    qs.stringify({resourceFileName: resourceFilename}))
-                    // .then(() => {
-                    //     context.commit({type: ADRMutation.ADRUploadCompleted, payload: false});
-                    // });
-                    // .then(response => {
-                    //       console.log('this is the repsonse:', response);
-                    // }, response2 => {
-                    //       console.log('this is the repsonse2:', response2);
-                    // })
-                    // .then(() => {
-                    //     console.log('abortUpload =', (adr.state as ADRState).abortUpload);
-                    // });
+                        .withError(ADRMutation.SetADRUploadError)
+                        .withSuccess(ADRMutation.ADRUploadCompleted)
+                        .postAndReturn(`/adr/datasets/hint_test/resource/${resourceType}/${modelCalibrateId}`, 
+                        qs.stringify({resourceFileName: resourceFilename}))
                 } else {
                     await api<ADRMutation, ADRMutation>(context)
-                    .withError(ADRMutation.SetADRUploadError)
-                    .ignoreSuccess()
-                    .postAndReturn(`/adr/datasets/hint_test/resource/${resourceType}/${modelCalibrateId}`, 
-                    // .postAndReturn(`/adr/datasets/hint_test/resource/fail/${modelCalibrateId}`, 
-                    qs.stringify({resourceFileName: resourceFilename}))
-                    // .then(() => {
-                    //     console.log('abortUpload =', (adr.state as ADRState).abortUpload);
-                    // });
+                        .withError(ADRMutation.SetADRUploadError)
+                        .ignoreSuccess()
+                        .postAndReturn(`/adr/datasets/hint_test/resource/${resourceType}/${modelCalibrateId}`,
+                        qs.stringify({resourceFileName: resourceFilename}))
                 }
             }
         }

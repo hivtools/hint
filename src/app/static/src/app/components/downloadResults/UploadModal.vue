@@ -110,7 +110,6 @@
                 console.log('uploadFilesPayload', uploadFilesPayload)
                 this.ADRUploadStarted();
                 this.uploadFilestoADRAction(uploadFilesPayload);
-                // this.uploadFilesToAdr = [];
                 this.$emit("close")
             },
             handleCancel() {
@@ -132,9 +131,6 @@
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                 dataset: state => state.selectedDataset?.title
             }),
-            // ...mapStateProps<ADRState, keyof Computed>("adr", {
-            //     uploadError: state => state.uploadError
-            // }),
             uploadFiles: mapStateProp<ADRState, Dict<UploadFile>>("adr",
                 (state: ADRState) => state.uploadFiles!
             )
@@ -142,14 +138,9 @@
         components: {
             Modal
         },
-        // mounted(){
-
-        //         console.log('upload files:', this.uploadFiles, this.uploadFilesToAdr)
-        // },
         watch: {
             uploadFiles() {
                 this.setDefaultCheckedItems()
-                // console.log('upload files:', this.uploadFiles, this.uploadFilesToAdr)
             }
         }
     });

@@ -20,15 +20,10 @@
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
-                <!-- <a @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href="#" :disabled="uploading">
-                    <span v-translate="'upload'"></span>
-                    <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
-                </a> -->
                 <button @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href="#" :disabled="uploading">
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
                 </button>
-                <!-- <div>{{ uploadStatusMessage }}</div> -->
                 <div v-if="uploadStatusMessage" class="d-flex align-items-end">
                     <loading-spinner v-if="uploading" size="xs"></loading-spinner>
                     <div class="d-flex align-items-center height-40" :class="{'ml-1': uploading, 'mr-1': uploadComplete}">
