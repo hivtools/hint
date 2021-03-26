@@ -37,7 +37,8 @@
                 <button
                     type="button"
                     class="btn btn-red"
-                    @click="confirmUpload"
+                    :disabled="uploadFilesToAdr.length < 1"
+                    @click.prevent="confirmUpload"
                     v-translate="'ok'"></button>
                 <button
                     type="button"
@@ -56,11 +57,11 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {formatDateTime, mapActionByName, mapStateProp, mapStateProps, mapMutationByName} from "../../utils";
     import {ADRState} from "../../store/adr/adr";
-    import {uploadFilesPayload} from "../../store/adr/actions";
+    import {UploadFilesPayload} from "../../store/adr/actions";
     import {ADRMutation} from "../../store/adr/mutations";
 
     interface Methods {
-        uploadFilestoADRAction: (uploadFilesPayload: uploadFilesPayload) => void;
+        uploadFilestoADRAction: (uploadFilesPayload: UploadFilesPayload) => void;
         ADRUploadStarted: () => void;
         confirmUpload: () => void;
         handleCancel: () => void
@@ -97,14 +98,15 @@
         },
         methods: {
             ADRUploadStarted: mapMutationByName('adr', ADRMutation.ADRUploadStarted),
-            uploadFilestoADRAction: mapActionByName<uploadFilesPayload>(
+            uploadFilestoADRAction: mapActionByName<UploadFilesPayload>(
                 'adr',
                 'uploadFilestoADR'
             ),
             async confirmUpload() {
+                console.log("confirmUplaod fired!")
                 const filesToBeUploaded: UploadFile[] = []
                 this.uploadFilesToAdr.map(value => filesToBeUploaded.push(this.uploadFiles[value]))
-                const uploadFilesPayload: uploadFilesPayload = {
+                const uploadFilesPayload: UploadFilesPayload = {
                     filesToBeUploaded
                 };
                 console.log('uploadFilesPayload', uploadFilesPayload)

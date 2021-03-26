@@ -46,14 +46,14 @@ export const mutations: MutationTree<ADRState> = {
         state.uploadFiles = action.payload;
     },
 
-    [ADRMutation.ADRUploadStarted](state: ADRState, action: PayloadWithType<boolean>) {
+    [ADRMutation.ADRUploadStarted](state: ADRState) {
         state.abortUpload = false;
         state.uploading = true;
         state.uploadComplete = false;
         state.uploadError = null;
     },
 
-    [ADRMutation.ADRUploadCompleted](state: ADRState, action: PayloadWithType<boolean>) {
+    [ADRMutation.ADRUploadCompleted](state: ADRState) {
         state.uploading = false;
         state.uploadComplete = true;
     },

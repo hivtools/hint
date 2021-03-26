@@ -8,7 +8,7 @@ import {constructUploadFile, datasetFromMetadata} from "../../utils";
 import {Organization, UploadFile} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 
-export interface uploadFilesPayload {
+export interface UploadFilesPayload {
     // filesToBeUploaded: Dict<UploadFile>[]
     filesToBeUploaded: UploadFile[]
 }
@@ -21,6 +21,7 @@ export interface ADRActions {
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
     getUploadFiles: (store: ActionContext<ADRState, RootState>) => void;
+    uploadFilestoADR: (store: ActionContext<ADRState, RootState>, uploadFilesPayload: UploadFilesPayload) => void;
 }
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
@@ -152,7 +153,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         const selectedDatasetId = rootState.baseline.selectedDataset?.id;
         const {filesToBeUploaded} = uploadFilesPayload;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
-        
+
         let i: number;
         for (i = 0; i < filesToBeUploaded.length; i++) {
 

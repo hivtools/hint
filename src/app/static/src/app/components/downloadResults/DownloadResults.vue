@@ -24,7 +24,7 @@
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
                 </button>
-                <div v-if="uploadStatusMessage" class="d-flex align-items-end">
+                <div id="uploadStatus" v-if="uploadStatusMessage" class="d-flex align-items-end">
                     <loading-spinner v-if="uploading" size="xs"></loading-spinner>
                     <div class="d-flex align-items-center height-40" :class="{'ml-1': uploading, 'mr-1': uploadComplete}">
                         <span :class="{'text-danger': uploadError, 'font-weight-bold': uploadComplete}">{{ uploadStatusMessage }}</span>
@@ -48,6 +48,9 @@
     import {ADRState} from "../../store/adr/adr";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
+    import i18next from "i18next";
+    import {Language} from "../../store/translations/locales";
+    import {RootState} from "../../root";
 
     interface Computed {
         modelCalibrateId: string,
@@ -58,6 +61,7 @@
         uploading: boolean,
         uploadComplete: boolean,
         uploadError: null | UploadError,
+        currentLanguage: Language,
         hasUploadPermission: boolean
     }
 
@@ -95,14 +99,18 @@
             uploadStatusMessage: function(){
                 if (this.uploadError){
                     if ("detail" in this.uploadError){
-                        return this.uploadError.detail
+                        return "ERROR: " + this.uploadError.detail
                     } else return this.uploadError
                 } else if (this.uploadComplete){
-                    return 'Upload complete'
+                    return i18next.t("uploadComplete", {lng: this.currentLanguage})
                 } else if (this.uploading){
-                    return 'Uploading (this may take a while)'
+                    return i18next.t("uploading", {lng: this.currentLanguage})
                 } else return ''
             },
+            currentLanguage: mapStateProp<RootState, Language>(
+                null,
+                (state: RootState) => state.language
+            ),
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr",
                 (state: ADRState) => state.userCanUpload
             ),
