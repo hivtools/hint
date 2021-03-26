@@ -31,10 +31,10 @@
                 <!-- <div>{{ uploadStatusMessage }}</div> -->
                 <div v-if="uploadStatusMessage" class="d-flex align-items-end">
                     <loading-spinner v-if="uploading" size="xs"></loading-spinner>
-                    <div class="d-flex align-items-center" :class="{'ml-1': uploading, 'mr-1': uploadComplete}" style="height: 40px;">
+                    <div class="d-flex align-items-center height-40" :class="{'ml-1': uploading, 'mr-1': uploadComplete}">
                         <span :class="{'text-danger': uploadError, 'font-weight-bold': uploadComplete}">{{ uploadStatusMessage }}</span>
                     </div>
-                    <div class="d-flex align-items-center" style="height: 40px;">
+                    <div class="d-flex align-items-center height-40">
                         <tick color="#e31837" v-if="uploadComplete" width="20px"></tick>
                     </div>
                 </div>

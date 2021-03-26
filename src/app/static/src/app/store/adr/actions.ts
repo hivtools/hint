@@ -2,7 +2,8 @@ import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import qs from "qs";
-import {ADRState} from "./adr";
+import {ADRState, adr} from "./adr";
+// import adr from "./adr";
 import {ADRMutation} from "./mutations";
 import {constructUploadFile, datasetFromMetadata, findResource} from "../../utils";
 import {Organization, Dict, UploadFile} from "../../types";
@@ -155,7 +156,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         // let abort = state.abortUpload;
         let i: number;
         for (i = 0; i < filesToBeUploaded.length; i++) {
-            if (!state.abortUpload){
+            if (!(adr.state as ADRState).abortUpload){
                 const { resourceType, resourceFilename, resourceId } = filesToBeUploaded[i]
                 // console.log(i, selectedDatasetId, modelCalibrateId, resourceType, resourceFilename, resourceId)
                 console.log(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`, resourceFilename, resourceId)
@@ -186,12 +187,19 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                     // }, response2 => {
                     //       console.log('this is the repsonse2:', response2);
                     // })
+                    // .then(() => {
+                    //     console.log('abortUpload =', (adr.state as ADRState).abortUpload);
+                    // });
                 } else {
                     await api<ADRMutation, ADRMutation>(context)
                     .withError(ADRMutation.SetADRUploadError)
                     .ignoreSuccess()
                     .postAndReturn(`/adr/datasets/hint_test/resource/${resourceType}/${modelCalibrateId}`, 
+                    // .postAndReturn(`/adr/datasets/hint_test/resource/fail/${modelCalibrateId}`, 
                     qs.stringify({resourceFileName: resourceFilename}))
+                    // .then(() => {
+                    //     console.log('abortUpload =', (adr.state as ADRState).abortUpload);
+                    // });
                 }
             }
         }
