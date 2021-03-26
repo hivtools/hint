@@ -1,3 +1,7 @@
+# hint 1.26.0
+
+* Set resource_type when pushing to ADR
+
 # hint 1.25.0
 
 * add upload button and dialog box for result outputs to ADR
