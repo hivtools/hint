@@ -100,6 +100,9 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                         const updateableOrgs = response.data as Organization[];
                         const canUpload = updateableOrgs.some(org => org.id === selectedDatasetOrgId);
                         commit({type: ADRMutation.SetUserCanUpload, payload: canUpload});
+
+                        const capacity = updateableOrgs.map(org => org.capacity)[0];
+                        commit({type: ADRMutation.SetCapacity, payload: capacity});
                     }
                 })
         }

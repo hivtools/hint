@@ -14,6 +14,7 @@ export interface ADRState {
     schemas: ADRSchemas | null,
     userCanUpload: boolean,
     uploadFiles: Dict<UploadFile> | null
+    capacity: string | null
 }
 
 export const initialADRState = (): ADRState => {
@@ -25,7 +26,8 @@ export const initialADRState = (): ADRState => {
         schemas: null,
         fetchingDatasets: false,
         userCanUpload: false,
-        uploadFiles: null
+        uploadFiles: null,
+        capacity: null
     }
 };
 
