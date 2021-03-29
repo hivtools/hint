@@ -6,14 +6,8 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {emptyState} from "../../../app/root";
 import {expectTranslated} from "../../testHelpers";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
-// import {ADRState} from "../../../app/store/adr/adr"
 
 const localVue = createLocalVue();
-
-// type UploadError: null {
-//     detail: string,
-//     error: string
-// }
 
 describe("Download Results component", () => {
 
@@ -143,7 +137,6 @@ describe("Download Results component", () => {
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();
-        // expect(uploadButton.attributes()).toBe({"class": "btn btn-red btn-lg my-3", "href": "#"})
     });
 
     it("renders upload error status messages as expected", () => {
@@ -159,6 +152,5 @@ describe("Download Results component", () => {
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();
-        // expect(uploadButton.attributes()).not.toContain("disabled")
     });
 });

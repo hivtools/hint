@@ -9,7 +9,6 @@ import {Organization, UploadFile} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 
 export interface UploadFilesPayload {
-    // filesToBeUploaded: Dict<UploadFile>[]
     filesToBeUploaded: UploadFile[]
 }
 

@@ -109,7 +109,6 @@
                 const uploadFilesPayload: UploadFilesPayload = {
                     filesToBeUploaded
                 };
-                console.log('uploadFilesPayload', uploadFilesPayload)
                 this.ADRUploadStarted();
                 this.uploadFilestoADRAction(uploadFilesPayload);
                 this.$emit("close")
