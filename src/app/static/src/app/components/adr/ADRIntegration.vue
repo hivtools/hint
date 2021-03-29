@@ -3,12 +3,12 @@
         <adr-key></adr-key>
         <div v-if="key">
             <select-dataset></select-dataset>
-            <div>
+            <div id="adr-capacity" v-if="capacity">
             <span class="font-weight-bold align-self-stretch"
-                  v-translate="'adrAccessLevel'">
+                  v-translate="'capacityAccessLevel'">
            </span>
-                <span v-tooltip="handleCapacityTooltip(capacity)">
-                    <a href="#">{{ handleCapacity(capacity) }}</a>
+                <span v-tooltip="handleCapacity(capacity, true)">
+                    <a href="#">{{ handleCapacity(capacity, false) }}</a>
                     </span>
             </div>
         </div>
@@ -21,26 +21,24 @@
     import SelectDataset from "./SelectDataset.vue";
     import {ADRState} from "../../store/adr/adr";
     import {VTooltip} from "v-tooltip";
+    import i18next from "i18next";
+    import {RootState} from "../../root";
+    import {Language} from "../../store/translations/locales";
 
     interface Methods {
         getDatasets: () => void
         fetchADRKey: () => void
         getUserCanUpload: () => void
-        handleCapacityTooltip: (access: string) => string | null
-        handleCapacity: (access: string) => string | null
-    }
-
-    enum capacityEnum {
-        admin = " You have the required permission to push output files to ADR",
-        editor = "ADR access level: You do not have permission to push data to ADR",
-        member = "ADR access level: You do not have the right permission to push data to ADR",
+        handleCapacity: (access: string, isTooltip: boolean) => string | null
+        getTranslation: (key: string) => string
     }
 
     interface Computed {
         isGuest: boolean
         loggedIn: boolean
         key: string | null,
-        capacity: string | null
+        capacity: string | null,
+        currentLanguage: Language
     }
 
     const namespace = "adr";
@@ -56,40 +54,48 @@
                 (state: ADRState) => state.key),
 
             capacity: mapStateProp<ADRState, string | null>(namespace,
-                (state: ADRState) => state.capacity)
+                (state: ADRState) => state.capacity),
+
+            currentLanguage: mapStateProp<RootState, Language>(
+                null,
+                (state: RootState) => state.language
+            )
         },
         methods: {
             getDatasets: mapActionByName(namespace, 'getDatasets'),
             fetchADRKey: mapActionByName(namespace, "fetchKey"),
             getUserCanUpload: mapActionByName(namespace, 'getUserCanUpload'),
-            handleCapacityTooltip: function (access: string) {
+            handleCapacity: function (access: string, isTooltip: boolean) {
                 let capacity = null;
                 switch (access) {
                     case "admin":
-                        capacity = capacityEnum.admin
+                        if (isTooltip) {
+                            capacity = this.getTranslation("capacityAdminTooltip")
+                        } else {
+                            capacity = this.getTranslation("capacityReadWrite")
+                        }
                         break
                     case "member":
-                        capacity = capacityEnum.member
+                        if (isTooltip) {
+                            capacity = this.getTranslation("capacityMemberTooltip")
+                        } else {
+                            capacity = this.getTranslation("capacityRead")
+                        }
                         break
                     case "editor":
-                        capacity = capacityEnum.editor
+                        if (isTooltip) {
+                            capacity = this.getTranslation("capacityEditorTooltip")
+                        } else {
+                            capacity = this.getTranslation("capacityReadWrite")
+
+                        }
                 }
                 return capacity
             },
-
-            handleCapacity: function (access: string) {
-                let capacity = null;
-                switch (access) {
-                    case "admin":
-                        capacity = "Read & Write"
-                        break
-                    case "member":
-                        capacity = "Read"
-                        break
-                    case "editor":
-                        capacity = "Read & Write"
-                }
-                return capacity
+            getTranslation(key: string) {
+                return i18next.t(key, {
+                    lng: this.currentLanguage,
+                });
             }
         },
         created() {
