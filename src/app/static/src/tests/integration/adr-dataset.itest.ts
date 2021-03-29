@@ -208,10 +208,26 @@ describe("ADR dataset-related actions", () => {
 
         const commit = jest.fn();
 
-        const adr = mockADRState({
-            datasets: [],
-            schemas: {baseUrl: "http://test"} as any
-        });
+        // 1. get datasets
+        await adrActions.getDatasets({commit, rootState} as any);
+
+        // 2. select a naomi dev dataset
+        const datasets = commit.mock.calls[2][0]["payload"];
+        const dataset = datasets.find((dataset: any) => dataset.organization.name === "naomi-development-team");
+
+        // 3. check can upload
+        commit.mockClear();
+        const root = {
+            ...rootState,
+            baseline: {
+                selectedDataset: {
+                    id: dataset.id,
+                    organization: {id: dataset.organization.id}
+                }
+            }
+        };
+
+        const adr = { schemas, datasets };
 
         const uploadFilesPayload = {
             filesToBeUploaded: [
@@ -223,7 +239,7 @@ describe("ADR dataset-related actions", () => {
             ]
         } as UploadFilesPayload
 
-        await adrActions.uploadFilestoADR({commit, state: adr, rootState} as any,
+        await adrActions.uploadFilestoADR({commit, state: adr, rootState: root} as any,
             uploadFilesPayload);
 
         expect(commit.mock.calls[1][0]["type"]).toBe(ADRMutation.ADRUploadCompleted);
