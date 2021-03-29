@@ -3,12 +3,12 @@
         <adr-key></adr-key>
         <div v-if="key">
             <select-dataset></select-dataset>
-            <div id="adr-capacity" >
+            <div id="adr-capacity">
             <span class="font-weight-bold align-self-stretch"
                   v-translate="'capacityAccessLevel'">
            </span>
-                <span v-tooltip="handleCapacity(canUpload, true)">
-                    <a href="#">{{ handleCapacity(canUpload, false) }}</a>
+                <span v-tooltip="handleUploadPermission(hasUploadPermission, true)">
+                    <a href="#">{{ handleUploadPermission(hasUploadPermission, false) }}</a>
                     </span>
             </div>
         </div>
@@ -29,7 +29,7 @@
         getDatasets: () => void
         fetchADRKey: () => void
         getUserCanUpload: () => void
-        handleCapacity: (isADRWriter: boolean, isTooltip: boolean) => string | null
+        handleUploadPermission: (isADRWriter: boolean, isTooltip: boolean) => string | null
         getTranslation: (key: string) => string
     }
 
@@ -37,7 +37,7 @@
         isGuest: boolean
         loggedIn: boolean
         key: string | null,
-        canUpload: boolean,
+        hasUploadPermission: boolean,
         currentLanguage: Language
     }
 
@@ -53,7 +53,7 @@
             key: mapStateProp<ADRState, string | null>(namespace,
                 (state: ADRState) => state.key),
 
-            canUpload: mapStateProp<ADRState, boolean>(namespace,
+            hasUploadPermission: mapStateProp<ADRState, boolean>(namespace,
                 (state: ADRState) => state.userCanUpload),
 
             currentLanguage: mapStateProp<RootState, Language>(
@@ -65,7 +65,7 @@
             getDatasets: mapActionByName(namespace, 'getDatasets'),
             fetchADRKey: mapActionByName(namespace, "fetchKey"),
             getUserCanUpload: mapActionByName(namespace, 'getUserCanUpload'),
-            handleCapacity: function (isADRWriter: boolean, isTooltip: boolean) {
+            handleUploadPermission: function (isADRWriter: boolean, isTooltip: boolean) {
                 let displayText = null;
                 switch (isADRWriter) {
                     case true:
