@@ -3,12 +3,12 @@
         <adr-key></adr-key>
         <div v-if="key">
             <select-dataset></select-dataset>
-            <div id="adr-capacity" v-if="capacity">
+            <div id="adr-capacity" >
             <span class="font-weight-bold align-self-stretch"
                   v-translate="'capacityAccessLevel'">
            </span>
-                <span v-tooltip="handleCapacity(capacity, true)">
-                    <a href="#">{{ handleCapacity(capacity, false) }}</a>
+                <span v-tooltip="handleCapacity(canUpload, true)">
+                    <a href="#">{{ handleCapacity(canUpload, false) }}</a>
                     </span>
             </div>
         </div>
@@ -29,7 +29,7 @@
         getDatasets: () => void
         fetchADRKey: () => void
         getUserCanUpload: () => void
-        handleCapacity: (access: string, isTooltip: boolean) => string | null
+        handleCapacity: (isADRWriter: boolean, isTooltip: boolean) => string | null
         getTranslation: (key: string) => string
     }
 
@@ -37,7 +37,7 @@
         isGuest: boolean
         loggedIn: boolean
         key: string | null,
-        capacity: string | null,
+        canUpload: boolean,
         currentLanguage: Language
     }
 
@@ -53,8 +53,8 @@
             key: mapStateProp<ADRState, string | null>(namespace,
                 (state: ADRState) => state.key),
 
-            capacity: mapStateProp<ADRState, string | null>(namespace,
-                (state: ADRState) => state.capacity),
+            canUpload: mapStateProp<ADRState, boolean>(namespace,
+                (state: ADRState) => state.userCanUpload),
 
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
@@ -65,32 +65,24 @@
             getDatasets: mapActionByName(namespace, 'getDatasets'),
             fetchADRKey: mapActionByName(namespace, "fetchKey"),
             getUserCanUpload: mapActionByName(namespace, 'getUserCanUpload'),
-            handleCapacity: function (access: string, isTooltip: boolean) {
-                let capacity = null;
-                switch (access) {
-                    case "admin":
+            handleCapacity: function (isADRWriter: boolean, isTooltip: boolean) {
+                let displayText = null;
+                switch (isADRWriter) {
+                    case true:
                         if (isTooltip) {
-                            capacity = this.getTranslation("capacityAdminTooltip")
+                            displayText = this.getTranslation("capacityAdminTooltip")
                         } else {
-                            capacity = this.getTranslation("capacityReadWrite")
+                            displayText = this.getTranslation("capacityReadWrite")
                         }
                         break
-                    case "member":
+                    case false:
                         if (isTooltip) {
-                            capacity = this.getTranslation("capacityMemberTooltip")
+                            displayText = this.getTranslation("capacityMemberTooltip")
                         } else {
-                            capacity = this.getTranslation("capacityRead")
-                        }
-                        break
-                    case "editor":
-                        if (isTooltip) {
-                            capacity = this.getTranslation("capacityEditorTooltip")
-                        } else {
-                            capacity = this.getTranslation("capacityReadWrite")
-
+                            displayText = this.getTranslation("capacityRead")
                         }
                 }
-                return capacity
+                return displayText
             },
             getTranslation(key: string) {
                 return i18next.t(key, {

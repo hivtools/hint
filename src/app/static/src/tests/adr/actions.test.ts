@@ -276,9 +276,8 @@ describe("ADR actions", () => {
 
         await actions.getUserCanUpload({commit, state, rootState: root} as any);
 
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SetUserCanUpload", payload: true});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "SetCapacity", payload: undefined});
     });
 
     it("getUserCanUpload fetches updateable dataset and commits when user cannot upload", async () => {
@@ -286,15 +285,14 @@ describe("ADR actions", () => {
         const root = mockRootState({
             baseline: mockBaselineState({selectedDataset: {organization: {id: "test-org"}} as any})
         });
-        const updateableOrgs = [{id: "other-org", capacity: "member"}, {id: "other-org-2", capacity: "admin"}];
+        const updateableOrgs = [{id: "other-org"}, {id: "other-org-2"}];
         mockAxios.onGet(`adr/orgs?permission=update_dataset`)
             .reply(200, mockSuccess(updateableOrgs));
 
         await actions.getUserCanUpload({commit, state, rootState: root} as any);
 
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SetUserCanUpload", payload: false});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "SetCapacity", payload: "member"});
     });
 
     it("getUserCanUpload commits error", async () => {
@@ -322,17 +320,16 @@ describe("ADR actions", () => {
         });
 
         mockAxios.onGet(`adr/orgs?permission=update_dataset`)
-            .reply(200, mockSuccess([{id: "test-org", capacity: "editor"}]));
+            .reply(200, mockSuccess([{id: "test-org"}]));
 
         await actions.getUserCanUpload({commit, state: adr, rootState: root} as any);
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toBe("baseline/SetDataset");
         expect(commit.mock.calls[0][1].id).toBe("test-dataset");
         expect(commit.mock.calls[0][1].organization).toStrictEqual({id: "test-org"});
         expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "SetUserCanUpload", payload: true});
-        expect(commit.mock.calls[2][0]).toStrictEqual({type: "SetCapacity", payload: "editor"});
     });
 
     it("getUserCanUpload fetches dataset metadata to get organization if necessary", async () => {
@@ -349,16 +346,15 @@ describe("ADR actions", () => {
         mockAxios.onGet(`adr/datasets/test-dataset`)
             .reply(200, mockSuccess(datasetResponse));
         mockAxios.onGet(`adr/orgs?permission=update_dataset`)
-            .reply(200, mockSuccess([{id: "test-org", capacity: "admin"}]));
+            .reply(200, mockSuccess([{id: "test-org"}]));
 
         await actions.getUserCanUpload({commit, state: adr, rootState: root} as any);
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toBe("baseline/SetDataset");
         expect(commit.mock.calls[0][1].id).toBe("test-dataset");
         expect(commit.mock.calls[0][1].organization).toStrictEqual({id: "test-org"});
         expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "SetUserCanUpload", payload: true});
-        expect(commit.mock.calls[2][0]).toStrictEqual({type: "SetCapacity", payload: "admin"});
     });
 });
