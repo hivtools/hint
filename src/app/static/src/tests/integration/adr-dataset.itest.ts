@@ -2,7 +2,7 @@ import {actions as baselineActions} from "../../app/store/baseline/actions";
 import {actions as surveyAndProgramActions} from "../../app/store/surveyAndProgram/actions";
 import {login, rootState} from "./integrationTest";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
-import {actions as adrActions} from "../../app/store/adr/actions";
+import {actions as adrActions, UploadFilesPayload} from "../../app/store/adr/actions";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {getFormData} from "./helpers";
 import {ADRMutation} from "../../app/store/adr/mutations";
@@ -202,6 +202,33 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("anc.csv");
+    }, 7000);
+
+    it("can upload files to adr", async () => {
+
+        const commit = jest.fn();
+
+        const adr = mockADRState({
+            datasets: [],
+            schemas: {baseUrl: "http://test"} as any
+        });
+
+        const uploadFilesPayload = {
+            filesToBeUploaded: [
+                {
+                    resourceType: "type1",
+                    resourceFilename: "file1",
+                    resourceId: "id1"
+                }
+            ]
+        } as UploadFilesPayload
+
+        await adrActions.uploadFilestoADR({commit, state: adr, rootState} as any,
+            uploadFilesPayload);
+
+        expect(commit.mock.calls[1][0]["type"]).toBe(ADRMutation.ADRUploadCompleted);
+        // expect(commit.mock.calls[1][0]["payload"]["filename"])
+        //     .toBe("anc.csv");
     }, 7000);
 
 });
