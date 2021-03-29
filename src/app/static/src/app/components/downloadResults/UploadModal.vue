@@ -103,7 +103,6 @@
                 'uploadFilestoADR'
             ),
             async confirmUpload() {
-                console.log("confirmUplaod fired!")
                 const filesToBeUploaded: UploadFile[] = []
                 this.uploadFilesToAdr.map(value => filesToBeUploaded.push(this.uploadFiles[value]))
                 const uploadFilesPayload: UploadFilesPayload = {

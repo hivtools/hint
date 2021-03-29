@@ -158,7 +158,6 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
 
             if (!(adr.state as ADRState).abortUpload){ // aborts subsequent file uploads if a prior fails
                 const { resourceType, resourceFilename, resourceId } = filesToBeUploaded[i]
-                console.log(i, selectedDatasetId, modelCalibrateId, resourceType, resourceFilename, resourceId)
                 
                 if (i === filesToBeUploaded.length - 1){ // only a successful upload of the last file sets the completed state
                     await api<ADRMutation, ADRMutation>(context)
