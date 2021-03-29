@@ -63,4 +63,14 @@ describe("ADR mutations", () => {
         mutations[ADRMutation.SetUploadFiles](state, {payload});
         expect(state.uploadFiles).toBe(payload);
     });
+
+    it("can set Capacity", () => {
+        const state = mockADRState();
+        mutations[ADRMutation.SetCapacity](state, {payload: "admin"});
+        expect(state.capacity).toEqual("admin");
+
+        mutations[ADRMutation.SetCapacity](state, {payload: null});
+        expect(state.capacity).toEqual(null);
+    });
+
 });

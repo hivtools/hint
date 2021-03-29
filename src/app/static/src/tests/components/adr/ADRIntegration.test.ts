@@ -2,9 +2,9 @@ import {Error} from "../../../app/generated";
 import Vuex, {ActionTree} from "vuex";
 import {mockADRState, mockRootState} from "../../mocks";
 import {ADRActions} from "../../../app/store/adr/actions";
-import {RootState} from "../../../app/root";
+import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {shallowMount} from "@vue/test-utils";
+import {shallowMount, Wrapper} from "@vue/test-utils";
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import ADRIntegration from "../../../app/components/adr/ADRIntegration.vue";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
@@ -22,13 +22,13 @@ describe("adr integration", () => {
     const getUserCanUploadStub = jest.fn()
 
     const createStore = (key: string = "", error: Error | null = null,
-                         partialRootState: Partial<RootState> = {}) => {
+                         partialRootState: Partial<RootState> = {}, capacity = "") => {
         const store = new Vuex.Store({
             state: mockRootState({...partialRootState}),
             modules: {
                 adr: {
                     namespaced: true,
-                    state: mockADRState({key, keyError: error, capacity: "admin"}),
+                    state: mockADRState({key, keyError: error, capacity: capacity}),
                     actions: {
                         getDatasets: getDataStub,
                         fetchKey: fetchKeyStub,
@@ -86,31 +86,59 @@ describe("adr integration", () => {
         expect(getDataStub.mock.calls.length).toBe(1);
     });
 
-    it("renders adr-access text as expected", () => {
-        const renders = shallowMount(ADRIntegration, {store: createStore("123")});
+    it("renders adr-access text for admin  users as expected", () => {
+        const mockTooltip = jest.fn()
+        const renders = shallowMount(ADRIntegration,
+            {
+                store: createStore("123",
+                    null, {}, "admin"),
+                directives: {"tooltip": mockTooltip}
+            });
         const store = renders.vm.$store
         expect(renders.findAll(ADRKey).length).toBe(1);
         const spans = (renders.find("#adr-capacity").findAll("span"))
 
-        expect(spans.at(1).classes("has-tooltip")).toBeTruthy()
         expectTranslated(spans.at(0), "ADR access level", "Niveau d'accès ADR", store)
         expectTranslated(spans.at(1), "Read & Write", "Lire et écrire", store)
-    });
-
-    it("renders Tooltip text as expected", () => {
-        const store = createStore("123")
-        const mockTooltip = jest.fn()
-        shallowMount(ADRIntegration,
-            {
-                store,
-                directives: {"tooltip": mockTooltip}
-            })
-
         expect(mockTooltip.mock.calls[0][1].value).toBe("You have full permission to push output files to ADR");
     });
 
-    it("renders Tooltip text as expected in French", () => {
-        const store = createStore("123")
+    it("renders adr-access text for editors as expected", () => {
+        const mockTooltip = jest.fn()
+        const renders = shallowMount(ADRIntegration,
+            {
+                store: createStore("123",
+                    null, {}, "editor"),
+                directives: {"tooltip": mockTooltip}
+            });
+        const store = renders.vm.$store
+        expect(renders.findAll(ADRKey).length).toBe(1);
+        const spans = (renders.find("#adr-capacity").findAll("span"))
+
+        expectTranslated(spans.at(0), "ADR access level", "Niveau d'accès ADR", store)
+        expectTranslated(spans.at(1), "Read & Write", "Lire et écrire", store)
+        expect(mockTooltip.mock.calls[0][1].value).toBe("You have the required permission to push output files to ADR");
+    });
+
+    it("renders adr-access text for members as expected", () => {
+        const mockTooltip = jest.fn()
+        const renders = shallowMount(ADRIntegration,
+            {
+                store: createStore("123",
+                    null, {}, "member"),
+                directives: {"tooltip": mockTooltip}
+            });
+        const store = renders.vm.$store
+        expect(renders.findAll(ADRKey).length).toBe(1);
+        const spans = (renders.find("#adr-capacity").findAll("span"))
+
+        expectTranslated(spans.at(0), "ADR access level", "Niveau d'accès ADR", store)
+        expectTranslated(spans.at(1), "Read", "Lire", store)
+        expect(mockTooltip.mock.calls[0][1].value).toBe("You don't have permission to push data to ADR");
+    });
+
+    it("renders Tooltip text for admin as expected in French", () => {
+        const store = createStore("123", null, {}, "admin")
         store.state.language = Language.fr
         const mockTooltip = jest.fn()
         shallowMount(ADRIntegration,
@@ -119,6 +147,30 @@ describe("adr integration", () => {
                 directives: {"tooltip": mockTooltip}
             })
         expect(mockTooltip.mock.calls[0][1].value).toBe("Vous avez la permission complète de pousser les fichiers de sortie vers ADR");
+    });
+
+    it("renders Tooltip text for editor as expected in French", () => {
+        const store = createStore("123", null, {}, "editor")
+        store.state.language = Language.fr
+        const mockTooltip = jest.fn()
+        shallowMount(ADRIntegration,
+            {
+                store,
+                directives: {"tooltip": mockTooltip}
+            })
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous avez l'autorisation requise pour pousser les fichiers de sortie vers ADR");
+    });
+
+    it("renders Tooltip text for member as expected in French", () => {
+        const store = createStore("123", null, {}, "member")
+        store.state.language = Language.fr
+        const mockTooltip = jest.fn()
+        shallowMount(ADRIntegration,
+            {
+                store,
+                directives: {"tooltip": mockTooltip}
+            })
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous n'êtes pas autorisé à envoyer des données vers ADR");
     });
 
     it("call getUserCanUpload action if key is provided", async() => {

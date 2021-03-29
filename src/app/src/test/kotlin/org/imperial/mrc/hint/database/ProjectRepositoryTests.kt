@@ -132,9 +132,8 @@ class ProjectRepositoryTests
     fun `getProjectFromVersionId throws project exception if project does not belong to user`()
     {
         val uid = setupUser()
-        val projectId = sut.saveNewProject(uid, "testProjectRepo")
         assertThatThrownBy {
-            sut.getProjectFromVersionId("v1", "testProjectRepo")
+            sut.getProjectFromVersionId("v1", uid)
         }.isInstanceOf(ProjectException::class.java)
                 .hasMessageContaining("projectDoesNotExist")
     }
