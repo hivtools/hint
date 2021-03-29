@@ -127,7 +127,6 @@ export interface Dataset {
 
 export interface Organization {
     id: string
-    capacity?: string
 }
 
 export interface ADRSchemas {
