@@ -1,6 +1,12 @@
 import {Error} from "../../../app/generated";
 import Vuex, {ActionTree} from "vuex";
-import {mockADRState, mockRootState} from "../../mocks";
+import {
+    mockADRState,
+    mockBaselineState,
+    mockDatasetResource,
+    mockModelCalibrateState,
+    mockRootState
+} from "../../mocks";
 import {ADRActions} from "../../../app/store/adr/actions";
 import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
@@ -14,6 +20,7 @@ import {ADRState} from "../../../app/store/adr/adr";
 import {prefixNamespace} from "../../../app/utils";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated} from "../../testHelpers";
+import {BaselineState} from "../../../app/store/baseline/baseline";
 
 describe("adr integration", () => {
 
@@ -21,8 +28,29 @@ describe("adr integration", () => {
     const getDataStub = jest.fn();
     const getUserCanUploadStub = jest.fn()
 
+    const fakeDataset = {
+        id: "id1",
+        title: "Some data",
+        url: "www.adr.com/naomi-data/some-data",
+        organization: {id: "org-id"},
+        resources: {
+            pjnz: null,
+            program: null,
+            pop: null,
+            survey: null,
+            shape: mockDatasetResource({
+                url: "shape.geojson",
+                lastModified: "2020-11-03",
+                metadataModified: "2020-11-04"
+            }),
+            anc: null
+        }
+    }
+
     const createStore = (key: string = "", error: Error | null = null,
-                         partialRootState: Partial<RootState> = {}, canUpload = false) => {
+                         partialRootState: Partial<RootState> = {},
+                         canUpload = false,
+                         baselineState?: Partial<BaselineState>) => {
         const store = new Vuex.Store({
             state: mockRootState({...partialRootState}),
             modules: {
@@ -35,6 +63,10 @@ describe("adr integration", () => {
                         getUserCanUpload: getUserCanUploadStub,
                     } as Partial<ADRActions> & ActionTree<ADRState, RootState>,
                     mutations
+                },
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState(baselineState),
                 }
             },
             getters: getters
@@ -91,7 +123,7 @@ describe("adr integration", () => {
         const renders = shallowMount(ADRIntegration,
             {
                 store: createStore("123",
-                    null, {}, true),
+                    null, {}, true, {selectedDataset: fakeDataset}),
                 directives: {"tooltip": mockTooltip}
             });
         const store = renders.vm.$store
@@ -108,7 +140,7 @@ describe("adr integration", () => {
         const renders = shallowMount(ADRIntegration,
             {
                 store: createStore("123",
-                    null, {}, false),
+                    null, {}, false, {selectedDataset: fakeDataset}),
                 directives: {"tooltip": mockTooltip}
             });
         const store = renders.vm.$store
@@ -117,11 +149,11 @@ describe("adr integration", () => {
 
         expectTranslated(spans.at(0), "ADR access level", "Niveau d'accès ADR", store)
         expectTranslated(spans.at(1), "Read", "Lire", store)
-        expect(mockTooltip.mock.calls[0][1].value).toBe("You don't have permission to push data to ADR");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("You do not currently have write permission in this dataset, and will be unable to upload files to ADR");
     });
 
     it("renders Tooltip text for writers as expected in French", () => {
-        const store = createStore("123", null, {}, true)
+        const store = createStore("123", null, {}, true, {selectedDataset: fakeDataset})
         store.state.language = Language.fr
         const mockTooltip = jest.fn()
         shallowMount(ADRIntegration,
@@ -133,7 +165,7 @@ describe("adr integration", () => {
     });
 
     it("renders Tooltip text for readers as expected in French", () => {
-        const store = createStore("123", null, {}, false)
+        const store = createStore("123", null, {}, false, {selectedDataset: fakeDataset})
         store.state.language = Language.fr
         const mockTooltip = jest.fn()
         shallowMount(ADRIntegration,
@@ -141,12 +173,13 @@ describe("adr integration", () => {
                 store,
                 directives: {"tooltip": mockTooltip}
             })
-        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous n'êtes pas autorisé à envoyer des données vers ADR");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous ne disposez actuellement pas des autorisations d'écriture dans cet ensemble de données et vous ne pourrez pas télécharger de fichiers vers ADR");
     });
 
     it("call getUserCanUpload action if key is provided", async() => {
-        const wrapper = shallowMount(ADRIntegration, {store: createStore()});
-        wrapper.vm.$store.state.adr.key = "123"
+        const store = createStore("123", null, {})
+        shallowMount(ADRIntegration, {store});
+        store.state.baseline.selectedDataset = fakeDataset
         expect(getUserCanUploadStub.mock.calls.length).toBe(1);
     });
 });

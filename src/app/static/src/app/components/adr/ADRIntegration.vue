@@ -3,13 +3,11 @@
         <adr-key></adr-key>
         <div v-if="key">
             <select-dataset></select-dataset>
-            <div id="adr-capacity">
-            <span class="font-weight-bold align-self-stretch"
-                  v-translate="'capacityAccessLevel'">
-           </span>
+            <div id="adr-capacity" v-if="selectedDataset">
+                <span class="font-weight-bold align-self-stretch" v-translate="'adrAccessLevel'"></span>
                 <span v-tooltip="handleUploadPermission(hasUploadPermission, true)">
                     <a href="#">{{ handleUploadPermission(hasUploadPermission, false) }}</a>
-                    </span>
+                </span>
             </div>
         </div>
     </div>
@@ -24,6 +22,8 @@
     import i18next from "i18next";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
+    import {BaselineState} from "../../store/baseline/baseline";
+    import {Dataset} from "../../types";
 
     interface Methods {
         getDatasets: () => void
@@ -39,6 +39,7 @@
         key: string | null,
         hasUploadPermission: boolean,
         currentLanguage: Language
+        selectedDataset: Dataset | null
     }
 
     const namespace = "adr";
@@ -59,7 +60,9 @@
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
-            )
+            ),
+            selectedDataset: mapStateProp<BaselineState, Dataset | null>("baseline",
+                (state: BaselineState) => state.selectedDataset)
         },
         methods: {
             getDatasets: mapActionByName(namespace, 'getDatasets'),
@@ -70,16 +73,16 @@
                 switch (isADRWriter) {
                     case true:
                         if (isTooltip) {
-                            displayText = this.getTranslation("capacityAdminTooltip")
+                            displayText = this.getTranslation("adrReadWriteTooltip")
                         } else {
-                            displayText = this.getTranslation("capacityReadWrite")
+                            displayText = this.getTranslation("adrReadWrite")
                         }
                         break
                     case false:
                         if (isTooltip) {
-                            displayText = this.getTranslation("capacityMemberTooltip")
+                            displayText = this.getTranslation("adrReadTooltip")
                         } else {
-                            displayText = this.getTranslation("capacityRead")
+                            displayText = this.getTranslation("adrRead")
                         }
                 }
                 return displayText
@@ -98,6 +101,8 @@
         watch: {
             key() {
                 this.getDatasets();
+            },
+            selectedDataset() {
                 this.getUserCanUpload()
             }
         },
