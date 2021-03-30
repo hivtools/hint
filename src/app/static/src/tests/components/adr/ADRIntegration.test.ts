@@ -147,7 +147,7 @@ describe("adr integration", () => {
         const spans = (renders.find("#adr-capacity").findAll("span"))
 
         expectTranslated(spans.at(0), "ADR access level:", "Niveau d'accès ADR:", store)
-        expectTranslated(spans.at(1), "Read", "Lire", store)
+        expectTranslated(spans.at(1), "Read only", "Lecture seulement", store)
         expect(mockTooltip.mock.calls[0][1].value).toBe("You do not currently have write permission in this dataset, and will be unable to upload files to ADR");
     });
 
