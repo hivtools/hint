@@ -57,12 +57,10 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {formatDateTime, mapActionByName, mapStateProp, mapStateProps, mapMutationByName} from "../../utils";
     import {ADRState} from "../../store/adr/adr";
-    // import {UploadFilesPayload} from "../../store/adr/actions";
     import {ADRMutation} from "../../store/adr/mutations";
 
     interface Methods {
         uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
-        // ADRUploadStarted: () => void;
         confirmUpload: () => void;
         handleCancel: () => void
         lastModified: (date: string) => string | null
@@ -97,7 +95,6 @@
             }
         },
         methods: {
-            // ADRUploadStarted: mapMutationByName('adr', ADRMutation.ADRUploadStarted),
             uploadFilesToADRAction: mapActionByName<UploadFile[]>(
                 'adr',
                 'uploadFilestoADR'
@@ -105,10 +102,6 @@
             async confirmUpload() {
                 const uploadFilesPayload: UploadFile[] = []
                 this.uploadFilesToAdr.map(value => uploadFilesPayload.push(this.uploadFiles[value]))
-                // const uploadFilesPayload: UploadFilesPayload = {
-                //     filesToBeUploaded
-                // };
-                // this.ADRUploadStarted();
                 this.uploadFilesToADRAction(uploadFilesPayload);
                 this.$emit("close")
             },
