@@ -102,6 +102,15 @@ describe("Download Results component", () => {
         expect(headers.length).toBe(3)
     });
 
+    it("does not render status messages or error alerts without appropriate states", () => {
+        const store = createStore(true, jest.fn());
+        const wrapper = shallowMount(DownloadResults, {store, localVue});
+
+        expect(wrapper.find("#uploading").exists()).toBe(false);
+        expect(wrapper.find("#uploadComplete").exists()).toBe(false);
+        expect(wrapper.find("error-alert-stub").exists()).toBe(false);
+    });
+
     it("renders uploading status messages as expected and disables upload button", () => {
         const store = createStore(true, jest.fn(), true);
         const wrapper = shallowMount(DownloadResults, {store, localVue});
