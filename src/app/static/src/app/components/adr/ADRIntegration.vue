@@ -3,7 +3,7 @@
         <adr-key></adr-key>
         <div v-if="key">
             <select-dataset></select-dataset>
-            <div id="adr-capacity" v-if="selectedDataset">
+            <div class="pt-3" id="adr-capacity" v-if="selectedDataset">
                 <span class="font-weight-bold align-self-stretch" v-translate="'adrAccessLevel'"></span>
                 <span v-tooltip="handleUploadPermission(hasUploadPermission, true)">
                     <a href="#">{{ handleUploadPermission(hasUploadPermission, false) }}</a>
