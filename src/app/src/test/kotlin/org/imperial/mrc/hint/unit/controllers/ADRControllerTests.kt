@@ -427,11 +427,39 @@ class ADRControllerTests : HintrControllerTests()
         assertThat(result.body!!).isEqualTo("whatever")
     }
 
+    @Test
+    fun `can compare hash to check if upload file has changes `()
+    {
+        val expectedUrl = "resource_show?id=resource-id"
+        val mockClient = mock<ADRClient> {
+            on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
+        }
+
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+
+        val result = sut.uploadFileHasNoChanges ("resource-id", "whatever")
+        assertThat(result).isEqualTo(true)
+    }
+
     private fun makeFakeSuccessResponse(): ResponseEntity<String>
     {
         val resultWithResources = mapOf("resources" to listOf(1, 2))
         val resultWithoutResources = mapOf("resources" to listOf<Any>())
-        val data = mapOf("results" to listOf(resultWithResources, resultWithoutResources))
+        val hash = mapOf("hash" to "whatever")
+        val data = mapOf("results" to listOf(hash, resultWithResources, resultWithoutResources))
         val body = mapOf("data" to data)
         return ResponseEntity
                 .ok()

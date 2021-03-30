@@ -213,12 +213,15 @@ class ADRController(private val encryption: Encryption,
                 null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
                 else ->
                 {
-                    val sameDataset = isSameDataset(resourceId, newDatasetHash)
-                    if (!sameDataset)
+                    val fileHasNoChanges = uploadFileHasNoChanges(resourceId, newDatasetHash)
+                    if (fileHasNoChanges)
+                    {
+                        SuccessResponse(null).asResponseEntity()
+                    }
+                    else
                     {
                         adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
                     }
-                    SuccessResponse(null).asResponseEntity()
                 }
             }
         } finally
@@ -227,11 +230,16 @@ class ADRController(private val encryption: Encryption,
         }
     }
 
-    fun isSameDataset(resourceId: String, newDatasetHash: String): Boolean
+    fun uploadFileHasNoChanges(resourceId: String, newDatasetHash: String): Boolean
     {
         val adr = adrClientBuilder.build()
         val response = adr.get("resource_show?id=${resourceId}")
-        val existingDatasetHash = objectMapper.readTree(response.body!!)["data"]["results"]["hash"]
-        return existingDatasetHash.equals(newDatasetHash)
+        val existingDatasetHash = objectMapper.readTree(response.body!!)["data"]["results"]["hash"].toString()
+
+        if (existingDatasetHash.isNotEmpty())
+        {
+            return existingDatasetHash == newDatasetHash
+        }
+        return false
     }
 }
