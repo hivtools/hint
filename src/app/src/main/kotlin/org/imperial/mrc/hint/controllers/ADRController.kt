@@ -204,34 +204,17 @@ class ADRController(private val encryption: Encryption,
         val commonParameters =
                 listOf("name" to resourceFileName, "description" to artefact.second, "hash" to file.md5sum(),
                         "resource_type" to resourceType)
-        val newDatasetHash = commonParameters.getOrNull(2)!!.second
         val adr = adrClientBuilder.build()
         return try
         {
             when (resourceId)
             {
                 null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
-                else ->
-                {
-                    val sameDataset = isSameDataset(resourceId, newDatasetHash)
-                    if (!sameDataset)
-                    {
-                        adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
-                    }
-                    SuccessResponse(null).asResponseEntity()
-                }
+                else -> adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
             }
-        } finally
-        {
+        }
+        finally {
             tmpDir.deleteRecursively()
         }
-    }
-
-    fun isSameDataset(resourceId: String, newDatasetHash: String): Boolean
-    {
-        val adr = adrClientBuilder.build()
-        val response = adr.get("resource_show?id=${resourceId}")
-        val existingDatasetHash = objectMapper.readTree(response.body!!)["data"]["results"]["hash"]
-        return existingDatasetHash.equals(newDatasetHash)
     }
 }
