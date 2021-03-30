@@ -24,6 +24,7 @@ import java.nio.file.Files
 
 @RestController
 @RequestMapping("/adr")
+@Suppress("LongParameterList")
 class ADRController(private val encryption: Encryption,
                     private val userRepository: UserRepository,
                     private val adrClientBuilder: ADRClientBuilder,
