@@ -54,7 +54,6 @@
     import {ADRState} from "../../store/adr/adr";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
-    import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ErrorAlert from "../ErrorAlert.vue";
