@@ -20,7 +20,11 @@
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
-                <button @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href="#" :disabled="uploading">
+                <button @click.prevent="handleUploadModal" 
+                        class="btn btn-lg my-3" 
+                        :class="uploading ? 'btn-secondary' : 'btn-red'"
+                        href="#" 
+                        :disabled="uploading">
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
                 </button>

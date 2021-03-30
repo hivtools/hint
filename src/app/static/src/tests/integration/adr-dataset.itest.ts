@@ -208,27 +208,18 @@ describe("ADR dataset-related actions", () => {
     it("hits upload files to adr endpoint and gets appropriate error", async () => {
 
         const commit = jest.fn();
-
-        // 1. get datasets
-        await adrActions.getDatasets({commit, rootState} as any);
-
-        // 2. select a naomi dev dataset
-        const datasets = commit.mock.calls[2][0]["payload"];
-        const dataset = datasets.find((dataset: any) => dataset.organization.name === "naomi-development-team");
-
-        // 3. check can upload
-        commit.mockClear();
         const root = {
             ...rootState,
+            modelCalibrate: {calibrateId: "calId"},
             baseline: {
                 selectedDataset: {
-                    id: dataset.id,
-                    organization: {id: dataset.organization.id}
+                    id: "datasetId",
+                    organization: {id: "organisationId"}
                 }
             }
         };
-
-        const adr = { schemas, datasets };
+        
+        const adr = { schemas, datasets: [] };
 
         const uploadFilesPayload = [
             {
