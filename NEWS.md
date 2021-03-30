@@ -1,3 +1,7 @@
+£ hint 1.27.0
+
+* Avoid re-uploading unchanged files to ADR
+
 # hint 1.26.0
 
 * Set resource_type when pushing to ADR
