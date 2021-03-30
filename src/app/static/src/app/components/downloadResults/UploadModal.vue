@@ -99,9 +99,9 @@
                 'adr',
                 'uploadFilestoADR'
             ),
-            async confirmUpload() {
+            confirmUpload() {
                 const uploadFilesPayload: UploadFile[] = []
-                this.uploadFilesToAdr.map(value => uploadFilesPayload.push(this.uploadFiles[value]))
+                this.uploadFilesToAdr.forEach(value => uploadFilesPayload.push(this.uploadFiles[value]))
                 this.uploadFilesToADRAction(uploadFilesPayload);
                 this.$emit("close")
             },

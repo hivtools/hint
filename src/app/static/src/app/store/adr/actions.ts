@@ -164,8 +164,11 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             } else {
                 apiRequest = apiRequest.ignoreSuccess();
             }
-            await apiRequest.postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`,
+            const response = await apiRequest.postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`,
                 qs.stringify(requestParams))
+            if (!response) {
+                break
+            }
         }
     }
 };

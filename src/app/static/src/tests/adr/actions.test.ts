@@ -381,8 +381,7 @@ describe("ADR actions", () => {
                 },
                 {
                     resourceType: "type2",
-                    resourceFilename: "file2",
-                    resourceId: "id2"
+                    resourceFilename: "file2"
                 }
             ] as UploadFile[]
 
@@ -399,9 +398,14 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
         expect(commit.mock.calls[1][0]["payload"]).toEqual(success2);
         expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadCompleted");
+        expect(mockAxios.history.post.length).toBe(2);
+        expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1");
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/type1/calId");
+        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2");
+        expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/type2/calId");
     });
 
-    it("uploadFilestoADR sets upload failure", async () => {
+    it("uploadFilestoADR sets upload failure and prevents subsquent uploads", async () => {
         const commit = jest.fn();
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
@@ -419,11 +423,21 @@ describe("ADR actions", () => {
                 resourceType: "type1",
                 resourceFilename: "file1",
                 resourceId: "id1"
+            },
+            {
+                resourceType: "type2",
+                resourceFilename: "file2",
+                resourceId: "id2"
             }
         ] as UploadFile[]
 
+
+        const success2 = {response: "success2"}
+
         mockAxios.onPost(`adr/datasets/datasetId/resource/type1/calId`)
             .reply(500, mockFailure("failed"));
+        mockAxios.onPost(`adr/datasets/datasetId/resource/type2/calId`)
+            .reply(200, mockSuccess(success2));
 
         await actions.uploadFilestoADR({commit, state: adr, rootState: root} as any, uploadFilesPayload);
 
@@ -431,5 +445,8 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
         expect(commit.mock.calls[1][0]["payload"]).toEqual({"detail": "failed", "error": "OTHER_ERROR"});
         expect(commit.mock.calls[1][0]["type"]).toBe("SetADRUploadError");
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1");
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/type1/calId");
     });
 });
