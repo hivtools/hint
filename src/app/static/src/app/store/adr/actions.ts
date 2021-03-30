@@ -8,9 +8,9 @@ import {constructUploadFile, datasetFromMetadata} from "../../utils";
 import {Organization, UploadFile} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 
-export interface UploadFilesPayload {
-    filesToBeUploaded: UploadFile[]
-}
+// export interface UploadFilesPayload {
+//     filesToBeUploaded: UploadFile[]
+// }
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -20,7 +20,7 @@ export interface ADRActions {
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
     getUploadFiles: (store: ActionContext<ADRState, RootState>) => void;
-    uploadFilestoADR: (store: ActionContext<ADRState, RootState>, uploadFilesPayload: UploadFilesPayload) => void;
+    uploadFilestoADR: (store: ActionContext<ADRState, RootState>, uploadFilesPayload: UploadFile[]) => void;
 }
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
@@ -150,16 +150,15 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     async uploadFilestoADR(context, uploadFilesPayload) {
         const {state, rootState, commit} = context;
         const selectedDatasetId = rootState.baseline.selectedDataset?.id;
-        const {filesToBeUploaded} = uploadFilesPayload;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
+        commit({type: ADRMutation.ADRUploadStarted});
 
-        let i: number;
-        for (i = 0; i < filesToBeUploaded.length; i++) {
+        for (let i = 0; i < uploadFilesPayload.length; i++) {
 
-            if (!(adr.state as ADRState).abortUpload){ // aborts subsequent file uploads if a prior fails
-                const { resourceType, resourceFilename, resourceId } = filesToBeUploaded[i]
+            // if (!(adr.state as ADRState).abortUpload){ // aborts subsequent file uploads if a prior fails
+                const { resourceType, resourceFilename, resourceId } = uploadFilesPayload[i]
                 
-                if (i === filesToBeUploaded.length - 1){ // only a successful upload of the last file sets the completed state
+                if (i === uploadFilesPayload.length - 1){ // only a successful upload of the last file sets the completed state
                     await api<ADRMutation, ADRMutation>(context)
                         .withError(ADRMutation.SetADRUploadError)
                         .withSuccess(ADRMutation.ADRUploadCompleted)
@@ -172,7 +171,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                         .postAndReturn(`/adr/datasets/hint_test/resource/${resourceType}/${modelCalibrateId}`,
                         qs.stringify({resourceFileName: resourceFilename}))
                 }
-            }
+            // }
         }
         
     }

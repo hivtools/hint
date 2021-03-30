@@ -2,10 +2,11 @@ import {actions as baselineActions} from "../../app/store/baseline/actions";
 import {actions as surveyAndProgramActions} from "../../app/store/surveyAndProgram/actions";
 import {login, rootState} from "./integrationTest";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
-import {actions as adrActions, UploadFilesPayload} from "../../app/store/adr/actions";
+import {actions as adrActions} from "../../app/store/adr/actions";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {getFormData} from "./helpers";
 import {ADRMutation} from "../../app/store/adr/mutations";
+import {UploadFile} from "../../app/types";
 import {mockADRState} from "../mocks";
 
 // this suite tests all endpoints that talk to the ADR
@@ -229,15 +230,13 @@ describe("ADR dataset-related actions", () => {
 
         const adr = { schemas, datasets };
 
-        const uploadFilesPayload = {
-            filesToBeUploaded: [
-                {
-                    resourceType: "type1",
-                    resourceFilename: "file1",
-                    resourceId: "id1"
-                }
-            ]
-        } as UploadFilesPayload
+        const uploadFilesPayload = [
+            {
+                resourceType: "type1",
+                resourceFilename: "file1",
+                resourceId: "id1"
+            }
+        ] as UploadFile[]
 
         await adrActions.uploadFilestoADR({commit, state: adr, rootState: root} as any,
             uploadFilesPayload);

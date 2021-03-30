@@ -24,7 +24,7 @@
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
                 </button>
-                <div id="uploadStatus" v-if="uploadStatusMessage" class="d-flex align-items-end">
+                <!-- <div id="uploadStatus" v-if="uploadStatusMessage" class="d-flex align-items-end">
                     <loading-spinner v-if="uploading" size="xs"></loading-spinner>
                     <div class="d-flex align-items-center height-40" :class="{'ml-1': uploading, 'mr-1': uploadComplete}">
                         <span :class="{'text-danger': uploadError, 'font-weight-bold': uploadComplete}">{{ uploadStatusMessage }}</span>
@@ -32,7 +32,22 @@
                     <div class="d-flex align-items-center height-40">
                         <tick color="#e31837" v-if="uploadComplete" width="20px"></tick>
                     </div>
+                </div> -->
+                <div id="uploading" v-if="uploading" class="d-flex align-items-end">
+                    <loading-spinner size="xs"></loading-spinner>
+                    <div class="d-flex align-items-center height-40 ml-1'">
+                        <span v-translate="'uploading'"></span>
+                    </div>
                 </div>
+                <div id="uploadComplete" v-if="uploadComplete" class="d-flex align-items-end">
+                    <div class="d-flex align-items-center height-40 mr-1">
+                        <span class="font-weight-bold" v-translate="'uploadComplete'"></span>
+                    </div>
+                    <div class="d-flex align-items-center height-40">
+                        <tick color="#e31837" v-if="uploadComplete" width="20px"></tick>
+                    </div>
+                </div>
+                <error-alert v-if="uploadError" :error="uploadError"></error-alert>
             </div>
         </div>
         <upload-modal id="modal" :open="uploadModalOpen" @close="uploadModalOpen = false"></upload-modal>
@@ -51,6 +66,7 @@
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     interface Computed {
         modelCalibrateId: string,
@@ -61,7 +77,7 @@
         uploading: boolean,
         uploadComplete: boolean,
         uploadError: null | UploadError,
-        currentLanguage: Language,
+        // currentLanguage: Language,
         hasUploadPermission: boolean
     }
 
@@ -96,21 +112,21 @@
                 uploadComplete: state => state.uploadComplete,
                 uploadError: state => state.uploadError
             }),
-            uploadStatusMessage: function(){
-                if (this.uploadError){
-                    if ("detail" in this.uploadError){
-                        return "ERROR: " + this.uploadError.detail
-                    } else return this.uploadError
-                } else if (this.uploadComplete){
-                    return i18next.t("uploadComplete", {lng: this.currentLanguage})
-                } else if (this.uploading){
-                    return i18next.t("uploading", {lng: this.currentLanguage})
-                } else return ''
-            },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
+            // uploadStatusMessage: function(){
+            //     if (this.uploadError){
+            //         if ("detail" in this.uploadError){
+            //             return "ERROR: " + this.uploadError.detail
+            //         } else return this.uploadError
+            //     } else if (this.uploadComplete){
+            //         return i18next.t("uploadComplete", {lng: this.currentLanguage})
+            //     } else if (this.uploading){
+            //         return i18next.t("uploading", {lng: this.currentLanguage})
+            //     } else return ''
+            // },
+            // currentLanguage: mapStateProp<RootState, Language>(
+            //     null,
+            //     (state: RootState) => state.language
+            // ),
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr",
                 (state: ADRState) => state.userCanUpload
             ),
@@ -140,6 +156,7 @@
             UploadIcon,
             LoadingSpinner,
             Tick,
+            ErrorAlert,
             UploadModal
         }
     });

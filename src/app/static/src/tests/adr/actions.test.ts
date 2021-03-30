@@ -9,9 +9,10 @@ import {
     mockRootState,
     mockSuccess
 } from "../mocks";
-import {actions, UploadFilesPayload} from "../../app/store/adr/actions";
+import {actions} from "../../app/store/adr/actions";
 import {ADRMutation} from "../../app/store/adr/mutations";
 import { modelCalibrate } from "../../app/store/modelCalibrate/modelCalibrate";
+import {UploadFile} from "../../types";
 
 describe("ADR actions", () => {
     const state = mockADRState();
@@ -370,8 +371,7 @@ describe("ADR actions", () => {
             schemas: {baseUrl: "http://test"} as any
         });
 
-        const uploadFilesPayload = {
-            filesToBeUploaded: [
+        const uploadFilesPayload = [
                 {
                     resourceType: "type1",
                     resourceFilename: "file1",
@@ -382,8 +382,7 @@ describe("ADR actions", () => {
                     resourceFilename: "file2",
                     resourceId: "id2"
                 }
-            ]
-        } as UploadFilesPayload
+            ] as UploadFile[]
 
         const success = {response: "success"}
         const success2 = {response: "success2"}
@@ -409,15 +408,13 @@ describe("ADR actions", () => {
             schemas: {baseUrl: "http://test"} as any
         });
 
-        const uploadFilesPayload = {
-            filesToBeUploaded: [
-                {
-                    resourceType: "type1",
-                    resourceFilename: "file1",
-                    resourceId: "id1"
-                }
-            ]
-        } as UploadFilesPayload
+        const uploadFilesPayload = [
+            {
+                resourceType: "type1",
+                resourceFilename: "file1",
+                resourceId: "id1"
+            }
+        ] as UploadFile[]
 
         mockAxios.onPost(`adr/datasets/hint_test/resource/type1/calId`)
             .reply(500, mockFailure("failed"));

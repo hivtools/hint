@@ -57,12 +57,12 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {formatDateTime, mapActionByName, mapStateProp, mapStateProps, mapMutationByName} from "../../utils";
     import {ADRState} from "../../store/adr/adr";
-    import {UploadFilesPayload} from "../../store/adr/actions";
+    // import {UploadFilesPayload} from "../../store/adr/actions";
     import {ADRMutation} from "../../store/adr/mutations";
 
     interface Methods {
-        uploadFilestoADRAction: (uploadFilesPayload: UploadFilesPayload) => void;
-        ADRUploadStarted: () => void;
+        uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
+        // ADRUploadStarted: () => void;
         confirmUpload: () => void;
         handleCancel: () => void
         lastModified: (date: string) => string | null
@@ -97,19 +97,19 @@
             }
         },
         methods: {
-            ADRUploadStarted: mapMutationByName('adr', ADRMutation.ADRUploadStarted),
-            uploadFilestoADRAction: mapActionByName<UploadFilesPayload>(
+            // ADRUploadStarted: mapMutationByName('adr', ADRMutation.ADRUploadStarted),
+            uploadFilesToADRAction: mapActionByName<UploadFile[]>(
                 'adr',
                 'uploadFilestoADR'
             ),
             async confirmUpload() {
-                const filesToBeUploaded: UploadFile[] = []
-                this.uploadFilesToAdr.map(value => filesToBeUploaded.push(this.uploadFiles[value]))
-                const uploadFilesPayload: UploadFilesPayload = {
-                    filesToBeUploaded
-                };
-                this.ADRUploadStarted();
-                this.uploadFilestoADRAction(uploadFilesPayload);
+                const uploadFilesPayload: UploadFile[] = []
+                this.uploadFilesToAdr.map(value => uploadFilesPayload.push(this.uploadFiles[value]))
+                // const uploadFilesPayload: UploadFilesPayload = {
+                //     filesToBeUploaded
+                // };
+                // this.ADRUploadStarted();
+                this.uploadFilesToADRAction(uploadFilesPayload);
                 this.$emit("close")
             },
             handleCancel() {
