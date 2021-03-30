@@ -11,8 +11,9 @@ import {
 } from "../mocks";
 import {actions} from "../../app/store/adr/actions";
 import {ADRMutation} from "../../app/store/adr/mutations";
-import { modelCalibrate } from "../../app/store/modelCalibrate/modelCalibrate";
-import {UploadFile} from "../../types";
+// import { modelCalibrate } from "../../app/store/modelCalibrate/modelCalibrate";
+import {UploadFile} from "../../app/types";
+import { baseline } from "../../app/store/baseline/baseline";
 
 describe("ADR actions", () => {
     const state = mockADRState();
@@ -364,7 +365,10 @@ describe("ADR actions", () => {
     it("uploadFilestoADR uploads files sequentially to adr and commits complete on upload of final file", async () => {
         const commit = jest.fn();
         const root = mockRootState({
-            modelCalibrate: mockModelCalibrateState({calibrateId: "calId"})
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
+            baseline: mockBaselineState({selectedDataset: {
+                id: "datasetId"
+            }} as any)
         });
         const adr = mockADRState({
             datasets: [],
@@ -386,22 +390,26 @@ describe("ADR actions", () => {
 
         const success = {response: "success"}
         const success2 = {response: "success2"}
-        mockAxios.onPost(`adr/datasets/hint_test/resource/type1/calId`)
+        mockAxios.onPost(`adr/datasets/datasetId/resource/type1/calId`)
             .reply(200, mockSuccess(success));
-        mockAxios.onPost(`adr/datasets/hint_test/resource/type2/calId`)
+        mockAxios.onPost(`adr/datasets/datasetId/resource/type2/calId`)
             .reply(200, mockSuccess(success2));
 
         await actions.uploadFilestoADR({commit, state: adr, rootState: root} as any, uploadFilesPayload);
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["payload"]).toEqual(success2);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadCompleted");
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(success2);
+        expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadCompleted");
     });
 
     it("uploadFilestoADR sets upload failure", async () => {
         const commit = jest.fn();
         const root = mockRootState({
-            modelCalibrate: mockModelCalibrateState({calibrateId: "calId"})
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
+            baseline: mockBaselineState({selectedDataset: {
+                id: "datasetId"
+            }} as any)
         });
         const adr = mockADRState({
             datasets: [],
@@ -416,13 +424,14 @@ describe("ADR actions", () => {
             }
         ] as UploadFile[]
 
-        mockAxios.onPost(`adr/datasets/hint_test/resource/type1/calId`)
+        mockAxios.onPost(`adr/datasets/datasetId/resource/type1/calId`)
             .reply(500, mockFailure("failed"));
 
         await actions.uploadFilestoADR({commit, state: adr, rootState: root} as any, uploadFilesPayload);
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["payload"]).toEqual({"detail": "failed", "error": "OTHER_ERROR"});
-        expect(commit.mock.calls[0][0]["type"]).toBe("SetADRUploadError");
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
+        expect(commit.mock.calls[1][0]["payload"]).toEqual({"detail": "failed", "error": "OTHER_ERROR"});
+        expect(commit.mock.calls[1][0]["type"]).toBe("SetADRUploadError");
     });
 });

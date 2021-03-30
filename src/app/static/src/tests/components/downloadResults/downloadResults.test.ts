@@ -102,22 +102,14 @@ describe("Download Results component", () => {
         expect(headers.length).toBe(3)
     });
 
-    it("does not render upload status message when should not", async () => {
-        const store = createStore();
-        const wrapper = shallowMount(DownloadResults, {store});
-        expect(wrapper.find("#uploadStatus").exists()).toBe(false)
-    });
-
     it("renders uploading status messages as expected and disables upload button", () => {
         const store = createStore(true, jest.fn(), true);
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
-        const statusMessage = wrapper.find("#uploadStatus");
+        const statusMessage = wrapper.find("#uploading");
         expect(statusMessage.find("loading-spinner-stub").exists()).toBe(true)
-        expect(statusMessage.findAll("div").at(1).classes()).toContain("ml-1")
         expectTranslated(statusMessage.find("span"), "Uploading (this may take a while)",
             "Téléchargement (cela peut prendre un certain temps)", store);
-        expect(statusMessage.find("tick-stub").exists()).toBe(false)
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBe("disabled")
@@ -127,10 +119,7 @@ describe("Download Results component", () => {
         const store = createStore(true, jest.fn(), false, true);
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
-        const statusMessage = wrapper.find("#uploadStatus");
-        expect(statusMessage.find("loading-spinner-stub").exists()).toBe(false)
-        expect(statusMessage.findAll("div").at(1).classes()).toContain("mr-1")
-        expect(statusMessage.find("span").classes()).toContain('font-weight-bold')
+        const statusMessage = wrapper.find("#uploadComplete");
         expectTranslated(statusMessage.find("span"), "Upload complete",
             "Téléchargement complet", store);
         expect(statusMessage.find("tick-stub").exists()).toBe(true)
@@ -139,16 +128,13 @@ describe("Download Results component", () => {
         expect(uploadButton.attributes("disabled")).toBeUndefined();
     });
 
-    it("renders upload error status messages as expected", () => {
+    it("renders upload error alert as expected", () => {
         const error = { detail: "there was an error"}
         const store = createStore(true, jest.fn(), false, false, error);
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
-        const statusMessage = wrapper.find("#uploadStatus");
-        expect(statusMessage.find("loading-spinner-stub").exists()).toBe(false)
-        expect(statusMessage.find("span").classes()).toContain('text-danger')
-        expect(statusMessage.find("span").text()).toBe("ERROR: " + error.detail)
-        expect(statusMessage.find("tick-stub").exists()).toBe(false)
+        const errorAlert = wrapper.find("error-alert-stub");
+        expect(errorAlert.props("error")).toEqual(error)
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();

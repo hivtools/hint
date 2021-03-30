@@ -69,12 +69,10 @@ describe("ADR mutations", () => {
         mutations[ADRMutation.SetADRUploadError](state, {payload: mockError("error detail")});
         expect(state.uploadError!!.detail).toBe("error detail");
         expect(state.uploading).toBe(false);
-        expect(state.abortUpload).toBe(true);
 
         mutations[ADRMutation.SetADRUploadError](state, {payload: null});
         expect(state.uploadError).toBe(null);
         expect(state.uploading).toBe(false);
-        expect(state.abortUpload).toBe(true);
     });
 
     it("can set upload started", () => {
@@ -82,7 +80,6 @@ describe("ADR mutations", () => {
         mutations[ADRMutation.ADRUploadStarted](state);
         expect(state.uploadError).toBe(null);
         expect(state.uploading).toBe(true);
-        expect(state.abortUpload).toBe(false);
         expect(state.uploadComplete).toBe(false);
     });
 

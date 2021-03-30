@@ -205,7 +205,7 @@ describe("ADR dataset-related actions", () => {
             .toBe("anc.csv");
     }, 7000);
 
-    it("can upload files to adr", async () => {
+    it("hits upload files to adr endpoint and gets appropriate error", async () => {
 
         const commit = jest.fn();
 
@@ -241,9 +241,9 @@ describe("ADR dataset-related actions", () => {
         await adrActions.uploadFilestoADR({commit, state: adr, rootState: root} as any,
             uploadFilesPayload);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(ADRMutation.ADRUploadCompleted);
-        // expect(commit.mock.calls[1][0]["payload"]["filename"])
-        //     .toBe("anc.csv");
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SetADRUploadError");
+        expect(commit.mock.calls[0][0]["payload"]["error"]).toBe("OTHER_ERROR");
     }, 7000);
 
 });
