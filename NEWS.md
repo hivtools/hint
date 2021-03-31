@@ -1,3 +1,7 @@
+# hint 1.28.0
+
+* Progress feedback on uploading files to ADR
+
 # hint 1.27.0
 
 * Invoke ADR uploads with actions
