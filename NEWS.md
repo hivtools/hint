@@ -1,3 +1,7 @@
+# hint 1.27.0
+
+* Invoke ADR uploads with actions
+
 # hint 1.26.0
 
 * Set resource_type when pushing to ADR
