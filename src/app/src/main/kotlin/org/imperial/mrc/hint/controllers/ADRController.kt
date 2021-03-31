@@ -1,9 +1,12 @@
 package org.imperial.mrc.hint.controllers
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
+import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.UserRepository
@@ -14,6 +17,7 @@ import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
+import org.skife.jdbi.org.antlr.runtime.misc.Stats
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -205,8 +209,8 @@ class ADRController(private val encryption: Encryption,
         val commonParameters =
                 listOf("name" to resourceFileName, "description" to artefact.second, "hash" to file.md5sum(),
                         "resource_type" to resourceType)
-        val newDatasetHash = commonParameters.getOrNull(2)!!.second
         val adr = adrClientBuilder.build()
+        val newDatasetHash = commonParameters.getOrNull(2)!!.second
         return try
         {
             when (resourceId)
@@ -235,11 +239,10 @@ class ADRController(private val encryption: Encryption,
     {
         val adr = adrClientBuilder.build()
         val response = adr.get("resource_show?id=${resourceId}")
-        val existingDatasetHash = objectMapper.readTree(response.body!!)["data"]["results"]["hash"].toString()
-
-        if (existingDatasetHash.isNotEmpty())
+        if (response.statusCode.is2xxSuccessful)
         {
-            return existingDatasetHash == newDatasetHash
+            val existingDatasetHash = objectMapper.readTree(response.body!!)
+            return existingDatasetHash["data"]["hash"].textValue() == newDatasetHash
         }
         return false
     }
