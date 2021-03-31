@@ -12,6 +12,7 @@ export enum ADRMutation {
     SetSchemas = "SetSchemas",
     SetUploadFiles = "SetUploadFiles",
     ADRUploadStarted = "ADRUploadStarted",
+    ADRUploadProgress = "ADRUploadProgress",
     ADRUploadCompleted = "ADRUploadCompleted",
     SetADRUploadError = "SetADRUploadError",
     SetUserCanUpload = "SetUserCanUpload"
@@ -46,20 +47,29 @@ export const mutations: MutationTree<ADRState> = {
         state.uploadFiles = action.payload;
     },
 
-    [ADRMutation.ADRUploadStarted](state: ADRState) {
+    [ADRMutation.ADRUploadStarted](state: ADRState, action: PayloadWithType<number>) {
         state.uploading = true;
         state.uploadComplete = false;
         state.uploadError = null;
+        state.totalFilesUploading = action.payload;
+    },
+
+    [ADRMutation.ADRUploadProgress](state: ADRState, action: PayloadWithType<number>) {
+        state.currentFileUploading = action.payload;
     },
 
     [ADRMutation.ADRUploadCompleted](state: ADRState) {
         state.uploading = false;
         state.uploadComplete = true;
+        state.currentFileUploading = null;
+        state.totalFilesUploading = null;
     },
 
     [ADRMutation.SetADRUploadError](state: ADRState, action: PayloadWithType<Error | null>) {
         state.uploadError = action.payload;
         state.uploading = false;
+        state.currentFileUploading = null;
+        state.totalFilesUploading = null;
     },
 
     [ADRMutation.SetUserCanUpload](state: ADRState, action: PayloadWithType<boolean>) {

@@ -31,7 +31,7 @@
                 <div id="uploading" v-if="uploading" class="d-flex align-items-end">
                     <loading-spinner size="xs"></loading-spinner>
                     <div class="d-flex align-items-center height-40 ml-2'">
-                        <span v-translate="'uploading'"></span>
+                        <span v-html="uploadingStatus"></span>
                     </div>
                 </div>
                 <div id="uploadComplete" v-if="uploadComplete" class="d-flex align-items-end">
@@ -61,12 +61,17 @@
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ErrorAlert from "../ErrorAlert.vue";
+    import i18next from "i18next";
 
     interface Computed {
         modelCalibrateId: string,
         spectrumUrl: string,
         coarseOutputUrl: string,
         summaryReportUrl: string,
+        uploadingStatus: string,
+        currentLanguage: Language,
+        currentFileUploading: number | null,
+        totalFilesUploading: number | null,
         uploading: boolean,
         uploadComplete: boolean,
         uploadError: null | UploadError,
@@ -100,12 +105,25 @@
                 modelCalibrateId: state => state.calibrateId
             }),
             ...mapStateProps<ADRState, keyof Computed>("adr", {
+                currentFileUploading: state => state.currentFileUploading,
+                totalFilesUploading: state => state.totalFilesUploading,
                 uploading: state => state.uploading,
                 uploadComplete: state => state.uploadComplete,
                 uploadError: state => state.uploadError
             }),
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr",
                 (state: ADRState) => state.userCanUpload
+            ),
+            uploadingStatus: function () {
+                return i18next.t("uploadingStatus", {
+                    fileNumber: this.currentFileUploading,
+                    totalFiles: this.totalFilesUploading,
+                    lng: this.currentLanguage,
+                });
+            },
+            currentLanguage: mapStateProp<RootState, Language>(
+                null,
+                (state: RootState) => state.language
             ),
             spectrumUrl: function () {
                 return `/download/spectrum/${this.modelCalibrateId}`
