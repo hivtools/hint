@@ -7,6 +7,7 @@ import {ADRMutation} from "./mutations";
 import {constructUploadFile, datasetFromMetadata} from "../../utils";
 import {Organization, UploadFile, Dict} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
+import {switches} from "../../featureSwitches";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -122,7 +123,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                         const metadata = response.data;
                         const schemas = state.schemas!;
 
-                        const uploadFiles = {
+                        const uploadFiles =  {
                             outputZip: constructUploadFile(
                                 metadata,
                                 0,
@@ -135,7 +136,30 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                                 schemas.outputSummary,
                                 `${project.name}_naomi_summary.html`,
                                 "uploadFileOutputSummary")
-                        };
+                        } as Dict<UploadFile>;
+
+                        if (switches.adrPushInputs) {
+
+                            const addInputFileToUploads = (schema: string, displayName: string) => {
+                                const uploadFile = constructUploadFile(
+                                    metadata,
+                                    Object.keys(uploadFiles).length,
+                                    schemas.pjnz,
+                                    null,
+                                    displayName
+                                );
+                                if (uploadFile) {
+                                    uploadFiles[schema] = uploadFile;
+                                }
+                            };
+
+                            if (!rootState.baseline.pjnz!.fromADR) {
+                                addInputFileToUploads(schemas.pjnz, "PJNZ")
+                            }
+
+
+
+                        }
 
                         commit({type: ADRMutation.SetUploadFiles, payload: uploadFiles});
                     }

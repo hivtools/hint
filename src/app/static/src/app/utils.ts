@@ -1,6 +1,6 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
-import {ADRSchemas, DatasetResource, Dict, Version} from "./types";
+import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
 import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
@@ -167,6 +167,7 @@ export const findResource = (datasetWithResources: any, resourceType: string): D
     const metadata = datasetWithResources.resources.find((r: any) => r.resource_type == resourceType);
     return metadata ? {
         id: metadata.id,
+        name: metadata.name,
         url: metadata.url,
         lastModified: metadata.last_modified,
         metadataModified: metadata.metadata_modified,
@@ -194,11 +195,21 @@ export const datasetFromMetadata = (id: string, datasets: any[], schemas: ADRSch
 };
 
 export const constructUploadFile = (datasetWithResources: any, index: number, resourceType: string,
-                             resourceFilename: string, displayName: string) => {
+                             resourceFilename: string | null, displayName: string): UploadFile | null => {
     const resource = findResource(datasetWithResources, resourceType);
     const resourceId = resource ? resource.id : null;
     const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
     const resourceUrl = resource ? resource.url : null;
+
+    //if resource name not provided, we expect to find it on the resource - return null if not found - file should
+    // not be uploadable
+    if (!resourceFilename) {
+        if (resource) {
+            resourceFilename = resource.name;
+        } else {
+            return null;
+        }
+    }
 
     return {
         index,
