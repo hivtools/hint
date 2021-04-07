@@ -18,7 +18,8 @@ describe(`uploadModal `, () => {
                 resourceFilename: "naomi-model-outputs-project1.zip",
                 resourceId: null,
                 resourceUrl: null,
-                lastModified: null
+                lastModified: null,
+                description: null
             },
         outputSummary:
             {
@@ -28,7 +29,8 @@ describe(`uploadModal `, () => {
                 resourceFilename: "string",
                 resourceId: "value",
                 resourceUrl: null,
-                lastModified: "2021-01-25T06:34:12.375649"
+                lastModified: "2021-01-25T06:34:12.375649",
+                description: null
             }
     }
 
@@ -63,7 +65,13 @@ describe(`uploadModal `, () => {
                 },
                 adr: {
                     namespaced: true,
-                    state: mockADRState({uploadFiles: data})
+                    state: mockADRState({uploadFiles: data}),
+                    actions: {
+                        uploadFilesToADR: jest.fn()
+                    },
+                    mutations: {
+                        ADRUploadStarted: jest.fn()
+                    }
                 }
             }
         });
@@ -151,18 +159,6 @@ describe(`uploadModal `, () => {
         expect(wrapper.vm.$data.uploadFilesToAdr).toMatchObject(["outputZip", "outputSummary"])
     })
 
-    it.skip(`can set and get description value as expected`, async () => {
-        const wrapper = getWrapper()
-        const newDesc = "new description"
-
-        const desc = wrapper.find("#description-id")
-        desc.setValue(newDesc)
-        expect(wrapper.vm.$data.uploadDescToAdr).toBe(newDesc)
-
-        const textarea = desc.element as HTMLTextAreaElement
-        expect(textarea.value).toBe(newDesc)
-    })
-
     it(`can trigger close modal as expected`, async () => {
         const wrapper = mount(UploadModal, {store: createStore()})
 
@@ -185,5 +181,24 @@ describe(`uploadModal `, () => {
                 }
             })
         expect(mockUploadFiles).toHaveBeenCalledTimes(1)
+    })
+
+    it(`ok button is enabled when inputs are set and triggers close modal`, async () => {
+        const wrapper = mount(UploadModal, {store: createStore()})
+
+        await wrapper.setProps({open: true})
+
+        const okBtn = wrapper.find("button");
+        expect(okBtn.attributes("disabled")).toBe("disabled");
+
+        const inputs = wrapper.findAll("input.form-check-input")
+        expect(inputs.length).toBe(2)
+        inputs.at(0).setChecked(true)
+        inputs.at(1).setChecked(true)
+
+        expect(okBtn.attributes("disabled")).toBeUndefined();
+        expect(okBtn.text()).toBe("OK")
+        await okBtn.trigger("click")
+        expect(wrapper.emitted("close").length).toBe(1)
     })
 })

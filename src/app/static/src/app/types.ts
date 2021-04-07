@@ -149,6 +149,7 @@ export interface UploadFile {
     resourceId: string | null,
     resourceUrl: string | null,
     lastModified: string | null
+    description: string | null
 }
 
 export interface UploadMetadata {

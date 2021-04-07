@@ -201,7 +201,8 @@ class ADRController(private val encryption: Encryption,
         // 4. Checksum file and upload with metadata to ADR
         val filePart = Pair("upload", file)
         val commonParameters =
-                listOf("name" to resourceFileName, "description" to artefact.second, "hash" to file.md5sum())
+                listOf("name" to resourceFileName, "description" to artefact.second, "hash" to file.md5sum(),
+                        "resource_type" to resourceType)
         val adr = adrClientBuilder.build()
         return try
         {

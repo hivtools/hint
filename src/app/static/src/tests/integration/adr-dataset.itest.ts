@@ -6,6 +6,7 @@ import {actions as adrActions} from "../../app/store/adr/actions";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {getFormData} from "./helpers";
 import {ADRMutation} from "../../app/store/adr/mutations";
+import {UploadFile} from "../../app/types";
 import {mockADRState} from "../mocks";
 
 // this suite tests all endpoints that talk to the ADR
@@ -82,8 +83,8 @@ describe("ADR dataset-related actions", () => {
         // 2. select a naomi dev dataset
         expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
         const datasets = commit.mock.calls[2][0]["payload"];
-        const dataset = datasets[1];
-        expect(dataset.organization.name).toBe("naomi-development-team");
+        const dataset = datasets.find((dataset: any) => dataset.organization.name === "naomi-development-team");
+        expect(dataset).not.toBeNull()
 
         // 3. check can upload
         commit.mockClear();
@@ -111,8 +112,8 @@ describe("ADR dataset-related actions", () => {
         // 2. select a naomi dev dataset
         expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
         const datasets = commit.mock.calls[2][0]["payload"];
-        const dataset = datasets[1];
-        expect(dataset.organization.name).toBe("naomi-development-team");
+        const dataset = datasets.find((dataset: any) => dataset.organization.name === "naomi-development-team");
+        expect(dataset).not.toBeNull()
 
         // 3. check can upload
         commit.mockClear();
@@ -202,6 +203,39 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("anc.csv");
+    }, 7000);
+
+    it("hits upload files to adr endpoint and gets appropriate error", async () => {
+
+        const commit = jest.fn();
+        const root = {
+            ...rootState,
+            modelCalibrate: {calibrateId: "calId"},
+            baseline: {
+                selectedDataset: {
+                    id: "datasetId",
+                    organization: {id: "organisationId"}
+                }
+            }
+        };
+        
+        const adr = { schemas, datasets: [] };
+
+        const uploadFilesPayload = [
+            {
+                resourceType: "type1",
+                resourceFilename: "file1",
+                resourceId: "id1"
+            }
+        ] as UploadFile[]
+
+        await adrActions.uploadFilesToADR({commit, state: adr, rootState: root} as any,
+            uploadFilesPayload);
+
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
+        expect(commit.mock.calls[1][0]["type"]).toBe("SetADRUploadError");
+        expect(commit.mock.calls[1][0]["payload"]["error"]).toBe("OTHER_ERROR");
     }, 7000);
 
 });

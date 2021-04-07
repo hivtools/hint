@@ -1,6 +1,15 @@
-# hint 1.26.0
+
+# hint 1.28.0
 
 * Include metadata when pushing file to ADR
+
+# hint 1.27.0
+
+* Invoke ADR uploads with actions
+
+# hint 1.26.0
+
+* Set resource_type when pushing to ADR
 
 # hint 1.25.0
 

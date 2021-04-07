@@ -4,8 +4,8 @@ import {api} from "../../apiService";
 import qs from "qs";
 import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
-import {constructUploadFile, datasetFromMetadata, findResource} from "../../utils";
-import {Organization} from "../../types";
+import {constructUploadFile, datasetFromMetadata} from "../../utils";
+import {Organization, UploadFile, Dict} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 import {rootState} from "../../../tests/integration/integrationTest";
 
@@ -17,6 +17,7 @@ export interface ADRActions {
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
     getUploadFiles: (store: ActionContext<ADRState, RootState>) => void;
+    uploadFilesToADR: (store: ActionContext<ADRState, RootState>, uploadFilesPayload: UploadFile[]) => void;
 }
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
@@ -146,9 +147,38 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     async uploadFilesToADR(context, uploadFilesPayload) {
         const {state, rootState, commit} = context;
         const uploadMetadata = rootState.modelCalibrate.uploadMetadata
-      
-        // Waiting for Nick's ticket to complete the uploadFilesToADR with "?description=uploadMetadata.{fileName}.description" as query param
-        //uploadMetadata.outputZip.description
+        const selectedDatasetId = rootState.baseline.selectedDataset?.id;
+        const modelCalibrateId = rootState.modelCalibrate.calibrateId;
+        commit({type: ADRMutation.ADRUploadStarted});
+
+        for (let i = 0; i < uploadFilesPayload.length; i++) {
+            const { resourceType, resourceFilename, resourceId, displayName } = uploadFilesPayload[i]
+
+            const requestParams: Dict<string> = {resourceFileName: resourceFilename}
+            if (resourceId){
+                requestParams["resourceId"] = resourceId
+            }
+
+            if (displayName === "outputSummary") {
+                requestParams["description"] = uploadMetadata.outputSummary.description
+            }
+            if (displayName === "outputZip") {
+                requestParams["description"] = uploadMetadata.outputZip.description
+            }
+
+            let apiRequest = api<ADRMutation, ADRMutation>(context)
+                                        .withError(ADRMutation.SetADRUploadError);
+            if  (i === uploadFilesPayload.length - 1) {
+                apiRequest = apiRequest.withSuccess(ADRMutation.ADRUploadCompleted);
+            } else {
+                apiRequest = apiRequest.ignoreSuccess();
+            }
+            const response = await apiRequest.postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`,
+                qs.stringify(requestParams))
+            if (!response) {
+                break
+            }
+        }
     }
 };
 
