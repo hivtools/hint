@@ -31,7 +31,7 @@
                 <div id="uploading" v-if="uploading" class="d-flex align-items-end">
                     <loading-spinner size="xs"></loading-spinner>
                     <div class="d-flex align-items-center height-40 ml-2'">
-                        <span v-html="uploadingStatus"></span>
+                        <span>{{ uploadingStatus }}</span>
                     </div>
                 </div>
                 <div id="uploadComplete" v-if="uploadComplete" class="d-flex align-items-end">
