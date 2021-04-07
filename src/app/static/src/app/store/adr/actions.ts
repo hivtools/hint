@@ -165,7 +165,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             } else {
                 /**
                  * Default description will tentatively solve backward
-                 * compatibility issue that may arise due to previous app version calibration
+                 * compatibility issue that may arise with previously calibrated model
                  * and once re-calibrated, the correct data will be populated
                  */
                 requestParams["description"] = "Naomi model outputs"
