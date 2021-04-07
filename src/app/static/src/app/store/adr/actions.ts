@@ -15,6 +15,7 @@ export interface ADRActions {
     getDatasets: (store: ActionContext<ADRState, RootState>) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
+    refreshBaselineDataset: (store: ActionContext<ADRState, RootState>) => void;
     getUploadFiles: (store: ActionContext<ADRState, RootState>) => void;
     uploadFilestoADR: (store: ActionContext<ADRState, RootState>, uploadFilesPayload: UploadFile[]) => void;
 }
@@ -106,6 +107,35 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         }
     },
 
+    async refreshBaselineDataset(context) {
+        const {state, rootState, commit} = context;
+        const selectedDataset = rootState.baseline.selectedDataset;
+
+        if (selectedDataset) {
+            let selectedDatasetOrgId: string;
+            if (!selectedDataset.organization) {
+                let datasets = state.datasets;
+                if (!datasets.length) {
+                    await api(context)
+                        .ignoreErrors()
+                        .ignoreSuccess()
+                        .get(`/adr/datasets/${selectedDataset.id}`)
+                        .then((response) => {
+                            if (response) {
+                                datasets = [response.data];
+                            }
+                        });
+                }
+
+                const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
+                commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
+                selectedDatasetOrgId = regenDataset.organization.id;
+            } else {
+                selectedDatasetOrgId = selectedDataset.organization.id;
+            }
+        }
+    },
+
     async getUploadFiles(context) {
         const {state, rootState, commit} = context;
         const selectedDataset = rootState.baseline.selectedDataset;
@@ -170,6 +200,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                 break
             }
         }
+        this.refreshBaselineDataset(context)
     }
 };
 
