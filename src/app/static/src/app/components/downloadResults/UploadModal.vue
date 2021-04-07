@@ -37,6 +37,8 @@
                 <button
                     type="button"
                     class="btn btn-red"
+                    :disabled="uploadFilesToAdr.length < 1"
+                    @click.prevent="confirmUpload"
                     v-translate="'ok'"></button>
                 <button
                     type="button"
@@ -53,10 +55,13 @@
     import Modal from "../Modal.vue";
     import {Dict, UploadFile} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {formatDateTime, mapStateProp, mapStateProps} from "../../utils";
+    import {formatDateTime, mapActionByName, mapStateProp, mapStateProps, mapMutationByName} from "../../utils";
     import {ADRState} from "../../store/adr/adr";
+    import {ADRMutation} from "../../store/adr/mutations";
 
     interface Methods {
+        uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
+        confirmUpload: () => void;
         handleCancel: () => void
         lastModified: (date: string) => string | null
         setDefaultCheckedItems: () => void
@@ -90,6 +95,16 @@
             }
         },
         methods: {
+            uploadFilesToADRAction: mapActionByName<UploadFile[]>(
+                'adr',
+                'uploadFilestoADR'
+            ),
+            confirmUpload() {
+                const uploadFilesPayload: UploadFile[] = []
+                this.uploadFilesToAdr.forEach(value => uploadFilesPayload.push(this.uploadFiles[value]))
+                this.uploadFilesToADRAction(uploadFilesPayload);
+                this.$emit("close")
+            },
             handleCancel() {
                 this.$emit("close")
             },

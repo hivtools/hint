@@ -20,10 +20,29 @@
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
-                <a @click.prevent="handleUploadModal" class="btn btn-red btn-lg my-3" href="#">
+                <button @click.prevent="handleUploadModal" 
+                        class="btn btn-lg my-3" 
+                        :class="uploading ? 'btn-secondary' : 'btn-red'"
+                        href="#" 
+                        :disabled="uploading">
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
-                </a>
+                </button>
+                <div id="uploading" v-if="uploading" class="d-flex align-items-end">
+                    <loading-spinner size="xs"></loading-spinner>
+                    <div class="d-flex align-items-center height-40 ml-2'">
+                        <span v-translate="'uploading'"></span>
+                    </div>
+                </div>
+                <div id="uploadComplete" v-if="uploadComplete" class="d-flex align-items-end">
+                    <div class="d-flex align-items-center height-40 mr-1">
+                        <span class="font-weight-bold" v-translate="'uploadComplete'"></span>
+                    </div>
+                    <div class="d-flex align-items-center height-40">
+                        <tick color="#e31837" v-if="uploadComplete" width="20px"></tick>
+                    </div>
+                </div>
+                <error-alert v-if="uploadError" :error="uploadError"></error-alert>
             </div>
         </div>
         <upload-modal id="modal" :open="uploadModalOpen" @close="uploadModalOpen = false"></upload-modal>
@@ -37,13 +56,26 @@
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
+    import LoadingSpinner from "../LoadingSpinner.vue";
+    import Tick from "../Tick.vue";
+    import {Language} from "../../store/translations/locales";
+    import {RootState} from "../../root";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     interface Computed {
         modelCalibrateId: string,
         spectrumUrl: string,
         coarseOutputUrl: string,
         summaryReportUrl: string,
+        uploading: boolean,
+        uploadComplete: boolean,
+        uploadError: null | UploadError,
         hasUploadPermission: boolean
+    }
+
+    interface UploadError {
+        detail: string,
+        error: string
     }
 
     interface Methods {
@@ -66,6 +98,11 @@
         computed: {
             ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
                 modelCalibrateId: state => state.calibrateId
+            }),
+            ...mapStateProps<ADRState, keyof Computed>("adr", {
+                uploading: state => state.uploading,
+                uploadComplete: state => state.uploadComplete,
+                uploadError: state => state.uploadError
             }),
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr",
                 (state: ADRState) => state.userCanUpload
@@ -94,6 +131,9 @@
         components: {
             DownloadIcon,
             UploadIcon,
+            LoadingSpinner,
+            Tick,
+            ErrorAlert,
             UploadModal
         }
     });
