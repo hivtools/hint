@@ -63,7 +63,13 @@ describe(`uploadModal `, () => {
                 },
                 adr: {
                     namespaced: true,
-                    state: mockADRState({uploadFiles: data})
+                    state: mockADRState({uploadFiles: data}),
+                    actions: {
+                        uploadFilestoADR: jest.fn()
+                    },
+                    mutations: {
+                        ADRUploadStarted: jest.fn()
+                    }
                 }
             }
         });
@@ -185,5 +191,24 @@ describe(`uploadModal `, () => {
                 }
             })
         expect(mockUploadFiles).toHaveBeenCalledTimes(1)
+    })
+
+    it(`ok button is enabled when inputs are set and triggers close modal`, async () => {
+        const wrapper = mount(UploadModal, {store: createStore()})
+
+        await wrapper.setProps({open: true})
+
+        const okBtn = wrapper.find("button");
+        expect(okBtn.attributes("disabled")).toBe("disabled");
+
+        const inputs = wrapper.findAll("input.form-check-input")
+        expect(inputs.length).toBe(2)
+        inputs.at(0).setChecked(true)
+        inputs.at(1).setChecked(true)
+
+        expect(okBtn.attributes("disabled")).toBeUndefined();
+        expect(okBtn.text()).toBe("OK")
+        await okBtn.trigger("click")
+        expect(wrapper.emitted("close").length).toBe(1)
     })
 })

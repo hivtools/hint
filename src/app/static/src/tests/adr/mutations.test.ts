@@ -63,5 +63,4 @@ describe("ADR mutations", () => {
         mutations[ADRMutation.SetUploadFiles](state, {payload});
         expect(state.uploadFiles).toBe(payload);
     });
-
 });

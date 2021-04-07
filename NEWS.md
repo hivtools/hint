@@ -2,6 +2,8 @@
 
 * Check and display user permissions on dataset when dataset is first selected
 
+* Invoke ADR uploads with actions
+
 # hint 1.26.0
 
 * Set resource_type when pushing to ADR
