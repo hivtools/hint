@@ -28,7 +28,6 @@ import java.nio.file.Files
 
 @RestController
 @RequestMapping("/adr")
-@Suppress("LongParameterList")
 class ADRController(private val encryption: Encryption,
                     private val userRepository: UserRepository,
                     private val adrClientBuilder: ADRClientBuilder,
@@ -241,8 +240,8 @@ class ADRController(private val encryption: Encryption,
         val response = adr.get("resource_show?id=${resourceId}")
         if (response.statusCode.is2xxSuccessful)
         {
-            val existingDatasetHash = objectMapper.readTree(response.body!!)
-            return existingDatasetHash["data"]["hash"].textValue() == newDatasetHash
+            val existingDatasetHash = objectMapper.readTree(response.body!!)["data"]["hash"]
+            return existingDatasetHash.textValue() == newDatasetHash
         }
         return false
     }
