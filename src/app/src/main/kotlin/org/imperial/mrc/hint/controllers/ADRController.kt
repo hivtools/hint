@@ -209,7 +209,7 @@ class ADRController(private val encryption: Encryption,
                 listOf("name" to resourceFileName, "description" to artefact.second, "hash" to file.md5sum(),
                         "resource_type" to resourceType)
         val adr = adrClientBuilder.build()
-        val newDatasetHash = commonParameters.getOrNull(2)!!.second
+        val newDatasetHash = commonParameters[2].second
         return try
         {
             when (resourceId)
