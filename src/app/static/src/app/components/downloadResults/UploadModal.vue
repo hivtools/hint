@@ -18,7 +18,6 @@
                         <label class="form-check-label"
                                :for="`id-${index}`"
                                v-translate="uploadFile.displayName"></label>
-
                         <small v-if="uploadFile.resourceId" class="text-danger row">
                         <span class="col-auto">
                         <span v-translate="'uploadFileOverwrite'"></span>{{ lastModified(uploadFile.lastModified) }}

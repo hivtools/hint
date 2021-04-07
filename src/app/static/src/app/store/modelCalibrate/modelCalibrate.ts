@@ -5,7 +5,6 @@ import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
 import {actions} from "./actions";
 import {VersionInfo, Error, CalibrateStatusResponse} from "../../generated";
-import {UploadMetadata} from "../../types";
 
 export interface ModelCalibrateState extends ReadyState {
     optionsFormMeta: DynamicFormMeta
@@ -18,7 +17,6 @@ export interface ModelCalibrateState extends ReadyState {
     complete: boolean
     version: VersionInfo
     error: Error | null
-    uploadMetadata: UploadMetadata
 }
 
 export const initialModelCalibrateState = (): ModelCalibrateState => {
@@ -33,8 +31,7 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         calibrating: false,
         complete: false,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
-        error: null,
-        uploadMetadata: {} as UploadMetadata
+        error: null
     }
 };
 

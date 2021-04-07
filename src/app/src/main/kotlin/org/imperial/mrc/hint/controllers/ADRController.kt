@@ -178,30 +178,30 @@ class ADRController(
         // 1. Download relevant artefact from hintr
         val artefact = when (resourceType)
         {
-            appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId), description)
-            appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId), description)
+            appProperties.adrOutputZipSchema -> apiClient.downloadSpectrum(modelCalibrateId)
+            appProperties.adrOutputSummarySchema -> apiClient.downloadSummary(modelCalibrateId)
             else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
         }
 
         // 2. Return error if artefact can't be retrieved
-        if (!artefact.first.statusCode.is2xxSuccessful)
+        if (!artefact.statusCode.is2xxSuccessful)
         {
             val baos = ByteArrayOutputStream()
-            artefact.first.body?.writeTo(baos)
-            return ErrorDetail(artefact.first.statusCode, baos.toString()).toResponseEntity()
+            artefact.body?.writeTo(baos)
+            return ErrorDetail(artefact.statusCode, baos.toString()).toResponseEntity()
         }
 
         // 3. Stream artefact to file
         val tmpDir = Files.createTempDirectory("adr").toFile()
         val file = File(tmpDir, resourceFileName)
         FileOutputStream(file).use { fis ->
-            artefact.first.body!!.writeTo(fis)
+            artefact.body!!.writeTo(fis)
         }
 
         // 4. Checksum file and upload with metadata to ADR
         val filePart = Pair("upload", file)
         val commonParameters =
-                listOf("name" to resourceFileName, "description" to artefact.second, "hash" to file.md5sum(),
+                listOf("name" to resourceFileName, "description" to description, "hash" to file.md5sum(),
                         "resource_type" to resourceType)
         val adr = adrClientBuilder.build()
         return try

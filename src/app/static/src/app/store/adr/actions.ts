@@ -7,7 +7,6 @@ import {ADRMutation} from "./mutations";
 import {constructUploadFile, datasetFromMetadata} from "../../utils";
 import {Organization, UploadFile, Dict} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
-import {rootState} from "../../../tests/integration/integrationTest";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -146,24 +145,30 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
 
     async uploadFilesToADR(context, uploadFilesPayload) {
         const {state, rootState, commit} = context;
-        const uploadMetadata = rootState.modelCalibrate.uploadMetadata
+        const uploadMetadata = rootState.modelRun.result?.uploadMetadata
         const selectedDatasetId = rootState.baseline.selectedDataset?.id;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
         commit({type: ADRMutation.ADRUploadStarted});
 
         for (let i = 0; i < uploadFilesPayload.length; i++) {
-            const { resourceType, resourceFilename, resourceId, displayName } = uploadFilesPayload[i]
+            const {resourceType, resourceFilename, resourceId} = uploadFilesPayload[i]
 
             const requestParams: Dict<string> = {resourceFileName: resourceFilename}
-            if (resourceId){
+            if (resourceId) {
                 requestParams["resourceId"] = resourceId
             }
 
-            if (displayName === "outputSummary") {
+            if (uploadMetadata && resourceType === "outputSummary") {
                 requestParams["description"] = uploadMetadata.outputSummary.description
-            }
-            if (displayName === "outputZip") {
+            } else if (uploadMetadata && resourceType === "outputZip") {
                 requestParams["description"] = uploadMetadata.outputZip.description
+            } else {
+                /**
+                 * Default description will tentatively solve backward
+                 * compatibility issue that may arise due to previous app version calibration
+                 * and once re-calibrated, the correct data will be populated
+                 */
+                requestParams["description"] = "Naomi model outputs"
             }
 
             let apiRequest = api<ADRMutation, ADRMutation>(context)

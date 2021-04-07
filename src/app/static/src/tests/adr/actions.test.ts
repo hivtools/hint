@@ -1,10 +1,10 @@
 import {
     mockADRState,
     mockAxios,
-    mockBaselineState,
+    mockBaselineState, mockCalibrateResultResponse,
     mockError,
     mockFailure,
-    mockModelCalibrateState,
+    mockModelCalibrateState, mockModelRunState,
     mockProjectsState,
     mockRootState,
     mockSuccess
@@ -12,6 +12,7 @@ import {
 import {actions} from "../../app/store/adr/actions";
 import {ADRMutation} from "../../app/store/adr/mutations";
 import {UploadFile} from "../../app/types";
+import {CalibrateResultResponse} from "../../app/generated";
 
 describe("ADR actions", () => {
     const state = mockADRState();
@@ -363,10 +364,16 @@ describe("ADR actions", () => {
     it("uploadFilestoADR uploads files sequentially to adr and commits complete on upload of final file", async () => {
         const commit = jest.fn();
         const root = mockRootState({
-            modelCalibrate: mockModelCalibrateState({
-                calibrateId: "calId",
-                uploadMetadata: {outputSummary: {description: "summary"}, outputZip: {description: "zip"}}
-            }),
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
+            modelRun: mockModelRunState(
+                {
+                    result: mockCalibrateResultResponse({
+                        uploadMetadata: {
+                            outputSummary: {description: "summary"},
+                            outputZip: {description: "zip"}
+                        }
+                    })
+                }),
             baseline: mockBaselineState({selectedDataset: {
                 id: "datasetId"
             }} as any)
@@ -378,10 +385,9 @@ describe("ADR actions", () => {
 
         const uploadFilesPayload = [
                 {
-                    resourceType: "type1",
+                    resourceType: "outputZip",
                     resourceFilename: "file1",
-                    resourceId: "id1",
-                    displayName: "outputZip"
+                    resourceId: "id1"
                 },
                 {
                     resourceType: "type2",
@@ -391,7 +397,7 @@ describe("ADR actions", () => {
 
         const success = {response: "success"}
         const success2 = {response: "success2"}
-        mockAxios.onPost(`adr/datasets/datasetId/resource/type1/calId`)
+        mockAxios.onPost(`adr/datasets/datasetId/resource/outputZip/calId`)
             .reply(200, mockSuccess(success));
         mockAxios.onPost(`adr/datasets/datasetId/resource/type2/calId`)
             .reply(200, mockSuccess(success2));
@@ -404,18 +410,26 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadCompleted");
         expect(mockAxios.history.post.length).toBe(2);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=zip");
-        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/type1/calId");
-        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2");
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/outputZip/calId");
+
+        //sends default message where no data provided
+        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=Naomi%20model%20outputs");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/type2/calId");
     });
 
-    it("uploadFilestoADR sets upload failure and prevents subsquent uploads", async () => {
+    it("uploadFilesToADR sets upload failure and prevents subsquent uploads", async () => {
         const commit = jest.fn();
         const root = mockRootState({
-            modelCalibrate: mockModelCalibrateState({
-                calibrateId: "calId",
-                uploadMetadata: {outputSummary: {description: "summary"}, outputZip: {description: "zip"}}
-            }),
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
+            modelRun: mockModelRunState(
+                {
+                    result: mockCalibrateResultResponse({
+                        uploadMetadata: {
+                            outputSummary: {description: "summary"},
+                            outputZip: {description: "zip"}
+                        }
+                    })
+                }),
             baseline: mockBaselineState({selectedDataset: {
                 id: "datasetId"
             }} as any)
@@ -427,23 +441,21 @@ describe("ADR actions", () => {
 
         const uploadFilesPayload = [
             {
-                resourceType: "type1",
+                resourceType: "outputSummary",
                 resourceFilename: "file1",
-                resourceId: "id1",
-                displayName: "outputZip"
+                resourceId: "id1"
             },
             {
                 resourceType: "type2",
                 resourceFilename: "file2",
-                resourceId: "id2",
-                displayName: "outputZip"
+                resourceId: "id2"
             }
         ] as UploadFile[]
 
 
         const success2 = {response: "success2"}
 
-        mockAxios.onPost(`adr/datasets/datasetId/resource/type1/calId`)
+        mockAxios.onPost(`adr/datasets/datasetId/resource/outputSummary/calId`)
             .reply(500, mockFailure("failed"));
         mockAxios.onPost(`adr/datasets/datasetId/resource/type2/calId`)
             .reply(200, mockSuccess(success2));
@@ -455,7 +467,7 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[1][0]["payload"]).toEqual({"detail": "failed", "error": "OTHER_ERROR"});
         expect(commit.mock.calls[1][0]["type"]).toBe("SetADRUploadError");
         expect(mockAxios.history.post.length).toBe(1);
-        expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=zip");
-        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/type1/calId");
+        expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=summary");
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/outputSummary/calId");
     });
 });

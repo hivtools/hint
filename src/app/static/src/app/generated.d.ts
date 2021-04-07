@@ -96,6 +96,9 @@ export interface BarchartMetadata {
     };
   };
 }
+interface UploadMetadataElements {
+  description: string
+}
 export interface CalibrateResultResponse {
   data: {
     area_id: string;
@@ -109,6 +112,10 @@ export interface CalibrateResultResponse {
     upper: number | null;
     [k: string]: any;
   }[];
+  uploadMetadata: {
+    outputZip: UploadMetadataElements
+    outputSummary: UploadMetadataElements
+  }
   plottingMetadata: {
     barchart: {
       indicators: {

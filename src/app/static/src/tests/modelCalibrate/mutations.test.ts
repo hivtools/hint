@@ -124,14 +124,4 @@ describe("ModelCalibrate mutations", () => {
         mutations[ModelCalibrateMutation.PollingForStatusStarted](state, {payload: 99});
         expect(state.statusPollId).toBe(99);
     });
-
-    it("uploadMetadata can set properties ", () => {
-        const state = mockModelCalibrateState();
-        const mockUploadMetadata = {
-            outputZip: {description: "spectrum output info"},
-            outputSummary: {description: "summary output info"}
-        }
-        mutations[ModelCalibrateMutation.UploadMetadata](state, {payload: mockUploadMetadata});
-        expect(state.uploadMetadata).toBe(mockUploadMetadata);
-    });
 });
