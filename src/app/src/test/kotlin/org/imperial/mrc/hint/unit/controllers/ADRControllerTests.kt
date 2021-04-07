@@ -334,7 +334,7 @@ class ADRControllerTests : HintrControllerTests()
             on { build() } doReturn mockClient
         }
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-summary", "model1", "output1.html", null, "Naomi model outputs")
+        val result = sut.pushFileToADR("dataset1", "adr-output-summary", "model1", "output1.html", null, "Naomi summary report")
         verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.name == "output1.html" })
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
