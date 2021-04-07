@@ -1,5 +1,6 @@
 import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
+import {baseline, BaselineState} from "../baseline/baseline";
 import {api} from "../../apiService";
 import qs from "qs";
 import {ADRState} from "./adr";
@@ -64,31 +65,18 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getUserCanUpload(context) {
-        const {state, rootState, commit} = context;
+        const {rootState, commit, dispatch} = context;
         const selectedDataset = rootState.baseline.selectedDataset;
 
         if (selectedDataset) {
             //For backward compatibility, we may have to regenerate the dataset metadata to provide the
             //organisation id for projects which are reloaded
-            let selectedDatasetOrgId: string;
+            let selectedDatasetOrgId = '';
             if (!selectedDataset.organization) {
                 //We may also have to fetch the selected dataset metadata too, if not loaded during this session
-                let datasets = state.datasets;
-                if (!datasets.length) {
-                    await api(context)
-                        .ignoreErrors()
-                        .ignoreSuccess()
-                        .get(`/adr/datasets/${selectedDataset.id}`)
-                        .then((response) => {
-                            if (response) {
-                                datasets = [response.data];
-                            }
-                        });
-                }
-
-                const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
-                commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
-                selectedDatasetOrgId = regenDataset.organization.id;
+                dispatch('refreshBaselineDataset');
+                // this.refreshBaselineDataset(context, selectedDatasetOrgId);
+                selectedDatasetOrgId = (baseline!.state! as BaselineState).selectedDataset!.organization.id;
             } else {
                 selectedDatasetOrgId = selectedDataset.organization.id;
             }
@@ -111,28 +99,23 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         const {state, rootState, commit} = context;
         const selectedDataset = rootState.baseline.selectedDataset;
 
+        // if (selectedDataset && !selectedDataset.organization) {
         if (selectedDataset) {
-            let selectedDatasetOrgId: string;
-            if (!selectedDataset.organization) {
-                let datasets = state.datasets;
-                if (!datasets.length) {
-                    await api(context)
-                        .ignoreErrors()
-                        .ignoreSuccess()
-                        .get(`/adr/datasets/${selectedDataset.id}`)
-                        .then((response) => {
-                            if (response) {
-                                datasets = [response.data];
-                            }
-                        });
-                }
-
-                const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
-                commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
-                selectedDatasetOrgId = regenDataset.organization.id;
-            } else {
-                selectedDatasetOrgId = selectedDataset.organization.id;
+            let datasets = state.datasets;
+            if (!datasets.length) {
+                await api(context)
+                    .ignoreErrors()
+                    .ignoreSuccess()
+                    .get(`/adr/datasets/${selectedDataset.id}`)
+                    .then((response) => {
+                        if (response) {
+                            datasets = [response.data];
+                        }
+                    });
             }
+
+            const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
+            commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
         }
     },
 
@@ -174,7 +157,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async uploadFilestoADR(context, uploadFilesPayload) {
-        const {state, rootState, commit} = context;
+        const {state, rootState, commit, dispatch} = context;
         const selectedDatasetId = rootState.baseline.selectedDataset?.id;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
         commit({type: ADRMutation.ADRUploadStarted});
@@ -200,7 +183,10 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                 break
             }
         }
-        this.refreshBaselineDataset(context)
+        dispatch('refreshBaselineDataset');
+        dispatch('getUploadFiles');
+        // this.refreshBaselineDataset(context);
+        // this.getUploadFiles(context);
     }
 };
 
