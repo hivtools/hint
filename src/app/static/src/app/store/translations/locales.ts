@@ -193,9 +193,9 @@ const en: Translations = {
     adrKey: "ADR access key",
     adrAccessLevel: "ADR access level:",
     adrRead: "Read only",
-    adrReadTooltip: "You do not currently have write permission in this dataset, and will be unable to upload files to ADR",
+    adrReadTooltip: "You do not currently have write permissions for this dataset and will be unable to upload files to ADR",
     adrReadWrite: "Read & Write",
-    adrReadWriteTooltip: "You have full permission to push output files to ADR",
+    adrReadWriteTooltip: "You have read and write permissions for this dataset and may push output files to ADR",
     adrTooltip: "To import data from the ADR you have to provide your ADR access key. " +
         "This can be found on your ADR profile page",
     age: "Age",
@@ -391,9 +391,9 @@ const fr: Partial<Translations> = {
     adrKey: "Clé d'accès ADR",
     adrAccessLevel: "Niveau d'accès ADR:",
     adrRead: "Lecture seulement",
-    adrReadTooltip: "Vous ne disposez actuellement pas des autorisations d'écriture dans cet ensemble de données et vous ne pourrez pas télécharger de fichiers vers ADR",
+    adrReadTooltip: "Vous ne disposez actuellement pas des autorisations d'écriture pour cet ensemble de données et ne pourrez pas télécharger de fichiers vers ADR",
     adrReadWrite: "Lire et écrire",
-    adrReadWriteTooltip: "Vous avez la permission complète de pousser les fichiers de sortie vers ADR",
+    adrReadWriteTooltip: "Vous disposez des autorisations de lecture et d'écriture pour cet ensemble de données et pouvez envoyer les fichiers de sortie vers ADR",
     adrTooltip: "Pour importer des données depuis l'ADR, vous devez fournir votre clé d'accès ADR. " +
         "Cela peut être trouvé sur votre page de profil ADR",
     age: "Âge",

@@ -131,7 +131,7 @@ describe("adr integration", () => {
 
         expectTranslated(spans.at(0), "ADR access level:", "Niveau d'accès ADR:", store)
         expectTranslated(spans.at(1), "Read & Write", "Lire et écrire", store)
-        expect(mockTooltip.mock.calls[0][1].value).toBe("You have full permission to push output files to ADR");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("You have read and write permissions for this dataset and may push output files to ADR");
     });
 
     it("renders adr-access text for readers as expected", () => {
@@ -148,7 +148,7 @@ describe("adr integration", () => {
 
         expectTranslated(spans.at(0), "ADR access level:", "Niveau d'accès ADR:", store)
         expectTranslated(spans.at(1), "Read only", "Lecture seulement", store)
-        expect(mockTooltip.mock.calls[0][1].value).toBe("You do not currently have write permission in this dataset, and will be unable to upload files to ADR");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("You do not currently have write permissions for this dataset and will be unable to upload files to ADR");
     });
 
     it("renders Tooltip text for writers as expected in French", () => {
@@ -160,7 +160,7 @@ describe("adr integration", () => {
                 store,
                 directives: {"tooltip": mockTooltip}
             })
-        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous avez la permission complète de pousser les fichiers de sortie vers ADR");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous disposez des autorisations de lecture et d'écriture pour cet ensemble de données et pouvez envoyer les fichiers de sortie vers ADR");
     });
 
     it("renders Tooltip text for readers as expected in French", () => {
@@ -172,7 +172,7 @@ describe("adr integration", () => {
                 store,
                 directives: {"tooltip": mockTooltip}
             })
-        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous ne disposez actuellement pas des autorisations d'écriture dans cet ensemble de données et vous ne pourrez pas télécharger de fichiers vers ADR");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Vous ne disposez actuellement pas des autorisations d'écriture pour cet ensemble de données et ne pourrez pas télécharger de fichiers vers ADR");
     });
 
     it("call getUserCanUpload action if key is provided", async() => {
@@ -180,5 +180,11 @@ describe("adr integration", () => {
         shallowMount(ADRIntegration, {store});
         store.state.baseline.selectedDataset = fakeDataset
         expect(getUserCanUploadStub.mock.calls.length).toBe(1);
+    });
+
+    it("does not render permission displayText if dataset is not selected", async() => {
+        const store = createStore("123", null, {})
+        const renders = shallowMount(ADRIntegration, {store});
+        expect(renders.find("#adr-capacity").exists()).toBeFalsy()
     });
 });
