@@ -1,3 +1,7 @@
+# hint 1.28.0
+
+* Check and display user permissions on dataset when dataset is first selected
+
 # hint 1.27.0
 
 * Invoke ADR uploads with actions
