@@ -159,7 +159,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                                    const uploadFile = constructUploadFile(
                                        metadata,
                                        Object.keys(uploadFiles).length,
-                                       schemas.pjnz,
+                                       schema,
                                        response.filename,
                                        null,
                                        displayName

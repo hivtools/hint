@@ -17,6 +17,7 @@ import org.imperial.mrc.hint.security.Session
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -176,7 +177,7 @@ class ADRController(private val encryption: Encryption,
                       @RequestParam resourceId: String?): ResponseEntity<String>
     {
         // 1. If output file, download relevant artefact from hintr
-        val artefact = when (resourceType)
+        val artefact: Pair<ResponseEntity<StreamingResponseBody>, String>? = when (resourceType)
         {
             appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId),
                     "Naomi model outputs")
@@ -188,6 +189,7 @@ class ADRController(private val encryption: Encryption,
         }
 
         var file: File
+        val tmpDir = Files.createTempDirectory("adr").toFile()
         if (artefact != null)
         {
             // 2. Return error if artefact can't be retrieved
@@ -199,7 +201,6 @@ class ADRController(private val encryption: Encryption,
             }
 
             // 3. Stream artefact to file
-            val tmpDir = Files.createTempDirectory("adr").toFile()
             file = File(tmpDir, resourceFileName)
             FileOutputStream(file).use { fis ->
                 artefact.first.body!!.writeTo(fis)
@@ -207,8 +208,12 @@ class ADRController(private val encryption: Encryption,
         }
         else
         {
-            //TODO: throw an error if resource id is not set
-            // Do not set description for input files - test that these are retained!
+            if (resourceId == null)
+            {
+                return ErrorDetail(HttpStatus.BAD_REQUEST,"resourceId must be provided for input resourceType")
+                        .toResponseEntity()
+            }
+
             // 3. Map adr schema to version file type
             val fileType = when (resourceType)
             {
@@ -218,18 +223,28 @@ class ADRController(private val encryption: Encryption,
                 appProperties.adrSurveySchema -> FileType.Survey
                 appProperties.adrARTSchema -> FileType.Programme
                 appProperties.adrANCSchema -> FileType.ANC
+                else -> return ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid state")
+                        .toResponseEntity()
             }
 
-            // 3. Find input file on disk
+            //Find input file on disk and copy to tmp dir with original file name
             val versionFile = fileManager.getFile(fileType)
-            file = File(versionFile.path, versionFile.filename)
+                    ?: return ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "File does not exist")
+                            .toResponseEntity()
+            file = File(tmpDir, versionFile.filename)
+            File(versionFile.path).copyTo(file)
         }
 
         // 4. Checksum file and upload with metadata to ADR
         val filePart = Pair("upload", file)
         val commonParameters =
-                listOf("name" to resourceName, "description" to artefact.second, "hash" to file.md5sum(),
-                        "resource_type" to resourceType)
+                mutableListOf("name" to resourceName, "hash" to file.md5sum(), "resource_type" to resourceType)
+
+        if (artefact != null)
+        {
+            commonParameters.add("description" to artefact.second)
+        }
+
         val adr = adrClientBuilder.build()
         return try
         {

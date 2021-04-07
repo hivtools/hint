@@ -100,8 +100,8 @@
                 'uploadFilestoADR'
             ),
             confirmUpload() {
-                const uploadFilesPayload: UploadFile[] = []
-                this.uploadFilesToAdr.forEach(value => uploadFilesPayload.push(this.uploadFiles[value]))
+                const uploadFilesPayload: UploadFile[] = [];
+                this.uploadFilesToAdr.forEach(value => uploadFilesPayload.push(this.uploadFiles[value]));
                 this.uploadFilesToADRAction(uploadFilesPayload);
                 this.$emit("close")
             },
@@ -112,7 +112,7 @@
                 return formatDateTime(date)
             },
             setDefaultCheckedItems: function () {
-                const uploadFilesKeys = ["outputZip", "outputSummary"]
+                const uploadFilesKeys = ["outputZip", "outputSummary"];
                 uploadFilesKeys.forEach(key => {
                     if (this.uploadFiles.hasOwnProperty(key)) {
                         this.uploadFilesToAdr.push(key)
