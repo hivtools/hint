@@ -172,37 +172,63 @@ class ADRController(private val encryption: Encryption,
                       @PathVariable resourceType: String,
                       @PathVariable modelCalibrateId: String,
                       @RequestParam resourceFileName: String,
+                      @RequestParam resourceName: String,
                       @RequestParam resourceId: String?): ResponseEntity<String>
     {
-        // 1. Download relevant artefact from hintr
+        // 1. If output file, download relevant artefact from hintr
         val artefact = when (resourceType)
         {
             appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId),
                     "Naomi model outputs")
             appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId),
                     "Naomi summary report")
+            appProperties.adrPJNZSchema, appProperties.adrShapeSchema, appProperties.adrPopSchema,
+                appProperties.adrSurveySchema, appProperties.adrARTSchema, appProperties.adrANCSchema -> null
             else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
         }
 
-        // 2. Return error if artefact can't be retrieved
-        if (!artefact.first.statusCode.is2xxSuccessful)
+        var file: File
+        if (artefact != null)
         {
-            val baos = ByteArrayOutputStream()
-            artefact.first.body?.writeTo(baos)
-            return ErrorDetail(artefact.first.statusCode, baos.toString()).toResponseEntity()
-        }
+            // 2. Return error if artefact can't be retrieved
+            if (!artefact.first.statusCode.is2xxSuccessful)
+            {
+                val baos = ByteArrayOutputStream()
+                artefact.first.body?.writeTo(baos)
+                return ErrorDetail(artefact.first.statusCode, baos.toString()).toResponseEntity()
+            }
 
-        // 3. Stream artefact to file
-        val tmpDir = Files.createTempDirectory("adr").toFile()
-        val file = File(tmpDir, resourceFileName)
-        FileOutputStream(file).use { fis ->
-            artefact.first.body!!.writeTo(fis)
+            // 3. Stream artefact to file
+            val tmpDir = Files.createTempDirectory("adr").toFile()
+            file = File(tmpDir, resourceFileName)
+            FileOutputStream(file).use { fis ->
+                artefact.first.body!!.writeTo(fis)
+            }
+        }
+        else
+        {
+            //TODO: throw an error if resource id is not set
+            // Do not set description for input files - test that these are retained!
+            // 3. Map adr schema to version file type
+            val fileType = when (resourceType)
+            {
+                appProperties.adrPJNZSchema -> FileType.PJNZ
+                appProperties.adrShapeSchema -> FileType.Shape
+                appProperties.adrPopSchema -> FileType.Population
+                appProperties.adrSurveySchema -> FileType.Survey
+                appProperties.adrARTSchema -> FileType.Programme
+                appProperties.adrANCSchema -> FileType.ANC
+            }
+
+            // 3. Find input file on disk
+            val versionFile = fileManager.getFile(fileType)
+            file = File(versionFile.path, versionFile.filename)
         }
 
         // 4. Checksum file and upload with metadata to ADR
         val filePart = Pair("upload", file)
         val commonParameters =
-                listOf("name" to resourceFileName, "description" to artefact.second, "hash" to file.md5sum(),
+                listOf("name" to resourceName, "description" to artefact.second, "hash" to file.md5sum(),
                         "resource_type" to resourceType)
         val adr = adrClientBuilder.build()
         return try

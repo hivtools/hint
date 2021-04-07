@@ -8,6 +8,14 @@ import {constructUploadFile, datasetFromMetadata} from "../../utils";
 import {Organization, UploadFile, Dict} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 import {switches} from "../../featureSwitches";
+import {
+    AncResponse,
+    PjnzResponse,
+    PopulationResponse,
+    ProgrammeResponse,
+    ShapeResponse,
+    SurveyResponse
+} from "../../generated";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -129,36 +137,48 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                                 0,
                                 schemas.outputZip,
                                 `${project.name}_naomi_outputs.zip`,
+                                `${project.name} Naomi Outputs`,
                                 "uploadFileOutputZip"),
                             outputSummary: constructUploadFile(
                                 metadata,
                                 1,
                                 schemas.outputSummary,
                                 `${project.name}_naomi_summary.html`,
+                                `${project.name} Naomi Summary`,
                                 "uploadFileOutputSummary")
                         } as Dict<UploadFile>;
 
                         if (switches.adrPushInputs) {
 
-                            const addInputFileToUploads = (schema: string, displayName: string) => {
-                                const uploadFile = constructUploadFile(
-                                    metadata,
-                                    Object.keys(uploadFiles).length,
-                                    schemas.pjnz,
-                                    null,
-                                    displayName
-                                );
-                                if (uploadFile) {
-                                    uploadFiles[schema] = uploadFile;
-                                }
+                            const addLocalInputFileToUploads = (
+                                schema: string,
+                                response: PjnzResponse | ShapeResponse | PopulationResponse | SurveyResponse
+                                            | ProgrammeResponse | AncResponse,
+                                displayName: string) => {
+                               if (!response.fromADR) {
+                                   const uploadFile = constructUploadFile(
+                                       metadata,
+                                       Object.keys(uploadFiles).length,
+                                       schemas.pjnz,
+                                       response.filename,
+                                       null,
+                                       displayName
+                                   );
+                                   if (uploadFile) {
+                                       uploadFiles[schema] = uploadFile;
+                                   }
+                               }
                             };
 
-                            if (!rootState.baseline.pjnz!.fromADR) {
-                                addInputFileToUploads(schemas.pjnz, "PJNZ")
-                            }
+                            const baseline = rootState.baseline;
+                            addLocalInputFileToUploads(schemas.pjnz, baseline.pjnz!, "PJNZ");
+                            addLocalInputFileToUploads(schemas.shape, baseline.shape!, "shape");
+                            addLocalInputFileToUploads(schemas.population, baseline.population!, "population");
 
-
-
+                            const sap = rootState.surveyAndProgram;
+                            addLocalInputFileToUploads(schemas.survey, sap.survey!, "survey");
+                            addLocalInputFileToUploads(schemas.programme, sap.program!, "ART");
+                            addLocalInputFileToUploads(schemas.anc, sap.anc!, "ANC");
                         }
 
                         commit({type: ADRMutation.SetUploadFiles, payload: uploadFiles});
@@ -174,9 +194,9 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         commit({type: ADRMutation.ADRUploadStarted});
 
         for (let i = 0; i < uploadFilesPayload.length; i++) {
-            const { resourceType, resourceFilename, resourceId } = uploadFilesPayload[i]
+            const { resourceType, resourceFilename, resourceName, resourceId } = uploadFilesPayload[i]
 
-            const requestParams: Dict<string> = {resourceFileName: resourceFilename}
+            const requestParams: Dict<string> = {resourceFileName: resourceFilename, resourceName}
             if (resourceId){
                 requestParams["resourceId"] = resourceId
             }

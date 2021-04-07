@@ -195,17 +195,17 @@ export const datasetFromMetadata = (id: string, datasets: any[], schemas: ADRSch
 };
 
 export const constructUploadFile = (datasetWithResources: any, index: number, resourceType: string,
-                             resourceFilename: string | null, displayName: string): UploadFile | null => {
+                             resourceFilename: string, resourceName: string | null,  displayName: string): UploadFile | null => {
     const resource = findResource(datasetWithResources, resourceType);
     const resourceId = resource ? resource.id : null;
     const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
     const resourceUrl = resource ? resource.url : null;
 
-    //if resource name not provided, we expect to find it on the resource - return null if not found - file should
-    // not be uploadable
-    if (!resourceFilename) {
+    // If resource name not provided, we expect to find it on the resource - return null if not found - file should
+    // not be uploadable.
+    if (!resourceName) {
         if (resource) {
-            resourceFilename = resource.name;
+            resourceName = resource.name;
         } else {
             return null;
         }
@@ -216,6 +216,7 @@ export const constructUploadFile = (datasetWithResources: any, index: number, re
         displayName,
         resourceType,
         resourceFilename,
+        resourceName,
         resourceId,
         resourceUrl,
         lastModified
