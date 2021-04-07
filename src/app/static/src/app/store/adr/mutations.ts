@@ -74,5 +74,5 @@ export const mutations: MutationTree<ADRState> = {
 
     [ADRMutation.SetUserCanUpload](state: ADRState, action: PayloadWithType<boolean>) {
         state.userCanUpload = action.payload;
-    },
+    }
 };
