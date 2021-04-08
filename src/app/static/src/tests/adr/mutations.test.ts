@@ -73,14 +73,23 @@ describe("ADR mutations", () => {
         mutations[ADRMutation.SetADRUploadError](state, {payload: null});
         expect(state.uploadError).toBe(null);
         expect(state.uploading).toBe(false);
+        expect(state.currentFileUploading).toBe(null);
+        expect(state.totalFilesUploading).toBe(null);
     });
 
     it("can set upload started", () => {
         const state = mockADRState();
-        mutations[ADRMutation.ADRUploadStarted](state);
+        mutations[ADRMutation.ADRUploadStarted](state, {payload: 2});
         expect(state.uploadError).toBe(null);
         expect(state.uploading).toBe(true);
         expect(state.uploadComplete).toBe(false);
+        expect(state.totalFilesUploading).toBe(2);
+    });
+
+    it("can set upload progress", () => {
+        const state = mockADRState();
+        mutations[ADRMutation.ADRUploadProgress](state, {payload: 1});
+        expect(state.currentFileUploading).toBe(1);
     });
 
     it("can set upload completed", () => {
@@ -88,5 +97,7 @@ describe("ADR mutations", () => {
         mutations[ADRMutation.ADRUploadCompleted](state);
         expect(state.uploading).toBe(false);
         expect(state.uploadComplete).toBe(true);
+        expect(state.currentFileUploading).toBe(null);
+        expect(state.totalFilesUploading).toBe(null);
     });
 });
