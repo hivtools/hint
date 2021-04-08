@@ -382,6 +382,7 @@ export const mockDatasetResource = (props: Partial<DatasetResource> = {}): Datas
         lastModified: "2020-11-05T00:00:00",
         metadataModified: "2020-11-04T00:00:00",
         outOfDate: false,
+        name: "mock-resource-name",
         ...props
     }
 };

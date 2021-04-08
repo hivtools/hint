@@ -229,7 +229,7 @@ class ADRController(private val encryption: Encryption,
 
             //Find input file on disk and copy to tmp dir with original file name
             val versionFile = fileManager.getFile(fileType)
-                    ?: return ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "File does not exist")
+                    ?: return ErrorDetail(HttpStatus.BAD_REQUEST, "File does not exist")
                             .toResponseEntity()
             file = File(tmpDir, versionFile.filename)
             File(versionFile.path).copyTo(file)

@@ -13,18 +13,43 @@ import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.md5sum
 import org.imperial.mrc.hint.models.ErrorResponse
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentCaptor
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.sql.profile.DbProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
+import java.io.File
+import java.nio.file.Files
 
 class ADRControllerTests : HintrControllerTests()
 {
+    companion object
+    {
+        private var tmpTestDir: File? = null
+
+        @BeforeAll
+        @JvmStatic
+        fun setUp()
+        {
+            tmpTestDir = Files.createTempDirectory("adrTest").toFile()
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun `delete tmpdir for test files`()
+        {
+            tmpTestDir?.deleteRecursively()
+        }
+    }
 
     private val mockEncryption = mock<Encryption> {
         on { encrypt(any()) } doReturn "encrypted".toByteArray()
@@ -52,6 +77,13 @@ class ADRControllerTests : HintrControllerTests()
 
     private val mockSession = mock<Session> {
         on { getUserProfile() } doReturn CommonProfile().apply { id = "test" }
+    }
+
+    private fun writeTestFile(filename: String, contents: String): String
+    {
+        val file = File(filename)
+        file.writeText(contents)
+        return file.md5sum()
     }
 
     @Test
@@ -352,19 +384,97 @@ class ADRControllerTests : HintrControllerTests()
         assertThat(result.body!!).isEqualTo("whatever")
     }
 
+    private fun testPushesInputFile(fileType: FileType, fileExt: String, resourceType: String)
+    {
+        val testFilePath = "${tmpTestDir!!.path}/1234.$fileExt"
+        val fileHash = writeTestFile(testFilePath, "hello")
+
+        val versionFile = VersionFileWithPath(testFilePath, "abc123","original-test.$fileExt", false)
+
+        val mockFileManager = mock<FileManager>{
+            on { getFile(fileType) } doReturn versionFile
+        }
+
+        val mockClient = mock<ADRClient> {
+            on { postFile(eq("resource_patch"),
+                    eq(listOf("name" to "testResName",
+                            "hash" to fileHash,
+                            "resource_type" to resourceType,
+                            "id" to "testResId")),
+                    any()) } doReturn ResponseEntity.ok().body("whatever")
+        }
+        val mockBuilder: ADRClientBuilder = mock {
+            on { build() } doReturn mockClient
+        }
+
+        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mockFileManager, mock(), mock(), mock())
+        val result = sut.pushFileToADR("datasetId", resourceType, "calId",
+                "testResFilename.", "testResName", "testResId")
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body!!).isEqualTo("whatever")
+
+        val argumentCaptor = argumentCaptor<Pair<String, File>>()
+        verify(mockClient).postFile(any(), any(), argumentCaptor.capture())
+        assertThat(argumentCaptor.firstValue.first).isEqualTo("upload")
+        val uploadedFile = argumentCaptor.firstValue.second
+        assertThat(uploadedFile.name).isEqualTo("original-test.$fileExt")
+    }
+
     @Test
     fun `pushes pjnz to ADR`()
     {
-        val mockVersionFile = mock<VersionFileWithPath> {
-            on { path } doReturn "/testpath/1234.pjnz"
-            on { filename } doReturn "test.pjnz"
-        }
-        val mockFileManager = mock<FileManager>{
-            on { getFile(FileType.PJNZ) } doReturn mockVersionFile
-        }
+        testPushesInputFile(FileType.PJNZ, "pjnz", "adr-pjnz")
+    }
 
-        //TODO: fake file system to test 'copy' nonexistent test file to tmp dir. Hm, that's tricky though -use some existing
-        //assertSaveAndValidate stuff?
+    @Test
+    fun `pushes shape file to ADR`()
+    {
+        testPushesInputFile(FileType.Shape, "geojson", "adr-shape")
+    }
+
+    @Test
+    fun `pushes population file to ADR`()
+    {
+        testPushesInputFile(FileType.Population, "csv", "adr-pop")
+    }
+
+    @Test
+    fun `pushes survey file to ADR`()
+    {
+        testPushesInputFile(FileType.Survey, "csv", "adr-survey")
+    }
+
+    @Test
+    fun `pushes art file to ADR`()
+    {
+        testPushesInputFile(FileType.Programme, "csv", "adr-art")
+    }
+
+    @Test
+    fun `pushes anc file to ADR`()
+    {
+        testPushesInputFile(FileType.ANC, "csv", "adr-anc")
+    }
+
+    @Test
+    fun `returns error on upload input file without resourceId`()
+    {
+        val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mock(), mock(), mock())
+        val result = sut.pushFileToADR("datasetId", "adr-pjnz", "calId",
+                "testResFilename.", "testResName", null)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(result.body!!).contains("resourceId must be provided for input resourceType")
+    }
+
+    @Test
+    fun `returns error on upload input file which does not exist in version`()
+    {
+        val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mock(), mock(), mock())
+        val result = sut.pushFileToADR("datasetId", "adr-pjnz", "calId",
+                "testResFilename.", "testResName", "testResId")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(result.body!!).contains("File does not exist")
     }
 
     @Test

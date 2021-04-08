@@ -151,34 +151,35 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                         if (switches.adrPushInputs) {
 
                             const addLocalInputFileToUploads = (
+                                key: string,
                                 schema: string,
                                 response: PjnzResponse | ShapeResponse | PopulationResponse | SurveyResponse
                                             | ProgrammeResponse | AncResponse,
                                 displayName: string) => {
-                               if (!response.fromADR) {
-                                   const uploadFile = constructUploadFile(
-                                       metadata,
-                                       Object.keys(uploadFiles).length,
-                                       schema,
-                                       response.filename,
-                                       null,
-                                       displayName
-                                   );
-                                   if (uploadFile) {
-                                       uploadFiles[schema] = uploadFile;
-                                   }
+                                if (!response.fromADR) {
+                                    const uploadFile = constructUploadFile(
+                                        metadata,
+                                        Object.keys(uploadFiles).length,
+                                        schema,
+                                        response.filename,
+                                        null,
+                                        displayName
+                                    );
+                                    if (uploadFile) {
+                                       uploadFiles[key] = uploadFile;
+                                    }
                                }
                             };
 
                             const baseline = rootState.baseline;
-                            addLocalInputFileToUploads(schemas.pjnz, baseline.pjnz!, "PJNZ");
-                            addLocalInputFileToUploads(schemas.shape, baseline.shape!, "shape");
-                            addLocalInputFileToUploads(schemas.population, baseline.population!, "population");
+                            addLocalInputFileToUploads("pjnz", schemas.pjnz, baseline.pjnz!, "PJNZ");
+                            addLocalInputFileToUploads("shape", schemas.shape, baseline.shape!, "shape");
+                            addLocalInputFileToUploads("population",  schemas.population, baseline.population!, "population");
 
                             const sap = rootState.surveyAndProgram;
-                            addLocalInputFileToUploads(schemas.survey, sap.survey!, "survey");
-                            addLocalInputFileToUploads(schemas.programme, sap.program!, "ART");
-                            addLocalInputFileToUploads(schemas.anc, sap.anc!, "ANC");
+                            addLocalInputFileToUploads("survey", schemas.survey, sap.survey!, "survey");
+                            addLocalInputFileToUploads("programme", schemas.programme, sap.program!, "ART");
+                            addLocalInputFileToUploads("anc", schemas.anc, sap.anc!, "ANC");
                         }
 
                         commit({type: ADRMutation.SetUploadFiles, payload: uploadFiles});
