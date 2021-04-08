@@ -21,7 +21,11 @@ describe("Download Results component", () => {
                 },
                 adr: {
                     namespaced: true,
-                    state: mockADRState({userCanUpload: hasUploadPermission, uploading, uploadComplete, uploadError}),
+                    state: mockADRState({userCanUpload: hasUploadPermission, 
+                        uploading, uploadComplete, uploadError, 
+                        currentFileUploading: 1, 
+                        totalFilesUploading: 2
+                    }),
                     actions: {
                         getUserCanUpload,
                         getUploadFiles: jest.fn()
@@ -117,8 +121,8 @@ describe("Download Results component", () => {
 
         const statusMessage = wrapper.find("#uploading");
         expect(statusMessage.find("loading-spinner-stub").exists()).toBe(true)
-        expectTranslated(statusMessage.find("span"), "Uploading (this may take a while)",
-            "Téléchargement (cela peut prendre un certain temps)", store);
+        expectTranslated(statusMessage.find("span"), "Uploading 1 of 2 (this may take a while)",
+            "Téléchargement de 1 sur 2 (cela peut prendre un certain temps)", store);
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBe("disabled")

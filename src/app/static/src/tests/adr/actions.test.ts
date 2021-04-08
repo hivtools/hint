@@ -394,10 +394,15 @@ describe("ADR actions", () => {
 
         await actions.uploadFilestoADR({commit, state: adr, rootState: root} as any, uploadFilesPayload);
 
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
-        expect(commit.mock.calls[1][0]["payload"]).toEqual(success2);
-        expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadCompleted");
+        expect(commit.mock.calls[0][0]["payload"]).toBe(2);
+        expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadProgress");
+        expect(commit.mock.calls[1][0]["payload"]).toBe(1);
+        expect(commit.mock.calls[2][0]["type"]).toBe("ADRUploadProgress");
+        expect(commit.mock.calls[2][0]["payload"]).toBe(2);
+        expect(commit.mock.calls[3][0]["type"]).toBe("ADRUploadCompleted");
+        expect(commit.mock.calls[3][0]["payload"]).toEqual(success2);
         expect(mockAxios.history.post.length).toBe(2);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/type1/calId");
@@ -441,10 +446,13 @@ describe("ADR actions", () => {
 
         await actions.uploadFilestoADR({commit, state: adr, rootState: root} as any, uploadFilesPayload);
 
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
-        expect(commit.mock.calls[1][0]["payload"]).toEqual({"detail": "failed", "error": "OTHER_ERROR"});
-        expect(commit.mock.calls[1][0]["type"]).toBe("SetADRUploadError");
+        expect(commit.mock.calls[0][0]["payload"]).toBe(2);
+        expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadProgress");
+        expect(commit.mock.calls[1][0]["payload"]).toBe(1);
+        expect(commit.mock.calls[2][0]["type"]).toBe("SetADRUploadError");
+        expect(commit.mock.calls[2][0]["payload"]).toEqual({"detail": "failed", "error": "OTHER_ERROR"});
         expect(mockAxios.history.post.length).toBe(1);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/type1/calId");

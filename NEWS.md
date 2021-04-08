@@ -1,3 +1,7 @@
+# hint 1.29.0
+
+* Progress feedback on uploading files to ADR
+
 # hint 1.28.0
 
 * Check and display user permissions on dataset when dataset is first selected
