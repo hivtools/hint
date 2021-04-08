@@ -16,7 +16,7 @@ export interface ADRActions {
     getDatasets: (store: ActionContext<ADRState, RootState>) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
-    refreshBaselineDataset: (store: ActionContext<ADRState, RootState>) => void;
+    // refreshBaselineDataset: (store: ActionContext<ADRState, RootState>) => void;
     getUploadFiles: (store: ActionContext<ADRState, RootState>) => void;
     uploadFilestoADR: (store: ActionContext<ADRState, RootState>, uploadFilesPayload: UploadFile[]) => void;
 }
@@ -65,18 +65,31 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getUserCanUpload(context) {
-        const {rootState, commit, dispatch} = context;
+        const {state, rootState, commit} = context;
         const selectedDataset = rootState.baseline.selectedDataset;
 
         if (selectedDataset) {
             //For backward compatibility, we may have to regenerate the dataset metadata to provide the
             //organisation id for projects which are reloaded
-            let selectedDatasetOrgId = '';
+            let selectedDatasetOrgId: string;
             if (!selectedDataset.organization) {
                 //We may also have to fetch the selected dataset metadata too, if not loaded during this session
-                dispatch('refreshBaselineDataset');
-                // this.refreshBaselineDataset(context, selectedDatasetOrgId);
-                selectedDatasetOrgId = (baseline!.state! as BaselineState).selectedDataset!.organization.id;
+                let datasets = state.datasets;
+                if (!datasets.length) {
+                    await api(context)
+                        .ignoreErrors()
+                        .ignoreSuccess()
+                        .get(`/adr/datasets/${selectedDataset.id}`)
+                        .then((response) => {
+                            if (response) {
+                                datasets = [response.data];
+                            }
+                        });
+                }
+
+                const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
+                commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
+                selectedDatasetOrgId = regenDataset.organization.id;
             } else {
                 selectedDatasetOrgId = selectedDataset.organization.id;
             }
@@ -95,29 +108,60 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         }
     },
 
-    async refreshBaselineDataset(context) {
-        const {state, rootState, commit} = context;
-        const selectedDataset = rootState.baseline.selectedDataset;
+    // async getUserCanUpload(context) {
+    //     const {rootState, commit, dispatch} = context;
+    //     const selectedDataset = rootState.baseline.selectedDataset;
 
-        // if (selectedDataset && !selectedDataset.organization) {
-        if (selectedDataset) {
-            let datasets = state.datasets;
-            if (!datasets.length) {
-                await api(context)
-                    .ignoreErrors()
-                    .ignoreSuccess()
-                    .get(`/adr/datasets/${selectedDataset.id}`)
-                    .then((response) => {
-                        if (response) {
-                            datasets = [response.data];
-                        }
-                    });
-            }
+    //     if (selectedDataset) {
+    //         //For backward compatibility, we may have to regenerate the dataset metadata to provide the
+    //         //organisation id for projects which are reloaded
+    //         let selectedDatasetOrgId = '';
+    //         if (!selectedDataset.organization) {
+    //             //We may also have to fetch the selected dataset metadata too, if not loaded during this session
+    //             // dispatch("refreshBaselineDataset");
+    //             this.refreshBaselineDataset(context);
+    //             // selectedDatasetOrgId = (baseline!.state! as BaselineState).selectedDataset?.organization.id;
+    //         } else {
+    //             selectedDatasetOrgId = selectedDataset.organization.id;
+    //         }
 
-            const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
-            commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
-        }
-    },
+    //         await api(context)
+    //             .withError(ADRMutation.SetADRError)
+    //             .ignoreSuccess()
+    //             .get("/adr/orgs?permission=update_dataset")
+    //             .then(async (response) => {
+    //                 if (response) {
+    //                     const updateableOrgs = response.data as Organization[];
+    //                     const canUpload = updateableOrgs.some(org => org.id === selectedDatasetOrgId);
+    //                     commit({type: ADRMutation.SetUserCanUpload, payload: canUpload});
+    //                 }
+    //             })
+    //     }
+    // },
+
+    // async refreshBaselineDataset(context) {
+    //     const {state, rootState, commit} = context;
+    //     const selectedDataset = rootState.baseline.selectedDataset;
+
+    //     // if (selectedDataset && !selectedDataset.organization) {
+    //     if (selectedDataset) {
+    //         let datasets = state.datasets;
+    //         if (!datasets.length) {
+    //             await api(context)
+    //                 .ignoreErrors()
+    //                 .ignoreSuccess()
+    //                 .get(`/adr/datasets/${selectedDataset.id}`)
+    //                 .then((response) => {
+    //                     if (response) {
+    //                         datasets = [response.data];
+    //                     }
+    //                 });
+    //         }
+
+    //         const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
+    //         commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
+    //     }
+    // },
 
     async getUploadFiles(context) {
         const {state, rootState, commit} = context;
@@ -160,32 +204,50 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         const {state, rootState, commit, dispatch} = context;
         const selectedDatasetId = rootState.baseline.selectedDataset?.id;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
-        commit({type: ADRMutation.ADRUploadStarted, payload: uploadFilesPayload.length});
 
-        for (let i = 0; i < uploadFilesPayload.length; i++) {
-            commit({type: ADRMutation.ADRUploadProgress, payload: i + 1});
-            const { resourceType, resourceFilename, resourceId } = uploadFilesPayload[i]
+        if (selectedDatasetId){
+            commit({type: ADRMutation.ADRUploadStarted, payload: uploadFilesPayload.length});
 
-            const requestParams: Dict<string> = {resourceFileName: resourceFilename}
-            if (resourceId){
-                requestParams["resourceId"] = resourceId
-            }
+            for (let i = 0; i < uploadFilesPayload.length; i++) {
+                commit({type: ADRMutation.ADRUploadProgress, payload: i + 1});
+                const { resourceType, resourceFilename, resourceId } = uploadFilesPayload[i]
 
-            let apiRequest = api<ADRMutation, ADRMutation>(context)
-                                        .withError(ADRMutation.SetADRUploadError);
-            if  (i === uploadFilesPayload.length - 1) {
-                apiRequest = apiRequest.withSuccess(ADRMutation.ADRUploadCompleted);
-            } else {
-                apiRequest = apiRequest.ignoreSuccess();
+                const requestParams: Dict<string> = {resourceFileName: resourceFilename}
+                if (resourceId){
+                    requestParams["resourceId"] = resourceId
+                }
+
+                let apiRequest = api<ADRMutation, ADRMutation>(context)
+                                            .withError(ADRMutation.SetADRUploadError);
+                if  (i === uploadFilesPayload.length - 1) {
+                    apiRequest = apiRequest.withSuccess(ADRMutation.ADRUploadCompleted);
+                } else {
+                    apiRequest = apiRequest.ignoreSuccess();
+                }
+                const response = await apiRequest.postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`,
+                    qs.stringify(requestParams))
+                if (!response) {
+                    break
+                }
             }
-            const response = await apiRequest.postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`,
-                qs.stringify(requestParams))
-            if (!response) {
-                break
-            }
+            let datasets = state.datasets;
+            await api(context)
+                .ignoreErrors()
+                .ignoreSuccess()
+                .get(`/adr/datasets/${selectedDatasetId}`)
+                .then((response) => {
+                    if (response) {
+                        datasets = [response.data];
+                    }
+                });
+    
+            const regenDataset = datasetFromMetadata(selectedDatasetId, datasets, state.schemas!);
+            commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
+            dispatch("getUploadFiles");
         }
-        dispatch('refreshBaselineDataset');
-        dispatch('getUploadFiles');
+        // dispatch({ type: "refreshBaselineDataset" });
+        // dispatch("refreshBaselineDataset");
+        // dispatch("getUploadFiles");
         // this.refreshBaselineDataset(context);
         // this.getUploadFiles(context);
     }
