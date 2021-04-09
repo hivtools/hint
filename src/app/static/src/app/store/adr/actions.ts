@@ -195,9 +195,9 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         commit({type: ADRMutation.ADRUploadStarted});
 
         for (let i = 0; i < uploadFilesPayload.length; i++) {
-            const { resourceType, resourceFilename, resourceName, resourceId } = uploadFilesPayload[i]
+            const { resourceType, resourceFilename, resourceName, resourceId } = uploadFilesPayload[i];
 
-            const requestParams: Dict<string> = {resourceFileName: resourceFilename, resourceName}
+            const requestParams: Dict<string> = {resourceFileName: resourceFilename, resourceName};
             if (resourceId){
                 requestParams["resourceId"] = resourceId
             }

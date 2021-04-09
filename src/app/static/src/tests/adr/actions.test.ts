@@ -690,11 +690,13 @@ describe("ADR actions", () => {
                 {
                     resourceType: "type1",
                     resourceFilename: "file1",
-                    resourceId: "id1"
+                    resourceId: "id1",
+                    resourceName: "resource1"
                 },
                 {
                     resourceType: "type2",
-                    resourceFilename: "file2"
+                    resourceFilename: "file2",
+                    resourceName: "resource2"
                 }
             ] as UploadFile[]
 
@@ -712,9 +714,9 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[1][0]["payload"]).toEqual(success2);
         expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadCompleted");
         expect(mockAxios.history.post.length).toBe(2);
-        expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1");
+        expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceName=resource1&resourceId=id1");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/type1/calId");
-        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2");
+        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&resourceName=resource2");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/type2/calId");
     });
 

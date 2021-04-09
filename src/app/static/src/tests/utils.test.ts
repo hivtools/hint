@@ -187,18 +187,20 @@ describe("utils", () => {
                     id: "456",
                     last_modified: "2021-02-01",
                     metadata_modified: "2021-01-28",
-                    url: "http://other"
+                    url: "http://other",
+                    name: "Other Resource"
                 },
                 {
                     resource_type: "test-type",
                     id: "123",
                     last_modified: "2021-03-01",
                     metadata_modified: "2021-02-28",
-                    url: "http://test"
+                    url: "http://test",
+                    name: "Test Resource"
                 }
             ]
         };
-        const result = constructUploadFile(datasetWithResources, 0,"test-type", "test.txt", "displayTest");
+        const result = constructUploadFile(datasetWithResources, 0,"test-type", "test.txt", null, "displayTest");
         expect(result).toStrictEqual({
             index: 0,
             displayName: "displayTest",
@@ -206,13 +208,14 @@ describe("utils", () => {
             resourceFilename: "test.txt",
             resourceId: "123",
             lastModified: "2021-03-01",
-            resourceUrl: "http://test"
+            resourceUrl: "http://test",
+            resourceName: "Test Resource"
         });
     });
 
     it("can construct upload file where resource does not exist", () => {
         const datasetWithResources = {resources: []};
-        const result = constructUploadFile(datasetWithResources, 0, "test-type", "test.txt", "displayTest");
+        const result = constructUploadFile(datasetWithResources, 0, "test-type", "test.txt", "Test Resource", "displayTest");
         expect(result).toStrictEqual({
             index: 0,
             displayName: "displayTest",
@@ -220,7 +223,14 @@ describe("utils", () => {
             resourceFilename: "test.txt",
             resourceId: null,
             lastModified: null,
-            resourceUrl: null
+            resourceUrl: null,
+            resourceName: "Test Resource"
         });
+    });
+
+    it("constructUploadFile returns null if resource name not provided and resource does not exist", () => {
+        const datasetWithResources = {resources: []};
+        const result = constructUploadFile(datasetWithResources, 0, "test-type", "test.txt", null, "displayTest");
+        expect(result).toBeNull();
     });
 });
