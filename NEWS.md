@@ -1,3 +1,7 @@
+# hint 1.30.0
+
+* Rebuild ADR uploadFiles with new resourceIds after upload new files
+
 # hint 1.29.0
 
 * Progress feedback on uploading files to ADR

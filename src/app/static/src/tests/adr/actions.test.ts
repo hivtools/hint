@@ -398,7 +398,6 @@ describe("ADR actions", () => {
 
         await actions.uploadFilestoADR({commit, dispatch, state: adr, rootState: root} as any, uploadFilesPayload);
 
-        // expect(commit.mock.calls).toBe(5);
         expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
         expect(commit.mock.calls[0][0]["payload"]).toBe(2);
@@ -408,7 +407,6 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[2][0]["payload"]).toBe(2);
         expect(commit.mock.calls[3][0]["type"]).toBe("ADRUploadCompleted");
         expect(commit.mock.calls[3][0]["payload"]).toEqual(success2);
-        // expect(commit.mock.calls[4]).toBe("baseline/SetDataset");
         expect(commit.mock.calls[4][0]).toBe("baseline/SetDataset");
         expect(commit.mock.calls[4][2]["root"]).toBe(true);
         expect(dispatch.mock.calls.length).toBe(1);
@@ -419,9 +417,7 @@ describe("ADR actions", () => {
         expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/type2/calId");
         expect(mockAxios.history.get.length).toBe(1);
-        // expect(mockAxios.history.get[0]["data"]).toBe("resourceFileName=file1&resourceId=id1");
         expect(mockAxios.history.get[0]["url"]).toBe("/adr/datasets/datasetId");
-        // expect(mockAxios.history.get).toBe(1);
     });
 
     it("uploadFilestoADR sets upload failure and prevents subsquent uploads", async () => {

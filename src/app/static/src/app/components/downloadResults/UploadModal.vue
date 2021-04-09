@@ -139,7 +139,6 @@
                 if (!this.defaultSet){
                     this.setDefaultCheckedItems()
                 }
-                console.log("uploadFiles", this.uploadFiles, "uploadFilesToAdr", this.uploadFilesToAdr, "defaultSet", this.defaultSet)
             }
         }
     });

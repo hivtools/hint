@@ -1,6 +1,5 @@
 import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
-import {baseline, BaselineState} from "../baseline/baseline";
 import {api} from "../../apiService";
 import qs from "qs";
 import {ADRState} from "./adr";
@@ -16,7 +15,6 @@ export interface ADRActions {
     getDatasets: (store: ActionContext<ADRState, RootState>) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
-    // refreshBaselineDataset: (store: ActionContext<ADRState, RootState>) => void;
     getUploadFiles: (store: ActionContext<ADRState, RootState>) => void;
     uploadFilestoADR: (store: ActionContext<ADRState, RootState>, uploadFilesPayload: UploadFile[]) => void;
 }
@@ -108,61 +106,6 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         }
     },
 
-    // async getUserCanUpload(context) {
-    //     const {rootState, commit, dispatch} = context;
-    //     const selectedDataset = rootState.baseline.selectedDataset;
-
-    //     if (selectedDataset) {
-    //         //For backward compatibility, we may have to regenerate the dataset metadata to provide the
-    //         //organisation id for projects which are reloaded
-    //         let selectedDatasetOrgId = '';
-    //         if (!selectedDataset.organization) {
-    //             //We may also have to fetch the selected dataset metadata too, if not loaded during this session
-    //             // dispatch("refreshBaselineDataset");
-    //             this.refreshBaselineDataset(context);
-    //             // selectedDatasetOrgId = (baseline!.state! as BaselineState).selectedDataset?.organization.id;
-    //         } else {
-    //             selectedDatasetOrgId = selectedDataset.organization.id;
-    //         }
-
-    //         await api(context)
-    //             .withError(ADRMutation.SetADRError)
-    //             .ignoreSuccess()
-    //             .get("/adr/orgs?permission=update_dataset")
-    //             .then(async (response) => {
-    //                 if (response) {
-    //                     const updateableOrgs = response.data as Organization[];
-    //                     const canUpload = updateableOrgs.some(org => org.id === selectedDatasetOrgId);
-    //                     commit({type: ADRMutation.SetUserCanUpload, payload: canUpload});
-    //                 }
-    //             })
-    //     }
-    // },
-
-    // async refreshBaselineDataset(context) {
-    //     const {state, rootState, commit} = context;
-    //     const selectedDataset = rootState.baseline.selectedDataset;
-
-    //     // if (selectedDataset && !selectedDataset.organization) {
-    //     if (selectedDataset) {
-    //         let datasets = state.datasets;
-    //         if (!datasets.length) {
-    //             await api(context)
-    //                 .ignoreErrors()
-    //                 .ignoreSuccess()
-    //                 .get(`/adr/datasets/${selectedDataset.id}`)
-    //                 .then((response) => {
-    //                     if (response) {
-    //                         datasets = [response.data];
-    //                     }
-    //                 });
-    //         }
-
-    //         const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
-    //         commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
-    //     }
-    // },
-
     async getUploadFiles(context) {
         const {state, rootState, commit} = context;
         const selectedDataset = rootState.baseline.selectedDataset;
@@ -245,11 +188,6 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
             dispatch("getUploadFiles");
         }
-        // dispatch({ type: "refreshBaselineDataset" });
-        // dispatch("refreshBaselineDataset");
-        // dispatch("getUploadFiles");
-        // this.refreshBaselineDataset(context);
-        // this.getUploadFiles(context);
     }
 };
 
