@@ -1,3 +1,15 @@
+# hint 1.30.0
+
+* Support uploading edited input files, behind feature switch for now
+
+# hint 1.29.0
+
+* Progress feedback on uploading files to ADR
+
+# hint 1.28.0
+
+* Check and display user permissions on dataset when dataset is first selected
+
 # hint 1.27.0
 
 * Invoke ADR uploads with actions
