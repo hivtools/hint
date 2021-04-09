@@ -1,4 +1,4 @@
-# hint 1.30.0
+# hint 1.29.1
 
 * Improve performance of ADR uploads
 
