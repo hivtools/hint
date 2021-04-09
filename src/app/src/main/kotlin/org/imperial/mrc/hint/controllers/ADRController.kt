@@ -25,6 +25,7 @@ import java.nio.file.Files
 
 @RestController
 @RequestMapping("/adr")
+@Suppress("LongParameterList")
 class ADRController(private val encryption: Encryption,
                     private val userRepository: UserRepository,
                     private val adrClientBuilder: ADRClientBuilder,
@@ -184,59 +185,29 @@ class ADRController(private val encryption: Encryption,
             appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId),
                     "Naomi summary report")
             appProperties.adrPJNZSchema, appProperties.adrShapeSchema, appProperties.adrPopSchema,
-                appProperties.adrSurveySchema, appProperties.adrARTSchema, appProperties.adrANCSchema -> null
+            appProperties.adrSurveySchema, appProperties.adrARTSchema, appProperties.adrANCSchema -> null
             else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
         }
 
-        var file: File
+        // 2. Get the file ready to upload
         val tmpDir = Files.createTempDirectory("adr").toFile()
-        if (artefact != null)
+        val (file, errorDetail) = if (artefact != null)
         {
-            // 2. Return error if artefact can't be retrieved
-            if (!artefact.first.statusCode.is2xxSuccessful)
-            {
-                val baos = ByteArrayOutputStream()
-                artefact.first.body?.writeTo(baos)
-                return ErrorDetail(artefact.first.statusCode, baos.toString()).toResponseEntity()
-            }
-
-            // 3. Stream artefact to file
-            file = File(tmpDir, resourceFileName)
-            FileOutputStream(file).use { fis ->
-                artefact.first.body!!.writeTo(fis)
-            }
+            makeOutputFileToPushToADR(artefact, tmpDir, resourceFileName)
         }
         else
         {
-            if (resourceId == null)
-            {
-                return ErrorDetail(HttpStatus.BAD_REQUEST,"resourceId must be provided for input resourceType")
-                        .toResponseEntity()
-            }
-
-            // 3. Map adr schema to version file type
-            val fileType = when (resourceType)
-            {
-                appProperties.adrPJNZSchema -> FileType.PJNZ
-                appProperties.adrShapeSchema -> FileType.Shape
-                appProperties.adrPopSchema -> FileType.Population
-                appProperties.adrSurveySchema -> FileType.Survey
-                appProperties.adrARTSchema -> FileType.Programme
-                appProperties.adrANCSchema -> FileType.ANC
-                else -> return ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid state")
-                        .toResponseEntity()
-            }
-
-            //Find input file on disk and copy to tmp dir with original file name
-            val versionFile = fileManager.getFile(fileType)
-                    ?: return ErrorDetail(HttpStatus.BAD_REQUEST, "File does not exist")
-                            .toResponseEntity()
-            file = File(tmpDir, versionFile.filename)
-            File(versionFile.path).copyTo(file)
+            makeInputFileToPushToADR(resourceType, resourceId, tmpDir)
         }
 
-        // 4. Checksum file and upload with metadata to ADR
-        val filePart = Pair("upload", file)
+        if (errorDetail != null)
+        {
+           return errorDetail.toResponseEntity()
+        }
+
+        // 3. Checksum file and upload with metadata to ADR
+        @Suppress("UnsafeCallOnNullableType")
+        val filePart = Pair("upload", file!!)
         val commonParameters =
                 mutableListOf("name" to resourceName, "hash" to file.md5sum(), "resource_type" to resourceType)
 
@@ -253,9 +224,64 @@ class ADRController(private val encryption: Encryption,
                 null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
                 else -> adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
             }
-        }
-        finally {
+        } finally
+        {
             tmpDir.deleteRecursively()
         }
     }
+
+    @Suppress("ReturnCount")
+    private fun makeOutputFileToPushToADR(artefact: Pair<ResponseEntity<StreamingResponseBody>, String>,
+                                          tmpDir: File,
+                                          resourceFileName: String): Pair<File?, ErrorDetail?>
+    {
+        // Return error if artefact can't be retrieved
+        if (!artefact.first.statusCode.is2xxSuccessful)
+        {
+            val baos = ByteArrayOutputStream()
+            artefact.first.body?.writeTo(baos)
+            return Pair(null, ErrorDetail(artefact.first.statusCode, baos.toString()))
+        }
+
+        // Stream artefact to file
+        val file = File(tmpDir, resourceFileName)
+        FileOutputStream(file).use { fis ->
+            artefact.first.body!!.writeTo(fis)
+        }
+        return Pair(file, null)
+    }
+
+    @Suppress("ReturnCount")
+    private fun makeInputFileToPushToADR(resourceType: String,
+                                         resourceId: String?,
+                                         tmpDir: File): Pair<File?, ErrorDetail?>
+    {
+        if (resourceId == null)
+        {
+            return Pair(null,
+                    ErrorDetail(HttpStatus.BAD_REQUEST, "resourceId must be provided for input resourceType"))
+        }
+
+        // Map adr schema to version file type
+        val fileType = when (resourceType)
+        {
+            appProperties.adrPJNZSchema -> FileType.PJNZ
+            appProperties.adrShapeSchema -> FileType.Shape
+            appProperties.adrPopSchema -> FileType.Population
+            appProperties.adrSurveySchema -> FileType.Survey
+            appProperties.adrARTSchema -> FileType.Programme
+            appProperties.adrANCSchema -> FileType.ANC
+            else -> return Pair(null, ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid state"))
+        }
+
+        //Find input file on disk and copy to tmp dir with original file name
+        val versionFile = fileManager.getFile(fileType)
+                ?: return Pair(null, ErrorDetail(HttpStatus.BAD_REQUEST, "File does not exist"))
+
+        val file = File(tmpDir, versionFile.filename)
+        File(versionFile.path).copyTo(file)
+        return Pair(file, null)
+    }
 }
+
+
