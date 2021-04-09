@@ -186,16 +186,36 @@ class ADRTests : SecureIntegrationTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `can push file to ADR`(isAuthorized: IsAuthorized)
+    fun `can push output file to ADR`(isAuthorized: IsAuthorized)
     {
         if (isAuthorized == IsAuthorized.TRUE) {
             val modelCalibrationId = waitForModelRunResult()
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
-            val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputZipSchema}/$modelCalibrationId?resourceFileName=output.zip"
+            val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputZipSchema}/$modelCalibrationId?resourceFileName=output.zip&resourceName=TestZip"
             val createResult = testRestTemplate.postForEntity<String>(url)
             assertSuccess(createResult)
             val resourceId = ObjectMapper().readTree(createResult.body!!)["data"]["id"].textValue()
             val updateResult = testRestTemplate.postForEntity<String>("$url&resourceId=$resourceId")
+            assertSuccess(updateResult)
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can push input file to ADR`(isAuthorized: IsAuthorized)
+    {
+        if (isAuthorized == IsAuthorized.TRUE) {
+
+            val modelCalibrationId = waitForModelRunResult()
+            testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
+
+            //TODO: update for new resource ID when ADR dev server updates from live:
+            //135759cf-2ad4-4724-a3d4-52c01d65d778
+            val resourceId = "7b672358-439f-4c0d-947c-10f9fc1957d1"
+            val qs = "resourceFileName=input.pjnz&resourceName=TestPJNZ&resourceId=$resourceId"
+            val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrPJNZSchema}/$modelCalibrationId?$qs"
+
+            val updateResult = testRestTemplate.postForEntity<String>(url)
             assertSuccess(updateResult)
         }
     }
