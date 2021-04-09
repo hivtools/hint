@@ -72,7 +72,8 @@
         uploadFiles: Dict<UploadFile>
     }
 
-    interface Data {
+    interface Data { 
+        defaultSet: boolean
         uploadFilesToAdr: string[]
         uploadDescToAdr: string
     }
@@ -90,6 +91,7 @@
         },
         data(): Data {
             return {
+                defaultSet: false,
                 uploadFilesToAdr: [],
                 uploadDescToAdr: ""
             }
@@ -118,6 +120,7 @@
                         this.uploadFilesToAdr.push(key)
                     }
                 })
+                this.defaultSet = true;
             }
         },
         computed: {
@@ -133,7 +136,10 @@
         },
         watch: {
             uploadFiles() {
-                this.setDefaultCheckedItems()
+                if (!this.defaultSet){
+                    this.setDefaultCheckedItems()
+                }
+                console.log("uploadFiles", this.uploadFiles, "uploadFilesToAdr", this.uploadFilesToAdr, "defaultSet", this.defaultSet)
             }
         }
     });
