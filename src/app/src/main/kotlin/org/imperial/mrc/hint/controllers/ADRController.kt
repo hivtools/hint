@@ -224,7 +224,8 @@ class ADRController(private val encryption: Encryption,
                 null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
                 else -> adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
             }
-        } finally
+        }
+        finally
         {
             tmpDir.deleteRecursively()
         }
@@ -271,7 +272,7 @@ class ADRController(private val encryption: Encryption,
             appProperties.adrSurveySchema -> FileType.Survey
             appProperties.adrARTSchema -> FileType.Programme
             appProperties.adrANCSchema -> FileType.ANC
-            else -> return Pair(null, ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid state"))
+            else -> throw IllegalArgumentException("$resourceType is not an input resource type")
         }
 
         //Find input file on disk and copy to tmp dir with original file name

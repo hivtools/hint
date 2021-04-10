@@ -209,9 +209,7 @@ class ADRTests : SecureIntegrationTests()
             val modelCalibrationId = waitForModelRunResult()
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
 
-            //TODO: update for new resource ID when ADR dev server updates from live:
-            //135759cf-2ad4-4724-a3d4-52c01d65d778
-            val resourceId = "7b672358-439f-4c0d-947c-10f9fc1957d1"
+            val resourceId = "135759cf-2ad4-4724-a3d4-52c01d65d778"
             val qs = "resourceFileName=input.pjnz&resourceName=TestPJNZ&resourceId=$resourceId"
             val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrPJNZSchema}/$modelCalibrationId?$qs"
 

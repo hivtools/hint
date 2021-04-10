@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.unit.controllers
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
@@ -28,7 +29,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.io.File
+import java.lang.reflect.InvocationTargetException
 import java.nio.file.Files
+import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.jvm.isAccessible
 
 class ADRControllerTests : HintrControllerTests()
 {
@@ -475,6 +479,17 @@ class ADRControllerTests : HintrControllerTests()
                 "testResFilename.", "testResName", "testResId")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(result.body!!).contains("File does not exist")
+    }
+
+    @Test
+    fun `throws exception on make input file to push to ADR if not input resource type`()
+    {
+        val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mock(), mock(), mock())
+        val makeInputFileMethod = sut::class.memberFunctions.find{ it.name == "makeInputFileToPushToADR" }
+        makeInputFileMethod!!.isAccessible = true
+        assertThatThrownBy{ makeInputFileMethod.call(sut, mockProperties.adrOutputZipSchema, "testResourceId", File("fakeFile")) }
+                .isInstanceOf(InvocationTargetException::class.java)
+                .hasCauseInstanceOf(IllegalArgumentException::class.java)
     }
 
     @Test

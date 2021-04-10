@@ -112,7 +112,7 @@
                 return formatDateTime(date)
             },
             setDefaultCheckedItems: function () {
-                const uploadFilesKeys = ["outputZip", "outputSummary"];
+                const uploadFilesKeys = ["outputZip", "outputSummary"]
                 uploadFilesKeys.forEach(key => {
                     if (this.uploadFiles.hasOwnProperty(key)) {
                         this.uploadFilesToAdr.push(key)
