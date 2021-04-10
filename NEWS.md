@@ -2,6 +2,10 @@
 
 * Support uploading edited input files, behind feature switch for now
 
+# hint 1.29.1
+
+* Improve performance of ADR uploads
+
 # hint 1.29.0
 
 * Progress feedback on uploading files to ADR
