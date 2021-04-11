@@ -142,7 +142,7 @@ a.down::after {
     height: 40px;
 }
 
-.modal-content {
+#upload-modal .modal-content {
   max-height: 95vh;
   overflow: auto;
 }
