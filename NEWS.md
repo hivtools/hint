@@ -1,6 +1,14 @@
-# hint 1.29.0
+# hint 1.30.0
 
 * Avoid re-uploading unchanged files to ADR
+
+# hint 1.29.1
+
+* Improve performance of ADR uploads
+
+# hint 1.29.0
+
+* Progress feedback on uploading files to ADR
 
 # hint 1.28.0
 

@@ -232,10 +232,13 @@ describe("ADR dataset-related actions", () => {
         await adrActions.uploadFilestoADR({commit, state: adr, rootState: root} as any,
             uploadFilesPayload);
 
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
-        expect(commit.mock.calls[1][0]["type"]).toBe("SetADRUploadError");
-        expect(commit.mock.calls[1][0]["payload"]["error"]).toBe("OTHER_ERROR");
+        expect(commit.mock.calls[0][0]["payload"]).toBe(1);
+        expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadProgress");
+        expect(commit.mock.calls[1][0]["payload"]).toBe(1);
+        expect(commit.mock.calls[2][0]["type"]).toBe("SetADRUploadError");
+        expect(commit.mock.calls[2][0]["payload"]["error"]).toBe("OTHER_ERROR");
     }, 7000);
 
 });
