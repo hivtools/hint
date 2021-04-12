@@ -73,8 +73,10 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             let selectedDatasetOrgId: string;
             if (!selectedDataset.organization) {
                 //We may also have to fetch the selected dataset metadata too, if not loaded during this session
-                getAndSetDatasets(context, selectedDataset.id)
-                selectedDatasetOrgId = (baseline as BaselineState).selectedDataset!.organization.id
+                await getAndSetDatasets(context, selectedDataset.id)
+                // selectedDatasetOrgId = (baseline as BaselineState).selectedDataset!.organization.id
+                // selectedDatasetOrgId = rootState.baseline.selectedDataset!.organization.id;
+                selectedDatasetOrgId = selectedDataset.organization!.id;
             } else {
                 selectedDatasetOrgId = selectedDataset.organization.id;
             }
@@ -159,7 +161,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                 break
             }
         }
-        getAndSetDatasets(context, selectedDatasetId)
+        await getAndSetDatasets(context, selectedDatasetId)
         dispatch("getUploadFiles");
     }    
 };
