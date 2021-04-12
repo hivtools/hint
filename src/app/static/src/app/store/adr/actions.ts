@@ -169,7 +169,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                  * compatibility issue that may arise due to previous app version calibration
                  * and once re-calibrated, the correct data will be populated
                  */
-                requestParams["description"] = "Naomi model outputs"
+                requestParams["description"] = "Output upload from Naomi web"
             }
 
             let apiRequest = api<ADRMutation, ADRMutation>(context)
