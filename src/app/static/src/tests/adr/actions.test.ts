@@ -416,7 +416,7 @@ describe("ADR actions", () => {
         expect(mockAxios.history.post.length).toBe(2);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=zip");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/outputZip/calId");
-        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=Naomi%20model%20outputs");
+        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=Output%20upload%20from%20Naomi%20web");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/type2/calId");
     });
 
