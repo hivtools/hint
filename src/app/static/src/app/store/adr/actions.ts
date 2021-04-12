@@ -148,10 +148,11 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         const uploadMetadata = rootState.modelRun.result?.uploadMetadata
         const selectedDatasetId = rootState.baseline.selectedDataset?.id;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
-        commit({type: ADRMutation.ADRUploadStarted});
+        commit({type: ADRMutation.ADRUploadStarted, payload: uploadFilesPayload.length});
 
         for (let i = 0; i < uploadFilesPayload.length; i++) {
-            const {resourceType, resourceFilename, resourceId} = uploadFilesPayload[i]
+            commit({type: ADRMutation.ADRUploadProgress, payload: i + 1});
+            const { resourceType, resourceFilename, resourceId } = uploadFilesPayload[i]
 
             const requestParams: Dict<string> = {resourceFileName: resourceFilename}
             if (resourceId) {

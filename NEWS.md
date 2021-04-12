@@ -1,7 +1,18 @@
+# hint 1.30.0
+
+* Include metadata when pushing file to ADR
+
+# hint 1.29.1
+
+* Improve performance of ADR uploads
+
+# hint 1.29.0
+
+* Progress feedback on uploading files to ADR
 
 # hint 1.28.0
 
-* Include metadata when pushing file to ADR
+* Check and display user permissions on dataset when dataset is first selected
 
 # hint 1.27.0
 
