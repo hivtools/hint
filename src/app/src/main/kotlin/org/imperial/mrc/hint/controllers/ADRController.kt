@@ -224,8 +224,8 @@ class ADRController(private val encryption: Encryption,
                     }
                 }
             }
-        } finally
-        {
+        }
+        finally {
             tmpDir.deleteRecursively()
         }
     }
