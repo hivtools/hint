@@ -147,31 +147,6 @@ describe(`uploadModal `, () => {
         expect(input2.checked).toBe(true)
     })
 
-    // it(`checkboxes are set by default2`, async () => {
-    //     const wrapper = shallowMount(UploadModal, {store: createStore({})})
-    //     // await wrapper.setData({uploadFilesToAdr: ["outputZip", "outputSummary"]})
-
-    //     // wrapper.vm.$store.modules.adr.state.uploadFiles = fakeMetadata
-    //     wrapper.s
-
-    //     const inputs = wrapper.findAll("input.form-check-input")
-    //     expect(inputs.length).toBe(2)
-
-    //     const input1 =  inputs.at(0).element as HTMLInputElement
-    //     expect(input1.checked).toBe(true)
-
-    //     const input2 =  inputs.at(1).element as HTMLInputElement
-    //     expect(input2.checked).toBe(true)
-    //     // input2.setAttribute("checked", false)
-    //     inputs.setChecked(false)
-    //     expect(input2.checked).toBe(false)
-
-    //     wrapper.vm.$options.watch.uploadFiles.call(wrapper.vm)
-    //     wrapper.vm.$store.state.adr.uploadFiles = jest.fn()
-    //     expect(input2.checked).toBe(false)
-    //     // expect(inputs.length).toBe(2)
-    // })
-
     it(`can check and get values from check boxes`, async () => {
         const wrapper = getWrapper()
         const inputs = wrapper.findAll("input.form-check-input")

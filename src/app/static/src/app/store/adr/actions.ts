@@ -74,24 +74,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             if (!selectedDataset.organization) {
                 //We may also have to fetch the selected dataset metadata too, if not loaded during this session
                 getAndSetDatasets(context, selectedDataset.id)
-                // let datasets = state.datasets;
-                // if (!datasets.length) {
-                //     await api(context)
-                //         .ignoreErrors()
-                //         .ignoreSuccess()
-                //         .get(`/adr/datasets/${selectedDataset.id}`)
-                //         .then((response) => {
-                //             if (response) {
-                //                 datasets = [response.data];
-                //             }
-                //         });
-                // }
-
-                // const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
-                // commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
-                // selectedDatasetOrgId = regenDataset.organization.id;
                 selectedDatasetOrgId = (baseline as BaselineState).selectedDataset!.organization.id
-                console.log("this is the selectedDatasetOrgId", selectedDatasetOrgId)
             } else {
                 selectedDatasetOrgId = selectedDataset.organization.id;
             }
@@ -176,19 +159,6 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                 break
             }
         }
-        // let datasets = state.datasets;
-        // await api(context)
-        //     .ignoreErrors()
-        //     .ignoreSuccess()
-        //     .get(`/adr/datasets/${selectedDatasetId}`)
-        //     .then((response) => {
-        //         if (response) {
-        //             datasets = [response.data];
-        //         }
-        //     });
-
-        // const regenDataset = datasetFromMetadata(selectedDatasetId, datasets, state.schemas!);
-        // commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
         getAndSetDatasets(context, selectedDatasetId)
         dispatch("getUploadFiles");
     }    
@@ -198,7 +168,6 @@ async function getAndSetDatasets(context: ActionContext<ADRState, RootState>, se
     const {state, commit} = context;
     let datasets = state.datasets;
     if (!datasets.length) {
-        console.log('datasets before', datasets)
         await api(context)
                 .ignoreErrors()
                 .ignoreSuccess()
@@ -208,7 +177,6 @@ async function getAndSetDatasets(context: ActionContext<ADRState, RootState>, se
                         datasets = [response.data];
                     }
                 });
-        console.log('datasets after', datasets)
     }
 
     const regenDataset = datasetFromMetadata(selectedDatasetId, datasets, state.schemas!);
