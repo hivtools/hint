@@ -18,8 +18,7 @@ describe(`uploadModal `, () => {
                 resourceFilename: "naomi-model-outputs-project1.zip",
                 resourceId: null,
                 resourceUrl: null,
-                lastModified: null,
-                description: null
+                lastModified: null
             },
         outputSummary:
             {
@@ -29,8 +28,7 @@ describe(`uploadModal `, () => {
                 resourceFilename: "string",
                 resourceId: "value",
                 resourceUrl: null,
-                lastModified: "2021-01-25T06:34:12.375649",
-                description: null
+                lastModified: "2021-01-25T06:34:12.375649"
             }
     }
 
