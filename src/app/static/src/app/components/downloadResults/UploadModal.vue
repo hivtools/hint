@@ -73,7 +73,6 @@
     }
 
     interface Data { 
-        defaultSet: boolean
         uploadFilesToAdr: string[]
         uploadDescToAdr: string
     }
@@ -91,7 +90,6 @@
         },
         data(): Data {
             return {
-                defaultSet: false,
                 uploadFilesToAdr: [],
                 uploadDescToAdr: ""
             }
@@ -114,13 +112,8 @@
                 return formatDateTime(date)
             },
             setDefaultCheckedItems: function () {
-                const uploadFilesKeys = ["outputZip", "outputSummary"]
-                uploadFilesKeys.forEach(key => {
-                    if (this.uploadFiles.hasOwnProperty(key)) {
-                        this.uploadFilesToAdr.push(key)
-                    }
-                })
-                this.defaultSet = true;
+                this.uploadFilesToAdr = ["outputZip", "outputSummary"]
+                    .filter(key => this.uploadFiles.hasOwnProperty(key))
             }
         },
         computed: {
@@ -136,9 +129,7 @@
         },
         watch: {
             uploadFiles() {
-                if (!this.defaultSet){
-                    this.setDefaultCheckedItems()
-                }
+                this.setDefaultCheckedItems()
             }
         }
     });
