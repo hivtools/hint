@@ -343,13 +343,13 @@ class ADRControllerTests : HintrControllerTests()
     fun `pushes updated file to ADR`()
     {
         val hash = mapOf("hash" to "D41D8CD98F00B204E9800998ECF8427E")
-        val body = mapOf("data" to hash)
+        val data = mapOf("data" to hash)
         val mockAPIClient: HintrAPIClient = mock {
             on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
         val mockClient: ADRClient = mock {
             on { postFile(eq("resource_patch"), eq(listOf("name" to "output1.zip", "description" to "Naomi model outputs", "hash" to "D41D8CD98F00B204E9800998ECF8427E", "resource_type" to "adr-output-zip", "id" to "resource1")), any()) } doReturn ResponseEntity.ok().body("whatever")
-            on { get("resource_show?id=resource1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(body))
+            on { get("resource_show?id=resource1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
         }
         val mockBuilder: ADRClientBuilder = mock {
             on { build() } doReturn mockClient
@@ -429,40 +429,6 @@ class ADRControllerTests : HintrControllerTests()
         val result = sut.getOrgsWithPermission("test_perm")
         assertThat(result.body!!).isEqualTo("whatever")
     }
-
-    /*
-    @Ignore
-    @Test
-    fun `can compare hash to check if upload file has changes `()
-    {
-        val hash = mapOf("hash" to "whatever")
-        val body = mapOf("data" to hash)
-        val expectedUrl = "resource_show?id=resource-id"
-        val mockClient = mock<ADRClient> {
-            on { get(expectedUrl) } doReturn ResponseEntity
-                    .ok()
-                    .body(objectMapper.writeValueAsString(body))
-        }
-
-        val mockBuilder = mock<ADRClientBuilder> {
-            on { build() } doReturn mockClient
-        }
-
-        val sut = ADRController(
-                mock(),
-                mock(),
-                mockBuilder,
-                objectMapper,
-                mockProperties,
-                mock(),
-                mock(),
-                mockSession,
-                mock())
-        val result = sut.uploadFileHasNoChanges ("resource-id", "whatever")
-        assertThat(result).isEqualTo(true)
-    }
-
-     */
 
     private fun makeFakeSuccessResponse(): ResponseEntity<String>
     {
