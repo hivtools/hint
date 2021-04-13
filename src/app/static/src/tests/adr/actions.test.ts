@@ -385,7 +385,7 @@ describe("ADR actions", () => {
 
         const uploadFilesPayload = [
                 {
-                    resourceType: "outputZip",
+                    resourceType: "inputs-unaids-naomi-output-zip",
                     resourceFilename: "file1",
                     resourceId: "id1"
                 },
@@ -397,7 +397,7 @@ describe("ADR actions", () => {
 
         const success = {response: "success"}
         const success2 = {response: "success2"}
-        mockAxios.onPost(`adr/datasets/datasetId/resource/outputZip/calId`)
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId`)
             .reply(200, mockSuccess(success));
         mockAxios.onPost(`adr/datasets/datasetId/resource/type2/calId`)
             .reply(200, mockSuccess(success2));
@@ -415,7 +415,7 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[3][0]["payload"]).toEqual(success2);
         expect(mockAxios.history.post.length).toBe(2);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=zip");
-        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/outputZip/calId");
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId");
         expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=Output%20upload%20from%20Naomi%20web");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/type2/calId");
     });
@@ -444,7 +444,7 @@ describe("ADR actions", () => {
 
         const uploadFilesPayload = [
             {
-                resourceType: "outputSummary",
+                resourceType: "inputs-unaids-naomi-report",
                 resourceFilename: "file1",
                 resourceId: "id1"
             },
@@ -458,7 +458,7 @@ describe("ADR actions", () => {
 
         const success2 = {response: "success2"}
 
-        mockAxios.onPost(`adr/datasets/datasetId/resource/outputSummary/calId`)
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId`)
             .reply(500, mockFailure("failed"));
         mockAxios.onPost(`adr/datasets/datasetId/resource/type2/calId`)
             .reply(200, mockSuccess(success2));
@@ -474,6 +474,6 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[2][0]["payload"]).toEqual({"detail": "failed", "error": "OTHER_ERROR"});
         expect(mockAxios.history.post.length).toBe(1);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=summary");
-        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/outputSummary/calId");
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId");
     });
 });
