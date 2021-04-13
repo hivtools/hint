@@ -158,9 +158,9 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             if (resourceId) {
                 requestParams["resourceId"] = resourceId
             }
-            if (uploadMetadata && resourceType === "inputs-unaids-naomi-report") {
+            if (uploadMetadata && resourceType === state.schemas?.outputSummary) {
                 requestParams["description"] = uploadMetadata.outputSummary.description
-            } else if (uploadMetadata && resourceType === "inputs-unaids-naomi-output-zip") {
+            } else if (uploadMetadata && resourceType === state.schemas?.outputZip) {
                 requestParams["description"] = uploadMetadata.outputZip.description
             } else {
                 /**

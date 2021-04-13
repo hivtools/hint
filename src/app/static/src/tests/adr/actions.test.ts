@@ -380,7 +380,11 @@ describe("ADR actions", () => {
         });
         const adr = mockADRState({
             datasets: [],
-            schemas: {baseUrl: "http://test"} as any
+            schemas: {
+                baseUrl: "http://test",
+                outputZip: "inputs-unaids-naomi-output-zip",
+                outputSummary: "inputs-unaids-naomi-report"
+            } as any
         });
 
         const uploadFilesPayload = [
@@ -439,7 +443,11 @@ describe("ADR actions", () => {
         });
         const adr = mockADRState({
             datasets: [],
-            schemas: {baseUrl: "http://test"} as any
+            schemas: {
+                baseUrl: "http://test",
+                outputZip: "inputs-unaids-naomi-output-zip",
+                outputSummary: "inputs-unaids-naomi-report"
+            } as any
         });
 
         const uploadFilesPayload = [
