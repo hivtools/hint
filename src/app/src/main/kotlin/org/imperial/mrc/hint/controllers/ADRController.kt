@@ -32,7 +32,8 @@ class ADRController(private val encryption: Encryption,
                     fileManager: FileManager,
                     apiClient: HintrAPIClient,
                     session: Session,
-                    versionRepository: VersionRepository) : HintrController(fileManager, apiClient, session, versionRepository)
+                    versionRepository: VersionRepository) :
+        HintrController(fileManager, apiClient, session, versionRepository)
 {
 
     companion object
