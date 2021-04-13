@@ -24,16 +24,15 @@ import java.nio.file.Files
 
 @RestController
 @RequestMapping("/adr")
-class ADRController(
-        private val encryption: Encryption,
-        private val userRepository: UserRepository,
-        private val adrClientBuilder: ADRClientBuilder,
-        private val objectMapper: ObjectMapper,
-        private val appProperties: AppProperties,
-        fileManager: FileManager,
-        apiClient: HintrAPIClient,
-        session: Session,
-        versionRepository: VersionRepository) : HintrController(fileManager, apiClient, session, versionRepository)
+class ADRController(private val encryption: Encryption,
+                    private val userRepository: UserRepository,
+                    private val adrClientBuilder: ADRClientBuilder,
+                    private val objectMapper: ObjectMapper,
+                    private val appProperties: AppProperties,
+                    fileManager: FileManager,
+                    apiClient: HintrAPIClient,
+                    session: Session,
+                    versionRepository: VersionRepository) : HintrController(fileManager, apiClient, session, versionRepository)
 {
 
     companion object
