@@ -12,7 +12,6 @@ import {
 import {actions} from "../../app/store/adr/actions";
 import {ADRMutation} from "../../app/store/adr/mutations";
 import {UploadFile} from "../../app/types";
-import {CalibrateResultResponse} from "../../app/generated";
 
 describe("ADR actions", () => {
     const state = mockADRState();
