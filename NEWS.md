@@ -2,6 +2,10 @@
 
 * Avoid re-uploading unchanged files to ADR
 
+# hint 1.29.2
+
+* Remove incorrectly committed debug code
+
 # hint 1.29.1
 
 * Improve performance of ADR uploads

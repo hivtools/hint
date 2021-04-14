@@ -9,7 +9,6 @@ import com.github.kittinunf.fuel.httpUpload
 import org.imperial.mrc.hint.asResponseEntity
 import org.springframework.http.ResponseEntity
 import java.io.File
-import java.time.Instant
 
 abstract class FuelClient(protected val baseUrl: String)
 {
@@ -61,29 +60,12 @@ abstract class FuelClient(protected val baseUrl: String)
 
     fun postFile(url: String, parameters: Parameters, file: Pair<String, File>): ResponseEntity<String>
     {
-        println("""
-            > postFile
-            ${Instant.now()}
-            $baseUrl/$url
-            parameters: $parameters
-            file: $file
-            header: ${standardHeaders()}
-        """.trimIndent())
-//        val response = "https://paste.c-net.org/".httpUpload(parameters)
-//        val response = "https://hookb.in/1gjdyBNoZqfj002yk3kl".httpUpload(parameters)
-        val response = "$baseUrl/$url".httpUpload(parameters)
+        return "$baseUrl/$url".httpUpload(parameters)
                 .add(FileDataPart(file.second, file.first))
                 .addTimeouts()
                 .header(standardHeaders())
                 .response()
                 .second
                 .asResponseEntity()
-        println("""
-            < postFile
-            ${Instant.now()}
-            response code: ${response.statusCodeValue}
-            response body: ${response.body}
-        """.trimIndent())
-        return response
     }
 }
