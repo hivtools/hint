@@ -324,7 +324,7 @@ describe("ADR actions", () => {
         //of action which required that state change
         const commit = jest.fn().mockImplementation(mutation => {
             if (mutation === "baseline/SetDataset") {
-                root.baseline.selectedDataset = {organization: {id: "test-org"}} as any
+                root.baseline.selectedDataset = {id: "test-dataset", organization: {id: "test-org"}} as any
             }
         });
 
