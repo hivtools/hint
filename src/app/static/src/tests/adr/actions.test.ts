@@ -322,9 +322,9 @@ describe("ADR actions", () => {
 
         //Give commit an implementation so it can really update the state on the SetDataset mutation to allow testing
         //of action which required that state change
-        const commit = jest.fn().mockImplementation(mutation => {
+        const commit = jest.fn().mockImplementation((mutation, payload) => {
             if (mutation === "baseline/SetDataset") {
-                root.baseline.selectedDataset = {id: "test-dataset", organization: {id: "test-org"}} as any
+                root.baseline.selectedDataset = payload
             }
         });
 
