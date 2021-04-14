@@ -344,15 +344,19 @@ describe("ADR actions", () => {
             schemas: {baseUrl: "http://test"} as any
         });
 
+        // const baselineMutation = {
+        //     SetDataset = jest.fn(root.baseline.selectedDataset.organization = { id: "test-org"})
+        // }
+
         const datasetResponse = {id: "test-dataset", resources: [], organization: {id: "test-org"}}
         mockAxios.onGet(`adr/datasets/test-dataset`)
-            .reply(200, mockSuccess(datasetResponse), root.baseline.selectedDataset!.organization = {id: "test-org"});
+            .reply(200, mockSuccess(datasetResponse));
         mockAxios.onGet(`adr/orgs?permission=update_dataset`)
             .reply(200, mockSuccess([{id: "test-org"}]));
 
         await actions.getUserCanUpload({commit, state: adr, rootState: root} as any);
 
-        // expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toBe("baseline/SetDataset");
         expect(commit.mock.calls[0][1].id).toBe("test-dataset");
         expect(commit.mock.calls[0][1].organization).toStrictEqual({id: "test-org"});
