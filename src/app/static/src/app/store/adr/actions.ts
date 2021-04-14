@@ -74,7 +74,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             if (!selectedDataset.organization) {
                 //We may also have to fetch the selected dataset metadata too, if not loaded during this session
                 await getAndSetDatasets(context, selectedDataset.id)
-                selectedDatasetOrgId = (baseline as BaselineState).selectedDataset!.organization.id
+                selectedDatasetOrgId = rootState.baseline.selectedDataset!.organization.id
                 // selectedDatasetOrgId = rootState.baseline.selectedDataset!.organization.id;
                 // selectedDatasetOrgId = selectedDataset.organization!.id;
             } else {
