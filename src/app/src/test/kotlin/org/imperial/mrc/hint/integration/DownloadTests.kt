@@ -21,7 +21,6 @@ class DownloadTests : SecureIntegrationTests()
         testRestTemplate.getForEntity<String>("/")
     }
 
-    @Disabled
     @Test
     fun `can download Spectrum results`()
     {
@@ -32,6 +31,7 @@ class DownloadTests : SecureIntegrationTests()
 
     }
 
+    @Disabled
     @Test
     fun `can download summary data`()
     {
@@ -41,6 +41,7 @@ class DownloadTests : SecureIntegrationTests()
         assertResponseHasExpectedDownloadHeaders(responseEntity)
     }
 
+    @Disabled
     @Test
     fun `can download coarse output results`()
     {
