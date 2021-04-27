@@ -312,13 +312,20 @@ describe("ADR actions", () => {
     });
 
     it("getUserCanUpload sets organisation on selectedDataset if necessary", async () => {
-        const commit = jest.fn();
         const root = mockRootState({
             baseline: mockBaselineState({selectedDataset: {id: "test-dataset"}} as any)
         });
         const adr = mockADRState({
             datasets: [{id: "test-dataset", resources: [], organization: {id: "test-org"}}],
             schemas: {baseUrl: "http://test"} as any
+        });
+
+        //Give commit an implementation so it can really update the state on the SetDataset mutation to allow testing
+        //of action which required that state change
+        const commit = jest.fn().mockImplementation((mutation, payload) => {
+            if (mutation === "baseline/SetDataset") {
+                root.baseline.selectedDataset = payload
+            }
         });
 
         mockAxios.onGet(`adr/orgs?permission=update_dataset`)
