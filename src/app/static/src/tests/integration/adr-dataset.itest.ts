@@ -104,7 +104,11 @@ describe("ADR dataset-related actions", () => {
     });
 
     it("can get dataset details on get userCanUpload when selected dataset organisation is not set", async () => {
-        const commit = jest.fn();
+        const commit = jest.fn().mockImplementation((mutation, payload) => {
+            if (mutation === "baseline/SetDataset") {
+                root.baseline.selectedDataset = payload
+            }
+        });
 
         // 1. get datasets
         await adrActions.getDatasets({commit, rootState} as any);
