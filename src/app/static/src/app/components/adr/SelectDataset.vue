@@ -23,11 +23,11 @@
         <button
             class="btn btn-red"
             :class="selectedDataset && 'ml-2'"
-            @click="toggleModal"
+            @click="selectedDataset? confirmEditing($event) : toggleModal()"
         >
             {{ selectText }}
         </button>
-        <modal id="dataset" :open="open">
+        <modal id="dataset" :open="openModal">
             <h4 v-if="!loading" v-translate="'browseADR'"></h4>
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
@@ -74,6 +74,9 @@
                 ></button>
             </template>
         </modal>
+        <reset-confirmation :continue-editing="continueEditing"
+                            :cancel-editing="cancelEditing"
+                            :open="showConfirmation"></reset-confirmation>
     </div>
 </template>
 <script lang="ts">
@@ -97,6 +100,7 @@
     import {VTooltip} from "v-tooltip";
     import {ADRState} from "../../store/adr/adr";
     import {Error} from "../../generated";
+    import ResetConfirmation from "../ResetConfirmation.vue";
 
     interface Methods {
         getDatasets: () => void;
@@ -114,6 +118,9 @@
         markResourcesUpdated: () => void;
         startPolling: () => void;
         stopPolling: () => void;
+        continueEditing: () => void
+        confirmEditing: (e: Event) => void;
+        cancelEditing: () => void;
     }
 
     interface Computed {
@@ -132,7 +139,8 @@
     }
 
     interface Data {
-        open: boolean;
+        openModal: boolean;
+        showConfirmation: boolean;
         loading: boolean;
         newDatasetId: string | null;
         pollingId: number | null;
@@ -152,13 +160,14 @@
     export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
-                open: false,
+                openModal: false,
+                showConfirmation: false,
                 loading: false,
                 newDatasetId: null,
                 pollingId: null,
             };
         },
-        components: {Modal, TreeSelect, LoadingSpinner, InfoIcon},
+        components: {Modal, TreeSelect, LoadingSpinner, InfoIcon, ResetConfirmation},
         directives: {tooltip: VTooltip},
         computed: {
             hasShapeFile: mapStateProp<BaselineState, boolean>(
@@ -262,14 +271,14 @@
                     ]);
 
                     this.loading = false;
-                    this.open = false;
+                    this.openModal = false;
                 }
             },
             async refresh() {
                 this.stopPolling();
 
                 this.loading = true;
-                this.open = true;
+                this.openModal = true;
                 const {pjnz, pop, shape, survey, program, anc} = this.selectedDataset!.resources;
                 await Promise.all([
                     this.outOfDateResources["pjnz"] && pjnz && this.importPJNZ(pjnz.url),
@@ -302,12 +311,27 @@
 
                 this.markResourcesUpdated();
                 this.loading = false;
-                this.open = false;
+                this.openModal = false;
 
                 this.startPolling();
             },
             toggleModal() {
-                this.open = !this.open;
+                this.openModal = !this.openModal;
+            },
+            confirmEditing(e: Event) {
+                console.log('confirm editing fired')
+                // if (this.editsRequireConfirmation) {
+                    e.preventDefault();
+                    this.showConfirmation = true;
+                // }
+            },
+            continueEditing() {
+                // this.unValidate();
+                this.showConfirmation = false;
+                this.openModal = true;
+            },
+            cancelEditing() {
+                this.showConfirmation = false;
             },
             startPolling() {
                 this.pollingId = window.setInterval(this.refreshDatasetMetadata, 10000);
