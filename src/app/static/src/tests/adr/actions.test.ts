@@ -342,7 +342,11 @@ describe("ADR actions", () => {
     });
 
     it("getUserCanUpload fetches dataset metadata to get organization if necessary", async () => {
-        const commit = jest.fn();
+        const commit = jest.fn().mockImplementation((mutation, payload) => {
+            if (mutation === "baseline/SetDataset") {
+                root.baseline.selectedDataset = payload
+            }
+        });
         const root = mockRootState({
             baseline: mockBaselineState({selectedDataset: {id: "test-dataset"}} as any)
         });
@@ -350,10 +354,6 @@ describe("ADR actions", () => {
             datasets: [],
             schemas: {baseUrl: "http://test"} as any
         });
-
-        // const baselineMutation = {
-        //     SetDataset = jest.fn(root.baseline.selectedDataset.organization = { id: "test-org"})
-        // }
 
         const datasetResponse = {id: "test-dataset", resources: [], organization: {id: "test-org"}}
         mockAxios.onGet(`adr/datasets/test-dataset`)
