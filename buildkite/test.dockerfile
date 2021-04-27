@@ -7,5 +7,5 @@ ARG CODECOV_TOKEN
 ENV CODECOV_TOKEN=$CODECOV_TOKEN
 
 # Test app
-CMD ./gradlew -d :app:detektMain -PexcludeADR=true :app:test :userCLI:test :app:jacocoTestReport && \
+CMD ./gradlew :app:detektMain -PexcludeADR=true :app:test :userCLI:test :app:jacocoTestReport && \
     codecov -p .. -f app/coverage/test/*.xml
