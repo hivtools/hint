@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
@@ -20,6 +21,7 @@ class DownloadTests : SecureIntegrationTests()
         testRestTemplate.getForEntity<String>("/")
     }
 
+    @Disabled
     @Test
     fun `can download Spectrum results`()
     {
@@ -39,7 +41,7 @@ class DownloadTests : SecureIntegrationTests()
         assertResponseHasExpectedDownloadHeaders(responseEntity)
     }
 
-
+    @Disabled
     @Test
     fun `can download coarse output results`()
     {
