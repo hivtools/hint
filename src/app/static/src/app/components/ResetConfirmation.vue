@@ -4,12 +4,15 @@
             <h4 v-if="isGuest" v-translate="'haveYouSaved'"></h4>
             <h4 v-if="!isGuest" v-translate="'saveVersion'"></h4>
 
-            <p v-translate="'discardWarning'"></p>
-            <ul>
-            <li v-for="step in changesToRelevantSteps" :key="step.number">
-                    <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
-                </li>
-            </ul>
+            <p v-if="datasetChange" v-translate="'datasetChangeWarning'"></p>
+            <template v-else>
+                <p v-translate="'discardWarning'"></p>
+                <ul>
+                    <li v-for="step in changesToRelevantSteps" :key="step.number">
+                        <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
+                    </li>
+                </ul>
+            </template>
 
             <p v-if="isGuest" v-translate="'savePrompt'"></p>
             <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
@@ -55,6 +58,7 @@
         open: boolean
         continueEditing: boolean
         cancelEditing: boolean
+        datasetChange: boolean
     }
 
     interface Data {
@@ -62,7 +66,7 @@
     }
 
     export default Vue.extend<Data, unknown, Computed, any>({
-        props: ["open", "continueEditing", "cancelEditing"],
+        props: ["open", "continueEditing", "cancelEditing", "datasetChange"],
         data: function () {
             return {
                 waitingForVersion: false

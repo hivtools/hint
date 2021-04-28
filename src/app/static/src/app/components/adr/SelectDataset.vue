@@ -74,7 +74,8 @@
                 ></button>
             </template>
         </modal>
-        <reset-confirmation :continue-editing="continueEditing"
+        <reset-confirmation :dataset-change="true"
+                            :continue-editing="continueEditing"
                             :cancel-editing="cancelEditing"
                             :open="showConfirmation"></reset-confirmation>
     </div>
