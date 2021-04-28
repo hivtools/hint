@@ -216,6 +216,14 @@ describe("ADR dataset-related actions", () => {
                     id: "datasetId",
                     organization: {id: "organisationId"}
                 }
+            },
+            modelRun: {
+                result: {
+                    uploadMetadata: {
+                        outputSummary: {description: "summary"},
+                        outputZip: {description: "zip"}
+                    }
+                }
             }
         };
         
