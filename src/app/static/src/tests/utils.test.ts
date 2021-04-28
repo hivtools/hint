@@ -191,7 +191,16 @@ describe("utils", () => {
                 },
                 {
                     resource_type: "test-type",
+                    id: "456",
+                    name: "test2.txt",
+                    last_modified: "2021-03-01",
+                    metadata_modified: "2021-02-28",
+                    url: "http://test2"
+                },
+                {
+                    resource_type: "test-type",
                     id: "123",
+                    name: "test.txt",
                     last_modified: "2021-03-01",
                     metadata_modified: "2021-02-28",
                     url: "http://test"
