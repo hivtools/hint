@@ -1,7 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.util.JSONPObject
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
