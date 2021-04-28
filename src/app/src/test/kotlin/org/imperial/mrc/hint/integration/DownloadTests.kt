@@ -1,14 +1,9 @@
 package org.imperial.mrc.hint.integration
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
-import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.ResponseEntity
 
 class DownloadTests : SecureIntegrationTests()
@@ -31,7 +26,6 @@ class DownloadTests : SecureIntegrationTests()
 
     }
 
-    @Disabled
     @Test
     fun `can download summary data`()
     {
@@ -41,7 +35,6 @@ class DownloadTests : SecureIntegrationTests()
         assertResponseHasExpectedDownloadHeaders(responseEntity)
     }
 
-    @Disabled
     @Test
     fun `can download coarse output results`()
     {
