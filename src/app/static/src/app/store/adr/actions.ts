@@ -158,16 +158,18 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             if (resourceId) {
                 requestParams["resourceId"] = resourceId
             }
-            if (resourceType === state.schemas?.outputSummary) {
-                requestParams["description"] = uploadMetadata
-                    ? uploadMetadata.outputSummary.description
-                    : "Naomi summary report uploaded from Naomi web app"
-            } else if (resourceType === state.schemas?.outputZip) {
-                requestParams["description"] = uploadMetadata
-                    ? uploadMetadata.outputZip.description
-                    : "Naomi output uploaded from Naomi web app"
+            if (uploadMetadata && resourceType === state.schemas?.outputSummary) {
+                requestParams["description"] = uploadMetadata.outputSummary.description
+            } else if (uploadMetadata && resourceType === state.schemas?.outputZip) {
+                requestParams["description"] = uploadMetadata.outputZip.description
             } else {
-                requestParams["description"] = "Files uploaded from Naomi web app"
+                /**
+                 * Default description will tentatively solve backward
+                 * compatibility issue that may arise with previously calibrated model
+                 * and once re-calibrated, the correct data will be populated
+                 */
+
+                requestParams["description"] = "Output files uploaded from Naomi web app"
             }
 
             let apiRequest = api<ADRMutation, ADRMutation>(context)
