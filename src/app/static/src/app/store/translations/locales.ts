@@ -254,7 +254,7 @@ const en: Translations = {
     axeTechnicalHeading: "Technical information about this website’s accessibility",
     axeTechnicalParagraph1: "We are committed to making this website accessible in accordance with the Public Sector\n" +
         "                    Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
-    axeTechnicalParagraph2: "his website is partially compliant with the <a href=\"https://www.w3.org/TR/WCAG21/\" target='_blank' rel='noopener noreferrer'>\n" +
+    axeTechnicalParagraph2: "This website is partially compliant with the <a href=\"https://www.w3.org/TR/WCAG21/\" target='_blank' rel='noopener noreferrer'>\n" +
         "                    Web Content Accessibility Guidelines version 2.1</a> AA standard, due to the known issues listed\n" +
         "                    above.",
     axeReportingHeading: "Reporting accessibility issues",
