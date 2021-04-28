@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.util.JSONPObject
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
@@ -14,6 +15,8 @@ import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
+import org.jooq.tools.json.JSONObject
+import org.jooq.tools.json.JSONParser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -236,8 +239,10 @@ class ADRController(private val encryption: Encryption,
         val response = adr.get("resource_show?id=${resourceId}")
         if (response.statusCode.is2xxSuccessful)
         {
-            val existingDatasetHash = objectMapper.readTree(response.body!!)["data"]["hash"]
-            return existingDatasetHash.textValue() == newDatasetHash
+            val parser = JSONParser()
+            val json: JSONObject = parser.parse(response.body!!) as JSONObject
+            val data: JSONObject = json["data"] as JSONObject
+            return data["hash"] == newDatasetHash
         }
         return false
     }
