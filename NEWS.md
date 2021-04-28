@@ -1,6 +1,34 @@
-# hint 1.25.0
+# hint 1.30.0
 
 * Add accessibility statement
+
+# hint 1.29.2
+
+* Remove incorrectly committed debug code
+
+# hint 1.29.1
+
+* Improve performance of ADR uploads
+
+# hint 1.29.0
+
+* Progress feedback on uploading files to ADR
+
+# hint 1.28.0
+
+* Check and display user permissions on dataset when dataset is first selected
+
+# hint 1.27.0
+
+* Invoke ADR uploads with actions
+
+# hint 1.26.0
+
+* Set resource_type when pushing to ADR
+
+# hint 1.25.0
+
+* add upload button and dialog box for result outputs to ADR
 
 # hint 1.24.0
 

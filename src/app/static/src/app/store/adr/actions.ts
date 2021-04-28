@@ -4,8 +4,8 @@ import {api} from "../../apiService";
 import qs from "qs";
 import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
-import {constructUploadFile, datasetFromMetadata, findResource} from "../../utils";
-import {Organization} from "../../types";
+import {constructUploadFile, datasetFromMetadata} from "../../utils";
+import {Organization, UploadFile, Dict} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 
 export interface ADRActions {
@@ -16,6 +16,7 @@ export interface ADRActions {
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
     getUploadFiles: (store: ActionContext<ADRState, RootState>) => void;
+    uploadFilestoADR: (store: ActionContext<ADRState, RootState>, uploadFilesPayload: UploadFile[]) => void;
 }
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
@@ -139,6 +140,36 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                         commit({type: ADRMutation.SetUploadFiles, payload: uploadFiles});
                     }
                 });
+        }
+    },
+
+    async uploadFilestoADR(context, uploadFilesPayload) {
+        const {state, rootState, commit} = context;
+        const selectedDatasetId = rootState.baseline.selectedDataset?.id;
+        const modelCalibrateId = rootState.modelCalibrate.calibrateId;
+        commit({type: ADRMutation.ADRUploadStarted, payload: uploadFilesPayload.length});
+
+        for (let i = 0; i < uploadFilesPayload.length; i++) {
+            commit({type: ADRMutation.ADRUploadProgress, payload: i + 1});
+            const { resourceType, resourceFilename, resourceId } = uploadFilesPayload[i]
+
+            const requestParams: Dict<string> = {resourceFileName: resourceFilename}
+            if (resourceId){
+                requestParams["resourceId"] = resourceId
+            }
+
+            let apiRequest = api<ADRMutation, ADRMutation>(context)
+                                        .withError(ADRMutation.SetADRUploadError);
+            if  (i === uploadFilesPayload.length - 1) {
+                apiRequest = apiRequest.withSuccess(ADRMutation.ADRUploadCompleted);
+            } else {
+                apiRequest = apiRequest.ignoreSuccess();
+            }
+            const response = await apiRequest.postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`,
+                qs.stringify(requestParams))
+            if (!response) {
+                break
+            }
         }
     }
 };

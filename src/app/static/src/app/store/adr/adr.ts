@@ -12,7 +12,12 @@ export interface ADRState {
     keyError: Error | null,
     adrError: Error | null,
     schemas: ADRSchemas | null,
+    currentFileUploading: number | null,
+    totalFilesUploading: number | null,
     userCanUpload: boolean,
+    uploadError: Error | null,
+    uploading: boolean,
+    uploadComplete: boolean,
     uploadFiles: Dict<UploadFile> | null
 }
 
@@ -24,7 +29,12 @@ export const initialADRState = (): ADRState => {
         adrError: null,
         schemas: null,
         fetchingDatasets: false,
+        currentFileUploading: null,
+        totalFilesUploading: null,
         userCanUpload: false,
+        uploadError: null,
+        uploading: false,
+        uploadComplete: false,
         uploadFiles: null
     }
 };

@@ -2,6 +2,11 @@ export interface Translations {
     add: string,
     adjustScale: string,
     adrKey: string,
+    adrAccessLevel: string,
+    adrRead: string,
+    adrReadTooltip: string,
+    adrReadWrite: string,
+    adrReadWriteTooltip: string,
     adrTooltip: string,
     age: string,
     ANC: string,
@@ -187,9 +192,17 @@ export interface Translations {
     typeSearch: string,
     uniqueProjectName: string,
     updatePassword: string,
+    upload: string,
+    uploadingStatus: string,
     uploadBaseline: string,
+    uploadComplete: string,
     uploadFileOutputSummary: string,
     uploadFileOutputZip: string,
+    uploadFileDataset: string,
+    uploadFileDesc: string,
+    uploadFileInstruction: string,
+    uploadFileOverwrite: string,
+    uploadFileToAdr: string,
     uploadSurvey: string,
     username: string,
     usernameValidation: string,
@@ -203,6 +216,11 @@ const en: Translations = {
     add: "add",
     adjustScale: "Adjust scale",
     adrKey: "ADR access key",
+    adrAccessLevel: "ADR access level:",
+    adrRead: "Read only",
+    adrReadTooltip: "You do not currently have write permissions for this dataset and will be unable to upload files to ADR",
+    adrReadWrite: "Read & Write",
+    adrReadWriteTooltip: "You have read and write permissions for this dataset and may push output files to ADR",
     adrTooltip: "To import data from the ADR you have to provide your ADR access key. " +
         "This can be found on your ADR profile page",
     age: "Age",
@@ -213,13 +231,13 @@ const en: Translations = {
     apiMissingError: "API response failed but did not contain any error information. Please contact support.",
     axe: "Accessibility",
     axeOnNaomiHeading: "Accessibility on Naomi",
-    axeOnNaomiParagraph1: "This statement applies to content published on <a href=\"https://naomi.unaids.org/\"> naomi.unaids.org </a>",
+    axeOnNaomiParagraph1: "This statement applies to content published on <a href=\"https://naomi.unaids.org/\" target='_blank' rel='noopener noreferrer'> naomi.unaids.org </a>",
     axeOnNaomiParagraph2: "We want as many people as possible to be able to use this website. For example, that means you should\n" +
         "                    be able to:",
     axeOnNaomiPurposeList: "<li>Resize your window with content being reformatted appropriately</li>\n" +
         "                    <li>Adjust your text size without the site becoming less usable</li>\n" +
         "                    <li>Read text easily due to sufficient contrast between foreground and background elements</li>",
-    axeOnNaomiParagraph3: "<a href=\"https://mcmw.abilitynet.org.uk/\">AbilityNet</a> has advice on making your device easier to\n" +
+    axeOnNaomiParagraph3: "<a href=\"https://mcmw.abilitynet.org.uk/\" target='_blank' rel='noopener noreferrer'>AbilityNet</a> has advice on making your device easier to\n" +
         "                    use if you have a disability.",
     axeHowHeading: "How accessible the website is",
     axeHowContent: "Parts of this website may not be fully accessible. For example:",
@@ -230,13 +248,13 @@ const en: Translations = {
         "                    <li>Some form elements may lack sufficient color contrasts</li>\n" +
         "                    <li>Some pages may not have the option to skip navigation and jump to the content</li>",
     axeWhatHeading: "What we do about known issues",
-    axeWhatContent: "We work to achieve and maintain <a href=\"https://www.w3.org/TR/WCAG21/\">WCAG 2.1 AA standards</a>,\n" +
+    axeWhatContent: "We work to achieve and maintain <a href=\"https://www.w3.org/TR/WCAG21/\" target='_blank' rel='noopener noreferrer'>WCAG 2.1 AA standards</a>,\n" +
         "                    but it is not always possible for all our content to be accessible. Where content is not accessible,\n" +
         "                    we will state a reason, warn users and offer alternatives.",
     axeTechnicalHeading: "Technical information about this website’s accessibility",
     axeTechnicalParagraph1: "We are committed to making this website accessible in accordance with the Public Sector\n" +
         "                    Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
-    axeTechnicalParagraph2: "his website is partially compliant with the <a href=\"https://www.w3.org/TR/WCAG21/\">\n" +
+    axeTechnicalParagraph2: "his website is partially compliant with the <a href=\"https://www.w3.org/TR/WCAG21/\" target='_blank' rel='noopener noreferrer'>\n" +
         "                    Web Content Accessibility Guidelines version 2.1</a> AA standard, due to the known issues listed\n" +
         "                    above.",
     axeReportingHeading: "Reporting accessibility issues",
@@ -249,11 +267,11 @@ const en: Translations = {
     axeEnforcementParagraph: "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies\n" +
         "                    (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility\n" +
         "                    regulations’). If you’re not happy with how we respond to your complaint,\n" +
-        "                    <a href=\"https://www.equalityadvisoryservice.com/\">contact the Equality Advisory and Support\n" +
+        "                    <a href=\"https://www.equalityadvisoryservice.com/\" target='_blank' rel='noopener noreferrer'>contact the Equality Advisory and Support\n" +
         "                        Service (EASS)</a>.",
     axeTestHeading: "How we test this website",
     axeTestParagraph: "This website was last tested for accessibility compliance on 24 February 2021, and these tests have\n" +
-        "                    been carried out internally using the <a href=\"https://accessibilityinsights.io/en/\">Accessibility\n" +
+        "                    been carried out internally using the <a href=\"https://accessibilityinsights.io/en/\" target='_blank' rel='noopener noreferrer'>Accessibility\n" +
         "                        Insights</a> tools.",
     axeUpdateHeading: "Last updated",
     axeUpdateParagraph: "This statement was prepared on 24 February 2021. It was last updated on 26 February 2021.",
@@ -294,7 +312,7 @@ const en: Translations = {
     discardWarning: "Changing this will result in the following steps being discarded:",
     done: "Done",
     download: "Download",
-    downloadResults: "Download results",
+    downloadResults: "Save results",
     downloadCoarseOutput: "Download coarse age group outputs",
     downloadSummaryReport: "Download summary report",
     duplicateEmails: "Please remove duplicate emails from the list",
@@ -420,9 +438,17 @@ const en: Translations = {
     typeSearch: "Type to Search",
     uniqueProjectName: "Please choose a unique name",
     updatePassword: "Update password",
+    upload: "Upload",
+    uploadingStatus: "Uploading {{ fileNumber }} of {{ totalFiles }} (this may take a while)",
     uploadBaseline: "Upload baseline data",
+    uploadComplete: "Upload complete",
     uploadFileOutputSummary: "Summary report",
     uploadFileOutputZip: "Model outputs",
+    uploadFileDataset: "Dataset:",
+    uploadFileDesc: "Description (this will be appended to file metadata):",
+    uploadFileInstruction: "Please select the new or modified files which should be uploaded",
+    uploadFileOverwrite: "This file already exists on ADR and will be overwritten. File was updated ",
+    uploadFileToAdr: "Upload to ADR",
     uploadSurvey: "Upload survey and programme data",
     username: "Username",
     usernameValidation: "Please enter your username",
@@ -436,6 +462,11 @@ const fr: Partial<Translations> = {
     add: "ajouter",
     adjustScale: "Ajuster l'échelle",
     adrKey: "Clé d'accès ADR",
+    adrAccessLevel: "Niveau d'accès ADR:",
+    adrRead: "Lecture seulement",
+    adrReadTooltip: "Vous ne disposez actuellement pas des autorisations d'écriture pour cet ensemble de données et ne pourrez pas télécharger de fichiers vers ADR",
+    adrReadWrite: "Lire et écrire",
+    adrReadWriteTooltip: "Vous disposez des autorisations de lecture et d'écriture pour cet ensemble de données et pouvez envoyer les fichiers de sortie vers ADR",
     adrTooltip: "Pour importer des données depuis l'ADR, vous devez fournir votre clé d'accès ADR. " +
         "Cela peut être trouvé sur votre page de profil ADR",
     age: "Âge",
@@ -446,13 +477,13 @@ const fr: Partial<Translations> = {
     ART: "ART",
     axe: "Accessibilité",
     axeOnNaomiHeading: "Accessibilité sur Naomi",
-    axeOnNaomiParagraph1: "Cette déclaration s'applique au contenu publié sur <a href=\"https://naomi.unaids.org/\"> naomi.unaids.org </a>",
+    axeOnNaomiParagraph1: "Cette déclaration s'applique au contenu publié sur <a href=\"https://naomi.unaids.org/\" target='_blank' rel='noopener noreferrer'> naomi.unaids.org </a>",
     axeOnNaomiParagraph2: "Nous voulons que le plus grand nombre de personnes possible puisse utiliser ce site Web. Par exemple, cela signifie que vous devriez \n " +
         "                    être capable de:",
     axeOnNaomiPurposeList: "<li>Redimensionner votre fenêtre avec le contenu reformaté de manière appropriée</li>\n" +
         "                    <li>Ajustez la taille de votre texte sans que le site ne devienne moins utilisable</li>\n" +
         "                    <li>Lisez facilement le texte grâce au contraste suffisant entre les éléments de premier plan et d'arrière-plan</li>",
-    axeOnNaomiParagraph3: "<a href=\"https://mcmw.abilitynet.org.uk/\">AbilityNet</a> a des conseils pour rendre votre appareil plus facile à utiliser si vous avez un handicap.",
+    axeOnNaomiParagraph3: "<a href=\"https://mcmw.abilitynet.org.uk/\" target='_blank' rel='noopener noreferrer'>AbilityNet</a> a des conseils pour rendre votre appareil plus facile à utiliser si vous avez un handicap.",
     axeHowHeading: "Dans quelle mesure le site Web est-il accessible",
     axeHowContent: "Certaines parties de ce site Web peuvent ne pas être entièrement accessibles. Par exemple:",
     axeHowExampleList: "<li>Il peut ne pas être entièrement navigable au clavier</li>\n" +
@@ -462,14 +493,14 @@ const fr: Partial<Translations> = {
         "                    <li>Certains éléments de formulaire peuvent manquer de contrastes de couleurs suffisants</li>" +
         "                    <li>Certains pages peuvent ne pas avoir la possibilité de sauter la navigation et d'accéder au contenu</li>",
     axeWhatHeading: "Ce que nous faisons face aux problèmes connus",
-    axeWhatContent: "Nous travaillons pour atteindre et maintenir les <a href=\"https://www.w3.org/TR/WCAG21/\"> WCAG 2.1 AA standards </a>,\n" +
+    axeWhatContent: "Nous travaillons pour atteindre et maintenir les <a href=\"https://www.w3.org/TR/WCAG21/\" target='_blank' rel='noopener noreferrer'> WCAG 2.1 AA standards </a>,\n" +
         "                    mais ce n'est pas toujours possible pour tous nos\n" +
         "                    contenu pour être accessible. Lorsque le contenu n'est pas accessible, nous indiquerons une raison, avertirons les utilisateurs et\n" +
         "                    proposer des alternatives.",
     axeTechnicalHeading: "Informations techniques sur l'accessibilité de ce site Web",
     axeTechnicalParagraph1: "Nous nous engageons à rendre son site Web accessible conformément aux\n" +
         "                    Organismes sectoriels (sites Web et applications mobiles) (No. 2) Règlement sur l'accessibilité 2018.",
-    axeTechnicalParagraph2: "Ce site Web est partiellement conforme au <a href=\"https://www.w3.org/Translations/WCAG20-fr/\"> Web Content Accessibility Guidelines version 2.0\n" +
+    axeTechnicalParagraph2: "Ce site Web est partiellement conforme au <a href=\"https://www.w3.org/Translations/WCAG20-fr/\" target='_blank' rel='noopener noreferrer'> Web Content Accessibility Guidelines version 2.0\n" +
         "                    </a> Norme AA, en raison des problèmes connus énumérés ci-dessus.",
     axeReportingHeading: "Signaler des problèmes d'accessibilité",
     axeReportingParagraph1: "Si vous avez besoin d'informations sur ce site Web dans un format différent, tel que PDF accessible, gros caractères, facile\n" +
@@ -480,11 +511,11 @@ const fr: Partial<Translations> = {
     axeEnforcementParagraph: "La Commission pour l'égalité et les droits de l'homme (EHRC) est chargée de faire respecter les organes du secteur public\n" +
         "                    (Sites Web et applications mobiles) (No. 2) Règlement sur l'accessibilité 2018 (le\n" +
         "                    règlements'). Si vous n'êtes pas satisfait de la manière dont nous répondons à votre réclamation, <a\n" +
-        "                        href = \"https://www.equalityadvisoryservice.com/\">contacter le Equality Advisory and Support\n" +
+        "                        href = \"https://www.equalityadvisoryservice.com/\" target='_blank' rel='noopener noreferrer'>contacter le Equality Advisory and Support\n" +
         "                        Service (EASS)</a>.",
     axeTestHeading: "Comment nous testons ce site Web",
     axeTestParagraph: "La conformité de ce site Web a été testée pour la dernière fois le 24 février 2021, et ces tests ont\n" +
-        "                    été réalisée en interne à l'aide du <a href=\"https://accessibilityinsights.io/en/\">Accessibility Insights</a> outils.",
+        "                    été réalisée en interne à l'aide du <a href=\"https://accessibilityinsights.io/en/\" target='_blank' rel='noopener noreferrer'>Accessibility Insights</a> outils.",
     axeUpdateHeading: "Dernière mise à jour",
     axeUpdateParagraph: "Cette déclaration a été préparée le 24 février 2021. Elle a été mise à jour pour la dernière fois le 26 février 2021.",
     back: "retour",
@@ -524,7 +555,7 @@ const fr: Partial<Translations> = {
     discardWarning: "Si vous modifiez ce paramètre, les étapes suivantes seront abandonnées :",
     done: "Terminé",
     download: "Télécharger",
-    downloadResults: "Télécharger les résultats",
+    downloadResults: "Enregistrer les résultats",
     downloadCoarseOutput: "Télécharger les résultats grossiers du groupe d'âge",
     downloadSummaryReport: "Télécharger le rapport de synthèse",
     duplicateEmails: "Veuillez supprimer les e-mails en double de la liste",
@@ -649,9 +680,17 @@ const fr: Partial<Translations> = {
     typeSearch: "Tapez pour rechercher",
     uniqueProjectName: "Veuillez choisire un nom unique",
     updatePassword: "Mettre à jour le mot de passe",
+    upload: "Télécharger",
+    uploadingStatus: "Téléchargement de {{ fileNumber}} sur {{ totalFiles }} (cela peut prendre un certain temps)",
     uploadBaseline: "Télécharger les données de base",
+    uploadComplete: "Téléchargement complet",
     uploadFileOutputSummary: "Rapport sommaire",
     uploadFileOutputZip: "Résultats du modèle",
+    uploadFileDataset: "Base de données:",
+    uploadFileDesc: "Description (elle sera ajoutée aux métadonnées du fichier):",
+    uploadFileInstruction: "Veuillez sélectionner les fichiers nouveaux ou modifiés qui doivent être téléchargés",
+    uploadFileOverwrite: "Ce fichier existe déjà sur ADR et sera écrasé. Le fichier a été mis à jour ",
+    uploadFileToAdr: "Télécharger vers ADR",
     uploadSurvey: "Télécharger les données d'enquête et de programme",
     username: "Nom d’utilisateur",
     usernameValidation: "Veuillez entrer votre nom d’utilisateur",
