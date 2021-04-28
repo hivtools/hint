@@ -9,6 +9,7 @@ import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.md5sum
+import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -203,11 +204,11 @@ class ADRController(private val encryption: Encryption,
 
         // 4. Checksum file and upload with metadata to ADR
         val filePart = Pair("upload", file)
+        val fileHash = file.md5sum()
         val commonParameters =
-                listOf("name" to resourceFileName, "description" to artefact.second, "hash" to file.md5sum(),
+                listOf("name" to resourceFileName, "description" to artefact.second, "hash" to fileHash,
                         "resource_type" to resourceType)
         val adr = adrClientBuilder.build()
-        val newDatasetHash = commonParameters[2].second
         return try
         {
             when (resourceId)
@@ -215,10 +216,9 @@ class ADRController(private val encryption: Encryption,
                 null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
                 else ->
                 {
-                    val fileHasNoChanges = uploadFileHasNoChanges(resourceId, newDatasetHash)
-                    if (fileHasNoChanges)
+                    if (uploadFileHasNoChanges(resourceId, fileHash))
                     {
-                        SuccessResponse(null).asResponseEntity()
+                        EmptySuccessResponse.asResponseEntity()
                     }
                     else
                     {
