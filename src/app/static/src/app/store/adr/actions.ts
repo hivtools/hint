@@ -68,16 +68,10 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         const selectedDataset = rootState.baseline.selectedDataset;
 
         if (selectedDataset) {
-            //For backward compatibility, we may have to regenerate the dataset metadata to provide the
-            //organisation id for projects which are reloaded
-            let selectedDatasetOrgId: string;
             if (!selectedDataset.organization) {
-                //We may also have to fetch the selected dataset metadata too, if not loaded during this session
                 await getAndSetDatasets(context, selectedDataset.id)
-                selectedDatasetOrgId = rootState.baseline.selectedDataset!.organization.id
-            } else {
-                selectedDatasetOrgId = selectedDataset.organization.id;
             }
+            const selectedDatasetOrgId = rootState.baseline.selectedDataset!.organization.id
 
             await api(context)
                 .withError(ADRMutation.SetADRError)

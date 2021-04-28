@@ -72,7 +72,7 @@
         uploadFiles: Dict<UploadFile>
     }
 
-    interface Data { 
+    interface Data {
         uploadFilesToAdr: string[]
         uploadDescToAdr: string
     }

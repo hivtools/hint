@@ -134,7 +134,7 @@ describe(`uploadModal `, () => {
         expectTranslated(label.at(1), "Summary report", "Rapport sommaire", store)
     })
 
-    it(`checkboxes are set by default`, async () => {
+    it(`checkboxes are set by default and change to reflect uploadFiles`, async () => {
         const wrapper = shallowMount(UploadModal, {store: createStore()})
         await wrapper.setData({uploadFilesToAdr: ["outputZip", "outputSummary"]})
         const inputs = wrapper.findAll("input.form-check-input")
@@ -145,6 +145,14 @@ describe(`uploadModal `, () => {
 
         const input2 =  inputs.at(1).element as HTMLInputElement
         expect(input2.checked).toBe(true)
+
+        // wrapper.vm.$store = {"outputZip": fakeMetadata["outputZip"]}
+        // wrapper.vm.$store.state.uploadFiles = {"outputZip": fakeMetadata["outputZip"]}
+        // // wrapper.vm.
+        // // wrapper.setProps()
+        // await Vue.nextTick()
+        // expect(input1.checked).toBe(true)
+        // expect(input2.checked).toBe(true)
     })
 
     it(`can check and get values from check boxes`, async () => {
