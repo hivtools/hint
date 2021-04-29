@@ -242,7 +242,8 @@ class ADRController(private val encryption: Encryption,
             val parser = JSONParser()
             val json: JSONObject = parser.parse(response.body!!) as JSONObject
             val data: JSONObject = json["data"] as JSONObject
-            ResponseEntity<Boolean>(data["hash"] != newDatasetHash, response.headers, response.statusCode)
+            val result = data["hash"] != newDatasetHash
+            ResponseEntity.ok().body(result)
         }
         else
         {
