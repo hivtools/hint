@@ -216,13 +216,14 @@ class ADRController(private val encryption: Encryption,
                 null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
                 else ->
                 {
-                    if (uploadFileHasNoChanges(resourceId, fileHash))
+                    val fileHasChangesResponse = uploadFileHasChanges(resourceId, fileHash)
+                    if (fileHasChangesResponse.statusCode.is2xxSuccessful && fileHasChangesResponse.body!!)
                     {
-                        EmptySuccessResponse.asResponseEntity()
+                        adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
                     }
                     else
                     {
-                        adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
+                        EmptySuccessResponse.asResponseEntity()
                     }
                 }
             }
@@ -232,7 +233,7 @@ class ADRController(private val encryption: Encryption,
         }
     }
 
-    fun uploadFileHasNoChanges(resourceId: String, newDatasetHash: String): Boolean
+    fun uploadFileHasChanges(resourceId: String, newDatasetHash: String): ResponseEntity<Boolean>
     {
         val adr = adrClientBuilder.build()
         val response = adr.get("resource_show?id=${resourceId}")
@@ -241,11 +242,11 @@ class ADRController(private val encryption: Encryption,
             val parser = JSONParser()
             val json: JSONObject = parser.parse(response.body!!) as JSONObject
             val data: JSONObject = json["data"] as JSONObject
-            data["hash"] == newDatasetHash
+            ResponseEntity<Boolean>(data["hash"] != newDatasetHash, response.headers, response.statusCode)
         }
         else
         {
-            false
+            ResponseEntity<Boolean>(false, response.headers, response.statusCode)
         }
     }
 }

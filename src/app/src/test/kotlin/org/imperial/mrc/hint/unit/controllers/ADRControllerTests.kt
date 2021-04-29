@@ -375,8 +375,9 @@ class ADRControllerTests : HintrControllerTests()
         }
 
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.uploadFileHasNoChanges("resource1", "test")
-        assertThat(result).isFalse
+        val result = sut.uploadFileHasChanges("resource1", "test")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
+        assertThat(result.body!!).isFalse
     }
 
     @Test
@@ -394,8 +395,8 @@ class ADRControllerTests : HintrControllerTests()
             on { build() } doReturn mockClient
         }
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
-        val hasOldHash = sut.uploadFileHasNoChanges("resource1", "D41D8CD98F00B204E9800998ECF8427E")
-        assertThat(hasOldHash).isTrue
+        val hasOldHash = sut.uploadFileHasChanges("resource1", "D41D8CD98F00B204E9800998ECF8427E")
+        assertThat(hasOldHash.body!!).isFalse
 
         val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
         verify(mockClient, never()).postFile(any(), any(), any())
@@ -416,7 +417,7 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
-    fun `pushes file to ADR fails if retrieval from hintr fails`()
+    fun `pushes file to ADR fails retrieval from ADR fails`()
     {
         val mockAPIClient: HintrAPIClient = mock {
             on { downloadSpectrum("model1") } doReturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StreamingResponseBody { it.write("Internal Server Error".toByteArray()) })
@@ -429,7 +430,7 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
-    fun `pushes file to ADR fails retrieval from ADR fails`()
+    fun `returns error if ADR upload fails`()
     {
         val hash = mapOf("hash" to "")
         val data = mapOf("data" to hash)
