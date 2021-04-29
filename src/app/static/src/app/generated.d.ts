@@ -115,7 +115,7 @@ export interface CalibrateResultResponse {
   uploadMetadata: {
     outputZip: UploadMetadataElements
     outputSummary: UploadMetadataElements
-  }
+  } | null
   plottingMetadata: {
     barchart: {
       indicators: {

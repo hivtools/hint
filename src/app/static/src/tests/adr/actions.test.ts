@@ -492,4 +492,53 @@ describe("ADR actions", () => {
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=summary");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId");
     });
+
+    it("uploadFilesToADR uploads files and static description sequentially to adr", async () => {
+        const commit = jest.fn();
+        const root = mockRootState({
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
+            modelRun: mockModelRunState(
+                {
+                    result: mockCalibrateResultResponse({
+                        uploadMetadata: null
+                    })
+                }),
+            baseline: mockBaselineState({selectedDataset: {
+                    id: "datasetId"
+                }} as any)
+        });
+        const adr = mockADRState({
+            datasets: [],
+            schemas: {
+                baseUrl: "http://test",
+                outputZip: "inputs-unaids-naomi-output-zip",
+                outputSummary: "inputs-unaids-naomi-report"
+            } as any
+        });
+
+        const uploadFilesPayload = [
+            {
+                resourceType: "inputs-unaids-naomi-output-zip",
+                resourceFilename: "file1",
+                resourceId: "id1"
+            },
+            {
+                resourceType: "inputs-unaids-naomi-report",
+                resourceFilename: "file2"
+            }
+        ] as UploadFile[]
+
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId`)
+            .reply(200, mockSuccess("success"));
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId`)
+            .reply(200, mockSuccess("success2"));
+
+        await actions.uploadFilesToADR({commit, state: adr, rootState: root} as any, uploadFilesPayload);
+        expect(mockAxios.history.post.length).toBe(2);
+        expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=Naomi%20output%20uploaded%20from%20Naomi%20web%20app");
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId");
+        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=Naomi%20summary%20report%20uploaded%20from%20Naomi%20web%20app");
+        expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId");
+    });
+
 });
