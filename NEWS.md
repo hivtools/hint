@@ -1,3 +1,7 @@
+# hint 1.30.0
+
+* Prevent ADR upload of output files from overwriting those from other projects
+
 # hint 1.29.2
 
 * Remove incorrectly committed debug code
