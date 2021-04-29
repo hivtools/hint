@@ -356,12 +356,27 @@ class ADRControllerTests : HintrControllerTests()
         }
 
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
-        val hasOldHash = sut.uploadFileHasNoChanges("resource1", "D41D8CD98F00B204E9800998ECF8427E")
-        assertThat(hasOldHash).isFalse
-
         val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
+    fun `does return false if error occurred while checking if upload file has changes`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val mockClient: ADRClient = mock {
+            on { get("resource_show?id=resource1") } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null)
+        }
+        val mockBuilder: ADRClientBuilder = mock {
+            on { build() } doReturn mockClient
+        }
+
+        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.uploadFileHasNoChanges("resource1", "test")
+        assertThat(result).isFalse
     }
 
     @Test

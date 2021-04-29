@@ -236,13 +236,16 @@ class ADRController(private val encryption: Encryption,
     {
         val adr = adrClientBuilder.build()
         val response = adr.get("resource_show?id=${resourceId}")
-        if (response.statusCode.is2xxSuccessful)
+        return if (response.statusCode.is2xxSuccessful)
         {
             val parser = JSONParser()
             val json: JSONObject = parser.parse(response.body!!) as JSONObject
             val data: JSONObject = json["data"] as JSONObject
-            return data["hash"] == newDatasetHash
+            data["hash"] == newDatasetHash
         }
-        return false
+        else
+        {
+            false
+        }
     }
 }
