@@ -545,7 +545,7 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
     
-    it("renders reset confirmation dialog when changing selected dataset and then renders modal when confirming change", async () => {
+    it("renders reset confirmation dialog when changing selected dataset", async () => {
         let store = getStore({
             selectedDataset: fakeDataset
         },

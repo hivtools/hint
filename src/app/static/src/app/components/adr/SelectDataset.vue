@@ -321,14 +321,10 @@
                 this.open = !this.open;
             },
             confirmEditing(e: Event) {
-                console.log('confirm editing fired')
-                // if (this.editsRequireConfirmation) {
-                    e.preventDefault();
-                    this.showConfirmation = true;
-                // }
+                e.preventDefault();
+                this.showConfirmation = true;
             },
             continueEditing() {
-                // this.unValidate();
                 this.showConfirmation = false;
                 this.open = true;
             },
