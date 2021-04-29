@@ -11,6 +11,11 @@
                target="_blank"
                v-translate="'contact'">
             </a>
+            <router-link id="accessibility-link"
+                         to="/accessibility"
+                         class="dropdown-item"
+                         v-translate="'axe'">
+            </router-link>
         </drop-down>
     </div>
 </template>

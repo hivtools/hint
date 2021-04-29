@@ -1,3 +1,7 @@
+# hint 1.31.0
+
+* Add accessibility statement
+
 # hint 1.30.0
 
 * Prevent ADR upload of output files from overwriting those from other projects
@@ -57,7 +61,6 @@
 # hint 1.18.0
 
 * add uncertainty ranges to choropleth tooltips
-
 
 # hint 1.16.1
 
