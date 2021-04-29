@@ -9,9 +9,15 @@ import {switches} from "../../../app/featureSwitches";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated} from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
+import VueRouter from 'vue-router'
+
+
+const localVue = createLocalVue()
+localVue.use(VueRouter)
+const router = new VueRouter()
+
 
 describe("Online support menu", () => {
-
     const createStore = () => {
         const store = new Vuex.Store({
             state: emptyState(),
@@ -30,7 +36,9 @@ describe("Online support menu", () => {
     it("renders drop down with delay property true", () => {
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
-            store
+            store,
+            localVue,
+            router
         });
 
         const dropDown = wrapper.find(DropDown);
@@ -40,7 +48,9 @@ describe("Online support menu", () => {
     it("renders drop down text correctly", () => {
         const store = createStore();
         const wrapper = mount(OnlineSupportMenu, {
-            store
+            store,
+            localVue,
+            router
         });
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes())
@@ -53,7 +63,9 @@ describe("Online support menu", () => {
     it("renders FAQ menu-item text and link when language is English", () => {
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
-            store
+            store,
+            localVue,
+            router
         });
 
         const link = wrapper.findAll(".dropdown-item").at(0);
@@ -66,7 +78,9 @@ describe("Online support menu", () => {
         const store = createStore();
         store.state.language = Language.fr;
         const wrapper = shallowMount(OnlineSupportMenu, {
-            store
+            store,
+            localVue,
+            router
         });
 
         const link = wrapper.findAll(".dropdown-item").at(0);
@@ -80,7 +94,9 @@ describe("Online support menu", () => {
 
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
-            store
+            store,
+            localVue,
+            router
         });
 
         const link = wrapper.findAll(".dropdown-item").at(1);
@@ -99,7 +115,9 @@ describe("Online support menu", () => {
 
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
-            store
+            store,
+            localVue,
+            router
         });
 
         const link = wrapper.findAll(".dropdown-item").at(1);
@@ -108,5 +126,18 @@ describe("Online support menu", () => {
         expect(link.attributes("href")).toBe(expectedHref);
         expect(link.attributes("target")).toBe("_blank");
         expectTranslated(link, "Contact", "Contact", store as any);
+    });
+
+    it("renders accessibility menu-item text and link", () => {
+        const store = createStore();
+        const wrapper = shallowMount(OnlineSupportMenu, {
+            store,
+            localVue,
+            router
+        });
+
+        const link = wrapper.find("router-link-stub");
+        expect(link.attributes("to")).toBe("/accessibility");
+        expectTranslated(link, "Accessibility", "Accessibilité", store as any);
     });
 });
