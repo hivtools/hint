@@ -1,3 +1,7 @@
+# hint 1.31.1
+
+* Rebuild ADR uploadFiles with new resourceIds after upload new files
+
 # hint 1.31.0
 
 * Add accessibility statement

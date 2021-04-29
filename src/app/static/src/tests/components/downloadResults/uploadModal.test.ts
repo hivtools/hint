@@ -6,6 +6,7 @@ import {mockADRState, mockBaselineState, mockDatasetResource} from "../../mocks"
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
 import Vue from 'vue';
+import { Dict } from "../../../app/types";
 
 describe(`uploadModal `, () => {
 
@@ -43,7 +44,7 @@ describe(`uploadModal `, () => {
     const mockOrganization = {
         id: "123abc"
     }
-    const createStore = (data = fakeMetadata) => {
+    const createStore = (data: Dict<any> = fakeMetadata) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -134,8 +135,10 @@ describe(`uploadModal `, () => {
     })
 
     it(`checkboxes are set by default`, async () => {
-        const wrapper = shallowMount(UploadModal, {store: createStore()})
-        await wrapper.setData({uploadFilesToAdr: ["outputZip", "outputSummary"]})
+        const store = createStore({})
+        const wrapper = shallowMount(UploadModal, {store})
+        store.state.adr.uploadFiles = fakeMetadata
+        await Vue.nextTick()
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
 
