@@ -27,7 +27,7 @@
         >
             {{ selectText }}
         </button>
-        <modal id="dataset" :open="openModal">
+        <modal id="dataset" :open="open">
             <h4 v-if="!loading" v-translate="'browseADR'"></h4>
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
@@ -74,7 +74,8 @@
                 ></button>
             </template>
         </modal>
-        <reset-confirmation :dataset-change="true"
+        <reset-confirmation v-if="showConfirmation"
+                            :dataset-change="true"
                             :continue-editing="continueEditing"
                             :cancel-editing="cancelEditing"
                             :open="showConfirmation"></reset-confirmation>
@@ -140,7 +141,7 @@
     }
 
     interface Data {
-        openModal: boolean;
+        open: boolean;
         showConfirmation: boolean;
         loading: boolean;
         newDatasetId: string | null;
@@ -161,7 +162,7 @@
     export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
-                openModal: false,
+                open: false,
                 showConfirmation: false,
                 loading: false,
                 newDatasetId: null,
@@ -272,14 +273,14 @@
                     ]);
 
                     this.loading = false;
-                    this.openModal = false;
+                    this.open = false;
                 }
             },
             async refresh() {
                 this.stopPolling();
 
                 this.loading = true;
-                this.openModal = true;
+                this.open = true;
                 const {pjnz, pop, shape, survey, program, anc} = this.selectedDataset!.resources;
                 await Promise.all([
                     this.outOfDateResources["pjnz"] && pjnz && this.importPJNZ(pjnz.url),
@@ -312,12 +313,12 @@
 
                 this.markResourcesUpdated();
                 this.loading = false;
-                this.openModal = false;
+                this.open = false;
 
                 this.startPolling();
             },
             toggleModal() {
-                this.openModal = !this.openModal;
+                this.open = !this.open;
             },
             confirmEditing(e: Event) {
                 console.log('confirm editing fired')
@@ -329,7 +330,7 @@
             continueEditing() {
                 // this.unValidate();
                 this.showConfirmation = false;
-                this.openModal = true;
+                this.open = true;
             },
             cancelEditing() {
                 this.showConfirmation = false;

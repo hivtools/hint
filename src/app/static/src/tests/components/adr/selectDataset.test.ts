@@ -9,6 +9,8 @@ import {
     mockDataset,
     mockDatasetResource,
     mockError,
+    mockErrorsState,
+    mockProjectsState,
     mockRootState,
     mockShapeResponse
 } from "../../mocks";
@@ -25,6 +27,8 @@ import {expectTranslated} from "../../testHelpers";
 import {ADRState} from "../../../app/store/adr/adr";
 import {DomUtil} from "leaflet";
 import get = DomUtil.get;
+import {getters as rootGetters} from "../../../app/store/root/getters";
+import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
 
 describe("select dataset", () => {
 
@@ -162,6 +166,7 @@ describe("select dataset", () => {
     const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}) => {
         const store = new Vuex.Store({
             state: mockRootState(),
+            getters: rootGetters,
             modules: {
                 adr: {
                     namespaced: true,
@@ -182,6 +187,17 @@ describe("select dataset", () => {
                         [BaselineMutation.SetDataset]: setDatasetMock,
                         [BaselineMutation.MarkDatasetResourcesUpdated]: markResourcesUpdatedMock
                     }
+                },
+                errors: {
+                    namespaced: true,
+                    state: mockErrorsState(),
+                },
+                projects: {
+                    namespaced: true,
+                    state: mockProjectsState({currentProject: {id: 1, name: "v1", versions: []}}),
+                    actions: {
+                        newVersion: jest.fn()
+                    },
                 },
                 surveyAndProgram: {
                     namespaced: true,
@@ -527,6 +543,37 @@ describe("select dataset", () => {
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+    
+    it("renders reset confirmation dialog when changing selected dataset and then renders modal when confirming change", async () => {
+        let store = getStore({
+            selectedDataset: fakeDataset
+        },
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.find(ResetConfirmation).exists()).toBe(true);
+        expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findAll("p").length).toBe(2);
+        expectTranslated(rendered.findAll("p").at(0),
+            "Changing the selected dataset will result in changes to all subsequent steps being discarded.",
+            "La modification de l'ensemble de données sélectionné entraînera la suppression des modifications de toutes les étapes suivantes.",
+            store);
+        expectTranslated(rendered.findAll("p").at(1),
+            "These steps will automatically be saved in a version. You will be able to reload this version from the Projects page.",
+            "Ces étapes seront automatiquement sauvegardées dans une version. Vous pourrez recharger cette version depuis la page Projets.",
+            store);
+        const buttons = rendered.findAll("button");
+        expectTranslated(buttons.at(3), "Save version and keep editing",
+            "Sauvegarder la version et continuer à modifier", store);
+        expectTranslated(buttons.at(4), "Cancel editing", "Annuler l'édition", store);
     });
 
     it("imports baseline files if they exist", async () => {

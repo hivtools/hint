@@ -106,6 +106,22 @@ describe("Reset confirmation modal", () => {
         expect(rendered.find(LoadingSpinner).exists()).toBe(false);
     });
 
+    it("renders as expected for user trying to change their adr dataset", () => {
+        const store = createStore();
+        const rendered = mount(ResetConfirmation, {
+            propsData: {
+                datasetChange: true,
+                continueEditing: jest.fn(),
+                cancelEditing: jest.fn()
+            },
+            store
+        });
+        expectTranslated(rendered.findAll("p").at(0),
+            "Changing the selected dataset will result in changes to all subsequent steps being discarded.",
+            "La modification de l'ensemble de données sélectionné entraînera la suppression des modifications de toutes les étapes suivantes.", store);
+    });
+
+
     it("renders as expected for someone rerunning the model", () => {
         const stepperGetter = {
             changesToRelevantSteps: () => [
