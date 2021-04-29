@@ -13,7 +13,6 @@ import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
-import org.imperial.mrc.hint.models.ErrorResponse
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
@@ -399,6 +398,17 @@ class ADRControllerTests : HintrControllerTests()
         val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
         assertThat(result.body!!).isEqualTo("Bad Gateway")
+    }
+
+    @Test
+    fun `pushes file to ADR fails if retrieval from hintr fails with empty response`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null)
+        }
+        val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
     }
 
     @Test

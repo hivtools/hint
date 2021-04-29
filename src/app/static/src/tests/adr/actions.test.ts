@@ -211,7 +211,16 @@ describe("ADR actions", () => {
             resources: [
                 {
                     resource_type: "output-summary",
+                    id: "456",
+                    name: "project2_naomi_summary.html",
+                    last_modified: "2021-03-01",
+                    metadata_modified: "2021-03-02",
+                    url: "http://test2"
+                },
+                {
+                    resource_type: "output-summary",
                     id: "123",
+                    name: "project1_naomi_summary.html",
                     last_modified: "2021-03-01",
                     metadata_modified: "2021-03-02",
                     url: "http://test"

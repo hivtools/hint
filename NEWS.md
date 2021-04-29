@@ -1,7 +1,10 @@
+# hint 1.31.0
+
+* Include metadata when pushing file to ADR
 
 # hint 1.30.0
 
-* Include metadata when pushing file to ADR
+* Prevent ADR upload of output files from overwriting those from other projects
 
 # hint 1.29.2
 

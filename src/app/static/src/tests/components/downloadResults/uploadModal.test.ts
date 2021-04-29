@@ -5,7 +5,6 @@ import {emptyState} from "../../../app/root";
 import {mockADRState, mockBaselineState, mockDatasetResource} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
-import Vue from 'vue';
 
 describe(`uploadModal `, () => {
 
@@ -120,8 +119,9 @@ describe(`uploadModal `, () => {
 
         const overwriteText = wrapper.findAll("small")
         expect(overwriteText.length).toBe(1)
-        expect(overwriteText.at(0).text()).toBe("This file already exists on ADR " +
-            "and will be overwritten. File was updated 25/01/2021 06:34:12")
+        expectTranslated(overwriteText.at(0), "This file already exists on ADR " +
+            "and will be overwritten. File was updated 25/01/2021 06:34:12",
+            "Ce fichier existe déjà sur ADR et sera écrasé. Le fichier a été mis à jour 25/01/2021 06:34:12", store)
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
