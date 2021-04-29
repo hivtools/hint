@@ -1,6 +1,10 @@
-# hint 1.30.1
+# hint 1.31.1
 
 * Rebuild ADR uploadFiles with new resourceIds after upload new files
+
+# hint 1.31.0
+
+* Add accessibility statement
 
 # hint 1.30.0
 
@@ -61,7 +65,6 @@
 # hint 1.18.0
 
 * add uncertainty ranges to choropleth tooltips
-
 
 # hint 1.16.1
 
