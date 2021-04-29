@@ -7,7 +7,6 @@ import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutatio
 import {getFormData} from "./helpers";
 import {ADRMutation} from "../../app/store/adr/mutations";
 import {UploadFile} from "../../app/types";
-import {mockADRState} from "../mocks";
 
 // this suite tests all endpoints that talk to the ADR
 // we put them in a suite of their own so that we can run

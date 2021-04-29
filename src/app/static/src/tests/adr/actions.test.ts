@@ -402,7 +402,7 @@ describe("ADR actions", () => {
                     resourceId: "id1"
                 },
                 {
-                    resourceType: "type2",
+                    resourceType: "inputs-unaids-naomi-report",
                     resourceFilename: "file2"
                 }
             ] as UploadFile[]
@@ -411,7 +411,7 @@ describe("ADR actions", () => {
         const success2 = {response: "success2"}
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId`)
             .reply(200, mockSuccess(success));
-        mockAxios.onPost(`adr/datasets/datasetId/resource/type2/calId`)
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId`)
             .reply(200, mockSuccess(success2));
 
         await actions.uploadFilesToADR({commit, state: adr, rootState: root} as any, uploadFilesPayload);
@@ -428,8 +428,8 @@ describe("ADR actions", () => {
         expect(mockAxios.history.post.length).toBe(2);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=zip");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId");
-        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=Output%20files%20uploaded%20from%20Naomi%20web%20app");
-        expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/type2/calId");
+        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=summary");
+        expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId");
     });
 
     it("uploadFilesToADR sets upload failure and prevents subsquent uploads", async () => {
