@@ -81,7 +81,7 @@
     import {Language} from "../../store/translations/locales";
     import Vue from "vue";
     import TreeSelect from "@riophae/vue-treeselect";
-    import {datasetFromMetadata, findResource, mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
+    import {datasetFromMetadata, mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
     import {BaselineMutation} from "../../store/baseline/mutations";

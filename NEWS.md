@@ -1,6 +1,10 @@
-# hint 1.30.0
+# hint 1.31.0
 
 * Add accessibility statement
+
+# hint 1.30.0
+
+* Prevent ADR upload of output files from overwriting those from other projects
 
 # hint 1.29.2
 
