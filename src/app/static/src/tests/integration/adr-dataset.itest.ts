@@ -104,7 +104,11 @@ describe("ADR dataset-related actions", () => {
     });
 
     it("can get dataset details on get userCanUpload when selected dataset organisation is not set", async () => {
-        const commit = jest.fn();
+        const commit = jest.fn().mockImplementation((mutation, payload) => {
+            if (mutation === "baseline/SetDataset") {
+                root.baseline.selectedDataset = payload
+            }
+        });
 
         // 1. get datasets
         await adrActions.getDatasets({commit, rootState} as any);
@@ -208,6 +212,7 @@ describe("ADR dataset-related actions", () => {
     it("hits upload files to adr endpoint and gets appropriate error", async () => {
 
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const root = {
             ...rootState,
             modelCalibrate: {calibrateId: "calId"},
@@ -229,16 +234,20 @@ describe("ADR dataset-related actions", () => {
             }
         ] as UploadFile[]
 
-        await adrActions.uploadFilestoADR({commit, state: adr, rootState: root} as any,
+        await adrActions.uploadFilestoADR({commit, dispatch, state: adr, rootState: root} as any,
             uploadFilesPayload);
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
         expect(commit.mock.calls[0][0]["payload"]).toBe(1);
         expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadProgress");
         expect(commit.mock.calls[1][0]["payload"]).toBe(1);
         expect(commit.mock.calls[2][0]["type"]).toBe("SetADRUploadError");
         expect(commit.mock.calls[2][0]["payload"]["error"]).toBe("OTHER_ERROR");
+        expect(commit.mock.calls[3][0]).toBe("baseline/SetDataset");
+        expect(commit.mock.calls[3][2]["root"]).toBe(true);
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
     }, 7000);
 
 });
