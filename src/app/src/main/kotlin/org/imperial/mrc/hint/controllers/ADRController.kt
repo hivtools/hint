@@ -171,7 +171,7 @@ class ADRController(private val encryption: Encryption,
     }
 
     @PostMapping("/datasets/{id}/resource/{resourceType}/{modelCalibrateId}")
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "UnsafeCallOnNullableType", "TooGenericExceptionCaught")
     fun pushFileToADR(@PathVariable id: String,
                       @PathVariable resourceType: String,
                       @PathVariable modelCalibrateId: String,
@@ -241,8 +241,9 @@ class ADRController(private val encryption: Encryption,
     {
         val adr = adrClientBuilder.build()
         val response = adr.get("resource_show?id=${resourceId}")
-        if (response.statusCode.isError) {
-            throw IOException("Unable to retrieve hash")
+        if (response.statusCode.isError)
+        {
+            throw IOException("Unable to retrieve hash from ADR")
         }
         val parser = JSONParser()
         val json: JSONObject = parser.parse(response.body!!) as JSONObject
