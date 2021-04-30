@@ -362,7 +362,7 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
-    fun `does return false if error occurred while checking if upload file has changes`()
+    fun `uploading returns error and does not update ADR if exception occurs while comparing hash codes`()
     {
         val mockAPIClient: HintrAPIClient = mock {
             on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
@@ -375,9 +375,10 @@ class ADRControllerTests : HintrControllerTests()
         }
 
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.uploadFileHasChanges("resource1", "test")
-        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
-        assertThat(result.body!!).isFalse
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        verify(mockClient, never()).postFile(any(), any(), any())
+        assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(objectMapper.readTree(result.body)["data"].textValue()).isEqualTo(null)
     }
 
     @Test
@@ -396,7 +397,7 @@ class ADRControllerTests : HintrControllerTests()
         }
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
         val hasOldHash = sut.uploadFileHasChanges("resource1", "D41D8CD98F00B204E9800998ECF8427E")
-        assertThat(hasOldHash.body!!).isFalse
+        assertThat(hasOldHash).isFalse
 
         val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
         verify(mockClient, never()).postFile(any(), any(), any())
@@ -417,7 +418,7 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
-    fun `pushes file to ADR fails retrieval from ADR fails`()
+    fun `pushes file to ADR fails if retrieval from hintr fails`()
     {
         val mockAPIClient: HintrAPIClient = mock {
             on { downloadSpectrum("model1") } doReturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StreamingResponseBody { it.write("Internal Server Error".toByteArray()) })

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.nio.file.Files
 
 @RestController
@@ -216,8 +217,7 @@ class ADRController(private val encryption: Encryption,
                 null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
                 else ->
                 {
-                    val fileHasChangesResponse = uploadFileHasChanges(resourceId, fileHash)
-                    if (fileHasChangesResponse.statusCode.is2xxSuccessful && fileHasChangesResponse.body!!)
+                    if (uploadFileHasChanges(resourceId, fileHash))
                     {
                         adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
                     }
@@ -228,26 +228,25 @@ class ADRController(private val encryption: Encryption,
                 }
             }
         }
-        finally {
+        catch (e: Exception)
+        {
+            ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.message!!).toResponseEntity()
+        } finally
+        {
             tmpDir.deleteRecursively()
         }
     }
 
-    fun uploadFileHasChanges(resourceId: String, newDatasetHash: String): ResponseEntity<Boolean>
+    fun uploadFileHasChanges(resourceId: String, newDatasetHash: String): Boolean
     {
         val adr = adrClientBuilder.build()
         val response = adr.get("resource_show?id=${resourceId}")
-        return if (response.statusCode.is2xxSuccessful)
-        {
-            val parser = JSONParser()
-            val json: JSONObject = parser.parse(response.body!!) as JSONObject
-            val data: JSONObject = json["data"] as JSONObject
-            val result = data["hash"] != newDatasetHash
-            ResponseEntity.ok().body(result)
+        if (response.statusCode.isError) {
+            throw IOException("Unable to retrieve hash")
         }
-        else
-        {
-            ResponseEntity<Boolean>(false, response.headers, response.statusCode)
-        }
+        val parser = JSONParser()
+        val json: JSONObject = parser.parse(response.body!!) as JSONObject
+        val data: JSONObject = json["data"] as JSONObject
+        return data["hash"] != newDatasetHash
     }
 }
