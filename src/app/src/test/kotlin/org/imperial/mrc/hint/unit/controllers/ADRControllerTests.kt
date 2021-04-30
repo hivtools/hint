@@ -314,7 +314,7 @@ class ADRControllerTests : HintrControllerTests()
             on { build() } doReturn mockClient
         }
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", null)
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", null, "Naomi model outputs")
         verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.name == "output1.zip" })
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
@@ -333,7 +333,7 @@ class ADRControllerTests : HintrControllerTests()
             on { build() } doReturn mockClient
         }
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-summary", "model1", "output1.html", null)
+        val result = sut.pushFileToADR("dataset1", "adr-output-summary", "model1", "output1.html", null, "Naomi summary report")
         verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.name == "output1.html" })
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
@@ -356,7 +356,7 @@ class ADRControllerTests : HintrControllerTests()
         }
 
         val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
     }
@@ -375,7 +375,7 @@ class ADRControllerTests : HintrControllerTests()
         }
 
         val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs")
         verify(mockClient, never()).postFile(any(), any(), any())
         assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(objectMapper.readTree(result.body)["data"].textValue()).isEqualTo(null)
@@ -399,7 +399,7 @@ class ADRControllerTests : HintrControllerTests()
         val hasOldHash = sut.uploadFileHasChanges("resource1", "D41D8CD98F00B204E9800998ECF8427E")
         assertThat(hasOldHash).isFalse
 
-        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs")
         verify(mockClient, never()).postFile(any(), any(), any())
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(objectMapper.readTree(result.body)["data"].textValue()).isEqualTo(null)
@@ -412,7 +412,7 @@ class ADRControllerTests : HintrControllerTests()
             on { downloadSpectrum("model1") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
         val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-unknown", "model1", "output1.zip", "resource1")
+        val result = sut.pushFileToADR("dataset1", "adr-output-unknown", "model1", "output1.zip", "resource1", "Naomi model outputs")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(objectMapper.readTree(result.body)["errors"][0]["detail"].textValue()).isEqualTo("Invalid resourceType")
     }
@@ -425,7 +425,7 @@ class ADRControllerTests : HintrControllerTests()
             on { downloadSpectrum("model1") } doReturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StreamingResponseBody { it.write("Internal Server Error".toByteArray()) })
         }
         val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs")
         assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(result.body!!).contains("Internal Server Error")
     }
@@ -445,10 +445,22 @@ class ADRControllerTests : HintrControllerTests()
         val mockBuilder: ADRClientBuilder = mock {
             on { build() } doReturn mockClient
         }
+
         val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
         assertThat(result.body!!).isEqualTo("Bad Gateway")
+    }
+
+    @Test
+    fun `pushes file to ADR fails if retrieval from hintr fails with empty response`()
+    {
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadSpectrum("model1") } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null)
+        }
+        val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
     }
 
     @Test

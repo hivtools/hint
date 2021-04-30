@@ -173,6 +173,14 @@ export interface CalibrateResultResponse {
       }[];
     };
   };
+  uploadMetadata?: {
+    outputZip: {
+      description?: string;
+    };
+    outputSummary: {
+      description?: string;
+    };
+  };
   [k: string]: any;
 }
 export interface CalibrateStatusResponse {
@@ -181,13 +189,15 @@ export interface CalibrateStatusResponse {
   status: string;
   success: boolean | null;
   queue: number;
-  progress: {
-    started: boolean;
-    complete: boolean;
-    value?: number;
-    name: string;
-    helpText?: string;
-  }[];
+  progress: (
+    | {
+        started: boolean;
+        complete: boolean;
+        value?: number;
+        name: string;
+        helpText?: string;
+      }
+    | string)[];
 }
 export interface CalibrateSubmitRequest {
   options: {
@@ -249,7 +259,6 @@ export interface ChoroplethMetadata {
     use_shape_regions?: boolean | null;
   }[];
 }
-export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -257,6 +266,7 @@ export interface Error {
   trace?: string[];
   [k: string]: any;
 }
+export type ErrorCode = string;
 export type FileName = string;
 export type FilePath = string | null;
 export interface Filter {

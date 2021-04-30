@@ -3,7 +3,6 @@ import {RootState} from "../../root";
 import {api} from "../../apiService";
 import qs from "qs";
 import {ADRState} from "./adr";
-import {BaselineState, baseline} from "../baseline/baseline";
 import {ADRMutation} from "./mutations";
 import {constructUploadFile, datasetFromMetadata} from "../../utils";
 import {Organization, UploadFile, Dict} from "../../types";
@@ -17,7 +16,7 @@ export interface ADRActions {
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
     getUploadFiles: (store: ActionContext<ADRState, RootState>) => void;
-    uploadFilestoADR: (store: ActionContext<ADRState, RootState>, uploadFilesPayload: UploadFile[]) => void;
+    uploadFilesToADR: (store: ActionContext<ADRState, RootState>, uploadFilesPayload: UploadFile[]) => void;
 }
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
@@ -124,8 +123,9 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         }
     },
 
-    async uploadFilestoADR(context, uploadFilesPayload) {
+    async uploadFilesToADR(context, uploadFilesPayload) {
         const {state, rootState, commit, dispatch} = context;
+        const uploadMetadata = rootState.modelRun.result?.uploadMetadata
         const selectedDatasetId = rootState.baseline.selectedDataset!.id;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
 
@@ -136,8 +136,18 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             const { resourceType, resourceFilename, resourceId } = uploadFilesPayload[i]
 
             const requestParams: Dict<string> = {resourceFileName: resourceFilename}
-            if (resourceId){
+            if (resourceId) {
                 requestParams["resourceId"] = resourceId
+            }
+            if (resourceType === state.schemas?.outputSummary) {
+                requestParams["description"] = uploadMetadata
+                    ? uploadMetadata.outputSummary.description
+                    : "Naomi summary report uploaded from Naomi web app"
+            }
+            if (resourceType === state.schemas?.outputZip) {
+                requestParams["description"] = uploadMetadata
+                    ? uploadMetadata.outputZip.description
+                    : "Naomi output uploaded from Naomi web app"
             }
 
             let apiRequest = api<ADRMutation, ADRMutation>(context)
@@ -155,7 +165,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         }
         await getAndSetDatasets(context, selectedDatasetId)
         dispatch("getUploadFiles");
-    }    
+    }
 };
 
 async function getAndSetDatasets(context: ActionContext<ADRState, RootState>, selectedDatasetId: string){

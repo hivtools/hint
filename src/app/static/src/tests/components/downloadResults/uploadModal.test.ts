@@ -66,7 +66,7 @@ describe(`uploadModal `, () => {
                     namespaced: true,
                     state: mockADRState({uploadFiles: data}),
                     actions: {
-                        uploadFilestoADR: jest.fn()
+                        uploadFilesToADR: jest.fn()
                     },
                     mutations: {
                         ADRUploadStarted: jest.fn()
@@ -121,8 +121,9 @@ describe(`uploadModal `, () => {
 
         const overwriteText = wrapper.findAll("small")
         expect(overwriteText.length).toBe(1)
-        expect(overwriteText.at(0).text()).toBe("This file already exists on ADR " +
-            "and will be overwritten. File was updated 25/01/2021 06:34:12")
+        expectTranslated(overwriteText.at(0), "This file already exists on ADR " +
+            "and will be overwritten. File was updated 25/01/2021 06:34:12",
+            "Ce fichier existe déjà sur ADR et sera écrasé. Le fichier a été mis à jour 25/01/2021 06:34:12", store)
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
@@ -158,18 +159,6 @@ describe(`uploadModal `, () => {
 
         expect(wrapper.find("#dialog").exists()).toBe(true)
         expect(wrapper.vm.$data.uploadFilesToAdr).toMatchObject(["outputZip", "outputSummary"])
-    })
-
-    it(`can set and get description value as expected`, async () => {
-        const wrapper = getWrapper()
-        const newDesc = "new description"
-
-        const desc = wrapper.find("#description-id")
-        desc.setValue(newDesc)
-        expect(wrapper.vm.$data.uploadDescToAdr).toBe(newDesc)
-
-        const textarea = desc.element as HTMLTextAreaElement
-        expect(textarea.value).toBe(newDesc)
     })
 
     it(`can trigger close modal as expected`, async () => {

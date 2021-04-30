@@ -7,7 +7,6 @@ import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutatio
 import {getFormData} from "./helpers";
 import {ADRMutation} from "../../app/store/adr/mutations";
 import {UploadFile} from "../../app/types";
-import {mockADRState} from "../mocks";
 
 // this suite tests all endpoints that talk to the ADR
 // we put them in a suite of their own so that we can run
@@ -221,6 +220,14 @@ describe("ADR dataset-related actions", () => {
                     id: "datasetId",
                     organization: {id: "organisationId"}
                 }
+            },
+            modelRun: {
+                result: {
+                    uploadMetadata: {
+                        outputSummary: {description: "summary"},
+                        outputZip: {description: "zip"}
+                    }
+                }
             }
         };
         
@@ -234,8 +241,7 @@ describe("ADR dataset-related actions", () => {
             }
         ] as UploadFile[]
 
-        await adrActions.uploadFilestoADR({commit, dispatch, state: adr, rootState: root} as any,
-            uploadFilesPayload);
+        await adrActions.uploadFilesToADR({commit, dispatch, state: adr, rootState: root} as any, uploadFilesPayload);
 
         expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");

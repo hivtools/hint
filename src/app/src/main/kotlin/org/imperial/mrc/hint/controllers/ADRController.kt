@@ -15,8 +15,6 @@ import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
-import org.jooq.tools.json.JSONObject
-import org.jooq.tools.json.JSONParser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -171,43 +169,42 @@ class ADRController(private val encryption: Encryption,
     }
 
     @PostMapping("/datasets/{id}/resource/{resourceType}/{modelCalibrateId}")
-    @Suppress("ReturnCount", "UnsafeCallOnNullableType")
+    @Suppress("ReturnCount", "LongParameterList", "UnsafeCallOnNullableType")
     fun pushFileToADR(@PathVariable id: String,
                       @PathVariable resourceType: String,
                       @PathVariable modelCalibrateId: String,
                       @RequestParam resourceFileName: String,
-                      @RequestParam resourceId: String?): ResponseEntity<String>
+                      @RequestParam resourceId: String?,
+                      @RequestParam description: String) : ResponseEntity<String>
     {
         // 1. Download relevant artefact from hintr
         val artefact = when (resourceType)
         {
-            appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId),
-                    "Naomi model outputs")
-            appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId),
-                    "Naomi summary report")
+            appProperties.adrOutputZipSchema -> apiClient.downloadSpectrum(modelCalibrateId)
+            appProperties.adrOutputSummarySchema -> apiClient.downloadSummary(modelCalibrateId)
             else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
         }
 
         // 2. Return error if artefact can't be retrieved
-        if (!artefact.first.statusCode.is2xxSuccessful)
+        if (!artefact.statusCode.is2xxSuccessful)
         {
             val baos = ByteArrayOutputStream()
-            artefact.first.body?.writeTo(baos)
-            return ErrorDetail(artefact.first.statusCode, baos.toString()).toResponseEntity()
+            artefact.body?.writeTo(baos)
+            return ErrorDetail(artefact.statusCode, baos.toString()).toResponseEntity()
         }
 
         // 3. Stream artefact to file
         val tmpDir = Files.createTempDirectory("adr").toFile()
         val file = File(tmpDir, resourceFileName)
         FileOutputStream(file).use { fis ->
-            artefact.first.body!!.writeTo(fis)
+            artefact.body!!.writeTo(fis)
         }
 
         // 4. Checksum file and upload with metadata to ADR
         val filePart = Pair("upload", file)
         val fileHash = file.md5sum()
         val commonParameters =
-                listOf("name" to resourceFileName, "description" to artefact.second, "hash" to fileHash,
+                listOf("name" to resourceFileName, "description" to description, "hash" to fileHash,
                         "resource_type" to resourceType)
         val adr = adrClientBuilder.build()
         return try
