@@ -1,3 +1,7 @@
+# hint 1.32.0
+
+* Avoid re-uploading unchanged files to ADR
+
 # hint 1.31.1
 
 * Rebuild ADR uploadFiles with new resourceIds after upload new files
