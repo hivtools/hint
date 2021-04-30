@@ -321,13 +321,20 @@ describe("ADR actions", () => {
     });
 
     it("getUserCanUpload sets organisation on selectedDataset if necessary", async () => {
-        const commit = jest.fn();
         const root = mockRootState({
             baseline: mockBaselineState({selectedDataset: {id: "test-dataset"}} as any)
         });
         const adr = mockADRState({
             datasets: [{id: "test-dataset", resources: [], organization: {id: "test-org"}}],
             schemas: {baseUrl: "http://test"} as any
+        });
+
+        //Give commit an implementation so it can really update the state on the SetDataset mutation to allow testing
+        //of action which required that state change
+        const commit = jest.fn().mockImplementation((mutation, payload) => {
+            if (mutation === "baseline/SetDataset") {
+                root.baseline.selectedDataset = payload
+            }
         });
 
         mockAxios.onGet(`adr/orgs?permission=update_dataset`)
@@ -344,7 +351,11 @@ describe("ADR actions", () => {
     });
 
     it("getUserCanUpload fetches dataset metadata to get organization if necessary", async () => {
-        const commit = jest.fn();
+        const commit = jest.fn().mockImplementation((mutation, payload) => {
+            if (mutation === "baseline/SetDataset") {
+                root.baseline.selectedDataset = payload
+            }
+        });
         const root = mockRootState({
             baseline: mockBaselineState({selectedDataset: {id: "test-dataset"}} as any)
         });
@@ -369,8 +380,9 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "SetUserCanUpload", payload: true});
     });
 
-    it("uploadFilestoADR uploads files sequentially to adr and commits complete on upload of final file", async () => {
+    it("uploadFilesToADR uploads files sequentially to adr and commits complete on upload of final file", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
             modelRun: mockModelRunState(
@@ -409,14 +421,18 @@ describe("ADR actions", () => {
 
         const success = {response: "success"}
         const success2 = {response: "success2"}
+        const success3 = {response: "success3", data: {id: "datasetId"}}
+
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId`)
             .reply(200, mockSuccess(success));
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId`)
             .reply(200, mockSuccess(success2));
+        mockAxios.onGet(`adr/datasets/datasetId`)
+            .reply(200, mockSuccess(success3));
 
-        await actions.uploadFilesToADR({commit, state: adr, rootState: root} as any, uploadFilesPayload);
+        await actions.uploadFilesToADR({commit, dispatch, state: adr, rootState: root} as any, uploadFilesPayload);
 
-        expect(commit.mock.calls.length).toBe(4);
+        expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
         expect(commit.mock.calls[0][0]["payload"]).toBe(2);
         expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadProgress");
@@ -425,15 +441,22 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[2][0]["payload"]).toBe(2);
         expect(commit.mock.calls[3][0]["type"]).toBe("ADRUploadCompleted");
         expect(commit.mock.calls[3][0]["payload"]).toEqual(success2);
+        expect(commit.mock.calls[4][0]).toBe("baseline/SetDataset");
+        expect(commit.mock.calls[4][2]["root"]).toBe(true);
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
         expect(mockAxios.history.post.length).toBe(2);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=zip");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId");
         expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=summary");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId");
+        expect(mockAxios.history.get.length).toBe(1);
+        expect(mockAxios.history.get[0]["url"]).toBe("/adr/datasets/datasetId");
     });
 
     it("uploadFilesToADR sets upload failure and prevents subsquent uploads", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
             modelRun: mockModelRunState(
@@ -471,7 +494,6 @@ describe("ADR actions", () => {
             }
         ] as UploadFile[]
 
-
         const success2 = {response: "success2"}
 
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId`)
@@ -479,30 +501,32 @@ describe("ADR actions", () => {
         mockAxios.onPost(`adr/datasets/datasetId/resource/type2/calId`)
             .reply(200, mockSuccess(success2));
 
-        await actions.uploadFilesToADR({commit, state: adr, rootState: root} as any, uploadFilesPayload);
+        await actions.uploadFilesToADR({commit, dispatch, state: adr, rootState: root} as any, uploadFilesPayload);
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
         expect(commit.mock.calls[0][0]["payload"]).toBe(2);
         expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadProgress");
         expect(commit.mock.calls[1][0]["payload"]).toBe(1);
         expect(commit.mock.calls[2][0]["type"]).toBe("SetADRUploadError");
         expect(commit.mock.calls[2][0]["payload"]).toEqual({"detail": "failed", "error": "OTHER_ERROR"});
+        expect(commit.mock.calls[3][0]).toBe("baseline/SetDataset");
+        expect(commit.mock.calls[3][2]["root"]).toBe(true);
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
         expect(mockAxios.history.post.length).toBe(1);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=summary");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId");
+        expect(mockAxios.history.get.length).toBe(1);
+        expect(mockAxios.history.get[0]["url"]).toBe("/adr/datasets/datasetId");
     });
 
     it("uploadFilesToADR uploads files and static description sequentially to adr", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
-            modelRun: mockModelRunState(
-                {
-                    result: mockCalibrateResultResponse({
-                        uploadMetadata: null
-                    })
-                }),
+            modelRun: mockModelRunState({}),
             baseline: mockBaselineState({selectedDataset: {
                     id: "datasetId"
                 }} as any)
@@ -533,12 +557,11 @@ describe("ADR actions", () => {
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId`)
             .reply(200, mockSuccess("success2"));
 
-        await actions.uploadFilesToADR({commit, state: adr, rootState: root} as any, uploadFilesPayload);
+        await actions.uploadFilesToADR({commit, dispatch, state: adr, rootState: root} as any, uploadFilesPayload);
         expect(mockAxios.history.post.length).toBe(2);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=Naomi%20output%20uploaded%20from%20Naomi%20web%20app");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId");
         expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=Naomi%20summary%20report%20uploaded%20from%20Naomi%20web%20app");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId");
     });
-
 });

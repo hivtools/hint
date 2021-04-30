@@ -67,30 +67,10 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         const selectedDataset = rootState.baseline.selectedDataset;
 
         if (selectedDataset) {
-            //For backward compatibility, we may have to regenerate the dataset metadata to provide the
-            //organisation id for projects which are reloaded
-            let selectedDatasetOrgId: string;
             if (!selectedDataset.organization) {
-                //We may also have to fetch the selected dataset metadata too, if not loaded during this session
-                let datasets = state.datasets;
-                if (!datasets.length) {
-                    await api(context)
-                        .ignoreErrors()
-                        .ignoreSuccess()
-                        .get(`/adr/datasets/${selectedDataset.id}`)
-                        .then((response) => {
-                            if (response) {
-                                datasets = [response.data];
-                            }
-                        });
-                }
-
-                const regenDataset = datasetFromMetadata(selectedDataset.id, datasets, state.schemas!);
-                commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
-                selectedDatasetOrgId = regenDataset.organization.id;
-            } else {
-                selectedDatasetOrgId = selectedDataset.organization.id;
+                await getAndSetDatasets(context, selectedDataset.id)
             }
+            const selectedDatasetOrgId = rootState.baseline.selectedDataset!.organization.id
 
             await api(context)
                 .withError(ADRMutation.SetADRError)
@@ -144,10 +124,11 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async uploadFilesToADR(context, uploadFilesPayload) {
-        const {state, rootState, commit} = context;
+        const {state, rootState, commit, dispatch} = context;
         const uploadMetadata = rootState.modelRun.result?.uploadMetadata
-        const selectedDatasetId = rootState.baseline.selectedDataset?.id;
+        const selectedDatasetId = rootState.baseline.selectedDataset!.id;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
+
         commit({type: ADRMutation.ADRUploadStarted, payload: uploadFilesPayload.length});
 
         for (let i = 0; i < uploadFilesPayload.length; i++) {
@@ -182,6 +163,27 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                 break
             }
         }
+        await getAndSetDatasets(context, selectedDatasetId)
+        dispatch("getUploadFiles");
     }
 };
+
+async function getAndSetDatasets(context: ActionContext<ADRState, RootState>, selectedDatasetId: string){
+    const {state, commit} = context;
+    let datasets = state.datasets;
+    if (!datasets.length) {
+        await api(context)
+                .ignoreErrors()
+                .ignoreSuccess()
+                .get(`/adr/datasets/${selectedDatasetId}`)
+                .then((response) => {
+                    if (response) {
+                        datasets = [response.data];
+                    }
+                });
+    }
+
+    const regenDataset = datasetFromMetadata(selectedDatasetId, datasets, state.schemas!);
+    commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
+}
 
