@@ -171,7 +171,7 @@ class ADRController(private val encryption: Encryption,
     }
 
     @PostMapping("/datasets/{id}/resource/{resourceType}/{modelCalibrateId}")
-    @Suppress("ReturnCount", "UnsafeCallOnNullableType", "TooGenericExceptionCaught")
+    @Suppress("ReturnCount", "UnsafeCallOnNullableType")
     fun pushFileToADR(@PathVariable id: String,
                       @PathVariable resourceType: String,
                       @PathVariable modelCalibrateId: String,
@@ -228,10 +228,11 @@ class ADRController(private val encryption: Encryption,
                 }
             }
         }
-        catch (e: Exception)
+        catch (e: IOException)
         {
             ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.message!!).toResponseEntity()
-        } finally
+        }
+        finally
         {
             tmpDir.deleteRecursively()
         }
