@@ -9,6 +9,7 @@ import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.md5sum
+import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.nio.file.Files
 
 @RestController
@@ -167,7 +169,7 @@ class ADRController(private val encryption: Encryption,
     }
 
     @PostMapping("/datasets/{id}/resource/{resourceType}/{modelCalibrateId}")
-    @Suppress("ReturnCount", "LongParameterList")
+    @Suppress("ReturnCount", "LongParameterList", "UnsafeCallOnNullableType")
     fun pushFileToADR(@PathVariable id: String,
                       @PathVariable resourceType: String,
                       @PathVariable modelCalibrateId: String,
@@ -200,8 +202,9 @@ class ADRController(private val encryption: Encryption,
 
         // 4. Checksum file and upload with metadata to ADR
         val filePart = Pair("upload", file)
+        val fileHash = file.md5sum()
         val commonParameters =
-                listOf("name" to resourceFileName, "description" to description, "hash" to file.md5sum(),
+                listOf("name" to resourceFileName, "description" to description, "hash" to fileHash,
                         "resource_type" to resourceType)
         val adr = adrClientBuilder.build()
         return try
@@ -209,11 +212,38 @@ class ADRController(private val encryption: Encryption,
             when (resourceId)
             {
                 null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
-                else -> adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
+                else ->
+                {
+                    if (uploadFileHasChanges(resourceId, fileHash))
+                    {
+                        adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
+                    }
+                    else
+                    {
+                        EmptySuccessResponse.asResponseEntity()
+                    }
+                }
             }
         }
-        finally {
+        catch (e: IOException)
+        {
+            ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.message!!).toResponseEntity()
+        }
+        finally
+        {
             tmpDir.deleteRecursively()
         }
+    }
+
+    fun uploadFileHasChanges(resourceId: String, newDatasetHash: String): Boolean
+    {
+        val adr = adrClientBuilder.build()
+        val response = adr.get("resource_show?id=${resourceId}")
+        if (response.statusCode.isError)
+        {
+            throw IOException("Unable to retrieve hash from ADR")
+        }
+        val hash = objectMapper.readTree(response.body!!)["data"]["hash"].asText()
+        return hash != newDatasetHash
     }
 }
