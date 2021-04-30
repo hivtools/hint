@@ -245,9 +245,7 @@ class ADRController(private val encryption: Encryption,
         {
             throw IOException("Unable to retrieve hash from ADR")
         }
-        val parser = JSONParser()
-        val json: JSONObject = parser.parse(response.body!!) as JSONObject
-        val data: JSONObject = json["data"] as JSONObject
-        return data["hash"] != newDatasetHash
+        val hash = objectMapper.readTree(response.body!!)["data"]["hash"].asText()
+        return hash != newDatasetHash
     }
 }

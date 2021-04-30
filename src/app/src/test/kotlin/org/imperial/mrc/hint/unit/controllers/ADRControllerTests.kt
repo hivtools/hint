@@ -355,7 +355,7 @@ class ADRControllerTests : HintrControllerTests()
             on { build() } doReturn mockClient
         }
 
-        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient, mock(), mock())
         val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
@@ -374,7 +374,7 @@ class ADRControllerTests : HintrControllerTests()
             on { build() } doReturn mockClient
         }
 
-        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient, mock(), mock())
         val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
         verify(mockClient, never()).postFile(any(), any(), any())
         assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -395,7 +395,7 @@ class ADRControllerTests : HintrControllerTests()
         val mockBuilder: ADRClientBuilder = mock {
             on { build() } doReturn mockClient
         }
-        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient, mock(), mock())
         val hasOldHash = sut.uploadFileHasChanges("resource1", "D41D8CD98F00B204E9800998ECF8427E")
         assertThat(hasOldHash).isFalse
 
@@ -445,7 +445,7 @@ class ADRControllerTests : HintrControllerTests()
         val mockBuilder: ADRClientBuilder = mock {
             on { build() } doReturn mockClient
         }
-        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
+        val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient, mock(), mock())
         val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
         assertThat(result.body!!).isEqualTo("Bad Gateway")
